@@ -52,8 +52,6 @@ public class DevelopmentUserStoreConfig {
     public static final String NM_PUBLISHER = "role_nm_publisher";
     public static final String NC_EDITOR = "role_nc_editor";
     public static final String NC_PUBLISHER = "role_nc_publisher";
-    public static final String OSDP_EDITOR = "role_osdp_editor";
-    public static final String OSDP_PUBLISHER = "role_osdp_publisher";
     public static final String INFRASTRUCTURE_EDITOR = "role_infrastructure_editor";
     public static final String INFRASTRUCTURE_PUBLISHER = "role_infrastructure_publisher";
     public static final String SA_EDITOR = "role_sa_editor";
@@ -197,14 +195,6 @@ public class DevelopmentUserStoreConfig {
     }
 
     @Bean
-    public CatalogueUser osdpPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser("osdp-publisher", "osdp-publisher@ceh.ac.uk");
-        addUserToGroup(user, OSDP_EDITOR, OSDP_PUBLISHER);
-        userStore().addUser(user, "password");
-        return user;
-    }
-
-    @Bean
     public CatalogueUser readonly() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser("readonly", "readonly@ceh.ac.uk");
         addUserToGroup(user, READONLY_GROUP);
@@ -311,8 +301,6 @@ public class DevelopmentUserStoreConfig {
         groupStore.createGroup(MAINTENANCE_ROLE, "");
         groupStore.createGroup(NC_EDITOR, "");
         groupStore.createGroup(NC_PUBLISHER, "");
-        groupStore.createGroup(OSDP_EDITOR, "");
-        groupStore.createGroup(OSDP_PUBLISHER, "");
         groupStore.createGroup(READONLY_GROUP, "");
         groupStore.createGroup(INFRASTRUCTURE_EDITOR, "");
         groupStore.createGroup(INFRASTRUCTURE_PUBLISHER, "");

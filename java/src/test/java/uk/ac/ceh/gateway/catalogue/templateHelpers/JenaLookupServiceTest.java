@@ -28,7 +28,7 @@ public class JenaLookupServiceTest {
     private Dataset jenaTdb;
     private JenaLookupService service;
 
-    private static final Property OSDP_PRODUCES = ResourceFactory.createProperty("http://onto.nerc.ac.uk/CEHMD/rels/produces");
+    private static final Property REL_PRODUCES = ResourceFactory.createProperty("http://onto.nerc.ac.uk/CEHMD/rels/produces");
     private static final Property BELONGS_TO = ResourceFactory.createProperty("http://purl.org/voc/ef#belongsTo");
     private static final Property NARROWER = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#narrower");
 
@@ -72,10 +72,10 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://dataset1"), TITLE, "Dataset 1");
         triples.add(createResource("http://dataset1"), METADATA_STATUS, "published");
         triples.add(createResource("http://dataset1"), TYPE, "dataset");
-        triples.add(createResource("http://monitoringActivity"), OSDP_PRODUCES, createResource("http://dataset1"));
+        triples.add(createResource("http://monitoringActivity"), REL_PRODUCES, createResource("http://dataset1"));
 
         //When
-        List<Link> actual = service.relationships("http://monitoringActivity", OSDP_PRODUCES.toString());
+        List<Link> actual = service.relationships("http://monitoringActivity", REL_PRODUCES.toString());
 
         //Then
         assertThat("Should be 1 Link", actual.size(), equalTo(1));
@@ -88,11 +88,11 @@ public class JenaLookupServiceTest {
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://monitoringActivity"), TITLE, "Monitoring Activity");
         triples.add(createResource("http://monitoringActivity"), METADATA_STATUS, "published");
-        triples.add(createResource("http://monitoringActivity"), OSDP_PRODUCES, createResource("http://dataset1"));
+        triples.add(createResource("http://monitoringActivity"), REL_PRODUCES, createResource("http://dataset1"));
         triples.add(createResource("http://monitoringActivity"), TYPE, "dataset");
 
         //When
-        List<Link> actual = service.inverseRelationships("http://dataset1", OSDP_PRODUCES.toString());
+        List<Link> actual = service.inverseRelationships("http://dataset1", REL_PRODUCES.toString());
 
         //Then
         assertThat("Should be 1 Link", actual.size(), equalTo(1));

@@ -94,36 +94,6 @@ public class DocumentTypes {
         .type(NERC_MODEL_USE)
         .build();
 
-    public static final String OSDP_AGENT = "osdp-agent";
-    public static DocumentType OSDP_AGENT_TYPE = DocumentType.builder()
-        .title("Agent")
-        .type(OSDP_AGENT)
-        .build();
-
-    public static final String OSDP_DATASET = "osdp-dataset";
-    public static DocumentType OSDP_DATASET_TYPE = DocumentType.builder()
-        .title("Dataset")
-        .type(OSDP_DATASET)
-        .build();
-
-    public static final String OSDP_MODEL = "osdp-model";
-    public static DocumentType OSDP_MODEL_TYPE = DocumentType.builder()
-        .title("Model")
-        .type(OSDP_MODEL)
-        .build();
-
-    public static final String OSDP_PUBLICATION = "osdp-publication";
-    public static DocumentType OSDP_PUBLICATION_TYPE = DocumentType.builder()
-        .title("Publication")
-        .type(OSDP_PUBLICATION)
-        .build();
-
-    public static final String OSDP_SAMPLE = "osdp-sample";
-    public static DocumentType OSDP_SAMPLE_TYPE = DocumentType.builder()
-        .title("Sample")
-        .type(OSDP_SAMPLE)
-        .build();
-
     public static final String SAMPLE_ARCHIVE = "sample-archive";
     public static DocumentType SAMPLE_ARCHIVE_TYPE = DocumentType.builder()
         .title("Sample Archive")

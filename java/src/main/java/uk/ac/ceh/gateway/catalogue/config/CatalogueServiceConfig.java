@@ -189,24 +189,6 @@ public class CatalogueServiceConfig {
                 .build(),
 
             Catalogue.builder()
-                .id("osdp")
-                .title("Open Soils Data Platform")
-                .url("https://www.ceh.ac.uk")
-                .contactUrl("https://www.ceh.ac.uk/contact-us")
-                .logo("ukceh.png")
-                .documentType(OSDP_AGENT_TYPE)
-                .documentType(OSDP_DATASET_TYPE)
-                .documentType(OSDP_MODEL_TYPE)
-                .documentType(MONITORING_ACTIVITY_TYPE)
-                .documentType(MONITORING_FACILITY_TYPE)
-                .documentType(MONITORING_PROGRAMME_TYPE)
-                .documentType(OSDP_PUBLICATION_TYPE)
-                .documentType(OSDP_SAMPLE_TYPE)
-                .facetKey("resourceType")
-                .fileUpload(false)
-                .build(),
-
-            Catalogue.builder()
                 .id("sa")
                 .title("UK Environmental Specimen Bank")
                 .url("https://uk-scape.ceh.ac.uk/our-science/projects/UK-vESB")

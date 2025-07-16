@@ -46,10 +46,6 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
-import uk.ac.ceh.gateway.catalogue.osdp.Agent;
-import uk.ac.ceh.gateway.catalogue.osdp.Dataset;
-import uk.ac.ceh.gateway.catalogue.osdp.Publication;
-import uk.ac.ceh.gateway.catalogue.osdp.Sample;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService;
@@ -282,14 +278,10 @@ class DocumentControllerTest {
         log.debug(link.toString());
 
         return Stream.of(
-            Arguments.of(new Agent(), TEXT_HTML, HTML, null),
-            Arguments.of(new Agent(), APPLICATION_JSON, JSON, null),
             Arguments.of(new CehModel(), TEXT_HTML, HTML, null),
             Arguments.of(new CehModel(), APPLICATION_JSON, JSON, null),
             Arguments.of(new CehModelApplication(), TEXT_HTML, HTML, null),
             Arguments.of(new CehModelApplication(), APPLICATION_JSON, JSON, null),
-            Arguments.of(new Dataset(), TEXT_HTML, HTML, null),
-            Arguments.of(new Dataset(), APPLICATION_JSON, JSON, null),
             Arguments.of(new DataType(), TEXT_HTML, HTML, null),
             Arguments.of(new DataType(), APPLICATION_JSON, JSON, null),
             Arguments.of(new InfrastructureRecord(), TEXT_HTML, HTML, null),
@@ -311,8 +303,6 @@ class DocumentControllerTest {
             Arguments.of(impModelApplication, APPLICATION_JSON, JSON, null),
             Arguments.of(link, TEXT_HTML, HTML, null),
             Arguments.of(link, APPLICATION_JSON, JSON, "link.json"),
-            Arguments.of(new uk.ac.ceh.gateway.catalogue.osdp.Model(), TEXT_HTML, HTML, null),
-            Arguments.of(new uk.ac.ceh.gateway.catalogue.osdp.Model(), APPLICATION_JSON, JSON, null),
             Arguments.of(new MonitoringActivity(), TEXT_HTML, HTML, null),
             Arguments.of(new MonitoringActivity(), APPLICATION_JSON, JSON, null),
             Arguments.of(new MonitoringFacility(), TEXT_HTML, HTML, null),
@@ -321,10 +311,6 @@ class DocumentControllerTest {
             Arguments.of(new MonitoringNetwork(), APPLICATION_JSON, JSON, null),
             Arguments.of(new MonitoringProgramme(), TEXT_HTML, HTML, null),
             Arguments.of(new MonitoringProgramme(), APPLICATION_JSON, JSON, null),
-            Arguments.of(new Publication(), TEXT_HTML, HTML, null),
-            Arguments.of(new Publication(), APPLICATION_JSON, JSON, null),
-            Arguments.of(new Sample(), TEXT_HTML, HTML, null),
-            Arguments.of(new Sample(), APPLICATION_JSON, JSON, null),
             Arguments.of(new SampleArchive(), TEXT_HTML, HTML, null),
             Arguments.of(new SampleArchive(), APPLICATION_JSON, JSON, null)
         );

@@ -121,9 +121,6 @@ Classes representing catalogue wide information, general dumping ground for docu
 #### ogc
 Web Map Service (WMS) model code
 
-#### osdp
-Java classes representing Open Soil Data Platform (OSDP) project concepts, same basis as EF but extended.
-
 #### postprocess
 Adding information to the Java object in the HTTP request/response cycle. After the controller has retrieved the metadata document but before sent back to the client, adds things like citation information, uses services to add e.g. citation information and links to the object so can be used by Freemarker to render HTML, XML templates
 
@@ -170,5 +167,5 @@ LESS css for different catalogues, most just import `style-ceh.less` and change 
 #### Apps
 * Search - the search page for each catalogue, facets, spatial search, show search results
 * Permissions - change users permissions on a metadata record
-* Editors - create and edit the different document types e.g. Gemini, OSDP. Configured from components, e.g. simple textbox, list of strings, list of keywords.
+* Editors - create and edit the different document types e.g. Gemini. Configured from components, e.g. simple textbox, list of strings, list of keywords.
 * Map Viewer - Show metadata records spatial services, WMS
