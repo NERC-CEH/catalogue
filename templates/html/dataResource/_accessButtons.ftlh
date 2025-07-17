@@ -2,7 +2,7 @@
 <#if onlineResources?? >
   <#assign downloadOrder=downloadOrderDetails.from(onlineResources) >
 </#if>
-<#if (resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application') && (resourceStatus == "Available" || resourceStatus == "Controlled") && (downloadOrder?? && downloadOrder?string?contains("isOrderable=true")) || (resourceType.value == 'service' && mapViewable ) || downloadOrder.supportingDocumentsUrl?has_content>
+<#if (resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application') && (resourceStatus == "Available" || resourceStatus == "Embargoed" || resourceStatus == "Controlled") >
   <#assign displayButtonRow = true>
 </#if>
 
