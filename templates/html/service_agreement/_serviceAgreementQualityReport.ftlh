@@ -15,7 +15,7 @@
       <#assign warnings = func.filter(problems, "severity", "WARNING")>
       <#assign infos = func.filter(problems, "severity", "INFO")>
       <#if errors?? && errors?has_content>
-          <div class="alert alert-dark border-4 border-primary">
+          <div class="alert alert-dark border-4 border-primary mt-2">
             <i class="fa-solid fa-info-circle text-primary"></i> <b>This service agreement is incomplete and cannot be submitted until all errors are cleared</b>
           </div>
       </#if>

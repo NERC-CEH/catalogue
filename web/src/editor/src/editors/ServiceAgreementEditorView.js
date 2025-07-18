@@ -270,7 +270,8 @@ export default EditorView.extend({
           label: 'Availability',
           text: `\
 <p>Depositors may request that access to the data be restricted for an agreed period (embargoed).  Embargoes and embargo periods may be subject to funder requirements. For NERC-funded research, a reasonable embargo period is considered to be a maximum of two years <strong>from the end of data collection.</strong></p>
-<p>If an embargo is required, please specify below.</p>\
+<p>If an embargo is required, please specify below.</p>
+<p class="requiredInfo">* The date must be today or within the next 5 years</p>
 `
         }),
 
