@@ -50,14 +50,14 @@
     }
 
     .saStatus {
-        color: var(--statusColor, gray);
-        font-size: 75%;
+        color: var(--_statusColor, gray);
+        font-size: var(--_statusFontsize, 1.6rem);
         display: block;
         font-weight: 600;
 
         &:before {
             content: "status: ";
-            font-weight: 200;
+            font-weight: 400;
         }
 
         &-draft {
@@ -421,6 +421,24 @@
 
         h3 {
             font-size: calc(1.15 * var(--_font-size));
+        }
+
+
+        .saStatus-draft {
+            /*If a draft version is printed, display 'DRAFT' on all pages */
+            --_statusFontsize: 10rem;
+            display: inline;
+            position: fixed;
+            top: 300px;
+            left: 10px;
+            opacity: 0.1;
+            width: 100%;
+            text-align: center;
+            z-index: 1000;
+
+            &::before {
+                display: none;
+            }
         }
 
         .supportingDoc {
