@@ -19,8 +19,8 @@
                 <div class="flex-grow-1">
                   <h1>
                     EIDC Service Agreement for ${title!"NOT PROVIDED"}
-                    <span class="saStatus saStatus-${getStateTitle()?lower_case}">${getStateTitle()?upper_case}</span>
                   </h1>
+                  <div class="saStatus saStatus-${getStateTitle()?lower_case}">${getStateTitle()?upper_case}</div>
                 </div>
             </div>
 

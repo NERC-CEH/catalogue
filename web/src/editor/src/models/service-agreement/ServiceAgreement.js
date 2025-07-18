@@ -29,7 +29,7 @@ export default EditorMetadata.extend({
       maxDate.setFullYear(today.getFullYear() + 5)
       today.setHours(0, 0, 0, 0)
       if (date < today || date > maxDate) {
-        errors.push('Availability date must be between today and 5 years from today')
+        errors.push('Embargo date is in the past or too far in the future')
       }
     }
 
