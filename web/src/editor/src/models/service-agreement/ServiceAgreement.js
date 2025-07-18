@@ -22,6 +22,17 @@ export default EditorMetadata.extend({
       errors.push('Depositor contact details are mandatory')
     }
 
+    if (attrs.availability) {
+      const date = new Date(attrs.availability)
+      const today = new Date()
+      const maxDate = new Date()
+      maxDate.setFullYear(today.getFullYear() + 5)
+      today.setHours(0, 0, 0, 0)
+      if (date < today || date > maxDate) {
+        errors.push('Availability date must be between today and 5 years from today')
+      }
+    }
+
     if (errors.length) {
       return errors
     }
