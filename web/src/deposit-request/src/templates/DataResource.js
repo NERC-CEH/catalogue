@@ -126,4 +126,40 @@ export default _.template(`
           placeholder="Enter a rough estimate of size (Mb or Gb and approx number of files)">
     <div class="invalid-feedback"></div>
   </div>
+
+  <div class="mt-2 largeData">
+    <label class="form-label d-block mt-3">
+      <span class="fw-bold">Is the total size of the data resource over 1Tb?</span> <span class="text-danger">*</span>
+    </label>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input"
+              type="radio"
+              name="largeData"
+              data-name="largeData"
+              id="largeDataYes"
+              value=true
+              <%= data.largeData === true ? 'checked' : '' %>>
+      <label class="form-check-label" for="largeDataYes">Yes</label>
+    </div>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input"
+              type="radio"
+              name="largeData"
+              data-name="largeData"
+              id="largeDataNo"
+              value=false
+              <%= data.largeData === false ? 'checked' : '' %>>
+      <label class="form-check-label" for="largeDataNo">No</label>
+    </div>
+    <div>
+      <input class="d-none"
+              type="radio"
+              name="largeData"
+              data-name="largeData"
+              id="largeDataNone">
+      <label class="d-none" >None</label>
+      <div class="invalid-feedback"></div>
+    </div>
+  </div>
+
 `)

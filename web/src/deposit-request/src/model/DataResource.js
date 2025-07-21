@@ -9,7 +9,8 @@ export default Backbone.Model.extend({
     easilyRecreated: '',
     resourceFormat: '',
     resourceFormatOther: '',
-    size: ''
+    size: '',
+    largeData: ''
   },
 
   validate (attrs = this.attributes) {
@@ -35,6 +36,7 @@ export default Backbone.Model.extend({
       }
     }
     if (attrs.size === '') errors.push({ name: 'size', message: 'Size is required.' })
+    if (attrs.largeData === '') errors.push({ name: 'largeData', message: 'Please make a choice' })
 
     return errors.length > 0 ? errors : undefined
   }
