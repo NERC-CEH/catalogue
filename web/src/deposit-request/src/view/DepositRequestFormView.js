@@ -36,6 +36,7 @@ export default ObjectInputView.extend({
   addResource (e) {
     e.preventDefault()
     this.dataResourceList.add(new DataResource())
+    this.updateAddButtonLabel()
   },
 
   newDataResource (model, i) {
@@ -58,6 +59,7 @@ export default ObjectInputView.extend({
     if (index !== -1) {
       this.dataResourceViewList.splice(index, 1)
     }
+    this.updateAddButtonLabel()
   },
 
   onFieldChange (e) {
@@ -84,6 +86,11 @@ export default ObjectInputView.extend({
     if (this.continueValidate) {
       this.validate()
     }
+  },
+
+  updateAddButtonLabel () {
+    const label = this.dataResourceList.length === 0 ? 'Add a dataset' : 'Add another dataset'
+    this.$('.add-resource').text(label)
   },
 
   validate () {
