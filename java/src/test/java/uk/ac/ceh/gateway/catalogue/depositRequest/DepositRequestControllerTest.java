@@ -48,7 +48,7 @@ class DepositRequestControllerTest {
             true, true, false, false,
             List.of(new DataResourceModel(
                 "Title","Description","Images","",true,"NetCDF","",
-                "1000")),
+                "1000", false)),
             "Some notes");
 
         doNothing().when(service).handleSubmission(body);

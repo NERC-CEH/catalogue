@@ -46,7 +46,7 @@ class DepositRequestServiceTest {
             true, true, false, false,
             List.of(new DataResourceModel(
                 "Dataset X", "Some description", "Satellite", "", true,
-                "GeoTIFF", "", "100MB"
+                "GeoTIFF", "", "100MB", false
             )),
             "Extra notes"
         );
@@ -70,7 +70,7 @@ class DepositRequestServiceTest {
             false, false, false, false,
             List.of(new DataResourceModel(
                 "Omics Dataset", "DNA Sequences", "Text", "", true,
-                "FASTA", "", "250MB"
+                "FASTA", "", "250MB", false
             )),
             ""
         );
