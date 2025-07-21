@@ -13,7 +13,8 @@ import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 
 import java.util.List;
 
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -51,7 +52,7 @@ class DepositRequestControllerTest {
                 "1000")),
             "Some notes");
 
-        doNothing().when(service).handleSubmission(body);
+        when(service.handleSubmission(any(DepositRequestModel.class))).thenReturn("{\"key\":\"TEST-123\"}");
 
         mvc.perform(post("/deposit-request")
                 .with(csrf())
@@ -59,7 +60,7 @@ class DepositRequestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(body)))
             .andExpect(status().isCreated())
-            .andExpect(header().string("Location", "/deposit-request/success"));
+            .andExpect(header().string("Location", "/deposit-request/success?ref=TEST-123"));
     }
 
     @Test

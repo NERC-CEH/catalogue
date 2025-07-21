@@ -127,6 +127,7 @@ export_default HUBBUB_LOCATION "$TOP"/dropbox
 export_default HUBBUB_URL http://localhost:8082/v7
 export_default JENA_LOCATION "$TOP"/fixtures/jena
 export_default JIRA_SERVICEAGREEMENT_PREFIX CT-
+export_default JIRA_DEPOSITREQUEST_PROJECT CT
 export_default MANAGEMENT_SERVER_PORT 8091
 export_default MAPS_LOCATION "$TOP"/mapfiles
 export_default METRICS_DATABASE_URL jdbc:sqlite:"$TOP"/metrics-db/metrics.db
