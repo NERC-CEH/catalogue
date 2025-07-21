@@ -15,6 +15,10 @@
     <#include "_description.ftlh">
   </#if>
 
+  <#if lcmUrl?? && lcmUrl?has_content>
+    <#include "_lcm.ftlh">
+  </#if>
+
   <#if rel_hasMember?has_content && rel_hasMember?size gt 0 >
     <div id="segment-itemren">
       <h2>
