@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.depositRequest;
 
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record DataResourceModel(
     @NotBlank(message = "Working title is required")
@@ -23,7 +24,10 @@ public record DataResourceModel(
     String resourceFormatOther,
 
     @NotBlank(message = "Size is required.")
-    String size
+    String size,
+
+    @NotNull(message = "Please make a choice")
+    Boolean largeData
 ) {
     @AssertTrue(message = "Resource type not specified.")
     public boolean isValidResourceTypeOther() {
