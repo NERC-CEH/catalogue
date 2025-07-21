@@ -1,8 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.depositRequest;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,17 +47,29 @@ public class DepositRequestController {
             return ResponseEntity.badRequest().body("Invalid request");
         }
 
-        depositRequestService.handleSubmission(depositRequest);
+        String jiraResponse = depositRequestService.handleSubmission(depositRequest);
+        String referenceNumber = "";
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(jiraResponse);
+            referenceNumber = rootNode.path("key").asText();
+        } catch (Exception e) {
+            log.info("Error parsing reference number from JIRA response: {}", e.getMessage());
+        }
+
         return ResponseEntity.status(201)
-                .header("Location", "/deposit-request/success")
+                .header("Location", "/deposit-request/success?ref=" + referenceNumber)
                 .build();
     }
 
     @PreAuthorize("@permission.hasLogin(#user)")
     @GetMapping(value = "/success", produces = MediaType.TEXT_HTML_VALUE)
     public String depositSuccess(
-        @ActiveUser CatalogueUser user
+        @ActiveUser CatalogueUser user,
+        @RequestParam(name = "ref", required = false) String referenceNumber,
+        Model model
     ) {
+        model.addAttribute("referenceNumber", referenceNumber != null ? referenceNumber : "");
         return "html/deposit_request/deposit_success";
     }
 

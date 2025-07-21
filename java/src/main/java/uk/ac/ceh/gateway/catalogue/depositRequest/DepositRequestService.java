@@ -49,7 +49,7 @@ public class DepositRequestService {
         log.info("Creating DepositRequestService");
     }
 
-    public void handleSubmission(DepositRequestModel form) {
+    public String handleSubmission(DepositRequestModel form) {
         log.info("Handling deposit request for {}", form.name());
 
         val url = UriComponentsBuilder
@@ -75,6 +75,7 @@ public class DepositRequestService {
             log.info("JIRA responded with: {}", response.getStatusCode());
             log.debug("JIRA response body: {}", response.getBody());
 
+            return response.getBody();
         } catch (RestClientResponseException ex) {
             log.error("Error submitting to JIRA: {} - {}", ex.getStatusCode(), ex.getResponseBodyAsString());
             throw ex;
