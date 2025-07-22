@@ -5,6 +5,6 @@
         <i class="fa-solid fa-up-right-from-square"></i>
       </a>
     </div>
-    <iframe src="${lcmUrl}" style="width: 100%; height: 600px;" title="Spatial Explorer" scrolling="no"></iframe>
+    <iframe src="${lcmUrl}" style="width: 100%; height: 700px;" title="Spatial Explorer" scrolling="no"></iframe>
   </#if>
 
