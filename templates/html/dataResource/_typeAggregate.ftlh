@@ -15,6 +15,10 @@
     <#include "_description.ftlh">
   </#if>
 
+  <#if apps?? && apps?size gte 1>
+    <#include "_spatialExplorer.ftlh">
+  </#if>
+
   <#if rel_hasMember?has_content && rel_hasMember?size gt 0 >
     <div id="segment-itemren">
       <h2>
