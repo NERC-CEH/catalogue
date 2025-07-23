@@ -60,7 +60,7 @@ export default _.template(`
       <div class="form-check form-check-inline">
         <input class="form-check-input"
                 type="radio"
-                name="easilyRecreated"
+                name="easilyRecreated-<%= data.index %>"
                 data-name="easilyRecreated"
                 id="easilyRecreatedYes"
                 value=true
@@ -70,7 +70,7 @@ export default _.template(`
       <div class="form-check form-check-inline">
         <input class="form-check-input"
                 type="radio"
-                name="easilyRecreated"
+                name="easilyRecreated-<%= data.index %>"
                 data-name="easilyRecreated"
                 id="easilyRecreatedNo"
                 value=false
@@ -80,7 +80,7 @@ export default _.template(`
       <div>
         <input class="d-none"
                 type="radio"
-                name="easilyRecreated"
+                name="easilyRecreated-<%= data.index %>"
                 data-name="easilyRecreated"
                 id="easilyRecreatedNone">
         <label class="d-none" >None</label>
@@ -134,7 +134,7 @@ export default _.template(`
     <div class="form-check form-check-inline">
       <input class="form-check-input"
               type="radio"
-              name="largeData"
+              name="largeData-<%= data.index %>"
               data-name="largeData"
               id="largeDataYes"
               value=true
@@ -144,7 +144,7 @@ export default _.template(`
     <div class="form-check form-check-inline">
       <input class="form-check-input"
               type="radio"
-              name="largeData"
+              name="largeData-<%= data.index %>"
               data-name="largeData"
               id="largeDataNo"
               value=false
@@ -154,7 +154,7 @@ export default _.template(`
     <div>
       <input class="d-none"
               type="radio"
-              name="largeData"
+              name="largeData-<%= data.index %>"
               data-name="largeData"
               id="largeDataNone">
       <label class="d-none" >None</label>
