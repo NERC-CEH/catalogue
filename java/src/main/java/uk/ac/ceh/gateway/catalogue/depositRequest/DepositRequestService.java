@@ -144,7 +144,8 @@ public class DepositRequestService {
                     }
 
                 sb.append("*Format:* ").append(resolveOtherField(r.resourceFormat(), r.resourceFormatOther())).append("  \n  \n")
-                    .append("*Size:* ").append(r.size())
+                    .append("*Size:* ").append(r.size()).append("  \n  \n")
+                    .append("*Larger than 1Tb?:* ").append(booleanToYesNo(r.largeData())).append("  \n")
                     .append("{panel}  \n");
             }
         }
