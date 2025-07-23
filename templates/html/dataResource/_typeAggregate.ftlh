@@ -16,7 +16,7 @@
   </#if>
 
   <#if apps?? && apps?size gte 1>
-    <#include "_lcm.ftlh">
+    <#include "_spatialExplorer.ftlh">
   </#if>
 
   <#if rel_hasMember?has_content && rel_hasMember?size gt 0 >
