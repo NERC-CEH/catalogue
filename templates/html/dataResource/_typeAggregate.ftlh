@@ -15,7 +15,7 @@
     <#include "_description.ftlh">
   </#if>
 
-  <#if lcmUrl?? && lcmUrl?has_content>
+  <#if apps?? && apps?size gte 1>
     <#include "_lcm.ftlh">
   </#if>
 

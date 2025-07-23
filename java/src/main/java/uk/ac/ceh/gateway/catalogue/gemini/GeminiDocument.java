@@ -49,7 +49,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
                     CASE_INSENSITIVE
             );
     private String otherCitationDetails, lineage, reasonChanged,
-            metadataStandardName, metadataStandardVersion, lcmUrl;
+            metadataStandardName, metadataStandardVersion;
     private Number version;
     private List<String> alternateTitles, spatialRepresentationTypes, temporalResolution, datasetLanguages,
             securityConstraints;

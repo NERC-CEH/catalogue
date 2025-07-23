@@ -821,12 +821,6 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
               format: 'YYYY-MM-DDThh:mm:ss'
             }
           }
-        }),
-
-        new InputView({
-          model: this.model,
-          modelAttribute: 'lcmUrl',
-          label: 'LCM URL'
         })
       ]
     }
