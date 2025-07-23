@@ -8,9 +8,10 @@ export default Backbone.View.extend({
     'change input, textarea, select': 'onFieldChange'
   },
 
-  initialize () {
+  initialize (options) {
     this.template = dataResourceTemplate
     this.continueValidate = false
+    this.index = options.index
     this.render()
   },
 
@@ -52,7 +53,7 @@ export default Backbone.View.extend({
   },
 
   render () {
-    this.$el.html(this.template({ data: _.extend({}, this.data, this.model.attributes) }))
+    this.$el.html(this.template({ data: _.extend({}, this.model.attributes, { index: this.index }) }))
     return this
   },
 
