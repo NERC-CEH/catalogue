@@ -130,7 +130,7 @@ export default ObjectInputView.extend({
     const submitBtn = this.$('.btn-submit')
     const originalText = submitBtn.html()
     submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...')
-    this.$('.alert').html('').hide()
+    this.$('#message-box').html('').hide()
 
     const modelData = this.model.toJSON()
     this.model.save(modelData, {
