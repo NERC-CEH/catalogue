@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.depositRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,11 @@ class DepositRequestControllerTest {
                 "1000", false)),
             "Some notes");
 
-        when(service.handleSubmission(any(DepositRequestModel.class))).thenReturn("{\"key\":\"TEST-123\"}");
+        ObjectNode mockResponse = new ObjectMapper().createObjectNode();
+        mockResponse.put("key", "TEST-123");
+        mockResponse.put("componentName", "Deposit Request");
+
+        when(service.handleSubmission(any(DepositRequestModel.class))).thenReturn(mockResponse);
 
         mvc.perform(post("/deposit-request")
                 .with(csrf())
@@ -60,7 +65,7 @@ class DepositRequestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(body)))
             .andExpect(status().isCreated())
-            .andExpect(header().string("Location", "/deposit-request/success?ref=TEST-123"));
+            .andExpect(header().string("Location", "/deposit-request/success"));
     }
 
     @Test

@@ -1,7 +1,7 @@
 import baseTemplate from './DepositRequestBase'
 
 const template = `
-    <div class="text-center mt-5 alert alert-danger" role="alert" style="display: none;"></div>
+    <div id="message-box" class="text-center mt-5 alert alert-danger" role="alert" style="display: none;"></div>
     <p><span class="text-danger">*</span> indicates required information</p>
     <form id="deposit-request-form" class="mt-3">
 

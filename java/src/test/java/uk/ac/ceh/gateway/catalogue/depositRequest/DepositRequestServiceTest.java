@@ -8,6 +8,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @DisplayName("DepositRequestService")
@@ -24,8 +25,7 @@ class DepositRequestServiceTest {
             "username",
             "password",
             "https://mock-jira.local/rest/api/2",
-            "EIDCHELP",
-            "Deposit Request"
+            "EIDCHELP"
         );
 
         // Stub restTemplate to prevent actual HTTP call
@@ -83,5 +83,60 @@ class DepositRequestServiceTest {
             any(HttpEntity.class),
             eq(String.class)
         );
+    }
+
+    @Test
+    @DisplayName("Get Jira Component Name Ingestion Management")
+    void testGetJiraComponentNameIngestionManagement() {
+        DepositRequestModel form = new DepositRequestModel(
+            "Bob Jones", "bob@example.com", "CEH", false, false, false, false,
+            "NERC", "", "NE789", "Yes", "No",
+            true, true, false, false,
+            List.of(
+                new DataResourceModel(
+                    "Omics Dataset", "DNA Sequences", "Experimental data", "", null,
+                    "Comma separated values (csv)", "", "250MB", false)
+                ,new DataResourceModel(
+                    "Omics Dataset", "DNA Sequences", "Model output", "", false,
+                    "Excel spreadsheet", "", "250MB", false)
+                ,new DataResourceModel(
+                    "Omics Dataset", "DNA Sequences", "Monitoring data", "", null,
+                    "NetCDF", "", "250MB", false)
+                ,new DataResourceModel(
+                    "Omics Dataset", "DNA Sequences", "Monitoring data", "", null,
+                    "Shapefile", "", "250MB", false)
+            ),
+            ""
+        );
+
+        String componentName = service.getJiraComponentName(form);
+
+        assertEquals("Ingestion Management", componentName, "Component name should be 'Ingestion Management'");
+    }
+
+    @Test
+    @DisplayName("Get Jira Component Name Deposit Request")
+    void testGetJiraComponentNameDepositRequest() {
+        DepositRequestModel form = new DepositRequestModel(
+            "Bob Jones", "bob@example.com", "CEH", false, false, false, false,
+            "STFC", "", "NE789", "No", "Yes",
+            false, false, true, false,
+            List.of(
+                new DataResourceModel(
+                    "Omics Dataset", "DNA Sequences", "Interview/survey", "", null,
+                    "Other", "txt", "2GB", true)
+                ,new DataResourceModel(
+                    "Omics Dataset", "DNA Sequences", "Images", "", null,
+                    "Other", "txt", "2GB", true)
+                ,new DataResourceModel(
+                    "Omics Dataset", "DNA Sequences", "Other", "Test", true,
+                    "Other", "txt", "2GB", true)
+            ),
+            ""
+        );
+
+        String componentName = service.getJiraComponentName(form);
+
+        assertEquals("Deposit Request", componentName, "Component name should be 'Deposit Request'");
     }
 }

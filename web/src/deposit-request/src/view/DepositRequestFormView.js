@@ -163,7 +163,7 @@ export default ObjectInputView.extend({
       ? response
       : 'Submission successful.'
 
-    const target = this.$('.alert')
+    const target = this.$('#message-box')
     target.html(msg).show()
     target[0].scrollIntoView({ behavior: 'smooth', block: 'center' })
   },
@@ -174,7 +174,7 @@ export default ObjectInputView.extend({
     if (!msg) {
       msg = `Status: ${xhr.status} - ${xhr.statusText || 'An unknown error occurred'}`
     }
-    const target = this.$('.alert')
+    const target = this.$('#message-box')
     target.html(msg).show()
     target[0].scrollIntoView({ behavior: 'smooth', block: 'center' })
   }

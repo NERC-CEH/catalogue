@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.depositRequest;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -41,24 +41,19 @@ public class DepositRequestController {
     public ResponseEntity<String> depositForm(
         @ActiveUser CatalogueUser user,
         @Valid @RequestBody DepositRequestModel depositRequest,
-        BindingResult bindingResult
+        BindingResult bindingResult,
+        HttpSession session
     ) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body("Invalid request");
         }
 
-        String jiraResponse = depositRequestService.handleSubmission(depositRequest);
-        String referenceNumber = "";
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(jiraResponse);
-            referenceNumber = rootNode.path("key").asText();
-        } catch (Exception e) {
-            log.info("Error parsing reference number from JIRA response: {}", e.getMessage());
-        }
+        ObjectNode jiraResponse = depositRequestService.handleSubmission(depositRequest);
+        session.setAttribute("referenceNumber", jiraResponse.get("key").asText());
+        session.setAttribute("componentName", jiraResponse.get("componentName").asText());
 
         return ResponseEntity.status(201)
-                .header("Location", "/deposit-request/success?ref=" + referenceNumber)
+                .header("Location", "/deposit-request/success")
                 .build();
     }
 
@@ -66,10 +61,14 @@ public class DepositRequestController {
     @GetMapping(value = "/success", produces = MediaType.TEXT_HTML_VALUE)
     public String depositSuccess(
         @ActiveUser CatalogueUser user,
-        @RequestParam(name = "ref", required = false) String referenceNumber,
+        HttpSession session,
         Model model
     ) {
-        model.addAttribute("referenceNumber", referenceNumber != null ? referenceNumber : "");
+        model.addAttribute("referenceNumber", session.getAttribute("referenceNumber") != null ? session.getAttribute("referenceNumber").toString() : "");
+        model.addAttribute("componentName", session.getAttribute("componentName") != null ? session.getAttribute("componentName").toString() : "");
+        session.removeAttribute("referenceNumber");
+        session.removeAttribute("componentName");
+
         return "html/deposit_request/deposit_success";
     }
 
