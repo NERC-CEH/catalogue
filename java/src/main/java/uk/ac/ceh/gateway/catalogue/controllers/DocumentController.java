@@ -18,6 +18,10 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
@@ -150,6 +154,138 @@ public class DocumentController extends AbstractDocumentController {
                 document
                 );
             }
+
+
+@PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @RequestMapping (value = "documents",
+        method = RequestMethod.POST,
+        consumes = MONITORING_ACTIVITY_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newMonitoringActivity(
+        @ActiveUser CatalogueUser user,
+        @RequestBody MonitoringActivity document,
+        @RequestParam("catalogue") String catalogue
+    ) throws DocumentRepositoryException  {
+        return saveNewMetadataDocument(
+            user,
+            document,
+            catalogue,
+            "new Monitoring activity"
+        );
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping(value = "documents/{file}",
+        method = RequestMethod.PUT,
+        consumes = MONITORING_ACTIVITY_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateMonitoringActivity(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("file") String file,
+        @RequestBody MonitoringActivity document
+    ) throws DocumentRepositoryException  {
+        return saveMetadataDocument(
+            user,
+            file,
+            document
+        );
+    }
+
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @RequestMapping (value = "documents",
+        method = RequestMethod.POST,
+        consumes = MONITORING_FACILITY_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newMonitoringFacility(
+        @ActiveUser CatalogueUser user,
+        @RequestBody MonitoringFacility document,
+        @RequestParam("catalogue") String catalogue
+    ) throws DocumentRepositoryException  {
+        return saveNewMetadataDocument(
+            user,
+            document,
+            catalogue,
+            "new Monitoring facility"
+        );
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping(value = "documents/{file}",
+        method = RequestMethod.PUT,
+        consumes = MONITORING_FACILITY_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateMonitoringFacility(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("file") String file,
+        @RequestBody MonitoringFacility document
+    ) throws DocumentRepositoryException  {
+        return saveMetadataDocument(
+            user,
+            file,
+            document
+        );
+    }
+
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @RequestMapping (value = "documents",
+        method = RequestMethod.POST,
+        consumes = MONITORING_NETWORK_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newMonitoringNetwork(
+        @ActiveUser CatalogueUser user,
+        @RequestBody MonitoringNetwork document,
+        @RequestParam("catalogue") String catalogue
+    ) throws DocumentRepositoryException  {
+        return saveNewMetadataDocument(
+            user,
+            document,
+            catalogue,
+            "new Monitoring Network"
+        );
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping(value = "documents/{file}",
+        method = RequestMethod.PUT,
+        consumes = MONITORING_NETWORK_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateMonitoringNetwork(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("file") String file,
+        @RequestBody MonitoringNetwork document
+    ) throws DocumentRepositoryException  {
+        return saveMetadataDocument(
+            user,
+            file,
+            document
+        );
+    }
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @RequestMapping (value = "documents",
+        method = RequestMethod.POST,
+        consumes = MONITORING_PROGRAMME_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newMonitoringProgramme(
+        @ActiveUser CatalogueUser user,
+        @RequestBody MonitoringProgramme document,
+        @RequestParam("catalogue") String catalogue
+    ) throws DocumentRepositoryException  {
+        return saveNewMetadataDocument(
+            user,
+            document,
+            catalogue,
+            "new Monitoring programme"
+        );
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping(value = "documents/{file}",
+        method = RequestMethod.PUT,
+        consumes = MONITORING_PROGRAMME_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateMonitoringProgramme(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("file") String file,
+        @RequestBody MonitoringProgramme document
+    ) throws DocumentRepositoryException  {
+        return saveMetadataDocument(
+            user,
+            file,
+            document
+        );
+    }
 
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
