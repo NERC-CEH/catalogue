@@ -436,8 +436,14 @@ body {
 
     .studyarea-map,
     .geometry-map {
-        height: 300px;
-        width: 300px;
+        height: var(--map-height, 300px);
+        width: var(--map-width, 300px);
+
+        .location {
+            &-inactive {
+                filter: grayscale(100%) contrast(50%) brightness(1.35);
+            }
+        }
     }
 
     .mintDOI {
@@ -884,7 +890,7 @@ body {
 
     .studyarea-map,
     .geometry-map {
-        min-height: 500px;
+        --map-height: 500px;
         width: 100%;
     }
 
@@ -906,6 +912,10 @@ body {
 
             .key {
                 display: none;
+            }
+
+            .link-inactive {
+                @extend .link-secondary !optional;
             }
         }
     }

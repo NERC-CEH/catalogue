@@ -37,11 +37,11 @@ body {
 
 a {
     text-decoration: none;
+    @extend .link-offset-2 !optional;
 
     &:hover,
     &:focus {
         text-decoration: underline;
-        text-underline-offset: 3px;
     }
 }
 

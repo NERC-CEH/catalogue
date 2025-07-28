@@ -114,14 +114,29 @@ export default Backbone.View.extend({
         return feature
       }
     })
+
     const featureInPoints = L.geoJson(pointFeatureCollection, {
+      pointToLayer: (feature, latlng) => {
+        const marker = L.marker(latlng)
+        if (feature.properties.availability === 'Inactive') {
+          marker.on('add', (e) => {
+            e.target.getElement().classList.add('location-inactive')
+          })
+        }
+        return marker
+      },
       onEachFeature: (feature, layer) => {
         const title = feature.properties.title
-        let content = `<h5>${title}</h5>`
+        const availability = feature.properties.availability
+        let content = `<p>${title}</p>`
         if (typeof feature.properties.link !== 'undefined') {
           const link = feature.properties.link
-          content = `<h5><a href=${link}>${title}</a></h5>`
+          content = `<p><a href=${link}>${title}</a></p>`
         }
+        if (availability === 'Inactive') {
+          content = content + '<p class="text-body-tertiary">(INACTIVE)</p>'
+        }
+
         layer.bindPopup(content)
       }
     })

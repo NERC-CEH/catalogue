@@ -125,12 +125,13 @@ public class JenaLookupServiceTest {
         Model triples = jenaTdb.getDefaultModel();
         String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
         String geometryString2 = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}";
-        String combinedGeometry = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\",\"title\":\"Monitoring Facility\",\"link\":\"http://monitoringFacility\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}},{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\",\"title\":\"Monitoring Facility 2\",\"link\":\"http://monitoringFacility2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}]}";
+        String combinedGeometry = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\",\"title\":\"Monitoring Facility\",\"link\":\"http://monitoringFacility\",\"availability\":\"Inactive\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}},{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\",\"title\":\"Monitoring Facility 2\",\"link\":\"http://monitoringFacility2\",\"availability\":\"\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}]}";
         triples.add(createResource("http://monitoringFacility"), TITLE, "Monitoring Facility");
         triples.add(createResource("http://monitoringFacility"), METADATA_STATUS, "published");
         triples.add(createResource("http://monitoringFacility"), BELONGS_TO, createResource("http://network1"));
         triples.add(createResource("http://monitoringFacility"), TYPE, "Monitoring Facility");
         triples.add(createResource("http://monitoringFacility"), HAS_GEOMETRY, geometryString);
+        triples.add(createResource("http://monitoringFacility"), HAS_STATUS, "Inactive");
         triples.add(createResource("http://monitoringFacility2"), TITLE, "Monitoring Facility 2");
         triples.add(createResource("http://monitoringFacility2"), METADATA_STATUS, "published");
         triples.add(createResource("http://monitoringFacility2"), BELONGS_TO, createResource("http://network1"));
@@ -150,11 +151,12 @@ public class JenaLookupServiceTest {
         Model triples = jenaTdb.getDefaultModel();
         String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
         String geometryString2 = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}";
-        String combinedGeometry = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\",\"title\":\"Monitoring Facility\",\"link\":\"http://monitoringFacility\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}},{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\",\"title\":\"Monitoring Facility 2\",\"showPolygon\":true},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}]}";
+        String combinedGeometry = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\",\"title\":\"Monitoring Facility\",\"link\":\"http://monitoringFacility\",\"availability\":\"Inactive\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}},{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\",\"title\":\"Monitoring Facility 2\",\"showPolygon\":true,\"availability\":\"\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}]}";
         triples.add(createResource("http://monitoringFacility"), TITLE, "Monitoring Facility");
         triples.add(createResource("http://monitoringFacility"), METADATA_STATUS, "published");
         triples.add(createResource("http://monitoringFacility"), TYPE, "Monitoring Facility");
         triples.add(createResource("http://monitoringFacility"), HAS_GEOMETRY, geometryString);
+        triples.add(createResource("http://monitoringFacility"), HAS_STATUS, "Inactive");
         triples.add(createResource("http://monitoringFacility2"), TITLE, "Monitoring Facility 2");
         triples.add(createResource("http://monitoringFacility2"), METADATA_STATUS, "published");
         triples.add(createResource("http://monitoringFacility2"), NARROWER, createResource("http://monitoringFacility"));
@@ -201,13 +203,14 @@ public class JenaLookupServiceTest {
         String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Facility 1\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
         String geometryString2 = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Facility 2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}";
         String combinedGeometry = "{\"type\":\"FeatureCollection\",\"features\":["
-            + "{\"type\":\"Feature\",\"properties\":{\"name\":\"Facility 1\",\"title\":\"Facility 1\",\"link\":\"http://facility1\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}},"
-            + "{\"type\":\"Feature\",\"properties\":{\"name\":\"Facility 2\",\"title\":\"Facility 2\",\"link\":\"http://facility2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}"
+            + "{\"type\":\"Feature\",\"properties\":{\"name\":\"Facility 1\",\"title\":\"Facility 1\",\"link\":\"http://facility1\",\"availability\":\"Inactive\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}},"
+            + "{\"type\":\"Feature\",\"properties\":{\"name\":\"Facility 2\",\"title\":\"Facility 2\",\"link\":\"http://facility2\",\"availability\":\"\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}"
             + "]}";
         triples.add(createResource("http://facility1"), TITLE, "Facility 1");
         triples.add(createResource("http://facility1"), METADATA_STATUS, "published");
         triples.add(createResource("http://facility1"), TYPE, "facility");
         triples.add(createResource("http://facility1"), HAS_GEOMETRY, geometryString);
+        triples.add(createResource("http://facility1"), HAS_STATUS, "Inactive");
         triples.add(createResource("http://facility2"), TITLE, "Facility 2");
         triples.add(createResource("http://facility2"), METADATA_STATUS, "published");
         triples.add(createResource("http://facility2"), TYPE, "facility");
@@ -221,8 +224,6 @@ public class JenaLookupServiceTest {
         // Then
         assertThat("Generates correct combined GeoJSON", actual, equalTo(combinedGeometry));
     }
-
-
 
     @Test
     public void lookupMetadata() {
