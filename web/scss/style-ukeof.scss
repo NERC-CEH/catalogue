@@ -43,11 +43,8 @@ header {
 
     .studyarea-map,
     .geometry-map {
-        height: 500px;
-        width: 700px;
-        .grey-marker {
-            filter: grayscale(100%);
-        }
+        --map-height: 500px;
+        --map-width:700px;
     }
 
     h2 {

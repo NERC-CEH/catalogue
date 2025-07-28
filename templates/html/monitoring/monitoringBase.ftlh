@@ -316,7 +316,16 @@ Operating period
       <#if link.associationType=="monitoringFacility" && !link.geometry?has_content>
         <#local linkClass += " nogeom">
       </#if>
-      <a <#if linkClass?has_content>class="${linkClass?trim}"</#if> href="<#if link.href??>${link.href}<#else>#</#if>"><#if link.title??>${link.title}<#else>link</#if></a>
+      <a class="${linkClass?trim}" href="<#if link.href??>${link.href}<#else>#</#if>">
+        <#if link.title??>
+          ${link.title}
+        <#else>
+          link
+        </#if>
+      </a>
+      <#if link.availability?has_content && link.availability == "Inactive">
+        <small class="text-body-tertiary small"> (INACTIVE)</small>
+      </#if>
   </div>
 </#macro>
 
