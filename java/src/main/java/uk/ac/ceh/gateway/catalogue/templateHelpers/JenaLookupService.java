@@ -138,10 +138,12 @@ public class JenaLookupService {
     }
 
     public List<Link> relationshipsWithOwner(String uri, String relation) {
-        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX geo: <http://www.opengis.net/ont/geosparql#> " +
-            "SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel ?geom " +
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
+            "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom " +
             "WHERE {{?me dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; geo:hasGeometry ?geom. BIND(?me as ?node)} " +
-            "UNION {?me ?relation ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; geo:hasGeometry ?geom. BIND(?relation as ?rel)}} " +
+            "UNION {?me ?relation ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; geo:hasGeometry ?geom. BIND(?relation as ?rel)} " +
+            "OPTIONAL {?node eidc:resourceStatus ?availability} " +
+            "OPTIONAL {?node ef:hasStatus ?availability}}" +
             "ORDER BY ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
@@ -150,11 +152,18 @@ public class JenaLookupService {
     }
 
     public List<Link> programmeFeatures(String uri) {
-        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX ef: <http://onto.ceh.ac.uk/EF#>  PREFIX geo: <http://www.opengis.net/ont/geosparql#> SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel ?geom WHERE {{?me ef:utilises ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type; geo:hasGeometry ?geom} UNION {?me ef:utilises ?network. ?node ef:belongsTo ?network; dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; geo:hasGeometry ?geom.}BIND(ef:utilises as ?rel)}";
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX ef: <http://onto.ceh.ac.uk/EF#>  PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
+            "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom " +
+            "WHERE {{?me ef:utilises ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type; geo:hasGeometry ?geom} " +
+            "UNION {?me ef:utilises ?network. ?node ef:belongsTo ?network; dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; geo:hasGeometry ?geom. BIND(ef:utilises as ?rel)}" +
+            "OPTIONAL {?node eidc:resourceStatus ?availability} " +
+            "OPTIONAL {?node ef:hasStatus ?availability}}";
+
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         return links(pss);
     }
+
     /**
      * Function to compile a FeatureCollection for programmes - directly linked facilities and child facilities of networks
      */
@@ -180,6 +189,7 @@ public class JenaLookupService {
                 }
                 propertiesNode.put("title", link.getTitle());
                 propertiesNode.put("link", link.getHref());
+                propertiesNode.put("availability", link.getAvailability());
                 features.add(jsonNode);
             }
         }
@@ -233,6 +243,7 @@ public class JenaLookupService {
                 } else {
                     propertiesNode.put("link", link.getHref());
                 }
+                propertiesNode.put("availability", link.getAvailability());
                 features.add(jsonNode);
             }
         }

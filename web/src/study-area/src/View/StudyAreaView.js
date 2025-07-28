@@ -114,7 +114,17 @@ export default Backbone.View.extend({
         return feature
       }
     })
+
     const featureInPoints = L.geoJson(pointFeatureCollection, {
+      pointToLayer: function (feature, latlng) {
+        const marker = L.marker(latlng);
+        if (feature.properties.availability == 'Inactive') {
+          marker.on('add', function() {
+              this.getElement().classList.add('grey-marker');
+          });
+        }
+        return marker;
+      },
       onEachFeature: (feature, layer) => {
         const title = feature.properties.title
         let content = `<h5>${title}</h5>`
