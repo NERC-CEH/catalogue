@@ -130,7 +130,7 @@ export default ObjectInputView.extend({
     const submitBtn = this.$('.btn-submit')
     const originalText = submitBtn.html()
     submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...')
-    this.$('.alert').html('').hide()
+    this.$('#message-box').html('').hide()
 
     const modelData = this.model.toJSON()
     this.model.save(modelData, {
@@ -163,7 +163,7 @@ export default ObjectInputView.extend({
       ? response
       : 'Submission successful.'
 
-    const target = this.$('.alert')
+    const target = this.$('#message-box')
     target.html(msg).show()
     target[0].scrollIntoView({ behavior: 'smooth', block: 'center' })
   },
@@ -174,7 +174,7 @@ export default ObjectInputView.extend({
     if (!msg) {
       msg = `Status: ${xhr.status} - ${xhr.statusText || 'An unknown error occurred'}`
     }
-    const target = this.$('.alert')
+    const target = this.$('#message-box')
     target.html(msg).show()
     target[0].scrollIntoView({ behavior: 'smooth', block: 'center' })
   }

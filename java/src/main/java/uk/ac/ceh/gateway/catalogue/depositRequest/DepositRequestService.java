@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.depositRequest;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,7 +31,6 @@ public class DepositRequestService {
     private final String username;
     private final String password;
     private final String projectKey;
-    private final String componentName;
     private final ObjectMapper mapper = new ObjectMapper();
 
     public DepositRequestService(
@@ -37,19 +38,17 @@ public class DepositRequestService {
         @Value("${jira.username}") String username,
         @Value("${jira.password}") String password,
         @Value("${jira.address}") String jiraAddress,
-        @Value("${jira.depositRequest.project}") String projectKey,
-        @Value("${jira.depositRequest.component}") String componentName
+        @Value("${jira.depositRequest.project}") String projectKey
     ) {
         this.restTemplate = restTemplate;
         this.jiraEndpoint = jiraAddress;
         this.username = username;
         this.password = password;
         this.projectKey = projectKey;
-        this.componentName = componentName;
         log.info("Creating DepositRequestService");
     }
 
-    public String handleSubmission(DepositRequestModel form) {
+    public ObjectNode handleSubmission(DepositRequestModel form) {
         log.info("Handling deposit request for {}", form.name());
 
         val url = UriComponentsBuilder
@@ -75,7 +74,13 @@ public class DepositRequestService {
             log.info("JIRA responded with: {}", response.getStatusCode());
             log.debug("JIRA response body: {}", response.getBody());
 
-            return response.getBody();
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode responseNode = mapper.readTree(response.getBody());
+            ObjectNode modifiedResponse = mapper.createObjectNode();
+            modifiedResponse.setAll((ObjectNode) responseNode);
+            modifiedResponse.put("componentName", getJiraComponentName(form));
+
+            return modifiedResponse;
         } catch (RestClientResponseException ex) {
             log.error("Error submitting to JIRA: {} - {}", ex.getStatusCode(), ex.getResponseBodyAsString());
             throw ex;
@@ -85,6 +90,35 @@ public class DepositRequestService {
         }
     }
 
+    public String getJiraComponentName(DepositRequestModel form) {
+        String componentName = "Deposit Request";
+
+        if (form.funder().equals("NERC")
+            && form.eidcRemit().equals("Yes")
+            && form.alternativeData().equals("No")
+            && form.hasSupportingDocs()
+            && form.isSupportingDocsReady()
+            && !form.replaceExisting()
+        ) {
+            boolean dataResourcePass = true;
+            for (DataResourceModel dataResource : form.dataResources()) {
+                if (List.of("Interview/survey", "Images", "Other").contains(dataResource.resourceType())
+                    || (dataResource.easilyRecreated() != null && dataResource.easilyRecreated())
+                    || dataResource.resourceFormat().equals("Other")
+                    || dataResource.largeData()
+                ) {
+                    dataResourcePass = false;
+                    break;
+                }
+            }
+            if (dataResourcePass) {
+                componentName = "Ingestion Management";
+            }
+        }
+
+        return componentName;
+    }
+
     private String buildJiraPayload(DepositRequestModel form) throws Exception {
         val payload = mapper.createObjectNode();
         val fields = payload.putObject("fields");
@@ -92,7 +126,7 @@ public class DepositRequestService {
         fields.putObject("project").put("key", projectKey);
         fields.put("summary", "Deposit request for " + form.name() + " " + LocalDate.now());
         fields.put("description", buildDescription(form));
-        fields.putArray("components").addObject().put("name", componentName);
+        fields.putArray("components").addObject().put("name", getJiraComponentName(form));
         fields.putObject("issuetype").put("name", "Job");
 
         val fundingRefs = mapper.createArrayNode();
