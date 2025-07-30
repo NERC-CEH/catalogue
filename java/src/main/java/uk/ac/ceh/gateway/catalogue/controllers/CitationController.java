@@ -2,9 +2,12 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -31,16 +34,25 @@ public class CitationController {
 
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @GetMapping("documents/{file}/citation")
-    public Citation getCitation(
+    public ResponseEntity<Citation> getCitationByFormat(
         @ActiveUser CatalogueUser user,
-        @PathVariable("file") String file
+        @PathVariable("file") String file,
+        @RequestParam(value = "format", required = false) String format
     ) throws DocumentRepositoryException {
-        return getCitation(documentRepository.read(file));
+        Citation citation = getCitation(documentRepository.read(file));
+        HttpHeaders headers = new HttpHeaders();
+        if (format != null) {
+            headers.setContentDispositionFormData("attachment", file + "-citation." + format);
+        }
+
+        return ResponseEntity.ok()
+            .headers(headers)
+            .body(citation);
     }
 
     @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'VIEW')")
     @GetMapping("history/{revision}/{file}/citation")
-    public Citation getCitation(
+    public Citation getCitationHistory(
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file,
         @PathVariable("revision") String revision
