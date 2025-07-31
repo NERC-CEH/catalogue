@@ -112,7 +112,9 @@ public class DepositRequestService {
                 }
             }
             if (dataResourcePass) {
-                componentName = "Ingestion Management";
+                componentName = "Deposit Request";
+                //temporarily disable this !
+                //componentName = "Ingestion Management";
             }
         }
 
