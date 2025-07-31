@@ -113,8 +113,12 @@ public class DepositRequestService {
             }
             if (dataResourcePass) {
                 componentName = "Deposit Request";
+<<<<<<< Updated upstream
                 //temporarily disable this !
                 //componentName = "Ingestion Management";
+=======
+                //componentName should be "Ingestion Management" but I'm temporarily disabling it
+>>>>>>> Stashed changes
             }
         }
 
