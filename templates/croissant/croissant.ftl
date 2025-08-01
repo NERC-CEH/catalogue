@@ -4,7 +4,9 @@
 
   <#if fileaccess?size gt 0 && (type=='dataset' || type=='nonGeographicDataset')>
       <#if resourceStatus?lower_case != "deleted">
-        <@croissant fileDetails.getDetailsFor(id, false)/>
+        <@m.getPartsData id false ; eidchub, suppDocs, combinedParts>
+          <@croissant combinedParts/>
+        </@m.getPartsData>
       </#if>
   <#else>
     not a valid croissant document

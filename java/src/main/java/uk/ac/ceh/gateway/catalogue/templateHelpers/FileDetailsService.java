@@ -18,24 +18,21 @@ import java.util.List;
 @Slf4j
 public class FileDetailsService {
     private final UploadService uploadService;
-    private final String datastore;
     private final String baseUri;
     private final int pageSize;
 
     public FileDetailsService(
         UploadService uploadService,
-        @Value("${hubbub.datastore:eidchub}") String datastore,
         @Value("${documents.baseUri}") String baseUri,
         @Value("${hubbub.request.pagesize}") int pageSize
     ) {
         this.uploadService = uploadService;
-        this.datastore = datastore;
         this.baseUri = baseUri;
         this.pageSize = pageSize;
         log.info("Creating");
     }
 
-    public List<Part> getDetailsFor(String fileId, boolean isAttached){
+    public List<Part> getDetailsFor(String fileId, boolean isAttached, String datastore){
         int currentPage = 0;
         HubbubResponse resp;
         ArrayList<Part> parts = new ArrayList<>();
@@ -56,7 +53,7 @@ public class FileDetailsService {
         resp.getData().forEach(file -> {
             String[] pathBits = file.getPath().split("/");
             String id = pathBits[pathBits.length - 1];
-            String path = path(isAttached, fileId, file.getPath());
+            String path = path(isAttached, fileId, file.getPath(), file.getDatastore());
             parts.add(
                 new Part(
                     id,
@@ -84,7 +81,7 @@ public class FileDetailsService {
      * @param path the path to the file as already taken from a HubbubResponse
      * @return the full path (relative or absolute) to the data
      */
-    private String path(boolean isAttached, String fileId, String path){
+    private String path(boolean isAttached, String fileId, String path, String datastore){
         return isAttached ?
                 "data/" + path
             :

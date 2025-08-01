@@ -8,5 +8,7 @@
     <#assign docType = "SoftwareSourceCode">
   </#if>
 
-  <@m.rocrate docType fileDetails.getDetailsFor(id, true)/>
+  <@m.getPartsData id true ; eidchub, suppDocs, combinedParts>
+    <@m.rocrate docType combinedParts/>
+  </@m.getPartsData>
 </#compress>

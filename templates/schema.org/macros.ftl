@@ -431,3 +431,10 @@
     }<#sep>,
   </#list>
 </#macro>
+
+<#macro getPartsData id isAttached>
+  <#assign eidchub = fileDetails.getDetailsFor(id, isAttached, "eidchub")>
+  <#assign suppDocs = fileDetails.getDetailsFor(id, isAttached, "supporting-documents")>
+  <#assign combinedParts = eidchub + suppDocs>
+  <#nested eidchub suppDocs combinedParts>
+</#macro>
