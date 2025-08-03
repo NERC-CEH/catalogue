@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
-import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -164,10 +163,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             Keyword::getValue
         );
 
-        if (document instanceof Model) {
-            String applicationScale = ((Model) document).getApplicationScale();
-            toReturn.add(applicationScale);
-        } else if (document instanceof CehModelApplication application) {
+        if (document instanceof CehModelApplication application) {
             Optional.ofNullable(application.getModelInfos())
                 .orElse(Collections.emptyList())
                 .stream()

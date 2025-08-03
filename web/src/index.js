@@ -11,7 +11,6 @@ import {
   GeminiEditorView, InfrastructureRecordEditorView,
   MethodRecordEditorView,
   LinkEditorView,
-  ModelEditorView,
   MonitoringEditorView,
   MonitoringActivityEditorView,
   MonitoringFacilityEditorView,
@@ -124,11 +123,6 @@ function initEditor () {
       View: MonitoringEditorView,
       Model: EditorMetadata,
       mediaType: 'application/monitoring+json'
-    },
-    IMP_DOCUMENT: {
-      View: ModelEditorView,
-      Model: EditorMetadata,
-      mediaType: 'application/model+json'
     },
     CEH_MODEL: {
       View: CehModelEditorView,

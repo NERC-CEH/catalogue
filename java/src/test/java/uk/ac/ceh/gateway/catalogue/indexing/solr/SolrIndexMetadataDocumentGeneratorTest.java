@@ -12,7 +12,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
-import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
@@ -126,19 +125,6 @@ class SolrIndexMetadataDocumentGeneratorTest {
                 actual.getLocations(),
                 hasItems("POINT(-1.875916 53.891391)")
         );
-    }
-
-        @Test
-    void applicationScaleAddedToIndex() {
-        //Given
-        Model document = new Model();
-        document.setApplicationScale("global");
-
-        //When
-        SolrIndex actual = generator.generateIndex(document);
-
-        //Then
-        assertTrue(actual.getImpScale().contains("global"));
     }
 
     @Test
