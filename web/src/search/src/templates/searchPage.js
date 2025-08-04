@@ -11,7 +11,11 @@ export default _.template(`
 <div class="d-flex p-1 m-3 mt-0 results__header align-items-center justify-content-between">
    <% if(numFound > 0) { %>
     <div class="small">
-      <span id="num-records"><%=numFound%></span> record<% if(numFound > 1) { %>s<% } %> found
+      <%
+        const startItem = (page - 1) * rows + 1;
+        const endItem = Math.min(page * rows, numFound);
+      %>
+      <span id="num-records">Showing <%=startItem%>-<%=endItem%> of <%=numFound%></span>
       <i id="searchShareIcon" class="fa-solid fa-fw fa-share-square mx-1" data-bs-toggle="tooltip" data-bs-placement="right" role="button" title="Email search results"></i>
     </div>
     <div class="small">
@@ -76,17 +80,68 @@ export default _.template(`
 <% }); %>
 </div>
 
-<div class="results__footer">
- <% if(prevPage || nextPage) { %>
-  <ul class="pagination">
-      <% if(prevPage) { %>
-          <li class="page-item previous-item"><a class="page-link" href="<%=prevPage%>">&larr; Previous</a></li>
-      <% } %>
-      <li class="page-item center-item">Page <%=page%></li>
-      <% if(nextPage) { %>
-          <li class="page-item next-item"><a class="page-link" href="<%=nextPage%>">Next &rarr;</a></li>
-      <% } %>
-  </ul>
-<% } %>
+<div class="d-flex justify-content-center">
+  <% const totalPage = Math.ceil(numFound / rows); %>
+  <% if(totalPage > 1) { %>
+    <%
+      const pageToShow = 5;
+      const halfPageToShow = Math.floor(pageToShow / 2);
+      let startPage = (page - halfPageToShow > 0) ? page - halfPageToShow : 1;
+      let endPage = (startPage + pageToShow - 1 < totalPage) ? startPage + pageToShow - 1 : totalPage;
+      if (endPage - startPage + 1 < pageToShow && startPage > 1) {
+        startPage = Math.max(1, endPage - pageToShow + 1);
+      }
+    %>
+
+    <nav aria-label="Search results pagination">
+      <ul class="pagination mb-0">
+        <% if(page > 1) { %>
+          <li class="page-item">
+            <a class="page-link" href="<%=prevPage%>" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        <% } else { %>
+          <li class="page-item disabled">
+            <span class="page-link" aria-hidden="true">&laquo;</span>
+          </li>
+        <% } %>
+
+        <% for (let i = startPage; i <= endPage; i++) { %>
+          <% if (i === page) { %>
+            <li class="page-item active " aria-current="page">
+              <span class="page-link"><%=i%></span>
+            </li>
+          <% } else { %>
+            <li class="page-item">
+              <a class="page-link" href="<%= buildPageUrl(url, page, i) %>"><%=i%></a>
+            </li>
+          <% } %>
+        <% } %>
+
+        <% if(page < totalPage) { %>
+          <li class="page-item">
+            <a class="page-link" href="<%=nextPage%>" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        <% } else { %>
+          <li class="page-item disabled">
+            <span class="page-link" aria-hidden="true">&raquo;</span>
+          </li>
+        <% } %>
+      </ul>
+    </nav>
+  <% } %>
 </div>
+
+<%
+  function buildPageUrl(url, currentPage, pageNum) {
+    if (url.indexOf('page=') !== -1) {
+      return url.replace('page=' + currentPage, 'page=' + pageNum);
+    } else {
+      return (url.indexOf('?') !== -1) ? url + '&page=' + pageNum : url + '?page=' + pageNum;
+    }
+  }
+%>
 `)

@@ -8,7 +8,9 @@
 <div class="d-flex p-1 mx-3 results__header align-items-center justify-content-between">
   <#if numFound gt 0>
     <div class="small">
-      <span id="num-records">${numFound}</span> record<#if numFound gt 1>s</#if> found
+      <#assign startItem = (page - 1) * rows + 1>
+      <#assign endItem = (page * rows > numFound)?then(numFound, page * rows)>
+      <span id="num-records">Showing ${startItem}-${endItem} of ${numFound}</span>
       <i id="searchShareIcon" class="fa-solid fa-fw fa-share-square mx-1" data-bs-toggle="tooltip" data-bs-placement="right" role="button"  title="Email search results"></i>
     </div>
     <div class="small">
@@ -77,16 +79,63 @@
 </#list>
 </div>
 
-<div class="results__footer">
-  <#if prevPage?has_content || nextPage?has_content>
-    <ul class="pagination">
-      <#if prevPage?has_content>
-        <li class="page-item previous-item"><a class="page-link" href="${prevPage}">&larr; Previous</a></li>
-      </#if>
-      <li class="page-item center-item">Page ${page}</li>
-      <#if nextPage?has_content>
-        <li class="page-item next-item"><a class="page-link" href="${nextPage}">Next &rarr;</a></li>
-      </#if>
-    </ul>
+<div class="d-flex justify-content-center">
+  <#assign totalPage = (numFound / rows)?ceiling>
+  <#if totalPage gt 1>
+    <#assign pageToShow = 5>
+    <#assign halfPageToShow = (pageToShow / 2)?floor>
+    <#assign startPage = (page - halfPageToShow > 0)?then(page - halfPageToShow, 1)>
+    <#assign endPage = (startPage + pageToShow - 1 > totalPage)?then(totalPage, startPage + pageToShow - 1)>
+    <#if (endPage - startPage + 1) < pageToShow && (endPage - pageToShow + 1 > 0)>
+      <#assign startPage = endPage - pageToShow + 1>
+    </#if>
+
+    <nav aria-label="Search results pagination">
+      <ul class="pagination mb-0">
+        <#if page gt 1>
+          <li class="page-item">
+            <a class="page-link" href="${prevPage}" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        <#else>
+          <li class="page-item disabled">
+            <span class="page-link" aria-hidden="true">&laquo;</span>
+          </li>
+        </#if>
+
+        <#list startPage..endPage as i>
+          <#if i == page>
+            <li class="page-item active" aria-current="page">
+              <span class="page-link">${i}</span>
+            </li>
+          <#else>
+            <li class="page-item">
+              <a class="page-link" href="${buildPageUrl(url, page, i)}">${i}</a>
+            </li>
+          </#if>
+        </#list>
+
+        <#if page < totalPage>
+          <li class="page-item">
+            <a class="page-link" href="${nextPage}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        <#else>
+          <li class="page-item disabled">
+            <span class="page-link" aria-hidden="true">&raquo;</span>
+          </li>
+        </#if>
+      </ul>
+    </nav>
   </#if>
 </div>
+
+<#function buildPageUrl url currentPage pageNum>
+  <#if url?contains('page=')>
+    <#return url?replace('page=' + currentPage, 'page=' + pageNum)>
+  <#else>
+    <#return url + (url?contains('?')?then('&', '?')) + 'page=' + pageNum>
+  </#if>
+</#function>
