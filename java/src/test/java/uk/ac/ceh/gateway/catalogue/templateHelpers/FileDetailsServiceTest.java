@@ -56,10 +56,10 @@ class FileDetailsServiceTest {
             .willReturn(getHubbubResponse(1, lastPage, pageSize, totalFiles, 5));
         given(uploadService.get(fileId, datastore, 2, pageSize))
             .willReturn(getHubbubResponse(2, lastPage, pageSize, totalFiles, 3));
-        FileDetailsService fileDetailsService = new FileDetailsService(uploadService, datastore, baseUri, pageSize);
+        FileDetailsService fileDetailsService = new FileDetailsService(uploadService, baseUri, pageSize);
 
         //when
-        var actual = fileDetailsService.getDetailsFor(fileId, isAttached);
+        var actual = fileDetailsService.getDetailsFor(fileId, isAttached, datastore);
 
         //then
         verify(uploadService).get(fileId, datastore, 1, 5);
@@ -83,10 +83,10 @@ class FileDetailsServiceTest {
             .willReturn(getHubbubResponse(1, lastPage, pageSize, totalFiles, 5));
         given(uploadService.get(fileId, datastore, 2, pageSize))
             .willReturn(getHubbubResponse(2, lastPage, pageSize, totalFiles, 3));
-        FileDetailsService fileDetailsService = new FileDetailsService(uploadService, datastore, baseUri, pageSize);
+        FileDetailsService fileDetailsService = new FileDetailsService(uploadService, baseUri, pageSize);
 
         //when
-        var actual = fileDetailsService.getDetailsFor(fileId, isAttached);
+        var actual = fileDetailsService.getDetailsFor(fileId, isAttached, datastore);
 
         //then
         verify(uploadService).get(fileId, datastore, 1, 5);

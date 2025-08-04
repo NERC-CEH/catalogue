@@ -10,7 +10,9 @@
 
   <#assign fileaccess = filter(downloads, "function", "fileAccess")>
   <#if fileaccess?size gt 0>
-    <@m.rocrate docType fileDetails.getDetailsFor(id, false)/>
+    <@m.getPartsData id false ; eidchub, suppDocs, combinedParts>
+      <@m.rocrate docType combinedParts/>
+    </@m.getPartsData>
   <#else>
     not a valid rocrate document
   </#if>

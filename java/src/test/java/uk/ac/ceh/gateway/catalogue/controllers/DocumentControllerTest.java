@@ -224,7 +224,7 @@ class DocumentControllerTest {
     }
 
     private void givenRoCrateServiceFrom() {
-        given(fileDetailsService.getDetailsFor(anyString(), anyBoolean()))
+        given(fileDetailsService.getDetailsFor(anyString(), anyBoolean(), anyString()))
             .willReturn(new ArrayList<>());
     }
 
