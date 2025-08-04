@@ -12,7 +12,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
-import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
@@ -29,9 +28,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SolrIndexMetadataDocumentGeneratorTest {
@@ -128,19 +127,6 @@ class SolrIndexMetadataDocumentGeneratorTest {
         );
     }
 
-        @Test
-    void applicationScaleAddedToIndex() {
-        //Given
-        Model document = new Model();
-        document.setApplicationScale("global");
-
-        //When
-        SolrIndex actual = generator.generateIndex(document);
-
-        //Then
-        assertTrue(actual.getImpScale().contains("global"));
-    }
-
     @Test
     void scaleAddedFromModel() {
         //Given
@@ -152,7 +138,7 @@ class SolrIndexMetadataDocumentGeneratorTest {
 
         //When
         SolrIndex index = generator.generateIndex(model);
-        List<String> actual = index.getImpScale();
+        List<String> actual = index.getInmsScale();
 
         //Then
         assertTrue(actual.contains("global"));
@@ -174,7 +160,7 @@ class SolrIndexMetadataDocumentGeneratorTest {
 
         //When
         SolrIndex index = generator.generateIndex(application);
-        List<String> actual = index.getImpScale();
+        List<String> actual = index.getInmsScale();
 
         //Then
         assertTrue(actual.contains("global"));
@@ -199,7 +185,7 @@ class SolrIndexMetadataDocumentGeneratorTest {
 
 
         SolrIndex index = generator.generateIndex(application);
-        List<String> actual = index.getImpTopic();
+        List<String> actual = index.getInmsTopic();
 
         //Then
         assertTrue(actual.contains("nitrogen"));
@@ -341,10 +327,6 @@ class SolrIndexMetadataDocumentGeneratorTest {
         DescriptiveKeywords ncterms = DescriptiveKeywords.builder()
             .keywords(Arrays.asList(
                 Keyword.builder()
-                    .value("farm")
-                    .URI("http://vocabs.ceh.ac.uk/imp/wp/nitrogen")
-                    .build(),
-                Keyword.builder()
                     .value("field")
                     .URI("http://vocabs.ceh.ac.uk/inms/wp/pm")
                     .build()
@@ -371,153 +353,7 @@ class SolrIndexMetadataDocumentGeneratorTest {
         generator.generateIndex(document);
 
         //Then
-        verify(vocabularyService).isMember(
-            "wp",
-            "http://vocabs.ceh.ac.uk/imp/wp/nitrogen"
-        );
-        verify(vocabularyService).isMember(
-            "wp",
-            "http://vocabs.ceh.ac.uk/inms/wp/pm"
-        );
-        verify(vocabularyService).isMember(
-            "wp",
-            "https://example.com/blue"
-        );
+        verify(vocabularyService, atLeastOnce()).isMember(anyString(), eq("http://vocabs.ceh.ac.uk/inms/wp/pm"));
+        verify(vocabularyService, atLeastOnce()).isMember(anyString(), eq("https://example.com/blue"));
     }
-
-    @Test
-    public void checkThatImpScaleIsIndexed() {
-        //Given
-        DescriptiveKeywords imp = DescriptiveKeywords.builder()
-            .keywords(Arrays.asList(
-                Keyword.builder()
-                    .value("Catchment")
-                    .URI("http://vocabs.ceh.ac.uk/imp/scale/catchment")
-                    .build(),
-                Keyword.builder()
-                    .value("National")
-                    .URI("http://vocabs.ceh.ac.uk/imp/scale/national")
-                    .build()
-            )
-        ).build();
-
-        DescriptiveKeywords other = DescriptiveKeywords.builder()
-            .keywords(Arrays.asList(
-                Keyword.builder()
-                    .value("Green")
-                    .build(),
-                Keyword.builder()
-                    .value("Blue")
-                    .URI("https://example.com/blue")
-                    .build()
-            )
-        ).build();
-
-        GeminiDocument document = new GeminiDocument();
-        document.setDescriptiveKeywords(Arrays.asList(imp, other));
-
-
-        //When
-        SolrIndex index = generator.generateIndex(document);
-
-        //Then
-        assertThat(index.getImpScale().contains("Catchment"), is(true));
-        assertThat(index.getImpScale().contains("National"), is(true));
-        assertThat(index.getImpScale().contains("Blue"), is(false));
-
-    }
-
-    @Test
-    public void checkThatImpCaMMPIssuesIsIndexed() {
-        //Given
-        DescriptiveKeywords imp = DescriptiveKeywords.builder()
-            .keywords(Arrays.asList(
-                Keyword.builder()
-                    .value("Agri-environment")
-                    .URI("http://vocabs.ceh.ac.uk/imp/ci/agri-environment")
-                    .build(),
-                Keyword.builder()
-                    .value("Ecosystem Response")
-                    .URI("http://vocabs.ceh.ac.uk/imp/ci/ecosystem-response")
-                    .build()
-            )
-        ).build();
-
-        DescriptiveKeywords other = DescriptiveKeywords.builder()
-            .keywords(Arrays.asList(
-                Keyword.builder()
-                    .value("Green")
-                    .build(),
-                Keyword.builder()
-                    .value("Blue")
-                    .URI("https://example.com/blue")
-                    .build()
-            )
-        ).build();
-
-        GeminiDocument document = new GeminiDocument();
-        document.setDescriptiveKeywords(Arrays.asList(imp, other));
-
-
-        //When
-        SolrIndex index = generator.generateIndex(document);
-
-        //Then
-        assertThat(index.getImpCaMMPIssues().contains("Agri-environment"), is(true));
-        assertThat( index.getImpCaMMPIssues().contains("Ecosystem Response"), is(true));
-        assertThat(index.getImpScale().contains("Blue"), is(false));
-
-    }
-
-    @Test
-    public void checkThatImpWaterQualityIsIndexed() {
-        //Given
-        DescriptiveKeywords imp = DescriptiveKeywords.builder()
-            .keywords(Arrays.asList(
-                Keyword.builder()
-                    .value("Nitrogen")
-                    .URI("http://vocabs.ceh.ac.uk/imp/wp/nitrogen")
-                    .build(),
-                Keyword.builder()
-                    .value("Phosphorous")
-                    .URI("http://vocabs.ceh.ac.uk/imp/wp/phosphorous")
-                    .build()
-            )
-        ).build();
-
-        DescriptiveKeywords other = DescriptiveKeywords.builder()
-            .keywords(Arrays.asList(
-                Keyword.builder()
-                    .value("Green")
-                    .build(),
-                Keyword.builder()
-                    .value("Blue")
-                    .URI("https://example.com/blue")
-                    .build()
-            )
-        ).build();
-
-        GeminiDocument document = new GeminiDocument();
-        document.setDescriptiveKeywords(Arrays.asList(imp, other));
-        document.setId("TestID");
-
-        //When
-        when(vocabularyService.isMember(anyString(), anyString())).thenReturn(false);
-        when(vocabularyService.isMember("wp", "http://vocabs.ceh.ac.uk/imp/wp/nitrogen")).thenReturn(true);
-        when(vocabularyService.isMember("wp", "http://vocabs.ceh.ac.uk/imp/wp/phosphorous")).thenReturn(true);
-
-        SolrIndex index = generator.generateIndex(document);
-
-        //Then
-        verify(vocabularyService).isMember(
-            "wp",
-            "http://vocabs.ceh.ac.uk/imp/wp/nitrogen"
-        );
-        assertTrue(vocabularyService.isMember("wp","http://vocabs.ceh.ac.uk/imp/wp/nitrogen"));
-        assertThat(index.getImpWaterPollutant().contains("Nitrogen"), is(true));
-        assertThat(index.getImpWaterPollutant().contains("Phosphorous"), is(true));
-        assertThat(index.getImpWaterPollutant().contains("Blue"), is(false));
-
-    }
-
 }

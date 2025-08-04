@@ -28,11 +28,8 @@ public class SolrIndex {
     private @Field List<String> funder;
     private @Field List<String> grant;
     private @Field String identifier;
-    private @Field List<String> impCaMMPIssues;
-    private @Field List<String> impDataType;
-    private @Field List<String> impScale;
-    private @Field List<String> impTopic;
-    private @Field List<String> impWaterPollutant;
+    private @Field List<String> inmsScale;
+    private @Field List<String> inmsTopic;
     private @Field long incomingCitationCount;
     private @Field List<String> givenName;
     private @Field List<String> familyName;

@@ -29,7 +29,6 @@ import uk.ac.ceh.gateway.catalogue.document.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.document.reading.*;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
 import uk.ac.ceh.gateway.catalogue.indexing.PrioritisedClassMap;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
@@ -136,7 +135,6 @@ public class ServicesConfig {
             .register(INFRASTRUCTURERECORD, InfrastructureRecord.class)
             .register(METHODRECORD, MethodRecord.class)
             .register(GEMINI, GeminiDocument.class)
-            .register(IMP, ImpDocument.class)
             .register(LINK, LinkDocument.class)
             .register(NERC_MODEL, NercModel.class)
             .register(NERC_MODEL_USE, NercModelUse.class)

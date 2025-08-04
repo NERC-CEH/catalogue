@@ -38,8 +38,6 @@ public class DevelopmentUserStoreConfig {
     public static final String ASSIST_PUBLISHER = "role_assist_publisher";
     public static final String UKCEH_EDITOR = "role_ukceh_editor";
     public static final String UKCEH_PUBLISHER = "role_ukceh_publisher";
-    public static final String CMP_EDITOR = "role_cmp_editor";
-    public static final String CMP_PUBLISHER = "role_cmp_publisher";
     public static final String DATALABS_EDITOR = "role_datalabs_editor";
     public static final String DATALABS_PUBLISHER = "role_datalabs_publisher";
     public static final String EIDC_EDITOR = "role_eidc_editor";
@@ -86,22 +84,6 @@ public class DevelopmentUserStoreConfig {
     public CatalogueUser assistPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser("assist-publisher", "assist-publisher@ceh.ac.uk");
         addUserToGroup(user, ASSIST_EDITOR, ASSIST_PUBLISHER);
-        userStore().addUser(user, "password");
-        return user;
-    }
-
-    @Bean
-    public CatalogueUser cmpEditor() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser("cmp-editor", "cmp-editor@ceh.ac.uk");
-        addUserToGroup(user, CMP_EDITOR);
-        userStore().addUser(user, "password");
-        return user;
-    }
-
-    @Bean
-    public CatalogueUser cmpPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser("cmp-publisher","cmp-publisher@ceh.ac.uk");
-        addUserToGroup(user, CMP_EDITOR, CMP_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
     }
@@ -283,8 +265,6 @@ public class DevelopmentUserStoreConfig {
         groupStore.createGroup(ASSIST_EDITOR, "");
         groupStore.createGroup(ASSIST_PUBLISHER, "");
         groupStore.createGroup(CEH_GROUP_NAME, "");
-        groupStore.createGroup(CMP_EDITOR, "");
-        groupStore.createGroup(CMP_PUBLISHER, "");
         groupStore.createGroup(UKCEH_EDITOR, "");
         groupStore.createGroup(UKCEH_PUBLISHER, "");
         groupStore.createGroup(DATACITE_ROLE, "");
