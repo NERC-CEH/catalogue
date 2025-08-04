@@ -28,9 +28,6 @@ import java.util.stream.Collectors;
 @ToString
 public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, SolrIndex> {
 
-    public static final String IMP_CAMMP_ISSUES_URL = "http://vocabs.ceh.ac.uk/imp/ci/";
-    public static final String IMP_SCALE_URL = "http://vocabs.ceh.ac.uk/imp/scale/";
-
     public static final String INMS_SCALE_URL = "http://vocabs.ceh.ac.uk/inms/scale/";
 
     @SuppressWarnings("unused")
@@ -61,11 +58,8 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setDescription(document.getDescription())
             .setDocumentType(getDocumentType(document))
             .setIdentifier(identifierService.generateFileId(document.getId()))
-            .setImpCaMMPIssues(grab(getKeywordsFilteredByUrlFragment(document, IMP_CAMMP_ISSUES_URL), Keyword::getValue))
-            .setImpDataType(grab(getKeywordsByVocabulary(document, VocabularyFacet.IMP_DATE_TYPE.getFacetName()), Keyword::getValue))
-            .setImpScale(impScale(document))
-            .setImpTopic(grab(getKeywordsByVocabulary(document, VocabularyFacet.TOPIC.getFacetName()), Keyword::getValue))
-            .setImpWaterPollutant(grab(getKeywordsByVocabulary(document, VocabularyFacet.WATER_POLLUTANT.getFacetName()), Keyword::getValue))
+            .setInmsScale(inmsScale(document))
+            .setInmsTopic(grab(getKeywordsByVocabulary(document, VocabularyFacet.TOPIC.getFacetName()), Keyword::getValue))
             .setInmsDemonstrationRegion(grab(getKeywordsByVocabulary(document, VocabularyFacet.INMS_DEMONSTRATION_REGION.getFacetName()), Keyword::getValue))
             .setInmsProject(grab(getKeywordsByVocabulary(document, VocabularyFacet.INMS_PROJECT.getFacetName()), Keyword::getValue))
             .setKeyword(grab(document.getAllKeywords(), Keyword::getValue))
@@ -157,9 +151,9 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .collect(Collectors.toList());
     }
 
-    private List<String> impScale(MetadataDocument document) {
+    private List<String> inmsScale(MetadataDocument document) {
         List<String> toReturn = grab(
-            getKeywordsFilteredByUrlFragment(document, IMP_SCALE_URL, INMS_SCALE_URL),
+            getKeywordsFilteredByUrlFragment(document, INMS_SCALE_URL),
             Keyword::getValue
         );
 

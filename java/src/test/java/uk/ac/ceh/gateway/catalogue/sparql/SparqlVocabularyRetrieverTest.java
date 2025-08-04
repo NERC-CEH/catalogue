@@ -64,9 +64,7 @@ public class SparqlVocabularyRetrieverTest {
 
 
         assertThat(retrieve.containsEntry("wp", "http://example.com/abc/def"), is(true));
-        assertThat(retrieve.containsEntry("dt", "http://example.com/abc/ghi"), is(true));
         assertThat(retrieve.containsEntry("wp", "http://example.com/abc/xyz"), is(false));
-        assertThat(retrieve.containsEntry("dt", "http://example.com/abc/xyz"), is(false));
         assertThat(retrieve.containsEntry("UnrealFacet", "http://example.com/abc/ghi"), is(false));
     }
 
@@ -106,7 +104,7 @@ public class SparqlVocabularyRetrieverTest {
         Multimap<String, String> retrieve = vocabularyRetriever.retrieve();
 
         //then
-        verify(template, times(12)).getForEntity(any(URI.class), eq(SparqlQueryResponse.class));
+        verify(template, times(VocabularyFacet.values().length)).getForEntity(any(URI.class), eq(SparqlQueryResponse.class));
         assertThat(retrieve.isEmpty(), is(true));
     }
 
