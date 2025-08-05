@@ -3,12 +3,12 @@
 <#macro rocrate docType="" parts=[]>
   <#if docType?has_content>
     {
-    "@context": "https://w3id.org/ro/crate/1.1/context",
+    "@context": "https://w3id.org/ro/crate/1.2/context",
     "@graph": [
     {
     "@type": "CreativeWork",
     "@id": "ro-crate-metadata.json",
-    "conformsTo": { "@id": "https://w3id.org/ro/crate/1.1" },
+    "conformsTo": { "@id": "https://w3id.org/ro/crate/1.2" },
     "about": { "@id": "${uri?trim}" }
     },
     <@schemaDocument docType parts/>
@@ -33,8 +33,8 @@
   "@type":<@displayLiteral docType/>,
   "name":<@displayLiteral title/>,
   "@id": "${uri?trim}",
+  <@doi/>
   <@partsList parts/>
-  <@datacite/>
   <#if resourceStatus?lower_case != "deleted">
     <#if description?has_content>"description":<@displayLiteral description/>,</#if>
     <@alternateTitlesList/>
@@ -43,7 +43,7 @@
     <@publicationDate/>
     <@observedPropertiesList/>
     <@keywordsList/>
-    <#if authors?has_content>"author": [<@contactList authors "author"/>],</#if>
+    <#if authors?has_content>"creator": [<@contactList authors "creator"/>],</#if>
     <#if pointsOfContact?has_content>"contactPoint": [<@contactList pointsOfContact/>],</#if>
     <@citationList/>
     <@temporalExtentsList/>
@@ -75,9 +75,10 @@
   "name":"NERC EDS Environmental Information Data Centre",
   "email": "info@eidc.ac.uk"
   }
+  <@doiDetail/>
   <@licencesDetail/>
   <#if boundingBoxes?has_content>,<@bboxDetails/></#if>
-  <#if authors?has_content>,<@contactDetails authors "author"/></#if>
+  <#if authors?has_content>,<@contactDetails authors "creator"/></#if>
   <#if pointsOfContact?has_content>,<@contactDetails pointsOfContact/></#if>
   <#if incomingCitations?has_content>,<@citationDetails/></#if>
   <#if funding?has_content>,<@fundDetails/></#if>
@@ -103,10 +104,14 @@
     {
     "@id": "#bbox${bbox?index}",
     "@type":"Place",
-    "geo":{
-    "@type":"GeoShape",
-    "box":"${bbox.westBoundLongitude} ${bbox.southBoundLatitude}, ${bbox.eastBoundLongitude} ${bbox.northBoundLatitude}"
-    }
+    "geo": {
+      "@id": "#geoshape${bbox?index}"
+      }
+    },
+    {
+      "@id": "#geoshape${bbox?index}",
+      "@type": "GeoShape",
+      "box":"${bbox.westBoundLongitude} ${bbox.southBoundLatitude}, ${bbox.eastBoundLongitude} ${bbox.northBoundLatitude}"
     }<#sep>,
   </#list>
 </#macro>
@@ -123,20 +128,27 @@
   </#if>
 </#macro>
 
-<#macro datacite>
+<#macro doi>
   <#if datacitable && citation?has_content>
-    "identifier": {
-    "@type":"PropertyValue",
-    "propertyID": "https://registry.identifiers.org/registry/doi",
-    "value": "doi:${citation.doi}",
-    "url": "${citation.url}"
-    },
-    "url": "${citation.url}",
+    "identifier": {"@id": "${citation.url}"},
     "creditText":"${citation.authors?join(', ')} (${citation.year?string["0000"]}). ${citation.title}. ${citation.publisher}. (${codes.lookup('datacite.resourceTypeGeneral',citation.resourceTypeGeneral)}). ${citation.url}",
   <#else>
     "url":"${uri?trim}",
   </#if>
 </#macro>
+
+<#macro doiDetail>
+  <#if datacitable && citation?has_content>
+    ,{
+      "@id": "${citation.url}",
+      "@type":"PropertyValue",
+      "propertyID": "https://registry.identifiers.org/registry/doi",
+      "value": "doi:${citation.doi}",
+      "url": "${citation.url}"
+    }
+  </#if>
+</#macro>
+
 
 <#macro keywordsList>
   <#if allKeywords??>
@@ -199,43 +211,51 @@
 
 <#macro observedPropertiesList>
   <#if fileset?? && fileset?has_content>
-    "variableMeasured": [
-      <#list fileset as filesetOp>
-        <#if filesetOp.observedProperty?has_content>
-          <#list filesetOp.observedProperty as op>
-            <#assign opLabel ="unknown">
-            <#if op.title?has_content>
-              <#assign opLabel = op.title?trim>
-            <#elseif op.value?has_content>
-              <#assign opLabel = op.value?trim>
+    <#--Combine the observed Properties lists and de-duplicate -->
+    <#assign allObservedProperties = [] />
+      <#list fileset as fs>
+        <#if fs.observedProperty?has_content>
+          <#list fs.observedProperty as op>
+            <#if ! allObservedProperties?seq_contains(op)>
+              <#assign allObservedProperties = allObservedProperties + [ op ] />
             </#if>
-
-            <#if op.uri?has_content>
-              {
-              "@type": "StatisticalVariable",
-              "@id": "${op.uri?trim}",
-              "name": "${opLabel}"
-              <#if op.unitsUri?has_content>,"unitCode": "${op.unitsUri?trim}"</#if>
-              <#if op.units?has_content>,"unitText": "${op.units?trim}"</#if>
-              }
-            <#else>
-              <@displayLiteral opLabel/>
-            </#if>
-            <#sep>,
           </#list>
         </#if>
-        <#sep>,
       </#list>
-    ],
+
+    "variableMeasured": [
+        <#list allObservedProperties as op>
+          <#assign opLabel="">
+
+          <#if op.title?has_content>
+            <#assign opLabel=op.title?trim>
+          <#elseif op.value?has_content>
+            <#assign opLabel=op.value?trim>
+          </#if>
+
+          <#if op.uri?has_content>
+            {
+            "@type": "StatisticalVariable",
+            "@id": "${op.uri?trim}",
+            "name": "${opLabel}"
+            <#if op.unitsUri?has_content>,"unitCode": "${op.unitsUri?trim}"</#if>
+            <#if op.units?has_content>,"unitText": "${op.units?trim}"</#if>
+            }
+          <#else>
+            <@displayLiteral opLabel/>
+          </#if>
+          <#sep>,</#sep>
+        </#list>
+      ],
   </#if>
 </#macro>
 
 <#macro partsList parts>
-  <#if parts?size lt 60000>
+  <#if parts?size lt 30000>
     <#list parts>
       "hasPart": [
       <#items as part>
-        <#if part.id?has_content>{"@id": "#part${part.id}"}</#if><#sep>,
+        <#if part.contentUrl?has_content>{"@id": "${part.contentUrl}"}</#if><#sep>,
       </#items>
       ],
     </#list>
@@ -245,11 +265,11 @@
 </#macro>
 
 <#macro partDetails parts>
-  <#if parts?size lt 60000>
+  <#if parts?size lt 30000>
     <#list parts as part>
       <#if part.id?has_content>
         {
-        <#t>"@id": "#part${part.id}",
+        <#if part.contentUrl?? && part.contentUrl?has_content>,<#t>"@id": "${part.contentUrl}"</#if>
         <#t>"name": "${part.id}"
         <#if part.type?? && part.type?has_content><#t>,"@type": "${part.type}"</#if>
         <#if part.encodingFormat?? && part.encodingFormat?has_content>,<#t>"encodingFormat": "${part.encodingFormat}"</#if>
@@ -324,13 +344,6 @@
       <#if contact.familyName?has_content>, "familyName": "${contact.familyName}"</#if>
       <#if contact.givenName?has_content>, "givenName": "${contact. givenName}"</#if>
       <#if contact.email?has_content>,"email": "${contact.email}"</#if>
-      <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
-        ,"identifier": {
-        "@type":"PropertyValue",
-        "propertyID": "orcid",
-        "value": "${contact.nameIdentifier}"
-        }
-      </#if>
       <#if contact.organisationName?has_content>
         ,"affiliation":{
         <#if contact.organisationIdentifier?matches("^https://ror\\.org/\\w{8,10}$")>

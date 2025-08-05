@@ -6,7 +6,7 @@
         <div id="associations-${id}">
             <h4>${title}</h4>
             <#list array as item>
-                <p><a href="${item.href}">${item.title}</a></p>
+                <p class="${item.publicationStatus}"><a href="${item.href}">${item.title}</a></p>
             </#list>
         </div>
       </#if>
