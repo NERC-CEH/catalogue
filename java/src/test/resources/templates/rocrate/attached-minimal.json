@@ -1,11 +1,11 @@
 {
-    "@context": "https://w3id.org/ro/crate/1.1/context",
+    "@context": "https://w3id.org/ro/crate/1.2/context",
     "@graph": [
         {
             "@type": "CreativeWork",
             "@id": "ro-crate-metadata.json",
             "conformsTo": {
-                "@id": "https://w3id.org/ro/crate/1.1"
+                "@id": "https://w3id.org/ro/crate/1.2"
             },
             "about": {
                 "@id": "https://example.org/id/123456789"
