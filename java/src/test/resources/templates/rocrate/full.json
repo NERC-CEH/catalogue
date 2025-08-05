@@ -23,12 +23,7 @@
                     "@id": "#part882739943"
                 }
             ],
-            "identifier": {
-                "@type": "PropertyValue",
-                "propertyID": "https://registry.identifiers.org/registry/doi",
-                "value": "doi:10.5285/882739943",
-                "url": "https://doi.org/10.5285/882739943"
-            },
+            "identifier": {"@id": "https://doi.org/10.5285/882739943"},
             "url": "https://doi.org/10.5285/882739943",
             "creditText": "Able, Bracken, Charles (2020). Title. Publisher. (Resource Type). https://doi.org/10.5285/882739943",
             "description": "Description",
@@ -61,7 +56,7 @@
                     "name": "Lancaster"
                 }
             ],
-            "author": [
+            "creator": [
                 {
                     "@id": "https://orcid.org/0000-1234-5678-9101"
                 }
@@ -141,20 +136,35 @@
             "license": "https://spdx.org/licenses/OGL-UK-3.0.html"
         },
         {
+            "@id": "https://doi.org/10.5285/882739943",
+            "@type":"PropertyValue",
+            "propertyID": "https://registry.identifiers.org/registry/doi",
+            "value": "doi:10.5285/882739943",
+            "url": "https://doi.org/10.5285/882739943"
+        },
+        {
             "@id": "#bbox0",
             "@type": "Place",
             "geo": {
-                "@type": "GeoShape",
-                "box": "0.4 45.7, 2.3 46.2"
+                "@id": "#geoshape0"
             }
+        },
+        {
+            "@id": "#geoshape0",
+            "@type": "GeoShape",
+            "box": "0.4 45.7, 2.3 46.2"
         },
         {
             "@id": "#bbox1",
             "@type": "Place",
             "geo": {
-                "@type": "GeoShape",
-                "box": "-120.5 -11.6, 48.7 36.8"
+                "@id": "#geoshape1"
             }
+        },
+        {
+            "@id": "#geoshape1",
+            "@type": "GeoShape",
+            "box": "-120.5 -11.6, 48.7 36.8"
         },
         {
             "@id": "https://orcid.org/0000-1234-5678-9101",
@@ -162,12 +172,7 @@
             "name": "Duck, D.",
             "familyName": "Duck",
             "givenName": "Donald",
-            "email": "donald@example.com",
-            "identifier": {
-                "@type": "PropertyValue",
-                "propertyID": "orcid",
-                "value": "https://orcid.org/0000-1234-5678-9101"
-            }
+            "email": "donald@example.com"
         },
         {
             "@id": "https://example.com/TMSP",
@@ -202,7 +207,7 @@
             "name": "University of Oxford"
         },
         {
-            "@id": "#part882739943",
+            "@id": "https://example.com/name1",
             "name": "882739943",
             "@type": "File",
             "encodingFormat": "text/csv",
@@ -212,7 +217,7 @@
             "contentUrl": "https://example.com/name1"
         },
         {
-            "@id": "#part882739943",
+            "@id": "https://example.com/name2",
             "name": "882739943",
             "@type": "File",
             "encodingFormat": "text/csv",

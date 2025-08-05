@@ -50,7 +50,7 @@
             "email": "info@eidc.ac.uk"
         },
         {
-            "@id": "#part09837382",
+            "@id": "https://example.com/name1",
             "name": "09837382",
             "@type": "File",
             "encodingFormat": "text/csv",
@@ -60,7 +60,7 @@
             "contentUrl": "https://example.com/name1"
         },
         {
-            "@id": "#part09837382",
+            "@id": "https://example.com/name2",
             "name": "09837382",
             "@type": "File",
             "encodingFormat": "text/csv",
