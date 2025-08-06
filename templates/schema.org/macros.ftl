@@ -269,8 +269,8 @@
     <#list parts as part>
       <#if part.id?has_content>
         {
-        <#if part.contentUrl?? && part.contentUrl?has_content>,<#t>"@id": "${part.contentUrl}"</#if>
-        <#t>"name": "${part.id}"
+        <#t>"@id": "${part.contentUrl}"
+        <#t>,"name": "${part.id}"
         <#if part.type?? && part.type?has_content><#t>,"@type": "${part.type}"</#if>
         <#if part.encodingFormat?? && part.encodingFormat?has_content>,<#t>"encodingFormat": "${part.encodingFormat}"</#if>
         <#if part.sha256?? && part.sha256?has_content>,<#t>"sha256": "${part.sha256}"</#if>
