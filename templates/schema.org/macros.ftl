@@ -75,8 +75,8 @@
   "name":"NERC EDS Environmental Information Data Centre",
   "email": "info@eidc.ac.uk"
   }
-  <@doiDetail/>
   <@licencesDetail/>
+  <@doiDetail/>
   <#if boundingBoxes?has_content>,<@bboxDetails/></#if>
   <#if authors?has_content>,<@contactDetails authors "creator"/></#if>
   <#if pointsOfContact?has_content>,<@contactDetails pointsOfContact/></#if>
@@ -148,7 +148,6 @@
     }
   </#if>
 </#macro>
-
 
 <#macro keywordsList>
   <#if allKeywords??>
