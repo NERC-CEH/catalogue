@@ -255,7 +255,14 @@
     <#list parts>
       "hasPart": [
       <#items as part>
-        <#if part.contentUrl?has_content>{"@id": "${part.contentUrl}"}</#if><#sep>,
+        {"@id":
+            <#if part.contentUrl?? && part.contentUrl?has_content>
+              "${part.contentUrl}"
+            <#else>
+              "${part.id}"
+            </#if>
+        }<#t>
+        <#sep>,
       </#items>
       ],
     </#list>
@@ -269,7 +276,12 @@
     <#list parts as part>
       <#if part.id?has_content>
         {
-        <#t>"@id": "${part.contentUrl}"
+        "@id":
+            <#if part.contentUrl?? && part.contentUrl?has_content>
+              "${part.contentUrl}"
+            <#else>
+              "${part.id}"
+            </#if>
         <#t>,"name": "${part.id}"
         <#if part.type?? && part.type?has_content><#t>,"@type": "${part.type}"</#if>
         <#if part.encodingFormat?? && part.encodingFormat?has_content>,<#t>"encodingFormat": "${part.encodingFormat}"</#if>
