@@ -2,9 +2,13 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
+import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.jena.geosparql.configuration.GeoSPARQLConfig;
+import org.apache.jena.geosparql.implementation.index.IndexConfiguration;
+import org.apache.jena.sparql.function.FunctionRegistry;
 import org.apache.jena.tdb1.TDB1Factory;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpJdkSolrClient;
@@ -219,6 +223,22 @@ public class ServicesConfig {
         ObjectMapper objectMapper
     ) {
         return new JacksonDocumentInfoMapper<>(objectMapper, ServiceAgreement.class);
+    }
+
+    @PostConstruct
+    public void initializeGeoSPARQL() {
+        log.info("Initializing GeoSPARQL support");
+        try {
+//            GeoSPARQLConfig.setup(IndexConfiguration.IndexOption.MEMORY);
+            GeoSPARQLConfig.setupMemoryIndex();
+
+            log.info("GeoSPARQL initialization completed successfully");
+        } catch (Exception e) {
+            log.error("Failed to initialize GeoSPARQL", e);
+        }
+        FunctionRegistry registry = FunctionRegistry.get();
+        boolean isRegistered = registry.isRegistered("http://www.opengis.net/def/function/geosparql/distance");
+        log.info("geof:distance registered: " + isRegistered);
     }
 
     @Bean(destroyMethod = "close")
