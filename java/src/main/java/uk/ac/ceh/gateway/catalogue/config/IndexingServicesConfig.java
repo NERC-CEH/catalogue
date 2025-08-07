@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.jena.query.Dataset;
@@ -15,7 +14,6 @@ import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.network.NetworkIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
@@ -38,6 +36,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
+import uk.ac.ceh.gateway.catalogue.services.LegiloSupportingDocsService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
@@ -124,12 +123,14 @@ public class IndexingServicesConfig {
             DocumentRepository documentRepository,
             JenaLookupService jenaLookupService,
             SolrClient solrClient,
-            VocabularyService vocabularyService
-            ) {
+            VocabularyService vocabularyService,
+            LegiloSupportingDocsService legiloFulltextService
+    ) {
         val metadataDocumentGenerator = new SolrIndexMetadataDocumentGenerator(
                 codeLookupService,
                 documentIdentifierService,
-                vocabularyService
+                vocabularyService,
+                legiloFulltextService
                 );
         val linkDocumentGenerator = new SolrIndexLinkDocumentGenerator();
         linkDocumentGenerator.setRepository(documentRepository);

@@ -153,6 +153,7 @@
     <field name="state" type="keywords" multiValued="false"/>
     <field name="supplementalDescription" type="text_general"/>
     <field name="supplementalName" type="text_general"/>
+    <field name="supportingText" type="text_general" stored="true" indexed="true" multiValued="false"/>
     <field name="title" type="text_general" required="true" multiValued="false"/>
     <field name="topic" type="keywords"/>
     <field name="ukcehResearchProject" type="keywords"/>

@@ -140,11 +140,11 @@ export_default SPRING_WEB_RESOURCES_STATIC_LOCATIONS file:"$TOP"/static
 export_default UPLOAD_SIMPLE_DATASTORE "$TOP"/datastore
 export_default SPRING_DEVTOOLS_RESTART_ENABLED true
 export_default SPRING_DEVTOOLS_LIVERELOAD_ENABLED true
-export_default LEGILO_URL http://localhost:8000
+export_default LEGILO_URL http://192.168.211.128:8000
 export_default LEGILO_USER user
 export_default LEGILO_PASSWORD password
 
-spring_profile='development,server:eidc,search:basic,cache,service-agreement'
+spring_profile='development,server:eidc,search:basic,cache,service-agreement,keyword-suggestions'
 if [[ $with_hubbub = true ]]; then
     spring_profile="$spring_profile,upload:hubbub"
 else

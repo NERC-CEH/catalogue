@@ -10,6 +10,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
+import uk.ac.ceh.gateway.catalogue.services.LegiloSupportingDocsService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyFacet;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
@@ -36,15 +37,18 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
     private final VocabularyService vocabularyService;
+    private final LegiloSupportingDocsService legiloSupportingDocsService;
 
     public SolrIndexMetadataDocumentGenerator(
             CodeLookupService codeLookupService,
             DocumentIdentifierService identifierService,
-            VocabularyService vocabularyService
+            VocabularyService vocabularyService,
+            LegiloSupportingDocsService legiloSupportingDocsService
     ) {
         this.codeLookupService = codeLookupService;
         this.identifierService = identifierService;
         this.vocabularyService = vocabularyService;
+        this.legiloSupportingDocsService = legiloSupportingDocsService;
         log.info("Creating");
     }
 
@@ -68,6 +72,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setRecordType(getRecordType(document))
             .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
             .setState(getState(document))
+            .setSupportingText(fetchSupportingText(document.getId()))
             .setTitle(document.getTitle())
             .setUkcehResearchTheme(grab(getKeywordsByVocabulary(document, VocabularyFacet.UKCEH_RESEARCH_THEME.getFacetName()), Keyword::getValue))
             .setUkcehResearchProject(grab(getKeywordsByVocabulary(document, VocabularyFacet.UKCEH_RESEARCH_PROJECT.getFacetName()), Keyword::getValue))
@@ -77,6 +82,21 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setResourceIdentifier(grab(document.getResourceIdentifiers(), ResourceIdentifier::getCode))
             ;
     }
+
+    private String fetchSupportingText(String datasetId) {
+        try {
+            Map<String, String> fileTextMap = legiloSupportingDocsService.getFulltextByDatasetId(datasetId);
+            return fileTextMap.values().stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.joining(" "));
+        } catch (Exception e) {
+            log.warn("Failed to fetch supporting docs from Legilo for {}: {}", datasetId, e.getMessage());
+            return "";
+        }
+    }
+
 
     private String getRecordType(MetadataDocument document) {
         log.debug("Catalogue: {}", document.getCatalogue());
