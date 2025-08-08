@@ -72,6 +72,13 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 });
             });
 
+        Optional.ofNullable(document.getType())
+            .ifPresent(t -> {
+                if ("dataset".equalsIgnoreCase(t)) {
+                    toReturn.add(createStatement(me, RDF_TYPE, CLASS_DCATDATASET));
+                }
+            });
+
         Optional.ofNullable(document.getBoundingBoxes())
             .orElse(Collections.emptyList())
             .forEach(b ->

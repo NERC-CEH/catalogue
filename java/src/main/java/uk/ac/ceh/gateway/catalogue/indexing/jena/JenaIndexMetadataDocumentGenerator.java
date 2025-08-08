@@ -31,6 +31,7 @@ public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<Metada
 
     @Override
     public List<Statement> generateIndex(MetadataDocument document) {
+
         List<Statement> toReturn = new ArrayList<>();
         if(emptyToNull(document.getId()) != null) {
             Resource me = resource(document.getId());
@@ -48,9 +49,10 @@ public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                     );
 
             Optional.ofNullable(emptyToNull(document.getType()))
-                    .ifPresent(t -> toReturn.add(
-                        createStatement(me, TYPE, createPlainLiteral(t)))
-                    );
+                .ifPresent(t -> {
+                    toReturn.add(createStatement(me, TYPE, createPlainLiteral(t)));
+
+                });
 
             Optional.ofNullable(document.getRelationships())
                 .ifPresent(relationships -> {
