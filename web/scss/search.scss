@@ -83,6 +83,10 @@ main {
             }
 
         }
+
+        .recordCount {
+            @extend .text-body-secondary !optional;
+        }
     }
 }
 
@@ -377,24 +381,17 @@ main {
 }
 
 .results__footer {
-    margin-block-start: auto;
+     @extend .d-flex !optional;
+     @extend .justify-content-center !optional;
+     @extend .mt2 !optional;
 
     .pagination {
 
-        .previous-item,
-        .next-item {
-            width: max-content;
-            white-space: nowrap;
-        }
-
-        .center-item {
-            width: 100%;
-            text-align: center;
-        }
-
-        .page-link {
-            padding: 6px 20px;
-            border-radius: 18px;
-        }
+            li.active {
+                span {
+                    background-color: var(--primary-colour);
+                    border-color: var(--primary-colour);
+                }
+            }
     }
 }

@@ -124,7 +124,6 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
     private String vocabSelector(VocabularyFacet facet){
         return switch (facet) {
             case ASSIST_RESEARCH_THEMES, ASSIST_TOPICS                                                -> "<http://onto.nerc.ac.uk/CEHMD/>";
-            case IMP_DATE_TYPE                                                                        -> "<http://vocabs.ceh.ac.uk/imp/>";
             case UKCEH_RESEARCH_THEME, UKCEH_RESEARCH_PROJECT, UKCEH_SCIENCE_CHALLENGE, UKCEH_SERVICE -> "<http://vocabs.ceh.ac.uk/ukscape/>";
             case INMS_DEMONSTRATION_REGION, INMS_PROJECT, MODEL_TYPE                                  -> "<http://vocabs.ceh.ac.uk/inms/>";
             default -> ""; // No vocab needed for others

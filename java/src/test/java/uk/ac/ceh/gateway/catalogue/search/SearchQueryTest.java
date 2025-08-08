@@ -754,56 +754,6 @@ public class SearchQueryTest {
     }
 
     @Test
-    public void impFacetsConfigured() {
-        //Given
-        Catalogue catalogue = Catalogue.builder()
-            .id("cmp")
-            .title("Catchment Management Modelling Platform")
-            .url("http://www.ceh.ac.uk")
-            .contactUrl("")
-            .logo("eidc.png")
-            .facetKey("impCaMMPIssues")
-            .facetKey("impDataType")
-            .facetKey("impScale")
-            .facetKey("impTopic")
-            .facetKey("impWaterPollutant")
-            .facetKey("resourceType")
-            .build();
-        SearchQuery query = new SearchQuery(
-                ENDPOINT,
-                CatalogueUser.PUBLIC_USER,
-                SearchQuery.DEFAULT_SEARCH_TERM,
-                DEFAULT_BBOX,
-                SpatialOperation.ISWITHIN,
-                DEFAULT_PAGE,
-                DEFAULT_ROWS,
-                DEFAULT_FILTERS,
-                groupStore,
-                catalogue,
-                FACET_FACTORY.newInstances(catalogue.getFacetKeys()),
-                sortField,
-                sortOrder
-                );
-
-        //When
-        List<String> actual = query
-            .getFacets()
-            .stream()
-            .map(Facet::getFieldName)
-            .collect(Collectors.toList());
-
-
-        //Then
-        assertThat(actual.contains("impCaMMPIssues"), is(true));
-        assertThat(actual.contains("impDataType"), is(true));
-        assertThat(actual.contains("impScale"), is(true));
-        assertThat(actual.contains("impTopic"), is(true));
-        assertThat(actual.contains("impWaterPollutant"), is(true));
-        assertThat(actual.contains("resourceType"), is(true));
-
-    }
-
-    @Test
     public void checkSortParameters() {
         //Given
         SearchQuery interestingQuery = new SearchQuery(

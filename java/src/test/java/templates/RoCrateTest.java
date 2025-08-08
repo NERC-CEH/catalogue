@@ -52,7 +52,7 @@ public class RoCrateTest {
     }
 
     private void givenFileDetailsServiceDetached(String fileId) {
-        given(fileDetailsService.getDetailsFor(fileId, false))
+        given(fileDetailsService.getDetailsFor(fileId, false, "eidchub"))
             .willReturn(List.of(
                 new FileDetailsService.Part(fileId, "File", "name1", "text/csv", "testHash", "https://example.com/name1", 12L, LocalDateTime.of(2024,12,9,15, 34)),
                 new FileDetailsService.Part(fileId, "File", "name2", "text/csv", "testHash", "https://example.com/name2", 9832L, LocalDateTime.of(2020,5,6,23, 59))
@@ -60,7 +60,7 @@ public class RoCrateTest {
     }
 
     private void givenFileDetailsServiceAttached(String fileId) {
-        given(fileDetailsService.getDetailsFor(fileId, true))
+        given(fileDetailsService.getDetailsFor(fileId, true, "eidchub"))
             .willReturn(List.of(
                 new FileDetailsService.Part(fileId, "File", "name1", "text/csv", "testHash", "data/name4", 542L, LocalDateTime.of(2024,12,9,15, 34)),
                 new FileDetailsService.Part(fileId, "File", "name2", "text/csv", "testHash", "data/name5", 32L, LocalDateTime.of(2020,5,6,23, 59))
@@ -132,7 +132,7 @@ public class RoCrateTest {
 
             //then
             JSONAssert.assertEquals(expected, actual, true);
-            verify(fileDetailsService).getDetailsFor(fileId, true);
+            verify(fileDetailsService).getDetailsFor(fileId, true, "eidchub");
         }
     }
 
@@ -154,7 +154,7 @@ public class RoCrateTest {
 
             //then
             JSONAssert.assertEquals(expected, actual, true);
-            verify(fileDetailsService).getDetailsFor(fileId, false);
+            verify(fileDetailsService).getDetailsFor(fileId, false, "eidchub");
         }
 
         @SneakyThrows
@@ -254,7 +254,7 @@ public class RoCrateTest {
 
             //then
             JSONAssert.assertEquals(expected, actual, true);
-            verify(fileDetailsService).getDetailsFor(fileId, false);
+            verify(fileDetailsService).getDetailsFor(fileId, false, "eidchub");
         }
     }
 }

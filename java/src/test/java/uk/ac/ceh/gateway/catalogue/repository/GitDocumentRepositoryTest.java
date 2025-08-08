@@ -13,11 +13,9 @@ import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.model.Permission;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -148,33 +146,4 @@ public class GitDocumentRepositoryTest {
         //Then
         verify(repo).delete(user, "id");
     }
-
-    @Test
-    @SneakyThrows
-    public void checkMetadataInfoUpdated() {
-        //Given
-        CatalogueUser editor = new CatalogueUser("editor", "editor@example.com");
-        String file = "3c25e9b7-d3dd-41be-ae29-e8979bb462a2";
-        String message = "Test message";
-        MetadataInfo metadataInfo = MetadataInfo.builder()
-            .catalogue("eidc")
-            .documentType("MODEL_DOCUMENT")
-            .rawType("application/json")
-            .state("published")
-            .build();
-        metadataInfo.addPermission(Permission.EDIT, "editor");
-        MetadataDocument document = new Model()
-            .setId(file)
-            .setMetadata(metadataInfo);
-
-        given(documentIdentifierService.generateUri(file)).willReturn("https://catalogue.ceh.ac.uk/id/3c25e9b7-d3dd-41be-ae29-e8979bb462a2");
-
-        //When
-        documentRepository.save(editor, document, file, message);
-
-        //Then
-        verify(repo).save(eq(editor), eq(file), eq(message), eq(metadataInfo), any());
-
-    }
-
 }

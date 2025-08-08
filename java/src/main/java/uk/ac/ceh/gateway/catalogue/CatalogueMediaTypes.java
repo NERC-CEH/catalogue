@@ -41,7 +41,6 @@ public class CatalogueMediaTypes {
     public static final String MONITORING_NETWORK_JSON_VALUE = "application/vnd.monitoring-network+json";
     public static final String MONITORING_PROGRAMME_JSON_VALUE = "application/vnd.monitoring-programme+json";
 
-    public static final String MODEL_JSON_VALUE = "application/model+json";
     public static final String NERC_MODEL_JSON_VALUE = "application/vnd.nerc-model+json";
     public static final String NERC_MODEL_USE_JSON_VALUE = "application/vnd.nerc-model-use+json";
 

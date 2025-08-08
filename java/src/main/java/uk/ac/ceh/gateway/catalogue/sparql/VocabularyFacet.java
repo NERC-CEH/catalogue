@@ -6,7 +6,6 @@ import lombok.Getter;
 public enum VocabularyFacet {
     ASSIST_RESEARCH_THEMES("assist-research-themes"),
     ASSIST_TOPICS("assist-topics"),
-    IMP_DATE_TYPE("dt"),
     TOPIC("topic"),
     WATER_POLLUTANT("wp"),
     INMS_DEMONSTRATION_REGION("region"),

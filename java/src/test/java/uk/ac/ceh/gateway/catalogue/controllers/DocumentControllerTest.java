@@ -34,9 +34,6 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
-import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
-import uk.ac.ceh.gateway.catalogue.imp.Model;
-import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.model.*;
@@ -227,7 +224,7 @@ class DocumentControllerTest {
     }
 
     private void givenRoCrateServiceFrom() {
-        given(fileDetailsService.getDetailsFor(anyString(), anyBoolean()))
+        given(fileDetailsService.getDetailsFor(anyString(), anyBoolean(), anyString()))
             .willReturn(new ArrayList<>());
     }
 
@@ -248,15 +245,6 @@ class DocumentControllerTest {
                 .url("https://example.com/maps/da9d9beb-3fe5-4799-a4ed-c558d55159e6?request=getCapabilities&service=WMS")
                 .build()
         ));
-
-        val caseStudy = new CaseStudy();
-        caseStudy.setType("dataset");
-
-        val impModel = new Model();
-        impModel.setType("dataset");
-
-        val impModelApplication = new ModelApplication();
-        impModelApplication.setType("dataset");
 
         val original = new GeminiDocument();
         val metadataInfo = MetadataInfo.builder()
@@ -295,12 +283,6 @@ class DocumentControllerTest {
             Arguments.of(gemini, ROCRATE_JSON, ROCRATE_SHORT, "rocrate.json"),
             Arguments.of(gemini, ROCRATE_ATTACHED_JSON, ROCRATE_ATTACHED_SHORT, "rocrate-attached.json"),
             Arguments.of(gemini, RDF_TTL, RDF_TTL_SHORT, "gemini.ttl"),
-            Arguments.of(caseStudy, TEXT_HTML, HTML, null),
-            Arguments.of(caseStudy, APPLICATION_JSON, JSON, null),
-            Arguments.of(impModel, TEXT_HTML, HTML, null),
-            Arguments.of(impModel, APPLICATION_JSON, JSON, null),
-            Arguments.of(impModelApplication, TEXT_HTML, HTML, null),
-            Arguments.of(impModelApplication, APPLICATION_JSON, JSON, null),
             Arguments.of(link, TEXT_HTML, HTML, null),
             Arguments.of(link, APPLICATION_JSON, JSON, "link.json"),
             Arguments.of(new MonitoringActivity(), TEXT_HTML, HTML, null),
@@ -453,46 +435,6 @@ class DocumentControllerTest {
     }
 
     @Test
-    public void checkCanCreateModelDocument() throws Exception {
-        //Given
-        CatalogueUser user = new CatalogueUser("test", "test@example.com");
-        Model document = new Model();
-        document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
-        String message = "new Model Document";
-        String catalogue = "catalogue";
-
-        given(documentRepository.saveNew(user, document, catalogue, message)).willReturn(document);
-
-        //When
-        ResponseEntity<MetadataDocument> actual = controller.newModelDocument(user, document, catalogue);
-
-        //Then
-        verify(documentRepository).saveNew(user, document, catalogue, message);
-        assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
-    }
-
-    @Test
-    public void checkCanEditModelDocument() throws Exception {
-        //Given
-        CatalogueUser user = new CatalogueUser("test", "test@example.com");
-        Model document = new Model();
-        document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
-        String fileId = "test";
-        String message = "Edited document: test";
-
-        given(documentRepository.read(fileId)).willReturn(new Model().setMetadata(MetadataInfo.builder().build()));
-        given(documentRepository.save(user, document, fileId, message)).willReturn(document);
-
-        //When
-        ResponseEntity<MetadataDocument> actual = controller.updateModelDocument(user, fileId, document);
-
-        //Then
-        verify(documentRepository).save(user, document, fileId, "Edited document: test");
-        verify(documentRepository).read(fileId);
-        assertThat("Should have 200 OK status", actual.getStatusCode(), equalTo(HttpStatus.OK));
-    }
-
-    @Test
     public void checkCanCreateGeminiDocument() throws Exception {
         //Given
         CatalogueUser user = new CatalogueUser("test", "test@example.com");
@@ -509,29 +451,6 @@ class DocumentControllerTest {
         //Then
         verify(documentRepository).saveNew(user, document, catalogue, message);
         assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
-    }
-
-    @Test
-    public void checkCanEditGeminiDocument() throws Exception {
-        //Given
-        String fileId = "test";
-        String message = "Edited document: test";
-        CatalogueUser user = new CatalogueUser("test", "test@example.com");
-        MetadataDocument document = new GeminiDocument()
-            .setId(fileId)
-            .setUri("https://catalogue.ceh.ac.uk/id/123-test")
-            .setMetadata(MetadataInfo.builder().build());
-
-        given(documentRepository.read(fileId)).willReturn(new Model().setMetadata(MetadataInfo.builder().build()));
-        given(documentRepository.save(user, document, fileId, message)).willReturn(document);
-
-        //When
-        ResponseEntity<MetadataDocument> actual = controller.updateGeminiDocument(user, fileId, (GeminiDocument) document);
-
-        //Then
-        verify(documentRepository).read(fileId);
-        verify(documentRepository).save(user, document, fileId, "Edited document: test");
-        assertThat("Should have 200 OK status", actual.getStatusCode(), equalTo(HttpStatus.OK));
     }
 
     @Test
@@ -553,27 +472,6 @@ class DocumentControllerTest {
         //Then
         verify(documentRepository).saveNew(user, document, catalogue, message);
         assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
-    }
-
-    @Test
-    public void checkCanEditLinkedDocument() throws Exception {
-        //Given
-        CatalogueUser user = new CatalogueUser("test", "test@example.com");
-        LinkDocument document = LinkDocument.builder().linkedDocumentId(linkedDocumentId).build();
-        document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
-        String fileId = "test";
-        String message = "Edited document: test";
-
-        given(documentRepository.read(fileId)).willReturn(new Model().setMetadata(MetadataInfo.builder().build()));
-        given(documentRepository.save(user, document, fileId, message)).willReturn(document);
-
-        //When
-        ResponseEntity<MetadataDocument> actual = controller.updateLinkDocument(user, fileId, document);
-
-        //Then
-        verify(documentRepository).read(fileId);
-        verify(documentRepository).save(user, document, fileId, message);
-        assertThat("Should have 200 OK status", actual.getStatusCode(), equalTo(HttpStatus.OK));
     }
 
     @Test
