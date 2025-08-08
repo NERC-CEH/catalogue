@@ -15,8 +15,10 @@ export default _.template(`
         const startItem = (page - 1) * rows + 1;
         const endItem = Math.min(page * rows, numFound);
       %>
-      <span id="num-records">Showing <%=startItem%>-<%=endItem%> of <%=numFound%></span>
-      <i id="searchShareIcon" class="fa-solid fa-fw fa-share-square mx-1" data-bs-toggle="tooltip" data-bs-placement="right" role="button" title="Email search results"></i>
+      <span id="num-records" class="recordCount">
+        Showing <span class="recordCount-start"><%=startItem%></span> - <span class="recordCount-end"><%=endItem%></span>  of <span class="recordCount-total"><%=numFound%></span> records
+      </span>
+      <i id="searchShareIcon" class="ms-3 fa-solid fa-fw fa-share-square mx-1" data-bs-toggle="tooltip" data-bs-placement="right" role="button" title="Email search results"></i>
     </div>
     <div class="small">
       <label for="sort-search">Sort by</label>
@@ -80,7 +82,7 @@ export default _.template(`
 <% }); %>
 </div>
 
-<div class="d-flex justify-content-center">
+<div class="results__footer">
   <% const totalPage = Math.ceil(numFound / rows); %>
   <% if(totalPage > 1) { %>
     <%

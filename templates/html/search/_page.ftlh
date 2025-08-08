@@ -10,8 +10,10 @@
     <div class="small">
       <#assign startItem = (page - 1) * rows + 1>
       <#assign endItem = (page * rows > numFound)?then(numFound, page * rows)>
-      <span id="num-records">Showing ${startItem}-${endItem} of ${numFound}</span>
-      <i id="searchShareIcon" class="fa-solid fa-fw fa-share-square mx-1" data-bs-toggle="tooltip" data-bs-placement="right" role="button"  title="Email search results"></i>
+      <span id="num-records" class="recordCount">
+        Showing <span class="recordCount-start">${startItem}</span> - <span class="recordCount-end">${endItem}</span>  of <span class="recordCount-total">${numFound}</span> records
+      </span>
+      <i id="searchShareIcon" class="ms-3 fa-solid fa-fw fa-share-square mx-1" data-bs-toggle="tooltip" data-bs-placement="right" role="button"  title="Email search results"></i>
     </div>
     <div class="small">
       <label for="sort-search">Sort by</label>
@@ -79,7 +81,7 @@
 </#list>
 </div>
 
-<div class="d-flex justify-content-center">
+<div class="results__footer">
   <#assign totalPage = (numFound / rows)?ceiling>
   <#if totalPage gt 1>
     <#assign pageToShow = 5>
