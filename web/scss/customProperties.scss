@@ -29,6 +29,18 @@
     /* UKCEH fonts */
     --ukceh-font-family-Lato: 'Lato', system-ui, sans-serif;
     --ukceh-font-family-Montserrat: 'Montserrat', system-ui, sans-serif;
+
+    /* UKCEH colour gradients */
+    --ukceh-colour-logoblue-100: hsl(from var(--ukceh-colour-logoblue) h s calc(l + (l * 0)));
+    --ukceh-colour-logoblue-80: hsl(from var(--ukceh-colour-logoblue) h s calc(l + (l * 0.2)));
+    --ukceh-colour-logoblue-60: hsl(from var(--ukceh-colour-logoblue) h s calc(l + (l * 0.4)));
+    --ukceh-colour-logoblue-40: hsl(from var(--ukceh-colour-logoblue) h s calc(l + (l * 0.6)));
+    --ukceh-colour-logoblue-20: hsl(from var(--ukceh-colour-logoblue) h s calc(l + (l * 0.8)));
+    --ukceh-colour-logogreen-100: hsl(from var(--ukceh-colour-logogreen) h s calc(l + (l * 0)));
+    --ukceh-colour-logogreen-80: hsl(from var(--ukceh-colour-logogreen) h s calc(l + (l * 0.2)));
+    --ukceh-colour-logogreen-60: hsl(from var(--ukceh-colour-logogreen) h s calc(l + (l * 0.4)));
+    --ukceh-colour-logogreen-40: hsl(from var(--ukceh-colour-logogreen) h s calc(l + (l * 0.6)));
+    --ukceh-colour-logogreen-20: hsl(from var(--ukceh-colour-logogreen) h s calc(l + (l * 0.8)));
 }
 
 :root {

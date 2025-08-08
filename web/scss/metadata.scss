@@ -502,7 +502,7 @@ body {
     }
 
     .responsiblePartyCollapse.trigger {
-        &:not(.in) {
+        &:not(.show) {
             a.moreAuthors {
                 &::after {
                     content: "more ↓";
@@ -514,7 +514,7 @@ body {
             }
         }
 
-        &.in {
+        &.show {
             a.moreAuthors {
                 &::after {
                     content: "fewer ↑";
@@ -555,6 +555,11 @@ body {
 
             p {
                 margin: 0 0 0.4em 3em;
+
+                &.draft {
+                    display: var(--display-draft-data, none);
+                    a { @extend .link-secondary !optional;}
+                }
             }
         }
     }

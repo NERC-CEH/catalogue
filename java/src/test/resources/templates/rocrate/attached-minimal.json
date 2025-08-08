@@ -1,11 +1,11 @@
 {
-    "@context": "https://w3id.org/ro/crate/1.1/context",
+    "@context": "https://w3id.org/ro/crate/1.2/context",
     "@graph": [
         {
             "@type": "CreativeWork",
             "@id": "ro-crate-metadata.json",
             "conformsTo": {
-                "@id": "https://w3id.org/ro/crate/1.1"
+                "@id": "https://w3id.org/ro/crate/1.2"
             },
             "about": {
                 "@id": "https://example.org/id/123456789"
@@ -17,10 +17,10 @@
             "@id": "https://example.org/id/123456789",
             "hasPart": [
                 {
-                    "@id": "#part123456789"
+                    "@id": "data/name4"
                 },
                 {
-                    "@id": "#part123456789"
+                    "@id": "data/name5"
                 }
             ],
             "url": "https://example.org/id/123456789",
@@ -50,7 +50,7 @@
             "email": "info@eidc.ac.uk"
         },
         {
-            "@id": "#part123456789",
+            "@id": "data/name4",
             "name": "123456789",
             "@type": "File",
             "encodingFormat": "text/csv",
@@ -60,7 +60,7 @@
             "contentUrl": "data/name4"
         },
         {
-            "@id": "#part123456789",
+            "@id": "data/name5",
             "name": "123456789",
             "@type": "File",
             "encodingFormat": "text/csv",
