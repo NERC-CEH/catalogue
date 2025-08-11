@@ -42,7 +42,13 @@ public class JenaIndexMonitoringFacilityGenerator implements IndexGenerator<Moni
                 toReturn.add(createStatement(me, RDF_TYPE, GEO_FEATURE));
                 toReturn.add(createStatement(me, GEO_HASGEOMETRY, geometryNode));
                 toReturn.add(createStatement(geometryNode, RDF_TYPE, GEO_GEOMETRY));
-                toReturn.add(createStatement(geometryNode, GEO_ASGEOJSON, createTypedLiteral(g.getGeometryString(), GEOJSON_LITERAL)));
+                Optional<String> wktOptional = g.getWkt();
+                if (wktOptional.isPresent()) {
+                    String wktString = wktOptional.get();
+                    toReturn.add(createStatement(geometryNode, GEO_ASWKT, createTypedLiteral(wktString, WKT_LITERAL)));
+                } else {
+                    log.info("Could not generate WKT from geometry, getWkt() returned empty");
+                }
             });
 
         Optional.ofNullable(document.getOperationalStatus())
