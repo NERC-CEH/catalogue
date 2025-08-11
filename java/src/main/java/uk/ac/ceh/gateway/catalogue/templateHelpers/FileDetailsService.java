@@ -82,11 +82,13 @@ public class FileDetailsService {
      * @return the full path (relative or absolute) to the data
      */
     private String path(boolean isAttached, String fileId, String path, String datastore){
-        return isAttached ?
-                "data/" + path
-            :
-                baseUri + "/datastore/" + datastore + "/" + fileId + "/" + path
-            ;
+            if (isAttached) {
+                return datastore.equals("supporting-documents") ? "supporting-documents/" + path : "data/" + path;
+            } else {
+                return datastore.equals("supporting-documents")
+                ? ""
+                : baseUri + "/datastore/" + datastore + "/" + fileId + "/" + path;
+            }
     }
 
     @lombok.Value
