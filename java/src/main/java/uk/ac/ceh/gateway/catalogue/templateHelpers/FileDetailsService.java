@@ -81,14 +81,19 @@ public class FileDetailsService {
      * @param path the path to the file as already taken from a HubbubResponse
      * @return the full path (relative or absolute) to the data
      */
-    private String path(boolean isAttached, String fileId, String path, String datastore){
-            if (isAttached) {
-                return datastore.equals("supporting-documents") ? "supporting-documents/" + path : "data/" + path;
+
+    private String path(boolean isAttached, String fileId, String path, String datastore) {
+        if (isAttached) {
+            return datastore.equals("supporting-documents")
+                ? "supporting-documents/" + path
+                : "data/" + path;
+        } else {
+            if (datastore.equals("supporting-documents")) {
+                return null;
             } else {
-                return datastore.equals("supporting-documents")
-                ? ""
-                : baseUri + "/datastore/" + datastore + "/" + fileId + "/" + path;
+                return baseUri + "/datastore/" + datastore + "/" + fileId + "/" + path;
             }
+        }
     }
 
     @lombok.Value
