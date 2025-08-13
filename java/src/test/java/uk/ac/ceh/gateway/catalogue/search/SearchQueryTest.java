@@ -610,7 +610,7 @@ public class SearchQueryTest {
         String url = interestingQuery.toUrl();
 
         //Then
-        assertThat("Term should be searched for", url, containsString("term=My+Search+Term"));
+        assertThat("Term should be searched for", url, containsString("term=My%20Search%20Term"));
         assertThat("BBOX should be searched for", url, containsString("bbox=1,2,3,4"));
         assertThat("OP should be present", url, containsString("op=iswithin"));
         assertThat("page should be specified", url, containsString("page=24"));
@@ -649,7 +649,7 @@ public class SearchQueryTest {
         String url = interestingQuery.toUrl();
 
         //Then
-        assertThat(url, equalTo("http://my.endpo.int?page=24&rows=30&term=My+Search+Term&bbox=1,2,3,4&op=iswithin&facet=licence%7Cb"));
+        assertThat(url, equalTo("http://my.endpo.int?page=24&rows=30&term=My%20Search%20Term&bbox=1,2,3,4&op=iswithin&facet=licence%7Cb"));
     }
 
     @Test

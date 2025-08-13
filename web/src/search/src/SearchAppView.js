@@ -20,7 +20,7 @@ export default Backbone.View.extend({
 
     // Prefill search input when a term is present in the URL or user is redirected from the portal, for better UX
     const initialParams = deparam(window.location.search.substring(1), true)
-    console.log(initialParams)
+
     if (Object.keys(initialParams).length) {
       this.model.setState(initialParams)
     }
