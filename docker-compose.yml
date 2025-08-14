@@ -23,6 +23,8 @@ services:
       POSTGRES_PASSWORD: &db_password cabbages
       POSTGRES_USER: &db_user gardener
       POSTGRES_DB: hubbub
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
     ports:
       - "5432:5432"
     profiles: [hubbub]
@@ -37,6 +39,7 @@ services:
     ports:
       - '8082:8080'
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - dropbox:/mnt/dropbox
       - ./fixtures/upload/eidchub:/mnt/eidchub
       - ./fixtures/upload/supporting-documents:/mnt/supporting-documents

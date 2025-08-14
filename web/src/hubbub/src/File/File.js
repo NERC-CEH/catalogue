@@ -68,7 +68,7 @@ export default Backbone.Model.extend({
   },
 
   copy (datastore) {
-    return new File({
+    return new this.constructor({
       bytes: this.get('bytes'),
       check: true,
       dataset: this.get('datasetId'),
