@@ -4,6 +4,9 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.sparql.ARQConstants;
+import org.apache.jena.sparql.function.FunctionFactory;
+import org.apache.jena.sparql.function.FunctionRegistry;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlResponse;
@@ -31,6 +34,7 @@ public class SparqlController {
         SparqlResponse response = new SparqlResponse();
         response.setQuery(queryStr);
         try {
+            log.info("Running query: \n{}", queryStr);
             Query query = QueryFactory.create(queryStr, Syntax.syntaxARQ);
             executeQuery(query, response);
         }
@@ -42,7 +46,12 @@ public class SparqlController {
 
     private void executeQuery(Query query, SparqlResponse response) {
         jenaTdb.begin(ReadWrite.READ);
+        ARQ.getContext().set(ARQConstants.registryFunctions, FunctionRegistry.get());
         try ( QueryExecution qExec = QueryExecutionFactory.create(query, jenaTdb)) {
+            qExec.getContext().set(ARQConstants.registryFunctions, FunctionRegistry.get());
+            FunctionFactory f = FunctionRegistry.get().get("http://www.opengis.net/def/function/geosparql/distance");
+            log.info("Function instance: " + f.getClass().getName());
+
             if(query.isSelectType()) {
                 response.setResult(ResultSetFormatter.asText(qExec.execSelect()));
             }

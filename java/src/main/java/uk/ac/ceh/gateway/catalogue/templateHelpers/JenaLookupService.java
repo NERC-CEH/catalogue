@@ -107,10 +107,10 @@ public class JenaLookupService {
     }
 
     public List<Link> relationships(String uri, String relation) {
-        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
             "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom (IF(BOUND(?geom), true, false) AS ?hasGeom)" +
             "WHERE {?me ?rel ?node; ?relation ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type. " +
-            "OPTIONAL {?node geo:hasGeometry ?geom} " +
+            "OPTIONAL {?node ef:hasGeometry ?geom} " +
             "OPTIONAL {?node dcterms:available ?publicationDate} " +
             "OPTIONAL {?node eidc:resourceStatus ?availability} " +
             "OPTIONAL {?node ef:hasStatus ?availability}} " +
@@ -122,10 +122,10 @@ public class JenaLookupService {
     }
 
     public List<Link> inverseRelationships(String uri, String relation) {
-        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
             "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?publicationDate (GROUP_CONCAT(?geo; separator=', ') AS ?geom)" +
             "WHERE {?node ?rel ?me; ?relation ?me. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type. " +
-            "OPTIONAL {?node geo:hasGeometry ?geo} " +
+            "OPTIONAL {?node ef:hasGeometry ?geo} " +
             "OPTIONAL {?node dcterms:available ?publicationDate} " +
             "OPTIONAL {?node eidc:resourceStatus ?availability} " +
             "OPTIONAL {?node ef:hasStatus ?availability}} " +
@@ -138,10 +138,10 @@ public class JenaLookupService {
     }
 
     public List<Link> relationshipsWithOwner(String uri, String relation) {
-        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
             "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom " +
-            "WHERE {{?me dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; geo:hasGeometry ?geom. BIND(?me as ?node)} " +
-            "UNION {?me ?relation ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; geo:hasGeometry ?geom. BIND(?relation as ?rel)} " +
+            "WHERE {{?me dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; ef:hasGeometry ?geom. BIND(?me as ?node)} " +
+            "UNION {?me ?relation ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; ef:hasGeometry ?geom. BIND(?relation as ?rel)} " +
             "OPTIONAL {?node eidc:resourceStatus ?availability} " +
             "OPTIONAL {?node ef:hasStatus ?availability}}" +
             "ORDER BY ?title";
@@ -152,10 +152,10 @@ public class JenaLookupService {
     }
 
     public List<Link> programmeFeatures(String uri) {
-        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX ef: <http://onto.ceh.ac.uk/EF#>  PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX ef: <http://onto.ceh.ac.uk/EF#> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
             "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom " +
-            "WHERE {{?me ef:utilises ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type; geo:hasGeometry ?geom} " +
-            "UNION {?me ef:utilises ?network. ?node ef:belongsTo ?network; dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; geo:hasGeometry ?geom. BIND(ef:utilises as ?rel)}" +
+            "WHERE {{?me ef:utilises ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type; ef:hasGeometry ?geom} " +
+            "UNION {?me ef:utilises ?network. ?node ef:belongsTo ?network; dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; ef:hasGeometry ?geom. BIND(ef:utilises as ?rel)}" +
             "OPTIONAL {?node eidc:resourceStatus ?availability} " +
             "OPTIONAL {?node ef:hasStatus ?availability}}";
 

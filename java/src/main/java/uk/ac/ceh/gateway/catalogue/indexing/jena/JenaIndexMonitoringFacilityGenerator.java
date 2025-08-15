@@ -35,6 +35,22 @@ public class JenaIndexMonitoringFacilityGenerator implements IndexGenerator<Moni
             .ifPresent(b -> toReturn.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(b.getGeometryString(), GEOJSON_LITERAL)))
             );
 
+        Optional.ofNullable(document.getGeometry())
+            .ifPresent(g -> {
+                Resource geometryNode = createResource(me + "#geom");
+
+                toReturn.add(createStatement(me, RDF_TYPE, GEO_FEATURE));
+                toReturn.add(createStatement(me, GEO_HASGEOMETRY, geometryNode));
+                toReturn.add(createStatement(geometryNode, RDF_TYPE, GEO_GEOMETRY));
+                Optional<String> wktOptional = g.getWkt();
+                if (wktOptional.isPresent()) {
+                    String wktString = wktOptional.get();
+                    toReturn.add(createStatement(geometryNode, GEO_ASWKT, createTypedLiteral(wktString, WKT_LITERAL)));
+                } else {
+                    log.info("Could not generate WKT from geometry, getWkt() returned empty");
+                }
+            });
+
         Optional.ofNullable(document.getOperationalStatus())
             .ifPresent(s -> toReturn.add(createStatement(me, HAS_STATUS, createPlainLiteral(s)))
             );

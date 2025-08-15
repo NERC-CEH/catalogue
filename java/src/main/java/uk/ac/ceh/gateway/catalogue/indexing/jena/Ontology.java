@@ -37,15 +37,33 @@ public class Ontology {
     public static final Property CONTAINS = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#contains");
     public static final Property TRIGGERS = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#triggers");
     public static final Property HAS_STATUS = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#hasStatus");
+    public static final Property HAS_GEOMETRY = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#hasGeometry");
+    public static final Property CLASS_EMF = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#Facility");
+    public static final Property CLASS_EMN = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#Network");
+    public static final Property CLASS_EMP = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#Programme");
 
-    public static final Property LINKING_TIME = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#linkingTime");
-    public static final Property TEMPORAL_BEGIN = ResourceFactory.createProperty("http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#begin");
-    public static final Property TEMPORAL_END = ResourceFactory.createProperty("http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#end");
-
-    public static final Property HAS_GEOMETRY = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#hasGeometry");
-    public static final RDFDatatype WKT_LITERAL = new BaseDatatype("http://www.opengis.net/ont/geosparql#wktLiteral");
-    public static final RDFDatatype GEOJSON_LITERAL = new BaseDatatype("http://www.opengis.net/ont/geosparql#geoJSONLiteral");
     public static final Property HAS_OBSERVED_PROPERTY = ResourceFactory.createProperty("http://schema.org/variableMeasured");
     public static final Property HAS_UNIT = ResourceFactory.createProperty("http://qudt.org/schema/qudt/applicableUnit");
     public static final Property RDFS_LABEL = ResourceFactory.createProperty("http://www.w3.org/2000/01/rdf-schema#label");
+
+    public static final Property RDF_TYPE = ResourceFactory.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+
+    public static final Property CLASS_DCATDATASET = ResourceFactory.createProperty("http://www.w3.org/ns/dcat#Dataset");
+
+    public static final Property GEO_FEATURE = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#Feature");
+    public static final Property GEO_HASGEOMETRY = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#hasGeometry");
+    public static final Property GEO_GEOMETRY = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#Geometry");
+    public static final Property GEO_ASWKT = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#asWKT");
+    public static final Property GEO_ASGEOJSON = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#asGeoJSON");
+
+    public static final RDFDatatype WKT_LITERAL = new BaseDatatype("http://www.opengis.net/ont/geosparql#wktLiteral");
+    public static final RDFDatatype GEOJSON_LITERAL = new BaseDatatype("http://www.opengis.net/ont/geosparql#geoJSONLiteral");
+
+
+/*  I dont think these are used any more
+    public static final Property LINKING_TIME = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#linkingTime");
+    public static final Property TEMPORAL_BEGIN = ResourceFactory.createProperty("http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#begin");
+    public static final Property TEMPORAL_END = ResourceFactory.createProperty("http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#end");
+ */
+
 }

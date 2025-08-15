@@ -36,7 +36,7 @@ public class JenaIndexMonitoringFacilityGeneratorTest {
         List<Statement> actual = service.generateIndex(document);
 
         //Then
-        assertThat("Should be one identifier statements", actual.size(), equalTo(1));
+        assertThat("Should be one identifier statements", actual.size(), equalTo(5));
         assertThat("Geometry statement should be as expected", actual.get(0).getLiteral().getString(), equalTo(exampleGeometry));
     }
 
