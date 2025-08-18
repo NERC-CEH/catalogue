@@ -22,6 +22,7 @@ RUN java -Djarmode=layertools -jar app.jar extract
 # Create production image
 FROM eclipse-temurin:23-alpine AS prod
 LABEL maintainer="oss@ceh.ac.uk"
+RUN apk --no-cache upgrade
 RUN apk --no-cache add curl
 RUN addgroup -g 1001 -S spring && adduser -u 1001 -S spring -G spring
 RUN mkdir -p /var/ceh-catalogue/datastore /var/ceh-catalogue/dropbox /var/ceh-catalogue/mapfiles /var/ceh-catalogue/tdb /var/upload/datastore /var/ceh-catalogue/metrics-db /var/ceh-catalogue/ror
