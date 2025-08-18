@@ -12,8 +12,6 @@ import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -71,7 +69,7 @@ public class SearchQuery {
         this.spatialOperation = spatialOperation;
         this.page = page;
         this.rows = rows;
-        this.facetFilters = new ArrayList<>(facetFilters);
+        this.facetFilters = new ArrayList<>(normalizeFacetFilters(facetFilters));
         this.groupStore = groupStore;
         this.facets = facets;
         this.catalogue = catalogue;
@@ -279,7 +277,7 @@ public class SearchQuery {
         }
 
         if(!DEFAULT_SEARCH_TERM.equals(term)) {
-            builder.queryParam(TERM_QUERY_PARAM, URLEncoder.encode(term, StandardCharsets.UTF_8));
+            builder.queryParam(TERM_QUERY_PARAM, term);
         }
 
         if(bbox != null) {
@@ -288,7 +286,18 @@ public class SearchQuery {
         }
 
         if(!facetFilters.isEmpty()) {
-            facetFilters.forEach((f)-> builder.queryParam(FACET_QUERY_PARAM, f.asURIContent()));
+            Map<String, List<String>> grouped = facetFilters.stream()
+                .collect(Collectors.groupingBy(
+                    FacetFilter::getField,
+                    Collectors.mapping(FacetFilter::getValue, Collectors.toList())
+                ));
+
+            grouped.forEach((field, values) -> {
+                String joined = (values.size() == 1)
+                    ? String.format("%s|%s", field, values.getFirst())
+                    : String.format("%s|(%s)", field, String.join(" OR ", values));
+                builder.queryParam(FACET_QUERY_PARAM, joined);
+            });
         }
 
         if(sortField != null) {
@@ -298,7 +307,7 @@ public class SearchQuery {
             }
         }
 
-        return builder.build().toUriString();
+        return builder.build().encode().toUriString();
     }
 
     /**
@@ -366,7 +375,7 @@ public class SearchQuery {
                 query.addFilterQuery(String.format("{!tag=%s}%s:(%s)", field, field, combinedFilters));
             } else {
                 query.addFilterQuery(String.format("{!tag=%s}%s:\"%s\"", field, field,
-                    ClientUtils.escapeQueryChars(filters.get(0).getValue())));
+                    ClientUtils.escapeQueryChars(filters.getFirst().getValue())));
             }
         });
     }
@@ -412,5 +421,29 @@ public class SearchQuery {
     private int getRandomSeed(){
         Calendar calendar = Calendar.getInstance();
         return calendar.get(Calendar.DAY_OF_YEAR);
+    }
+
+    private static List<FacetFilter> normalizeFacetFilters(List<FacetFilter> initialFilters) {
+        Map<String, Set<String>> valuesByField = new LinkedHashMap<>();
+        for (FacetFilter f : initialFilters) {
+            if (f == null || f.getField() == null || f.getValue() == null) continue;
+
+            valuesByField.computeIfAbsent(f.getField(), k -> new LinkedHashSet<>());
+
+            String v = f.getValue().trim();
+            if (v.startsWith("(") && v.endsWith(")")) {
+                String inner = v.substring(1, v.length() - 1);
+                for (String part : inner.split("\\s+OR\\s+")) {
+                    String p = part.trim();
+                    if (!p.isEmpty()) valuesByField.get(f.getField()).add(p);
+                }
+            } else {
+                valuesByField.get(f.getField()).add(v);
+            }
+        }
+
+        List<FacetFilter> flat = new ArrayList<>();
+        valuesByField.forEach((field, set) -> set.forEach(val -> flat.add(new FacetFilter(field, val))));
+        return flat;
     }
 }

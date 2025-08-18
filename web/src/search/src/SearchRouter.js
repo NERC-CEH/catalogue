@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import Backbone from 'backbone'
 import deparam from 'deparam.js'
 
@@ -25,15 +24,47 @@ export default Backbone.Router.extend({
      * router will be able to parse and process at a later time
      */
   updateRoute () {
-    if (typeof window.history.replaceState !== 'undefined') {
-      let url = this.appUrl
-      const param = $.param(this.model.getState())
-      if (param) {
-        url = url.concat('?', param)
+    const state = this.model.getState()
+    const params = []
+
+    const facetMap = {}
+
+    if (state.facet) {
+      const facets = Array.isArray(state.facet) ? state.facet : [state.facet]
+
+      facets.forEach(entry => {
+        const [field, value] = entry.split('|')
+        if (!facetMap[field]) {
+          facetMap[field] = []
+        }
+        facetMap[field].push(value)
+      })
+
+      Object.keys(facetMap).forEach(field => {
+        const values = facetMap[field]
+        const encoded = values.length === 1
+          ? `${field}|${values[0]}`
+          : `${field}|(${values.join(' OR ')})`
+        params.push('facet=' + encodeURIComponent(encoded))
+      })
+    }
+
+    Object.keys(state).forEach(key => {
+      if (key === 'facet') return
+      const value = state[key]
+      if (Array.isArray(value)) {
+        value.forEach(v => params.push(`${encodeURIComponent(key)}=${encodeURIComponent(v)}`))
+      } else {
+        params.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
       }
+    })
+
+    const url = this.appUrl + (params.length ? '?' + params.join('&') : '')
+
+    if (window.history.replaceState) {
       window.history.replaceState({ catalogueSearch: 'update search url' }, '', url)
     } else {
-      this.navigate($.param(this.model.getState(), true), { replace: true })
+      this.navigate(params.join('&'), { replace: true })
     }
   },
 
