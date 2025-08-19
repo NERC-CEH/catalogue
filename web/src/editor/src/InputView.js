@@ -1,7 +1,7 @@
 import _ from 'underscore'
 import $ from 'jquery'
 import SingleView from './SingleView'
-import { cleanText } from "./utils";
+import { cleanText } from './utils'
 
 const template = _.template(`
 <input autocomplete="off" aria-autocomplete="none" list="<%= data.modelAttribute %>List" data-name="<%= data.modelAttribute %>" type="<%= data.typeAttribute %>" placeholder="<%= data.placeholderAttribute %>" class="editor-input" id="input-<%= data.modelAttribute %>" value="<%- data.value %>" <%= data.disabled%>>
