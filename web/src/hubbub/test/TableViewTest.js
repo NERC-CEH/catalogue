@@ -1,4 +1,5 @@
 import $ from 'jquery'
+import Backbone from 'backbone'
 import { TableView } from '../src/table'
 import FileCollection from '../src/File/FileCollection'
 import File from '../src/File/File'
@@ -31,10 +32,14 @@ describe('TableView', function () {
     document.body.innerHTML = '<div id="test-container"></div>'
     collection = new FileCollection()
 
+    const ViewModel = Backbone.Model.extend({
+      url: () => '/upload/123'
+    })
+
     view = new TableView({
       el: '#test-container',
       collection,
-      url: '/upload/123',
+      model: new ViewModel(),
       datastore: new FileCollection(),
       metadata: new FileCollection()
     })
@@ -48,7 +53,7 @@ describe('TableView', function () {
   describe('initialization', function () {
     it('should initialize with default values', function () {
       expect(view.collection).toBeDefined()
-      expect(view.url).toBeDefined()
+      expect(view.model.url()).toBeDefined()
       expect(view.datastore).toBeDefined()
       expect(view.metadata).toBeDefined()
     })
@@ -145,7 +150,7 @@ describe('TableView', function () {
       triggerAction('Validate')
 
       expect(ajaxSpy).toHaveBeenCalledWith({
-        url: `${view.url}/${model.get('datastore')}/validate?path=${encodeURIComponent(model.get('path'))}`,
+        url: `${view.model.url()}/${model.get('datastore')}/validate?path=${encodeURIComponent(model.get('path'))}`,
         type: 'POST',
         success: jasmine.any(Function),
         error: jasmine.any(Function)
@@ -160,7 +165,7 @@ describe('TableView', function () {
 
       expect(confirmSpy).toHaveBeenCalled()
       expect(ajaxSpy).toHaveBeenCalledWith({
-        url: `${view.url}/${model.get('datastore')}/cancel?path=${encodeURIComponent(model.get('path'))}`,
+        url: `${view.model.url()}/${model.get('datastore')}/cancel?path=${encodeURIComponent(model.get('path'))}`,
         type: 'POST',
         success: jasmine.any(Function),
         error: jasmine.any(Function)
@@ -175,7 +180,7 @@ describe('TableView', function () {
 
       expect(confirmSpy).toHaveBeenCalled()
       expect(ajaxSpy).toHaveBeenCalledWith({
-        url: `${view.url}/${model.get('datastore')}?path=${encodeURIComponent(model.get('path'))}`,
+        url: `${view.model.url()}/${model.get('datastore')}?path=${encodeURIComponent(model.get('path'))}`,
         type: 'DELETE',
         success: jasmine.any(Function),
         error: jasmine.any(Function)

@@ -174,7 +174,7 @@
 </#macro>
 
 <#macro loadMoreButton storage>
-    <@button text="View more" button="load ${storage}" icon="angle-double-down"/>
+    <@button text="Load more to table" button="load ${storage}" icon="download"/>
 </#macro>
 
 <#macro registerDropboxButton>

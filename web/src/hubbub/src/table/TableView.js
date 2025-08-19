@@ -9,7 +9,7 @@ export default Backbone.View.extend({
 
   initialize (options = {}) {
     this.collection = options.collection
-    this.url = options.url
+    this.model = options.model
     this.datastore = options.datastore
     this.metadata = options.metadata
     this.statusValues = new Set()
@@ -176,7 +176,7 @@ export default Backbone.View.extend({
         this.request(
           this,
           $dropdown,
-          `${this.url}/${model.get('datastore')}/validate?path=${encodeURIComponent(model.get('path'))}`,
+          `${this.model.url()}/${model.get('datastore')}/validate?path=${encodeURIComponent(model.get('path'))}`,
           'POST',
           () => this.getServerState(this, 3000, $dropdown, model, (model) => this.updateTableRow(tr, model))
         )
@@ -185,7 +185,7 @@ export default Backbone.View.extend({
         this.request(
           this,
           $dropdown,
-          `${this.url}/${model.get('datastore')}/accept?path=${encodeURIComponent(model.get('path'))}`,
+          `${this.model.url()}/${model.get('datastore')}/accept?path=${encodeURIComponent(model.get('path'))}`,
           'POST',
           () => this.getServerState(this, 3000, $dropdown, model, (model) => this.updateTableRow(tr, model))
         )
@@ -195,7 +195,7 @@ export default Backbone.View.extend({
           this.request(
             this,
             $dropdown,
-            `${this.url}/${model.get('datastore')}/cancel?path=${encodeURIComponent(model.get('path'))}`,
+            `${this.model.url()}/${model.get('datastore')}/cancel?path=${encodeURIComponent(model.get('path'))}`,
             'POST',
             () => this.getServerState(this, 3000, $dropdown, model, () => this.updateTableRow(tr, model))
           )
@@ -206,9 +206,12 @@ export default Backbone.View.extend({
           this.request(
             this,
             $dropdown,
-            `${this.url}/${model.get('datastore')}?path=${encodeURIComponent(model.get('path'))}`,
+            `${this.model.url()}/${model.get('datastore')}?path=${encodeURIComponent(model.get('path'))}`,
             'DELETE',
-            () => this.removeTableRow(tr, model)
+            () => {
+              this.removeTableRow(tr, model)
+              this.addTotal(model.get('datastore'), -1)
+            }
           )
         }
       } else if (action === 'Ignore') {
@@ -217,9 +220,12 @@ export default Backbone.View.extend({
           this.request(
             this,
             $dropdown,
-            `${this.url}/${model.get('datastore')}/unregister?path=${encodeURIComponent(model.get('path'))}`,
+            `${this.model.url()}/${model.get('datastore')}/unregister?path=${encodeURIComponent(model.get('path'))}`,
             'POST',
-            () => this.removeTableRow(tr, model)
+            () => {
+              this.removeTableRow(tr, model)
+              this.addTotal(model.get('datastore'), -1)
+            }
           )
         }
       } else if (action === 'Move to datastore') {
@@ -227,13 +233,15 @@ export default Backbone.View.extend({
         this.request(
           this,
           $dropdown,
-          `${this.url}/${model.get('datastore')}/move?path=${encodeURIComponent(model.get('path'))}&to=eidchub`,
+          `${this.model.url()}/${model.get('datastore')}/move?path=${encodeURIComponent(model.get('path'))}&to=eidchub`,
           'POST',
           () => {
             const toModel = model.copy('eidchub')
             this.getServerState(this, 3000, $dropdown, toModel, (updatedModel) => {
               this.removeTableRow(tr, model)
               this.datastore.length > 0 ? this.datastore.trigger('addBatch', [updatedModel]) : this.datastore.reset(updatedModel)
+              this.addTotal(model.get('datastore'), -1)
+              this.addTotal('datastore', 1)
             })
           }
         )
@@ -242,18 +250,30 @@ export default Backbone.View.extend({
         this.request(
           this,
           $dropdown,
-          `${this.url}/${model.get('datastore')}/move?path=${encodeURIComponent(model.get('path'))}&to=supporting-documents`,
+          `${this.model.url()}/${model.get('datastore')}/move?path=${encodeURIComponent(model.get('path'))}&to=supporting-documents`,
           'POST',
           () => {
             const toModel = model.copy('supporting-documents')
             this.getServerState(this, 3000, $dropdown, toModel, (updatedModel) => {
               this.removeTableRow(tr, model)
               this.metadata.length > 0 ? this.metadata.trigger('addBatch', [updatedModel]) : this.metadata.reset(updatedModel)
+              this.addTotal(model.get('datastore'), -1)
+              this.addTotal('metadata', 1)
             })
           }
         )
       }
     })
+  },
+
+  addTotal (store, num) {
+    let storeTotal = `${store}TotalFiles`
+    if (store === 'eidchub') {
+      storeTotal = 'datastoreTotalFiles'
+    } else if (store === 'supporting-documents') {
+      storeTotal = 'metadataTotalFiles'
+    }
+    this.model.set(storeTotal, (this.model.get(storeTotal) ?? 0) + num)
   },
 
   updateTableRow (row, model) {
@@ -323,7 +343,7 @@ export default Backbone.View.extend({
       $.ajax,
       timeout,
       {
-        url: `${self.url}/${model.get('datastore')}?path=${encodeURIComponent(model.get('path'))}`,
+        url: `${self.model.url()}/${model.get('datastore')}?path=${encodeURIComponent(model.get('path'))}`,
         method: 'GET',
         success: (response) => {
           model.update(response.data[0])

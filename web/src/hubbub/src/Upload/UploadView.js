@@ -41,6 +41,7 @@ export default Backbone.View.extend({
 
       const dropzoneComplete = () => {
         this.dropbox.length > 0 ? this.dropbox.trigger('addBatch', this.dropzoneData) : this.dropbox.reset(this.dropzoneData)
+        this.model.set('dropboxTotalFiles', (this.model.get('dropboxTotalFiles') ?? 0) + this.dropzoneData.length)
         this.dropzoneData = []
       }
 
@@ -61,21 +62,18 @@ export default Backbone.View.extend({
     this.listenTo(this.datastore, 'reset', (collection) => this.addAll('datastoreView', collection, this.$datastore))
     this.listenTo(this.datastore, 'update', () => this.showEmptyStorage(this.datastore, this.$datastore, 'datastore'))
     this.listenTo(this.model, 'change:datastoreTotalFiles', () => this.renderTotalFiles('datastore'))
-    this.listenTo(this.datastore, 'update', () => this.updateTotalFiles('datastore'))
 
     this.$dropbox = this.$('.data-files')
     this.dropbox = new FileCollection()
     this.listenTo(this.dropbox, 'reset', (collection) => this.addAll('dropboxView', collection, this.$dropbox))
     this.listenTo(this.dropbox, 'update', () => this.showEmptyStorage(this.dropbox, this.$dropbox, 'data'))
     this.listenTo(this.model, 'change:dropboxTotalFiles', () => this.renderTotalFiles('dropbox'))
-    this.listenTo(this.dropbox, 'update', () => this.updateTotalFiles('dropbox'))
 
     this.$metadata = this.$('.metadata-files')
     this.metadata = new FileCollection()
     this.listenTo(this.metadata, 'reset', (collection) => this.addAll('metadataView', collection, this.$metadata))
     this.listenTo(this.metadata, 'update', () => this.showEmptyStorage(this.metadata, this.$metadata, 'metadata'))
     this.listenTo(this.model, 'change:metadataTotalFiles', () => this.renderTotalFiles('metadata'))
-    this.listenTo(this.metadata, 'update', () => this.updateTotalFiles('metadata'))
 
     const $datastoreData = $('#datastore-data')
     if ($datastoreData.length) {
@@ -86,6 +84,7 @@ export default Backbone.View.extend({
         datastoreLastPage: response.meta.lastPage,
         datastoreTotalFiles: response.meta.totalFiles
       })
+      this.setLoadMoreButton('datastore')
       this.datastore.reset(response.data)
     }
 
@@ -98,6 +97,7 @@ export default Backbone.View.extend({
         dropboxLastPage: response.meta.lastPage,
         dropboxTotalFiles: response.meta.totalFiles
       })
+      this.setLoadMoreButton('dropbox')
       this.dropbox.reset(response.data)
     }
 
@@ -110,6 +110,7 @@ export default Backbone.View.extend({
         metadataLastPage: response.meta.lastPage,
         metadataTotalFiles: response.meta.totalFiles
       })
+      this.setLoadMoreButton('metadata')
       this.metadata.reset(response.data)
     }
 
@@ -129,13 +130,13 @@ export default Backbone.View.extend({
 
   addAll (tableView, collection, $container) {
     if (collection.length === 0) return
-
+    this.setLoadMoreButton(tableView.replace('View', ''))
     $container.empty()
     const view = new TableView({
       collection,
       datastore: this.datastore,
       metadata: this.metadata,
-      url: this.model.url(),
+      model: this.model,
       el: $container[0]
     })
 
@@ -143,11 +144,27 @@ export default Backbone.View.extend({
     this[tableView] = view
   },
 
+  setLoadMoreButton (name) {
+    if (this.checkLastPage(name)) {
+      (name === 'dropbox') ? this.$('.load.data').hide() : this.$('.load.' + name).hide()
+    } else {
+      (name === 'dropbox') ? this.$('.load.data').show() : this.$('.load.' + name).show()
+    }
+  },
+
+  checkLastPage (name) {
+    const currentPage = this.model.get(`${name}Page`)
+    const lastPage = this.model.get(`${name}LastPage`)
+    if (!currentPage || !lastPage) return true
+
+    const nextPage = currentPage + 1
+    return nextPage > lastPage
+  },
+
   loadMore (event, name, path, collection) {
     const nextPage = this.model.get(`${name}Page`) + 1
     const size = this.model.get(`${name}Size`)
-    const lastPage = this.model.get(`${name}LastPage`)
-    if (nextPage <= lastPage) {
+    if (!this.checkLastPage(name)) {
       const currentClasses = this.showInProgress(event)
       return $.ajax({
         url: `${this.model.url()}/${path}?page=${nextPage}&size=${size}`,
@@ -156,6 +173,7 @@ export default Backbone.View.extend({
           collection.trigger('addBatch', models)
           this.model.set(`${name}Page`, response.meta.currentPage)
           this.showNormal(event, currentClasses)
+          this.setLoadMoreButton(name)
         },
         error: () => this.showInError(event)
       })
@@ -177,20 +195,13 @@ export default Backbone.View.extend({
   renderTotalFiles (datastore) {
     const $totalFiles = this.$(`.document-upload-section.${datastore} .total-files`)
     const totalFiles = this.model.get(`${datastore}TotalFiles`)
-    console.log(`rendering ${datastore} to ${totalFiles}`)
-    if (totalFiles > 0) {
-      const fileText = totalFiles === 1 ? 'file' : 'files'
-      $totalFiles.text(`${Number(totalFiles).toLocaleString()} ${fileText}`)
-    }
-  },
-
-  updateTotalFiles (datastore) {
-    console.log(`updating ${datastore} to ${this[datastore].length}`)
-    this.model.set(`${datastore}TotalFiles`, this[datastore].length)
+    const fileText = totalFiles <= 1 ? 'file' : 'files'
+    $totalFiles.text(`${Number(totalFiles).toLocaleString()} ${fileText}`)
   },
 
   showEmptyStorage (collection, $container, title) {
-    if (collection.length === 0) {
+    const store = (title === 'data') ? 'dropbox' : title
+    if (collection.length === 0 && this.checkLastPage(store)) {
       $container.append(`<h3 class="no-documents text-center">NO FILES IN ${title.toUpperCase()}</h3>`)
     } else {
       $container.find('.no-documents').remove()
@@ -262,9 +273,19 @@ export default Backbone.View.extend({
       url: `${this.model.url()}/dropbox/move?to=eidchub`,
       type: 'POST',
       success () {
-        that.collectionSuccess(event, currentClasses, 'eidchub', 'eidchub', that.datastore)
-        that.dropboxView.dataTable.clear().draw()
-        that.dropbox.set([])
+        that.collectionSuccess(event, currentClasses, 'datastore', 'eidchub', that.datastore, () => {
+          that.dropboxView.dataTable.clear().draw()
+          that.model.set({
+            dropboxCurrentPage: 0,
+            dropboxLastPage: 0,
+            dropboxTotalFiles: 0
+          })
+          if (that.dropbox.length > 0) {
+            that.dropbox.set([])
+          } else {
+            that.showEmptyStorage(that.dropbox, that.$dropbox, 'dropbox')
+          }
+        })
       },
       error () {
         that.showInError(event)
@@ -344,13 +365,16 @@ export default Backbone.View.extend({
     })
   },
 
-  collectionSuccess (event, currentClasses, name, datastore, collection) {
+  collectionSuccess (event, currentClasses, name, datastore, collection, callback) {
     setTimeout(
       () => this.getServerState(
         name,
         datastore,
         collection,
-        () => this.showNormal(event, currentClasses)
+        () => {
+          if (callback) callback()
+          this.showNormal(event, currentClasses)
+        }
       ),
       7000
     )
@@ -359,16 +383,20 @@ export default Backbone.View.extend({
   getServerState (name, datastore, collection, callback) {
     const page = 1
     const collectionSize = collection.length
-    let size = (this.model.has(`${name}Size`)) ? this.model.get(`${name}Size`) : 20
+    let size = (this.model.has(`${name}Size`)) ? this.model.get(`${name}Size`) : 500
     if (collectionSize > size) { size = collectionSize }
     this.model.set(`${name}Page`, page)
     this.model.set(`${name}Size`, size)
 
+    const self = this
     $.ajax({
       url: `${this.model.url()}/${datastore}?page=${page}&size=${size}`,
       dataType: 'json',
       success (response) {
         collection.reset(response.data)
+        self.model.set(`${name}TotalFiles`, response.meta.totalFiles)
+        self.model.set(`${name}LastPage`, response.meta.lastPage)
+        self.setLoadMoreButton(name)
         if (callback) { callback() }
       }
     })
