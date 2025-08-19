@@ -34,7 +34,7 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .hierarchical(false)
                     .build();
             case "inmsPollutant" -> Facet.builder()
-                .fieldName("impWaterPollutant")
+                .fieldName("inmsPollutant")
                     .displayName("Pollutant")
                     .hierarchical(false)
                     .build();
