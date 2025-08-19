@@ -30,6 +30,7 @@ public class SolrIndex {
     private @Field String identifier;
     private @Field List<String> inmsScale;
     private @Field List<String> inmsTopic;
+    private @Field List<String> inmsPollutant;
     private @Field long incomingCitationCount;
     private @Field List<String> givenName;
     private @Field List<String> familyName;
