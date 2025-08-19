@@ -32,7 +32,7 @@ export default _.template(`
           <label for="contacts<%= data.index %>DisplayName">Display name <small class="text-body-secondary">(for institutional authors)</small></label>
       </div>
       <div class="col-sm-10">
-        <input data-name='displayName' class="editor-input form-control-sm" id="contacts<%= data.index %>DisplayName" placeholder="Name for institutional authors" value="<%= data.displayName %>">
+        <input data-name='displayName' class="editor-input form-control-sm" id="contacts<%= data.index %>DisplayName" placeholder="Name for institutional authors" value="<%- data.displayName %>">
       </div>
     </div>
     <div class="row">

@@ -4,6 +4,7 @@ import SingleView from '../SingleView'
 import parentTemplate from '../templates/Parent'
 import childTemplate from '../templates/MultiString'
 import template from '../templates/ChildLarge'
+import { cleanText } from '../utils'
 
 export default SingleView.extend({
 
@@ -48,8 +49,9 @@ export default SingleView.extend({
   modify (event) {
     const $target = $(event.target)
     const index = $target.data('index')
-    const value = $target.val()
+    const value = cleanText($target.val())
     this.array.splice(index, 1, value)
+    $target.val(value)
     this.updateModel()
   },
 
