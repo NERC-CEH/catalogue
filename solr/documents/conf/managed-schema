@@ -113,6 +113,7 @@
     <field name="familyName" type="names" multiValued="true"/>
     <field name="fullName" type="names" multiValued="true"/>
     <field name="inmsDemonstrationRegion" type="keywords"/>
+    <field name="inmsPollutant" type="keywords"/>
     <field name="inmsProject" type="keywords"/>
     <field name="keyword" type="keywords_lowercase"/>
     <field name="keywordsInstrument" type="keywords_lowercase"/>

@@ -60,6 +60,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setIdentifier(identifierService.generateFileId(document.getId()))
             .setInmsScale(inmsScale(document))
             .setInmsTopic(grab(getKeywordsByVocabulary(document, VocabularyFacet.TOPIC.getFacetName()), Keyword::getValue))
+            .setInmsPollutant(grab(getKeywordsByVocabulary(document, VocabularyFacet.WATER_POLLUTANT.getFacetName()), Keyword::getValue))
             .setInmsDemonstrationRegion(grab(getKeywordsByVocabulary(document, VocabularyFacet.INMS_DEMONSTRATION_REGION.getFacetName()), Keyword::getValue))
             .setInmsProject(grab(getKeywordsByVocabulary(document, VocabularyFacet.INMS_PROJECT.getFacetName()), Keyword::getValue))
             .setKeyword(grab(document.getAllKeywords(), Keyword::getValue))
