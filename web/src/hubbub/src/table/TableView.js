@@ -78,14 +78,14 @@ export default Backbone.View.extend({
     if (checksum) this.checksumValues.add(checksum)
 
     let actionsHtml = `<div class="dropdown">
-                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                        <button class="btn btn-sm btn-actions dropdown-toggle" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
                           <i class="fa-solid fa-cog fa-fw"></i>
                           <span class="selected-action"></span>
                         </button>
                         <span class="action-fail btn-icon fa-fw fa-solid fa-exclamation-triangle ms-1" style="display: none;"></span>
                         <span class="spinner-border spinner-border-sm ms-1" role="status" aria-hidden="true" style="display: none;"></span>
-                        <ul class="dropdown-menu">
+                        <ul class="dropdown-menu dropdown-menu-end">
                           <li><a class="dropdown-item text-primary" data-action="Validate" href="#">Validate</a></li>`
 
     const action = model.get('action')

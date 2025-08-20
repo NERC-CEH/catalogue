@@ -112,7 +112,18 @@
             td {
                 color: #900;
             }
+
+            .btn-actions {
+                @extend .btn-danger !optional;
+            }
         }
+
+        tr:not(.table-danger) {
+            .btn-actions {
+                @extend .btn-outline-dark !optional;
+            }
+        }
+
     }
 
 }
