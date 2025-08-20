@@ -8,8 +8,8 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-offset-2 col-sm-8">
-      <div class="page-header">
-        <h3 class="text-center">Metadata File Upload</h3>
+      <div class="section-header">
+        Metadata File Upload
       </div>
       <form class="form-horizontal" method="POST" enctype="multipart/form-data" action="/documents">
         <div class="mb-3">

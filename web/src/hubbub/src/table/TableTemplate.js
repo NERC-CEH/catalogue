@@ -13,7 +13,7 @@ export default _.template(`
       </tr>
     </thead>
     <thead>
-      <tr class="filters table-secondary">
+      <tr class="filters table-light">
         <th>
           <div class="position-relative">
             <input type="text" class="form-control form-control-sm column-search" placeholder="Search file ..." />

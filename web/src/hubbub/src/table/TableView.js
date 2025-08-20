@@ -36,10 +36,10 @@ export default Backbone.View.extend({
       ],
       rowCallback: (row, data) => this.handleRowCallback(row, data),
       responsive: true,
-      dom: "<<'filetable-size'l><'filetable-searchAll d-none'f>>" +
+      dom: "<<'filetable-size'l><'filetable-searchAll'f>>" +
            "<'filetable-content'tr>" +
-           "<'filetable-recordInfo d-flex justify-content-center py-3'i>" +
-           "<'filetable-pagination d-flex justify-content-center'p>",
+           "<'filetable-recordInfo'i>" +
+           "<'filetable-pagination'p>",
       language: {
         search: '_INPUT_',
         searchPlaceholder: 'Search all ...',
@@ -72,9 +72,7 @@ export default Backbone.View.extend({
     const fullPath = model.get('path') || ''
     const lastSlashIndex = fullPath.lastIndexOf('/')
     const filename = lastSlashIndex !== -1 ? fullPath.substring(lastSlashIndex + 1) : fullPath
-    const checksum = (model.get('hash') || '') !== 'NO_HASH'
-      ? `<span title="${model.get('path')}">Yes</span>`
-      : 'No'
+    const checksum = (model.get('hash') || '') !== 'NO_HASH' ? 'Yes' : 'No'
     const status = model.get('status') || ''
     if (status) this.statusValues.add(status)
     if (checksum) this.checksumValues.add(checksum)

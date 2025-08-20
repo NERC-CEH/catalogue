@@ -39,8 +39,8 @@
               </div>
             </@row>
 
-            <#assign metadataTitle>Metadata <small>Supporting Documents</small></#assign>
-            <@documentUploadSection title=metadataTitle name="metadata" icon="copy" iconClass="fa-regular">
+            <#assign metadataTitle>Supporting documents</#assign>
+            <@documentUploadSection title=metadataTitle name="metadata" icon="file-word" iconClass="fa-solid">
                 <@loadingContainer "metadata"/>
                 <@loadMoreRow "metadata"/>
             </@documentUploadSection>
@@ -87,7 +87,7 @@
 
 <#macro titleHeading>
     <div class="page-header">
-        <h1>${title}</h1>
+        ${title}
     </div>
 </#macro>
 
@@ -95,7 +95,7 @@
     <div class="return">
         <a href="/documents/${id}">
             <i class="btn-icon fa-fw fa-solid fa-arrow-left"></i>
-            <span>RETURN TO DOCUMENT: ${id}</span>
+            Back to catalogue record: ${id}
         </a>
     </div>
 </#macro>
@@ -109,8 +109,8 @@
 <#macro documentUploadSection title name icon iconClass="fa-solid">
     <section class="document-upload-section ${name}">
         <#if title?has_content && icon?has_content>
-            <div class="page-header">
-                <h3><i class="btn-icon fa-fw ${iconClass} fa-${icon}"></i> ${title} <span class="total-files"></span></h3>
+            <div class="section-header">
+                <i class="btn-icon fa-fw ${iconClass} fa-${icon}"></i> ${title} <span class="total-files"></span>
             </div>
         </#if>
         <#nested>
