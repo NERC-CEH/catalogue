@@ -7,12 +7,12 @@ import template from './previewTemplate'
 export default Backbone.View.extend({
 
   initialize (options) {
-    const { el, success, url } = options
+    const { el, success, url, complete } = options
     // eslint-disable-next-line no-new
-    new Dropzone(el, this.dropzoneOptions(url, success))
+    new Dropzone(el, this.dropzoneOptions(url, success, complete))
   },
 
-  dropzoneOptions (url, success) {
+  dropzoneOptions (url, success, complete) {
     return {
       timeout: -1,
       url,
@@ -38,6 +38,8 @@ export default Backbone.View.extend({
         })
 
         this.on('success', success)
+
+        this.on('queuecomplete', complete)
 
         this.on('sending', (file, _xhr, data) => {
           if (file.fullPath) {
