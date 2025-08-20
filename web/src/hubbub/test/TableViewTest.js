@@ -67,7 +67,7 @@ describe('TableView', function () {
       expect($.fn.DataTable).toHaveBeenCalled()
       expect(view.dataTable).toBeDefined()
       expect(view.dataTable).not.toBeNull()
-      expect($('#filesTable').length).toBe(1)
+      expect($('#filetable').length).toBe(1)
     })
   })
 
@@ -98,7 +98,7 @@ describe('TableView', function () {
       const fileSearch = view.$('.column-search').first()
       fileSearch.val('data1').trigger('keyup')
 
-      let visibleRows = view.$('#filesTable tbody tr:visible')
+      let visibleRows = view.$('#filetable tbody tr:visible')
       expect(visibleRows.length).toBe(1)
       expect(visibleRows.find('td:contains("data1.csv")').length).toBe(1)
 
@@ -106,7 +106,7 @@ describe('TableView', function () {
       expect(clearBtn.is(':visible')).toBe(true)
 
       clearBtn.trigger('click')
-      visibleRows = view.$('#filesTable tbody tr:visible')
+      visibleRows = view.$('#filetable tbody tr:visible')
       expect(visibleRows.length).toBe(2)
       expect(clearBtn.is(':visible')).toBe(false)
     })
