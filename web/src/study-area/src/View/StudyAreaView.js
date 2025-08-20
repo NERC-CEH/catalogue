@@ -56,6 +56,44 @@ export default Backbone.View.extend({
     map.setZoom(9)
   },
 
+  addFeatureToMap (featureLayer, features, studyArea, map, style) {
+    const numberOfLayers = Object.keys(featureLayer._layers).length
+
+    const layer = L.geoJson(features, {
+      style,
+      pointToLayer: (feature, latlng) => {
+        const marker = L.marker(latlng)
+        if (feature.properties.availability === 'Inactive') {
+          marker.on('add', (e) => {
+            e.target.getElement().classList.add('location-inactive')
+          })
+        }
+        return marker
+      },
+      onEachFeature: (feature, layer) => {
+        const title = feature.properties.title
+        const availability = feature.properties.availability
+        let content = `<p>${title}</p>`
+        if (typeof feature.properties.link !== 'undefined') {
+          const link = feature.properties.link
+          content = `<p><a href=${link}>${title}</a></p>`
+        }
+        if (availability === 'Inactive') {
+          content = content + '<p class="text-body-tertiary">(INACTIVE)</p>'
+        }
+
+        layer.bindPopup(content)
+      }
+    })
+
+    const markers = L.markerClusterGroup()
+    markers.addLayer(layer)
+    map.addLayer(markers)
+    if (numberOfLayers === 1) {
+      this.pointDisplay(featureLayer, studyArea, map)
+    }
+  },
+
   // If this is a polygon, then set a zoom threshold whereby, zooming-out will show
   // the polygon's centroid as a point marker, and zooming-in will show the actual
   // polygon.  This zoom threshold is '3 map zoom-outs' beyond the feature's bounding
@@ -97,56 +135,18 @@ export default Backbone.View.extend({
   },
 
   featureCollectionDisplay (feature, studyArea, map) {
-    const numberOfLayers = Object.keys(feature._layers).length
-
-    // Convert all features in feature collection to points in order to play
-    // nicely with Leaflet.ClusterMap library
-    const pointFeatureCollection = studyArea.features.map(feature => {
-      if ((feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') &&
-          (typeof feature.properties.showPolygon === 'undefined' || !feature.properties.showPolygon)) {
-        const polygon = L.geoJSON(feature.geometry)
-        const centroid = this.centerPointOfPolygon(polygon)
-        return {
-          ...feature,
-          geometry: centroid.geometry
-        }
+    const parentFeatures = []
+    const childFeatures = []
+    studyArea.features.forEach(feature => {
+      if ((feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') && feature.properties.showPolygon) {
+        parentFeatures.push(feature)
       } else {
-        return feature
+        childFeatures.push(feature)
       }
     })
 
-    const featureInPoints = L.geoJson(pointFeatureCollection, {
-      pointToLayer: (feature, latlng) => {
-        const marker = L.marker(latlng)
-        if (feature.properties.availability === 'Inactive') {
-          marker.on('add', (e) => {
-            e.target.getElement().classList.add('location-inactive')
-          })
-        }
-        return marker
-      },
-      onEachFeature: (feature, layer) => {
-        const title = feature.properties.title
-        const availability = feature.properties.availability
-        let content = `<p>${title}</p>`
-        if (typeof feature.properties.link !== 'undefined') {
-          const link = feature.properties.link
-          content = `<p><a href=${link}>${title}</a></p>`
-        }
-        if (availability === 'Inactive') {
-          content = content + '<p class="text-body-tertiary">(INACTIVE)</p>'
-        }
-
-        layer.bindPopup(content)
-      }
-    })
-
-    const markers = L.markerClusterGroup()
-    markers.addLayer(featureInPoints)
-    map.addLayer(markers)
-    if (numberOfLayers === 1) {
-      this.pointDisplay(feature, studyArea, map)
-    }
+    this.addFeatureToMap(feature, parentFeatures, studyArea, map, { interactive: false })
+    this.addFeatureToMap(feature, childFeatures, studyArea, map, { interactive: true, color: '#89A1FA' })
   },
 
   // TODO: Consider returning centroid of polygon within the polygon itself
