@@ -93,7 +93,7 @@ public class KeywordSuggestionsServiceTest {
         //given
         String variablesResponse = IOUtils.toString(getClass().getResource("legilo-variables-response.json"), UTF_8);
         mockServer
-            .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/variables")))
+            .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/variables?use_llm=true")))
             .andExpect(method(HttpMethod.GET))
             .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
             .andRespond(withSuccess(variablesResponse, MediaType.APPLICATION_JSON));
@@ -115,7 +115,7 @@ public class KeywordSuggestionsServiceTest {
     void getVariablesSuggestionsWithException() {
         //given
         mockServer
-            .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/variables")))
+            .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/variables?use_llm=true")))
             .andExpect(method(HttpMethod.GET))
             .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
             .andRespond(withStatus(HttpStatus.NOT_FOUND));

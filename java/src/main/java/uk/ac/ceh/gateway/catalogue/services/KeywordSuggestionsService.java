@@ -115,7 +115,7 @@ public class KeywordSuggestionsService {
         return Optional.ofNullable(
             restClient
                 .get()
-                .uri("/{file}/variables", file)
+                .uri("/{file}/variables?use_llm=true", file)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
                     int code = response.getStatusCode().value();
