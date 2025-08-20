@@ -25,11 +25,10 @@ export default Backbone.View.extend({
   },
 
   initializeDataTable () {
-    this.dataTable = this.$('#filesTable').DataTable({
+    this.dataTable = this.$('#filetable').DataTable({
       data: this.prepareTableData(),
       columns: [
         { data: 'file' },
-        { data: 'path' },
         { data: 'size' },
         { data: 'checksum' },
         { data: 'status' },
@@ -37,9 +36,10 @@ export default Backbone.View.extend({
       ],
       rowCallback: (row, data) => this.handleRowCallback(row, data),
       responsive: true,
-      dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
-           "<'row'<'col-sm-12'tr>>" +
-           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+      dom: "<<'filetable-size'l><'filetable-searchAll d-none'f>>" +
+           "<tr>" +
+           "<'filetable-recordInfo d-flex justify-content-center py-3'i>" +
+           "<'filetable-pagination d-flex justify-content-center'p>",
       language: {
         search: '_INPUT_',
         searchPlaceholder: 'Search all ...',
@@ -71,9 +71,10 @@ export default Backbone.View.extend({
   prepareSingleTableData (model) {
     const fullPath = model.get('path') || ''
     const lastSlashIndex = fullPath.lastIndexOf('/')
-    const path = lastSlashIndex !== -1 ? fullPath.substring(0, lastSlashIndex + 1) : ''
     const filename = lastSlashIndex !== -1 ? fullPath.substring(lastSlashIndex + 1) : fullPath
-    const checksum = (model.get('hash') || '') !== 'NO_HASH' ? 'Yes' : 'No'
+    const checksum = (model.get('hash') || '') !== 'NO_HASH'
+      ? `<span title="${model.get('path')}">Yes</span>`
+      : 'No';
     const status = model.get('status') || ''
     if (status) this.statusValues.add(status)
     if (checksum) this.checksumValues.add(checksum)
@@ -81,11 +82,11 @@ export default Backbone.View.extend({
     let actionsHtml = `<div class="dropdown">
                         <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                          <i class="fas fa-cog me-1"></i>
+                          <i class="fa-solid fa-cog fa-fw"></i>
                           <span class="selected-action"></span>
                         </button>
-                        <span class="action-fail btn-icon fa-fw fa fa-exclamation-triangle ms-1" style="display: none;"></span>
-                        <span class="spinner-border spinner-border-sm  ms-1" role="status" aria-hidden="true" style="display: none;"></span>
+                        <span class="action-fail btn-icon fa-fw fa-solid fa-exclamation-triangle ms-1" style="display: none;"></span>
+                        <span class="spinner-border spinner-border-sm ms-1" role="status" aria-hidden="true" style="display: none;"></span>
                         <ul class="dropdown-menu">
                           <li><a class="dropdown-item text-primary" data-action="Validate" href="#">Validate</a></li>`
 
@@ -113,7 +114,6 @@ export default Backbone.View.extend({
 
     return {
       file: filename,
-      path,
       size: model.get('size') || '',
       checksum,
       status,
