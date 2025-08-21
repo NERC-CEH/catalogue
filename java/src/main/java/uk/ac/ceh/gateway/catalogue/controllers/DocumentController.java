@@ -6,6 +6,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -31,6 +32,8 @@ import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementService;
 
 import java.io.IOException;
+import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -470,4 +473,32 @@ public class DocumentController extends AbstractDocumentController {
             ) {
         return documentRepository.delete(user, file);
             }
+
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @PostMapping("documents/{file}/clone")
+    public ResponseEntity<Void> cloneAsNewVersion(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("file") String file
+    ) throws DocumentRepositoryException
+    {
+        MetadataDocument source = documentRepository.read(file);
+
+        if (!(source instanceof GeminiDocument gemini)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        source.setResourceIdentifiers(Collections.emptyList());
+        gemini.setIncomingCitations(Collections.emptyList());
+        gemini.setOnlineResources(Collections.emptyList());
+        gemini.setCitation(null);
+
+        Number version = gemini.getVersion();
+        gemini.setVersion(version == null ? 2 : version.intValue() + 1);
+
+        String catalogue = source.getMetadata().getCatalogue();
+        MetadataDocument saved = documentRepository.saveNew(user, source, catalogue, String.format("cloned a new version of %s", file));
+
+        URI redirectUri = URI.create("/documents/" + saved.getId());
+        return ResponseEntity.status(HttpStatus.SEE_OTHER).location(redirectUri).build();
+    }
 }

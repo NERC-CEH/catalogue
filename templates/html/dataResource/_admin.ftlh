@@ -35,6 +35,8 @@
   <div class="row d-print-none" id="adminPanel">
     <div class="text-end" id="adminToolbar" role="toolbar">
 
+      <@cloneButton />
+
       <@editButton />
 
       <#if isRestrictedFieldsEditor && isNotLinkDocument>
@@ -61,8 +63,22 @@
   </a></li>
 </#macro>
 
+<#macro cloneButton>
+  <#if permission.userCanEdit(id)>
+    <form action="/documents/${id}/clone"
+          method="POST"
+          class="d-inline clone-control">
+      <div class="btn-group btn-group-sm ms-3 position-relative">
+        <button type="submit" class="btn btn-light border btn-wide">
+          New version
+        </button>
+      </div>
+    </form>
+  </#if>
+</#macro>
+
 <#macro editButton>
-  <div class="btn-group btn-group-sm position-relative">
+  <div class="btn-group btn-group-sm ms-3 position-relative">
     <button type="button" class="btn btn-light border btn-wide edit-control" data-document-type="${metadata.documentType}">
       Edit
       <#if totalIssues gte 1>

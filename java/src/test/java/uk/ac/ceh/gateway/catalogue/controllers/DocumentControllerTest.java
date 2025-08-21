@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -33,6 +34,7 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
@@ -67,14 +69,14 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.Matchers.empty;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.TEXT_HTML;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
@@ -603,5 +605,51 @@ class DocumentControllerTest {
 
         //Then
         verify(metricsService, never()).recordView(any(), any());
+    }
+
+    @Test
+    @SneakyThrows
+    void checkCloneIsCorrect() {
+        givenFreemarkerConfiguration();
+        givenDefaultCatalogue();
+
+        given(permissionService.toAccess(any(CatalogueUser.class), eq(id), eq("VIEW"))).willReturn(true);
+        given(permissionService.toAccess(any(CatalogueUser.class), eq(id), eq("EDIT"))).willReturn(true);
+        given(permissionService.userCanEdit(id)).willReturn(true);
+
+        GeminiDocument source = new GeminiDocument();
+        source.setId(id);
+        source.setVersion(7);
+        source.setMetadata(
+            MetadataInfo.builder()
+                .catalogue(catalogueKey)
+                .state("public")
+                .build()
+        );
+        source.setResourceIdentifiers(List.of(
+            uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier.builder()
+                .code("some-code")
+                .codeSpace("some-space")
+                .build()
+        ));
+        source.setIncomingCitations(List.of(
+            Supplemental.builder().name("citation 1").build()
+        ));
+
+        given(documentRepository.read(id)).willReturn(source);
+
+        given(documentRepository.saveNew(any(CatalogueUser.class), any(GeminiDocument.class), eq(catalogueKey), anyString()))
+            .willAnswer(invocation -> invocation.getArgument(1));
+
+        mvc.perform(post("/documents/{id}/clone", id))
+            .andExpect(status().isSeeOther());
+
+        ArgumentCaptor<GeminiDocument> captor = ArgumentCaptor.forClass(GeminiDocument.class);
+        verify(documentRepository).saveNew(any(CatalogueUser.class), captor.capture(), eq(catalogueKey), anyString());
+        GeminiDocument cloned = captor.getValue();
+
+        assertThat("Version should be incremented", cloned.getVersion(), equalTo(8));
+        assertThat("Resource identifiers should be cleared", cloned.getResourceIdentifiers(), equalTo(java.util.Collections.emptyList()));
+        assertThat("Incoming citations should be cleared", cloned.getIncomingCitations(), equalTo(java.util.Collections.emptyList()));
     }
 }
