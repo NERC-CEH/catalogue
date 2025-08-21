@@ -3,6 +3,7 @@
 import './globals'
 import $ from 'jquery'
 import Backbone from 'backbone'
+import Swal from 'sweetalert2'
 import 'bootstrap'
 import {
   CehModelApplicationEditorView,
@@ -40,6 +41,7 @@ const $documentUpload = $('#document-upload')
 const $edit = $('.edit-control')
 const $serviceAgreement = $('.service-agreement')
 const $navbarToggle = $('.nav-toggle')
+const $clone = $('.clone-control')
 
 if ($catalogue.length) {
   initCatalogue()
@@ -91,6 +93,10 @@ if ($('#metrics-report').length) {
 
 if ($('#deposit-request').length) {
   initDepositRequest()
+}
+
+if ($clone.length) {
+  initClone()
 }
 
 Backbone.history.start()
@@ -338,5 +344,25 @@ function initDepositRequest () {
   new DepositRequestFormView({
     el: '#deposit-request',
     model: app
+  })
+}
+
+function initClone () {
+  $('.clone-control').on('submit', function (event) {
+    event.preventDefault()
+    const form = event.currentTarget
+
+    Swal.fire({
+      title: 'Create new version?',
+      text: 'This will clone the record as a draft.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, clone it',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        form.submit()
+      }
+    })
   })
 }
