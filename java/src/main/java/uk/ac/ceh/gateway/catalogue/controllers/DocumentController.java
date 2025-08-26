@@ -491,6 +491,7 @@ public class DocumentController extends AbstractDocumentController {
         gemini.setIncomingCitations(Collections.emptyList());
         gemini.setOnlineResources(Collections.emptyList());
         gemini.setCitation(null);
+        gemini.setDatasetReferenceDate(null);
 
         Number version = gemini.getVersion();
         gemini.setVersion(version == null ? 2 : version.intValue() + 1);

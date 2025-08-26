@@ -651,5 +651,6 @@ class DocumentControllerTest {
         assertThat("Version should be incremented", cloned.getVersion(), equalTo(8));
         assertThat("Resource identifiers should be cleared", cloned.getResourceIdentifiers(), equalTo(java.util.Collections.emptyList()));
         assertThat("Incoming citations should be cleared", cloned.getIncomingCitations(), equalTo(java.util.Collections.emptyList()));
+        assertThat("Dataset reference date should be cleared", cloned.getDatasetReferenceDate(), equalTo(null));
     }
 }
