@@ -141,13 +141,13 @@
 </#macro>
 
 <#macro row classes="">
-    <div class="row ${classes}">
+    <div class="row my-3 ${classes}">
         <#nested>
     </div>
 </#macro>
 
 <#macro loadMoreRow storage> <#--hide -->
-    <@row "mb-3">
+    <@row>
       <div class="d-inline-flex justify-content-end">
           <@loadMoreButton storage/>
       </div>

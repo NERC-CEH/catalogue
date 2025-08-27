@@ -353,11 +353,11 @@ function initClone () {
     const form = event.currentTarget
 
     Swal.fire({
-      title: 'Create new version?',
-      text: 'This will clone the record as a draft.',
+      title: 'Are you sure?',
+      text: 'This will create a copy of the record and save it as a draft',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, clone it',
+      confirmButtonText: 'Yes, copy it',
       cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {

@@ -33,9 +33,7 @@
 
 <#if resourceType?? && permission.userCanEdit(id)>
   <div class="row d-print-none" id="adminPanel">
-    <div class="text-end" id="adminToolbar" role="toolbar">
-
-      <@cloneButton />
+    <div class="d-flex gap-2 justify-content-end flex-wrap" id="adminToolbar" role="toolbar">
 
       <@editButton />
 
@@ -43,6 +41,8 @@
         <#if hasCitation = 0  && isEidcWithResourceType>
           <@doiButton />
         </#if>
+
+        <@cloneRecord />
 
         <#if isSimpleUpload || hasOrders || isEidcCustodian || isEidcWithResourceType>
           <@moreButton />
@@ -63,23 +63,21 @@
   </a></li>
 </#macro>
 
-<#macro cloneButton>
-  <#if permission.userCanEdit(id)>
+<#macro cloneRecord>
+  <#if permission.userCanEdit(id) && state == 'published'>
     <form action="/documents/${id}/clone"
           method="POST"
-          class="d-inline clone-control">
-      <div class="btn-group btn-group-sm ms-3 position-relative">
-        <button type="submit" class="btn btn-light border btn-wide">
-          New version
-        </button>
-      </div>
+          class="d-none clone-control"><#-- temporarily disabled by adding class d-none -->
+      <button type="submit" class="btn btn-sm btn-outline-secondary btn-wide">
+        New version
+      </button>
     </form>
   </#if>
 </#macro>
 
 <#macro editButton>
-  <div class="btn-group btn-group-sm ms-3 position-relative">
-    <button type="button" class="btn btn-light border btn-wide edit-control" data-document-type="${metadata.documentType}">
+  <div class="btn-group btn-group-sm position-relative">
+    <button type="button" class="btn btn-outline-secondary btn-wide edit-control" data-document-type="${metadata.documentType}">
       Edit
       <#if totalIssues gte 1>
         <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-${metadataClass}"
@@ -90,7 +88,7 @@
       </#if>
     </button>
     <#if isRestrictedFieldsEditor>
-      <button type="button" class="btn btn-light border dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+      <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
         <span class="caret"></span>
         <span class="visually-hidden">Toggle Dropdown</span>
       </button>
@@ -116,8 +114,8 @@
 </#macro>
 
 <#macro moreButton>
-  <div class="btn-group btn-group-sm ms-3" role="group">
-    <button type="button" class="btn btn-light border btn-wide dropdown-toggle" data-bs-toggle="dropdown">
+  <div class="btn-group btn-group-sm" role="group">
+    <button type="button" class="btn btn-outline-secondary btn-wide dropdown-toggle" data-bs-toggle="dropdown">
       More <span class="caret"></span>
     </button>
     <ul class="dropdown-menu dropdown-menu-end">
@@ -150,8 +148,8 @@
 </#macro>
 
 <#macro doiButton>
-  <div class="btn-group btn-group-sm ms-3" role="group">
-    <button type="button" class="position-relative btn btn-light border btn-wide dropdown-toggle" data-bs-toggle="dropdown">
+  <div class="btn-group btn-group-sm" role="group">
+    <button type="button" class="position-relative btn btn-outline-secondary btn-wide dropdown-toggle" data-bs-toggle="dropdown">
       <#if !datacitable>
         <i class="fa-solid fa-triangle-exclamation fa-xl text-danger position-absolute top-0 start-0"></i>
       </#if>
