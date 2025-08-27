@@ -2,6 +2,7 @@ import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import validationTemplate from '../templates/validation'
+import { cleanText } from '../utils'
 
 export default Backbone.View.extend({
 
@@ -32,7 +33,12 @@ export default Backbone.View.extend({
 
   modify (event) {
     const name = $(event.target).data('name')
-    const value = $(event.target).val().trim()
+    let value = $(event.target).val().trim()
+
+    if (value) {
+      value = cleanText(value)
+      $(event.target).val(value)
+    }
 
     if (!value) {
       this.model.unset(name)
