@@ -112,8 +112,7 @@ public class DepositRequestService {
                 }
             }
             if (dataResourcePass) {
-                componentName = "Deposit Request";
-                //temporarily change this ti disable the logic componentName = "Ingestion Management";
+                componentName = "Ingestion Management";
             }
         }
 

@@ -81,7 +81,7 @@
         letter-spacing: 1px;
     }
 
-    .filetable {
+    .filetable-content {
 
         &-recordInfo {
             @extend .d-flex !optional;
@@ -106,24 +106,34 @@
             @extend .d-none !optional;
         }
 
-        tr.table-danger {
-            font-weight: 600;
+        table {
+            tr.table-danger {
+                font-weight: 600;
 
-            td {
-                color: #900;
+                td {
+                    color: #900;
+                }
+
+                .btn-actions {
+                    @extend .btn-danger !optional;
+                }
             }
 
-            .btn-actions {
-                @extend .btn-danger !optional;
+            tr:not(.table-danger) {
+                .btn-actions {
+                    @extend .btn-outline-dark !optional;
+                }
             }
         }
 
-        tr:not(.table-danger) {
-            .btn-actions {
-                @extend .btn-outline-dark !optional;
+    }
+
+    select {
+        option {
+            &:checked {
+                display: none;
             }
         }
-
     }
 
 }
