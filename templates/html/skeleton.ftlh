@@ -54,6 +54,9 @@
       </#if>
     </head>
     <body data-edit-restricted="${can_edit_restricted?then('','disabled')}">
+      <script>
+        window.isBetaUser = ${permission.userCanSeeBeta()?c};
+      </script>
       <header>
         <div class="ukcehBrand">
           <div class="${containerClass}">
@@ -122,6 +125,11 @@
         </div>
       </header>
       <main>
+        <#if permission.userCanSeeBeta()>
+          <div id="beta-component" style="margin:1rem;padding:1rem;border:1px dashed #cc0;">
+            Beta-only feature (visible for testers)
+          </div>
+        </#if>
         <#nested>
         <div id="message-panel"></div>
       </main>

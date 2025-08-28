@@ -130,7 +130,16 @@ export default EditorView.extend({
           modelAttribute: 'version',
           typeAttribute: 'number',
           label: 'Version'
-        })
+        }),
+
+        ...(window.isBetaUser ? [
+          new CheckboxView({
+            model: this.model,
+            modelAttribute: 'betaFlag',
+            label: 'Beta-only feature: enable extra processing?',
+            helpText: `<p>This option is only available for beta testers.</p>`
+          })
+        ] : [])
 
       ]
     },

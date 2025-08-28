@@ -58,6 +58,7 @@ public class DevelopmentUserStoreConfig {
     public static final String UKEOF_PUBLISHER = "role_ukeof_publisher";
     public static final String UKSCAPE_EDITOR = "role_ukscape_editor";
     public static final String UKSCAPE_PUBLISHER = "role_ukscape_publisher";
+    public static final String BETA_TESTER = "role_beta_tester";
 
     private void addUserToGroup(CatalogueUser user, String... groups) {
         Arrays.stream(groups)
@@ -220,7 +221,7 @@ public class DevelopmentUserStoreConfig {
         SA_EDITOR, SA_PUBLISHER,
         UKEOF_EDITOR, UKEOF_PUBLISHER,
         UKSCAPE_EDITOR, UKSCAPE_PUBLISHER,
-        MAINTENANCE_ROLE, DATACITE_ROLE);
+        MAINTENANCE_ROLE, DATACITE_ROLE, BETA_TESTER);
         userStore().addUser(user, "password");
         return user;
     }
@@ -290,6 +291,7 @@ public class DevelopmentUserStoreConfig {
         groupStore.createGroup(UKEOF_EDITOR, "");
         groupStore.createGroup(UKSCAPE_PUBLISHER, "");
         groupStore.createGroup(UKSCAPE_EDITOR, "");
+        groupStore.createGroup(BETA_TESTER, "");
         return groupStore;
     }
 

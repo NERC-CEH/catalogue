@@ -216,6 +216,10 @@ public class CrowdPermissionService implements PermissionService {
         return userCan((String name) -> name.equalsIgnoreCase(DataciteController.DATACITE_ROLE));
     }
 
+    public boolean userCanSeeBeta() {
+        return userInGroup("role_beta_tester");
+    }
+
     @Override
     public boolean userInGroup (String group) {
         return userCan((String name) -> name.equalsIgnoreCase(group));
