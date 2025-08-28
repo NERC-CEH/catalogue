@@ -227,8 +227,8 @@
 
             .dataentry:has(.ror) {
                 div:has(>.orgAutocomplete) {
-
-                    &:after {
+                     margin-block-end:-25px;
+                     &:after {
                         font-family: var(--font-stack-icons);
                         font-weight: 900;
                         content: var(--hasrorcontent, "\f06a");

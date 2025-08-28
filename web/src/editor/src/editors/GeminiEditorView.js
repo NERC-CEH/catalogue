@@ -91,7 +91,6 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'description',
           label: 'Description',
-          rows: 5,
           helpText: `\
 <p>The description should describe the data resource in question, NOT the project/activity which produced it.</p>
 <p>The description is an 'executive summary' that allows the reader to determine the relevance and usefulness of the resource.  The text should be concise but should contain sufficient detail to allow the reader to ascertain rapidly the scope and limitations of the resource.</p>

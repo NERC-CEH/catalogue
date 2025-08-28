@@ -31,9 +31,17 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
     private Keyword facilityType;
     private Geometry geometry;
     private boolean geometryRepresentative, mobile;
-    private List<ResponsibleParty> responsibleParties;
+    private List<ResponsibleParty> responsibleParties, contacts, collaborators;
     private List<TimePeriod> operatingPeriod;
     private List<Keyword> environmentalDomain, keywordsParameters;
+    private List<AdditionalInfo> additionalInfo;
+
+    @Data
+    public static class AdditionalInfo {
+        private String
+            key,
+            value;
+    }
 
     @Override
     public @NonNull List<String> getWKTs() {

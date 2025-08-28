@@ -9,14 +9,15 @@ import {
   SingleObjectView,
   TemporalExtentView,
   TextareaView,
-  ContactView,
+  ContactSimpleView,
   FacilityTypeView,
   EnvironmentalDomainView,
   ResourceIdentifierView,
   ParentStringView,
-  CheckboxView
+  CheckboxView,
+  AdditionalInfoView
 } from '../views'
-import { MultipleDate, FacilityType, EnvironmentalDomain, Contact } from '../models'
+import { MultipleDate, FacilityType, EnvironmentalDomain, ContactSimple } from '../models'
 import {
   Geometry,
   GeometryView
@@ -101,7 +102,18 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'mobile',
           label: 'Facility is mobile?'
-        })
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'additionalInfo',
+          multiline: true,
+          label: 'Additional information',
+          ObjectInputView: AdditionalInfoView,
+          helpText: `
+<p>Enter information as key-value pairs.</p>
+`       })
+
       ]
     },
     {
@@ -138,58 +150,53 @@ export default EditorView.extend({
       views: [
         new PredefinedParentView({
           model: this.model,
-          ModelType: Contact,
-          modelAttribute: 'responsibleParties',
+          ModelType: ContactSimple,
+          modelAttribute: 'contacts',
           label: 'Contacts',
-          ObjectInputView: ContactView,
+          ObjectInputView: ContactSimpleView,
           multiline: true,
+          roleDefault:'pointOfContact',
           predefined: {
-            'Lead organisation - Environment Agency': {
-              organisationName: 'Environment Agency',
-              role: 'pointOfContact',
-              email: 'enquiries@environment-agency.gov.uk',
-              organisationIdentifier: 'https://ror.org/01zewfb16'
-            },
-            'Lead organisation - Natural England': {
-              organisationName: 'Natural England',
-              role: 'pointOfContact',
-              email: 'enquiries@naturalengland.org.uk',
-              organisationIdentifier: 'https://ror.org/00r66pz14'
-            },
-            'Lead organisation - Natural Resources Wales': {
-              organisationName: 'Natural Resources Wales',
-              role: 'pointOfContact',
-              email: 'enquiries@naturalresourceswales.gov.uk',
-              organisationIdentifier: 'https://ror.org/04x65hs26'
-            },
-            'Lead organisation - UKCEH': {
+            'UKCEH': {
               organisationName: 'UK Centre for Ecology & Hydrology',
-              role: 'pointOfContact',
               email: 'enquiries@ceh.ac.uk',
               organisationIdentifier: 'https://ror.org/00pggkr55'
             },
-            'Funder - Defra': {
-              organisationName: 'Defra',
-              role: 'funder',
-              email: 'defra.helpline@defra.gsi.gov.uk',
-              organisationIdentifier: 'https://ror.org/00tnppw48'
+            'Environment Agency': {
+              organisationName: 'Environment Agency',
+              email: 'enquiries@environment-agency.gov.uk',
+              organisationIdentifier: 'https://ror.org/01zewfb16'
             },
-            'Funder - NERC': {
-              organisationName: 'Natural Environment Research Council',
-              role: 'funder',
-              organisationIdentifier: 'https://ror.org/02b5d8509'
+            'Natural England': {
+              organisationName: 'Natural England',
+              email: 'enquiries@naturalengland.org.uk',
+              organisationIdentifier: 'https://ror.org/00r66pz14'
             },
-            'Funder - Scottish Government': {
-              organisationName: 'Scottish Government',
-              role: 'funder',
-              organisationIdentifier: 'https://ror.org/04v2xmd71'
+            'Natural Resources Wales': {
+              organisationName: 'Natural Resources Wales',
+              email: 'enquiries@naturalresourceswales.gov.uk',
+              organisationIdentifier: 'https://ror.org/04x65hs26'
             },
-            'Funder - Welsh Government': {
-              organisationName: 'Welsh Government',
-              role: 'funder',
-              organisationIdentifier: 'https://ror.org/000wh6t45'
+            'SEPA': {
+              organisationName: 'Scottish Environment Protection Agency',
+              organisationIdentifier: 'https://ror.org/01kxjy285'
             }
           }
+        }),
+
+        new ParentView({
+          model: this.model,
+          ModelType: ContactSimple,
+          modelAttribute: 'collaborators',
+          label: 'Collaborators',
+          ObjectInputView: ContactSimpleView,
+          multiline: true,
+          roleoptions: [
+            { value: 'collaborator', label: 'collaborator' },
+            { value: 'funder', label: 'funder' },
+            { value: 'siteowner', label: 'site owner' }
+          ],
+          roleDefault: 'collaborator'
         })
       ]
     },

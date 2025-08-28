@@ -58,7 +58,7 @@ export default _.template(`
 </div>
 <div class="row">
     <div class="col-lg-2">
-        <label for="contacts<%= data.index %>organisationIdentifier">RoR</label>
+        <label for="contacts<%= data.index %>organisationIdentifier">RoR ID</label>
     </div>
     <div class="col-lg-10">
         <input autocomplete="off" aria-autocomplete="none" data-name='organisationIdentifier' placeholder="https//ror.org/..." class="ror editor-input" id="contacts<%= data.index %>organisationIdentifier" value="<%= data.organisationIdentifier %>">
