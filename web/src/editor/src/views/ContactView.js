@@ -9,14 +9,28 @@ export default ObjectInputView.extend({
 
   initialize (options) {
     this.template = template
+    this.roleDefault = options.roleDefault || 'pointOfContact'
+    this.optionTemplate = _.template('<option value="<%= value %>"><%= label %></option>')
+    this.options = Array.isArray(options.roleoptions) ? options.roleoptions : []
+
     ObjectInputView.prototype.initialize.apply(this)
     createOrgAutocomplete('.orgAutocomplete', this)
   },
 
   render () {
     ObjectInputView.prototype.render.apply(this)
-    this.$('select.role').val(this.model.get('role'))
+
+    if (this.options.length > 0) {
+      this.options.forEach(option => {
+        this.$('.role-select').append(this.optionTemplate(option))
+      });
+      this.$('.role-select').val(this.roleDefault)
+    } else {
+      this.$('.role').addClass('d-none')
+    }
+    this.$('select.role-select').val(this.model.get('role'))
     this.$('select.honorificPrefix').val(this.model.get('honorificPrefix'))
+
     return this
   },
 
@@ -41,5 +55,9 @@ export default ObjectInputView.extend({
         this.model.unset(name)
       }
     }
+
+    const selectedRole = this.$('.role-select').val()
+    this.model.set('role', selectedRole || this.roleDefault)
+
   }
 })

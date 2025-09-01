@@ -6,8 +6,8 @@ export default _.template(`
         Add
         <span class="caret"></span>
     </button>
-    <ul class="dropdown-menu" aria-labelledby="dropdown<%= data.modelAttribute %>Menu">
-        <li><a class="dropdown-item" href="#">Custom</a></li>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown<%= data.modelAttribute %>Menu">
+        <li><a class="dropdown-item" href="#">Other</a></li>
     </ul>
 </div>
 `)

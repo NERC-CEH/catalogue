@@ -144,6 +144,13 @@ export default EditorView.extend({
           label: 'Contacts',
           ObjectInputView: ContactView,
           multiline: true,
+          roleoptions: [
+            { value: 'author', label: 'Author' },
+            { value: 'custodian', label: 'Custodian' },
+            { value: 'pointOfContact', label: 'Point of contact' },
+            { value: 'publisher', label: 'Publisher' },
+            { value: 'rightsHolder', label: 'Rights holder' }
+          ],
           predefined: {
             'Author - UKCEH': {
               organisationName: 'UK Centre for Ecology & Hydrology',
@@ -433,19 +440,15 @@ export default EditorView.extend({
           label: 'Distributor contact<small>The organisation responsible for distributing the data resource</small>',
           ObjectInputView: ContactView,
           multiline: true,
+          roleDefault: 'distributor',
           predefined: {
             EIDC: {
               organisationName: 'NERC EDS Environmental Information Data Centre',
-              role: 'distributor',
               email: 'info@eidc.ac.uk',
               organisationIdentifier: 'https://ror.org/04xw4m193'
             },
             'EMBL-EBI': {
-              organisationName: 'The European Bioinformatics Institute (EMBL-EBI)',
-              role: 'distributor'
-            },
-            'Other distributor': {
-              role: 'distributor'
+              organisationName: 'The European Bioinformatics Institute (EMBL-EBI)'
             }
           }
         })

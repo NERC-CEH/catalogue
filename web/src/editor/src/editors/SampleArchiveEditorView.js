@@ -328,6 +328,7 @@ export default EditorView.extend({
           modelAttribute: 'metadataContacts',
           label: 'Record owner',
           ObjectInputView: ContactView,
+          roleDefault: 'originator',
           multiline: true,
           helpText: `
 <p>Person responsible for maintaining this metadata record</p>

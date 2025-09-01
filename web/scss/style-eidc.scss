@@ -7,7 +7,7 @@ $card-default-text: #FFF;
 
 /* CSS custom properties */
 :root {
-     --eidc-blue: var(--ukceh-colour-teal);
+    --eidc-blue: var(--ukceh-colour-teal);
     --primary-colour: var(--eidc-blue);
     --secondary-colour: white;
     --tertiary-colour: hsl(75, 45%, 36%);
@@ -42,30 +42,17 @@ header {
 }
 
 footer {
-    .container {
-        padding: 1em;
-
-        span {
-            &:not(:last-of-type)::after {
-                content: "|";
-                margin: 0 0.6em;
+    .footer {
+        .container {
+            .footer-socials {
+                display: none;
             }
-        }
 
-        .altviews {
-            span:first-of-type {
-                margin-inline-start: 0.6em;
+            .footer-links {
+                justify-content: center;
+                grid-column-end: 3;
             }
-        }
 
-        .footer-links {
-            flex-direction: row;
-            gap: 0 2em;
-            grid-column: 1 / -1;
-        }
-
-        .footer-socials {
-            display: none;
         }
     }
 }

@@ -18,7 +18,7 @@ export default ParentView.extend({
     this.$('button').prop(this.data.disabled, this.data.disabled)
     _.chain(this.data.predefined)
       .keys()
-      .each(item => this.$('ul.dropdown-menu').append(this.dropdownTemplate({ predefined: item })))
+      .each(item => this.$('ul.dropdown-menu').prepend(this.dropdownTemplate({ predefined: item })))
     return this
   },
 
@@ -27,7 +27,7 @@ export default ParentView.extend({
     const value = $(event.target).text()
     let selected = {}
 
-    if (value !== 'Custom') {
+    if (value !== 'Other') {
       selected = this.data.predefined[value]
     }
 

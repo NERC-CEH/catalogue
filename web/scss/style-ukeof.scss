@@ -18,8 +18,6 @@
     --header-logo-height: calc(var(--header-height) - 50px);
     --header-logo-border: none;
     --ukceh-brand-display: none;
-
-    --align-footer-logos: space-around;
 }
 
 header {
@@ -52,15 +50,4 @@ header {
         padding-block-start: 2em;
     }
 
-}
-
-@media only screen and (min-width: 800px) {
-    footer {
-        .container {
-            .footer-links {
-                flex-direction: row;
-                gap: 0 2em;
-            }
-        }
-    }
 }

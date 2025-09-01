@@ -1,51 +1,12 @@
 import _ from 'underscore'
 
 export default _.template(`
-<div class="row role">
+<div class="role row">
     <div class="col-lg-2">
         <label for="contacts<%= data.index %>Role">Role</label>
     </div>
     <div class="col-lg-10">
-        <select data-name="role" class="role" id="contacts<%= data.index %>Role">
-            <option value="" selected="">- Select Role -</option>
-            <optgroup label="Frequently used">
-                <option class="option-nm option-eidc option-ukceh" value="author">Author</option>
-                <option class="option-eidc" value="custodian">Custodian</option>
-                <option class="option-eidc" value="depositor">Depositor</option>
-                <option class="option-eidc" value="distributor">Distributor</option>
-                <option class="option-ukeof" value="funder">Funder</option>
-                <option class="option-eidc option-ukceh option-nm" value="pointOfContact">Point of contact</option>
-                <option class="option-ukeof" value="pointOfContact">Lead organisation (point of contact)</option>
-                <option class="option-nm option-eidc" value="publisher">Publisher</option>
-                <option class="option-nm option-eidc option-ukceh" value="rightsHolder">Rights holder</option>
-                <option class="option-nm" value="owner">Senior Responsible Officer [SRO]</option>
-                <option class="option-ukeof" value="stakeholder">Stakeholder</option>
-                <option class="option-ukeof" value="user">User</option>
-            </optgroup>
-            <!-- OTHER USERS -->
-            <optgroup class="option-iso" label="Complete list">
-              <option class="option-iso" value="author">Author</option>
-              <option class="option-iso" value="coAuthor">Co-author</option>
-              <option class="option-iso" value="collaborator">Collaborator</option>
-              <option class="option-iso" value="contributor">Contributor</option>
-              <option class="option-iso" value="custodian">Custodian</option>
-              <option class="option-iso" value="depositor">Depositor</option>
-              <option class="option-iso" value="distributor">Distributor</option>
-              <option class="option-iso" value="editor">Editor</option>
-              <option class="option-iso" value="funder">Funder</option>
-              <option class="option-iso" value="mediator">Mediator</option>
-              <option class="option-iso" value="originator">Originator</option>
-              <option class="option-iso" value="pointOfContact">Point of contact</option>
-              <option class="option-iso" value="principalInvestigator">Principal investigator</option>
-              <option class="option-iso" value="processor">Processor</option>
-              <option class="option-iso" value="publisher">Publisher</option>
-              <option class="option-iso" value="resourceProvider">Resource provider</option>
-              <option class="option-iso" value="rightsHolder">Rights holder</option>
-              <option class="option-iso" value="sponsor">Sponsor</option>
-              <option class="option-iso" value="stakeholder">Stakeholder</option>
-              <option class="option-iso" value="user">User</option>
-            </optgroup>
-        </select>
+        <select data-name='role' class="role-select" id="contacts<%= data.index %>Role"></select>
     </div>
 </div>
 <div class="row organisation">

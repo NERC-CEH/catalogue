@@ -7,7 +7,7 @@
     <div id="metadata" class="metadata metadata-monitoring ${metadata.state?lower_case} <#if operationalStatus?? && operationalStatus == "Inactive">inactive</#if>">
     <#if !type??>
     <#else>
-      <section class="section section-grey">
+      <section class="section">
         <div class="container">
           <@admin />
 
@@ -94,8 +94,14 @@
             <@displayLinks linksOther "Other links"/>
           </#if>
 
-          <div>
+          <div class="pb-5">
             <h2>Other metadata</h2>
+
+            <#if additionalInfo?? && additionalInfo?has_content>
+              <#list additionalInfo as theInfo>
+                <@keyValue theInfo.key?cap_first "">${theInfo.value}</@keyValue>
+              </#list>
+            </#if>
 
             <#if keywordsParameters?? && keywordsParameters?has_content>
               <@keyValue "Parameters measured" ""><@displayKeywords keywordsParameters ","/></@keyValue>
@@ -103,10 +109,6 @@
 
             <#if keywords?? && keywords?has_content>
               <@keyValue "Keywords" ""><@displayKeywords keywords ","/></@keyValue>
-            </#if>
-
-            <#if metadataDateTime?has_content>
-              <@keyValue "Last updated" "">${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</@keyValue>
             </#if>
           </div>
 
@@ -119,6 +121,7 @@
 
     </#if>
     </div>
+
   </@skeleton.master>
 </#macro>
 
@@ -156,7 +159,7 @@
 
 <#macro editButton>
   <div class="btn-group btn-group-sm position-relative">
-    <button type="button" class="btn btn-light border btn-wide edit-control" data-document-type="${metadata.documentType}">
+    <button type="button" class="btn btn-outline-secondary btn-wide edit-control" data-document-type="${metadata.documentType}">
       Edit
       <#if totalIssues gte 1>
         <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-${metadataClass}"
@@ -166,7 +169,7 @@
         </span>
       </#if>
     </button>
-    <button type="button" class="btn btn-light border dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
       <span class="caret"></span>
       <span class="visually-hidden">Toggle Dropdown</span>
     </button>

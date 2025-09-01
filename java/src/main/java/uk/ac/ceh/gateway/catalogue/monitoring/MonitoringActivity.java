@@ -28,7 +28,7 @@ public class MonitoringActivity extends AbstractMetadataDocument implements Well
     private List<String> alternateTitles;
     private String objectives, operationalStatus;
     private BoundingBox boundingBox;
-    private List<ResponsibleParty> responsibleParties;
+    private List<ResponsibleParty> pointsOfContact;
     private List<TimePeriod> operatingPeriod;
     private List<Keyword> environmentalDomain, purposeOfCollection, keywordsParameters;
     private List<Supplemental> linksData, linksOther;

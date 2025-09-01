@@ -9,7 +9,7 @@ import {
   SingleObjectView,
   TemporalExtentView,
   TextareaView,
-  ContactSimpleView,
+  ContactView,
   FacilityTypeView,
   EnvironmentalDomainView,
   ResourceIdentifierView,
@@ -17,7 +17,7 @@ import {
   CheckboxView,
   AdditionalInfoView
 } from '../views'
-import { MultipleDate, FacilityType, EnvironmentalDomain, ContactSimple } from '../models'
+import { MultipleDate, FacilityType, EnvironmentalDomain, Contact } from '../models'
 import {
   Geometry,
   GeometryView
@@ -112,8 +112,8 @@ export default EditorView.extend({
           ObjectInputView: AdditionalInfoView,
           helpText: `
 <p>Enter information as key-value pairs.</p>
-`       })
-
+`
+        })
       ]
     },
     {
@@ -150,14 +150,14 @@ export default EditorView.extend({
       views: [
         new PredefinedParentView({
           model: this.model,
-          ModelType: ContactSimple,
-          modelAttribute: 'contacts',
-          label: 'Contacts',
-          ObjectInputView: ContactSimpleView,
+          ModelType: Contact,
+          modelAttribute: 'pointsOfContact',
+          label: 'Point of contact',
+          ObjectInputView: ContactView,
           multiline: true,
-          roleDefault:'pointOfContact',
+          roleDefault: 'pointOfContact',
           predefined: {
-            'UKCEH': {
+            UKCEH: {
               organisationName: 'UK Centre for Ecology & Hydrology',
               email: 'enquiries@ceh.ac.uk',
               organisationIdentifier: 'https://ror.org/00pggkr55'
@@ -177,7 +177,7 @@ export default EditorView.extend({
               email: 'enquiries@naturalresourceswales.gov.uk',
               organisationIdentifier: 'https://ror.org/04x65hs26'
             },
-            'SEPA': {
+            SEPA: {
               organisationName: 'Scottish Environment Protection Agency',
               organisationIdentifier: 'https://ror.org/01kxjy285'
             }
@@ -186,17 +186,17 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          ModelType: ContactSimple,
-          modelAttribute: 'collaborators',
-          label: 'Collaborators',
-          ObjectInputView: ContactSimpleView,
+          ModelType: Contact,
+          modelAttribute: 'partners',
+          label: 'Partners',
+          ObjectInputView: ContactView,
           multiline: true,
           roleoptions: [
-            { value: 'collaborator', label: 'collaborator' },
-            { value: 'funder', label: 'funder' },
-            { value: 'siteowner', label: 'site owner' }
-          ],
-          roleDefault: 'collaborator'
+            { value: 'funder', label: 'Funder' },
+            { value: 'siteowner', label: 'Site owner' },
+            { value: 'stakeholder', label: 'Stakeholder' },
+            { value: 'user', label: 'User' }
+          ]
         })
       ]
     },

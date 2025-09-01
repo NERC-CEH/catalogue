@@ -59,13 +59,12 @@ export default EditorView.extend({
           model: this.model,
           ModelType: Contact,
           modelAttribute: 'owners',
-          label: 'Owner',
+          label: 'Record owner',
           ObjectInputView: ContactView,
           multiline: true,
           predefined: {
             'UKCEH Bangor': {
               organisationName: 'UK Centre for Ecology & Hydrology',
-              role: 'pointOfContact',
               email: 'enquiries@ceh.ac.uk',
               organisationIdentifier: 'https://ror.org/00pggkr55',
               address: {
@@ -74,7 +73,6 @@ export default EditorView.extend({
             },
             'UKCEH Edinburgh': {
               organisationName: 'UK Centre for Ecology & Hydrology',
-              role: 'pointOfContact',
               email: 'enquiries@ceh.ac.uk',
               organisationIdentifier: 'https://ror.org/00pggkr55',
               address: {
@@ -83,7 +81,6 @@ export default EditorView.extend({
             },
             'UKCEH Lancaster': {
               organisationName: 'UK Centre for Ecology & Hydrology',
-              role: 'pointOfContact',
               email: 'enquiries@ceh.ac.uk',
               organisationIdentifier: 'https://ror.org/00pggkr55',
               address: {
@@ -92,7 +89,6 @@ export default EditorView.extend({
             },
             'UKCEH Wallingford': {
               organisationName: 'UK Centre for Ecology & Hydrology',
-              role: 'pointOfContact',
               email: 'enquiries@ceh.ac.uk',
               organisationIdentifier: 'https://ror.org/00pggkr55',
               address: {

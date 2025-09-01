@@ -1,6 +1,5 @@
 export { default as AccessLimitation } from './AccessLimitation'
 export { default as Contact } from './Contact'
-export { default as ContactSimple } from './ContactSimple'
 export { default as ObservedProperty } from './ObservedProperty'
 export { default as Fileset } from './Fileset'
 export { default as DescriptiveKeyword } from './DescriptiveKeyword'
