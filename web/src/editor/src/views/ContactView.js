@@ -23,7 +23,7 @@ export default ObjectInputView.extend({
     if (this.options.length > 0) {
       this.options.forEach(option => {
         this.$('.role-select').append(this.optionTemplate(option))
-      });
+      })
       this.$('.role-select').val(this.roleDefault)
     } else {
       this.$('.role').addClass('d-none')
@@ -58,6 +58,5 @@ export default ObjectInputView.extend({
 
     const selectedRole = this.$('.role-select').val()
     this.model.set('role', selectedRole || this.roleDefault)
-
   }
 })
