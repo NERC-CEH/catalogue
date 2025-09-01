@@ -32,9 +32,8 @@ public class SolrIndexMonitoringProgrammeGenerator implements IndexGenerator<Mon
             .setObjectives(document.getObjectives())
             .setEnvironmentalDomains(grab(document.getEnvironmentalDomain(), Keyword::getValue))
             .setKeywordsParameters(grab(document.getKeywordsParameters(), Keyword::getValue))
-            .setResponsibleParties(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationName))
+            .setOrganisation(grab(document.getPointsOfContact(), ResponsibleParty::getOrganisationName))
             .setOperatingPeriod(grab(document.getOperatingPeriod(), MonitoringDocumentUtil::getTimeRange))
-            .setPointOfContact(grab(document.getResponsibleParties(), ResponsibleParty::getPointOfContact))
             .setOperationalStatus(document.getOperationalStatus() == null? "Unknown" : document.getOperationalStatus())
             ;
     }

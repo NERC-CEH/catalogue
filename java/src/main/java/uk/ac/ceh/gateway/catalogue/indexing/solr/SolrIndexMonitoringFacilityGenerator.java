@@ -7,6 +7,10 @@ import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import java.util.List;
+
 import static uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexMetadataDocumentGenerator.grab;
 
 /**
@@ -35,9 +39,13 @@ public class SolrIndexMonitoringFacilityGenerator implements IndexGenerator<Moni
         return index
             .setEnvironmentalDomains(grab(document.getEnvironmentalDomain(), Keyword::getValue))
             .setKeywordsParameters(grab(document.getKeywordsParameters(), Keyword::getValue))
-            .setResponsibleParties(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationName))
+            .setOrganisation(
+                Stream.concat(
+                    grab(document.getPointsOfContact(), ResponsibleParty::getOrganisationName).stream(),
+                    grab(document.getPartners(), ResponsibleParty::getOrganisationName).stream()
+                ).collect(Collectors.toList())
+            )
             .setOperatingPeriod(grab(document.getOperatingPeriod(), MonitoringDocumentUtil::getTimeRange))
-            .setPointOfContact(grab(document.getResponsibleParties(), ResponsibleParty::getPointOfContact))
             .setOperationalStatus(document.getOperationalStatus() == null? "Unknown" : document.getOperationalStatus())
             ;
     }
