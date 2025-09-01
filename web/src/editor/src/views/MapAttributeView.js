@@ -4,7 +4,7 @@ import ChildView from './ChildView'
 import MapValueView from './MapValueView'
 import MapBucketView from './MapBucketView'
 import template from '../templates/MapAttribute'
-import { MapDataSource } from "../models";
+import { MapDataSource } from '../models'
 
 export default ObjectInputView.extend({
 
