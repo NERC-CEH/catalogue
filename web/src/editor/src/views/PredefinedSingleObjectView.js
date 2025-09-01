@@ -22,7 +22,7 @@ export default SingleObjectView.extend({
     this.$('.editor-button').html('Set <span class="caret"></span>')
     _.chain(this.data.predefined)
       .keys()
-      .each(item => this.$('ul.dropdown-menu').append(this.dropdownTemplate({ predefined: item })))
+      .each(item => this.$('ul.dropdown-menu').prepend(this.dropdownTemplate({ predefined: item })))
     return this
   },
 
@@ -30,7 +30,7 @@ export default SingleObjectView.extend({
     event.preventDefault()
     const value = $(event.target).text()
 
-    if (value !== 'Custom') {
+    if (value !== 'Other') {
       this.inputModel.set(this.data.predefined[value])
     } else {
       this.inputModel.clear().set(this.inputModel.defaults)

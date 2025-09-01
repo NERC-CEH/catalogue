@@ -182,16 +182,13 @@ export default EditorView.extend({
           modelAttribute: 'responsibleParties',
           label: 'Contacts',
           ObjectInputView: ContactView,
+          roleDefault: 'owner',
           multiline: true,
           predefined: {
             'UKCEH owner': {
               organisationName: 'UK Centre for Ecology & Hydrology',
-              role: 'owner',
               email: 'enquiries@ceh.ac.uk',
               organisationIdentifier: 'https://ror.org/00pggkr55'
-            },
-            'Other owner': {
-              role: 'owner'
             }
           }
         })

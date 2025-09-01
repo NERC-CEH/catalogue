@@ -16,7 +16,7 @@ export default _.template(`
   <div class="mt-5">
     <label  class="control-label">
       <span class="fw-bold">Provide a brief description of what the data are and how they were created.</span> <span class="text-danger">*</span>
-      <br><span class="text-body-tertiary">Guidance on what to include in a description can be found <a class="link-secondary" href="https://eidc.ac.uk/deposit/metadata/guidance" target="_blank" rel="noopener noreferrer">in our guidance</a>.</span>
+      <br><span class="text-body-tertiary">Information on what to include in a description can be found <a class="link-secondary" href="https://eidc.ac.uk/deposit/metadata/guidance#description" target="_blank" rel="noopener noreferrer">in our guidance</a>.</span>
     </label>
     <textarea data-name='description'
               class="form-control"

@@ -85,11 +85,11 @@ export default EditorView.extend({
           modelAttribute: 'responsibleParties',
           label: 'Contacts',
           ObjectInputView: ContactView,
+          roleDefault: 'owner',
           multiline: true,
           predefined: {
             'SRO - UKCEH': {
               organisationName: 'UK Centre for Ecology & Hydrology',
-              role: 'owner',
               organisationIdentifier: 'https://ror.org/00pggkr55'
             }
           },

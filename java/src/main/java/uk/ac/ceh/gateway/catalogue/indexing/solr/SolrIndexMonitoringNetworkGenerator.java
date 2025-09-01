@@ -32,8 +32,7 @@ public class SolrIndexMonitoringNetworkGenerator implements IndexGenerator<Monit
             .setObjectives(document.getObjectives())
             .setEnvironmentalDomains(grab(document.getEnvironmentalDomain(), Keyword::getValue))
             .setKeywordsParameters(grab(document.getKeywordsParameters(), Keyword::getValue))
-            .setResponsibleParties(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationName))
-            .setPointOfContact(grab(document.getResponsibleParties(), ResponsibleParty::getPointOfContact))
+            .setOrganisation(grab(document.getPointsOfContact(), ResponsibleParty::getOrganisationName))
             .setOperationalStatus(document.getOperationalStatus() == null? "Unknown" : document.getOperationalStatus())
             ;
     }

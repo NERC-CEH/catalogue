@@ -28,7 +28,7 @@ export default ObjectInputView.extend({
     this.predefined = options.predefined
     _.chain(this.predefined)
       .keys()
-      .each(item => this.$('ul.dropdown-menu').append(this.dropdownTemplate({ predefined: item })))
+      .each(item => this.$('ul.dropdown-menu').prepend(this.dropdownTemplate({ predefined: item })))
 
     this.zIndex = 1
     this.observedPropertyList = this.model.getObservedProperty()

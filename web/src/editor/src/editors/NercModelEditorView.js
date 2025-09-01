@@ -80,29 +80,24 @@ export default EditorView.extend({
           multiline: true,
           predefined: {
             BAS: {
-              role: 'pointOfContact',
               organisationName: 'British Antarctic Survey',
               email: 'information@bas.ac.uk',
               organisationIdentifier: 'https://ror.org/01rhff309'
             },
             BGS: {
-              role: 'pointOfContact',
               organisationName: 'British Geological Survey',
               email: 'enquiries@bgs.ac.uk',
               organisationIdentifier: 'https://ror.org/04a7gbp98'
             },
             CEDA: {
-              role: 'pointOfContact',
               organisationName: 'Centre for Environmental Data Analysis',
               organisationIdentifier: 'https://ror.org/04j4kad11'
             },
             NOC: {
-              role: 'pointOfContact',
               organisationName: 'National Oceanography Centre',
               organisationIdentifier: 'https://ror.org/00874hx02'
             },
             UKCEH: {
-              role: 'pointOfContact',
               organisationName: 'UK Centre for Ecology & Hydrology',
               email: 'enquiries@ceh.ac.uk',
               organisationIdentifier: 'https://ror.org/00pggkr55'
