@@ -298,7 +298,7 @@ header {
             height: var(--header-height);
 
             img {
-                max-height: var(--header-logo-height);
+                max-height: calc(var(--header-height) * 0.75);
                 border-inline-end: var(--header-logo-border);
             }
         }
