@@ -70,12 +70,6 @@
           <h2>Additional metadata</h2>
           <#include "_tags.ftlh">
           <#include "_funding.ftlh">
-          <#if metadataDateTime?has_content>
-            <div class="row key-value">
-              <div class="col-sm-3 key">Last updated</div>
-              <div class="col-sm-9 value">${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</div>
-            </div>
-          </#if>
         </div>
       </#if>
 

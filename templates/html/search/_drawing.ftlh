@@ -8,7 +8,7 @@
 -->
 <#if withoutBbox?has_content>
   <div class="btn-group">
-    <button id="spatial-op-dropdown" class="btn btn-light border btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+    <button id="spatial-op-dropdown" class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
       <#if withinBbox?has_content>
         Overlapping
       <#else>
@@ -27,7 +27,7 @@
     <span class="fa-solid fa-xmark"></span>
   </a>
 <#else>
-  <button id="drawing-toggle" type="button" class="btn btn-light border btn-sm" aria-label="Draw a boundary in which to search">
+  <button id="drawing-toggle" type="button" class="btn btn-outline-secondary btn-sm" aria-label="Draw a boundary in which to search">
     <span class="fa-solid fa-pencil-alt"></span>
   </button>
 </#if>

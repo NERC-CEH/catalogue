@@ -200,11 +200,6 @@
             </div>
             </#if>
 
-
-            <@displayNest "Last updated">
-              ${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}
-            </@displayNest>
-
           </div>
         </div>
 

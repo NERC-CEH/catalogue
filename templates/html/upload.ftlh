@@ -39,7 +39,7 @@
         </div>
         <div class="mb-3">
           <div class="col-sm-offset-2 col-sm-10">
-            <input class="btn btn-light border" type="submit" value="Upload">
+            <input class="btn btn-outline-secondary" type="submit" value="Upload">
           </div>
         </div>
       </form>

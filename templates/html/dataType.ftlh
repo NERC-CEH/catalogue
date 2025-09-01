@@ -10,8 +10,8 @@
           <div class="admin d-print-none">
             <div class="text-end">
               <div class="btn-group">
-                <a type="button" class="btn btn-light border edit-control" href="#" data-document-type="${metadata.documentType}">Edit</a>
-                <button type="button" class="btn btn-light border dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a type="button" class="btn btn-outline-secondary edit-control" href="#" data-document-type="${metadata.documentType}">Edit</a>
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <span class="visually-hidden">Toggle Dropdown</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">

@@ -60,7 +60,7 @@ CEH model QA
     </#if>
   </div>
 </#macro>
-  
+
 <#--
 CEH dataInfo table
 -->
@@ -115,8 +115,6 @@ CEH dataInfo table
         </#list>
     </@key>
     </#if>
-
-    <@key "Last updated">${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</@key>
   </section>
   </#if>
 </#macro>

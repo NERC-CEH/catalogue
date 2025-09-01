@@ -27,7 +27,7 @@
             <div class="text-end d-print-none adminPanel" role="toolbar">
                 <#if state == "agreed">
                     <div class="btn-group btn-group-sm">
-                        <button type="button" class="btn btn-light border btn-wide" onClick="window.print()">Print</button>
+                        <button type="button" class="btn btn-outline-secondary btn-wide" onClick="window.print()">Print</button>
                     </div>
                 </#if>
                 <#if !isHistorical()>
@@ -47,8 +47,8 @@
                     </#if>
                     <#if permission.userCanEditServiceAgreement(id)>
                         <div class="btn-group btn-group-sm">
-                            <button type="button" class="btn btn-light border edit-control btn-wide" data-document-type="service-agreement">Edit</button>
-                            <button type="button" class="btn btn-light border dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                            <button type="button" class="btn btn-outline-secondary edit-control btn-wide" data-document-type="service-agreement">Edit</button>
+                            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                               <span class="caret"></span>
                               <span class="visually-hidden">Toggle Dropdown</span>
                             </button>
@@ -63,21 +63,21 @@
                         </div>
                         <#list getModelLinks() as link>
                             <#if link.rel == 'history'>
-                                <a href="${link.href}" class="btn btn-light border btn-wide btn-sm">${link.title}</a>
+                                <a href="${link.href}" class="btn btn-outline-secondary btn-wide btn-sm">${link.title}</a>
                             </#if>
                         </#list>
                     </#if>
                     <#if canChangeState>
                         <#list transitions as transition>
                             <form method="post" action="/service-agreement/${id}/form-publication/${transition.id}">
-                                <p><button type="submit" class="btn btn-light border btn-wide btn-sm" title="${transition.helpText}">${transition.title}</button></p>
+                                <p><button type="submit" class="btn btn-outline-secondary btn-wide btn-sm" title="${transition.helpText}">${transition.title}</button></p>
                             </form>
                         </#list>
                     </#if>
                 <#elseif  isHistorical()>
                     <#list getModelLinks() as link>
                         <#if link.title == 'History'>
-                            <a href="${link.href}" class="btn btn-light border btn-wide btn-sm">${link.title}</a>
+                            <a href="${link.href}" class="btn btn-outline-secondary btn-wide btn-sm">${link.title}</a>
                         </#if>
                     </#list>
                 </#if>

@@ -99,8 +99,6 @@ CEH dataInfo table
         </#list>
     </@key>
     </#if>
-
-    <@key "Last updated">${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</@key>
   </div>
   </#if>
 </#macro>

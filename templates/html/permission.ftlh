@@ -31,7 +31,7 @@
               <td><input type="checkbox" disabled <#if permission.canEdit>checked</#if>></td>
               <td><input type="checkbox" disabled <#if permission.canDelete>checked</#if>></td>
               <td><input type="checkbox" disabled <#if permission.canUpload>checked</#if>></td>
-              <td><button class="btn btn-light border btn-sm" title="remove permissions for this user" disabled ><i class="fa-solid fa-xmark"></i></button></td>
+              <td><button class="btn btn-outline-secondary btn-sm" title="remove permissions for this user" disabled ><i class="fa-solid fa-xmark"></i></button></td>
             </tr>
           </#list>
         </tbody>
@@ -41,7 +41,7 @@
 
       <nav class="navbar fixed-bottom p-3 bg-secondary"> <div class="container">
         <div class="d-flex ms-auto">
-          <a class="btn btn-light border me-2" href="/documents/${id}">Return to metadata</a>
+          <a class="btn btn-outline-secondary me-2" href="/documents/${id}">Return to metadata</a>
           <#if canEdit>
             <a class="btn btn-primary" href="#permission/${id}"><i class="fa-regular fa-edit"></i> Edit</a>
           </#if>

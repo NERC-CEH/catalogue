@@ -17,9 +17,9 @@ export default (title, tableTemplate) => {
         </div>
 
         <div class="suggestions-buttons text-center" style="display: none;">
-          <button class="btn btn-light border suggestions-add-btn">Add</button>
-          <button class="btn btn-light border suggestions-close-btn">Close</button>
-          <button class="btn btn-light border suggestions-load-more-btn">Load More</button>
+          <button class="btn btn-outline-secondary suggestions-add-btn">Add</button>
+          <button class="btn btn-outline-secondary suggestions-close-btn">Close</button>
+          <button class="btn btn-outline-secondary suggestions-load-more-btn">Load More</button>
         </div>
       </div>
     </div>
