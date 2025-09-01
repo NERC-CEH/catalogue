@@ -38,10 +38,16 @@ export default _.template(`
     </div>
 
     <hr/>
-    <h6>Values <button class="editor-button-xs addValue"  <%= data.disabled%>>Add <span class="fa-solid fa-plus"></span></button></h6>
+    <div class="mapDataSource-header">
+      <h6>Values</h6>
+      <button class="editor-button-xs addValue"  <%= data.disabled%>>Add <span class="fa-solid fa-plus"></span></button>
+    </div>
     <div class="values"></div>
     <hr/>
-    <h6>Buckets <button class="editor-button-xs addBucket"  <%= data.disabled%>>Add <span class="fa-solid fa-plus"></span></button></h6>
+    <div class="mapDataSource-header">
+      <h6>Buckets</h6>
+      <button class="editor-button-xs addBucket"  <%= data.disabled%>>Add <span class="fa-solid fa-plus"></span></button>
+    </div>
     <div class="buckets"></div>
 </div>
 `)

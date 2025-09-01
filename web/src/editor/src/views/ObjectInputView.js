@@ -53,7 +53,7 @@ export default Backbone.View.extend({
      * The supplied `view` callback function is required to generate a constructed
      * child view element which will be rendered on to the list
      */
-  createList (collection, selector, view, noSort) {
+  createList (collection, selector, view, noSort, options = {}) {
     const element = this.$(selector)
     const that = this
     const addView = function () {
@@ -68,6 +68,10 @@ export default Backbone.View.extend({
 
     this.listenTo(collection, 'add', addView)
     this.listenTo(collection, 'reset', resetView)
+
+    if (options.onCollectionChange) {
+      this.listenTo(collection, 'add change remove', options.onCollectionChange)
+    }
 
     let pos = null
     if (this.data.disabled !== 'disabled') {
