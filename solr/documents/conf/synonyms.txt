@@ -47,13 +47,13 @@ invasive species,alien species,non-indigenous species
 meter,metre
 ecosystem services,eco-services,natural capital
 hedge,hedgerow
-ceh,ukceh
 great britain,uk,united kingdom
 renewable energy,sustainable energy,green energy
 carbon footprint,carbon emissions
 carbon dioxide,CO2
 ozone,O3
-agriculture,agribusiness,agriculture,farming,farm,harvest,livestock
+agriculture,agribusiness,agriculture,farming,farming
+defra, department for environment food and rural affairs 
 climate change,global warming
 enviroment,enviromnent => environment
 teh => the
@@ -61,6 +61,7 @@ governmnet => government
 supercede => supersede
 catagory => category
 guage => gauge
+ceh => ukceh
 license,lisence => licence
 occurrance,occurence => occurrence
 flourescent => fluorescent
