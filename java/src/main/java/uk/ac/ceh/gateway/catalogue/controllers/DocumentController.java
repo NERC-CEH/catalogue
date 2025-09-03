@@ -1,5 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import lombok.ToString;
@@ -39,11 +48,13 @@ import java.util.Objects;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
 import static uk.ac.ceh.gateway.catalogue.model.Permission.VIEW;
+import static uk.ac.ceh.gateway.catalogue.openapi.OpenApiMessage.*;
 
 @SuppressWarnings("SpringMVCViewInspection")
 @Slf4j
 @ToString(callSuper = true)
 @Controller
+@Tag(name = "Document Management", description = "Managing metadata in the catalogue")
 public class DocumentController extends AbstractDocumentController {
     public static final String MAINTENANCE_ROLE = "ROLE_CIG_SYSTEM_ADMIN";
     private final MetricsService metricsService;
@@ -388,6 +399,44 @@ public class DocumentController extends AbstractDocumentController {
                 );
             }
 
+    @Operation(
+        summary = "Retrieve document metadata by ID",
+        description = "Fetches the metadata for a document with ID, VIEW permission is required.",
+        parameters = {
+            @Parameter(name = "file", description = "Unique document ID", required = true, in = ParameterIn.PATH),
+            @Parameter(name = "format", description = "Document output format", in = ParameterIn.QUERY, schema = @Schema(type = "string", allowableValues = {"schema.org", "ttl"}))
+        },
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Successfully retrieved the document metadata",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = MetadataDocument.class)
+                )
+            ),
+            @ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized - User is not authenticated",
+                content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = UNAUTHORIZED)
+                )
+            ),
+            @ApiResponse(
+                responseCode = "403",
+                description = "Forbidden - User doesn't have permission to view this document"
+            ),
+            @ApiResponse(
+                responseCode = "404",
+                description = "Document not found",
+                content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = NOT_FOUND)
+                )
+            )
+        }
+    )
     @CrossOrigin
     @ResponseBody
     @SneakyThrows
@@ -398,12 +447,12 @@ public class DocumentController extends AbstractDocumentController {
             @PathVariable("file") String file,
             HttpServletRequest request
         ) {
-        MetadataDocument document = documentRepository.read(file);
-        if(metricsService != null && !metricsExcludedUsers.contains(user.getUsername()) && !document.getState().equals(GitRepoServiceAgreementService.DRAFT)) {
-            metricsService.recordView(file, request.getRemoteAddr());
-        }
-        return postProcessLinkDocument(document);
+            MetadataDocument document = documentRepository.read(file);
+            if(metricsService != null && !metricsExcludedUsers.contains(user.getUsername()) && !document.getState().equals(GitRepoServiceAgreementService.DRAFT)) {
+                metricsService.recordView(file, request.getRemoteAddr());
             }
+            return postProcessLinkDocument(document);
+        }
 
     @CrossOrigin
     @SneakyThrows

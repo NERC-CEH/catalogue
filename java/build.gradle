@@ -53,6 +53,8 @@ dependencies {
     implementation "uk.ac.ceh.components:userstore-inmemory:${cehComponentsVersion}"
     implementation "uk.ac.ceh.components:springsecurity-userstore:${cehComponentsVersion}"
     implementation "com.opencsv:opencsv:5.10"
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.11'
+    implementation 'org.springdoc:springdoc-openapi-starter-common:2.8.11'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
