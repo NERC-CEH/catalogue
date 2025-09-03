@@ -73,18 +73,29 @@
             </@keyValue>
           </#if>
 
-          <#if responsibleParties?has_content>
-            <div>
+          <#if pointsOfContact?has_content || partners?has_content>
+            <div class="contacts">
               <h2>Contacts</h2>
+              <#if pointsOfContact?has_content>
+                <div class="contacts-main">
+                  <#list pointsOfContact>
+                    <#items as contact>
+                      <@contactDetails contact/>
+                    </#items>
+                  </#list>
+                </div>
+              </#if>
 
-              <#list responsibleParties>
-                <#items as rp>
-                  <@contactDetails rp/>
-                </#items>
-              </#list>
-
+              <#if partners?has_content>
+                <#list partners>
+                  <#items as contact>
+                    <@contactDetails contact/>
+                  </#items>
+                </#list>
+              </#if>
             </div>
           </#if>
+
 
           <#if linksData?has_content>
             <@displayLinks linksData "Links to data"/>
@@ -94,23 +105,26 @@
             <@displayLinks linksOther "Other links"/>
           </#if>
 
-          <div class="pb-5">
-            <h2>Other metadata</h2>
 
-            <#if additionalInfo?? && additionalInfo?has_content>
-              <#list additionalInfo as theInfo>
-                <@keyValue theInfo.key?cap_first "">${theInfo.value}</@keyValue>
-              </#list>
-            </#if>
+          <#if (additionalInfo?? && additionalInfo?has_content) || (keywordsParameters?? && keywordsParameters?has_content) || (keywords?? && keywords?has_content)>
+            <div class="pb-5">
+              <h2>Other metadata</h2>
 
-            <#if keywordsParameters?? && keywordsParameters?has_content>
-              <@keyValue "Parameters measured" ""><@displayKeywords keywordsParameters ","/></@keyValue>
-            </#if>
+              <#if additionalInfo?? && additionalInfo?has_content>
+                <#list additionalInfo as theInfo>
+                  <@keyValue theInfo.key?cap_first "">${theInfo.value}</@keyValue>
+                </#list>
+              </#if>
 
-            <#if keywords?? && keywords?has_content>
-              <@keyValue "Keywords" ""><@displayKeywords keywords ","/></@keyValue>
-            </#if>
-          </div>
+              <#if keywordsParameters?? && keywordsParameters?has_content>
+                <@keyValue "Parameters measured" ""><@displayKeywords keywordsParameters ","/></@keyValue>
+              </#if>
+
+              <#if keywords?? && keywords?has_content>
+                <@keyValue "Keywords" ""><@displayKeywords keywords ","/></@keyValue>
+              </#if>
+            </div>
+          </#if>
 
           <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
             <#include "../dataResource/_metadataqualityReport.ftlh">
@@ -379,41 +393,46 @@ Operating period
   </#if>
 </#macro>
 
-
 <#macro contactDetails contact>
- <@keyValue contact.roleDisplayName?cap_first "">
+  <div class="contact row">
+      <#if contact.role?has_content>
+      <div class="col-md-3 col-lg-2 col-12">
+        <b>${contact.roleDisplayName?cap_first}</b>
+      </div>
+      </#if>
 
-    <#if contact.fullName?has_content>
-      <span>
-        ${contact.fullName}
-        <#if contact.nameIdentifier?has_content>
-          <a href="${contact.nameIdentifier}" target="_blank" rel="noopener noreferrer">
-            <img src="/static/img/orcid_16x16.png" alt="ORCID iD icon" title="ORCID iD">
-          </a>
-        </#if>
-      </span>
-      <br>
-    </#if>
+    <div class="col-md-9 col-lg-10 col-12">
+      <#if contact.fullName?has_content>
+        <span>
+          ${contact.fullName}
+          <#if contact.nameIdentifier?has_content>
+            <a href="${contact.nameIdentifier}" target="_blank" rel="noopener noreferrer">
+              <img src="/static/img/orcid_16x16.png" alt="ORCID iD icon" title="ORCID iD">
+            </a>
+          </#if>
+        </span>
+        <br>
+      </#if>
 
-    <#if contact.organisationName?has_content>
-      <span>
-        ${contact.organisationName}
-        <#if contact.organisationIdentifier?has_content>
-          <a href="${contact.organisationIdentifier}" target="_blank" rel="noopener noreferrer">
-            <img src="/static/img/ror_16x16.png" alt="RoR icon" title="Research Organisation Identifier">
-          </a>
-        </#if>
-      </span>
-      <br>
-    </#if>
+      <#if contact.organisationName?has_content>
+        <span>
+          ${contact.organisationName}
+          <#if contact.organisationIdentifier?has_content>
+            <a href="${contact.organisationIdentifier}" target="_blank" rel="noopener noreferrer">
+              <img src="/static/img/ror_16x16.png" alt="RoR icon" title="Research Organisation Identifier">
+            </a>
+          </#if>
+        </span>
+        <br>
+      </#if>
 
-    <#if contact.email?has_content>
-      <span>
-        <a href="mailto:${contact.email}">${contact.email}</a>
-      </span>
-      <br>
-    </#if>
-  </@keyValue>
+      <#if contact.email?has_content>
+        <span>
+          <a href="mailto:${contact.email}">${contact.email}</a>
+        </span>
+      </#if>
+    </div>
+  </div>
 </#macro>
 
 <#macro displayLinks linkList title="">
