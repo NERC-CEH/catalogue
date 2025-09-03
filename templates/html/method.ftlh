@@ -105,11 +105,6 @@
                 </@displaykey>
             </#if>
 
-
-            <@displaykey "Last updated">${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</@displaykey>
-
-          </div>
-          <div class="col2">
           </div>
         </div>
       </div>

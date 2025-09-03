@@ -4,7 +4,7 @@ export default _.template(`
 <div id="map-style-selector" class="input-group">
   <input type="text" class="form-control" value="<%= data.type %>" <%= data.disabled%>/>
   <div class="input-group-btn">
-    <button type="button" class="btn btn-light border dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" <%= data.disabled%>>
+    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" <%= data.disabled%>>
       <span class="selected icon"></span>
     </span></button>
     <ul class="dropdown-menu dropdown-menu-end">

@@ -92,7 +92,7 @@
 
                 <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>
                     <div id="editorCreate" class="dropdown">
-                      <button class="btn btn-light border dropdown-toggle" type="button" id="createMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                      <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="createMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         Create
                         <span class="caret"></span>
                       </button>
@@ -127,13 +127,22 @@
       </main>
       <#if footer>
         <footer>
-            <#if catalogue.id == "eidc">
-              <#include "footer/eidc.ftlh">
-            <#elseif catalogue.id == "ukeof">
-              <#include "footer/ukeof.ftlh">
-            <#else>
-              <#include "footer/ukceh.ftlh">
-            </#if>
+
+          <#if metadataDateTime?has_content>
+            <div class="section-grey">
+              <div class="container">
+                <div class="small"><b>Last updated</b> ${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</div>
+              </div>
+            </div>
+          </#if>
+
+          <#if catalogue.id == "eidc">
+            <#include "footer/eidc.ftlh">
+          <#elseif catalogue.id == "ukeof">
+            <#include "footer/ukeof.ftlh">
+          <#else>
+            <#include "footer/ukceh.ftlh">
+          </#if>
         </footer>
       </#if>
       <#if catalogue?has_content && catalogue.id == "eidc">

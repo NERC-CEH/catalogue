@@ -3,7 +3,7 @@
   <#if displayApp.url?has_content>
     <div class="dataExplorer d-none d-md-block">
       <div class="d-flex justify-content-end mt-2">
-        <a href="${displayApp.url}" target="_blank" class="btn btn-sm btn-light border text-decoration-none">
+        <a href="${displayApp.url}" target="_blank" class="btn btn-sm btn-outline-secondary text-decoration-none">
           <span class="me-1">
             Open <#if displayApp.name?has_content>${displayApp.name} </#if>in new tab
           </span>

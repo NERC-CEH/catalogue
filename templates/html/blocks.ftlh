@@ -289,9 +289,9 @@ Admin toolbar
     <div class="row d-print-none" id="adminPanel">
         <div class="text-end" id="adminToolbar" role="toolbar">
           <div class="btn-group btn-group-sm">
-            <button type="button" class="btn btn-light border btn-wide edit-control" data-document-type="${metadata.documentType}">Edit</button>
+            <button type="button" class="btn btn-outline-secondary btn-wide edit-control" data-document-type="${metadata.documentType}">Edit</button>
             <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
-            <button type="button" class="btn btn-light border dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <span class="caret"></span>
               <span class="visually-hidden">Toggle Dropdown</span>
             </button>

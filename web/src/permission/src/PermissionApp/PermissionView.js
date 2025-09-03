@@ -9,14 +9,14 @@ export const documentsTemplate = _.template(`
 <td><input data-permission="canEdit" type="checkbox" <% if(canEdit) { %>checked<% } %>></td>
 <td><input data-permission="canDelete" type="checkbox" <% if(canDelete) { %>checked<% } %>></td>
 <td><input data-permission="canUpload" type="checkbox" <% if(canUpload) { %>checked<% } %>></td>
-<td><button class="btn btn-light border btn-sm"><i class="fa-solid fa-times"></i></button></td>
+<td><button class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-times"></i></button></td>
 `)
 
 export const serviceAgreementTemplate = _.template(`
 <td><%= identity %></td>
 <td><input data-permission="canView" type="checkbox" <% if(canView) { %>checked<% } %>></td>
 <td><input data-permission="canEdit" type="checkbox" <% if(canEdit) { %>checked<% } %>></td>
-<td><button class="btn btn-light border btn-sm"><i class="fa-solid fa-times"></i></button></td>
+<td><button class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-times"></i></button></td>
 `)
 
 export default Backbone.View.extend({

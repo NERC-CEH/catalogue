@@ -11,7 +11,7 @@
             LIMIT 10
           </#if>
         </textarea>
-        <button type="submit" class="btn btn-light border">Execute</button>
+        <button type="submit" class="btn btn-outline-secondary">Execute</button>
       </form>
 
       <#if error??><div class="alert alert-danger">${error}</div></#if>

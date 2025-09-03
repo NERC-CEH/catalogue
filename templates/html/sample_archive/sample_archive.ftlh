@@ -157,10 +157,6 @@
                 </@key>
               </#if>
 
-              <#if metadataDate?? && metadataDate?has_content>
-                  <@key "Record last updated">${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</@key>
-              </#if>
-
               <@key "Permanent link">
                   <a href="https://catalogue.ceh.ac.uk/documents/${id}">https://catalogue.ceh.ac.uk/id/${id}</a>
               </@key>

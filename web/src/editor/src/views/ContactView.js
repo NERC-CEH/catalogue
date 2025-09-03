@@ -15,6 +15,10 @@ export default ObjectInputView.extend({
 
     ObjectInputView.prototype.initialize.apply(this)
     createOrgAutocomplete('.orgAutocomplete', this)
+
+    if (!this.model.get('role')) {
+      this.model.set('role', this.roleDefault)
+    }
   },
 
   render () {

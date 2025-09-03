@@ -470,6 +470,17 @@ body {
         font-size: 0.85em;
     }
 
+
+    .contacts {
+        .contact:not(:last-of-type) {
+            margin-bottom: 0.65em;
+        }
+
+        .contacts-main {
+            margin-bottom: 2.5em;
+        }
+    }
+
     .responsibleParty {
         a.contactEmail {
             margin-inline-start: 0.5em;
@@ -496,34 +507,34 @@ body {
         address {
             margin-block-end: 0;
         }
-    }
 
-    .responsiblePartyCollapse.trigger.collapse {
-        display: block
-    }
+        &.trigger {
+            &:not(.show) {
+                a.moreAuthors {
+                    &::after {
+                        content: "more ↓";
+                    }
 
-    .responsiblePartyCollapse.trigger {
-        &:not(.show) {
-            a.moreAuthors {
-                &::after {
-                    content: "more ↓";
-                }
-
-                span {
-                    display: inline;
+                    span {
+                        display: inline;
+                    }
                 }
             }
-        }
 
-        &.show {
-            a.moreAuthors {
-                &::after {
-                    content: "fewer ↑";
-                }
+            &.show {
+                a.moreAuthors {
+                    &::after {
+                        content: "fewer ↑";
+                    }
 
-                span {
-                    display: none;
+                    span {
+                        display: none;
+                    }
                 }
+            }
+
+            &.collapse {
+                display: block
             }
         }
     }
@@ -559,7 +570,10 @@ body {
 
                 &.draft {
                     display: var(--display-draft-data, none);
-                    a { @extend .link-secondary !optional;}
+
+                    a {
+                        @extend .link-secondary !optional;
+                    }
                 }
             }
         }

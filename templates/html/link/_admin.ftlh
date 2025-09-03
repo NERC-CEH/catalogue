@@ -3,9 +3,9 @@
     <div class="card-header"><p class="card-title">Admin</p></div>
     <div class="card-body">
       <div class="btn-group btn-group-sm btn-group-justified" role="group">
-        <a href="#" class="btn btn-light border edit-control" data-document-type="${metadata.documentType}">Edit</a>
+        <a href="#" class="btn btn-outline-secondary edit-control" data-document-type="${metadata.documentType}">Edit</a>
         <div class="btn-group btn-group-sm" role="group">
-          <button type="button" class="btn btn-light border dropdown-toggle" data-bs-toggle="dropdown">Publish <span class="caret"></span></button>
+          <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Publish <span class="caret"></span></button>
             <ul class="dropdown-menu dropdown-menu-end">
               <li><a class="dropdown-item" href="/documents/${id}/permission">Amend permissions</a></li>
               <li><a href="/documents/${id}/catalogue" class="dropdown-item catalogue-control">Amend catalogues</a></li>
