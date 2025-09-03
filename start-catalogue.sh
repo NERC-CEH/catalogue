@@ -138,8 +138,8 @@ export_default SPRING_FREEMARKER_TEMPLATE_LOADER_PATH file:"$TOP"/templates
 export_default SPRING_SERVLET_MULTIPART_LOCATION "$TOP"/dropbox
 export_default SPRING_WEB_RESOURCES_STATIC_LOCATIONS file:"$TOP"/static
 export_default UPLOAD_SIMPLE_DATASTORE "$TOP"/datastore
-export_default SPRING_DEVTOOLS_RESTART_ENABLED true
-export_default SPRING_DEVTOOLS_LIVERELOAD_ENABLED true
+export_default SPRING_DEVTOOLS_RESTART_ENABLED false
+export_default SPRING_DEVTOOLS_LIVERELOAD_ENABLED false
 export_default LEGILO_URL http://localhost:8000
 export_default LEGILO_USER user
 export_default LEGILO_PASSWORD password
