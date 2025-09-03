@@ -19,7 +19,6 @@ export default ObjectInputView.extend({
     if (!this.model.get('role')) {
       this.model.set('role', this.roleDefault)
     }
-
   },
 
   render () {
