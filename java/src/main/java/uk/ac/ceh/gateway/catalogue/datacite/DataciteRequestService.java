@@ -124,15 +124,19 @@ public class DataciteRequestService {
             ));
         }
         for (Link link : relSupersedes) {
+            String href = link.getHref();
+            String uuid = href.substring(href.lastIndexOf("/") + 1);
+            String doi = "10.5285/" + uuid;
             relatedIdentifiers.add(new DataciteRequest.Attributes.RelatedIdentifier(
-                link.getHref().replace("https://catalogue.ceh.ac.uk/id/", "10.5285/"),
-                "DOI", "IsNewVersionOf", "", "", "", "Dataset"
+                doi, "DOI", "IsNewVersionOf", null, null, null, "Dataset"
             ));
         }
         for (Link link : relSupersedesBy) {
+            String href = link.getHref();
+            String uuid = href.substring(href.lastIndexOf("/") + 1);
+            String doi = "10.5285/" + uuid;
             relatedIdentifiers.add(new DataciteRequest.Attributes.RelatedIdentifier(
-                link.getHref().replace("https://catalogue.ceh.ac.uk/id/", "10.5285/"),
-                "DOI", "IsPreviousVersionOf", "", "", "", "Dataset"
+                doi, "DOI", "IsPreviousVersionOf", null, null, null, "Dataset"
             ));
         }
         for (Supplemental supplemental : Optional.ofNullable(document.getIncomingCitations()).orElse(List.of())) {
