@@ -150,10 +150,10 @@ export default EditorView.extend({
             { value: 'pointOfContact', label: 'Point of contact' },
             { value: 'publisher', label: 'Publisher' },
             { value: 'rightsHolder', label: 'Rights holder' },
-            { value: 'principalInvestigator', label: 'principalInvestigator' },
-            { value: 'owner', label: 'owner' },
-            { value: 'originator', label: 'originator' },
-            { value: 'resourceProvider', label: 'resourceProvider' }
+            { value: 'principalInvestigator', label: 'Principal investigator' },
+            { value: 'owner', label: 'owner' },
+            { value: 'originator', label: 'originator' },
+            { value: 'resourceProvider', label: 'resource provider' }
           ],
           predefined: {
             'Author - UKCEH': {
