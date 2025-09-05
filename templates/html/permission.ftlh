@@ -41,7 +41,7 @@
 
       <nav class="navbar fixed-bottom p-3 bg-secondary"> <div class="container">
         <div class="d-flex ms-auto">
-          <a class="btn btn-outline-secondary me-2" href="/documents/${id}">Return to metadata</a>
+          <a class="btn btn-light me-2" href="/documents/${id}">Return to metadata</a>
           <#if canEdit>
             <a class="btn btn-primary" href="#permission/${id}"><i class="fa-regular fa-edit"></i> Edit</a>
           </#if>
