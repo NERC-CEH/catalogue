@@ -149,7 +149,11 @@ export default EditorView.extend({
             { value: 'custodian', label: 'Custodian' },
             { value: 'pointOfContact', label: 'Point of contact' },
             { value: 'publisher', label: 'Publisher' },
-            { value: 'rightsHolder', label: 'Rights holder' }
+            { value: 'rightsHolder', label: 'Rights holder' },
+            { value: 'principalInvestigator', label: 'principalInvestigator' },
+            { value: 'owner', label: 'owner' },
+            { value: 'originator', label: 'originator' },
+            { value: 'resourceProvider', label: 'resourceProvider' }
           ],
           predefined: {
             'Author - UKCEH': {
