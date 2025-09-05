@@ -42,7 +42,7 @@ export default _.template(`
 <div class="navbar fixed-bottom p-3 bg-secondary">
     <div class="container">
         <div class="d-flex ms-auto">
-            <a href="/<%= doctype %>/<%= id %>/permission" class="btn btn-outline-secondary me-2">Cancel</a>
+            <a href="/<%= doctype %>/<%= id %>/permission" class="btn btn-light me-2">Cancel</a>
             <button id="permissionSave" class="btn btn-primary"><i class="fa-regular fa-save"></i> Save</button>
         </div>
     </div>
