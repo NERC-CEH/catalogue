@@ -73,8 +73,8 @@ export default Backbone.View.extend({
     const lastSlashIndex = fullPath.lastIndexOf('/')
     const filename = lastSlashIndex !== -1 ? fullPath.substring(lastSlashIndex + 1) : fullPath
     const sha256 = model.get('sha256') || ''
-    const checksumBool = sha256 !== 'NO_HASH' ? `Yes` : 'No'
-    const checksum = sha256 !== 'NO_HASH' ? `<span title="${sha256}">Yes</span>` : 'No'
+    const checksumBool = sha256 !== 'NO_HASH' ? 'Yes' : 'No'
+    const checksum = sha256 !== 'NO_HASH' ? '<span title="${sha256}">Yes</span>' : 'No'
     const status = model.get('status') || ''
     if (status) this.statusValues.add(status)
     if (checksum) this.checksumOptions.add(checksumBool)
