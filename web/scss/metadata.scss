@@ -885,6 +885,17 @@ body {
 
 /********** Monitoring Records *************/
 .metadata-monitoring {
+
+    .altNames {
+        @extend .fs-5 !optional;
+        @extend .text-body-tertiary !optional;
+
+        .altName {
+            margin-inline: 0.75rem;
+            color: #666;
+        }
+    }
+
     h2 {
         clear: both;
         padding-block-start: 2em;
