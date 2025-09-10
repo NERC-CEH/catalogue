@@ -13,7 +13,7 @@ export default Backbone.View.extend({
     this.datastore = options.datastore
     this.metadata = options.metadata
     this.statusValues = new Set()
-    this.checksumValues = new Set()
+    this.checksumOptions = new Set()
     this.dataTable = null
   },
 
@@ -73,10 +73,11 @@ export default Backbone.View.extend({
     const lastSlashIndex = fullPath.lastIndexOf('/')
     const filename = lastSlashIndex !== -1 ? fullPath.substring(lastSlashIndex + 1) : fullPath
     const sha256 = model.get('sha256') || ''
+    const checksumBool = sha256 !== 'NO_HASH' ? 'Yes' : 'No'
     const checksum = sha256 !== 'NO_HASH' ? `<span title="${sha256}">Yes</span>` : 'No'
     const status = model.get('status') || ''
     if (status) this.statusValues.add(status)
-    if (checksum) this.checksumValues.add(checksum)
+    if (checksum) this.checksumOptions.add(checksumBool)
 
     let actionsHtml = `<div class="dropdown">
                         <button class="btn btn-sm btn-actions dropdown-toggle" type="button"
@@ -291,7 +292,7 @@ export default Backbone.View.extend({
 
   updateSelectList () {
     this.updateOptionValues(this.statusValues, this.$('.status-filter'))
-    this.updateOptionValues(this.checksumValues, this.$('.checksum-filter'))
+    this.updateOptionValues(this.checksumOptions, this.$('.checksum-filter'))
   },
 
   showInProgress ($dropdown, action) {
