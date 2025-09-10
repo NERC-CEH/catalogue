@@ -29,16 +29,10 @@
                 </span>
               </div>
               <div> ${title}</div>
-              <#if alternateTitles?? && alternateTitles?has_content>
-                <div class="fs-5 text-body-tertiary">
-                  <#list alternateTitles as alt>
-                  ${alt}<#sep>, </#sep>
-                  </#list>
-                </div>
-              </#if>
+
+              <@alternativeNames />
             </h1>
           </#if>
-
 
           <#if description?? && description?has_content>
             <div class="my-4"><@b.linebreaksAndLinks description /></div>
@@ -213,7 +207,6 @@
   </a></li>
 </#macro>
 
-
 <#macro keyValue key description="" auto_esc=false>
   <div class="row key-value" title="${description}">
     <div class="col-sm-3 key">
@@ -296,6 +289,9 @@ Operating period
   </#if>
 </#macro>
 
+<#--
+Relationships
+-->
 <#macro relationships relation title="">
   <#local links=jena.relationships(uri, relation) />
   <#if links?has_content>
@@ -307,6 +303,9 @@ Operating period
   </#if>
 </#macro>
 
+<#--
+Inverse relationships
+-->
 <#macro inverseRelationships relation title="">
   <#local links=jena.inverseRelationships(uri, relation) />
   <#if links?has_content>
@@ -319,6 +318,28 @@ Operating period
     <#else>
       <#list links as link>
         <@geomUrl link  />
+      </#list>
+    </#if>
+  </#if>
+</#macro>
+
+<#--
+Symmetrical relationships
+-->
+<#macro symmetricRelationships relation title="">
+  <#local links = jena.inverseRelationships(uri, relation) />
+  <#local links = links + jena.relationships(uri, relation) />
+
+  <#if links?has_content>
+    <#if title?has_content>
+      <@keyValue title "">
+        <#list links as link>
+          <@b.blockUrl link />
+        </#list>
+      </@keyValue>
+    <#else>
+      <#list links as link>
+        <@b.blockUrl link />
       </#list>
     </#if>
   </#if>
@@ -344,26 +365,6 @@ Operating period
         <small class="text-body-tertiary small"> (INACTIVE)</small>
       </#if>
   </div>
-</#macro>
-
-
-<#macro symmetricRelationships relation title="">
-  <#local links = jena.inverseRelationships(uri, relation) />
-  <#local links = links + jena.relationships(uri, relation) />
-
-  <#if links?has_content>
-    <#if title?has_content>
-      <@keyValue title "">
-        <#list links as link>
-          <@b.blockUrl link />
-        </#list>
-      </@keyValue>
-    <#else>
-      <#list links as link>
-        <@b.blockUrl link />
-      </#list>
-    </#if>
-  </#if>
 </#macro>
 
 <#macro map mapData>
@@ -472,4 +473,30 @@ Operating period
 
     <#sep>${separator?no_esc}</#sep>
   </#list>
+</#macro>
+
+<#macro alternativeNames>
+  <#assign altNames=[]>
+  <#if alternateTitles?? && alternateTitles?has_content>
+    <#list alternateTitles as title>
+       <#assign altNames = altNames + [title] />
+    </#list>
+  </#if>
+
+  <#if resourceIdentifiers?? && resourceIdentifiers?has_content>
+    <#list resourceIdentifiers as identifier>
+      <#if !identifier.code?matches("^http.+[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}$")>
+        <#assign altNames = altNames + [identifier.code] />
+      </#if>
+    </#list>
+  </#if>
+
+  <#if altNames?? && altNames?has_content>
+    <div class="altNames">
+      Also known as
+      <#list altNames as altName>
+        <span class="altName">${altName}</span><#sep>or<#t>
+      </#list>
+    </div>
+  </#if>
 </#macro>
