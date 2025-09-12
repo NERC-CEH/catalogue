@@ -113,6 +113,7 @@ public class DataciteRequestService {
             document.getUri(),
             "https://vocabs.ceh.ac.uk/eidc#supersedes"
         );
+        log.info("Supersedes {} and Count {}", relSupersedes, relSupersedes.size());
         List<Link> relSupersedesBy = jenaLookupService.inverseRelationships(
             document.getUri(),
             "https://vocabs.ceh.ac.uk/eidc#supersedes"
@@ -120,7 +121,7 @@ public class DataciteRequestService {
 
         for (OnlineResource resource : filteredOnlineResources) {
             relatedIdentifiers.add(new DataciteRequest.Attributes.RelatedIdentifier(
-                resource.getUrl(), "URL", "IsDescribedBy", "", "", "", "Text"
+                resource.getUrl(), "URL", "IsDescribedBy", "Text"
             ));
         }
         for (Link link : relSupersedes) {
@@ -128,7 +129,7 @@ public class DataciteRequestService {
             String uuid = href.substring(href.lastIndexOf("/") + 1);
             String doi = "10.5285/" + uuid;
             relatedIdentifiers.add(new DataciteRequest.Attributes.RelatedIdentifier(
-                doi, "DOI", "IsNewVersionOf", null, null, null, "Dataset"
+                doi, "DOI", "IsNewVersionOf", "Dataset"
             ));
         }
         for (Link link : relSupersedesBy) {
@@ -136,7 +137,7 @@ public class DataciteRequestService {
             String uuid = href.substring(href.lastIndexOf("/") + 1);
             String doi = "10.5285/" + uuid;
             relatedIdentifiers.add(new DataciteRequest.Attributes.RelatedIdentifier(
-                doi, "DOI", "IsPreviousVersionOf", null, null, null, "Dataset"
+                doi, "DOI", "IsPreviousVersionOf", "Dataset"
             ));
         }
         for (Supplemental supplemental : Optional.ofNullable(document.getIncomingCitations()).orElse(List.of())) {
@@ -148,7 +149,7 @@ public class DataciteRequestService {
                 : url;
 
             relatedIdentifiers.add(new DataciteRequest.Attributes.RelatedIdentifier(
-                identifier, idType, "IsReferencedBy", "", "", "", "Text"
+                identifier, idType, "IsReferencedBy", "Text"
             ));
         }
         return relatedIdentifiers;
@@ -341,7 +342,8 @@ public class DataciteRequestService {
             givenName,
             familyName,
             nameIdentifiers,
-            affiliation
+            affiliation,
+            null
         );
     }
 }

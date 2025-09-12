@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.datacite;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
@@ -24,11 +25,9 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.DATACITE_JSON_VALUE;
 import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
 /**
@@ -89,8 +88,13 @@ public class DataciteService {
                     .toUriString();
             DataciteRequest dataciteRequest = new DataciteRequest(request, identifierService.generateUri(document.getId()), jenaLookupService, dataciteRequestService);
             try {
+                ObjectMapper mapper = new ObjectMapper();
+                String jsonPayload = mapper.writeValueAsString(dataciteRequest);
+                log.info("---- Datacite JSON Payload ----\n{}\n---- END Payload ----", jsonPayload);
+
                 val headers = withBasicAuth(username, password);
-                headers.setContentType(MediaType.valueOf("application/vnd.api+json"));
+                headers.setContentType(MediaType.valueOf(DATACITE_JSON_VALUE));
+                headers.setAccept(List.of(MediaType.valueOf(DATACITE_JSON_VALUE)));
                 restTemplate.postForEntity(
                         url,
                         new HttpEntity<>(dataciteRequest, headers),
@@ -101,7 +105,7 @@ public class DataciteService {
                 log.error("Failed to mint doi: {} - {} - {}", request.get("doi"), ex.getResponseBodyAsString(), ex.getStatusCode());
                 throw new DataciteException("Minting of the DOI failed, please review the datacite JSON (is it valid?) then try again", ex);
             }
-            catch(RestClientException ex) {
+            catch(RestClientException | JsonProcessingException ex) {
                 throw new DataciteException("Failed to communicate with the datacite api when trying to mint the doi", ex);
             }
         }
@@ -131,7 +135,7 @@ public class DataciteService {
             log.info("Url to retrieve DOI from Datacite: {}", url);
             try {
                 HttpHeaders headers = withBasicAuth(username, password);
-                headers.set("Accept", "application/vnd.api+json");
+                headers.set("Accept", DATACITE_JSON_VALUE);
 
                 String retrievedDoiMetadataString = restTemplate.exchange(
                     url,
@@ -139,7 +143,10 @@ public class DataciteService {
                     new HttpEntity<>(headers),
                     String.class
                 ).getBody();
+
                 ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
                 return objectMapper.readValue(retrievedDoiMetadataString, DataciteRequest.class);
             }
             catch(RestClientException ex) {
@@ -161,7 +168,8 @@ public class DataciteService {
         if(isDatacitable(document, true)) {
             try {
                 val headers = withBasicAuth(username, password);
-                headers.setContentType(MediaType.valueOf("application/vnd.api+json"));
+                headers.setContentType(MediaType.valueOf(DATACITE_JSON_VALUE));
+                headers.setAccept(List.of(MediaType.valueOf(DATACITE_JSON_VALUE)));
                 val request = getDatacitationRequest(document);
                 val url = UriComponentsBuilder
                         .fromUriString(api)
