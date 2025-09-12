@@ -109,7 +109,7 @@ public class JenaLookupService {
     public List<Link> relationships(String uri, String relation) {
         String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
             "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom (IF(BOUND(?geom), true, false) AS ?hasGeom)" +
-            "WHERE { ?me ?relation ?node. BIND(?relation AS ?rel) ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type. " +
+            "WHERE {?me ?rel ?node; ?relation ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type. " +
             "OPTIONAL {?node ef:hasGeometry ?geom} " +
             "OPTIONAL {?node dcterms:available ?publicationDate} " +
             "OPTIONAL {?node eidc:resourceStatus ?availability} " +
@@ -124,7 +124,7 @@ public class JenaLookupService {
     public List<Link> inverseRelationships(String uri, String relation) {
         String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
             "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?publicationDate (GROUP_CONCAT(?geo; separator=', ') AS ?geom)" +
-            "WHERE {?node ?relation ?me. BIND(?relation AS ?rel) ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type. " +
+            "WHERE {?node ?rel ?me; ?relation ?me. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type. " +
             "OPTIONAL {?node ef:hasGeometry ?geo} " +
             "OPTIONAL {?node dcterms:available ?publicationDate} " +
             "OPTIONAL {?node eidc:resourceStatus ?availability} " +
