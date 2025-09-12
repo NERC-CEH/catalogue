@@ -71,7 +71,9 @@ public class DataciteIndexingService implements DocumentIndexingService {
                   .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
                   .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
             String lastRequest = mapper.writeValueAsString(datacite.getDoiMetadata(document));
+            log.info("---- Datacite JSON Payload lastRequest ----\n{}\n---- END Payload ----", lastRequest);
             String newRequest = mapper.writeValueAsString(datacite.getNewDataciteRequest(document));
+            log.info("---- Datacite JSON Payload newRequest ----\n{}\n---- END Payload ----", newRequest);
             if(!newRequest.equals(lastRequest)) {
                 log.info("Submitting datacite update: {}", document.getId());
                 datacite.updateDoiMetadata(document);
