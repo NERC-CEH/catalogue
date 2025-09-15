@@ -204,7 +204,7 @@ export default EditorView.extend({
               organisationIdentifier: 'https://ror.org/00pggkr55'
             }
           }
-         }),
+        }),
 
         new ParentView({
           model: this.model,
