@@ -109,21 +109,34 @@ public class DataciteRequestService {
         List<OnlineResource> filteredOnlineResources = infoLinks.isEmpty()
             ? List.of()
             : filteredOnlineResources(infoLinks);
-        List<Link> relSupersedes = jenaLookupService.relationships(
-            document.getUri(),
-            "https://vocabs.ceh.ac.uk/eidc#supersedes"
-        );
-        log.info("Supersedes {} and Count {}", relSupersedes, relSupersedes.size());
-        List<Link> relSupersedesBy = jenaLookupService.inverseRelationships(
-            document.getUri(),
-            "https://vocabs.ceh.ac.uk/eidc#supersedes"
-        );
 
         for (OnlineResource resource : filteredOnlineResources) {
             relatedIdentifiers.add(new DataciteRequest.Attributes.RelatedIdentifier(
                 resource.getUrl(), "URL", "IsDescribedBy", "Text"
             ));
         }
+
+        String uri = document.getUri();
+        String subjectUri;
+
+        // Normalize to /id/{uuid} so Jena lookups work even when doc.getUri() is a historical /history/{rev}/{uuid}
+        if (uri.contains("/history/")) {
+            String uuid = document.getId();
+            subjectUri = uri.substring(0, uri.indexOf("/history/")) + "/id/" + uuid;
+        } else {
+            subjectUri = uri;
+        }
+
+        List<Link> relSupersedes = jenaLookupService.relationships(
+            subjectUri,
+            "https://vocabs.ceh.ac.uk/eidc#supersedes"
+        );
+
+        List<Link> relSupersedesBy = jenaLookupService.inverseRelationships(
+            subjectUri,
+            "https://vocabs.ceh.ac.uk/eidc#supersedes"
+        );
+
         for (Link link : relSupersedes) {
             String href = link.getHref();
             String uuid = href.substring(href.lastIndexOf("/") + 1);

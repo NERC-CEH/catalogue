@@ -116,6 +116,9 @@ public class DataciteRequestTest {
         Link link2 = Link.builder().title("https://catalogue.ceh.ac.uk/id/def").build();
         JenaLookupService jenaService = mock(JenaLookupService.class);
 
+        when(docMock.getUri()).thenReturn("http://localhost:8080/history/rev123/xyz");
+        when(docMock.getId()).thenReturn("xyz");
+
         when(docMock.getInfoLinks()).thenReturn(List.of(or));
         when(docMock.getIncomingCitations()).thenReturn(List.of(sup));
         when(jenaService.relationships(any(), any())).thenReturn(List.of(link));
