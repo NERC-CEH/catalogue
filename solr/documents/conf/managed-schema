@@ -11,10 +11,16 @@
       </analyzer>
     </fieldType>
     <fieldType name="keywords_lowercase" class="solr.TextField" sortMissingLast="true" omitNorms="true" multiValued="true">
-      <analyzer>
+      <analyzer type="index">
         <tokenizer class="solr.WhitespaceTokenizerFactory"/>
         <filter class="solr.LowerCaseFilterFactory"/>
         <filter class="solr.TrimFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.TrimFilterFactory"/>
+         <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
       </analyzer>
     </fieldType>
     <fieldType name="names" class="solr.TextField" sortMissingLast="true" omitNorms="true" multiValued="true">
