@@ -5,7 +5,7 @@ import ObjectInputView from './ObjectInputView'
 
 async function generateInformationString (target) {
   // Records can be kept either as a full URI or simply a UID
-  const urlRegEx = /https?:\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%-/]))?/
+  const urlRegEx = /^https?:\/\/(?!catalogue\.ceh\.ac\.uk\/documents)(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%-/]))?$/
   const isValidUrl = url => urlRegEx.test(url)
   const query = isValidUrl(target) ? target : `/documents/${target}`
 
