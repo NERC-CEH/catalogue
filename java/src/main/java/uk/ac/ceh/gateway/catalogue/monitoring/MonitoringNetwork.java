@@ -27,7 +27,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RDF_TTL_VALUE;
 public class MonitoringNetwork extends AbstractMetadataDocument implements WellKnownText {
     private List<String> alternateTitles;
     private String objectives, operationalStatus;
-    private List<ResponsibleParty> pointsOfContact;
+    private List<ResponsibleParty> pointsOfContact, partners;
     private TimePeriod operatingPeriod;
     private List<Keyword> environmentalDomain, keywordsParameters;
     private List<Supplemental> linksData, linksOther;

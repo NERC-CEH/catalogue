@@ -28,7 +28,7 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
     private List<String> alternateTitles;
     private String objectives, operationalStatus;
     private BoundingBox boundingBox;
-    private List<ResponsibleParty> pointsOfContact;
+    private List<ResponsibleParty> pointsOfContact, partners;
     private List<TimePeriod> operatingPeriod;
     private List<Keyword> environmentalDomain, purposeOfCollection, keywordsParameters;
     private List<Supplemental> linksData, linksOther;

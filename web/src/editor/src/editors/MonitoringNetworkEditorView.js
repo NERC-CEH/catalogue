@@ -99,7 +99,7 @@ export default EditorView.extend({
           model: this.model,
           ModelType: Contact,
           modelAttribute: 'pointsOfContact',
-          label: 'Contacts',
+          label: 'Point of contact',
           ObjectInputView: ContactView,
           roleDefault: 'pointOfContact',
           multiline: true,
@@ -125,6 +125,20 @@ export default EditorView.extend({
               organisationIdentifier: 'https://ror.org/00pggkr55'
             }
           }
+        }),
+
+        new ParentView({
+          model: this.model,
+          ModelType: Contact,
+          modelAttribute: 'partners',
+          label: 'Partners',
+          ObjectInputView: ContactView,
+          multiline: true,
+          roleoptions: [
+            { value: 'funder', label: 'Funder' },
+            { value: 'stakeholder', label: 'Stakeholder' },
+            { value: 'user', label: 'User' }
+          ]
         })
       ]
     },

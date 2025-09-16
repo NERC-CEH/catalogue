@@ -72,3 +72,5 @@ publically => publicly
 referance,refrence => reference
 relevent,revelant => relevant
 vaccuum,vaccum,vacume => vacuum
+scottish environmental protection agency,sepa
+nrw,natural resources wales,cyfoeth naturiol cymru
