@@ -113,7 +113,7 @@ export default Backbone.View.extend({
     actionsHtml += '</ul></div>'
 
     return {
-      file: filename,
+      file: fullPath,
       size: model.get('size') || '',
       checksum,
       status,
