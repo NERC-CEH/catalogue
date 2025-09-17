@@ -83,8 +83,8 @@ describe('TableView', function () {
 
       const data = view.prepareTableData()
       expect(data.length).toBe(2)
-      expect(data[0].file).toBe('data1.csv')
-      expect(data[1].file).toBe('data2.csv')
+      expect(data[0].file).toBe('folder1/data1.csv')
+      expect(data[1].file).toBe('folder2/data2.csv')
     })
   })
 
@@ -100,7 +100,7 @@ describe('TableView', function () {
 
       let visibleRows = view.$('#filetable tbody tr:visible')
       expect(visibleRows.length).toBe(1)
-      expect(visibleRows.find('td:contains("data1.csv")').length).toBe(1)
+      expect(visibleRows.find('td:contains("folder1/data1.csv")').length).toBe(1)
 
       const clearBtn = fileSearch.siblings('.clear-search')
       expect(clearBtn.is(':visible')).toBe(true)
