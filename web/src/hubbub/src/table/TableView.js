@@ -70,8 +70,8 @@ export default Backbone.View.extend({
 
   prepareSingleTableData (model) {
     const fullPath = model.get('path') || ''
-    const lastSlashIndex = fullPath.lastIndexOf('/')
-    const filename = lastSlashIndex !== -1 ? fullPath.substring(lastSlashIndex + 1) : fullPath
+    //const lastSlashIndex = fullPath.lastIndexOf('/')
+    //const filename = lastSlashIndex !== -1 ? fullPath.substring(lastSlashIndex + 1) : fullPath
     const sha256 = model.get('sha256') || ''
     const checksumBool = (sha256 && sha256 !== 'NO_HASH') ? 'Yes' : 'No'
     const checksum = (sha256 && sha256 !== 'NO_HASH') ? `<span title="${sha256}">Yes</span>` : 'No'
