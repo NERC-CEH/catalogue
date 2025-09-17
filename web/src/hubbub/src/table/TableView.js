@@ -70,7 +70,7 @@ export default Backbone.View.extend({
 
   prepareSingleTableData (model) {
     const fullPath = model.get('path') || ''
-    const fullPathMarkup = fullPath.replace(/\\/g, '<span class="folder-separator">/</span>')
+    const fullPathMarkup = fullPath.replace(/\//g, '<span class="folder-separator">/</span>')
     const sha256 = model.get('sha256') || ''
     const checksumBool = (sha256 && sha256 !== 'NO_HASH') ? 'Yes' : 'No'
     const checksum = (sha256 && sha256 !== 'NO_HASH') ? `<span title="${sha256}">Yes</span>` : 'No'

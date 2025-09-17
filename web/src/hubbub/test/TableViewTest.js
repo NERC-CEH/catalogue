@@ -83,8 +83,8 @@ describe('TableView', function () {
 
       const data = view.prepareTableData()
       expect(data.length).toBe(2)
-      expect(data[0].file).toBe('folder1/data1.csv')
-      expect(data[1].file).toBe('folder2/data2.csv')
+      expect(data[0].file).toBe('folder1<span class="folder-separator">/</span>data1.csv')
+      expect(data[1].file).toBe('folder2<span class="folder-separator">/</span>data2.csv')
     })
   })
 
