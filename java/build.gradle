@@ -38,6 +38,7 @@ dependencies {
     implementation 'org.apache.solr:solr-solrj:9.6.1'
     implementation 'org.ehcache:ehcache'
     implementation 'org.hibernate.validator:hibernate-validator'
+    implementation 'org.yaml:snakeyaml:1.8'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-freemarker'

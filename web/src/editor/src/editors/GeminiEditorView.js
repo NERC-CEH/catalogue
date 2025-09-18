@@ -26,7 +26,10 @@ import {
   SpatialRepresentationTypeView,
   SpatialResolutionView,
   TemporalExtentView, FilesetView,
-  TextareaView, TopicCategoryView, KeywordThemeView, KeywordVocabularyView, InspireThemeView, CheckboxView
+  TextareaView, TopicCategoryView,
+  KeywordThemeView, KeywordVocabularyView,
+  InspireThemeView, CheckboxView,
+  CffHarvestView
 } from '../views'
 import {
   AccessLimitation,
@@ -827,6 +830,14 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
               format: 'YYYY-MM-DDThh:mm:ss'
             }
           }
+        }),
+        new CffHarvestView({
+          model: this.model,
+          modelAttribute: 'cffUrl',
+          label: 'Harvest GitHub CFF',
+          helpText: `
+    <p>Paste the URL of a <code>CITATION.cff</code> file hosted on GitHub.</p>
+  `
         })
       ]
     }
