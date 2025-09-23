@@ -80,3 +80,4 @@ export { default as PredefinedSingleObjectView } from './PredefinedSingleObjectV
 export { default as LegiloView } from './LegiloView'
 export * from './LegiloFetcher'
 export * from './LegiloEventHandler'
+export { default as CffHarvestView } from './CffHarvestView'
