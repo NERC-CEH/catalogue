@@ -29,6 +29,8 @@ $card-default-text: #FFF;
 
     --eidc-component-display: block;
     --display-navbar-title: none;
+
+     --bs-primary-bg-subtle: color-mix(in lab,  var(--eidc-blue), white 80%);
 }
 
 html {
