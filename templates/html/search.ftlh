@@ -1,5 +1,5 @@
 <#import "skeleton.ftlh" as skeleton>
-<#import "../functions.ftlh" as b>
+<#import "../functions.ftlh" as func>
 <#assign docroot="documents">
 <@skeleton.master title="Search" catalogue=catalogue searching=true >
   <div class="search facets-mode container" id="search">
@@ -30,7 +30,7 @@
 
     <div>
 
-      <@b.temporaryBlock "2025-10-28">
+      <@func.temporaryBlock "2025-10-28">
         <#if catalogue.id == "eidc">
           <div class="m-3 alert alert-warning alert-dismissible fade show" role="alert">
             <strong>Would you like to help shape the future development of our services?</strong><br>
@@ -40,7 +40,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
         </#if>
-       </@b.temporaryBlock>
+       </@func.temporaryBlock>
 
       <form class="search-form" action="/${docroot}" method="get">
         <div class="input-group">

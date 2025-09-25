@@ -161,10 +161,10 @@
 Temporary element which only displays if the expiry date is in the future
 -->
 <#macro temporaryBlock expiry=.now>
-  <#local today = .now?date>
+  <#local todaysDate = .now?date>
   <#local expiryDate = expiry?date >
 
-  <#if expiryDate gte today>
+  <#if expiryDate gte todaysDate>
     <#nested>
   </#if>
 </#macro>
