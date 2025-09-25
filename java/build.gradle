@@ -55,7 +55,6 @@ dependencies {
     implementation "uk.ac.ceh.components:springsecurity-userstore:${cehComponentsVersion}"
     implementation "com.opencsv:opencsv:5.10"
     implementation 'org.springframework.security:spring-security-oauth2-jose'
-    implementation 'org.springframework.security:spring-security-oauth2-client'
     implementation 'org.springframework.security:spring-security-oauth2-resource-server'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

@@ -17,7 +17,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 @Slf4j
 @Configuration
-@Profile({"development", "auth:crowd", "test"})
+@Profile("!auth:cognito & (development | 'auth:crowd' | test)")
 public class SecurityConfigCrowd {
 
     @Bean

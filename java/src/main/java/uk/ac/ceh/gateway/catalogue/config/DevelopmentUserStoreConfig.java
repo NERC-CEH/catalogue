@@ -22,7 +22,7 @@ import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.READONLY_GROUP;
  * @see SecurityConfigCrowd
  */
 @Configuration
-@Profile({"development", "test"})
+@Profile("!auth:cognito & (development | test)")
 public class DevelopmentUserStoreConfig {
     // Usernames used in tests
     public static final String ADMIN = "admin";

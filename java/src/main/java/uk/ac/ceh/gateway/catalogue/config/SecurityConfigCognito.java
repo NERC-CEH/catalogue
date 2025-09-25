@@ -5,36 +5,53 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
-import uk.ac.ceh.gateway.catalogue.auth.cognito.CognitoAuthenticationProvider;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import uk.ac.ceh.components.userstore.springsecurity.AnonymousUserAuthenticationFilter;
+import uk.ac.ceh.gateway.catalogue.auth.cognito.CognitoAuthenticationFilter;
+import uk.ac.ceh.gateway.catalogue.auth.cognito.CognitoLogoutHandler;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Slf4j
 @Profile("auth:cognito")
 @Configuration
+@RequiredArgsConstructor
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
-@RequiredArgsConstructor
 public class SecurityConfigCognito {
 
-    private final CognitoAuthenticationProvider cognitoAuthenticationProvider;
-    private final JwtDecoder jwtDecoder;
+    private final CognitoAuthenticationFilter cognitoJwtAuthenticationFilter;
+    private final CognitoLogoutHandler cognitoLogoutHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/actuator/health").permitAll()
-                .anyRequest().authenticated()
+            .cors(withDefaults())
+            .anonymous(anonymous -> anonymous
+                .authenticationFilter(new AnonymousUserAuthenticationFilter("NotSure", CatalogueUser.PUBLIC_USER, "ROLE_ANONYMOUS"))
             )
-            .oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwt -> jwt.decoder(jwtDecoder))
+            .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
+                .requestMatchers(HttpMethod.POST, "/**").fullyAuthenticated()
+                .requestMatchers(HttpMethod.PUT, "/**").fullyAuthenticated()
+                .requestMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated()
+                .anyRequest().permitAll()
             )
-            .authenticationProvider(cognitoAuthenticationProvider)
+            .oauth2Login(Customizer.withDefaults())
+            .addFilterBefore(cognitoJwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .logout(logout -> logout
+                .logoutSuccessHandler(cognitoLogoutHandler)
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID")
+            )
             .csrf(AbstractHttpConfigurer::disable)
             .build();
     }
