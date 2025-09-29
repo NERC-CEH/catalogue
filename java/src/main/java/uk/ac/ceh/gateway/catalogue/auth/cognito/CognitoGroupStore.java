@@ -2,15 +2,18 @@ package uk.ac.ceh.gateway.catalogue.auth.cognito;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueCognitoUser;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueGroup;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.userdetails.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -21,7 +24,14 @@ public class CognitoGroupStore implements GroupStore<CatalogueUser> {
 
     @Override
     public List<Group> getGroups(CatalogueUser user) {
-        return new ArrayList<>(((CatalogueCognitoUser) user).getGroups());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return new ArrayList<>();
+        }
+
+        return authentication.getAuthorities().stream()
+            .map(authority -> new CatalogueGroup(authority.getAuthority()))
+            .collect(Collectors.toList());
     }
 
     @Override
