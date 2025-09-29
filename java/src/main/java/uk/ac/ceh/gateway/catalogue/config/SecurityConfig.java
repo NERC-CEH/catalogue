@@ -20,7 +20,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Slf4j
-@Profile("!auth:oidc & !auth:cognito")
+@Profile("!auth:oidc & !auth-cognito")
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)

@@ -15,7 +15,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
-@Profile("auth:cognito")
+@Profile("auth-cognito")
 @Component
 @RequiredArgsConstructor
 public class CognitoLogoutHandler extends SimpleUrlLogoutSuccessHandler {

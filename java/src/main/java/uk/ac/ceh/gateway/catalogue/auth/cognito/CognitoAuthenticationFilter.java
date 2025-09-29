@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Profile("auth:cognito")
+@Profile("auth-cognito")
 @Component
 @RequiredArgsConstructor
 public class CognitoAuthenticationFilter extends OncePerRequestFilter {

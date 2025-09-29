@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 
 @Slf4j
-@Profile("auth:cognito")
+@Profile("auth-cognito")
 @Service
 public class CognitoGroupStore implements GroupStore<CatalogueUser> {
 

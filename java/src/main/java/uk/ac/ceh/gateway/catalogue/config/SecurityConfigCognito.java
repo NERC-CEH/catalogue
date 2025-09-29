@@ -21,7 +21,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Slf4j
-@Profile("auth:cognito")
+@Profile("auth-cognito")
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity

@@ -113,7 +113,7 @@
                   <#else>
                     <a href="/login">Login</a>
                   </#if>
-                <#elseif profile.isActive("auth:cognito")>
+                <#elseif profile.isActive("auth-cognito")>
                   <#if userInfo.isLoggedIn()>
                     <a href="/logout">Logout with Cognito</a>
                   <#else>
