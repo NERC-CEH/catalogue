@@ -35,15 +35,9 @@ export default Backbone.View.extend({
 
       const sizeNumber = parseFloat(splitNumberUnitRegex[1].replace(',', ''))
       const sizeUnit = splitNumberUnitRegex[2].toUpperCase()
-      let unitIndex = fileSizeUnits.indexOf(sizeUnit)
+      const unitIndex = fileSizeUnits.indexOf(sizeUnit)
 
-      if (unitIndex === -1) {
-        unitIndex = fileSizeUnits.findIndex(u => u.toLowerCase() === sizeUnit.toLowerCase())
-      }
-
-      if (unitIndex === -1) return sizeNumber
-
-      return sizeNumber * Math.pow(1024, unitIndex)
+      return (unitIndex === -1) ? sizeNumber : sizeNumber * Math.pow(1024, unitIndex)
     }
 
     this.dataTable = this.$('#filetable').DataTable({
