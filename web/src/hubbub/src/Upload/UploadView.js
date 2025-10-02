@@ -383,7 +383,7 @@ export default Backbone.View.extend({
   getServerState (name, datastore, collection, callback) {
     const page = 1
     const collectionSize = collection.length
-    let size = (this.model.has(`${name}Size`)) ? this.model.get(`${name}Size`) : 500
+    let size = (this.model.has(`${name}Size`)) ? this.model.get(`${name}Size`) : 5000
     if (collectionSize > size) { size = collectionSize }
     this.model.set(`${name}Page`, page)
     this.model.set(`${name}Size`, size)

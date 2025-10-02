@@ -115,7 +115,7 @@ public class UploadController {
     @SneakyThrows
     private void addHubbubResponse(Model model, String attribute, String datasetId, String datastore) {
         try {
-            val response = uploadService.get(datasetId, datastore, 1, 500);
+            val response = uploadService.get(datasetId, datastore, 1, 5000);
             model.addAttribute(attribute, mapper.writeValueAsString(response));
         } catch (RestClientException ex) {
             log.debug("{}, {} not added to {}.\n{}", datasetId, datastore, attribute, ex.getMessage());
@@ -131,7 +131,7 @@ public class UploadController {
         @PathVariable("datastore") String datastore,
         @RequestParam(value = "path", required = false) Optional<String> possiblePath,
         @RequestParam(value = "page", defaultValue = "1") int page,
-        @RequestParam(value = "size", defaultValue = "500") int size
+        @RequestParam(value = "size", defaultValue = "5000") int size
     ) {
         if (possiblePath.isPresent()) {
             return uploadService.get(datasetId, datastore, possiblePath.get());

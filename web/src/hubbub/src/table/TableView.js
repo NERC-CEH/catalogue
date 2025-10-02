@@ -25,15 +25,33 @@ export default Backbone.View.extend({
   },
 
   initializeDataTable () {
+    $.fn.dataTable.ext.type.order['file-size-pre'] = function (data) {
+      if (!data || data === '') return 0
+
+      const fileSizeUnits = ['B', 'KB', 'MB', 'GB']
+      const splitNumberUnitRegex = data.trim().match(/([\d.,]+)\s*([a-z]+)/i)
+
+      if (!splitNumberUnitRegex) return 0
+
+      const sizeNumber = parseFloat(splitNumberUnitRegex[1].replace(',', ''))
+      const sizeUnit = splitNumberUnitRegex[2].toUpperCase()
+      const unitIndex = fileSizeUnits.indexOf(sizeUnit)
+
+      return (unitIndex === -1) ? sizeNumber : sizeNumber * Math.pow(1024, unitIndex)
+    }
+
     this.dataTable = this.$('#filetable').DataTable({
       data: this.prepareTableData(),
       columns: [
         { data: 'file' },
-        { data: 'size' },
+        { data: 'size', type: 'file-size' },
         { data: 'checksum' },
         { data: 'status' },
         { data: 'actions', orderable: false }
       ],
+      lengthMenu: [50, 100, 250, 500],
+      pageLength: 50,
+      order: [[3, 'asc'], [0, 'asc']],
       rowCallback: (row, data) => this.handleRowCallback(row, data),
       responsive: true,
       dom: "<<'filetable-size'l><'filetable-searchAll'f>>" +

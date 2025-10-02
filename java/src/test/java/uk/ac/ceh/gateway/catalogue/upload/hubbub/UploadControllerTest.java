@@ -171,7 +171,7 @@ class UploadControllerTest {
                 "text/csv"
             )
         );
-        given(uploadService.get(datasetId, DATASTORE, 1, 500))
+        given(uploadService.get(datasetId, DATASTORE, 1, 5000))
             .willReturn(new HubbubResponse(data, null, null));
     }
 
@@ -213,7 +213,7 @@ class UploadControllerTest {
                 "text/csv"
             )
         );
-        given(uploadService.get(datasetId, DROPBOX, 1, 500))
+        given(uploadService.get(datasetId, DROPBOX, 1, 5000))
             .willReturn(new HubbubResponse(data, null, null));
     }
 
@@ -234,7 +234,7 @@ class UploadControllerTest {
                 "text/csv"
             )
         );
-        given(uploadService.get(datasetId, METADATA, 1, 500))
+        given(uploadService.get(datasetId, METADATA, 1, 5000))
             .willReturn(new HubbubResponse(data, null, null));
     }
 
