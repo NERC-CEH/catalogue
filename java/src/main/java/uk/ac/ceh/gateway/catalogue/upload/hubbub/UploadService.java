@@ -194,6 +194,11 @@ public class UploadService {
             String unzipPath = FilenameUtils.getBaseName(filename);
             ZipEntry entry;
             while ((entry = zipStream.getNextEntry()) != null) {
+                String entryName = entry.getName();
+                if (entryName.toLowerCase().contains("__macosx")) {
+                    log.debug("Skipping macOS metadata file: {}", entryName);
+                    continue;
+                }
                 String unZipFileName = Paths.get(unzipPath, sanitisedFilename(datasetId, entry.getName())).toString();
                 Path resolvedPath = uploadPath.resolve(unZipFileName);
                 if (entry.isDirectory()) {
@@ -261,6 +266,8 @@ public class UploadService {
 
     private void register(String datasetId, String path, String user, long size) {
         val urlTemplate = format("%s/register/{datasetId}?path={path}&username={user}&size={size}", address);
+        log.info("Registering - datasetId: {}, path: {}, user: {}, size: {}", datasetId, path, user, size);
+
         restTemplate.exchange(
             urlTemplate,
             POST,
