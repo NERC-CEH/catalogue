@@ -25,8 +25,7 @@ import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
@@ -294,6 +293,9 @@ class UploadServiceTest {
         assertTrue(Files.exists(uploadedFile));
         uploadedFile = Paths.get(directory.getPath(), datasetId, "data/sub-folder1/data2.txt");
         assertTrue(Files.exists(uploadedFile));
+
+        Path macosxDir = Paths.get(directory.getPath(), datasetId, "data/__macosx");
+        assertFalse(Files.exists(macosxDir), "__MACOSX directory should be filtered out");
     }
 
     @Test
