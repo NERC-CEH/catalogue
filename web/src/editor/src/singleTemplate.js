@@ -24,6 +24,6 @@ export default _.template(`
             </div>
         <% } %>
     </div>
-    <div id="dataentry" class="col-md-9 dataentry"></div>
+    <div class="col-md-9 dataentry"></div>
 </div>
 `)

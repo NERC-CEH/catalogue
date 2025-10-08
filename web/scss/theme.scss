@@ -85,15 +85,8 @@ header {
     border-block-end: solid var(--header-border-bottom-colour) var(--header-border-bottom-width);
 
     .ukcehBrand {
-        display: var(--ukceh-brand-display);
+        display: var(--ukceh-brand-display, block);
         background-color: #eee;
-
-        &:before {
-            display: block;
-            content: "";
-            height: 5px;
-            background: linear-gradient(to left, var(--primary-colour), var(--secondary-colour));
-        }
 
         .ukcehBrand-toolbar {
             display: var(--display-brandbar, none); //hide the brand toolbar by default

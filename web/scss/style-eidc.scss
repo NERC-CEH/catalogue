@@ -5,14 +5,15 @@ $eidc-blue: hsl(195, 45%, 36%);
 $brand-success: $eidc-blue;
 $card-default-text: #FFF;
 
+
 /* CSS custom properties */
 :root {
-    --eidc-blue: var(--ukceh-colour-teal);
+    --eidc-blue: hsl(192, 95%, 33%);
     --primary-colour: var(--eidc-blue);
     --secondary-colour: white;
     --tertiary-colour: hsl(75, 45%, 36%);
 
-    --link-hover-colour: var(--ukceh-colour-highlight);
+    --link-hover-colour: hsl(31, 90%, 58%);
 
     --header-height: 95px;
     --header-background-colour: var(--primary-colour);
@@ -65,7 +66,7 @@ footer {
 
 main {
     ::selection {
-        background-color: var(--ukceh-colour-teal);
+        background-color: hsl(192, 95%, 33%);
         color: white;
     }
 }
