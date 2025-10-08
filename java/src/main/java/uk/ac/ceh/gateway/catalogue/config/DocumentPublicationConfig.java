@@ -31,6 +31,7 @@ public class DocumentPublicationConfig {
             .id("ykhm7b")
             .title("Request publication")
             .helpText("Request publication - a Publisher will review it for quality before final publication")
+            .cssClass("btn-outline-secondary")
             .build();
 
         Transition pendingToDraft = Transition.builder()
@@ -38,6 +39,7 @@ public class DocumentPublicationConfig {
             .id("gtkzpq")
             .title("Retract record")
             .helpText("Retract this record if you no longer want it published")
+            .cssClass("btn-outline-secondary")
             .build();
 
         Transition pendingToPublished = Transition.builder()
@@ -45,6 +47,7 @@ public class DocumentPublicationConfig {
             .id("re4vkb")
             .title("Publish record")
             .helpText("Only publish document after quality checks have been completed")
+            .cssClass("btn-outline-secondary")
             .build();
 
         Transition publishedToDraft = Transition.builder()
@@ -52,6 +55,7 @@ public class DocumentPublicationConfig {
             .id("qtak5r")
             .title("Retract record")
             .helpText("Retract this record if you no longer want it published")
+            .cssClass("btn-outline-secondary")
             .build();
 
         // Roles

@@ -412,14 +412,21 @@ body {
     #adminPanel {
         padding-block: 1em;
 
-        #adminToolbar,
         .adminToolbar {
             .btn-wide {
                 min-width: 10em;
             }
 
+            .btn {
+                @extend .btn-sm;
+            }
+
             .dropdown-menu.show {
                 z-index: 1030;
+            }
+
+            form {
+                display: inline-block;
             }
         }
 
