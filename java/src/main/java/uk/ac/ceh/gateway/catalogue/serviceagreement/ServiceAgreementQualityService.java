@@ -83,7 +83,8 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
                     checkSupportingDocs(parsedDoc).stream(),
                     checkDepositorContactDetails(parsedDoc).stream(),
                     checkOwnerOfIpr(parsedDoc).stream(),
-                    checkFiles(parsedDoc).stream()
+                    checkFiles(parsedDoc).stream(),
+                    checkKeywords(parsedDoc).stream()
                 ).flatMap(s -> s).toList();
                 return new Results(checks, id);
             } else {
@@ -334,6 +335,16 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             .filter(this::isInvalidEmail)
             .map(email -> new MetadataCheck(format(errorMessage, email), ERROR))
             .toList();
+    }
+
+    List<MetadataCheck> checkKeywords(DocumentContext parsed) {
+        val keywordsOther = parsed.read("$.keywordsOther[*]", typeRefStringString);
+        val allKeywords = new ArrayList<Map<String, String>>();
+        allKeywords.addAll(keywordsOther);
+        if (allKeywords.stream().anyMatch(keyword -> fieldIsMissing(keyword, "value"))) {
+            return Collections.singletonList(new MetadataCheck("Keyword is empty", ERROR));
+        }
+        return Collections.emptyList();
     }
 
 
