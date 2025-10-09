@@ -6,6 +6,7 @@
 - DataLabs
 - Development
 - OIDC
+- Cognito
 
 ### Crowd
 
@@ -90,3 +91,19 @@ The key is the authenticated user's email address and then a list of roles.
     "editor2@example.com": ["ROLE_EXAMPLE_EDITOR"]
 }
 ```
+
+### Cognito
+
+AWS Cognito authentication based on OIDC OAuth2.
+
+Activated by adding "auth-cognito" to Spring profiles.  If testing in local dev, development profile has to be removed.
+
+#### auth.env
+
+The properties is stored in separate file (resources/application-auth-cognito.properties) and the values can be obtained from AWS Cognito Console.
+
+```properties
+spring.security.oauth2.client.registration.cognito.client-id=get_from_aws_client_id
+spring.security.oauth2.client.provider.cognito.issuerUri=get_from_aws_issuer_uri
+aws.cognito.userpool.domain=get_from_aws_userpool_domain
+aws.cognito.userpool.id=get_from_aws_userpool_id
