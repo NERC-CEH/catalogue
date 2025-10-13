@@ -33,7 +33,7 @@
 
 <#if resourceType?? && permission.userCanEdit(id)>
   <div class="row d-print-none" id="adminPanel">
-    <div class="d-flex gap-2 justify-content-end flex-wrap" id="adminToolbar" role="toolbar">
+    <div class="d-flex gap-2 justify-content-end flex-wrap adminToolbar" role="toolbar">
 
       <@editButton />
 
@@ -103,7 +103,12 @@
          </#if>
 
         <@menuLink "/documents/${id}/permission" "fa-solid fa-users">Permissions</@menuLink>
-        <@menuLink "/documents/${id}/publication" "fa-solid fa-eye">Publication status</@menuLink>
+
+        <#if metadata.state!="published" && errors gte 1 && catalogue.id=="eidc" >
+          <li class="disabled dropdown-item" title="clear errors before publishing"><i class="fa-solid fa-ban fa-fw"></i> Publication status</li>
+        <#else>
+          <@menuLink "/documents/${id}/publication" "fa-solid fa-eye">Publication status</@menuLink>
+        </#if>
 
         <span class="catalogue-control">
           <@menuLink "/documents/${id}/catalogue" "fa-solid fa-right-from-bracket">Move to a different catalogue</@menuLink>

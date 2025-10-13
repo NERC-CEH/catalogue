@@ -20,7 +20,6 @@ $link-hover-color: $nerc-blue;
     --header-link-hover-background-colour:color-mix(in lab, var(--header-link-background-colour), black);
     --header-link-colour: var(--nerc-darkgreen);
     --header-link-hover-colour: red;
-    --header-logo-border: none;
 }
 
 html {
@@ -101,7 +100,7 @@ a.navbar-brand {
             flex-wrap: nowrap;
             justify-content: flex-start;
             align-items: center;
-            &:hover, &:focus {
+            &:hover, &:focus-visible {
                 outline: 1px solid var(--nerc-lightgreenvar);
                 text-decoration: none;
                 div:first-child {

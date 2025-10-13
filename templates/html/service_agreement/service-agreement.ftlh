@@ -12,19 +12,20 @@
     <div id="metadata" class="metadata serviceAgreement ${mdclass}">
         <div class="container" role="main">
 
-            <div class="title mt-3 d-flex flex-nowrap align-content-start">
-                <div class="eidcLogo me-3">
-                  <img src="/static/img/cataloguelogo/eidc_print.png">
-                </div>
-                <div class="flex-grow-1">
-                  <h1>
-                    EIDC Service Agreement for ${title!"NOT PROVIDED"}
-                  </h1>
-                  <div class="saStatus saStatus-${getStateTitle()?lower_case}">${getStateTitle()?upper_case}</div>
-                </div>
-            </div>
+          <div class="title mt-3 d-flex flex-nowrap align-content-start">
+              <div class="eidcLogo me-3">
+                <img src="/static/img/cataloguelogo/eidc_print.png">
+              </div>
+              <div class="flex-grow-1">
+                <h1>
+                  EIDC Service Agreement for ${title!"NOT PROVIDED"}
+                </h1>
+                <div class="saStatus saStatus-${getStateTitle()?lower_case}">${getStateTitle()?upper_case}</div>
+              </div>
+          </div>
 
-            <div class="text-end d-print-none adminPanel" role="toolbar">
+          <div class="text-end d-print-none" id="adminPanel" role="toolbar">
+            <div class="d-print-none adminToolbar" role="toolbar">
                 <#if state == "agreed">
                     <div class="btn-group btn-group-sm">
                         <button type="button" class="btn btn-outline-secondary btn-wide" onClick="window.print()">Print</button>
@@ -63,168 +64,169 @@
                         </div>
                         <#list getModelLinks() as link>
                             <#if link.rel == 'history'>
-                                <a href="${link.href}" class="btn btn-outline-secondary btn-wide btn-sm">${link.title}</a>
+                                <a href="${link.href}" class="btn btn-sa btn-outline-secondary btn-wide btn-sm">${link.title}</a>
                             </#if>
                         </#list>
                     </#if>
                     <#if canChangeState>
                         <#list transitions as transition>
                             <form method="post" action="/service-agreement/${id}/form-publication/${transition.id}">
-                                <p><button type="submit" class="btn btn-outline-secondary btn-wide btn-sm" title="${transition.helpText}">${transition.title}</button></p>
+                                <p><button type="submit" class="btn btn-sa btn-sa-submit btn-wide btn-sm" title="${transition.helpText}">${transition.title}</button></p>
                             </form>
                         </#list>
                     </#if>
                 <#elseif  isHistorical()>
                     <#list getModelLinks() as link>
                         <#if link.title == 'History'>
-                            <a href="${link.href}" class="btn btn-outline-secondary btn-wide btn-sm">${link.title}</a>
+                            <a href="${link.href}" class="btn btn-sa btn-sa-history btn-outline-secondary btn-wide btn-sm">${link.title}</a>
                         </#if>
                     </#list>
                 </#if>
             </div>
+          </div>
 
-            <#if permission.userCanEditServiceAgreement(id) && !isHistorical()>
-                <#include "_serviceAgreementQualityReport.ftlh">
-            </#if>
+          <#if permission.userCanEditServiceAgreement(id) && !isHistorical()>
+              <#include "_serviceAgreementQualityReport.ftlh">
+          </#if>
 
-            <#if isHistorical()>
-                <h1 class="text-red">Historic version<br><small><strong>IMPORTANT</strong> This is a historic version of this Service Agreement</small></h1>
-            </#if>
+          <#if isHistorical()>
+              <h1 class="text-red">Historic version<br><small><strong>IMPORTANT</strong> This is a historic version of this Service Agreement</small></h1>
+          </#if>
 
-            <@showTerms />
+          <@showTerms />
 
-            <div class="contactDetails">
-                <div class="row key-value">
-                    <div class="key">Deposit reference</div>
-                    <div class="value"><span>${depositReference!"NOT PROVIDED"}</span></div>
-                </div>
-                <#if depositorName?? && depositorName!=''>
-                    <div class="row key-value">
-                        <div class="key">Depositor</div>
-                        <div class="value">
-                            ${depositorName}
-                            <#if depositorContactDetails!=''><span>(${depositorContactDetails})</span></#if>
-                        </div>
-                    </div>
-                </#if>
-                <#if eidcName?? && eidcName!=''>
-                    <div class="row key-value">
-                        <div class="key">For the EIDC</div>
-                        <div class="value">
-                            ${eidcName}
-                            <#if eidcContactDetails!=''><span>(${eidcContactDetails})</span></#if>
-                        </div>
-                    </div>
-                </#if>
-            </div>
+          <div class="contactDetails">
+              <div class="row key-value">
+                  <div class="key">Deposit reference</div>
+                  <div class="value"><span>${depositReference!"NOT PROVIDED"}</span></div>
+              </div>
+              <#if depositorName?? && depositorName!=''>
+                  <div class="row key-value">
+                      <div class="key">Depositor</div>
+                      <div class="value">
+                          ${depositorName}
+                          <#if depositorContactDetails!=''><span>(${depositorContactDetails})</span></#if>
+                      </div>
+                  </div>
+              </#if>
+              <#if eidcName?? && eidcName!=''>
+                  <div class="row key-value">
+                      <div class="key">For the EIDC</div>
+                      <div class="value">
+                          ${eidcName}
+                          <#if eidcContactDetails!=''><span>(${eidcContactDetails})</span></#if>
+                      </div>
+                  </div>
+              </#if>
+          </div>
 
-            <section class="section section--1">
-                <h2>Data identification and citation</h2>
-                <div class="card text-bg-danger mb-3">
-                   <div class="card-body">
-                   <i class="fa-solid fa-triangle-exclamation" ></i>
-                   PLEASE NOTE: ONCE A DOI HAS BEEN ISSUED, THE INFORMATION PROVIDED IN THIS SECTION CANNOT BE CHANGED
-                   </div>
-                </div>
-                <h4 class="my-4">Title of data resource: ${title}</h4>
+          <section class="section section--1">
+              <h2>Data identification and citation</h2>
+              <div class="card text-bg-danger mb-3">
+                  <div class="card-body">
+                  <i class="fa-solid fa-triangle-exclamation" ></i>
+                  PLEASE NOTE: ONCE A DOI HAS BEEN ISSUED, THE INFORMATION PROVIDED IN THIS SECTION CANNOT BE CHANGED
+                  </div>
+              </div>
+              <h4 class="my-4">Title of data resource: ${title}</h4>
 
-                <div class="authors mt-4">
-                    <h3>Authors</h3>
-                    <p>This information will be used in discovery metadata for this dataset (the catalogue record).  <a href="https://eidc.ac.uk/policies/retentionPersonalData">See our policy on retention and use of personal data</a>.</p>
+              <div class="authors mt-4">
+                  <h3>Authors</h3>
+                  <p>This information will be used in discovery metadata for this dataset (the catalogue record).  <a href="https://eidc.ac.uk/policies/retentionPersonalData">See our policy on retention and use of personal data</a>.</p>
 
-                    <#if authors?has_content && authors?size gt 0 >
-                        <@displayAuthors/>
-                    <#else>
-                    <div class="text-danger">NO AUTHORS LISTED</div>
-                    </#if>
-                </div>
-            </section>
+                  <#if authors?has_content && authors?size gt 0 >
+                      <@displayAuthors/>
+                  <#else>
+                  <div class="text-danger">NO AUTHORS LISTED</div>
+                  </#if>
+              </div>
+          </section>
 
-            <section class="section section--3">
-                <h2>Data and supporting documentation</h2>
-                <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons' (<a href="#">see our policy on retention and use of personal data</a>).</p>
+          <section class="section section--3">
+              <h2>Data and supporting documentation</h2>
+              <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons' (<a href="#">see our policy on retention and use of personal data</a>).</p>
 
-                <#if files?has_content && files?size gt 0 >
-                    <@displayFiles/>
-                </#if>
+              <#if files?has_content && files?size gt 0 >
+                  <@displayFiles/>
+              </#if>
 
-                <@displayData "File naming convention" fileNamingConvention/>
+              <@displayData "File naming convention" fileNamingConvention/>
 
-                <@displayData "Number of files to be deposited" fileNumber/>
+              <@displayData "Number of files to be deposited" fileNumber/>
 
-                <#if supportingDocs?has_content && supportingDocs?size gt 0 >
-                    <div class="row key-value">
-                        <div class="key">Supporting documents</div>
-                        <div class="value">
-                            <#list supportingDocs as doc>
-                                <div class="supportingDoc">
-                                    <div class="supportingDoc__content">
-                                            <#list doc.content![] as kind>
-                                              ${doc.contentTypeToText(kind)}
-                                              <#sep><br></#sep>
-                                            <#else>
-                                              <span class="text-danger">missing</span>
-                                            </#list>
-                                    </div>
-                                    <div class="supportingDoc__name">
-                                        <#if doc.name?? && doc.format??>
-                                          ${doc.name}.${doc.format}
-                                        <#else>
-                                          <span class="text-danger">missing</span>
-                                        </#if>
-                                    </div>
-                                </div>
-                            </#list>
-                        </div>
-                    </div>
-                </#if>
+              <#if supportingDocs?has_content && supportingDocs?size gt 0 >
+                  <div class="row key-value">
+                      <div class="key">Supporting documents</div>
+                      <div class="value">
+                          <#list supportingDocs as doc>
+                              <div class="supportingDoc">
+                                  <div class="supportingDoc__content">
+                                          <#list doc.content![] as kind>
+                                            ${doc.contentTypeToText(kind)}
+                                            <#sep><br></#sep>
+                                          <#else>
+                                            <span class="text-danger">missing</span>
+                                          </#list>
+                                  </div>
+                                  <div class="supportingDoc__name">
+                                      <#if doc.name?? && doc.format??>
+                                        ${doc.name}.${doc.format}
+                                      <#else>
+                                        <span class="text-danger">missing</span>
+                                      </#if>
+                                  </div>
+                              </div>
+                          </#list>
+                      </div>
+                  </div>
+              </#if>
 
-                <#if dataCategory?has_content>
-                    <@displayData "Data category" dataCategory.value/>
-                </#if>
+              <#if dataCategory?has_content>
+                  <@displayData "Data category" dataCategory.value/>
+              </#if>
 
-                <@displayData "Agreed transfer method for data and supporting documents" transferMethod/>
+              <@displayData "Agreed transfer method for data and supporting documents" transferMethod/>
 
-            </section>
+          </section>
 
-            <section class="section section--6">
-                <h2>Availability, access and licensing</h2>
-                <div class="row key-value">
-                    <div class="key">Availability</div>
-                    <div class="value">
-                        <#if availability??>
-                            ${availability}
-                        <#else>
-                            <p>Data will be made publicly available as soon as possible</p>
-                        </#if>
-                    </div>
-                </div>
+          <section class="section section--6">
+              <h2>Availability, access and licensing</h2>
+              <div class="row key-value">
+                  <div class="key">Availability</div>
+                  <div class="value">
+                      <#if availability??>
+                          ${availability}
+                      <#else>
+                          <p>Data will be made publicly available as soon as possible</p>
+                      </#if>
+                  </div>
+              </div>
 
-                <@displayEndUserLicence/>
-                <@displayOwnerOfIpr/>
-                <@displayData "Use constraints" useConstraints/>
-            </section>
+              <@displayEndUserLicence/>
+              <@displayOwnerOfIpr/>
+              <@displayData "Use constraints" useConstraints/>
+          </section>
 
-            <#if otherInfo?? || supersededData?? || relatedDataHoldings?? || funding?has_content>
-                <section class="section section--9">
-                    <h2>Miscellaneous</h2>
-                    <@displayData "Superseding dataset" supersededData/>
-                    <@displayData "Related data" relatedDataHoldings/>
-                    <@displayData "Other information" otherInfo/>
-                    <@displayGrants/>
-                </section>
-            </#if>
+          <#if otherInfo?? || supersededData?? || relatedDataHoldings?? || funding?has_content>
+              <section class="section section--9">
+                  <h2>Miscellaneous</h2>
+                  <@displayData "Superseding dataset" supersededData/>
+                  <@displayData "Related data" relatedDataHoldings/>
+                  <@displayData "Other information" otherInfo/>
+                  <@displayGrants/>
+              </section>
+          </#if>
 
-            <#if description?has_content || lineage?has_content || allKeywords?has_content || topicCategories?? ||  inspireTheme?? || boundingBoxes??>
-                <section class="section section--metadata">
-                    <h2>Discovery metadata</h2>
-                    <p><i>Information in this section will be used to create a record in the EIDC data catalogue.</i></p>
-                    <@displayData "Description" description/>
-                    <@displayData "Lineage" lineage/>
-                    <@displayKeywords/>
-                    <@displayArea/>
-                </section>
-            </#if>
+          <#if description?has_content || lineage?has_content || allKeywords?has_content || topicCategories?? ||  inspireTheme?? || boundingBoxes??>
+              <section class="section section--metadata">
+                  <h2>Discovery metadata</h2>
+                  <p><i>Information in this section will be used to create a record in the EIDC data catalogue.</i></p>
+                  <@displayData "Description" description/>
+                  <@displayData "Lineage" lineage/>
+                  <@displayKeywords/>
+                  <@displayArea/>
+              </section>
+          </#if>
 
         </div>
     </div>

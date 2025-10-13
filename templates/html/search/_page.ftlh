@@ -42,17 +42,20 @@
 
 <div class="results__list">
 <#list results as result>
-  <a href="/${docroot}/${result.identifier}"
-    class="result result--${result.state}
-    <#if (result.operationalStatus??)>opstatus-${result.operationalStatus}</#if>
-    <#if (result.resourceStatus??)>result--${result.resourceStatus}</#if>" data-location="${(result.locations?join('|'))!}" id="${result.identifier}">
+  <#assign status = "unknown">
+  <#if result.operationalStatus??>
+    <#assign status = result.operationalStatus?lower_case>
+  </#if>
+  <#if result.resourceStatus??>
+    <#assign status = result.resourceStatus?lower_case>
+  </#if>
 
-    <div class="result__state">
-      <span>${(codes.lookup("publication.state", result.state)!)!?upper_case!''}</span>
-    </div>
+  <a href="/${docroot}/${result.identifier}" class="result result--${result.state} result--${status}" data-location="${(result.locations?join('|'))!}" id="${result.identifier}">
+
+    <div class="result__publicationState">${(codes.lookup("publication.state", result.state)!)!?upper_case!''}</div>
 
     <div>
-      <div>
+      <div class="result__tags">
           <#if (result.operationalStatus??)>
             <span class="opstatus">${result.operationalStatus}</span>
           </#if>

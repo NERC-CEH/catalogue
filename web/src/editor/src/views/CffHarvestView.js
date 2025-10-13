@@ -5,10 +5,13 @@ import SingleView from '../SingleView'
 const template = _.template(`
   <div class="mb-2">
     <div class="d-flex align-items-center input-group">
-      <input type="text" class="form-control cff-url me-2"
+      <input type="text" class="editor-input cff-url"
              id="input-<%= data.modelAttribute %>"
-             placeholder="Enter GitHub CFF file link" />
-      <button class="btn editor-button cff-extract-btn" type="button">Extract</button>
+             placeholder="Enter the path to the GitHub.com CFF file" />
+      <button class="btn editor-button cff-extract-btn" type="button">
+        <i class="fa-brands fa-github fa-fw"></i>
+        Extract
+      </button>
     </div>
     <div class="text-center mt-2">
       <div class="spinner-border text-secondary cff-loader"
@@ -46,7 +49,7 @@ const CffHarvestView = SingleView.extend({
     if (!url) {
       Swal.fire({
         title: 'Missing Input',
-        text: 'Please enter a GitHub CFF URL before extracting.',
+        text: 'Please enter a GitHub.com CFF url',
         icon: 'warning',
         confirmButtonText: 'Close'
       })

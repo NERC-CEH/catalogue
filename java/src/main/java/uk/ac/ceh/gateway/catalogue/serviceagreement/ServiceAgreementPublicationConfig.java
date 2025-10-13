@@ -42,6 +42,7 @@ public class ServiceAgreementPublicationConfig {
             .id(draftToSubmittedId)
             .title("Submit")
             .helpText("Submit service agreement for review")
+            .cssClass("btn-sa-submit")
             .build();
 
         Transition submittedToUnderReview = Transition.builder()
@@ -49,6 +50,7 @@ public class ServiceAgreementPublicationConfig {
             .id(submittedToUnderReviewId)
             .title("For approval")
             .helpText("Agree service agreement")
+            .cssClass("btn-sa-forapproval")
             .build();
 
         Transition submittedToDraft = Transition.builder()
@@ -56,6 +58,7 @@ public class ServiceAgreementPublicationConfig {
             .id(submittedToDraftId)
             .title("Edits required")
             .helpText("Move service agreement back to draft state")
+            .cssClass("btn-sa-editsrequired")
             .build();
 
         Transition underReviewToReadyForAgreement = Transition.builder()
@@ -63,6 +66,7 @@ public class ServiceAgreementPublicationConfig {
             .id(underReviewToReadyForAgreementId)
             .title("Ready for agreement")
             .helpText("Complete review of service agreement")
+            .cssClass("btn-sa-foragreement")
             .build();
 
         Transition underReviewToDraft = Transition.builder()
@@ -70,6 +74,7 @@ public class ServiceAgreementPublicationConfig {
             .id(underReviewToDraftId)
             .title("Edits required")
             .helpText("Move service agreement back to draft state")
+            .cssClass("btn-sa-editsrequired")
             .build();
 
         Transition readyForAgreementToAgreed = Transition.builder()
@@ -77,6 +82,7 @@ public class ServiceAgreementPublicationConfig {
             .id(readyForAgreementToAgreedId)
             .title("Agree Service Agreement")
             .helpText("Agree Service Agreement")
+            .cssClass("btn-sa-agree")
             .build();
 
         Transition readyForAgreementToDraft = Transition.builder()
@@ -84,6 +90,7 @@ public class ServiceAgreementPublicationConfig {
             .id(readyForAgreementToDraftId)
             .title("Edits required")
             .helpText("Move service agreement back to draft state")
+            .cssClass("btn-sa-editsrequired")
             .build();
 
         Transition agreedToDraft = Transition.builder()
@@ -91,6 +98,7 @@ public class ServiceAgreementPublicationConfig {
             .id(agreedToDraftId)
             .title("Edits required")
             .helpText("Move service agreement back to draft state")
+            .cssClass("btn-sa-editsrequired")
             .build();
 
         // Roles

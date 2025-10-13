@@ -7,7 +7,7 @@
 
       <#list transitions as transition>
         <form method="post" action="/${basePath}/${metadataId}/publication/${transition.id}">
-          <p><button type="submit" class="btn btn-outline-secondary" title="${transition.helpText}">${transition.title}</button></p>
+          <p><button type="submit" class="btn btn-outline-secondary" title="${transition.helpText} title="${transition.cssClass}">${transition.title}</button></p>
         </form>
       </#list>
 

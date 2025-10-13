@@ -42,19 +42,30 @@ export default _.template(`
 <div class="results__list">
 <% _.each(results, function(result) { %>
 
-    <a class="result result--<%=result.state%> <% if (result.operationalStatus != '') { %>opstatus-<%=result.operationalStatus%><% } %> <% if (result.resourceStatus != '') { %>result--<%=result.resourceStatus%><% } %>" id="<%=result.identifier%>" href="/documents/<%=result.identifier%>">
+  <%
+    let status = 'unknown';
+    if (result.operationalStatus != '') {
+      status = result.operationalStatus;
+    }
+    if (result.resourceStatus != '') {
+      status = result.resourceStatus;
+    }
+    status = status.toLowerCase();
+  %>
 
-        <div class="result__state">
+    <a class="result result--<%=result.state%> result--<%=status%>" id="<%=result.identifier%>" href="/documents/<%=result.identifier%>">
+
+        <div class="result__publicationState">
             <% if(result.state == 'draft') { %>
-                <span>DRAFT</span>
+                DRAFT
             <% } else if(result.state == 'pending') { %>
-                <span>PENDING PUBLICATION</span>
+                PENDING PUBLICATION
             <% } %>
         </div>
 
         <div>
 
-          <div>
+          <div class="result__tags">
             <% if (result.operationalStatus != '') {  %>
               <span class="opstatus"><%=result.operationalStatus%></span>
             <% } %>

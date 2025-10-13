@@ -40,7 +40,7 @@ a {
     @extend .link-offset-2 !optional;
 
     &:hover,
-    &:focus {
+    &:focus-visible {
         text-decoration: underline;
     }
 }
@@ -65,6 +65,11 @@ textarea.sparqlquery {
 
 
 main {
+    ::selection {
+        background-color: var(--primary-colour);
+        color: white;
+    }
+
     section {
         @extend .py-3 !optional;
 
@@ -85,15 +90,8 @@ header {
     border-block-end: solid var(--header-border-bottom-colour) var(--header-border-bottom-width);
 
     .ukcehBrand {
-        display: var(--ukceh-brand-display);
+        display: var(--ukceh-brand-display, block);
         background-color: #eee;
-
-        &:before {
-            display: block;
-            content: "";
-            height: 5px;
-            background: linear-gradient(to left, var(--primary-colour), var(--secondary-colour));
-        }
 
         .ukcehBrand-toolbar {
             display: var(--display-brandbar, none); //hide the brand toolbar by default
@@ -150,7 +148,7 @@ footer {
                 color: var(--footer-link-colour);
 
                 &:hover,
-                &:focus {
+                &:focus-visible {
                     color: var(--footer-link-hover-colour);
                 }
             }
@@ -233,7 +231,7 @@ h6 {
         color: var(--link-colour);
 
         &:hover,
-        &:focus {
+        &:focus-visible {
             color: var(--link-hover-colour);
             text-decoration: none;
         }
@@ -299,7 +297,6 @@ header {
 
             img {
                 max-height: calc(var(--header-height) * 0.75);
-                border-inline-end: var(--header-logo-border);
             }
         }
 
@@ -351,12 +348,15 @@ header {
                 }
 
                 .dropdown-menu {
-                    --dropdown-background-color: #EEE;
-                    background-color: var(--dropdown-background-color);
+                    background-color: var(--dropdownmenu-background);
 
                     li {
                         list-style: none;
                         border-block-end: 1px solid lightgray;
+
+                        &.disabled {
+                            font-size: .9em
+                        }
 
                         &:last-child {
                             border: none;
@@ -364,13 +364,12 @@ header {
 
                         a {
                             padding: .75em;
-                            background-color: var(--dropdown-background-color);
+                            background-color: var(--dropdownmenu-background);
                             color: black;
                             font-weight: 400;
 
                             &:hover {
-                                background-color: color-mix(in lab, var(--dropdown-background-color), black 5%);
-                                color: var(--header-link-hover-colour);
+                                background-color: var(--dropdownmenu-background-hover);
                             }
                         }
                     }

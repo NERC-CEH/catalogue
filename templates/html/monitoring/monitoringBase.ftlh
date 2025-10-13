@@ -157,7 +157,7 @@
     </#if>
 
     <div class="row d-print-none" id="adminPanel">
-      <div class="text-end" id="adminToolbar" role="toolbar">
+      <div class="text-end adminToolbar" role="toolbar">
         <@editButton />
       </div>
     </div>

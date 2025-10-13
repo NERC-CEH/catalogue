@@ -287,7 +287,7 @@ Admin toolbar
 <#macro admin>
   <#if permission.userCanEdit(id)>
     <div class="row d-print-none" id="adminPanel">
-        <div class="text-end" id="adminToolbar" role="toolbar">
+        <div class="text-end adminToolbar" role="toolbar">
           <div class="btn-group btn-group-sm">
             <button type="button" class="btn btn-outline-secondary btn-wide edit-control" data-document-type="${metadata.documentType}">Edit</button>
             <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
