@@ -1,4 +1,4 @@
 precreate-core documents /opt/solr/server/solr/configsets/documents
 precreate-core keywords /opt/solr/server/solr/configsets/keywords
 precreate-core organisations /opt/solr/server/solr/configsets/organisations
-solr-foreground
+solr-foreground -q
