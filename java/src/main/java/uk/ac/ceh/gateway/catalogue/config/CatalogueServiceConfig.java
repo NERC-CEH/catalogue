@@ -95,7 +95,6 @@ public class CatalogueServiceConfig {
                 .facetKey("grant")
                 .facetKey("publicationState")
                 .documentType(GEMINI_TYPE)
-                .documentType(DATA_TYPE_TYPE)
                 .fileUpload(false)
                 .build(),
 
