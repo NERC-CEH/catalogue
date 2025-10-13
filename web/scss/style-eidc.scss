@@ -24,14 +24,13 @@ $card-default-text: #FFF;
     --header-link-weight: 600;
     --header-border-bottom-colour: transparent;
     --header-border-bottom-width: 0;
-    --header-logo-border: none;
     --nav-toggle-colour: var(--header-link-colour);
     --ukceh-brand-display: none;
 
     --eidc-component-display: block;
     --display-navbar-title: none;
 
-     --bs-primary-bg-subtle: color-mix(in lab,  var(--eidc-blue), white 80%);
+    --bs-primary-bg-subtle: color-mix(in lab,  var(--eidc-blue), white 80%);
 }
 
 html {
@@ -66,7 +65,6 @@ footer {
 
 main {
     ::selection {
-        background-color: hsl(192, 95%, 33%);
         color: white;
     }
 }
@@ -109,7 +107,7 @@ main {
     a {
 
         &:hover,
-        &:focus {
+        &:focus-visible  {
             color: #FFF;
             text-decoration: none;
         }

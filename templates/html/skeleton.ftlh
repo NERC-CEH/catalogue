@@ -92,7 +92,7 @@
 
                 <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>
                     <div id="editorCreate" class="dropdown">
-                      <button class="btn btn-outline-dark btn-create dropdown-toggle" type="button" id="createMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                      <button class="btn btn-light btn-outline-secondary btn-create dropdown-toggle" type="button" id="createMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         Create
                         <span class="caret"></span>
                       </button>

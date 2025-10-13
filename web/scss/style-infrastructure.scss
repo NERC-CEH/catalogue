@@ -84,7 +84,7 @@
                         align-items: center;
 
                         &:hover,
-                        &:focus {
+                        &:focus-visible {
                             background-color: transparent;
                             color: #fff;
                             outline: 3px solid white;
