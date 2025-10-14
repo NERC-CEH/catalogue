@@ -21,7 +21,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @Profile("upload:hubbub")
-@RequestMapping("/datasets")
+@RequestMapping("/documents")
 @RequiredArgsConstructor
 public class DatasetFilesController {
 

@@ -89,7 +89,7 @@ class DatasetFilesControllerTest {
             .thenReturn(hubbubResponse);
 
         // when / then
-        mockMvc.perform(get("/datasets/abc123/files"))
+        mockMvc.perform(get("/documents/abc123/files"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$[0].name", is("sample.csv")))
@@ -107,7 +107,7 @@ class DatasetFilesControllerTest {
             .thenReturn(new AccessLimitation("Restricted", "", "", "http://purl.org/coar/access_right/c_16ec"));
         Mockito.when(documentRepository.read("abc123")).thenReturn(document);
 
-        mockMvc.perform(get("/datasets/abc123/files"))
+        mockMvc.perform(get("/documents/abc123/files"))
             .andExpect(status().isForbidden())
             .andExpect(content().string(containsString("Dataset not publicly accessible")));
     }
@@ -116,7 +116,7 @@ class DatasetFilesControllerTest {
     void shouldReturnNotFoundWhenDatasetMissing() throws Exception {
         Mockito.when(documentRepository.read("missing")).thenReturn(null);
 
-        mockMvc.perform(get("/datasets/missing/files"))
+        mockMvc.perform(get("/documents/missing/files"))
             .andExpect(status().isNotFound())
             .andExpect(content().string(containsString("Dataset not found")));
     }
@@ -137,7 +137,7 @@ class DatasetFilesControllerTest {
         Mockito.when(uploadService.get(eq("abc123"), eq("eidchub"), anyInt(), anyInt()))
             .thenReturn(hubbubResponse);
 
-        mockMvc.perform(get("/datasets/abc123/files"))
+        mockMvc.perform(get("/documents/abc123/files"))
             .andExpect(status().isNoContent());
     }
 }
