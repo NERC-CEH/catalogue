@@ -87,7 +87,7 @@
 <#macro exploreButton>
   <#if apps?? && apps?size gte 1>
     <#list apps as app>
-      <a class="btn btn-explore" href="${app.url}" alt="${app.name}" target="_blank">
+      <a class="btn btn-explore" href="${app.url}" alt="${app.name}" target="_blank" rel="noopener noreferrer">
         <span class="fa-solid fa-laptop"></span> ${app.name}</a>
     </#list>
   </#if>
