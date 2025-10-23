@@ -276,8 +276,6 @@ class DocumentControllerTest {
             Arguments.of(new DataType(), APPLICATION_JSON, JSON, null),
             Arguments.of(new InfrastructureRecord(), TEXT_HTML, HTML, null),
             Arguments.of(new InfrastructureRecord(), APPLICATION_JSON, JSON, null),
-            Arguments.of(new MethodRecord(), TEXT_HTML, HTML, null),
-            Arguments.of(new MethodRecord(), APPLICATION_JSON, JSON, null),
             Arguments.of(gemini, TEXT_HTML, HTML, null),
             Arguments.of(gemini, APPLICATION_JSON, JSON, "gemini.json"),
             Arguments.of(gemini, GEMINI_XML, GEMINI_XML_SHORT,  "gemini.xml"),

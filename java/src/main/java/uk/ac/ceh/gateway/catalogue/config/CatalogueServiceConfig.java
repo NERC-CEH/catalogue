@@ -74,7 +74,6 @@ public class CatalogueServiceConfig {
                 .facetKey("recordType")
                 .facetKey("publicationState")
                 .documentType(GEMINI_TYPE)
-                .documentType(METHODRECORD_TYPE)
                 .documentType(MONITORING_FACILITY_TYPE)
                 .documentType(MONITORING_NETWORK_TYPE)
                 .documentType(MONITORING_PROGRAMME_TYPE)
