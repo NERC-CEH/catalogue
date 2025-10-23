@@ -253,14 +253,14 @@ public class RdfTurtleTest {
         }
 
         @Test
-        void loadGeminiApplication() {
+        void loadGeminiSoftware() {
             //given
             val uri = "https://example.com/id/12678007";
             val document = new GeminiDocument()
-                .setType("application")
+                .setType("software")
                 .setId("12678007")
                 .setUri(uri)
-                .setTitle("Application");
+                .setTitle("Software");
 
             //when
             template( "rdf/ttl.ftl", document);
