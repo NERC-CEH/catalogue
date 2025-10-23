@@ -20,9 +20,9 @@
   </#if>
 
   <#if rel_hasMember?has_content && rel_hasMember?size gt 0 >
-    <div id="segment-itemren">
+    <div id="segment-members">
       <h2>
-      This ${recordType} contains <#if rel_hasMember?size gt 1>these<#else>this</#if> resource<#if rel_hasMember?size gt 1>s</#if></h2>
+      This collection contains <#if rel_hasMember?size gt 1>these<#else>this</#if> resource<#if rel_hasMember?size gt 1>s</#if></h2>
 
       <div class="ukcehcards">
         <#list rel_hasMember>
@@ -31,8 +31,14 @@
                 <#assign type="Dataset" icon="fa-solid fa-chart-column" >
               <#elseif item.associationType = "series" || item.associationType = "collection" || item.associationType = "aggregate">
                 <#assign type="Data collection" icon="fa-layer-group" >
-              <#elseif item.associationType = "application">
-                <#assign type="Model code" icon="fa-terminal" >
+              <#elseif item.associationType = "model">
+                <#assign type="Model" icon="fa-list-check" >
+              <#elseif item.associationType = "software">
+                <#assign type="Software" icon="fa-code" >
+              <#elseif item.associationType = "computationalNotebook">
+                <#assign type="Notebook" icon="fa-book-open" >
+              <#elseif item.associationType = "method">
+                <#assign type="Method" icon="fa-list-check">
               <#elseif item.associationType = "service">
                 <#assign type="Web service" icon="fa-location-arrow" >
               <#else>
@@ -52,6 +58,46 @@
     </div>
   </#if>
 
+  <#if rel_hasMember?has_content && rel_hasMember?size gt 0 >
+    <div id="segment-related">
+      <h2>
+    Other related resource<#if rel_hasMember?size gt 1>s</#if></h2>
+
+      <div class="ukcehcards ukcehcards-small">
+        <#list rel_related>
+          <#items as item>
+            <#if item.associationType = 'dataset' ||  item.associationType = 'nonGeographicDataset' ||  item.associationType = 'signpost'>
+              <#assign type="Dataset" icon="fa-solid fa-chart-column" >
+            <#elseif item.associationType = "series" || item.associationType = "collection" || item.associationType = "aggregate">
+              <#assign type="Data collection" icon="fa-layer-group" >
+            <#elseif item.associationType = "model">
+              <#assign type="Model" icon="fa-list-check" >
+            <#elseif item.associationType = "software">
+              <#assign type="Software" icon="fa-code" >
+            <#elseif item.associationType = "computationalNotebook">
+              <#assign type="Notebook" icon="fa-book-open" >
+            <#elseif item.associationType = "method">
+              <#assign type="Method" icon="fa-list-check">
+            <#elseif item.associationType = "service">
+              <#assign type="Web service" icon="fa-location-arrow" >
+            <#else>
+              <#assign type=item.associationType  >
+            </#if>
+
+            <@card item.href item.publicationStatus item.availability type item.title icon/>
+          </#items>
+        </#list>
+
+        <#list otherSupplemental>
+          <#items as item>
+            <@card item.url "published" "available" "Website" item.name "fa-globe" true />
+          </#items>
+        </#list>
+
+      </div>
+    </div>
+  </#if>
+
   <#if rel_memberOf?has_content && rel_memberOf?size gt 0 >
     <h2>This ${recordType} is included in the following collection<#if rel_memberOf?size gt 1>s</#if></h2>
     <div class="ukcehcards">
@@ -61,20 +107,9 @@
     </div>
   </#if>
 
-  <#if otherSupplemental?has_content && otherSupplemental?size gt 0>
-    <div id="segment-supplemental">
-      <h2>Supplemental information</h2>
-
-      <#list otherSupplemental as supplement>
-        <@func.displaySupplemental supplement true/>
-      </#list>
-
-    </div>
-  </#if>
-
 </div>
 
-<#macro card address publicationStatus availability type title icon='fa-layer-group' external=false>
+<#macro card address publicationStatus availability type title icon='fa-globe' external=false >
   <#assign target = "">
   <#assign cardClass = " ukcehcard-" + publicationStatus?lower_case >
 
@@ -98,9 +133,9 @@
 					<i class="fa-solid ${icon} fa-stack-1x fa-inverse"></i>
 				</span>
 			</div>
-			<div>
-				<div class="ukcehcard-type"><small><span>${publicationStatus}</span>${type}</small></div>
-				<div class="ukcehcard-content">${title}</div>
+			<div class="ukcehcard-content">
+				<div class="ukcehcard-type"><span>${publicationStatus}</span>${type}</div>
+				<div class="ukcehcard-title">${title}</div>
 			</div>
 		</a>
 	</#if>

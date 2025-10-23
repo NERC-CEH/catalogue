@@ -20,7 +20,7 @@ import { BoundingBox, BoundingBoxView } from '../geometryMap'
 export default EditorView.extend({
 
   initialize () {
-    if (!this.model.has('type')) { this.model.set('type', 'notebook') }
+    if (!this.model.has('type')) { this.model.set('type', 'computationalNotebook') }
 
     this.sections = [{
       label: 'Basic Info',
@@ -31,7 +31,7 @@ export default EditorView.extend({
           modelAttribute: 'type',
           label: 'Record type',
           options: [
-            { value: 'notebook', label: 'Notebook' },
+            { value: 'computationalNotebook', label: 'Notebook' },
             { value: 'codeProject', label: 'Code project' },
             { value: 'codeSnippet', label: 'Code snippet' }
           ]

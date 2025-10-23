@@ -4,7 +4,7 @@
     <#assign docType = "Dataset">
   <#elseif type=='aggregate' || type=='series'>
     <#assign docType = "Series">
-  <#elseif type=='application'>
+  <#elseif type=='software' || type=='model' || type=='compuationalNotebook'>
     <#assign docType = "SoftwareSourceCode">
   </#if>
 

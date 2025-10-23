@@ -7,10 +7,13 @@ export default _.template(`
       <option class="option-eidc option-ukceh option-inms option-assist" value="dataset">Dataset</option>
       <option class="option-eidc option-inms" value="nonGeographicDataset">Dataset (non-geographic)</option>
       <option class="option-eidc option-inms option-assist" value="aggregate">Data collection (aggregation)</option>
-      <option class="option-eidc" value="application">Model code (application)</option>
+      <option class="option-eidc option-ukceh" value="method">Method</option>
+      <option class="option-eidc option-ukceh" value="model">Model</option>
       <option class="option-eidc" value="nercSignpost">NERC signpost</option>
-      <option class="option-inms option-assist" value="thirdPartyDataset">Third-party dataset</option>
+      <option class="option-eidc option-ukceh" value="computationalNotebook">Notebook</option>
       <option class="option-eidc option-inms" value="service">Web service</option>
+      <option class="option-eidc option-ukceh" value="software">Software</option>
+      <option class="option-inms option-assist" value="thirdPartyDataset">Third-party dataset</option>
     </optgroup>
     <optgroup label="Other">
       <option class="option-iso" value="aggregate">Aggregate</option>

@@ -3,7 +3,7 @@
   isDraft = metadata.state == 'draft'
   isEidcCatalogue = metadata.catalogue == "eidc"
   isEidcCustodian = func.filter(custodians![], "organisationName", "NERC EDS Environmental Information Data Centre")?size gt 0
-  isEidcWithResourceType=isEidcCatalogue && (resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application')
+  isEidcWithResourceType=isEidcCatalogue && (resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'model' || resourceType.value == 'method' || resourceType.value == 'software' || resourceType.value == 'computationalNotebook')
   isNotLinkDocument = metadata.documentType != 'LINK_DOCUMENT'
   isRestrictedFieldsEditor = permission.userCanEditRestrictedFields(metadata.catalogue)
   isSimpleUpload = !isEidcCatalogue && permission.userCanUpload(id)

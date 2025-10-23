@@ -86,7 +86,7 @@
       </a>
       <ul class="dropdown-menu dropdown-menu-end">
         <li><a class="small dropdown-item" href="${uri}?format=json">json</a></li>
-        <#if resourceType?? && (resourceType.value == 'dataset' || resourceType.value == 'application' || resourceType.value == 'service' )>
+        <#if resourceType?? && (resourceType.value == 'dataset' || resourceType.value == 'model' || resourceType.value == 'software' || resourceType.value == 'service' )>
           <li><a class="small dropdown-item" href="${uri}.xml?format=gemini">ISO 19115 (XML)</a></li>
           <li><a class="small dropdown-item" href="${uri}?format=schema.org">schema.org (json-LD)</a></li>
           <li><a class="small dropdown-item" href="${uri}?format=ttl">RDF (Turtle)</a></li>
