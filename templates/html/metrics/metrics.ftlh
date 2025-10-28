@@ -24,8 +24,12 @@
                 <label class="form-check-label" for="recordTypeNonGeographic">Dataset (non geographic)</label>
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="application" id="recordTypeModel" name="recordType">
-                <label class="form-check-label" for="recordTypeModel">Model code (application)</label>
+                <input class="form-check-input" type="checkbox" value="model" id="recordTypeModel" name="recordType">
+                <label class="form-check-label" for="recordTypeModel">Model</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="software" id="recordTypeSoftware" name="recordType">
+                <label class="form-check-label" for="recordTypeSoftware">Software</label>
               </div>
             </div>
           </div>

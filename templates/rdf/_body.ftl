@@ -75,8 +75,8 @@
       <#include "turtle/_aggregation.ftl">
     <#elseif type=='service'>
       <#include "turtle/_service.ftl">
-    <#elseif type=='application'>
-      <#include "turtle/_application.ftl">
+    <#elseif type=='software' || type=='model'|| type=='computationalNotebook'>
+      <#include "turtle/_code.ftl">
     </#if>
 
     dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en> . <#-- leave here to close all the statements about the dataset -->

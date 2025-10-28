@@ -33,7 +33,7 @@
     <div class="navbar fixed-bottom p-3 bg-secondary">
       <div class="container">
         <div class="d-flex ms-auto">
-          <a class="btn btn-outline-secondary me-2" href="/service-agreement/${id}">Return to service agreement</a>
+          <a class="btn btn-light me-2" href="/service-agreement/${id}">Return to service agreement</a>
             <#if canEdit>
               <a class="btn btn-primary" href="#service-agreement-permission/${id}"><i class="fa-regular fa-edit"></i> Edit</a>
             </#if>

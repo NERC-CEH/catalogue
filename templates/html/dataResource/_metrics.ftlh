@@ -19,7 +19,10 @@
   </#if>
 </#if>
 
-<#if resourceType?? && (recordType == 'dataset' || resourceType.value == 'application' || resourceType.value == 'service' )>
+
+
+
+<#if resourceType?? && (recordType == 'dataset' || resourceType.value == 'model' || resourceType.value == 'software' || resourceType.value == 'computationalNotebook' || resourceType.value == 'method' || resourceType.value == 'service' )>
   <#if incomingCitations?has_content || totalDownloads gt 0 || totalViews gt 0>
     <div class="usage" id="segment-usage">
       <div>

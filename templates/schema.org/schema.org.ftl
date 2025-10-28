@@ -4,7 +4,7 @@
     <#assign docType = "Dataset">
   <#elseif type=='aggregate' || type=='series'>
     <#assign docType = "Series">
-  <#elseif type=='application'>
+  <#elseif type=='model' || type=='software' || type=='computationalNotebook'>
     <#assign docType = "SoftwareSourceCode">
   </#if>
   <@m.schemaDotOrg docType/>

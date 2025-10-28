@@ -27,7 +27,6 @@ import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.document.writing.MessageConverterWritingService;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
-import uk.ac.ceh.gateway.catalogue.model.MethodRecord;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
@@ -68,7 +67,6 @@ public class WebConfig implements WebMvcConfigurer {
         val code = new Object2TemplatedMessageConverter<>(CodeDocument.class, freemarkerConfiguration);
         val dataType = new Object2TemplatedMessageConverter<>(DataType.class, freemarkerConfiguration);
         val infrastructureRecord = new Object2TemplatedMessageConverter<>(InfrastructureRecord.class, freemarkerConfiguration);
-        val methodRecord = new Object2TemplatedMessageConverter<>(MethodRecord.class, freemarkerConfiguration);
         val errorResponse = new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration);
         val gemini = new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration);
         val history = new Object2TemplatedMessageConverter<>(History.class, freemarkerConfiguration);
@@ -102,7 +100,6 @@ public class WebConfig implements WebMvcConfigurer {
             code,
             dataType,
             infrastructureRecord,
-            methodRecord,
             errorResponse,
             history,
             link,

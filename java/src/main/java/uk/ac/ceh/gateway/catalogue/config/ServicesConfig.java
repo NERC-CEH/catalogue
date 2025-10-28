@@ -36,7 +36,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
 import uk.ac.ceh.gateway.catalogue.indexing.PrioritisedClassMap;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
-import uk.ac.ceh.gateway.catalogue.model.MethodRecord;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
@@ -137,7 +136,6 @@ public class ServicesConfig {
             .register(CODE, CodeDocument.class)
             .register(DATA_TYPE, DataType.class)
             .register(INFRASTRUCTURERECORD, InfrastructureRecord.class)
-            .register(METHODRECORD, MethodRecord.class)
             .register(GEMINI, GeminiDocument.class)
             .register(LINK, LinkDocument.class)
             .register(NERC_MODEL, NercModel.class)

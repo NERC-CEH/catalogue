@@ -29,7 +29,7 @@ import {
   TextareaView, TopicCategoryView,
   KeywordThemeView, KeywordVocabularyView,
   InspireThemeView, CheckboxView,
-  CffHarvestView
+  CffHarvestView, AdditionalInfoView
 } from '../views'
 import {
   AccessLimitation,
@@ -831,13 +831,25 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
             }
           }
         }),
+
         new CffHarvestView({
           model: this.model,
           modelAttribute: 'cffUrl',
-          label: 'Harvest GitHub CFF',
+          label: 'Harvest GitHub metadata',
           helpText: `
     <p>Paste the URL of a <code>CITATION.cff</code> file hosted on GitHub.</p>
   `
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'additionalInfo',
+          multiline: true,
+          label: 'Additional information',
+          ObjectInputView: AdditionalInfoView,
+          helpText: `
+<p>Enter extra information you can't record elsewhere as key-value pairs.</p>
+`
         })
       ]
     }

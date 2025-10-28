@@ -293,11 +293,10 @@ body {
     .ukcehcards {
         display: flex;
         justify-content: center;
-        gap: 1em;
+        gap: 0.5em;
         flex-wrap: wrap;
 
         a.ukcehcard {
-            --_ukcehcard-display: grid;
             --_ukcehcard-background: hsl(0, 0%, 100%);
             --_ukcehcard-border-colour: var(--primary-colour);
             --_ukcehcard-border-style: solid;
@@ -305,42 +304,43 @@ body {
             --_ukcehcard-link-colour: inherit;
             --_ukcehcard-icon-colour: var(--_ukcehcard-border-colour);
 
-            display: var(--_ukcehcard-display);
+            display: var(--_ukcehcard-display, grid);
             flex: 0 0 calc((100% - calc(var(--_ukcehcard-repeat, 3) * 1em) + 1em) / var(--_ukcehcard-repeat, 3));
-            grid-template-columns: 70px auto;
+            grid-template-columns: var(--_ukcehcard-icon-width, 70px) auto;
             background-color: var(--_ukcehcard-background);
             border: 2px var(--_ukcehcard-border-style) var(--_ukcehcard-border-colour);
             border-radius: 6px;
             text-decoration: none;
-            padding: 0.5em;
+            padding: var(--_ukcehcard-padding, 0.5em);
             text-wrap: balance;
             color: var(--_ukcehcard-text-colour);
-
-            .content {
-                display: flex;
-                gap: 1em;
-                flex-direction: row;
-            }
 
             .ukcehcard-icon {
                 padding-block: 0.5em;
                 color: var(--_ukcehcard-icon-colour);
             }
 
-            .ukcehcard-type {
-                color: #999;
+            .ukcehcard-content {
+                display: flex;
+                gap: 0 1em;
+                flex-direction: var(--_ukcehcard-content-flex-direction, column);
 
-                span {
-                    display: none;
-                    margin-inline-end: 1em;
-                    text-transform: uppercase;
-                    font-size: 80%;
-                    font-weight: 600;
+                .ukcehcard-type {
+                    color: #999;
+                    @extend .small;
+
+                    span {
+                        display: none;
+                        margin-inline-end: 1em;
+                        text-transform: uppercase;
+                        font-size: 80%;
+                        font-weight: 600;
+                    }
                 }
-            }
 
-            .ukcehcard-title {
-                color: var(--_ukcehcard-text-colour);
+                .ukcehcard-title {
+                    color: var(--_ukcehcard-text-colour);
+                }
             }
 
             &-hidden {
@@ -399,6 +399,21 @@ body {
                 color: var(--_ukcehcard-text-colour);
             }
         }
+
+        &.ukcehcards-small {
+            --_ukcehcard-repeat: 1;
+            --_ukcehcard-icon-width: 50px;
+            --_ukcehcard-padding: 0.35em;
+
+            a.ukcehcard {
+                .ukcehcard-icon {
+                    span {
+                        font-size: 1rem;
+                    }
+                }
+            }
+        }
+
 
         @media only screen and (max-width: 900px) {
             --_ukcehcard-repeat: 2;

@@ -68,6 +68,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<OnlineResource> onlineResources;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
     private List<Supplemental> incomingCitations, supplemental;
+    private List<AdditionalInfo> additionalInfo;
     @JsonIgnore
     private Citation citation;
     @JsonIgnore
@@ -83,6 +84,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private AccessLimitation accessLimitation;
     private boolean notGEMINI;
     private Boolean hasOnlineServiceAgreement;
+
 
     public void populateFromServiceAgreement(ServiceAgreement serviceAgreement) {
         this.setTitle(serviceAgreement.getTitle());
@@ -112,6 +114,13 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         this.keywordsDiscipline = serviceAgreement.getKeywordsDiscipline();
         this.keywordsTheme = serviceAgreement.getKeywordsTheme();
         this.keywordsOther = serviceAgreement.getKeywordsOther();
+    }
+
+    @Data
+    public static class AdditionalInfo {
+        private String
+            key,
+            value;
     }
 
     @Override
