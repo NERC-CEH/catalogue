@@ -11,6 +11,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeDeserializer;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeSerializer;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -43,6 +44,13 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
         return Optional.ofNullable(metadataDate)
             .map(md -> md.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
             .orElse("");
+    }
+
+    public Date getUpdatedDate() {
+        return Optional.ofNullable(metadataDate)
+            .map(date -> date.atZone(ZoneId.of("UTC")))
+            .map(zonedDateTime -> Date.from(zonedDateTime.toInstant()))
+            .orElse(null);
     }
 
     @Override

@@ -79,6 +79,7 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setSupplementalDescription(grab(document.getSupplemental(), Supplemental::getDescription))
             .setSupplementalName(grab(document.getSupplemental(), Supplemental::getName))
             .setTopic(topicIndexer.index(document))
+            .setUpdatedDate(document.getUpdatedDate())
             .setVersion(document.getVersion())
             ;
     }

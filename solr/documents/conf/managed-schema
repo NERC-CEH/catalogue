@@ -166,6 +166,7 @@
     <field name="ukcehResearchTheme" type="keywords"/>
     <field name="ukcehScienceChallenge" type="keywords"/>
     <field name="ukcehService" type="keywords"/>
+    <field name="updatedDate" type="pdate"/>
     <field name="version" type="pfloat" default="1"/>
     <field name="dataLevel" type="keywords" multiValued="false"/>
     <field name="view" type="keywords"/>
