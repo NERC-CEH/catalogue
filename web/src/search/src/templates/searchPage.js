@@ -43,8 +43,8 @@ export default _.template(`
 <% _.each(results, function(result) { %>
 
   <%
-    let statusValue = result.resourceStatus || result.operationalStatus;
-    let status = (typeof statusValue === 'string' && statusValue.trim() !== '')
+    const statusValue = result.resourceStatus || result.operationalStatus;
+    const status = (typeof statusValue === 'string' && statusValue.trim() !== '')
       ? statusValue.toLowerCase()
       : 'unknown';
   %>
