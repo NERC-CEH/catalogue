@@ -424,7 +424,7 @@ export default EditorView.extend({
           predefined: {
             'Licence - OGL': {
               value: 'This resource is available under the terms of the Open Government Licence',
-              uri: 'https://eidc.ceh.ac.uk/licences/OGL/plain',
+              uri: 'https://eidc.ac.uk/licences/OGL/plain',
               code: 'license'
             }
           },

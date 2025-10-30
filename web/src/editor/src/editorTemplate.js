@@ -9,7 +9,7 @@ export default _.template(`
         <button id="editorBack" accesskey="<" class="btn btn-sm btn-outline-secondary" disabled><i class="fa-solid fa-chevron-left"></i> Back</button>
         <button id="editorNext" accesskey=">" class="btn btn-sm btn-outline-secondary">Next <i class="fa-solid fa-chevron-right"></i></button>
         <button id="editorSave" accesskey="s" class="btn btn-sm btn-outline-secondary">Save <i class="fa-regular fa-save"></i></button>
-        <button id="editorExit" class="btn btn-sm btn-outline-secondary">Exit <i class="fa-solid fa-power-off"></i></button>
+        <button id="editorExit" accesskey="x" class="btn btn-sm btn-outline-secondary">Exit <i class="fa-solid fa-power-off"></i></button>
         <button id="editorDelete" class="btn btn-sm btn-danger">Delete <i class="fa-solid fa-times"></i></button>
       </div>
       </div>
