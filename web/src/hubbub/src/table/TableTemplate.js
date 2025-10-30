@@ -9,10 +9,9 @@ export default _.template(`
         <th>Size</th>
         <th>Checksum</th>
         <th>Status</th>
+        <th>Last checked</th>
         <th></th>
       </tr>
-    </thead>
-    <thead>
       <tr class="filters table-light">
         <th>
           <div class="position-relative">
@@ -40,9 +39,12 @@ export default _.template(`
         </th>
         <th>
         </th>
+        <th>
+        </th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody>
+    </tbody>
   </table>
 </div>
 `)

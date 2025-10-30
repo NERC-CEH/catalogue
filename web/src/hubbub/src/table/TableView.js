@@ -47,6 +47,7 @@ export default Backbone.View.extend({
         { data: 'size', type: 'file-size' },
         { data: 'checksum' },
         { data: 'status' },
+        { data: 'lastValidated' },
         { data: 'actions', orderable: false }
       ],
       lengthMenu: [50, 100, 250, 500],
@@ -92,6 +93,7 @@ export default Backbone.View.extend({
     const sha256 = model.get('sha256') || ''
     const checksumBool = (sha256 && sha256 !== 'NO_HASH') ? 'Yes' : 'No'
     const checksum = (sha256 && sha256 !== 'NO_HASH') ? `<span title="${sha256}">Yes</span>` : 'No'
+    const lastValidated = model.get('lastValidated') || ''
     const status = model.get('status') || ''
     if (status) this.statusValues.add(status)
     if (checksum) this.checksumOptions.add(checksumBool)
@@ -134,6 +136,7 @@ export default Backbone.View.extend({
       size: model.get('size') || '',
       checksum,
       status,
+      lastValidated,
       actions: actionsHtml,
       id: model.cid,
       model
