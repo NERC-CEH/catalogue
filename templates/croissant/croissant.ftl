@@ -106,7 +106,7 @@
   <#if licences?? && licences?has_content>
         ,"license": [
           <#list licences as licence>
-            <#if licence.uri?matches("^http[s]?://eidc.ceh.ac.uk/licences/OGL.+$")>
+            <#if licence.uri?matches("^http[s]?://eidc.ac.uk/licences/OGL.+$")>
               {
                 "@type": "CreativeWork",
                 "name": "Open Government Licence v3",

@@ -294,7 +294,7 @@
         <ul>
             <li>Authors are listed below in the order in which they will appear in the citation</li>
             <li>Details of the authors listed below will be published in a public data catalogue and held in EIDC systems. UK law requires us to inform all individuals that they are being proposed as an author. A current, valid email address (or phone number) for all living authors is therefore required.  Those without valid contact details are not eligible for authorship</li>
-            <li>Please see our <a href="http://eidc.ceh.ac.uk/policies/privacy" target="_blank" rel="noopener noreferrer" >Privacy Notice</a> for further information</li>
+            <li>Please see our <a href="http://eidc.ac.uk/policies/privacy" target="_blank" rel="noopener noreferrer" >Privacy Notice</a> for further information</li>
             </ul>
         <div class="tbl tbl--collapse tbl--authors">
             <table>

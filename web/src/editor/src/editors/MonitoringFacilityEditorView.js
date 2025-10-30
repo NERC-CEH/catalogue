@@ -90,7 +90,6 @@ export default EditorView.extend({
 `
         }),
 
-
         new SingleObjectView({
           model: this.model,
           modelAttribute: 'geometry',

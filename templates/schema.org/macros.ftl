@@ -183,7 +183,7 @@
 <#macro licencesLink>
   <#if licences?? && licences?has_content>
     <#if licences?first.uri?? && licences?first.uri?has_content>
-      <#if licences?first.uri?matches("^http[s]?://eidc.ceh.ac.uk/licences/OGL/plain")>
+      <#if licences?first.uri?matches("^http[s]?://eidc.ac.uk/licences/OGL/plain")>
         "license": {"@id": "#oglLicence"},
       <#else>
         "license": "${licences?first.uri?trim}",
@@ -195,7 +195,7 @@
 <#macro licencesDetail>
   <#if licences?? && licences?has_content>
     <#if licences?first.uri?? && licences?first.uri?has_content>
-      <#if licences?first.uri?matches("^http[s]?://eidc.ceh.ac.uk/licences/OGL.+$")>
+      <#if licences?first.uri?matches("^http[s]?://eidc.ac.uk/licences/OGL.+$")>
         ,{
         "@id": "#oglLicence",
         "@type": "CreativeWork",

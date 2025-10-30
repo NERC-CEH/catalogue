@@ -97,14 +97,14 @@ export default Backbone.View.extend({
     let lastValidated = '';
     const status = model.get('status') || ''
     if (lastValidatedRaw) {
-        const date = new Date(lastValidatedRaw);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
+      const date = new Date(lastValidatedRaw)
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const hours = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
 
-        lastValidated = `${year}-${month}-${day} ${hours}:${minutes}`;
+      lastValidated = `${year}-${month}-${day} ${hours}:${minutes}`
     }
     if (status) this.statusValues.add(status)
     if (checksum) this.checksumOptions.add(checksumBool)
