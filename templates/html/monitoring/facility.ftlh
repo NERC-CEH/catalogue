@@ -4,15 +4,18 @@
   <#assign relationshipCombinedGeometriesOutput>
     <@m.relationshipCombinedGeometriesWithOwner "http://onto.ceh.ac.uk/EF#narrower" />
   </#assign>
+
+
+  <#if locationConfidential>
+    <b>The location of this facility is confidential, so the position shown on the map is just representative</b>
+  </#if>
+
   <#if relationshipCombinedGeometriesOutput?has_content>
     <div class="displayFeatures">
         <div class="featureMap">${relationshipCombinedGeometriesOutput}</div>
     </div>
   </#if>
 
-  <#if geometryRepresentative>
-    <@m.keyValue "">Geometry is representative</@m.keyValue>
-  </#if>
   <#if mobile>
     <@m.keyValue "Mobile?">Yes</@m.keyValue>
   </#if>

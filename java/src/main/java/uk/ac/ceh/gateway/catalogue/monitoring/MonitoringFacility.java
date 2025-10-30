@@ -30,7 +30,7 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
     private List<String> alternateTitles;
     private Keyword facilityType;
     private Geometry geometry;
-    private boolean geometryRepresentative, mobile;
+    private boolean geometryRepresentative, locationConfidential, mobile;
     private List<ResponsibleParty> pointsOfContact, partners;
     private List<TimePeriod> operatingPeriod;
     private List<Keyword> environmentalDomain, keywordsParameters;
