@@ -94,7 +94,7 @@ export default Backbone.View.extend({
     const checksumBool = (sha256 && sha256 !== 'NO_HASH') ? 'Yes' : 'No'
     const checksum = (sha256 && sha256 !== 'NO_HASH') ? `<span title="${sha256}">Yes</span>` : 'No'
     const lastValidatedRaw = model.get('lastValidated') || ''
-    let lastValidated = '';
+    let lastValidated = ''
     const status = model.get('status') || ''
     if (lastValidatedRaw) {
       const date = new Date(lastValidatedRaw)
