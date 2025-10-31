@@ -58,10 +58,10 @@
     </div>
   </#if>
 
-  <#if rel_hasMember?has_content && rel_hasMember?size gt 0 >
-    <div id="segment-related">
-      <h2>
-    Other related resource<#if rel_hasMember?size gt 1>s</#if></h2>
+  <#if (rel_related?has_content && rel_hasMember?size gt 0) || (otherSupplemental?has_content && otherSupplemental?size gt 0) >
+    <div id="segment-related" class="mt-5">
+
+      <h3 class="my-3">Other related resources</h3>
 
       <div class="ukcehcards ukcehcards-small">
         <#list rel_related>
@@ -111,32 +111,35 @@
 
 <#macro card address publicationStatus availability type title icon='fa-globe' external=false >
   <#assign target = "">
-  <#assign cardClass = " ukcehcard-" + publicationStatus?lower_case >
+  <#if external=true>
+			<#assign target="target='_blank' rel='noopener noreferrer'">
+	</#if>
 
+  <#assign cardClass = " ukcehcard-" + publicationStatus?lower_case >
   <#if availability?has_content && availability != "Unknown">
    <#assign cardClass += " ukcehcard-" + availability?lower_case>
 	</#if>
 
-	<#if address?has_content && address?matches("^http(|s)://.+")>
-		<#if external=true>
-			<#assign target="target='_blank' rel='noopener noreferrer'">
-		</#if>
+  <#assign visible = false>
+  <#if publicationStatus=="published" || permission.userCanEdit(id)>
+     <#assign visible = true>
+  </#if>
 
-    <#if publicationStatus!="published" && !permission.userCanEdit(id)>
-      <#assign cardClass+=" visually-hidden">
+  <#if visible>
+    <#if address?has_content && address?matches("^http(|s)://.+")>
+      <a class="ukcehcard ${cardClass}" href="${address}" ${target}>
+
+        <div class="ukcehcard-icon">
+          <span class="fa-stack fa-xl">
+            <i class="fa-solid fa-circle fa-stack-2x"></i>
+            <i class="fa-solid ${icon} fa-stack-1x fa-inverse"></i>
+          </span>
+        </div>
+        <div class="ukcehcard-content">
+          <div class="ukcehcard-type"><span>${publicationStatus}</span>${type}</div>
+          <div class="ukcehcard-title">${title}</div>
+        </div>
+      </a>
     </#if>
-		<a class="ukcehcard ${cardClass}" href="${address}" ${target}>
-
-			<div class="ukcehcard-icon">
-				<span class="fa-stack fa-xl">
-					<i class="fa-solid fa-circle fa-stack-2x"></i>
-					<i class="fa-solid ${icon} fa-stack-1x fa-inverse"></i>
-				</span>
-			</div>
-			<div class="ukcehcard-content">
-				<div class="ukcehcard-type"><span>${publicationStatus}</span>${type}</div>
-				<div class="ukcehcard-title">${title}</div>
-			</div>
-		</a>
-	</#if>
+  </#if>
 </#macro>

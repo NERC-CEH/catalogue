@@ -424,6 +424,10 @@ body {
         }
     }
 
+    div:has(>.ukcehcards):not(:has(.ukcehcard)) {
+        display: none;
+    }
+
     #adminPanel {
         padding-block: 1em;
 

@@ -20,7 +20,7 @@
 
 header {
     .toolbar {
-        .siteLogo  {
+        .siteLogo {
             img {
                 max-height: calc(var(--header-height) - 60px);
                 margin-inline-end: 1em;
@@ -29,9 +29,23 @@ header {
     }
 }
 
+footer {
+    .footer {
+        .container {
+
+            .footer-logos {
+                .logo-ukceh {
+                    min-width: 200px;
+
+                }
+            }
+        }
+    }
+}
+
 #editor {
     .option-ukeof {
-        --display-option:block;
+        --display-option: block;
     }
 }
 
@@ -40,7 +54,7 @@ header {
     .studyarea-map,
     .geometry-map {
         --map-height: 500px;
-        --map-width:700px;
+        --map-width: 700px;
     }
 
     h2 {
