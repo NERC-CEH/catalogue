@@ -178,6 +178,10 @@ footer {
                     max-width: 200px;
                     max-height: 90px;
                 }
+
+                .logo-ukceh {
+                    min-inline-size: 220px;
+                }
             }
 
             .footer-links {
@@ -296,7 +300,8 @@ header {
             height: var(--header-height);
 
             img {
-                max-height: calc(var(--header-height) * 0.75);
+                max-block-size: calc(var(--header-height) * 0.65);
+                margin-inline-end: 1em;
             }
         }
 
