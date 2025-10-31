@@ -43,14 +43,10 @@ export default _.template(`
 <% _.each(results, function(result) { %>
 
   <%
-    let status = 'unknown';
-    if (result.operationalStatus != '') {
-      status = result.operationalStatus;
-    }
-    if (result.resourceStatus != '') {
-      status = result.resourceStatus;
-    }
-    status = status.toLowerCase();
+    const statusValue = result.resourceStatus || result.operationalStatus;
+    const status = (typeof statusValue === 'string' && statusValue.trim() !== '')
+      ? statusValue.toLowerCase()
+      : 'unknown';
   %>
 
     <a class="result result--<%=result.state%> result--<%=status%>" id="<%=result.identifier%>" href="/documents/<%=result.identifier%>">

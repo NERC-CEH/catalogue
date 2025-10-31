@@ -30,7 +30,7 @@ $card-default-text: #FFF;
     --eidc-component-display: block;
     --display-navbar-title: none;
 
-    --bs-primary-bg-subtle: color-mix(in lab,  var(--eidc-blue), white 80%);
+    --bs-primary-bg-subtle: color-mix(in lab, var(--eidc-blue), white 80%);
 }
 
 html {
@@ -43,13 +43,21 @@ header {
     }
 
     .btn-create {
-        background-color:white;
+        background-color: white;
     }
 }
 
 footer {
     .footer {
         .container {
+
+            .footer-logos {
+                .logo-ukceh {
+                    min-width: 200px;
+                    aspect-ratio: 1;
+                }
+            }
+
             .footer-socials {
                 display: none;
             }
@@ -107,7 +115,7 @@ main {
     a {
 
         &:hover,
-        &:focus-visible  {
+        &:focus-visible {
             color: #FFF;
             text-decoration: none;
         }
