@@ -81,6 +81,15 @@ export default EditorView.extend({
           ]
         }),
 
+        new CheckboxView({
+          model: this.model,
+          modelAttribute: 'locationConfidential',
+          label: 'Location is confidential',
+          helpText: `
+<p>If the location is confidential, add a point location that is representative of the location.  This might be (for example) a lat/long to only 2 decimal places of precision</p>
+`
+        }),
+
         new SingleObjectView({
           model: this.model,
           modelAttribute: 'geometry',
@@ -90,12 +99,6 @@ export default EditorView.extend({
           helpText: `
 <p>Geometry of Monitoring Facility</p>
 `
-        }),
-
-        new CheckboxView({
-          model: this.model,
-          modelAttribute: 'geometryRepresentative',
-          label: 'Geometry is representative?'
         }),
 
         new CheckboxView({
