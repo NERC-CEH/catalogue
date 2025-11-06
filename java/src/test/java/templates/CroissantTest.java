@@ -91,8 +91,8 @@ public class CroissantTest {
     private void givenFileDetailsServiceFull(String fileId) {
         given(fileDetailsService.getDetailsFor(fileId, false, "eidchub"))
             .willReturn(List.of(
-                new FileDetailsService.Part("data0", "File", "data0.csv", "text/csv", "29cd35efe0af017002da20c0f3b5e7c30d7fb5abe6906a3d92967240c5c5b337", "https://catalogue.ceh.ac.uk/datastore/eidchub/123456789/data0.csv", 997L, LocalDateTime.of(2024,7,21,8, 7)),
-                new FileDetailsService.Part("data1", "File", "data1.csv", "text/csv", "86e165efe0af017002da20c0f3b5e7c30d7fb5abe6906a3d92967240c5c98ac2", "https://catalogue.ceh.ac.uk/datastore/eidchub/123456789/data1.csv", 638L, LocalDateTime.of(2020,5,6,23, 59))
+                new FileDetailsService.Part("data0.csv", "File", "data0.csv", "text/csv", "29cd35efe0af017002da20c0f3b5e7c30d7fb5abe6906a3d92967240c5c5b337", "https://catalogue.ceh.ac.uk/datastore/eidchub/123456789/data0.csv", 997L, LocalDateTime.of(2024,7,21,8, 7)),
+                new FileDetailsService.Part("data1.parquet", "File", "data1.parquet", "application/parquet", "86e165efe0af017002da20c0f3b5e7c30d7fb5abe6906a3d92967240c5c98ac2", "https://catalogue.ceh.ac.uk/datastore/eidchub/123456789/data1.parquet", 638L, LocalDateTime.of(2020,5,6,23, 59))
             ));
     }
 

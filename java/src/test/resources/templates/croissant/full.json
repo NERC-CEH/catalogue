@@ -7,6 +7,7 @@
         "rai": "http://mlcommons.org/croissant/RAI/",
         "dct": "http://purl.org/dc/terms/",
         "citeAs": "cr:citeAs",
+        "column": "cr:column",
         "conformsTo": "dct:conformsTo",
         "data": {
             "@id": "cr:data",
@@ -16,14 +17,33 @@
             "@id": "cr:dataType",
             "@type": "@vocab"
         },
+        "examples": {
+            "@id": "cr:examples",
+            "@type": "@json"
+        },
+        "extract": "cr:extract",
+        "field": "cr:field",
         "fileProperty": "cr:fileProperty",
         "fileObject": "cr:fileObject",
         "fileSet": "cr:fileSet",
         "format": "cr:format",
         "includes": "cr:includes",
+        "isLiveDataset": "cr:isLiveDataset",
         "jsonPath": "cr:jsonPath",
+        "key": "cr:key",
+        "md5": "cr:md5",
+        "parentField": "cr:parentField",
         "path": "cr:path",
-        "recordSet": "cr:recordSet"
+        "recordSet": "cr:recordSet",
+        "references": "cr:references",
+        "regex": "cr:regex",
+        "repeated": "cr:repeated",
+        "replace": "cr:replace",
+        "samplingRate": "sc:samplingRate",
+        "separator": "cr:separator",
+        "source": "cr:source",
+        "subField": "cr:subField",
+        "transform": "cr:transform"
     },
     "@id": "123456789_croissant",
     "@type": "sc:Dataset",
@@ -45,22 +65,7 @@
     "distribution": [
         {
             "@type": "cr:FileObject",
-            "@id": "waf",
-            "contentUrl": "https://catalogue.ceh.ac.uk/datastore/eidchub/123456789",
-            "description": "Top level web-accessible folder for this data"
-        },
-        {
-            "@type": "cr:FileSet",
-            "@id": "all-files",
-            "containedIn": {
-                "@id": "waf"
-            },
-            "description": "All files in this dataset",
-            "includes": "*.*"
-        },
-        {
-            "@type": "cr:FileObject",
-            "@id": "data0",
+            "@id": "data0.csv",
             "encodingFormat": "text/csv",
             "sha256": "29cd35efe0af017002da20c0f3b5e7c30d7fb5abe6906a3d92967240c5c5b337",
             "contentUrl": "https://catalogue.ceh.ac.uk/datastore/eidchub/123456789/data0.csv",
@@ -68,10 +73,10 @@
         },
         {
             "@type": "cr:FileObject",
-            "@id": "data1",
-            "encodingFormat": "text/csv",
+            "@id": "data1.parquet",
+            "encodingFormat": "application/parquet",
             "sha256": "86e165efe0af017002da20c0f3b5e7c30d7fb5abe6906a3d92967240c5c98ac2",
-            "contentUrl": "https://catalogue.ceh.ac.uk/datastore/eidchub/123456789/data1.csv",
+            "contentUrl": "https://catalogue.ceh.ac.uk/datastore/eidchub/123456789/data1.parquet",
             "contentSize": "638 B"
         }
     ],

@@ -2,7 +2,7 @@
 <#import "../schema.org/macros.ftl" as m>
 <#assign fileaccess = filter(downloads, "function", "fileAccess")>
 
-  <#if fileaccess?size gt 0 && (type=='dataset' || type=='nonGeographicDataset')>
+  <#if (type=='dataset' || type=='nonGeographicDataset')>
       <#if resourceStatus?lower_case != "deleted">
         <@m.getPartsData id false ; eidchub, suppDocs, combinedParts>
           <@croissant combinedParts/>
@@ -134,9 +134,10 @@
   <#if fileset?? && fileset?has_content>
     ,"recordSet": [
     <#list fileset as filesetOp>
+      <#assign fileName = filesetOp.includes?keep_before_last(".")>
           {
             "@type": "cr:RecordSet",
-            "@id": "${filesetOp.includes?keep_before_last(".")}",
+            "@id": "${fileName}",
             "field": [
               <#if filesetOp.observedProperty?has_content>
                 <#list filesetOp.observedProperty as op>
@@ -152,7 +153,7 @@
                   </#if>
                   {
                     "@type": "cr:Field",
-                    "@id": "${op.value}",
+                    "@id": "${fileName}/${op.value}",
                     "description": "${op.title}",
                     "dataType": "${dataType}",
                     "source": {
