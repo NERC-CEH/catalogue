@@ -61,7 +61,7 @@
 </#if>
 
 <#if isLinkedDoc && resourceIdentifiers?has_content>
-  <#assign masterDocument = func.filterRegex(resourceIdentifiers, "code", "https://catalogue.ceh.ac.uk/id/")>
+  <#assign masterDocument = func.filterRegex(resourceIdentifiers, "code", ".+\\.catalogue\\.ceh\\.ac\\.uk\\/id\\/.+")>
 </#if>
 
 <#macro getLabel val array>

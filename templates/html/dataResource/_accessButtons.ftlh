@@ -1,6 +1,8 @@
 <#assign displayButtonRow = false>
 <#if onlineResources?? >
   <#assign downloadOrder=downloadOrderDetails.from(onlineResources) >
+  <#assign externalLinks = func.filterRegex(onlineResources, "url", ".+\\.ceh\\.ac\\.uk.+", true) >
+
 </#if>
 <#if (resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'model' || resourceType.value == 'software' || resourceType.value == 'computationalNotebook' || resourceType.value == 'method') && (resourceStatus == "Available" || resourceStatus == "Embargoed" || resourceStatus == "Controlled") >
   <#assign displayButtonRow = true>
@@ -14,6 +16,8 @@
     <#if resourceStatus == "Available" || resourceStatus == "Controlled" >
       <#if downloadOrder?? && downloadOrder?string?contains("isOrderable=true") >
         <a class="btn btn-download" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access"><i class="fa-solid fa-angles-down fa-fw"></i> Download</a>
+      <#elseif externalLinks?? && externalLinks?has_content>
+        <a class="btn btn-download" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access"><i class="fa-solid fa-arrow-up-right-from-square"></i> Access</a>
       </#if>
     </#if>
 
@@ -163,6 +167,17 @@
           </#list>
         </#if>
 
+
+
+      <#if externalLinks?? && externalLinks?has_content>
+        <#list externalLinks as item>
+          <p><a href="${item.url}" class="link-offset-2" target="_blank" rel="noopener noreferrer"><b>Access</b> &nbsp; <span class="fw-light">(${item.url})</span></a></p>
+
+        </#list>
+      </#if>
+
+
+
       </#if>
 
       <#include "_status.ftlh">
@@ -170,7 +185,7 @@
       <#if mapViewable?? >
 
         <#if onlineResources?? >
-          <#assign mapservices = func.filterRegex(onlineResources, "url", "https://catalogue.ceh.ac.uk/maps/")>
+          <#assign mapservices = func.filterRegex(onlineResources, "url", ".+\\.catalogue\\.ceh\\.ac\\.uk\\/maps\\/.+")>
         </#if>
 
         <#if mapservices?? && mapservices?has_content>

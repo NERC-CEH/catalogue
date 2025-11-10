@@ -22,12 +22,18 @@
     <#return result>
 </#function>
 
-<#function filterRegex things name regex >
+<#function filterRegex things name regex negate=false>
     <#local result = []>
     <#list things as thing>
-        <#if thing[name]?starts_with(regex) >
+      <#if negate>
+        <#if !thing[name]?matches(regex) >
             <#local result = result + [thing]>
         </#if>
+      <#else>
+        <#if thing[name]?matches(regex) >
+            <#local result = result + [thing]>
+        </#if>
+      </#if>
     </#list>
     <#return result>
 </#function>
