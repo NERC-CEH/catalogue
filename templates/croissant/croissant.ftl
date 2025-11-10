@@ -2,7 +2,7 @@
 <#import "../schema.org/macros.ftl" as m>
 <#assign fileaccess = filter(downloads, "function", "fileAccess")>
 
-  <#if fileaccess?size gt 0 && (type=='dataset' || type=='nonGeographicDataset')>
+  <#if (type=='dataset' || type=='nonGeographicDataset')>
       <#if resourceStatus?lower_case != "deleted">
         <@m.getPartsData id false ; eidchub, suppDocs, combinedParts>
           <@croissant combinedParts/>
@@ -24,6 +24,7 @@
     "rai": "http://mlcommons.org/croissant/RAI/",
     "dct": "http://purl.org/dc/terms/",
     "citeAs": "cr:citeAs",
+    "column": "cr:column",
     "conformsTo": "dct:conformsTo",
     "data": {
       "@id": "cr:data",
@@ -33,14 +34,33 @@
       "@id": "cr:dataType",
       "@type": "@vocab"
     },
+    "examples": {
+      "@id": "cr:examples",
+      "@type": "@json"
+    },
+    "extract": "cr:extract",
+    "field": "cr:field",
     "fileProperty": "cr:fileProperty",
     "fileObject": "cr:fileObject",
     "fileSet": "cr:fileSet",
     "format": "cr:format",
     "includes": "cr:includes",
+    "isLiveDataset": "cr:isLiveDataset",
     "jsonPath": "cr:jsonPath",
+    "key": "cr:key",
+    "md5": "cr:md5",
+    "parentField": "cr:parentField",
     "path": "cr:path",
-    "recordSet": "cr:recordSet"
+    "recordSet": "cr:recordSet",
+    "references": "cr:references",
+    "regex": "cr:regex",
+    "repeated": "cr:repeated",
+    "replace": "cr:replace",
+    "samplingRate": "sc:samplingRate",
+    "separator": "cr:separator",
+    "source": "cr:source",
+    "subField": "cr:subField",
+    "transform": "cr:transform"
   },
   "@id": "${id?trim}_croissant",
   "@type": "sc:Dataset", <#--check what if type = model code ?? -->
@@ -64,23 +84,8 @@
 <#macro distribution files>
   <#if files?size gt 0 && files?size lt 60000>
     ,"distribution":[
-        <#-- Default folder FileObject-->
-        {
-         "@type": "cr:FileObject",
-          "@id": "waf",
-          "contentUrl": "https://catalogue.ceh.ac.uk/datastore/eidchub/${id?trim}",
-          "description": "Top level web-accessible folder for this data"
-        },
-        <#-- Default fileset-->
-        {
-          "@type": "cr:FileSet",
-          "@id": "all-files",
-          "containedIn": { "@id": "waf" },
-          "description": "All files in this dataset",
-          "includes": "*.*"
-        },
     <#list files as file>
-      <#if file.id?has_content>
+      <#if file.id?has_content && (file.id?ends_with(".csv") || file.id?ends_with(".parquet"))>
         {
           "@type": "cr:FileObject",
           <#t>"@id": "${file.id}"
@@ -127,37 +132,42 @@
 
 <#macro recordSet>
   <#if fileset?? && fileset?has_content>
-  ,"recordSet": [
-      {
-        "@type": "cr:RecordSet",
-        "@id": "defaultRecordSet",
-        "key": { "@id": "hash" },
-        "field": [
-        <#list fileset as filesetOp>
-          <#if filesetOp.observedProperty?has_content>
-            <#list filesetOp.observedProperty as op>
-              <#assign dataType = "sc:Text">
-              <#if op.type == 'integer'>
-                <#assign dataType = "sc:Integer">
-              <#elseif op.type == 'number'>
-                <#assign dataType = "sc:Float">
-              <#elseif op.type == 'date'>
-                <#assign dataType = "sc:Date">
-              <#elseif op.type == 'datetime'>
-                <#assign dataType = "sc:DateTime">
+    ,"recordSet": [
+    <#list fileset as filesetOp>
+      <#assign fileName = filesetOp.includes?keep_before_last(".")>
+          {
+            "@type": "cr:RecordSet",
+            "@id": "${fileName}",
+            "field": [
+              <#if filesetOp.observedProperty?has_content>
+                <#list filesetOp.observedProperty as op>
+                  <#assign dataType = "sc:Text">
+                  <#if op.type == 'integer'>
+                    <#assign dataType = "sc:Integer">
+                  <#elseif op.type == 'number'>
+                    <#assign dataType = "sc:Float">
+                  <#elseif op.type == 'date'>
+                    <#assign dataType = "sc:Date">
+                  <#elseif op.type == 'datetime'>
+                    <#assign dataType = "sc:DateTime">
+                  </#if>
+                  {
+                    "@type": "cr:Field",
+                    "@id": "${fileName}/${op.value}",
+                    "description": "${op.title}",
+                    "dataType": "${dataType}",
+                    "source": {
+                      "fileObject": { "@id": "${filesetOp.includes}" },
+                      "extract": {
+                        "column": "${op.value}"
+                      }
+                    }
+                  }
+                <#sep>,</#sep></#list>
               </#if>
-              {
-                "@type": "cr:Field",
-                "@id": "${op.value}",
-                "description": "${op.title}",
-                "dataType": "${dataType}",
-                "source": { "@id": "all-files" }
-              }
-            <#sep>,</#sep></#list>
-          </#if>
-        <#sep>,</#sep></#list>
-        ]
-      }
+            ]
+          }
+      <#sep>,</#sep></#list>
     ]
   </#if>
 </#macro>
