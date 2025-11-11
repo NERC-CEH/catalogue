@@ -357,7 +357,7 @@ export default EditorView.extend({
               function: 'download'
             },
             'Order manager data': {
-              url: 'https://order-eidc.ceh.ac.uk/resources/{ORDER_REF}}/order',
+              url: 'https://order-eidc.ceh.ac.uk/resources/{ORDER_REF}/order',
               name: 'Download the data',
               description: 'Download a copy of this data',
               function: 'order'

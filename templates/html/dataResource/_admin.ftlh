@@ -19,8 +19,8 @@
 <#if onlineResources?has_content>
   <#assign
     orderResources = func.filter(onlineResources, "function", "order")
-    legacyOrders = func.filterRegex(orderResources, "url", "http://catalogue.ceh.ac.uk/download")
-    newOrders = func.filterRegex(orderResources, "url", "https://order-eidc.ceh.ac.uk/resources/")
+    legacyOrders = func.filterRegex(orderResources, "url", ".+\\.catalogue\\.ceh\\.ac\\.uk\\/download\\/.+")
+    newOrders = func.filterRegex(orderResources, "url", ".+\\.order-eidc\\.ceh\\.ac\\.uk\\/resources\\/.+")
     orders = legacyOrders + newOrders
     hasOrders = orders?size gt 0
   >
@@ -30,6 +30,7 @@
     hasOrders = false
   >
 </#if>
+
 
 <#if resourceType?? && permission.userCanEdit(id)>
   <div class="row d-print-none" id="adminPanel">
