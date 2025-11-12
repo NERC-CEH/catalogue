@@ -129,7 +129,7 @@
 
       <#assign constraints = "<p class='constraints'>By accessing or using this " + recordType?lower_case + ", you agree to the terms of the relevant licence agreement(s). You will ensure that this " + recordType?lower_case + " is cited in any publication that describes research in which the data have been used.</p>" />
       <#if metadata.catalogue == "eidc" && (resourceType.value == 'model' || resourceType.value == 'software' || resourceType.value == 'computationalNotebook' || resourceType.value == 'method')>
-        <#assign constraints += "<p class='constraints'>Publication of this " + recordType?lower_case + " by the EIDC does not signify any endorsement or approval. By accessing and using the resource, you acknowledge that it is entirely at your own risk and you are solely responsible for any loss or liability that may arise</p>" />
+        <#assign constraints += "<p class='constraints'>Providing access to this " + recordType?lower_case + " does not signify any endorsement or approval. By accessing and using the resource, you acknowledge that it is entirely at your own risk and you are solely responsible for any loss or liability that may arise</p>" />
       </#if>
 
       <#if resourceStatus == "Available" || resourceStatus == "Controlled">
