@@ -153,7 +153,7 @@
                   </#if>
                   {
                     "@type": "cr:Field",
-                    "@id": "${fileName}/${op.value}",
+                    "@id": "${fileName}/${op.value?replace('\\s+', '_', 'r')}",
                     "description": "${op.title}",
                     "dataType": "${dataType}",
                     "source": {
