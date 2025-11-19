@@ -143,6 +143,7 @@ export_default SPRING_DEVTOOLS_LIVERELOAD_ENABLED true
 export_default LEGILO_URL http://localhost:8000
 export_default LEGILO_USER user
 export_default LEGILO_PASSWORD password
+export_default FUSEKI_URL http://localhost:3030
 
 spring_profile='development,server:eidc,search:basic,cache,service-agreement'
 if [[ $with_hubbub = true ]]; then
@@ -152,6 +153,9 @@ else
 fi
 if [[ $with_legilo = true ]]; then
     spring_profile="$spring_profile,keyword-suggestions"
+fi
+if [[ $with_fuseki = true ]]; then
+    spring_profile="$spring_profile,exports"
 fi
 export_default SPRING_PROFILES_ACTIVE $spring_profile
 
