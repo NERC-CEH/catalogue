@@ -13,4 +13,4 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX odrs: <http://schema.theodi.org/odrs#>
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX sdo: <https://schema.org/>
-PREFIX ef: <http://www.w3.org/2015/03/inspire/ef#>
+PREFIX ef: <http://www.w3.org/2015/03/inspire/ef/>
