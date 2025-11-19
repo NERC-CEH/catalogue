@@ -5,7 +5,7 @@
   <#if (type=='dataset' || type=='nonGeographicDataset')>
       <#if resourceStatus?lower_case != "deleted">
         <@m.getPartsData id false ; eidchub, suppDocs, combinedParts>
-          <@croissant combinedParts/>
+          <@croissant eidchub/>
         </@m.getPartsData>
       </#if>
   <#else>
