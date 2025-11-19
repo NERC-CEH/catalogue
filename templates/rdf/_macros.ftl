@@ -56,7 +56,7 @@
         <#if contact.isRor()>
           <${contact.organisationIdentifier?trim}> ;
         <#else>
-          <#if orgName?has_content>[foaf:name <@displayLiteral orgName />];</#if>
+          [foaf:name <@displayLiteral contact.organisationName />] ;
         </#if>
       .
 
