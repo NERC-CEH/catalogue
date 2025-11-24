@@ -259,7 +259,9 @@ export default EditorView.extend({
           label: 'Additional Resources',
           ObjectInputView: SimpleLinkView,
           multiline: true,
-          helpText: `<p>Websites that may be of use to the user</p>`
+          helpText: `
+                <p>Websites that may be of use to the user</p>
+                `
         })
 
       ]
