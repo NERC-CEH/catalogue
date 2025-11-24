@@ -9,7 +9,7 @@
   >
 </#if>
 
-<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
   <div id="metadata" class="metadata sampleArchive-metadata">
     <div class="section section-grey">
       <div class="container">
@@ -20,8 +20,8 @@
             <h1>${title}</h1>
           </#if>
         </div>
-        <div class="description">
 
+        <div class="description">
           <#if description?? && description?has_content>
             <div class="description-text">
               <@b.linebreaks description />
@@ -138,10 +138,10 @@
               </@key>
             </#if>
 
-            <#if onlineResources?? && onlineResources?has_content>
+            <#if otherLinks?? && otherLinks?has_content>
               <@key "Further information">
-                <#list onlineResources as onlineResource>
-                  <div><a href="${onlineResource.url}" target="_blank" rel="noopener noreferrer">${onlineResource.name}</a></div>
+                <#list otherLinks as link>
+                  <div><a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.name}</a></div>
                 </#list>
               </@key>
             </#if>

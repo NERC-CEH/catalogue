@@ -3,7 +3,7 @@ import InputView from '../InputView'
 import {
   FundingView,
   KeywordVocabularyView,
-  OnlineResourceSimpleView,
+  OnlineResourceView,
   ParentView,
   ContactView,
   PredefinedParentView,
@@ -257,11 +257,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'onlineResources',
           label: 'Additional Resources',
-          ObjectInputView: OnlineResourceSimpleView,
-          listAttribute: `\
-<option value='Website' />
-<option value='browseGraphic' />\
-`,
+          ObjectInputView: OnlineResourceView,
           helpText: `
 <p>A list of websites that may be of use to the user</p>
 `
