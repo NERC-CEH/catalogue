@@ -61,7 +61,11 @@ body {
         display: grid;
         grid-template-columns: auto fit-content(450px);
 
-        .browseimage {
+        .browseGraphic {
+            @extend .float-end !optional;
+            margin: 0 0 1em 2em;
+            max-width: min(100dvw, 350px);
+            max-height: 195px;
             mix-blend-mode: multiply;
             display: none;
 
@@ -70,11 +74,63 @@ body {
                 max-width: 300px;
                 max-height: 600px;
             }
+
+            @media (width >=768px) {
+                display: block;
+            }
         }
 
-        @media only screen and (min-width: 640px) {
-            .browseimage {
-                display: block;
+        >div {
+            display: grid;
+            gap: 2em;
+        }
+
+        .usage {
+            >div {
+                background-color: #eee;
+                border-radius: 6px;
+                padding: 1em 0.5em;
+
+                .metrics {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 1em;
+
+                    .metric {
+                        line-height: 1.1;
+                        text-align: center;
+                        --size: 1.6rem;
+                        font-size: var(--size);
+
+                        span {
+                            font-size: calc(var(--size) / 1.75);
+                            display: block;
+                        }
+                    }
+                }
+
+                p {
+                    line-height: 1.2;
+                    text-align: center;
+                    min-width: 16ch;
+                    margin-block-start: 1.25em;
+                    margin-block-end: 0;
+                }
+
+                .metricsInfo {
+                    font-size: 0.8rem;
+                    margin-block-start: 1.25em;
+                    margin-block-end: 0;
+
+                    span {
+                        display: block;
+                        margin-block-end: 0.65em;
+                        text-align: center;
+                        ;
+                    }
+                }
             }
         }
     }
@@ -415,11 +471,11 @@ body {
         }
 
 
-        @media only screen and (max-width: 900px) {
+        @media (width >=992px) {
             --_ukcehcard-repeat: 2;
         }
 
-        @media only screen and (max-width: 550px) {
+        @media (width <=576px) {
             --_ukcehcard-repeat: 1;
         }
     }
@@ -662,68 +718,6 @@ body {
         }
     }
 
-    .description {
-        >div {
-            display: grid;
-            gap: 2em;
-        }
-
-        .browseGraphic {
-            @extend .float-end !optional;
-            margin: 0 0 1em 2em;
-            max-width: min(100dvw, 350px);
-            max-height: 195px;
-        }
-
-        .usage {
-            >div {
-                background-color: #eee;
-                border-radius: 6px;
-                padding: 1em 0.5em;
-
-                .metrics {
-                    display: flex;
-                    flex-direction: row;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 1em;
-
-                    .metric {
-                        line-height: 1.1;
-                        text-align: center;
-                        --size: 1.6rem;
-                        font-size: var(--size);
-
-                        span {
-                            font-size: calc(var(--size) / 1.75);
-                            display: block;
-                        }
-                    }
-                }
-
-                p {
-                    line-height: 1.2;
-                    text-align: center;
-                    min-width: 16ch;
-                    margin-block-start: 1.25em;
-                    margin-block-end: 0;
-                }
-
-                .metricsInfo {
-                    font-size: 0.8rem;
-                    margin-block-start: 1.25em;
-                    margin-block-end: 0;
-
-                    span {
-                        display: block;
-                        margin-block-end: 0.65em;
-                        text-align: center;
-                        ;
-                    }
-                }
-            }
-        }
-    }
 
     .alert-linked {
         @extend .alert-secondary !optional;
@@ -741,7 +735,7 @@ body {
 
 
 
-    @media only screen and (min-width: 1001px) {
+    @media (width >=992px) {
         .description {
             >div {
                 grid-template-columns: auto fit-content(0);
@@ -791,7 +785,7 @@ body {
                 "signpost-url signpost-url";
         }
 
-        @media only screen and (min-width: 420px) {
+        @media (width >=576px) {
             .signpost-content {
                 grid-template-areas:
                     "signpost-text signpost-logo"
@@ -892,7 +886,7 @@ body {
             grid-area: three;
         }
 
-        @media screen and (min-width: 850px) {
+        @media (width >=768px) {
             --gridspacing: 1em;
             grid-template-areas:
                 "one two"

@@ -10,7 +10,7 @@
         animation: fa-spin 1s infinite linear;
     }
 
-    .browseimages {
+    .browseGraphic {
         text-align: center;
 
         img {
@@ -99,7 +99,7 @@
         }
     }
 
-    @media only screen and (min-width: 1020px) {
+    @media (width >=992px)  {
         .footer-ri {
             .footer-content {
                 .footergrid {

@@ -17,12 +17,12 @@
         grid-template-columns: 1fr;
         gap: 2em;
 
-        @media (width >=1000px) {
+        @media (width >=992px) {
             grid-template-columns: auto 300px;
         }
 
         .key {
-            @media (width >=577px) {
+            @media (width >=576px) {
                 text-align: right !important;
             }
         }
@@ -43,5 +43,4 @@
             padding: .6em;
         }
     }
-}
 }
