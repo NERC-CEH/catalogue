@@ -28,7 +28,7 @@
             </div>
           </#if>
 
-          <div class="browseimage">
+          <div class="browseGraphic">
             <#if image?? && image?has_content>
               <#if image?first.url?matches("^.+(jpg|jpeg|gif|png)$")>
                 <img src="${image?first.url}" alt="${image?first.name}" class="browseGraphic" />

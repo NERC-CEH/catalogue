@@ -43,7 +43,7 @@
               <div class="description-text">
                 <@b.linebreaks description />
               </div>
-              <div class="browseimage">
+              <div class="browseGraphic">
                 <#if images?? && images?has_content>
                   <img src="${images?first.url}" alt="${images?first.name}"/>
                 </#if>

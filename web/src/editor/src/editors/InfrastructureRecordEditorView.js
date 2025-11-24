@@ -3,7 +3,7 @@ import {
   ContactView,
   InfrastructureCategoryView,
   InfrastructureChallengeView,
-  InfrastructureOnlineLinkView,
+  SimpleLinkView,
   KeywordVocabularyView,
   ParentStringView,
   ParentView,
@@ -261,7 +261,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'onlineResources',
           label: 'Online resources',
-          ObjectInputView: InfrastructureOnlineLinkView,
+          ObjectInputView: SimpleLinkView,
           multiline: true
         }),
 
