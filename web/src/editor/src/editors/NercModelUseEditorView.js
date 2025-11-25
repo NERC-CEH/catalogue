@@ -3,7 +3,7 @@ import InputView from '../InputView'
 import {
   ContactView, DataInfoView,
   FundingView,
-  KeywordVocabularyView, NercModelInfoView, OnlineResourceSimpleView,
+  KeywordVocabularyView, NercModelInfoView, SimpleLinkView,
   AdditionalInfoView,
   ParentView,
   PredefinedParentView, SupplementalView,
@@ -185,12 +185,9 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'onlineResources',
           label: 'Online resources',
-          ObjectInputView: OnlineResourceSimpleView,
-          multiline: true,
-          listAttribute: `\
-<option value='website'/>
-<option value='browseGraphic'>Image to display on metadata record</option>\
-`
+          ObjectInputView: SimpleLinkView,
+          multiline: true
+
         }),
 
         new ParentView({

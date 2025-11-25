@@ -1,6 +1,6 @@
 import EditorView from '../EditorView'
 import InputView from '../InputView'
-import { TextareaView, ParentView, PredefinedParentView, KeywordVocabularyView, ReferenceView, ContactView, SingleObjectView, QaView, VersionHistoryView, ProjectUsageView, OnlineResourceSimpleView, ObservedPropertySimpleView } from '../views'
+import { TextareaView, ParentView, PredefinedParentView, KeywordVocabularyView, ReferenceView, ContactView, SingleObjectView, QaView, VersionHistoryView, ProjectUsageView, SimpleLinkView, ObservedPropertySimpleView } from '../views'
 import { Contact, ObservedProperty, Reference } from '../models'
 import BoundingBoxView from '../geometryMap/BoundingBoxView'
 import BoundingBox from '../geometryMap/BoundingBox'
@@ -112,14 +112,8 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'onlineResources',
           label: 'Online resources',
-          ObjectInputView: OnlineResourceSimpleView,
+          ObjectInputView: SimpleLinkView,
           multiline: true,
-          listAttribute: `\
-<option value='code'>Location of the model code such as GitHub repository</option>
-<option value='documentation'>Online documentation describing how to use the model</option>
-<option value='website'/>
-<option value='browseGraphic'>Image to display on metadata record</option>\
-`,
           helpText: `\
 <p>Websites and online resources to access and further descibe the model</p>
 <p>You should include the location of the model code repository e.g. https://github.com/NERC-CEH/...</p>

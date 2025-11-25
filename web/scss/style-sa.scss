@@ -10,17 +10,37 @@
 }
 
 .sampleArchive-metadata {
+
+    .metadata-grid {
+        margin-top: 1.6em;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2em;
+
+        @media (width >=992px) {
+            grid-template-columns: auto 300px;
+        }
+
+        .key {
+            @media (width >=576px) {
+                text-align: right !important;
+            }
+        }
+    }
+
     .browseGraphic {
         max-width: min(100dvw, 350px);
-        max-height:250px;
-        margin:0 0 2em 2em;
+        max-height: 250px;
+        margin: 0 0 2em 2em;
         @extend .float-end !optional;
     }
 
     .record-metadata {
-        margin-block-start:6em;
-        background-color:#EEE;
-        padding:1em;
-        font-size:.9em;
+
+        .key,
+        .value {
+            background-color: #EEE;
+            padding: .6em;
+        }
     }
 }
