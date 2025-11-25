@@ -3,7 +3,7 @@ import {
   ObservedPropertySimpleView, FundingView, KeywordVocabularyView,
   ModelQAView,
   AdditionalInfoView,
-  ModelResolutionView, OnlineResourceSimpleView,
+  ModelResolutionView, SimpleLinkView,
   ParentView,
   PredefinedParentView,
   SupplementalView, TextareaView
@@ -173,14 +173,8 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'onlineResources',
           label: 'Online resources',
-          ObjectInputView: OnlineResourceSimpleView,
+          ObjectInputView: SimpleLinkView,
           multiline: true,
-          listAttribute: `\
-<option value='code'>Link to location of the model code (e.g. GitHub repository)</option>
-<option value='documentation'>Link to documentation describing how to use the model</option>
-<option value='website'/>
-<option value='browseGraphic'>Image to display on metadata record</option>\
-`,
           helpText: `\
 <p>Websites/online resources to access and further descibe the model</p>
 <p>You should include the location of the model code repository e.g. https://github.com/...</p>\

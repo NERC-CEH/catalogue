@@ -52,7 +52,16 @@ export default _.template(`
 
   <div class="mt-2 easilyRecreated" style="<%= data.resourceType === 'Other' || data.resourceType === 'Model output' ? '' : 'display: none;' %>">
     <div class="alert alert-info">
-      <b>Please note:</b> If the data is <b>model output from a publicly available model</b> that can be quickly and easily re-run to produce the same data, we may not consider it to be worth archiving and it may be outside the remit of the EIDC.
+      <p>Please note: If the data is model output from a publicly available model that can be quickly
+      and easily re-run to produce the same data, we <span class="fw-bold text-decoration-underline link-offset-2">may not</span> consider it to be data of long-term value
+      and therefore it would fall outside of our remit</p>
+      <p>If the model output is difficult to regenerate we <b>would</b> accept it.  Such cases include:</p>
+      <ul>
+        <li>If the model generating the data is not publicly available</li>
+        <li>If the model takes large amounts of computational power to regenerate the data</li>
+        <li>If the model takes a long time to run and/or is costly to do so</li>
+        <li>Sourcing input data is difficult and/or time consuming</li>
+      </ul>
 
       <label class="form-label d-block mt-3">
         <span class="fw-bold">Could the data be easily regenerated?</span> <span class="text-danger">*</span>

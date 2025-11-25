@@ -9,10 +9,10 @@ export default _.template(`
         <input data-name='name' class="editor-input" id="distributionFormat<%= data.index %>Name" value="<%= data.name %>">
     </div>
     <div class="col-md-1">
-        <label for="distributionFormat<%= data.index %>Type">Type</label>
+        <label for="distributionFormat<%= data.index %>Type">Media type</label>
     </div>
     <div class="col-md-3">
-        <input data-name='type' class="editor-input" id="distributionFormat<%= data.index %>Type" value="<%= data.type %>">
+        <input data-name='type' placeholder='Media type/MIME type' disabled class="editor-input" id="distributionFormat<%= data.index %>ype" value="<%= data.type %>">
     </div>
     <div class="col-md-1">
         <label for="distributionFormat<%= data.index %>Version">Version</label>

@@ -280,7 +280,7 @@
             }
         }
 
-        @media only screen and (max-width: 1200px) {
+        @media (width <= 992px)  {
             section.section.section--3 {
                 .key-value {
                     grid-template-columns: 1fr;
@@ -300,7 +300,7 @@
             }
         }
 
-        @media only screen and (max-width: 1410px) {
+        @media (width <= 1400px)  {
             .supportingDoc__name {
                 max-width: 45ch;
             }
