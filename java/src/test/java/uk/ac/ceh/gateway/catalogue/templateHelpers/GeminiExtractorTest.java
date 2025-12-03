@@ -9,6 +9,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -31,8 +32,8 @@ public class GeminiExtractorTest {
         val document = new GeminiDocument();
 
         document.setKeywordsOther(List.of(
-                Keyword.builder().value("example 1").URI("http://example.com/0").build(),
-                Keyword.builder().value("example 2").URI("ttp://example.com/1").build()
+            Keyword.builder().value("example 1").URI("http://example.com/0").build(),
+            Keyword.builder().value("example 2").URI("ttp://example.com/1").build()
         ));
 
         //When
