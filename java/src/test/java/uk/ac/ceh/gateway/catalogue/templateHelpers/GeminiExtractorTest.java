@@ -26,6 +26,36 @@ public class GeminiExtractorTest {
     }
 
     @Test
+    public void getKeywords() {
+        //Given
+        val document = new GeminiDocument();
+
+        document.setKeywordsOther(List.of(
+                Keyword.builder().value("example 1").URI("http://example.com/0").build(),
+                Keyword.builder().value("example 2").URI("ttp://example.com/1").build()
+        ));
+
+        //When
+        val keywords = service.getKeywords(document);
+
+        //Then
+        assertThat(keywords.size(), equalTo(2));
+    }
+
+    @Test
+    public void getKeywordsWhenNone() {
+        //Given
+        val document = new GeminiDocument();
+
+        //When
+        val keywords = service.getKeywords(document);
+
+        //Then
+        assertThat(keywords.size(), equalTo(0));
+    }
+
+
+    @Test
     @SneakyThrows
     public void getWhenNoExtent() {
         //Given

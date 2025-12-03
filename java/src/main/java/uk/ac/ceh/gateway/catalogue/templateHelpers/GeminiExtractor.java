@@ -31,6 +31,15 @@ public class GeminiExtractor {
         log.info("Creating");
     }
 
+    public List<String> getKeywords(GeminiDocument document) {
+        return Optional.ofNullable(document.getAllKeywords())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(Keyword::getValue)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
     /**
      * Returns the smallest extent which encompasses all of the bounding boxes
      *
