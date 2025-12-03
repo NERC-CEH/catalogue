@@ -58,7 +58,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<Geometry> geometries;
     private List<Fileset> fileset;
     private List<DistributionInfo> distributionFormats;
-    private List<DescriptiveKeywords> descriptiveKeywords;
     private List<InspireTheme> inspireThemes;
     private List<SpatialResolution> spatialResolutions;
     private List<Funding> funding;
@@ -155,7 +154,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     @JsonIgnore
     public List<Keyword> getAllKeywords() {
         return Stream.of(
-            keywordsFromDescriptiveKeywords(),
             Optional.ofNullable(keywordsDiscipline).orElseGet(Collections::emptyList),
             Optional.ofNullable(keywordsInstrument).orElseGet(Collections::emptyList),
             Optional.ofNullable(keywordsPlace).orElseGet(Collections::emptyList),
@@ -167,27 +165,18 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    private List<Keyword> keywordsFromDescriptiveKeywords() {
-        return Optional.ofNullable(descriptiveKeywords)
-            .orElseGet(Collections::emptyList)
-            .stream()
-            .flatMap(dk -> dk.getKeywords().stream())
-            .collect(Collectors.toCollection(ArrayList::new));
-    }
-
     @Override
     public GeminiDocument addAdditionalKeywords(List<Keyword> additionalKeywords) {
-        descriptiveKeywords = Optional.ofNullable(descriptiveKeywords)
-            .orElseGet(ArrayList::new);
+        keywordsOther = Optional.ofNullable(keywordsOther)
+                .orElseGet(ArrayList::new);
 
-        descriptiveKeywords.add(
-                DescriptiveKeywords
-                        .builder()
-                        .keywords(additionalKeywords)
-                        .build()
-        );
+        if (additionalKeywords != null && !additionalKeywords.isEmpty()) {
+            keywordsOther.addAll(additionalKeywords);
+        }
+
         return this;
     }
+
 
     @JsonProperty("citation")
     public Citation getCitation() {

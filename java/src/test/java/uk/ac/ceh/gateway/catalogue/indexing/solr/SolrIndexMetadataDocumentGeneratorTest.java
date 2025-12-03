@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
@@ -321,39 +320,4 @@ class SolrIndexMetadataDocumentGeneratorTest {
         );
     }
 
-    @Test
-    void checkThatVocabularyServiceUsed() {
-        //Given
-        DescriptiveKeywords ncterms = DescriptiveKeywords.builder()
-            .keywords(Arrays.asList(
-                Keyword.builder()
-                    .value("field")
-                    .URI("http://vocabs.ceh.ac.uk/inms/wp/pm")
-                    .build()
-                )
-            ).build();
-
-        DescriptiveKeywords other = DescriptiveKeywords.builder()
-            .keywords(Arrays.asList(
-                Keyword.builder()
-                    .value("Green")
-                    .build(),
-                Keyword.builder()
-                    .value("Blue")
-                    .URI("https://example.com/blue")
-                    .build()
-                )
-            ).build();
-
-        GeminiDocument document = new GeminiDocument();
-        document.setDescriptiveKeywords(Arrays.asList(ncterms, other));
-
-
-        //When
-        generator.generateIndex(document);
-
-        //Then
-        verify(vocabularyService, atLeastOnce()).isMember(anyString(), eq("http://vocabs.ceh.ac.uk/inms/wp/pm"));
-        verify(vocabularyService, atLeastOnce()).isMember(anyString(), eq("https://example.com/blue"));
-    }
 }

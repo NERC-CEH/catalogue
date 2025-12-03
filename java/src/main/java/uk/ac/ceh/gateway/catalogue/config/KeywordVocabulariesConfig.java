@@ -146,7 +146,7 @@ public class KeywordVocabulariesConfig {
                 solrClient,
                 sparqlEndpoint,
                 "<http://vocabs.ceh.ac.uk/inms/>",
-                "?uri skos:prefLabel ?label .",
+                "?uri a skos:Concept; skos:prefLabel ?label .",
                 "inms",
                 "INMS"
                 );

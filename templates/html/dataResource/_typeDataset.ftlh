@@ -65,7 +65,7 @@
       <#include "_supplemental.ftlh">
       <#include "_contacts.ftlh">
 
-      <#if topicCategories?? || descriptiveKeywords?? || inspireTheme?? || funding?? >
+      <#if topicCategories?? || allKeywords?has_content || inspireTheme?? || funding?? >
         <div id="segment-additional">
           <h2>Additional metadata</h2>
           <#include "_tags.ftlh">

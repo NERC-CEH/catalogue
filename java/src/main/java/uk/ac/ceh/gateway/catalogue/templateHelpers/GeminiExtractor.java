@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
-import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 
@@ -30,17 +29,6 @@ public class GeminiExtractor {
 
     public GeminiExtractor() {
         log.info("Creating");
-    }
-
-    public List<String> getKeywords(GeminiDocument document) {
-        return Optional.ofNullable(document.getDescriptiveKeywords())
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(DescriptiveKeywords::getKeywords)
-                .flatMap(Collection::stream)
-                .map(Keyword::getValue)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
     }
 
     /**
