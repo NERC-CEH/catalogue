@@ -14,6 +14,7 @@ import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
+import uk.ac.ceh.gateway.catalogue.services.ResourceIdentifierLookupService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,9 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @ToString(onlyExplicitlyIncluded = true)
@@ -33,6 +32,7 @@ public class GitDocumentRepository implements DocumentRepository {
     private final DocumentIdentifierService documentIdentifierService;
     private final DocumentWritingService documentWriter;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
+    private final ResourceIdentifierLookupService resourceIdentifierLookupService;
     private final GitRepoWrapper repo;
 
     public GitDocumentRepository(
@@ -41,6 +41,7 @@ public class GitDocumentRepository implements DocumentRepository {
             DocumentIdentifierService documentIdentifierService,
             DocumentWritingService documentWriter,
             BundledReaderService<MetadataDocument> documentBundleReader,
+            ResourceIdentifierLookupService resourceIdentifierLookupService,
             GitRepoWrapper repo
             ) {
         this.documentTypeLookupService = documentTypeLookupService;
@@ -48,6 +49,7 @@ public class GitDocumentRepository implements DocumentRepository {
         this.documentIdentifierService = documentIdentifierService;
         this.documentWriter = documentWriter;
         this.documentBundleReader = documentBundleReader;
+        this.resourceIdentifierLookupService = resourceIdentifierLookupService;
         this.repo = repo;
         log.info("Creating");
             }
@@ -233,7 +235,7 @@ public class GitDocumentRepository implements DocumentRepository {
         String uri = documentIdentifierService.generateUri(id);
         addRecordUriAsResourceIdentifier(document, uri);
         document.setUri(uri);
-
+        validateUniqueResourceIdentifiers(document, id);
         repo.save(
                 user,
                 id,
@@ -276,6 +278,31 @@ public class GitDocumentRepository implements DocumentRepository {
 
     private void updateIdAndMetadataDate(MetadataDocument document, String id) {
         document.setId(id).setMetadataDate(LocalDateTime.now());
+    }
+
+    private void validateUniqueResourceIdentifiers(MetadataDocument document, String currentId) {
+
+        if (document.getResourceIdentifiers() == null) return;
+
+        for (ResourceIdentifier ri : document.getResourceIdentifiers()) {
+            String code = ri.getCode();
+            String codeSpace = ri.getCodeSpace();
+
+            if (code == null || codeSpace == null || code.isBlank() || codeSpace.isBlank()) continue;
+
+            String combined = codeSpace + ":" + code;
+
+            Optional<String> existing =
+                resourceIdentifierLookupService.findDocumentByRi(combined);
+
+            if (existing.isPresent() && !existing.get().equals(currentId)) {
+                throw new ResourceIdentifierExistsException(
+                    "A document with Resource Identifier \"" + combined +
+                        "\" already exists (id = " + existing.get() + "). " +
+                        "Resource identifiers must be unique."
+                );
+            }
+        }
     }
 
     private void addRecordUriAsResourceIdentifier(MetadataDocument document, String recordUri) {

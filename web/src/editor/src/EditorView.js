@@ -27,10 +27,11 @@ export default Backbone.View.extend({
     this.listenTo(this.model, 'error', function (model, response) {
       that.$('#editorAjax').toggleClass('visible')
 
+      const message = response?.responseJSON?.message || response?.responseText || response?.statusText || 'There was a problem communicating with the server!'
+
       Swal.fire({
         title: `Server response: ${response.status} ${response.statusText}`,
-        text: 'There was a problem communicating with the server! \n Please save this record locally by copying the text below to a file.',
-        html: `<textarea readonly style="resize:none; height:auto;" rows="20">${JSON.stringify(model.toJSON())}</textarea>`,
+        html: `<p>${_.escape(message)}</p><textarea readonly style="resize:none; height:auto;" rows="10">${JSON.stringify(model.toJSON())}</textarea>`,
         icon: 'error',
         confirmButtonText: 'Close'
       })
