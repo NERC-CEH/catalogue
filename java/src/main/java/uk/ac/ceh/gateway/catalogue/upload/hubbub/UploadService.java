@@ -89,10 +89,22 @@ public class UploadService {
     public void csv(PrintWriter writer, String datasetId) {
         log.debug("Getting CSV for {}", datasetId);
         val response = get(datasetId, "eidchub", 1, BIG_PAGE_SIZE);
-        writer.println("path,MD5_checksum,SHA256_checksum");
-        response.getData().forEach(fileInfo ->
-            writer.println(format("%s/%s,%s,%s", fileInfo.getDatasetId(), fileInfo.getPath(), fileInfo.getHash(), fileInfo.getSha256()))
-        );
+        boolean withMD5 = response.getData().stream()
+            .anyMatch(fileInfo ->
+                (fileInfo.getHash() != null) && (!fileInfo.getHash().isBlank())
+            );
+
+        if (withMD5) {
+            writer.println("path,MD5_checksum,SHA256_checksum");
+            response.getData().forEach(fileInfo ->
+                writer.println(format("%s/%s,%s,%s", fileInfo.getDatasetId(), fileInfo.getPath(), fileInfo.getHash(), fileInfo.getSha256()))
+            );
+        } else {
+            writer.println("path,SHA256_checksum");
+            response.getData().forEach(fileInfo ->
+                writer.println(format("%s/%s,%s", fileInfo.getDatasetId(), fileInfo.getPath(), fileInfo.getSha256()))
+            );
+        }
     }
 
     public void delete(String datasetId, String datastore, String path, String user) {
