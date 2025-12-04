@@ -75,7 +75,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setUkcehScienceChallenge(grab(getKeywordsByVocabulary(document, VocabularyFacet.UKCEH_SCIENCE_CHALLENGE.getFacetName()), Keyword::getValue))
             .setUkcehService(grab(getKeywordsByVocabulary(document, VocabularyFacet.UKCEH_SERVICE.getFacetName()), Keyword::getValue))
             .setView(getViews(document))
-            .setResourceIdentifier(grab(document.getResourceIdentifiers(), ResourceIdentifier::getCode))
+            .setResourceIdentifier(buildResourceIdentifiers(document.getResourceIdentifiers()))
             ;
     }
 
@@ -167,4 +167,19 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
         }
         return toReturn;
     }
+
+    private List<String> buildResourceIdentifiers(Collection<ResourceIdentifier> identifiers) {
+        if (identifiers == null) return Collections.emptyList();
+
+        List<String> result = new ArrayList<>();
+        for (ResourceIdentifier ri : identifiers) {
+            if (!Strings.isNullOrEmpty(ri.getCode())) result.add(ri.getCode());
+
+            if (!Strings.isNullOrEmpty(ri.getCodeSpace()) && !Strings.isNullOrEmpty(ri.getCode())) {
+                result.add(ri.getCodeSpace() + ":" + ri.getCode());
+            }
+        }
+        return result.stream().distinct().collect(Collectors.toList());
+    }
+
 }

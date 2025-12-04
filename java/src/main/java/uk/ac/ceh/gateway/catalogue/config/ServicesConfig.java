@@ -52,6 +52,7 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitDocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
+import uk.ac.ceh.gateway.catalogue.services.ResourceIdentifierLookupService;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyRetriever;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyService;
@@ -167,6 +168,7 @@ public class ServicesConfig {
         DocumentReadingService documentReadingService,
         DocumentTypeLookupService documentTypeLookupService,
         DocumentWritingService documentWritingService,
+        ResourceIdentifierLookupService resourceIdentifierLookupService,
         GitRepoWrapper gitRepoWrapper
     ) {
         return new GitDocumentRepository(
@@ -175,6 +177,7 @@ public class ServicesConfig {
             documentIdentifierService,
             documentWritingService,
             bundledReaderService,
+            resourceIdentifierLookupService,
             gitRepoWrapper
         );
     }
