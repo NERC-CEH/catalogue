@@ -40,7 +40,7 @@ COPY --chown=spring:spring --from=build-web /web/node_modules/@fortawesome/fonta
 RUN chown spring:spring -R /var/ceh-catalogue && chown spring:spring -R /var/upload
 VOLUME ["/var/ceh-catalogue/datastore", "/var/ceh-catalogue/dropbox", "/var/ceh-catalogue/mapfiles", "/var/upload/datastore", "/var/ceh-catalogue/metrics-db", "/var/ceh-catalogue/ror"]
 EXPOSE 8080 8081
-USER spring
+USER root
 ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
 HEALTHCHECK --start-period=30s CMD curl --no-progress-meter --output - --fail http://localhost:8081/actuator/health || exit 1
 
