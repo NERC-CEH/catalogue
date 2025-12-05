@@ -166,8 +166,8 @@ export default ObjectInputView.extend({
     return toolbar
   },
 
-  isCircleGeometry(geojson) {
-    const feature = geojson.type === 'Feature' ? geojson : {type: 'Feature', geometry: geojson, properties: {}}
+  isCircleGeometry (geojson) {
+    const feature = geojson.type === 'Feature' ? geojson : { type: 'Feature', geometry: geojson, properties: {} }
     if (feature.properties && feature.properties.isTurfCircle) {
       return true
     }
