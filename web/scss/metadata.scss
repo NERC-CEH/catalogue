@@ -729,16 +729,10 @@ body {
 
 
     .alert-linked {
-        @extend .alert-secondary !optional;
-
-        .row {
-            max-width: 900px;
-            justify-self: center;
-        }
-
+        background-color: var(--ukceh-colour-data);
         img {
-            max-width: 160px;
-            justify-self: center;
+            max-width: 250px;
+            max-height: 45px;
         }
     }
 

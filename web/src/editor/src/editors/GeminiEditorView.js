@@ -289,8 +289,7 @@ export default EditorView.extend({
           multiline: true,
           vocabs: {
             ukceh: ['research-project'],
-            inms:  ['inms']
-
+            inms: ['inms']
           },
           helpText: 'Controlled keywords describing projects that fund/support the creation of this resource',
           renderLegiloKeywords: true
@@ -312,7 +311,7 @@ export default EditorView.extend({
           vocabs: {
             eidc: ['envThes', 'gemet', 'cast'],
             ukceh: ['envThes', 'gemet', 'cast'],
-            inms:  ['inms']
+            inms: ['inms']
           },
           multiline: true,
           helpText: 'All other keywords not described elsewhere',
