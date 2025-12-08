@@ -153,10 +153,8 @@ export default EditorView.extend({
             { value: 'pointOfContact', label: 'Point of contact' },
             { value: 'publisher', label: 'Publisher' },
             { value: 'rightsHolder', label: 'Rights holder' },
-            { value: 'principalInvestigator', label: 'Principal investigator' },
-            { value: 'owner', label: 'owner' },
-            { value: 'originator', label: 'originator' },
-            { value: 'resourceProvider', label: 'resource provider' }
+            { value: 'originator', label: 'Originator' },
+            { value: 'resourceProvider', label: 'Resource provider' }
           ],
           predefined: {
             'Author - UKCEH': {
@@ -290,7 +288,9 @@ export default EditorView.extend({
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
           vocabs: {
-            ukceh: ['research-project']
+            ukceh: ['research-project'],
+            inms:  ['inms']
+
           },
           helpText: 'Controlled keywords describing projects that fund/support the creation of this resource',
           renderLegiloKeywords: true
@@ -311,7 +311,8 @@ export default EditorView.extend({
           ObjectInputView: KeywordVocabularyView,
           vocabs: {
             eidc: ['envThes', 'gemet', 'cast'],
-            ukceh: ['envThes', 'gemet', 'cast']
+            ukceh: ['envThes', 'gemet', 'cast'],
+            inms:  ['inms']
           },
           multiline: true,
           helpText: 'All other keywords not described elsewhere',

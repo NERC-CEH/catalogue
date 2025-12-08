@@ -16,18 +16,14 @@
   </#if>
 </#if>
 
+<#assign
+  orders = []
+  hasOrders = false
+>
 <#if onlineResources?has_content>
   <#assign
-    orderResources = func.filter(onlineResources, "function", "order")
-    legacyOrders = func.filterRegex(orderResources, "url", ".+\\.catalogue\\.ceh\\.ac\\.uk\\/download\\/.+")
-    newOrders = func.filterRegex(orderResources, "url", ".+\\.order-eidc\\.ceh\\.ac\\.uk\\/resources\\/.+")
-    orders = legacyOrders + newOrders
+    orders = func.filterRegex(func.filter(onlineResources, "function", "order"), "url", ".+\\.order-eidc\\.ceh\\.ac\\.uk\\/resources\\/.+")
     hasOrders = orders?size gt 0
-  >
-<#else>
-  <#assign
-    orders = []
-    hasOrders = false
   >
 </#if>
 
@@ -39,7 +35,7 @@
       <@editButton />
 
       <#if isRestrictedFieldsEditor && isNotLinkDocument>
-        <#if hasCitation = 0  && isEidcWithResourceType>
+        <#if hasCitation = 0  && isEidcWithResourceType && metadata.catalogue == "eidc">
           <@doiButton />
         </#if>
 
@@ -80,7 +76,7 @@
   <div class="btn-group btn-group-sm position-relative">
     <button type="button" class="btn btn-outline-secondary btn-wide edit-control" data-document-type="${metadata.documentType}">
       Edit
-      <#if totalIssues gte 1>
+      <#if totalIssues gte 1 && metadata.catalogue == "eidc">
         <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-${metadataClass}"
         data-bs-toggle="tooltip" data-bs-placement="right" title="Metadata issues">
           ${totalIssues}

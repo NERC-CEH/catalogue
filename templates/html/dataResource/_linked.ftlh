@@ -7,7 +7,7 @@
   <div class="row">
     <#if isEidc>
       <div class="p-2 col-sm-5 col-md-3">
-        <img class="img-responsive" src="/static/img/cataloguelogo/eidc_print.png">
+        <img class="img-responsive" src="/static/img/cataloguelogo/UKCEH_EIDC_black.png">
       </div>
     </#if>
     <div class="p-2 col-sm-7 col-md-9" >

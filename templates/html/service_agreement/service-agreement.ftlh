@@ -14,7 +14,7 @@
 
           <div class="title mt-3 d-flex flex-nowrap align-content-start">
               <div class="eidcLogo me-3">
-                <img src="/static/img/cataloguelogo/eidc_print.png">
+                <img src="/static/img/cataloguelogo/UKCEH_EIDC_black.png">
               </div>
               <div class="flex-grow-1">
                 <h1>

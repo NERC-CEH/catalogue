@@ -8,11 +8,10 @@
     --ukceh-colour-water: #477AE2;
 
     /* UKCEH  fonts */
+    --ukceh-font-family-Suisse: 'Suisse International', Arial, sans-serif;
     --ukceh-font-family-Lato: 'Lato', system-ui, sans-serif;
     --ukceh-font-family-Montserrat: 'Montserrat', system-ui, sans-serif;
-}
 
-:root {
     --body-background-colour: #fff;
     --text-default-colour: #1d1d1b;
 
@@ -23,11 +22,12 @@
     --link-colour: var(--primary-colour);
     --link-hover-colour: var(--ukceh-colour-data);
 
-    --font-family-body: var(--ukceh-font-family-Lato);
-    --font-family-headers: var(--ukceh-font-family-Lato);
+    --font-family-body: var(--ukceh-font-family-Suisse);
+    --font-family-headers: var(--ukceh-font-family-Suisse);
 
     --header-background-colour: var(--ukceh-colour-night);
     --header-height: 80px;
+    --header-logo-size: calc(var(--header-height) * 0.65);
     --header-link-colour: var(--ukceh-colour-day);
     --header-link-background-colour: var(--header-background-colour);
     --header-link-hover-background-colour: color-mix(in lab, var(--header-link-background-colour), white 25%);
@@ -37,7 +37,6 @@
     --header-border-bottom-width: 1px;
     --dropdownmenu-background: #EEE;
     --dropdownmenu-background-hover: color-mix(in lab, var(--dropdownmenu-background), black 5%);
-
 
     --nav-toggle-colour: var(--header-link-colour);
 
@@ -54,7 +53,10 @@
     --footer-background-colour: #333;
     --footer-colour: #fff;
     --footer-link-colour: #fff;
-    --footer-link-hover-colour: #fff;
+    --footer-link-hover-colour: var(--ukceh-colour-data);
 
     --font-stack-icons: 'Font Awesome\ 6 Free';
+
+    --bs-pagination-hover-bg: var(--ukceh-colour-data);
+
 }

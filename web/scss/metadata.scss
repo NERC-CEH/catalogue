@@ -261,22 +261,21 @@ body {
         }
 
         .btn-download,
-        .btn-explore {
-            --bs-btn-bg: var(--eidc-blue);
-            --bs-btn-color: var(--bs-white);
-            --bs-btn-hover-bg: color-mix(in oklab, lightgray 40%, var(--eidc-blue));
-            --bs-btn-hover-color: var(--bs-white);
-            --bs-btn-hover-border-color: var(--eidc-orange);
-        }
-
+        .btn-explore,
         .btn-access {
-            --bs-btn-bg: color-mix(in oklab, lightgray 30%, var(--eidc-blue));
-            --bs-btn-color: var(--bs-white);
-            --bs-btn-hover-bg: color-mix(in oklab, lightgray 80%, var(--eidc-blue));
-            --bs-btn-hover-color: var(--bs-white);
-            --bs-btn-hover-border-color: var(--eidc-orange);
-
+            --bs-btn-bg: var(--ukceh-colour-data);
+            --bs-btn-color: var(--ukceh-colour-night);
+            --bs-btn-border-color: var(--ukceh-colour-night);
+            --bs-btn-hover-bg: color-mix(in oklab, black 10%, var(--ukceh-colour-data));
+            --bs-btn-hover-border-color: var(--ukceh-colour-night);
         }
+
+        .btn-download,
+        .btn-explore {
+            --bs-btn-border-width: 2px;
+        }
+
+
     }
 
     .offcanvas-access {
@@ -515,6 +514,16 @@ body {
                 white-space: nowrap;
             }
         }
+
+        ul.dropdown-menu {
+            li.disabled.dropdown-item {
+                all: unset;
+                font-size: .9rem;
+                cursor: not-allowed;
+                padding: 1rem;
+            }
+        }
+
     }
 
     .studyarea-map,
