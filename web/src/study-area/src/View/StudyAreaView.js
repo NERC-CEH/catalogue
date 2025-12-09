@@ -3,6 +3,7 @@ import $ from 'jquery'
 import Backbone from 'backbone'
 import L from 'leaflet'
 import 'leaflet.markercluster/dist/leaflet.markercluster.js'
+import * as turf from '@turf/turf'
 
 export default Backbone.View.extend({
 
@@ -49,7 +50,22 @@ export default Backbone.View.extend({
 
   getStudyArea () {
     const studyArea = this.$('[dataType="geoJson"]')
-    return _.map(studyArea, el => $(el).attr('content'))
+    const geoJsonStrings = _.map(studyArea, el => $(el).attr('content'))
+
+    return _.map(geoJsonStrings, geoJsonStr => {
+      const geoJson = JSON.parse(geoJsonStr)
+      const feature = geoJson.features?.[0]
+      const isConfidential = feature?.properties?.locationConfidential === true
+      const geom = feature.geometry
+
+      if (isConfidential && geom?.type === 'Point') {
+        const point = turf.point(geom.coordinates)
+        const buffered = turf.buffer(point, 2, { units: 'kilometers' })
+        buffered.properties = { ...feature.properties, isTurfCircle: true }
+        return JSON.stringify(buffered)
+      }
+      return geoJsonStr
+    })
   },
 
   pointDisplay (feature, studyArea, map) {

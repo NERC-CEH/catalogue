@@ -210,15 +210,15 @@ public class JenaLookupService {
      */
     public String inverseRelationshipCombinedGeometries(String uri, String relation) throws JsonProcessingException {
         List<Link> links = inverseRelationships(uri, relation);
-        return getCombinedGeometriesString(links, uri);
+        return getCombinedGeometriesString(links, uri, false);
     }
 
-    public String relationshipCombinedGeometriesWithOwner(String uri, String relation) throws JsonProcessingException {
+    public String relationshipCombinedGeometriesWithOwner(String uri, String relation, boolean locationConfidential) throws JsonProcessingException {
         List<Link> links = relationshipsWithOwner(uri, relation);
-        return getCombinedGeometriesString(links, uri);
+        return getCombinedGeometriesString(links, uri, locationConfidential);
     }
 
-    private String getCombinedGeometriesString(List<Link> links, String uri) throws JsonProcessingException {
+    private String getCombinedGeometriesString(List<Link> links, String uri, boolean locationConfidential) throws JsonProcessingException {
         // Return if no links found
         if (links.isEmpty()) {
             return "";
@@ -244,6 +244,7 @@ public class JenaLookupService {
                     propertiesNode.put("link", link.getHref());
                 }
                 propertiesNode.put("availability", link.getAvailability());
+                propertiesNode.put("locationConfidential", locationConfidential);
                 features.add(jsonNode);
             }
         }
