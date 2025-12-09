@@ -54,9 +54,18 @@ export default Backbone.View.extend({
 
     return _.map(geoJsonStrings, geoJsonStr => {
       const geoJson = JSON.parse(geoJsonStr)
-      const feature = geoJson.features?.[0]
-      const isConfidential = feature?.properties?.locationConfidential === true
-      const geom = feature.geometry
+      let feature, geom, isConfidential
+      if (geoJson.type === 'FeatureCollection') {
+        feature = geoJson.features?.[0]
+        geom = feature?.geometry
+        isConfidential = feature?.properties?.locationConfidential === true
+      } else if (geoJson.type === 'Feature') {
+        feature = geoJson
+        geom = geoJson.geometry
+        isConfidential = geoJson.properties?.locationConfidential === true
+      } else {
+        return geoJsonStr
+      }
 
       if (isConfidential && geom?.type === 'Point') {
         const point = turf.point(geom.coordinates)
