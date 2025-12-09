@@ -13,17 +13,24 @@ import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.ResourceIdentifierExistsException;
+import uk.ac.ceh.gateway.catalogue.services.ResourceIdentifierLookupService;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 public class GitDocumentRepositoryTest {
@@ -37,6 +44,8 @@ public class GitDocumentRepositoryTest {
     DocumentWritingService documentWritingService;
     @Mock
     DocumentTypeLookupService documentTypeLookupService;
+    @Mock
+    ResourceIdentifierLookupService resourceIdentifierLookupService;
     @Mock GitRepoWrapper repo;
 
     private GitDocumentRepository documentRepository;
@@ -49,7 +58,9 @@ public class GitDocumentRepositoryTest {
                             documentIdentifierService,
                             documentWritingService,
                             documentBundleReader,
+                            resourceIdentifierLookupService,
                             repo);
+        lenient().when(resourceIdentifierLookupService.findDocumentByRi(any())).thenReturn(Optional.empty());
     }
 
     @Test
@@ -145,5 +156,34 @@ public class GitDocumentRepositoryTest {
 
         //Then
         verify(repo).delete(user, "id");
+    }
+
+    @Test
+    @SneakyThrows
+    public void duplicateResourceIdentifierThrowsConflict() {
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        MetadataInfo metadataInfo = MetadataInfo.builder().build();
+
+        // Realistic RI: codespace + code
+        ResourceIdentifier ri = ResourceIdentifier.builder()
+            .codeSpace("ukceh.eidc")
+            .code("fafa99")
+            .build();
+
+        GeminiDocument document = (GeminiDocument) new GeminiDocument()
+            .setMetadata(metadataInfo)
+            .setResourceIdentifiers(List.of(ri));
+
+        String currentId = "tulips";
+        given(documentIdentifierService.generateUri(currentId))
+            .willReturn("http://localhost:8080/id/" + currentId);
+
+        given(resourceIdentifierLookupService.findDocumentByRi("ukceh.eidc:fafa99"))
+            .willReturn(Optional.of("existing-doc"));
+
+        assertThrows(
+            ResourceIdentifierExistsException.class,
+            () -> documentRepository.save(user, document, currentId, "message")
+        );
     }
 }

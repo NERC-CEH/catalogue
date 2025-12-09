@@ -96,6 +96,7 @@ export default EditorView.extend({
           ModelType: Geometry,
           label: 'Geometry',
           ObjectInputView: GeometryView,
+          parentModel: this.model,
           helpText: `
 <p>Geometry of Monitoring Facility</p>
 `

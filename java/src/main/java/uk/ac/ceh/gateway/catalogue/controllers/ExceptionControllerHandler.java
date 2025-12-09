@@ -135,6 +135,11 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, ex.getMessage(), INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(ResourceIdentifierExistsException.class)
+    public ResponseEntity<Object> handleResourceIdentifierAlreadyExists(ResourceIdentifierExistsException ex) {
+        return handleExceptionInternal(ex, ex.getMessage(), CONFLICT);
+    }
+
     @ExceptionHandler(ExternalResourceFailureException.class)
     public ResponseEntity<Object> handleExternalResourceFailureException(ExternalResourceFailureException ex) {
         return handleExceptionInternal(ex, ex.getMessage(), HttpStatus.BAD_GATEWAY);
