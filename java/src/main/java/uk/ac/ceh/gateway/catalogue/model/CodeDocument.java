@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -9,6 +10,7 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.util.CollectionFilter;
 
 import java.util.List;
 
@@ -36,5 +38,33 @@ public class CodeDocument extends AbstractMetadataDocument {
         private String reviewDate, reviewProcess;
     }
 
+    @JsonIgnore
+    public List<ResourceConstraint> getLicences() {
+        return CollectionFilter.filterByProperty(
+            useConstraints,
+            ResourceConstraint::getCode,
+            "license",
+            false
+        );
+    }
 
+    @JsonIgnore
+    public List<ResponsibleParty> getOwners() {
+        return CollectionFilter.filterByProperty(
+            responsibleParties,
+            ResponsibleParty::getRole,
+            "owner",
+            false
+        );
+    }
+
+    @JsonIgnore
+    public List<ResponsibleParty> getContacts() {
+        return CollectionFilter.filterByProperty(
+            responsibleParties,
+            ResponsibleParty::getRole,
+            "pointOfContact",
+            false
+        );
+    }
 }

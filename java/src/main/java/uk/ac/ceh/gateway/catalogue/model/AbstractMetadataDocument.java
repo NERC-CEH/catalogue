@@ -9,6 +9,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeDeserializer;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeSerializer;
+import uk.ac.ceh.gateway.catalogue.util.CollectionFilter;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -36,6 +37,16 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
     public List<ResourceIdentifier> getResourceIdentifiers() {
         return Optional.ofNullable(resourceIdentifiers)
             .orElseGet(Collections::emptyList);
+    }
+
+    @JsonIgnore
+    public List<ResourceIdentifier> getMasterDocument() {
+        return CollectionFilter.filterByPropertyRegex(
+            resourceIdentifiers,
+            ResourceIdentifier::getCode,
+            ".+\\.catalogue\\.ceh\\.ac\\.uk\\/id\\/.+",
+            false
+        );
     }
 
     @Override

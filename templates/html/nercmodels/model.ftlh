@@ -5,10 +5,10 @@
 
 <#if onlineResources?? && onlineResources?has_content>
   <#assign
-    images = func.filter(onlineResources, "function", "browseGraphic")
-    code = func.filter(onlineResources, "function", "code")
-    websites = func.filter(onlineResources, "function", "website")
-    documents = func.filter(onlineResources, "function", "documentation")
+    images = browseGraphics
+    code = code
+    websites = websites
+    documents = documentation
   >
 </#if>
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>

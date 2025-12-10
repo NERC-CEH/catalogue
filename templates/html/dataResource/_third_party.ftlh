@@ -1,8 +1,8 @@
 <#if onlineResources??>
-    <#assign distributionURLs = func.filter(onlineResources, "function", "browseGraphic", true)>
+    <#assign distributionURLs = nonBrowseGraphics>
 </#if>
 <#if distributorContacts??>
-    <#assign dataDistributors = func.filter(distributorContacts, "role", "distributor") >
+    <#assign dataDistributors = distributor>
 </#if>
 
 <div id="document-thirdParty">

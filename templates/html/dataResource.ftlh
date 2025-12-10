@@ -3,16 +3,16 @@
 <#import "../functions.ftlh" as func>
 
 <#assign
-    authors = func.filter(responsibleParties, "role", "author")
-    pocs = func.filter(responsibleParties, "role", "pointOfContact")
-    custodians = func.filter(responsibleParties, "role", "custodian")
-    publishers = func.filter(responsibleParties, "role", "publisher")
-    depositors = func.filter(responsibleParties, "role", "depositor")
-    originators = func.filter(responsibleParties, "role", "originator")
-    rightsHolders = func.filter(responsibleParties, "role", "rightsHolder")
-    owners = func.filter(responsibleParties, "role", "owner")
-    originators = func.filter(responsibleParties, "role", "originator")
-    resourceProviders = func.filter(responsibleParties, "role", "resourceProvider")
+    authors = authors
+    pocs = pointsOfContact
+    custodians = custodians
+    publishers = publishers
+    depositors = depositors
+    originators = originators
+    rightsHolders = rightsHolders
+    owners = owners
+    originators = originators
+    resourceProviders = resourceProviders
     otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders
     catalogue = catalogues.retrieve(metadata.catalogue)
 
@@ -33,10 +33,13 @@
     errors = MD_checks.getErrors()
     infos =  MD_checks.getInfo()
     warnings = MD_checks.getWarnings()
+    errorList = MD_checks.getErrorList()
+    infoList = MD_checks.getInfoList()
+    warningList = MD_checks.getWarningList()
     totalIssues = errors + infos +  warnings
     metadataClass="warning"
 >
-<#assign apps=func.filter(onlineResources, "function", "browsing")>
+<#assign apps=browsingApps>
 
 <#if totalIssues?? && totalIssues gte 1>
   <#if errors gte 1 >
@@ -50,8 +53,8 @@
 
 <#if useConstraints?has_content>
   <#assign
-    licences = func.filter(useConstraints, "code", "license")
-    otherConstraints =  func.filter(useConstraints, "code", "license", true)
+    licences = licences
+    otherConstraints =  otherConstraints
   >
 </#if>
 
@@ -61,7 +64,7 @@
 </#if>
 
 <#if isLinkedDoc && resourceIdentifiers?has_content>
-  <#assign masterDocument = func.filterRegex(resourceIdentifiers, "code", ".+\\.catalogue\\.ceh\\.ac\\.uk\\/id\\/.+")>
+  <#assign masterDocument = masterDocument>
 </#if>
 
 <#macro getLabel val array>

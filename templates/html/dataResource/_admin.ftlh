@@ -2,7 +2,7 @@
 <#assign
   isDraft = metadata.state == 'draft'
   isEidcCatalogue = metadata.catalogue == "eidc"
-  isEidcCustodian = func.filter(custodians![], "organisationName", "NERC EDS Environmental Information Data Centre")?size gt 0
+  isEidcCustodian = isEidcCustodian()
   isEidcWithResourceType=isEidcCatalogue && (resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'model' || resourceType.value == 'method' || resourceType.value == 'software' || resourceType.value == 'computationalNotebook')
   isNotLinkDocument = metadata.documentType != 'LINK_DOCUMENT'
   isRestrictedFieldsEditor = permission.userCanEditRestrictedFields(metadata.catalogue)
@@ -18,9 +18,9 @@
 
 <#if onlineResources?has_content>
   <#assign
-    orderResources = func.filter(onlineResources, "function", "order")
-    legacyOrders = func.filterRegex(orderResources, "url", ".+\\.catalogue\\.ceh\\.ac\\.uk\\/download\\/.+")
-    newOrders = func.filterRegex(orderResources, "url", ".+\\.order-eidc\\.ceh\\.ac\\.uk\\/resources\\/.+")
+    orderResources = orderResources
+    legacyOrders = legacyOrders
+    newOrders = newOrders
     orders = legacyOrders + newOrders
     hasOrders = orders?size gt 0
   >

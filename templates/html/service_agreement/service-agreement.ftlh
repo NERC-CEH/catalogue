@@ -37,7 +37,7 @@
                         <#assign
                             SA_checks = serviceAgreementQuality.check(id)
                             problems = SA_checks.getProblems()
-                            errors = func.filter(problems, "severity", "ERROR")
+                            errors = SA_checks.getErrorList()
                         >
                         <#if errors?? && errors?has_content>
                             <#assign canChangeState = false>

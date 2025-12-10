@@ -5,14 +5,14 @@
 
 <#if responsibleParties?? && responsibleParties?has_content>
   <#assign
-    SRO = func.filter(responsibleParties, "role", "owner")
-    otherContacts = func.filter(responsibleParties, "role", "owner", true)
+    SRO = SRO
+    otherContacts = otherContacts
   >
 </#if>
 <#if onlineResources?? && onlineResources?has_content>
   <#assign
-    images = func.filter(onlineResources, "function", "browseGraphic")
-    otherLinks = func.filter(onlineResources, "function", "browseGraphic", true)
+    images = images
+    otherLinks = otherLinks
   >
 </#if>
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>

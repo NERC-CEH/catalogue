@@ -1,13 +1,13 @@
 <#if onlineResources??>
-    <#assign signpostURLs = func.filter(onlineResources, "function", "information")  + func.filter(onlineResources, "function", "search")>
+    <#assign signpostURLs = information + search>
 </#if>
 <#if distributorContacts??>
-    <#assign signpostDistributor = func.filter(distributorContacts, "role", "distributor")>
+    <#assign signpostDistributor = distributor>
 </#if>
 
 <div>
     <div>
-        This record describes NERC-funded data managed by 
+        This record describes NERC-funded data managed by
         <#if signpostDistributor?has_content>
             ${signpostDistributor?first.organisationName}
         <#else>

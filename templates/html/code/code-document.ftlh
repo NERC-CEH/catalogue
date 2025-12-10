@@ -2,12 +2,12 @@
 <#import "../../functions.ftlh" as f>
 
 <#if useConstraints?has_content>
-  <#assign licences = f.filter(useConstraints, "code", "license")>
+  <#assign licences = licences>
 </#if>
 <#if responsibleParties?has_content>
   <#assign
-    owners = f.filter(responsibleParties, "role", "owner")
-    contacts = f.filter(responsibleParties, "role", "pointOfContact")
+    owners = owners
+    contacts = contacts
     >
 </#if>
 

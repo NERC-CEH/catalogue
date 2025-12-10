@@ -6,8 +6,8 @@
 
 <#if onlineResources??>
 <#assign
-    weblinks = func.filter(onlineResources, "function", "website")
-    images = func.filter(onlineResources, "function", "browseGraphic")
+    weblinks = websites
+    images = browseGraphics
 >
 </#if>
 

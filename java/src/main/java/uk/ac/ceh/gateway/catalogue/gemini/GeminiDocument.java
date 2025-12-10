@@ -14,6 +14,7 @@ import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
+import uk.ac.ceh.gateway.catalogue.util.CollectionFilter;
 
 import java.time.ZoneId;
 import java.time.LocalDate;
@@ -266,13 +267,16 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public List<ResponsibleParty> getAuthors() {
-        return responsiblePartyByRole("author");
+    private List<ResponsibleParty> distributorContactsByRole(String role) {
+        return distributorContacts
+            .stream()
+            .filter(responsibleParty -> responsibleParty.getRole().equalsIgnoreCase(role))
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public List<ResponsibleParty> getCustodians() {
-        return responsiblePartyByRole("custodian");
-    }
+    public List<ResponsibleParty> getAuthors() { return responsiblePartyByRole("author"); }
+
+    public List<ResponsibleParty> getCustodians() { return responsiblePartyByRole("custodian"); }
 
     public List<ResponsibleParty> getPointsOfContact() {
         return responsiblePartyByRole("pointOfContact");
@@ -284,6 +288,31 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     public List<ResponsibleParty> getPublishers() {
         return responsiblePartyByRole("publisher");
+    }
+
+    @JsonIgnore
+    public List<ResponsibleParty> getDepositors() {
+        return responsiblePartyByRole("depositor");
+    }
+
+    @JsonIgnore
+    public List<ResponsibleParty> getOriginators() {
+        return responsiblePartyByRole("originator");
+    }
+
+    @JsonIgnore
+    public List<ResponsibleParty> getOwners() {
+        return responsiblePartyByRole("owner");
+    }
+
+    @JsonIgnore
+    public List<ResponsibleParty> getResourceProviders() {
+        return responsiblePartyByRole("resourceProviders");
+    }
+
+    @JsonIgnore
+    public List<ResponsibleParty> getDistributor() {
+        return distributorContactsByRole("distributor");
     }
 
     public List<DistributionInfo> getDistributionFormats() {
@@ -336,6 +365,16 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
+    @JsonIgnore
+    public List<ResourceConstraint> getOtherConstraints() {
+        return CollectionFilter.filterByProperty(
+            useConstraints,
+            ResourceConstraint::getCode,
+            "license",
+            true
+        );
+    }
+
     public List<OnlineResource> getInfoLinks() {
         return Optional.ofNullable(onlineResources)
             .orElseGet(Collections::emptyList)
@@ -370,5 +409,141 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .flatMap(List::stream)
             .map(party -> party.withEmail(convertEmail(party.getEmail())))
             .toList();
+    }
+
+    private List<OnlineResource> filterOnlineResources(String filterVal) {
+        return CollectionFilter.filterByProperty(
+            onlineResources,
+            OnlineResource::getFunction,
+            filterVal,
+            false
+        );
+    }
+
+    private List<Supplemental> filterSupplemental(String filterVal) {
+        return CollectionFilter.filterByProperty(
+            supplemental,
+            Supplemental::getFunction,
+            filterVal,
+            false
+        );
+    }
+
+    @JsonIgnore
+    public List<Supplemental> getRelatedDatasets() {
+        return filterSupplemental("relatedDataset");
+    }
+
+    @JsonIgnore
+    public List<Supplemental> getRelatedArticle() {
+        return filterSupplemental("relatedArticle");
+    }
+
+    @JsonIgnore
+    public List<Supplemental> getEmptySupplemental() {
+        return filterSupplemental("");
+    }
+
+    @JsonIgnore
+    public List<Supplemental> getReferencedBy() {
+        return filterSupplemental("isReferencedBy");
+    }
+
+    @JsonIgnore
+    public List<Supplemental> getSupplementTo() {
+        return filterSupplemental("isSupplementTo");
+    }
+
+    @JsonIgnore
+    public List<Supplemental> getSupplementWebsite() {
+        return filterSupplemental("website");
+    }
+
+    @JsonIgnore
+    public List<Supplemental> getNonRelatedDatasets() {
+        return CollectionFilter.filterByProperty(
+            supplemental,
+            Supplemental::getFunction,
+            "relatedDataset",
+            true
+        );
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getBrowsingApps() {
+        return filterOnlineResources("browsing");
+    }
+
+    @JsonIgnore
+    public boolean isEidcCustodian() {
+        return Optional.ofNullable(getCustodians())
+            .orElse(Collections.emptyList())
+            .stream()
+            .anyMatch(custodian -> "NERC EDS Environmental Information Data Centre".equals(custodian.getOrganisationName()));
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getOrderResources() {
+        return filterOnlineResources("order");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getLegacyOrders() {
+        return CollectionFilter.filterByPropertyRegex(
+            getOrderResources(),
+            OnlineResource::getUrl,
+            ".+\\.catalogue\\.ceh\\.ac\\.uk\\/download\\/.+",
+            false
+        );
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getNewOrders() {
+        return CollectionFilter.filterByPropertyRegex(
+            getOrderResources(),
+            OnlineResource::getUrl,
+            ".+\\.order-eidc\\.ceh\\.ac\\.uk\\/resources\\/.+",
+            false
+        );
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getBrowseGraphics() {
+        return filterOnlineResources("browseGraphic");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getInformation() {
+        return filterOnlineResources("information");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getNonBrowseGraphics() {
+        return CollectionFilter.filterByProperty(
+            onlineResources,
+            OnlineResource::getFunction,
+            "browseGraphic",
+            true
+        );
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getSearch() {
+        return filterOnlineResources("search");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getWebsites() {
+        return filterOnlineResources("website");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getCode() {
+        return filterOnlineResources("code");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getDocumentation() {
+        return filterOnlineResources("documentation");
     }
 }

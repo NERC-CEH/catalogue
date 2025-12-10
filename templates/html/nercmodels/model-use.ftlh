@@ -4,7 +4,7 @@
 <#import "macros.ftlh" as m>
 
 <#if (onlineResources?? && onlineResources?has_content)>
-  <#assign websites = func.filter(onlineResources, "function", "website") >
+  <#assign websites = websites >
 </#if>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>

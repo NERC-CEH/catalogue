@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.http.MediaType;
 
 import lombok.Data;
@@ -17,6 +18,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.util.CollectionFilter;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -117,4 +119,45 @@ public class CehModel extends AbstractMetadataDocument implements WellKnownText 
             .map(BoundingBox::getWkt)
             .collect(Collectors.toList());
     }
+
+    @JsonIgnore
+    public List<ResponsibleParty> getSRO() {
+        return CollectionFilter.filterByProperty(
+            responsibleParties,
+            ResponsibleParty::getRole,
+            "owner",
+            false
+        );
+    }
+
+    @JsonIgnore
+    public List<ResponsibleParty> getOtherContacts() {
+        return CollectionFilter.filterByProperty(
+            responsibleParties,
+            ResponsibleParty::getRole,
+            "owner",
+            true
+        );
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getImages() {
+        return CollectionFilter.filterByProperty(
+            onlineResources,
+            OnlineResource::getFunction,
+            "browseGraphic",
+            false
+        );
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getOtherLinks() {
+        return CollectionFilter.filterByProperty(
+            onlineResources,
+            OnlineResource::getFunction,
+            "browseGraphic",
+            true
+        );
+    }
+
 }

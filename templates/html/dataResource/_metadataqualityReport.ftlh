@@ -1,9 +1,9 @@
 <div id="segment-metadataQuality" class="clearfix d-print-none metadataQuality metadataQuality-report my-3">
   <#if problems?? && problems?has_content>
   <h2>Metadata quality report</h2>
-      <#assign errors = func.filter(problems, "severity", "ERROR")>
-      <#assign warnings = func.filter(problems, "severity", "WARNING")>
-      <#assign infos = func.filter(problems, "severity", "INFO")>
+      <#assign errors = errorList>
+      <#assign warnings = warningList>
+      <#assign infos = infoList>
 
       <#if errors?? && errors?has_content>
         <div class="metadataQuality_error">

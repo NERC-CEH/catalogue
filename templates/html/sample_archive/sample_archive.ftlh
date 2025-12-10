@@ -4,8 +4,8 @@
 
 <#if onlineResources?? && onlineResources?has_content>
   <#assign
-    image = func.filter(onlineResources, "function", "browseGraphic")
-    otherLinks = func.filter(onlineResources, "function", "browseGraphic", true)
+    image = browseGraphics
+    otherLinks = nonBrowseGraphics
   >
 </#if>
 

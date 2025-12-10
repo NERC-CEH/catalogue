@@ -34,16 +34,34 @@ public class Results {
                 .count();
     }
 
+    public List<MetadataCheck> getErrorList() {
+        return problems.stream()
+            .filter(m -> ERROR.equals(m.getSeverity()))
+            .toList();
+    }
+
     public long getWarnings() {
         return problems.stream()
                 .filter(m -> WARNING.equals(m.getSeverity()))
                 .count();
     }
 
+    public List<MetadataCheck> getWarningList() {
+        return problems.stream()
+            .filter(m -> WARNING.equals(m.getSeverity()))
+            .toList();
+    }
+
     public long getInfo() {
         return problems.stream()
                 .filter(m -> INFO.equals(m.getSeverity()))
                 .count();
+    }
+
+    public List<MetadataCheck> getInfoList() {
+        return problems.stream()
+            .filter(m -> INFO.equals(m.getSeverity()))
+            .toList();
     }
 
     public enum Severity {
