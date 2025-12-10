@@ -321,12 +321,12 @@ public class SearchQuery {
             query.addFilterQuery(String.format("locations:\"%s(ENVELOPE(%s))\"", spatialOperation.getOperation(), bbox));
         }
     }
-    
+
     private void setRecordVisibility(SolrQuery query) {
         if (user.isPublic()) {
             query.addFilterQuery("{!term f=state}published");
             query.addFilterQuery("{!term f=view}public");
-            query.addFilterQuery("NOT resourceStatus:Superseded");
+            query.addFilterQuery("NOT resourceStatus:(Superseded OR Withdrawn)");
         } else {
             List<String> groups = groupStore.getGroups(user)
                 .stream()

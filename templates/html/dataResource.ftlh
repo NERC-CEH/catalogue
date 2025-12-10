@@ -3,17 +3,7 @@
 <#import "../functions.ftlh" as func>
 
 <#assign
-    authors = func.filter(responsibleParties, "role", "author")
-    pocs = func.filter(responsibleParties, "role", "pointOfContact")
-    custodians = func.filter(responsibleParties, "role", "custodian")
-    publishers = func.filter(responsibleParties, "role", "publisher")
-    depositors = func.filter(responsibleParties, "role", "depositor")
-    originators = func.filter(responsibleParties, "role", "originator")
-    rightsHolders = func.filter(responsibleParties, "role", "rightsHolder")
-    owners = func.filter(responsibleParties, "role", "owner")
-    originators = func.filter(responsibleParties, "role", "originator")
-    resourceProviders = func.filter(responsibleParties, "role", "resourceProvider")
-    otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders
+    otherContacts = publishers + rightsHolders
     catalogue = catalogues.retrieve(metadata.catalogue)
 
     rel_all=jena.allRelatedRecords(uri)

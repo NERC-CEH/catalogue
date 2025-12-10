@@ -396,5 +396,9 @@ main {
                 border-color: var(--primary-colour);
             }
         }
+
+        a:hover {
+            background-color: var(--ukceh-colour-data);
+        }
     }
 }

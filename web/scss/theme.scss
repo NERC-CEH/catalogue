@@ -66,8 +66,7 @@ textarea.sparqlquery {
 
 main {
     ::selection {
-        background-color: var(--primary-colour);
-        color: white;
+        background-color: var(--ukceh-colour-data);
     }
 
     section {
@@ -181,6 +180,11 @@ footer {
 
                 .logo-ukceh {
                     min-inline-size: 220px;
+                }
+
+                a:hover {
+                    outline: 1px solid var(--footer-link-hover-colour);
+                    outline-offset: 6px;
                 }
             }
 
@@ -335,6 +339,9 @@ header {
                     &:hover {
                         background-color: var(--header-link-hover-background-colour);
                         color: var(--header-link-hover-colour);
+                        text-decoration: underline;
+                        text-underline-offset: 1rem !important;
+                        text-decoration-thickness: 2px;
                     }
                 }
             }
