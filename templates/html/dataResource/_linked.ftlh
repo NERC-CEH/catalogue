@@ -4,13 +4,15 @@
 </#if>
 
 <div class="alert alert-linked" role="alert">
-  <div class="row">
+
+  <div class="d-flex justify-content-evenly  flex-wrap ">
     <#if isEidc>
-      <div class="p-2 col-sm-5 col-md-3">
-        <img class="img-responsive" src="/static/img/cataloguelogo/eidc_print.png">
+      <div class="flex-grow-0 flex-shrink-0 p-2 align-content-center" >
+        <img  src="/static/img/cataloguelogo/UKCEH_EIDC_black.png">
       </div>
     </#if>
-    <div class="p-2 col-sm-7 col-md-9" >
+
+    <div class="flex-grow-1 flex-shrink-1 p-2 align-content-center">
       <#if isEidc> These data are held and managed by the Environmental Information Data Centre<br></#if>
       <#if masterDocument?? & masterDocument?has_content>
         For more details and to access the data, go to
@@ -19,5 +21,6 @@
         </#list>
       </#if>
     </div>
- </div>
+  </div>
+
 </div>

@@ -70,6 +70,8 @@ public class CitationService {
                         .doi(doi.getCode())
                         .title(geminiDocument.getTitle())
                         .year(pubDate.get().getYear())
+                        .month(pubDate.get().getMonthValue())
+                        .day(pubDate.get().getDayOfMonth())
                         .publisher(publisher.get().getOrganisationName())
                         .resourceTypeGeneral(geminiDocument.getType())
                         .bibtex(getInAlternateFormat(geminiDocument, BIBTEX_SHORT))

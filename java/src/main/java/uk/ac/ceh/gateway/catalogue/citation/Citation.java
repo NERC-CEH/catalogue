@@ -20,7 +20,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RESEARCH_INFO_SYST
 public class Citation {
     List<String> authors;
     String doi, coupled, title, publisher, resourceTypeGeneral;
-    Integer year;
+    Integer year, month, day;
     URI bibtex, ris;
 
     public String getUrl() {
