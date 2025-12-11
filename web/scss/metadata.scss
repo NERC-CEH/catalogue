@@ -57,78 +57,81 @@ body {
         }
     }
 
+
     .description {
-        display: grid;
-        grid-template-columns: auto fit-content(450px);
+        display: flex;
+        gap: 2em;
+        flex-wrap: wrap;
 
-        .browseGraphic {
-            @extend .float-end !optional;
-            margin: 0 0 1em 2em;
-            max-width: min(100dvw, 350px);
-            max-height: 195px;
-            mix-blend-mode: multiply;
-            display: none;
+        .description-text {
+            flex: 2 0 65ch;
 
-            img {
-                padding: 1em;
-                max-width: 300px;
-                max-height: 600px;
+            .browseGraphic {
+                @extend .float-end !optional;
+                margin: 0 0 1em 2em;
+                max-width: min(100dvw, 350px);
+                max-height: 195px;
+                mix-blend-mode: multiply;
+                display: none;
+
+                img {
+                    padding: 1em;
+                    max-width: 300px;
+                    max-height: 600px;
+                }
+
+                @media (width >=768px) {
+                    display: block;
+                }
             }
 
-            @media (width >=768px) {
-                display: block;
-            }
-        }
-
-        >div {
-            display: grid;
-            gap: 2em;
         }
 
         .usage {
+            flex: 1 0 24ch;
+
             >div {
-                background-color: #eee;
-                border-radius: 6px;
+                background-color: var(--ukceh-colour-air);
                 padding: 1em 0.5em;
 
                 .metrics {
                     display: flex;
-                    flex-direction: row;
+                    flex-wrap: wrap;
+                    gap: 1em 2em;
+                    justify-content: space-around;
                     align-items: center;
-                    justify-content: center;
-                    gap: 1em;
 
                     .metric {
                         line-height: 1.1;
                         text-align: center;
-                        --size: 1.6rem;
-                        font-size: var(--size);
+                        font-size: 1.6rem;
+                        min-width: 10ch;
 
                         span {
-                            font-size: calc(var(--size) / 1.75);
                             display: block;
+                            font-size: .9rem;
                         }
                     }
                 }
 
-                p {
-                    line-height: 1.2;
-                    text-align: center;
-                    min-width: 16ch;
+                .metricsInfo {
+                    font-size: 0.9rem;
                     margin-block-start: 1.25em;
                     margin-block-end: 0;
+
+                    .seemore {
+                        background-color: var(--ukceh-colour-night);
+                        color: var(--ukceh-colour-day);
+                        padding: .25em 1em;
+                    }
                 }
 
-                .metricsInfo {
-                    font-size: 0.8rem;
-                    margin-block-start: 1.25em;
-                    margin-block-end: 0;
+                .metricsDatesMore {
+                    border: 1px solid var(--ukceh-colour-night);
+                    ;
 
-                    span {
-                        display: block;
-                        margin-block-end: 0.65em;
-                        text-align: center;
-                        ;
+                    >div {
+                        padding: .65em;
                     }
                 }
             }
@@ -248,6 +251,7 @@ body {
             flex: 0 1 var(--btn_width);
             text-wrap: nowrap;
             text-decoration: none;
+            border-radius: 0;
         }
 
         >div {
@@ -442,7 +446,7 @@ body {
         a.ukcehcard:hover {
             --_ukcehcard-background: var(--primary-colour);
             --_ukcehcard-text-colour: white;
-            --_ukcehcard-icon-colour: white;
+            --_ukcehcard-icon-colour: var(--ukceh-colour-data);
 
             text-decoration: none;
 
@@ -730,27 +734,10 @@ body {
 
     .alert-linked {
         background-color: var(--ukceh-colour-data);
+
         img {
             max-width: 250px;
             max-height: 45px;
-        }
-    }
-
-
-
-    @media (width >=992px) {
-        .description {
-            >div {
-                grid-template-columns: auto fit-content(0);
-            }
-
-            .usage {
-                >div {
-                    .metrics {
-                        flex-direction: column;
-                    }
-                }
-            }
         }
     }
 

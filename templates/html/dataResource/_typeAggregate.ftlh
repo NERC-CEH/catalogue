@@ -33,7 +33,7 @@
                 <#assign type="Data collection" icon="fa-layer-group" >
               <#elseif item.associationType = "model">
                 <#assign type="Model" icon="fa-list-check" >
-              <#elseif item.associationType = "software">
+              <#elseif item.associationType = "software" || item.associationType = "application">
                 <#assign type="Software" icon="fa-code" >
               <#elseif item.associationType = "computationalNotebook">
                 <#assign type="Notebook" icon="fa-book-open" >

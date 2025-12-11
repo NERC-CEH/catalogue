@@ -18,7 +18,7 @@ export default ObjectInputView.extend({
     const hasValue = this.model.has('value')
 
     if (hasUri || hasValue) {
-      if (hasUri && (this.model.get('uri') === 'https://eidc.ac.uk/licences/OGL/plain')) {
+      if (hasUri && (this.model.get('uri') === 'https://eidc.ac.uk/licences/ogl/plain')) {
         this.$('input.ogl').prop('checked', true)
       } else {
         this.$('input.other').prop('checked', true)
@@ -37,7 +37,7 @@ export default ObjectInputView.extend({
     this.model.set({
       value: 'This resource is available under the terms of the Open Government Licence',
       code: 'license',
-      uri: 'https://eidc.ac.uk/licences/OGL/plain'
+      uri: 'https://eidc.ac.uk/licences/ogl/plain'
     })
   },
 

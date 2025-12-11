@@ -26,7 +26,7 @@ import static uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexMetadataDocumen
 @ToString
 public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, SolrIndex> {
     private static final String OGL_PATTERN1 = ".*open-government-licence.*/plain$";
-    private static final String OGL_PATTERN2 = ".*OGL.*/plain$";
+    private static final String OGL_PATTERN2 = ".*ogl.*/plain$";
 
 
     private final TopicIndexer topicIndexer;
