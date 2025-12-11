@@ -15,18 +15,30 @@
 
     <#if resourceStatus == "Available" || resourceStatus == "Controlled" >
       <#if downloadOrder?? && downloadOrder?string?contains("isOrderable=true") >
-        <a class="btn btn-download" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access"><i class="fa-solid fa-angles-down fa-fw"></i> Download</a>
+        <a class="btn btn-download" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
+          Download
+          <i class="fa-solid fa-arrow-down fa-fw"></i>
+        </a>
       <#elseif externalLinks?? && externalLinks?has_content>
-        <a class="btn btn-download" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access"><i class="fa-solid fa-arrow-up-right-from-square"></i> Access</a>
+        <a class="btn btn-download" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
+        Access
+        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        </a>
       </#if>
     </#if>
 
     <#if resourceType.value == 'service' && mapViewable >
-      <a class="btn btn-download" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access"><i class="fa-solid fa-arrows-rotate fa-fw"></i> Access</a>
+      <a class="btn btn-download" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
+        Access
+        <i class="fa-solid fa-arrows-rotate fa-fw"></i>
+      </a>
     </#if>
 
     <#if (downloadOrder.supportingDocumentsUrl)?has_content>
-      <a class="btn btn-access" href="${downloadOrder.supportingDocumentsUrl}" title="Supporting information important for the re-use of this dataset"><i class="fa-solid fa-file-arrow-down fa-fw"></i></span> Supporting docs</a>
+      <a class="btn btn-access" href="${downloadOrder.supportingDocumentsUrl}" title="Supporting information important for the re-use of this dataset">
+        Supporting docs
+        <i class="fa-solid fa-file fa-fw"></i></span>
+      </a>
     </#if>
 
     <@citeButton />
@@ -68,11 +80,11 @@
     </#if>
 
     <a href="/download/${id}?url=${onlineResourceUrl?url}" class="btn btn-primary">
-      <span class="fa-solid fa-angles-down"></span>
       ${onlineResourceLabel}
       <#if sizeLabel??>
         <small>(${sizeLabel})</small>
       </#if>
+      <span class="fa-solid fa-arrow-down"></span>
     </a>
 
     <#if downloadType?? && downloadType=="direct">
@@ -92,14 +104,19 @@
   <#if apps?? && apps?size gte 1>
     <#list apps as app>
       <a class="btn btn-explore" href="${app.url}" alt="${app.name}" target="_blank" rel="noopener noreferrer">
-        <span class="fa-solid fa-laptop"></span> ${app.name}</a>
+        ${app.name}
+        <span class="fa-solid fa-laptop"></span>
+      </a>
     </#list>
   </#if>
 </#macro>
 
 <#macro citeButton>
  <#if citation?has_content>
-    <a href="#" class="btn btn-access" data-bs-toggle="modal" data-bs-target="#citationModal"><small><i class="fa-solid fa-quote-left fa-2xs"></i> <i class="fa-solid fa-quote-right fa-2xs"></i></small> Cite this ${recordType?lower_case!''}</a>
+    <a href="#" class="btn btn-access" data-bs-toggle="modal" data-bs-target="#citationModal">
+      Cite this ${recordType?lower_case!''}
+      <small><i class="fa-solid fa-quote-left fa-2xs"></i> <i class="fa-solid fa-quote-right fa-2xs"></i></small>
+    </a>
   </#if>
 </#macro>
 

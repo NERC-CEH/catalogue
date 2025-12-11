@@ -125,7 +125,7 @@ public class JenaLookupServiceTest {
         Model triples = jenaTdb.getDefaultModel();
         String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
         String geometryString2 = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}";
-        String combinedGeometry = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\",\"title\":\"Monitoring Facility\",\"link\":\"http://monitoringFacility\",\"availability\":\"Inactive\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}},{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\",\"title\":\"Monitoring Facility 2\",\"link\":\"http://monitoringFacility2\",\"availability\":\"\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}]}";
+        String combinedGeometry = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\",\"title\":\"Monitoring Facility\",\"link\":\"http://monitoringFacility\",\"availability\":\"Inactive\",\"locationConfidential\":false},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}},{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\",\"title\":\"Monitoring Facility 2\",\"link\":\"http://monitoringFacility2\",\"availability\":\"\",\"locationConfidential\":false},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}]}";
         triples.add(createResource("http://monitoringFacility"), TITLE, "Monitoring Facility");
         triples.add(createResource("http://monitoringFacility"), METADATA_STATUS, "published");
         triples.add(createResource("http://monitoringFacility"), BELONGS_TO, createResource("http://network1"));
@@ -151,7 +151,7 @@ public class JenaLookupServiceTest {
         Model triples = jenaTdb.getDefaultModel();
         String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
         String geometryString2 = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}";
-        String combinedGeometry = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\",\"title\":\"Monitoring Facility\",\"link\":\"http://monitoringFacility\",\"availability\":\"Inactive\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}},{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\",\"title\":\"Monitoring Facility 2\",\"showPolygon\":true,\"availability\":\"\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}]}";
+        String combinedGeometry = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\",\"title\":\"Monitoring Facility\",\"link\":\"http://monitoringFacility\",\"availability\":\"Inactive\",\"locationConfidential\":false},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}},{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\",\"title\":\"Monitoring Facility 2\",\"showPolygon\":true,\"availability\":\"\",\"locationConfidential\":false},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}]}";
         triples.add(createResource("http://monitoringFacility"), TITLE, "Monitoring Facility");
         triples.add(createResource("http://monitoringFacility"), METADATA_STATUS, "published");
         triples.add(createResource("http://monitoringFacility"), TYPE, "Monitoring Facility");
@@ -164,7 +164,7 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://monitoringFacility2"), HAS_GEOMETRY, geometryString2);
 
         //When
-        String actual = service.relationshipCombinedGeometriesWithOwner("http://monitoringFacility2", NARROWER.toString());
+        String actual = service.relationshipCombinedGeometriesWithOwner("http://monitoringFacility2", NARROWER.toString(), false);
 
         //Then
         assertThat("Generates correct combined GeoJSON with owner", actual, equalTo(combinedGeometry));

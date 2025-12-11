@@ -380,8 +380,8 @@ Symmetrical relationships
   </#if>
 </#macro>
 
-<#macro relationshipCombinedGeometriesWithOwner relation>
-  <#local combinedGeometry=jena.relationshipCombinedGeometriesWithOwner(uri, relation) />
+<#macro relationshipCombinedGeometriesWithOwner relation locationConfidential>
+  <#local combinedGeometry=jena.relationshipCombinedGeometriesWithOwner(uri, relation, locationConfidential) />
   <#if combinedGeometry?has_content>
     <@map combinedGeometry />
   </#if>

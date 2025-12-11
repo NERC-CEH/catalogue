@@ -15,15 +15,14 @@
   </#if>
 </#if>
 
+<#assign
+  orders = []
+  hasOrders = false
+>
 <#if onlineResources?has_content>
   <#assign
     orders = orders
     hasOrders = orders?size gt 0
-  >
-<#else>
-  <#assign
-    orders = []
-    hasOrders = false
   >
 </#if>
 
@@ -35,7 +34,7 @@
       <@editButton />
 
       <#if isRestrictedFieldsEditor && isNotLinkDocument>
-        <#if hasCitation = 0  && isEidcWithResourceType>
+        <#if hasCitation = 0  && isEidcWithResourceType && metadata.catalogue == "eidc">
           <@doiButton />
         </#if>
 
@@ -76,7 +75,7 @@
   <div class="btn-group btn-group-sm position-relative">
     <button type="button" class="btn btn-outline-secondary btn-wide edit-control" data-document-type="${metadata.documentType}">
       Edit
-      <#if totalIssues gte 1>
+      <#if totalIssues gte 1 && metadata.catalogue == "eidc">
         <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-${metadataClass}"
         data-bs-toggle="tooltip" data-bs-placement="right" title="Metadata issues">
           ${totalIssues}

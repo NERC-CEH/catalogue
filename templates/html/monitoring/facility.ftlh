@@ -2,7 +2,7 @@
 
 <@m.base>
   <#assign relationshipCombinedGeometriesOutput>
-    <@m.relationshipCombinedGeometriesWithOwner "http://onto.ceh.ac.uk/EF#narrower" />
+    <@m.relationshipCombinedGeometriesWithOwner "http://onto.ceh.ac.uk/EF#narrower" locationConfidential />
   </#assign>
 
 
