@@ -10,7 +10,6 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
-import uk.ac.ceh.gateway.catalogue.util.CollectionFilter;
 
 import java.util.List;
 
@@ -40,12 +39,7 @@ public class CodeDocument extends AbstractMetadataDocument {
 
     @JsonIgnore
     public List<ResourceConstraint> getLicences() {
-        return CollectionFilter.filterByProperty(
-            useConstraints,
-            ResourceConstraint::getCode,
-            "license",
-            false
-        );
+        return filterResourceConstraint(useConstraints, "license");
     }
 
     @JsonIgnore
