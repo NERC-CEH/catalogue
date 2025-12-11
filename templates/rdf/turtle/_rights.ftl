@@ -2,7 +2,7 @@
   dcterms:license <#t>
   <#list licences as licence>
     <#if licence.uri?has_content>
-      <#if licence.uri?contains("/licences/OGL/")>
+      <#if licence.uri?contains("/licences/ogl/")>
         <https://spdx.org/licenses/OGL-UK-3.0.ttl>
       <#else>
         <${licence.uri?trim}>
