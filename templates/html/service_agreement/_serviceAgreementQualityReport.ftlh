@@ -1,4 +1,3 @@
-<#import "../../functions.ftlh" as func>
 <#assign
     SA_checks = serviceAgreementQuality.check(id)
     problems = SA_checks.getProblems()

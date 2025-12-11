@@ -1,5 +1,4 @@
 <#import "../skeleton.ftlh" as skeleton>
-<#import "../../functions.ftlh" as f>
 
 <#if useConstraints?has_content>
   <#assign licences = licences>

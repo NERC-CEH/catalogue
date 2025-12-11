@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.ukems;
 
 import java.util.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -95,4 +96,35 @@ public class UkemsDocument extends AbstractMetadataDocument {
             .map(Keyword::getValue)
             .orElse("");
     }
+
+    @JsonIgnore
+    public List<Supplemental> getRelatedDatasets() {
+        return filterSupplemental(supplemental, "relatedDataset");
+    }
+
+    @JsonIgnore
+    public List<Supplemental> getRelatedArticle() {
+        return filterSupplemental(supplemental, "relatedArticle");
+    }
+
+    @JsonIgnore
+    public List<Supplemental> getEmptySupplemental() {
+        return filterSupplemental(supplemental, "");
+    }
+
+    @JsonIgnore
+    public List<Supplemental> getReferencedBy() {
+        return filterSupplemental(supplemental, "isReferencedBy");
+    }
+
+    @JsonIgnore
+    public List<Supplemental> getSupplementTo() {
+        return filterSupplemental(supplemental, "isSupplementTo");
+    }
+
+    @JsonIgnore
+    public List<Supplemental> getSupplementWebsite() {
+        return filterSupplemental(supplemental, "website");
+    }
+
 }

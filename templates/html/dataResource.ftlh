@@ -11,7 +11,6 @@
     originators = originators
     rightsHolders = rightsHolders
     owners = owners
-    originators = originators
     resourceProviders = resourceProviders
     otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders
     catalogue = catalogues.retrieve(metadata.catalogue)

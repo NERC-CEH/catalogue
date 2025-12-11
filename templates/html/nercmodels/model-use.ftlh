@@ -1,5 +1,4 @@
 <#import "../skeleton.ftlh" as skeleton>
-<#import "../../functions.ftlh" as func>
 <#import "../blocks.ftlh" as b>
 <#import "macros.ftlh" as m>
 
@@ -171,5 +170,4 @@
 
   </div>
 
-  <#include "_footer.ftlh">
 </@skeleton.master>

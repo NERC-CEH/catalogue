@@ -122,42 +122,22 @@ public class CehModel extends AbstractMetadataDocument implements WellKnownText 
 
     @JsonIgnore
     public List<ResponsibleParty> getSRO() {
-        return CollectionFilter.filterByProperty(
-            responsibleParties,
-            ResponsibleParty::getRole,
-            "owner",
-            false
-        );
+        return  filterResponsibleParty(responsibleParties, "owner");
     }
 
     @JsonIgnore
     public List<ResponsibleParty> getOtherContacts() {
-        return CollectionFilter.filterByProperty(
-            responsibleParties,
-            ResponsibleParty::getRole,
-            "owner",
-            true
-        );
+        return excludeResponsibleParty(responsibleParties, "owner");
     }
 
     @JsonIgnore
     public List<OnlineResource> getImages() {
-        return CollectionFilter.filterByProperty(
-            onlineResources,
-            OnlineResource::getFunction,
-            "browseGraphic",
-            false
-        );
+        return filterOnlineResources(onlineResources, "browseGraphic");
     }
 
     @JsonIgnore
     public List<OnlineResource> getOtherLinks() {
-        return CollectionFilter.filterByProperty(
-            onlineResources,
-            OnlineResource::getFunction,
-            "browseGraphic",
-            true
-        );
+        return excludeOnlineResources(onlineResources, "browseGraphic");
     }
 
 }

@@ -307,7 +307,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     @JsonIgnore
     public List<ResponsibleParty> getResourceProviders() {
-        return responsiblePartyByRole("resourceProviders");
+        return responsiblePartyByRole("resourceProvider");
     }
 
     @JsonIgnore
@@ -365,16 +365,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    @JsonIgnore
-    public List<ResourceConstraint> getOtherConstraints() {
-        return CollectionFilter.filterByProperty(
-            useConstraints,
-            ResourceConstraint::getCode,
-            "license",
-            true
-        );
-    }
-
     public List<OnlineResource> getInfoLinks() {
         return Optional.ofNullable(onlineResources)
             .orElseGet(Collections::emptyList)
@@ -411,67 +401,19 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .toList();
     }
 
-    private List<OnlineResource> filterOnlineResources(String filterVal) {
-        return CollectionFilter.filterByProperty(
-            onlineResources,
-            OnlineResource::getFunction,
-            filterVal,
-            false
-        );
-    }
-
-    private List<Supplemental> filterSupplemental(String filterVal) {
-        return CollectionFilter.filterByProperty(
-            supplemental,
-            Supplemental::getFunction,
-            filterVal,
-            false
-        );
-    }
-
     @JsonIgnore
     public List<Supplemental> getRelatedDatasets() {
-        return filterSupplemental("relatedDataset");
-    }
-
-    @JsonIgnore
-    public List<Supplemental> getRelatedArticle() {
-        return filterSupplemental("relatedArticle");
-    }
-
-    @JsonIgnore
-    public List<Supplemental> getEmptySupplemental() {
-        return filterSupplemental("");
-    }
-
-    @JsonIgnore
-    public List<Supplemental> getReferencedBy() {
-        return filterSupplemental("isReferencedBy");
-    }
-
-    @JsonIgnore
-    public List<Supplemental> getSupplementTo() {
-        return filterSupplemental("isSupplementTo");
-    }
-
-    @JsonIgnore
-    public List<Supplemental> getSupplementWebsite() {
-        return filterSupplemental("website");
+        return filterSupplemental(supplemental, "relatedDataset");
     }
 
     @JsonIgnore
     public List<Supplemental> getNonRelatedDatasets() {
-        return CollectionFilter.filterByProperty(
-            supplemental,
-            Supplemental::getFunction,
-            "relatedDataset",
-            true
-        );
+        return excludeSupplemental(supplemental, "relatedDataset");
     }
 
     @JsonIgnore
     public List<OnlineResource> getBrowsingApps() {
-        return filterOnlineResources("browsing");
+        return filterOnlineResources(onlineResources, "browsing");
     }
 
     @JsonIgnore
@@ -484,66 +426,62 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     @JsonIgnore
     public List<OnlineResource> getOrderResources() {
-        return filterOnlineResources("order");
+        return filterOnlineResources(onlineResources, "order");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getExternalLinks() {
+        return excludeOnlineResourcesUrl(onlineResources, ".+\\.ceh\\.ac\\.uk.+");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getMapservices() {
+        return filterOnlineResourcesUrl(onlineResources, ".+\\.catalogue\\.ceh\\.ac\\.uk\\/maps\\/.+");
     }
 
     @JsonIgnore
     public List<OnlineResource> getLegacyOrders() {
-        return CollectionFilter.filterByPropertyRegex(
-            getOrderResources(),
-            OnlineResource::getUrl,
-            ".+\\.catalogue\\.ceh\\.ac\\.uk\\/download\\/.+",
-            false
-        );
+        return filterOnlineResourcesUrl(getOrderResources(), ".+\\.catalogue\\.ceh\\.ac\\.uk\\/download\\/.+");
     }
 
     @JsonIgnore
     public List<OnlineResource> getNewOrders() {
-        return CollectionFilter.filterByPropertyRegex(
-            getOrderResources(),
-            OnlineResource::getUrl,
-            ".+\\.order-eidc\\.ceh\\.ac\\.uk\\/resources\\/.+",
-            false
-        );
+        return filterOnlineResourcesUrl(getOrderResources(), ".+\\.order-eidc\\.ceh\\.ac\\.uk\\/resources\\/.+");
     }
 
     @JsonIgnore
     public List<OnlineResource> getBrowseGraphics() {
-        return filterOnlineResources("browseGraphic");
+        return filterOnlineResources(onlineResources, "browseGraphic");
     }
 
     @JsonIgnore
     public List<OnlineResource> getInformation() {
-        return filterOnlineResources("information");
+        return filterOnlineResources(onlineResources, "information");
     }
 
     @JsonIgnore
     public List<OnlineResource> getNonBrowseGraphics() {
-        return CollectionFilter.filterByProperty(
-            onlineResources,
-            OnlineResource::getFunction,
-            "browseGraphic",
-            true
-        );
+        return excludeOnlineResources(onlineResources, "browseGraphic");
     }
 
     @JsonIgnore
     public List<OnlineResource> getSearch() {
-        return filterOnlineResources("search");
+        return filterOnlineResources(onlineResources, "search");
     }
 
     @JsonIgnore
-    public List<OnlineResource> getWebsites() {
-        return filterOnlineResources("website");
+    public List<OnlineResource> getFileaccess() {
+        return filterOnlineResources(getDownloads(), "fileAccess");
     }
 
     @JsonIgnore
-    public List<OnlineResource> getCode() {
-        return filterOnlineResources("code");
+    public List<ResourceConstraint> getOtherConstraints() {
+        return excludeResourceConstraint(useConstraints, "license");
     }
 
     @JsonIgnore
-    public List<OnlineResource> getDocumentation() {
-        return filterOnlineResources("documentation");
+    public List<ResourceConstraint> getCopyrights() {
+        return filterResourceConstraint(useConstraints, "copyright");
     }
+
 }

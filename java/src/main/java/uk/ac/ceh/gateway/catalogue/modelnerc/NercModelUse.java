@@ -91,4 +91,8 @@ public class NercModelUse extends AbstractMetadataDocument {
             url;
     }
 
+    @JsonIgnore
+    public List<OnlineResource> getWebsites() {
+        return filterOnlineResources(onlineResources, "website");
+    }
 }

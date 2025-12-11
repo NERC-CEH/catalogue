@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeDeserializer;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeSerializer;
@@ -76,6 +78,96 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
 
         keywords.addAll(additionalKeywords);
         return this;
+    }
+
+    public List<OnlineResource> filterOnlineResources(List<OnlineResource> onlineResource, String filterVal) {
+        return CollectionFilter.filterByProperty(
+            onlineResource,
+            OnlineResource::getFunction,
+            filterVal,
+            false
+        );
+    }
+
+    public List<OnlineResource> excludeOnlineResources(List<OnlineResource> onlineResource, String filterVal) {
+        return CollectionFilter.filterByProperty(
+            onlineResource,
+            OnlineResource::getFunction,
+            filterVal,
+            true
+        );
+    }
+
+    public List<Supplemental> filterSupplemental(List<Supplemental> supplemental, String filterVal) {
+        return CollectionFilter.filterByProperty(
+            supplemental,
+            Supplemental::getFunction,
+            filterVal,
+            false
+        );
+    }
+
+    public List<Supplemental> excludeSupplemental(List<Supplemental> supplemental, String filterVal) {
+        return CollectionFilter.filterByProperty(
+            supplemental,
+            Supplemental::getFunction,
+            filterVal,
+            true
+        );
+    }
+
+    public List<ResponsibleParty> filterResponsibleParty(List<ResponsibleParty> responsibleParties, String filterVal) {
+        return CollectionFilter.filterByProperty(
+            responsibleParties,
+            ResponsibleParty::getRole,
+            filterVal,
+            false
+        );
+    }
+
+    public List<ResponsibleParty> excludeResponsibleParty(List<ResponsibleParty> responsibleParties, String filterVal) {
+        return CollectionFilter.filterByProperty(
+            responsibleParties,
+            ResponsibleParty::getRole,
+            filterVal,
+            true
+        );
+    }
+
+    public List<OnlineResource> filterOnlineResourcesUrl(List<OnlineResource> onlineResource, String regexVal) {
+        return CollectionFilter.filterByPropertyRegex(
+            onlineResource,
+            OnlineResource::getUrl,
+            regexVal,
+            false
+        );
+    }
+
+    public List<OnlineResource> excludeOnlineResourcesUrl(List<OnlineResource> onlineResource, String regexVal) {
+        return CollectionFilter.filterByPropertyRegex(
+            onlineResource,
+            OnlineResource::getUrl,
+            regexVal,
+            true
+        );
+    }
+
+    public List<ResourceConstraint> filterResourceConstraint(List<ResourceConstraint> resourceConstraint, String filterVal) {
+        return CollectionFilter.filterByProperty(
+            resourceConstraint,
+            ResourceConstraint::getCode,
+            filterVal,
+            false
+        );
+    }
+
+    public List<ResourceConstraint> excludeResourceConstraint(List<ResourceConstraint> resourceConstraint, String filterVal) {
+        return CollectionFilter.filterByProperty(
+            resourceConstraint,
+            ResourceConstraint::getCode,
+            filterVal,
+            true
+        );
     }
 
 }

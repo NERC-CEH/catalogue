@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.infrastructure;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.NonNull;
 import lombok.val;
 import lombok.Data;
@@ -43,6 +44,16 @@ public class InfrastructureRecord extends AbstractMetadataDocument implements We
             possibleWkt.ifPresent(toReturn::add);
         }
         return toReturn;
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getWebsites() {
+        return filterOnlineResources(onlineResources, "website");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getBrowseGraphics() {
+        return filterOnlineResources(onlineResources, "browseGraphic");
     }
 }
 

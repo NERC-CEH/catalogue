@@ -1,5 +1,4 @@
 <#import "../skeleton.ftlh" as skeleton>
-<#import "../../functions.ftlh" as func>
 <#import "../blocks.ftlh" as b>
 <#import "macros.ftlh" as m>
 
@@ -8,7 +7,7 @@
     images = browseGraphics
     code = code
     websites = websites
-    documents = documentation
+    documents = documents
   >
 </#if>
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>

@@ -50,21 +50,11 @@ public class CodeDocument extends AbstractMetadataDocument {
 
     @JsonIgnore
     public List<ResponsibleParty> getOwners() {
-        return CollectionFilter.filterByProperty(
-            responsibleParties,
-            ResponsibleParty::getRole,
-            "owner",
-            false
-        );
+        return filterResponsibleParty(responsibleParties, "owner");
     }
 
     @JsonIgnore
     public List<ResponsibleParty> getContacts() {
-        return CollectionFilter.filterByProperty(
-            responsibleParties,
-            ResponsibleParty::getRole,
-            "pointOfContact",
-            false
-        );
+        return filterResponsibleParty(responsibleParties, "pointOfContact");
     }
 }

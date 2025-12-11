@@ -1,6 +1,5 @@
 <#import "blocks.ftlh" as blocks>
 <#import "skeleton.ftlh" as skeleton>
-<#import "../functions.ftlh" as func>
 
 <#assign
   catalogue = catalogues.retrieve(metadata.catalogue)

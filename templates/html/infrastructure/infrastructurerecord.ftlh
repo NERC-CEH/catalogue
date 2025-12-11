@@ -1,5 +1,4 @@
 <#import "../skeleton.ftlh" as skeleton>
-<#import "../../functions.ftlh" as func>
 <#import "../blocks.ftlh" as b>
 
 <#assign rel_all=jena.allRelatedRecords(uri) >
