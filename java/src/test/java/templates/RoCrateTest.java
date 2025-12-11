@@ -176,6 +176,8 @@ public class RoCrateTest {
                     .doi("10.5285/" + fileId)
                     .authors(List.of("Able", "Bracken", "Charles"))
                     .year(2020)
+                    .month(1)
+                    .day(1)
                     .title("Title")
                     .publisher("Publisher")
                     .resourceTypeGeneral("resourceType")
