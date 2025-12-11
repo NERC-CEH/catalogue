@@ -3,16 +3,7 @@
 <#import "../functions.ftlh" as func>
 
 <#assign
-    authors = authors
-    pocs = pointsOfContact
-    custodians = custodians
-    publishers = publishers
-    depositors = depositors
-    originators = originators
-    rightsHolders = rightsHolders
-    owners = owners
-    resourceProviders = resourceProviders
-    otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders
+    otherContacts = publishers + rightsHolders
     catalogue = catalogues.retrieve(metadata.catalogue)
 
     rel_all=jena.allRelatedRecords(uri)

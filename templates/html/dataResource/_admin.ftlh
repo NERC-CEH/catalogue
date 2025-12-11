@@ -17,10 +17,7 @@
 
 <#if onlineResources?has_content>
   <#assign
-    orderResources = orderResources
-    legacyOrders = legacyOrders
-    newOrders = newOrders
-    orders = legacyOrders + newOrders
+    orders = orders
     hasOrders = orders?size gt 0
   >
 <#else>
