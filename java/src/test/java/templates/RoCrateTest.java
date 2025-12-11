@@ -246,7 +246,7 @@ public class RoCrateTest {
 
             // OGL licences
             gemini.setUseConstraints(List.of(
-                ResourceConstraint.builder().code("license").uri("https://eidc.ac.uk/licences/OGL/plain").build()
+                ResourceConstraint.builder().code("license").uri("https://eidc.ac.uk/licences/ogl/plain").build()
             ));
 
             //when
