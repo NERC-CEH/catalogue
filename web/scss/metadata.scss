@@ -91,7 +91,7 @@ body {
             flex: 1 0 24ch;
 
             >div {
-                background-color: var(--ukceh-colour-air);
+                background-color: #eee;
                 padding: 1em 0.5em;
 
                 .metrics {
@@ -263,22 +263,6 @@ body {
                 width: 100%
             }
         }
-
-        .btn-download,
-        .btn-explore,
-        .btn-access {
-            --bs-btn-bg: var(--ukceh-colour-data);
-            --bs-btn-color: var(--ukceh-colour-night);
-            --bs-btn-border-color: var(--ukceh-colour-night);
-            --bs-btn-hover-bg: color-mix(in oklab, black 10%, var(--ukceh-colour-data));
-            --bs-btn-hover-border-color: var(--ukceh-colour-night);
-        }
-
-        .btn-download,
-        .btn-explore {
-            --bs-btn-border-width: 2px;
-        }
-
 
     }
 

@@ -15,12 +15,12 @@
 
     <#if resourceStatus == "Available" || resourceStatus == "Controlled" >
       <#if downloadOrder?? && downloadOrder?string?contains("isOrderable=true") >
-        <a class="btn btn-download" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
+        <a class="btn btn-ukceh" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
           Download
           <i class="fa-solid fa-arrow-down fa-fw"></i>
         </a>
       <#elseif externalLinks?? && externalLinks?has_content>
-        <a class="btn btn-download" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
+        <a class="btn btn-ukceh" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
         Access
         <i class="fa-solid fa-arrow-up-right-from-square"></i>
         </a>
@@ -28,14 +28,14 @@
     </#if>
 
     <#if resourceType.value == 'service' && mapViewable >
-      <a class="btn btn-download" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
+      <a class="btn btn-ukceh" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
         Access
         <i class="fa-solid fa-arrows-rotate fa-fw"></i>
       </a>
     </#if>
 
     <#if (downloadOrder.supportingDocumentsUrl)?has_content>
-      <a class="btn btn-access" href="${downloadOrder.supportingDocumentsUrl}" title="Supporting information important for the re-use of this dataset">
+      <a class="btn btn-ukceh" href="${downloadOrder.supportingDocumentsUrl}" title="Supporting information important for the re-use of this dataset">
         Supporting docs
         <i class="fa-solid fa-file fa-fw"></i></span>
       </a>
@@ -79,7 +79,7 @@
       </#if>
     </#if>
 
-    <a href="/download/${id}?url=${onlineResourceUrl?url}" class="btn btn-primary">
+    <a href="/download/${id}?url=${onlineResourceUrl?url}" class="btn btn-ukceh">
       ${onlineResourceLabel}
       <#if sizeLabel??>
         <small>(${sizeLabel})</small>
@@ -103,7 +103,7 @@
 <#macro exploreButton>
   <#if apps?? && apps?size gte 1>
     <#list apps as app>
-      <a class="btn btn-explore" href="${app.url}" alt="${app.name}" target="_blank" rel="noopener noreferrer">
+      <a class="btn btn-ukceh" href="${app.url}" alt="${app.name}" target="_blank" rel="noopener noreferrer">
         ${app.name}
         <span class="fa-solid fa-laptop"></span>
       </a>
@@ -113,7 +113,7 @@
 
 <#macro citeButton>
  <#if citation?has_content>
-    <a href="#" class="btn btn-access" data-bs-toggle="modal" data-bs-target="#citationModal">
+    <a href="#" class="btn btn-ukceh" data-bs-toggle="modal" data-bs-target="#citationModal">
       Cite this ${recordType?lower_case!''}
       <small><i class="fa-solid fa-quote-left fa-2xs"></i> <i class="fa-solid fa-quote-right fa-2xs"></i></small>
     </a>
