@@ -14,7 +14,6 @@ import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
-import uk.ac.ceh.gateway.catalogue.util.CollectionFilter;
 
 import java.time.ZoneId;
 import java.time.LocalDate;
