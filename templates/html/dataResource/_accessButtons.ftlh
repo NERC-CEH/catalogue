@@ -199,11 +199,6 @@
       <#include "_status.ftlh">
 
       <#if mapViewable?? >
-
-        <#if onlineResources?? >
-          <#assign mapservices = mapservices>
-        </#if>
-
         <#if mapservices?? && mapservices?has_content>
         <div class="mb-1">Add to your GIS application:</div>
         <div class="ms-3">
@@ -212,7 +207,6 @@
           </#list>
         </div>
         </#if>
-
       </#if>
 
     </div>
