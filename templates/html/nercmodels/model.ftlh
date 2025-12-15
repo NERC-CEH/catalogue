@@ -2,11 +2,6 @@
 <#import "../blocks.ftlh" as b>
 <#import "macros.ftlh" as m>
 
-<#if onlineResources?? && onlineResources?has_content>
-  <#assign
-    images = browseGraphics
-  >
-</#if>
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
 
 

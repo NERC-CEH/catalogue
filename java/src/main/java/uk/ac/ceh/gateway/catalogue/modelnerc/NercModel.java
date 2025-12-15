@@ -91,7 +91,7 @@ public class NercModel extends AbstractMetadataDocument implements WellKnownText
     }
 
     @JsonIgnore
-    public List<OnlineResource> getBrowseGraphics() {
+    public List<OnlineResource> getImages() {
         return filterOnlineResources(onlineResources, "browseGraphic");
     }
 
