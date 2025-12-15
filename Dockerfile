@@ -20,7 +20,7 @@ WORKDIR build/libs
 RUN java -Djarmode=layertools -jar app.jar extract
 
 # Create production image
-FROM eclipse-temurin:23-alpine AS prod
+FROM eclipse-temurin:25-alpine AS prod
 LABEL maintainer="oss@ceh.ac.uk"
 RUN apk --no-cache upgrade
 RUN apk --no-cache add curl
