@@ -1,9 +1,7 @@
 <#assign
-	relatedDatasets = relatedDatasets
 	otherSupplemental = nonRelatedDatasets
-	>
-
-<#assign apps = browsingApps>
+	apps = browsingApps
+>
 
 <div class="py-3">
 

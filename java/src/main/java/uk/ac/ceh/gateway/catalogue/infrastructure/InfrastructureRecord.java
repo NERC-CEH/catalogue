@@ -47,12 +47,12 @@ public class InfrastructureRecord extends AbstractMetadataDocument implements We
     }
 
     @JsonIgnore
-    public List<OnlineResource> getWebsites() {
+    public List<OnlineResource> getWeblinks() {
         return filterOnlineResources(onlineResources, "website");
     }
 
     @JsonIgnore
-    public List<OnlineResource> getBrowseGraphics() {
+    public List<OnlineResource> getImages() {
         return filterOnlineResources(onlineResources, "browseGraphic");
     }
 }

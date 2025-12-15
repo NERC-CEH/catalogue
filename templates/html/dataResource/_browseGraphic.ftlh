@@ -1,6 +1,5 @@
 <#if onlineResources??>
- <#assign images = browseGraphics>
-	<#if images?? && images?size gt 0>
-		<img src="${images?first.url}" alt="${images?first.name}" class="browseGraphic"/>
+ 	<#if browseGraphics?? && browseGraphics?size gt 0>
+		<img src="${browseGraphics?first.url}" alt="${browseGraphics?first.name}" class="browseGraphic"/>
 	</#if>
 </#if>

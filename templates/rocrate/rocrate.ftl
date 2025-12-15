@@ -8,8 +8,7 @@
     <#assign docType = "SoftwareSourceCode">
   </#if>
 
-  <#assign fileaccess = fileaccess>
-  <#if fileaccess?size gt 0>
+  <#if fileAccess?size gt 0>
     <@m.getPartsData id false ; eidchub, suppDocs, combinedParts>
       <@m.rocrate docType combinedParts/>
     </@m.getPartsData>

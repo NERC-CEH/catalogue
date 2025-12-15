@@ -9,8 +9,6 @@
 
 <#if supplemental?has_content>
   <#assign
-    referencedBy = referencedBy
-    supplementTo = supplementTo
     websites = supplementWebsite
     supOther = emptySupplemental + relatedArticle + relatedDatasets
   >

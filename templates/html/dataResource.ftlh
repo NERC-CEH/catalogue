@@ -41,20 +41,9 @@
   </#if>
 </#if>
 
-<#if useConstraints?has_content>
-  <#assign
-    licences = licences
-    otherConstraints =  otherConstraints
-  >
-</#if>
-
 <#assign isLinkedDoc=false linkedClass="" >
 <#if rel_source?has_content && rel_source?size gt 0>
   <#assign isLinkedDoc=true linkedClass="linked" >
-</#if>
-
-<#if isLinkedDoc && resourceIdentifiers?has_content>
-  <#assign masterDocument = masterDocument>
 </#if>
 
 <#macro getLabel val array>

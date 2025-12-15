@@ -16,12 +16,10 @@
 </#if>
 
 <#assign
-  orders = []
   hasOrders = false
 >
 <#if onlineResources?has_content>
   <#assign
-    orders = orders
     hasOrders = orders?size gt 0
   >
 </#if>

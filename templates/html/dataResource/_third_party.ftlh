@@ -1,9 +1,7 @@
-<#if onlineResources??>
-    <#assign distributionURLs = nonBrowseGraphics>
-</#if>
-<#if distributorContacts??>
-    <#assign dataDistributors = distributor>
-</#if>
+<#assign
+    distributionURLs = nonBrowseGraphics
+    dataDistributors = distributor
+>
 
 <div id="document-thirdParty">
     <div class="card card-default d-print-none" id="segment-distribution">

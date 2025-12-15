@@ -2,10 +2,6 @@
 <#import "../blocks.ftlh" as b>
 <#import "macros.ftlh" as m>
 
-<#if (onlineResources?? && onlineResources?has_content)>
-  <#assign websites = websites >
-</#if>
-
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
 
  <div id="metadata" class= "metadata nerc-model nerc-modeluse">

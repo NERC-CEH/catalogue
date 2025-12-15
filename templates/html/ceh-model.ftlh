@@ -3,18 +3,6 @@
 <#import "ceh-model-macros.ftlh" as m>
 <#import "../functions.ftlh" as func>
 
-<#if responsibleParties?? && responsibleParties?has_content>
-  <#assign
-    SRO = SRO
-    otherContacts = otherContacts
-  >
-</#if>
-<#if onlineResources?? && onlineResources?has_content>
-  <#assign
-    images = images
-    otherLinks = otherLinks
-  >
-</#if>
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 
   <div id="metadata" class="metadata ceh-model">
@@ -56,7 +44,7 @@
     <div class="section">
       <div class="container">
 
-          <#if primaryPurpose?? || SRO??|| otherContacts?? || licenseType?? || onlineResources??>
+          <#if primaryPurpose?? || (SRO?? && SRO?has_content) || (otherContacts?? && otherContacts?has_content) || licenseType?? || onlineResources??>
           <section>
             <#if primaryPurpose?? && primaryPurpose?has_content>
               <@m.key "Primary purpose">

@@ -3,13 +3,6 @@
 
 <#assign rel_all=jena.allRelatedRecords(uri) >
 
-<#if onlineResources??>
-<#assign
-    weblinks = websites
-    images = browseGraphics
->
-</#if>
-
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
   <div id="metadata" class="metadata infrastructure-metadata">
     <section class="section section-grey">

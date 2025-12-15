@@ -234,7 +234,7 @@
 
 <#-- Freemarker macros -->
 <#macro showTerms>
-  <div class="terms id="termsBoilerplate">
+  <div class="terms" id="termsBoilerplate">
       <p>This document sets out your rights and responsibilities as depositor and ours as the data distributor.</p>
       <p>As a depositor you must consent to this service agreement which establishes the terms and conditions of use of your data.</p>
       <p>This agreement authorises the EIDC to preserve and to distribute the data under the terms specified in this document. To do so, the EIDC

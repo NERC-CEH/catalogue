@@ -1,15 +1,5 @@
 <#import "../skeleton.ftlh" as skeleton>
 
-<#if useConstraints?has_content>
-  <#assign licences = licences>
-</#if>
-<#if responsibleParties?has_content>
-  <#assign
-    owners = owners
-    contacts = contacts
-    >
-</#if>
-
 <#assign
   rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
   rel_hasMember = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")

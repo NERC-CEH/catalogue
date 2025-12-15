@@ -1,15 +1,14 @@
 <#compress>
 <#import "../schema.org/macros.ftl" as m>
-<#assign fileaccess = fileaccess>
-  <#if (type=='dataset' || type=='nonGeographicDataset')>
-      <#if resourceStatus?lower_case != "deleted">
-        <@m.getPartsData id false ; eidchub, suppDocs, combinedParts>
-          <@croissant eidchub/>
-        </@m.getPartsData>
-      </#if>
-  <#else>
-    not a valid croissant document
-  </#if>
+<#if (type=='dataset' || type=='nonGeographicDataset')>
+    <#if resourceStatus?lower_case != "deleted">
+      <@m.getPartsData id false ; eidchub, suppDocs, combinedParts>
+        <@croissant eidchub/>
+      </@m.getPartsData>
+    </#if>
+<#else>
+  not a valid croissant document
+</#if>
 
 </#compress>
 

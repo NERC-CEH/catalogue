@@ -268,7 +268,8 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     private List<ResponsibleParty> distributorContactsByRole(String role) {
-        return distributorContacts
+        return Optional.ofNullable(distributorContacts)
+            .orElseGet(ArrayList::new)
             .stream()
             .filter(responsibleParty -> responsibleParty.getRole().equalsIgnoreCase(role))
             .collect(Collectors.toCollection(ArrayList::new));
@@ -465,7 +466,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @JsonIgnore
-    public List<OnlineResource> getFileaccess() {
+    public List<OnlineResource> getFileAccess() {
         return filterOnlineResources(getDownloads(), "fileAccess");
     }
 

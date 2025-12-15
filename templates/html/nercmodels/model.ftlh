@@ -5,9 +5,6 @@
 <#if onlineResources?? && onlineResources?has_content>
   <#assign
     images = browseGraphics
-    code = code
-    websites = websites
-    documents = documents
   >
 </#if>
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
