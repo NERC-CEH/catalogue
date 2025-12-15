@@ -1,6 +1,5 @@
 <#import "blocks.ftlh" as blocks>
 <#import "skeleton.ftlh" as skeleton>
-<#import "../functions.ftlh" as func>
 
 <#assign
   catalogue = catalogues.retrieve(metadata.catalogue)
@@ -10,10 +9,8 @@
 
 <#if supplemental?has_content>
   <#assign
-    referencedBy = func.filter(supplemental, "function", "isReferencedBy")
-    supplementTo = func.filter(supplemental, "function", "isSupplementTo")
-    websites = func.filter(supplemental, "function", "website")
-    supOther = func.filter(supplemental, "function", "") + func.filter(supplemental, "function", "relatedArticle") + func.filter(supplemental, "function", "relatedDataset")
+    websites = supplementWebsite
+    supOther = emptySupplemental + relatedArticle + relatedDatasets
   >
 </#if>
 

@@ -1,7 +1,6 @@
 <#assign displayButtonRow = false>
 <#if onlineResources?? >
   <#assign downloadOrder=downloadOrderDetails.from(onlineResources) >
-  <#assign externalLinks = func.filterRegex(onlineResources, "url", ".+\\.ceh\\.ac\\.uk.+", true) >
 
 </#if>
 <#if (resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'model' || resourceType.value == 'software' || resourceType.value == 'computationalNotebook' || resourceType.value == 'method') && (resourceStatus == "Available" || resourceStatus == "Embargoed" || resourceStatus == "Controlled") >
@@ -202,7 +201,7 @@
       <#if mapViewable?? >
 
         <#if onlineResources?? >
-          <#assign mapservices = func.filterRegex(onlineResources, "url", ".+\\.catalogue\\.ceh\\.ac\\.uk\\/maps\\/.+")>
+          <#assign mapservices = mapservices>
         </#if>
 
         <#if mapservices?? && mapservices?has_content>

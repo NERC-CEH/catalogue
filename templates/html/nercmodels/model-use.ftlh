@@ -1,11 +1,6 @@
 <#import "../skeleton.ftlh" as skeleton>
-<#import "../../functions.ftlh" as func>
 <#import "../blocks.ftlh" as b>
 <#import "macros.ftlh" as m>
-
-<#if (onlineResources?? && onlineResources?has_content)>
-  <#assign websites = func.filter(onlineResources, "function", "website") >
-</#if>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
 
@@ -171,5 +166,4 @@
 
   </div>
 
-  <#include "_footer.ftlh">
 </@skeleton.master>

@@ -23,10 +23,13 @@
     errors = MD_checks.getErrors()
     infos =  MD_checks.getInfo()
     warnings = MD_checks.getWarnings()
+    errorList = MD_checks.getErrorList()
+    infoList = MD_checks.getInfoList()
+    warningList = MD_checks.getWarningList()
     totalIssues = errors + infos +  warnings
     metadataClass="warning"
 >
-<#assign apps=func.filter(onlineResources, "function", "browsing")>
+<#assign apps=browsingApps>
 
 <#if totalIssues?? && totalIssues gte 1>
   <#if errors gte 1 >
@@ -38,20 +41,9 @@
   </#if>
 </#if>
 
-<#if useConstraints?has_content>
-  <#assign
-    licences = func.filter(useConstraints, "code", "license")
-    otherConstraints =  func.filter(useConstraints, "code", "license", true)
-  >
-</#if>
-
 <#assign isLinkedDoc=false linkedClass="" >
 <#if rel_source?has_content && rel_source?size gt 0>
   <#assign isLinkedDoc=true linkedClass="linked" >
-</#if>
-
-<#if isLinkedDoc && resourceIdentifiers?has_content>
-  <#assign masterDocument = func.filterRegex(resourceIdentifiers, "code", ".+\\.catalogue\\.ceh\\.ac\\.uk\\/id\\/.+")>
 </#if>
 
 <#macro getLabel val array>

@@ -1,9 +1,7 @@
 <#assign
-	relatedDatasets = func.filter(supplemental, "function", "relatedDataset")
-	otherSupplemental = func.filter(supplemental, "function", "relatedDataset", true)
-	>
-
-<#assign apps = func.filter(onlineResources, "function", "browsing") >
+	otherSupplemental = nonRelatedDatasets
+	apps = browsingApps
+>
 
 <div class="py-3">
 

@@ -18,7 +18,6 @@
 
 <#--copyright-->
 <#if useConstraints?has_content>
-  <#assign copyrights = filter(useConstraints, "code", "copyright"  ) >
   <#if copyrights?has_content>
     dcterms:rights <#t>
     <#list copyrights as copyright>
