@@ -1,9 +1,8 @@
 <#assign displayButtonRow = false>
 <#if onlineResources?? >
   <#assign downloadOrder=downloadOrderDetails.from(onlineResources) >
-
 </#if>
-<#if (resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'model' || resourceType.value == 'software' || resourceType.value == 'computationalNotebook' || resourceType.value == 'method') && (resourceStatus == "Available" || resourceStatus == "Embargoed" || resourceStatus == "Controlled") >
+<#if (resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'model' || resourceType.value == 'software' || resourceType.value == 'computationalNotebook' || resourceType.value == 'method' || resourceType.value == 'service') && (resourceStatus == "Available" || resourceStatus == "Embargoed" || resourceStatus == "Controlled") >
   <#assign displayButtonRow = true>
 </#if>
 
