@@ -2,6 +2,29 @@
 
 $fa-font-path: "../fonts";
 
+:root {
+    --link-colour: #1C9C32;
+    --link-hover-colour: #990000;
+
+    --header-background-colour: white;
+    --header-height: 80px;
+    --header-logo-size: calc(var(--header-height) * 0.65);
+    --header-link-colour: var(--link-colour);
+    --header-link-background-colour: var(--header-background-colour);
+    --header-link-hover-background-colour: color-mix(in lab, var(--header-link-background-colour), black 25%);
+    --header-link-hover-colour: var(--link-hover-colour);
+    --header-link-weight: 200;
+    --header-border-bottom-colour: #bbb;
+    --header-border-bottom-width: 1px;
+    --dropdownmenu-background: #EEE;
+    --dropdownmenu-background-hover: color-mix(in lab, var(--dropdownmenu-background), black 5%);
+
+    --nav-toggle-colour: var(--header-link-colour);
+
+     --footer-subsection-background-colour: #ddd;
+}
+
+
 #editor {
     .option-inms {
         --display-option:block;

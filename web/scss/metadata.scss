@@ -138,23 +138,36 @@ body {
         }
     }
 
+    .alert {
+        border-radius: 0;
+
+        &-data {
+            background-color: var(--ukceh-colour-data);
+        }
+
+        &-water {
+            background-color: var(--ukceh-colour-water);
+            color: var(--ukceh-colour-day);
+
+            a {
+                color: var(--ukceh-colour-data);
+            }
+        }
+
+        &-In-progress,
+        &-Embargoed,
+        &-Superseded,
+        &-Withdrawn {
+            @extend .alert !optional;
+            @extend .alert-water !optional;
+        }
+    }
+
     #segment-title {
 
         h1 {
             text-wrap: balance;
             font-weight: 400;
-        }
-
-        .alert-In-progress,
-        .alert-Embargoed {
-            @extend .alert !optional;
-            @extend .alert-info !optional;
-        }
-
-        .alert-Superseded,
-        .alert-Withdrawn {
-            @extend .alert !optional;
-            @extend .alert-danger !optional;
         }
 
         .authorList {
@@ -243,7 +256,17 @@ body {
         @extend .py-2 !optional;
     }
 
-    .accessButtons {
+
+    .accessButtons:not(:empty){
+        @extend .py-3 !optional;
+        @extend .d-flex !optional;
+        @extend .flex-row !optional;
+        @extend .align-items-center !optional;
+        @extend .flex-wrap !optional;
+        @extend .d-print-none !optional;
+        @extend .border-bottom !optional;
+        @extend .border-1 !optional;
+
         gap: .5em 1em;
         --btn_width: 170px;
 
@@ -251,7 +274,6 @@ body {
             flex: 0 1 var(--btn_width);
             text-wrap: nowrap;
             text-decoration: none;
-            border-radius: 0;
         }
 
         >div {
@@ -263,7 +285,6 @@ body {
                 width: 100%
             }
         }
-
     }
 
     .offcanvas-access {
@@ -341,7 +362,7 @@ body {
 
         a.ukcehcard {
             --_ukcehcard-background: hsl(0, 0%, 100%);
-            --_ukcehcard-border-colour: var(--primary-colour);
+            --_ukcehcard-border-colour: var(--ukceh-colour-night);
             --_ukcehcard-border-style: solid;
             --_ukcehcard-text-colour: black;
             --_ukcehcard-link-colour: inherit;
@@ -428,7 +449,7 @@ body {
         }
 
         a.ukcehcard:hover {
-            --_ukcehcard-background: var(--primary-colour);
+            --_ukcehcard-background: var(--ukceh-colour-night);
             --_ukcehcard-text-colour: white;
             --_ukcehcard-icon-colour: var(--ukceh-colour-data);
 
@@ -665,9 +686,7 @@ body {
     }
 
     .metadataQuality {
-        --_quality-success: hsl(120, 100%, 25%);
         --_quality-warning: hsl(34, 100%, 50%);
-        --_quality-info: hsl(240, 100%, 50%);
         --_quality-error: hsl(0, 100%, 50%);
 
         &_error {
@@ -683,7 +702,7 @@ body {
         }
 
         &_info {
-            --_qualityColor: var(--_quality-info);
+            --_qualityColor: var(--ukceh-colour-water);
         }
 
         span {

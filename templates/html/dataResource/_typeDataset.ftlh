@@ -22,7 +22,7 @@
     <div class="${mainColClasses} py-3">
 
       <#if resourceStatus?? && resourceStatus?has_content && resourceStatus != "Available" && resourceStatus != "Controlled"  && resourceStatus != "Unknown"  >
-        <div class="alert alert-primary" role="alert">
+        <div class="alert alert-${resourceStatus}" role="alert">
           <#include "_status.ftlh">
         </div>
       </#if>

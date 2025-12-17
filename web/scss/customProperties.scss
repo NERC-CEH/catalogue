@@ -15,12 +15,8 @@
     --body-background-colour: #fff;
     --text-default-colour: #1d1d1b;
 
-    --primary-colour: var(--ukceh-colour-night);
-    --secondary-colour: var(--ukceh-colour-data);
-    --tertiary-colour: var(--ukceh-colour-water);
-
-    --link-colour: var(--primary-colour);
-    --link-hover-colour: var(--ukceh-colour-data);
+    --link-colour:var(--ukceh-colour-water);
+    --link-hover-colour: var(--ukceh-colour-water);
 
     --font-family-body: var(--ukceh-font-family-Suisse);
     --font-family-headers: var(--ukceh-font-family-Suisse);
@@ -54,6 +50,7 @@
     --footer-colour: #fff;
     --footer-link-colour: #fff;
     --footer-link-hover-colour: var(--ukceh-colour-data);
+    --footer-subsection-background-colour: var(--ukceh-colour-air);
 
     --font-stack-icons: 'Font Awesome\ 6 Free';
 
