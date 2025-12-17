@@ -1,4 +1,3 @@
-<#import "../../functions.ftlh" as func>
 <#assign
     SA_checks = serviceAgreementQuality.check(id)
     problems = SA_checks.getProblems()
@@ -11,9 +10,9 @@
 
 <div class="d-print-none">
   <#if problems?? && problems?has_content>
-      <#assign errors = func.filter(problems, "severity", "ERROR")>
-      <#assign warnings = func.filter(problems, "severity", "WARNING")>
-      <#assign infos = func.filter(problems, "severity", "INFO")>
+      <#assign errors = SA_checks.getErrorList()>
+      <#assign warnings = SA_checks.getWarningList()>
+      <#assign infos = SA_checks.getInfoList()>
       <#if errors?? && errors?has_content>
           <div class="alert alert-dark border-4 border-primary mt-2">
             <i class="fa-solid fa-info-circle text-primary"></i> <b>This service agreement is incomplete and cannot be submitted until all errors are cleared</b>

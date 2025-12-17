@@ -1,15 +1,4 @@
 <#import "../skeleton.ftlh" as skeleton>
-<#import "../../functions.ftlh" as f>
-
-<#if useConstraints?has_content>
-  <#assign licences = f.filter(useConstraints, "code", "license")>
-</#if>
-<#if responsibleParties?has_content>
-  <#assign
-    owners = f.filter(responsibleParties, "role", "owner")
-    contacts = f.filter(responsibleParties, "role", "pointOfContact")
-    >
-</#if>
 
 <#assign
   rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")

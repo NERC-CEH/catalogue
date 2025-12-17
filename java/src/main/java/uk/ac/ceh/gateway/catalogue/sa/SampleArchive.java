@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.sa;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -44,5 +45,15 @@ public class SampleArchive extends AbstractMetadataDocument implements WellKnown
                 .stream()
                 .map(BoundingBox::getWkt)
                 .collect(Collectors.toList());
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getBrowseGraphics() {
+        return filterOnlineResources(onlineResources, "browseGraphic");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getNonBrowseGraphics() {
+        return excludeOnlineResources(onlineResources, "browseGraphic");
     }
 }

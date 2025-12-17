@@ -1,15 +1,7 @@
 <#import "../skeleton.ftlh" as skeleton>
-<#import "../../functions.ftlh" as func>
 <#import "../blocks.ftlh" as b>
 
 <#assign rel_all=jena.allRelatedRecords(uri) >
-
-<#if onlineResources??>
-<#assign
-    weblinks = func.filter(onlineResources, "function", "website")
-    images = func.filter(onlineResources, "function", "browseGraphic")
->
-</#if>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
   <div id="metadata" class="metadata infrastructure-metadata">

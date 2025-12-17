@@ -176,6 +176,8 @@ public class RoCrateTest {
                     .doi("10.5285/" + fileId)
                     .authors(List.of("Able", "Bracken", "Charles"))
                     .year(2020)
+                    .month(1)
+                    .day(1)
                     .title("Title")
                     .publisher("Publisher")
                     .resourceTypeGeneral("resourceType")
@@ -246,7 +248,7 @@ public class RoCrateTest {
 
             // OGL licences
             gemini.setUseConstraints(List.of(
-                ResourceConstraint.builder().code("license").uri("https://eidc.ac.uk/licences/OGL/plain").build()
+                ResourceConstraint.builder().code("license").uri("https://eidc.ac.uk/licences/ogl/plain").build()
             ));
 
             //when

@@ -94,7 +94,7 @@ public class DataciteRequestTest {
 
     @Test
     void testListRights() {
-        ResourceConstraint rc = new ResourceConstraint("Open Government Licence","license", "https://eidc.ac.uk/licences/OGL/plain");
+        ResourceConstraint rc = new ResourceConstraint("Open Government Licence","license", "https://eidc.ac.uk/licences/ogl/plain");
         ResourceConstraint rc2 = new ResourceConstraint("Open Government Licence","MPA", "");
         List<Rights> rights = attributes.listRights(List.of(rc,rc2));
         assertEquals("OGL-UK-3.0", rights.get(0).rightsIdentifier());

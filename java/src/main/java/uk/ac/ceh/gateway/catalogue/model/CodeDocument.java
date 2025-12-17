@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -36,5 +37,18 @@ public class CodeDocument extends AbstractMetadataDocument {
         private String reviewDate, reviewProcess;
     }
 
+    @JsonIgnore
+    public List<ResourceConstraint> getLicences() {
+        return filterResourceConstraint(useConstraints, "license");
+    }
 
+    @JsonIgnore
+    public List<ResponsibleParty> getOwners() {
+        return filterResponsibleParty(responsibleParties, "owner");
+    }
+
+    @JsonIgnore
+    public List<ResponsibleParty> getContacts() {
+        return filterResponsibleParty(responsibleParties, "pointOfContact");
+    }
 }

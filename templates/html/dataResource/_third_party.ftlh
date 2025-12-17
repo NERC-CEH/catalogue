@@ -1,9 +1,7 @@
-<#if onlineResources??>
-    <#assign distributionURLs = func.filter(onlineResources, "function", "browseGraphic", true)>
-</#if>
-<#if distributorContacts??>
-    <#assign dataDistributors = func.filter(distributorContacts, "role", "distributor") >
-</#if>
+<#assign
+    distributionURLs = nonBrowseGraphics
+    dataDistributors = distributor
+>
 
 <div id="document-thirdParty">
     <div class="card card-default d-print-none" id="segment-distribution">

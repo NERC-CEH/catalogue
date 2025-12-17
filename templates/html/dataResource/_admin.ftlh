@@ -1,8 +1,7 @@
-<#import "../../functions.ftlh" as func>
 <#assign
   isDraft = metadata.state == 'draft'
   isEidcCatalogue = metadata.catalogue == "eidc"
-  isEidcCustodian = func.filter(custodians![], "organisationName", "NERC EDS Environmental Information Data Centre")?size gt 0
+  isEidcCustodian = (isEidcCustodian?? && isEidcCustodian())!false
   isEidcWithResourceType=isEidcCatalogue && (resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'model' || resourceType.value == 'method' || resourceType.value == 'software' || resourceType.value == 'computationalNotebook')
   isNotLinkDocument = metadata.documentType != 'LINK_DOCUMENT'
   isRestrictedFieldsEditor = permission.userCanEditRestrictedFields(metadata.catalogue)
@@ -17,12 +16,10 @@
 </#if>
 
 <#assign
-  orders = []
   hasOrders = false
 >
 <#if onlineResources?has_content>
   <#assign
-    orders = func.filterRegex(func.filter(onlineResources, "function", "order"), "url", ".+\\.order-eidc\\.ceh\\.ac\\.uk\\/resources\\/.+")
     hasOrders = orders?size gt 0
   >
 </#if>
