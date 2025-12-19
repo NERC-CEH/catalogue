@@ -30,6 +30,7 @@ public class FreemarkerConfig {
     private final PermissionService permissionService;
     private final ProfileService profileService;
     private final FileDetailsService fileDetailsService;
+    private final FileListService fileListService;
     @Nullable private final ServiceAgreementQualityService serviceAgreementQualityService;
     @Nullable private final MetricsService metricsService;
 
@@ -48,6 +49,7 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("userInfo", new SecurityUserInfo());
         freemarkerConfiguration.setSharedVariable("fileDetails", fileDetailsService);
         freemarkerConfiguration.setSharedVariable("downloadUrlRegexes", downloadUrlProperties);
+        freemarkerConfiguration.setSharedVariable("fileListService", fileListService);
 
         if (serviceAgreementQualityService != null) {
             freemarkerConfiguration.setSharedVariable("serviceAgreementQuality", serviceAgreementQualityService);

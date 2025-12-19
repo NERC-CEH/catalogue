@@ -12,7 +12,7 @@ import static com.google.common.base.Strings.nullToEmpty;
 
 @Value
 public class Fileset {
-    private final String filesetName, encodingFormat, includes;
+    private final String filesetName, encodingFormat, includes, filesetRegex;
     public final List<ObservedProperty> observedProperty;
 
     @Builder
@@ -21,10 +21,12 @@ public class Fileset {
         @JsonProperty("filesetName") String filesetName,
         @JsonProperty("encodingFormat") String encodingFormat,
         @JsonProperty("includes") String includes,
+        @JsonProperty("filesetRegex") String filesetRegex,
         @JsonProperty("observedProperty") List<ObservedProperty> observedProperty) {
         this.filesetName = nullToEmpty(filesetName);
         this.encodingFormat = nullToEmpty(encodingFormat);
         this.includes = nullToEmpty(includes);
+        this.filesetRegex = nullToEmpty(filesetRegex);
         this.observedProperty = (observedProperty == null)? new ArrayList<>(): observedProperty;
     }
 }

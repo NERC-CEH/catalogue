@@ -17,9 +17,12 @@ import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
+import uk.ac.ceh.gateway.catalogue.model.Fileset;
+import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FileDetailsService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.FileListService;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -39,6 +42,9 @@ public class CroissantTest {
     GeminiDocument gemini;
     @Mock
     FileDetailsService fileDetailsService;
+
+    @Mock
+    FileListService fileListService;
 
     @SneakyThrows
     private String expected(String filename) {
@@ -96,12 +102,34 @@ public class CroissantTest {
             ));
     }
 
+    private void givenFileListServiceSmall(String fileId) {
+        given(fileListService.getFileList(fileId))
+            .willReturn(List.of("data-0.csv", "data-1.csv"));
+    }
+
+    private void givenFileListServiceLarge(String fileId) {
+        given(fileListService.getFileList(fileId))
+            .willReturn(List.of("data-0.csv", "data-1.csv", "data-11.csv", "data-2.csv", "data-3.csv", "data-4.csv", "data-5.csv", "data-6.csv", "data-7.csv", "data-8.csv", "data-9.csv"));
+    }
+
+    private Fileset dummyFileset() {
+        ObservedProperty observedProperty = ObservedProperty.builder().value("header").title("obTitle").type("text").build();
+        return Fileset.builder()
+            .filesetName("test-fileset")
+            .filesetRegex("^data-.*\\.csv$")
+            .encodingFormat("text/csv")
+            .includes("data")
+            .observedProperty(List.of(observedProperty))
+            .build();
+    }
+
     @SneakyThrows
     @BeforeEach
     void init() {
         configuration = new Configuration(Configuration.VERSION_2_3_33);
         configuration.setDirectoryForTemplateLoading(new File("../templates"));
         configuration.setSharedVariable("fileDetails", fileDetailsService);
+        configuration.setSharedVariable("fileListService", fileListService);
     }
 
     @SneakyThrows
@@ -111,6 +139,7 @@ public class CroissantTest {
         val expected = expected("croissant/minimal.json");
         val fileId = "123456789";
         gemini = createGeminiDocument(fileId);
+        givenFileListServiceSmall(fileId);
         givenFileDetailsServiceEmpty(fileId);
 
         //when
@@ -128,7 +157,26 @@ public class CroissantTest {
         val expected = expected("croissant/full.json");
         val fileId = "123456789";
         gemini = createGeminiDocumentFull(fileId);
+        givenFileListServiceSmall(fileId);
         givenFileDetailsServiceFull(fileId);
+
+        //when
+        val actual = template("croissant/croissant.ftl");
+        log.debug(actual);
+
+        //then
+        JSONAssert.assertEquals(expected, actual, true);
+    }
+
+    @SneakyThrows
+    @Test
+    void croissantLarge() {
+        //given
+        val expected = expected("croissant/large-dataset.json");
+        val fileId = "123456789";
+        gemini = createGeminiDocumentFull(fileId);
+        givenFileListServiceLarge(fileId);
+        configuration.setSharedVariable("fileset", List.of(dummyFileset()));
 
         //when
         val actual = template("croissant/croissant.ftl");
