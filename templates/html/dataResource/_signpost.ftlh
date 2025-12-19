@@ -1,9 +1,9 @@
 <#if onlineResources??>
-    <#assign signpostURLs = func.filter(onlineResources, "function", "browseGraphic", true)>
+    <#assign signpostURLs = nonBrowseGraphics>
 </#if>
 
 <#if distributorContacts??>
-    <#assign signpostDistributor = func.filter(distributorContacts, "role", "distributor")>
+    <#assign signpostDistributor = distributor>
     <#assign distributorName = signpostDistributor?first.organisationName >
 <#else>
     <#assign distributorName = "a third party" >

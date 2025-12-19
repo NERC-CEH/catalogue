@@ -110,7 +110,7 @@ class SolrIndexGeminiDocumentGeneratorTest {
             GeminiDocument document = mock(GeminiDocument.class);
             when(document.getUseConstraints()).thenReturn(Arrays.asList(
                     ResourceConstraint.builder()
-                            .uri("https://www.eidc.ac.uk/licences/OGLnonceh/plain")
+                            .uri("https://www.eidc.ac.uk/licences/oglnonceh/plain")
                             .build(),
                     ResourceConstraint.builder()
                             .value("More use limitations")

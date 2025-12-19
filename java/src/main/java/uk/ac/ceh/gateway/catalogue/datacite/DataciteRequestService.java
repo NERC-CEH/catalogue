@@ -81,7 +81,7 @@ public class DataciteRequestService {
                 boolean isLicense = "license".equals(resourceConstraint.getCode()) && !uri.isEmpty();
 
                 if (isLicense) {
-                    if ("https://eidc.ac.uk/licences/OGL/plain".equals(uri)) {
+                    if ("https://eidc.ac.uk/licences/ogl/plain".equals(uri)) {
                         return new DataciteRequest.Attributes.Rights(value, "", uri, "OGL-UK-3.0", "SPDX", "");
                     }
                     return new DataciteRequest.Attributes.Rights(value, "", uri, "", "", "");

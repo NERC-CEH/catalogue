@@ -76,7 +76,7 @@ public class CroissantTest {
         val gemini = createGeminiDocument(fileId);
         gemini.setDescription("Description of the dataset.");
         gemini.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2024, 8, 22)).build());
-        gemini.setUseConstraints(List.of(ResourceConstraint.builder().code("license").uri("https://eidc.ac.uk/licences/OGL3").build()));
+        gemini.setUseConstraints(List.of(ResourceConstraint.builder().code("license").uri("https://eidc.ac.uk/licences/ogl3").build()));
         gemini.setDatacitable(true);
         gemini.setCitation(Citation.builder().doi("doi").publisher("EIDC").title("Title of dataset").year(2024).authors(List.of("Bob", "Helen")).build());
         gemini.setKeywordsDiscipline(List.of(

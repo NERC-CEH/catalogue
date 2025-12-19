@@ -2,7 +2,7 @@
   dcterms:license <#t>
   <#list licences as licence>
     <#if licence.uri?has_content>
-      <#if licence.uri?contains("/licences/OGL/")>
+      <#if licence.uri?contains("/licences/ogl/")>
         <https://spdx.org/licenses/OGL-UK-3.0.ttl>
       <#else>
         <${licence.uri?trim}>
@@ -18,7 +18,6 @@
 
 <#--copyright-->
 <#if useConstraints?has_content>
-  <#assign copyrights = filter(useConstraints, "code", "copyright"  ) >
   <#if copyrights?has_content>
     dcterms:rights <#t>
     <#list copyrights as copyright>

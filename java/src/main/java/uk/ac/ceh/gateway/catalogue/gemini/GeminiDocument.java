@@ -266,13 +266,17 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public List<ResponsibleParty> getAuthors() {
-        return responsiblePartyByRole("author");
+    private List<ResponsibleParty> distributorContactsByRole(String role) {
+        return Optional.ofNullable(distributorContacts)
+            .orElseGet(ArrayList::new)
+            .stream()
+            .filter(responsibleParty -> responsibleParty.getRole().equalsIgnoreCase(role))
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public List<ResponsibleParty> getCustodians() {
-        return responsiblePartyByRole("custodian");
-    }
+    public List<ResponsibleParty> getAuthors() { return responsiblePartyByRole("author"); }
+
+    public List<ResponsibleParty> getCustodians() { return responsiblePartyByRole("custodian"); }
 
     public List<ResponsibleParty> getPointsOfContact() {
         return responsiblePartyByRole("pointOfContact");
@@ -284,6 +288,31 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     public List<ResponsibleParty> getPublishers() {
         return responsiblePartyByRole("publisher");
+    }
+
+    @JsonIgnore
+    public List<ResponsibleParty> getDepositors() {
+        return responsiblePartyByRole("depositor");
+    }
+
+    @JsonIgnore
+    public List<ResponsibleParty> getOriginators() {
+        return responsiblePartyByRole("originator");
+    }
+
+    @JsonIgnore
+    public List<ResponsibleParty> getOwners() {
+        return responsiblePartyByRole("owner");
+    }
+
+    @JsonIgnore
+    public List<ResponsibleParty> getResourceProviders() {
+        return responsiblePartyByRole("resourceProvider");
+    }
+
+    @JsonIgnore
+    public List<ResponsibleParty> getDistributor() {
+        return distributorContactsByRole("distributor");
     }
 
     public List<DistributionInfo> getDistributionFormats() {
@@ -371,4 +400,83 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .map(party -> party.withEmail(convertEmail(party.getEmail())))
             .toList();
     }
+
+    @JsonIgnore
+    public List<Supplemental> getRelatedDatasets() {
+        return filterSupplemental(supplemental, "relatedDataset");
+    }
+
+    @JsonIgnore
+    public List<Supplemental> getNonRelatedDatasets() {
+        return excludeSupplemental(supplemental, "relatedDataset");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getBrowsingApps() {
+        return filterOnlineResources(onlineResources, "browsing");
+    }
+
+    @JsonIgnore
+    public boolean isEidcCustodian() {
+        return Optional.ofNullable(getCustodians())
+            .orElse(Collections.emptyList())
+            .stream()
+            .anyMatch(custodian -> "NERC EDS Environmental Information Data Centre".equals(custodian.getOrganisationName()));
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getOrderResources() {
+        return filterOnlineResources(onlineResources, "order");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getExternalLinks() {
+        return excludeOnlineResourcesUrl(onlineResources, ".+\\.ceh\\.ac\\.uk.+");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getMapservices() {
+        return filterOnlineResourcesUrl(onlineResources, ".+catalogue\\.ceh\\.ac\\.uk\\/maps\\/.+");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getOrders() {
+        return filterOnlineResourcesUrl(getOrderResources(), ".+\\.order-eidc\\.ceh\\.ac\\.uk\\/resources\\/.+");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getBrowseGraphics() {
+        return filterOnlineResources(onlineResources, "browseGraphic");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getInformation() {
+        return filterOnlineResources(onlineResources, "information");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getNonBrowseGraphics() {
+        return excludeOnlineResources(onlineResources, "browseGraphic");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getSearch() {
+        return filterOnlineResources(onlineResources, "search");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getFileAccess() {
+        return filterOnlineResources(getDownloads(), "fileAccess");
+    }
+
+    @JsonIgnore
+    public List<ResourceConstraint> getOtherConstraints() {
+        return excludeResourceConstraint(useConstraints, "license");
+    }
+
+    @JsonIgnore
+    public List<ResourceConstraint> getCopyrights() {
+        return filterResourceConstraint(useConstraints, "copyright");
+    }
+
 }

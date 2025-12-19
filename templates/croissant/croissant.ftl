@@ -1,21 +1,19 @@
 <#compress>
 <#import "../schema.org/macros.ftl" as m>
-<#assign fileaccess = filter(downloads, "function", "fileAccess")>
-
-  <#if (type=='dataset' || type=='nonGeographicDataset')>
-    <#if resourceStatus?lower_case != "deleted">
-      <#assign fileList = fileListService.getFileList(id)>
-      <#if fileList?size gt 10>
-        <@croissant fileList/>
-      <#else>
-        <@m.getPartsData id false ; eidchub, suppDocs, combinedParts>
-          <@croissant eidchub/>
-        </@m.getPartsData>
-      </#if>
+<#if (type=='dataset' || type=='nonGeographicDataset')>
+  <#if resourceStatus?lower_case != "deleted">
+    <#assign fileList = fileListService.getFileList(id)>
+    <#if fileList?size gt 10>
+      <@croissant fileList/>
+    <#else>
+      <@m.getPartsData id false ; eidchub, suppDocs, combinedParts>
+        <@croissant eidchub/>
+      </@m.getPartsData>
     </#if>
-  <#else>
-    not a valid croissant document
   </#if>
+<#else>
+  not a valid croissant document
+</#if>
 
 </#compress>
 
@@ -155,7 +153,7 @@
   <#if licences?? && licences?has_content>
         ,"license": [
           <#list licences as licence>
-            <#if licence.uri?matches("^http[s]?://eidc.ac.uk/licences/OGL.+$")>
+            <#if licence.uri?matches("^http[s]?://eidc.ac.uk/licences/ogl.+$")>
               {
                 "@type": "CreativeWork",
                 "name": "Open Government Licence v3",
@@ -283,13 +281,3 @@
     ]
     </#if>
 </#macro>
-
-<#function filter listData filterBy value>
-    <#local result = []>
-    <#list listData as item>
-      <#if item[filterBy] == value >
-          <#local result = result + [item]>
-      </#if>
-    </#list>
-    <#return result>
-</#function>

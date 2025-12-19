@@ -311,7 +311,7 @@ public class RdfTurtleTest {
                 val document = new GeminiDocument()
                     .setType("dataset")
                     .setUseConstraints(List.of(
-                        ResourceConstraint.builder().code("license").uri("https://example.com/licences/OGL/plain").value("OGL").build(),
+                        ResourceConstraint.builder().code("license").uri("https://example.com/licences/ogl/plain").value("OGL").build(),
                         ResourceConstraint.builder().code("other").uri("https://example.com/other").build()
                     ))
                     .setUri(uri)

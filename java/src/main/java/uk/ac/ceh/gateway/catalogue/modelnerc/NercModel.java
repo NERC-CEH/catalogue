@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.http.MediaType;
 
 import lombok.Data;
@@ -87,5 +88,25 @@ public class NercModel extends AbstractMetadataDocument implements WellKnownText
             .stream()
             .map(BoundingBox::getWkt)
             .collect(Collectors.toList());
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getImages() {
+        return filterOnlineResources(onlineResources, "browseGraphic");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getCode() {
+        return filterOnlineResources(onlineResources, "code");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getWebsites() {
+        return filterOnlineResources(onlineResources, "website");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getDocuments() {
+        return filterOnlineResources(onlineResources, "document");
     }
 }

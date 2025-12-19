@@ -67,6 +67,7 @@ textarea.sparqlquery {
 main {
     ::selection {
         background-color: var(--ukceh-colour-data);
+        color: var(--ukceh-colour-night);
     }
 
     section {
@@ -78,6 +79,12 @@ main {
             }
         }
 
+    }
+
+    @media (prefers-contrast: more) {
+        a {
+            text-decoration: underline;
+        }
     }
 }
 
@@ -182,9 +189,13 @@ footer {
                     min-inline-size: 220px;
                 }
 
-                a:hover {
-                    outline: 1px solid var(--footer-link-hover-colour);
-                    outline-offset: 6px;
+                a {
+                    display: inline-block;
+
+                    &:hover {
+                        outline: 1px solid var(--footer-link-hover-colour);
+                        outline-offset: 6px;
+                    }
                 }
             }
 
@@ -257,6 +268,16 @@ h4 {
     color: #999;
     font-weight: 400;
 }
+
+.btn-ukceh {
+    --bs-btn-bg: var(--ukceh-colour-night);
+    --bs-btn-color: var(--ukceh-colour-day);
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-bg: color-mix(in oklab, white 25%, var(--ukceh-colour-night));
+    --bs-btn-hover-color: var(--ukceh-colour-data);
+    --bs-btn-hover-border-color: var(--ukceh-colour-data);
+}
+
 
 @media only screen and (min-width: 800px) {
     footer {
