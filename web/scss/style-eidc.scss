@@ -14,6 +14,7 @@ $card-default-text: #FFF;
     --display-navbar-title: none;
 }
 
+
 html {
     overflow-y: scroll;
 }
@@ -156,4 +157,25 @@ a#atlwdg-trigger {
     a#atlwdg-trigger {
         display: none;
     }
+}
+
+
+/*
+Everything below this point is to temporarily redefine styles
+When UKCEH brand colours are approved for EIDC, they can be deleted
+*/
+:root {
+    --eidc-blue: hsl(195 95% 33% / 1);
+    --eidc-orange: hsl(31 90% 58% /1);
+    --primary-colour: var(--eidc-blue);
+    --link-hover-colour: var(--eidc-orange);
+    --header-background-colour: hsl(195 95% 33% / 1);
+    --header-link-hover-background-colour: white;
+    --header-link-hover-colour: var(--eidc-orange);
+}
+
+.btn-ukceh {
+    --bs-btn-bg: var(--eidc-blue);
+    --bs-btn-hover-bg: var(--eidc-orange);
+    --bs-btn-hover-color: white;
 }

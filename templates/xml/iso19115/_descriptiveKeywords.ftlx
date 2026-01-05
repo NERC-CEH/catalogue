@@ -1,12 +1,8 @@
-<#assign all_keywords = []>
-
-  <#if allKeywords??>
-    <#assign all_keywords = all_keywords + allKeywords>
-  </#if>
+<#if allKeywords??>
 
   <#assign
-    keywords_withURIs = controlledKeywords(all_keywords, "^http(s?)://.+")
-    keywords_withoutURIs = controlledKeywords(all_keywords, "^$")
+    keywords_withURIs = controlledKeywords(allKeywords, "^http(s?)://.+")
+    keywords_withoutURIs = controlledKeywords(allKeywords, "^$")
 
     <#-- specify the patterns for the various vocabularies -->
     wikidata = "^http(s?)://www.wikidata.org/entity/.+"
@@ -22,7 +18,7 @@
     otherControlled_keywords = controlledKeywords(controlledKeywords(controlledKeywords(controlledKeywords(keywords_withURIs, wikidata, false), gemet, false), geonames, false), nercvocabs, false)
   >
 
-  <#if all_keywords?has_content>
+  <#if allKeywords?has_content>
     <#assign allOtherKeywords = otherControlled_keywords + keywords_withoutURIs>
     <@returnKeywordsXML wikidata_keywords 'Wikidata' '2012-10-29'/>
     <@returnKeywordsXML gemet_keywords 'GEMET - Concepts, version 4.1.3' '2019-01-28'/>
@@ -30,6 +26,8 @@
     <@returnKeywordsXML nerc_keywords 'NERC Vocabulary Server version 2.0' '2016-08-01' />
     <@returnKeywordsXML allOtherKeywords />
   </#if>
+
+</#if>
 
 <#function controlledKeywords hash regex match=true>
     <#local result = []>
