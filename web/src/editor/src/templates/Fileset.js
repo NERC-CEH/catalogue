@@ -36,6 +36,14 @@ export default _.template(`
         </div>
       </div>
   </div>
+  <div class="row">
+      <div class="col-lg-2">
+          <label class="control-label">Fileset Regex</label>
+      </div>
+      <div class="col-lg-4">
+          <input data-name='filesetRegex' placeholder="e.g., ^data.*\\.csv$" class="editor-input" value="<%= data.filesetRegex %>">
+      </div>
+  </div>
 
   <div class="legilo-variables-view mt-4"></div>
   <div class="styling-box observedProperty"></div>

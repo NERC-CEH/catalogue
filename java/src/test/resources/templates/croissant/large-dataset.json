@@ -1,0 +1,119 @@
+{
+    "@context": {
+        "@language": "en",
+        "@vocab": "https://schema.org/",
+        "sc": "https://schema.org/",
+        "cr": "http://mlcommons.org/croissant/",
+        "rai": "http://mlcommons.org/croissant/RAI/",
+        "dct": "http://purl.org/dc/terms/",
+        "citeAs": "cr:citeAs",
+        "column": "cr:column",
+        "conformsTo": "dct:conformsTo",
+        "data": {
+            "@id": "cr:data",
+            "@type": "@json"
+        },
+        "dataType": {
+            "@id": "cr:dataType",
+            "@type": "@vocab"
+        },
+        "examples": {
+            "@id": "cr:examples",
+            "@type": "@json"
+        },
+        "extract": "cr:extract",
+        "field": "cr:field",
+        "fileProperty": "cr:fileProperty",
+        "fileObject": "cr:fileObject",
+        "fileSet": "cr:fileSet",
+        "format": "cr:format",
+        "includes": "cr:includes",
+        "isLiveDataset": "cr:isLiveDataset",
+        "jsonPath": "cr:jsonPath",
+        "key": "cr:key",
+        "md5": "cr:md5",
+        "parentField": "cr:parentField",
+        "path": "cr:path",
+        "recordSet": "cr:recordSet",
+        "references": "cr:references",
+        "regex": "cr:regex",
+        "repeated": "cr:repeated",
+        "replace": "cr:replace",
+        "samplingRate": "sc:samplingRate",
+        "separator": "cr:separator",
+        "source": "cr:source",
+        "subField": "cr:subField",
+        "transform": "cr:transform"
+    },
+    "@id": "123456789_croissant",
+    "@type": "sc:Dataset",
+    "name": "Title",
+    "url": "https://example.org/id/123456789",
+    "dct:conformsTo": "http://mlcommons.org/croissant/1.0",
+    "version": 1,
+    "description": "Description of the dataset.",
+    "citeAs": "@Article{doi, doi = 'https://doi.org/doi', url = 'https://doi.org/doi', author = 'Bob AND Helen', publisher = 'EIDC', title = 'Title of dataset', year = '2024'}",
+    "datePublished": "2024-08-22",
+    "license": [
+        {
+            "@type": "CreativeWork",
+            "name": "Open Government Licence v3",
+            "alternateName": "OGL-UK-3.0",
+            "license": "https://spdx.org/licenses/OGL-UK-3.0.html"
+        }
+    ],
+    "distribution": [
+        {
+            "@type": "cr:FileSet",
+            "@id": "test-fileset",
+            "includes": "^data-.*\\.csv$",
+            "encodingFormat": "text/csv"
+        }
+    ],
+    "keywords": ["Environmental survey"],
+    "recordSet": [
+        {
+            "@type": "cr:RecordSet",
+            "@id": "test-fileset-recordSet",
+            "field": [
+                {
+                    "@type": "cr:Field",
+                    "@id": "test-fileset-recordSet/header",
+                    "description": "obTitle",
+                    "dataType": "sc:Text",
+                    "source": {
+                        "fileObject": {
+                            "@id": "test-fileset"
+                        },
+                        "extract": {
+                            "column": "header"
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "creator": [
+        {
+            "@id": "https://orcid.org/0000-0001-9570-7479",
+            "@type": "Person",
+            "name": "Hand, L.",
+            "familyName": "Hand",
+            "givenName": "L.",
+            "affiliation": {
+                "@type": "Organization",
+                "@id": "https://ror.org/01nrxwf90",
+                "name": "University of Edinburgh"
+            }
+        }
+    ],
+    "publisher": [
+        {
+            "@id": "https://ror.org/04xw4m193",
+            "@type": "Organization",
+            "name": "NERC EDS Environmental Information Data Centre",
+            "email": "info@eidc.ac.uk",
+            "identifier": "https://ror.org/04xw4m193"
+        }
+    ]
+}

@@ -1,11 +1,16 @@
 <#compress>
 <#import "../schema.org/macros.ftl" as m>
 <#if (type=='dataset' || type=='nonGeographicDataset')>
-    <#if resourceStatus?lower_case != "deleted">
+  <#if resourceStatus?lower_case != "deleted">
+    <#assign fileList = fileListService.getFileList(id)>
+    <#if fileList?size gt 10>
+      <@croissant fileList/>
+    <#else>
       <@m.getPartsData id false ; eidchub, suppDocs, combinedParts>
         <@croissant eidchub/>
       </@m.getPartsData>
     </#if>
+  </#if>
 <#else>
   not a valid croissant document
 </#if>
@@ -81,21 +86,60 @@
 
 <#macro distribution files>
   <#if files?size gt 0 && files?size lt 60000>
-    ,"distribution":[
-    <#list files as file>
-      <#if file.id?has_content && (file.id?ends_with(".csv") || file.id?ends_with(".parquet"))>
-        {
-          "@type": "cr:FileObject",
-          <#t>"@id": "${file.id}"
-          <#if file.encodingFormat?? && file.encodingFormat?has_content>,<#t>"encodingFormat": "${file.encodingFormat}"</#if>
-          <#if file.sha256?? && file.sha256?has_content>,<#t>"sha256": "${file.sha256}"</#if>
-          <#if file.contentUrl?? && file.contentUrl?has_content>,<#t>"contentUrl": "${file.contentUrl}"</#if>
-          <#if file.bytes?? && file.bytes?has_content>,<#t>"contentSize": "${file.bytes?long?c} B"</#if>
-        }
+    <#if files?size gt 10>
+      <#assign filesetGroups = {}>
+      <#if fileset?? && fileset?has_content>
+        <#list fileset as filesetOp>
+          <#assign matchingFiles = []>
+          <#list files as file>
+            <#if file?has_content && file?lower_case?matches(filesetOp.filesetRegex)>
+              <#assign matchingFiles = matchingFiles + [file]>
+            </#if>
+          </#list>
+
+          <#if matchingFiles?size gt 0>
+            <#assign filesetGroups = filesetGroups + {filesetOp.filesetName: {
+            "id": filesetOp.filesetName,
+            "regex": filesetOp.filesetRegex,
+            "files": matchingFiles
+            }}>
+          </#if>
+        </#list>
       </#if>
-      <#sep>,</#sep><#t>
-    </#list>
-    ]
+      <#if filesetGroups?size gt 0>
+        ,"distribution":[
+        <#list filesetGroups as filesetName, group>
+          {
+          "@type": "cr:FileSet",
+          "@id": "${group.id?replace('\\s+', '-', 'r')}",
+          "includes": "${group.regex?json_string}",
+          <#assign firstFile = group.files[0]>
+          <#if firstFile?lower_case?ends_with(".parquet")>
+            "encodingFormat": "application/vnd.apache.parquet"
+          <#else>
+            "encodingFormat": "text/csv"
+          </#if>
+          }<#sep>,</#sep>
+        </#list>
+        ]
+      </#if>
+    <#else>
+      ,"distribution":[
+      <#list files as file>
+        <#if file.id?has_content && (file.id?ends_with(".csv") || file.id?ends_with(".parquet"))>
+          {
+            "@type": "cr:FileObject",
+            <#t>"@id": "${file.id}"
+            <#if file.encodingFormat?? && file.encodingFormat?has_content>,<#t>"encodingFormat": "${file.encodingFormat}"</#if>
+            <#if file.sha256?? && file.sha256?has_content>,<#t>"sha256": "${file.sha256}"</#if>
+            <#if file.contentUrl?? && file.contentUrl?has_content>,<#t>"contentUrl": "${file.contentUrl}"</#if>
+            <#if file.bytes?? && file.bytes?has_content>,<#t>"contentSize": "${file.bytes?long?c} B"</#if>
+          }
+          <#sep>,</#sep><#t>
+        </#if>
+      </#list>
+      ]
+    </#if>
   </#if>
 </#macro>
 
@@ -132,39 +176,39 @@
   <#if fileset?? && fileset?has_content>
     ,"recordSet": [
     <#list fileset as filesetOp>
-      <#assign fileName = filesetOp.includes?keep_before_last(".")>
-          {
-            "@type": "cr:RecordSet",
-            "@id": "${fileName}",
-            "field": [
-              <#if filesetOp.observedProperty?has_content>
-                <#list filesetOp.observedProperty as op>
-                  <#assign dataType = "sc:Text">
-                  <#if op.type == 'integer'>
-                    <#assign dataType = "sc:Integer">
-                  <#elseif op.type == 'number'>
-                    <#assign dataType = "sc:Float">
-                  <#elseif op.type == 'date'>
-                    <#assign dataType = "sc:Date">
-                  <#elseif op.type == 'datetime'>
-                    <#assign dataType = "sc:DateTime">
-                  </#if>
-                  {
-                    "@type": "cr:Field",
-                    "@id": "${fileName}/${op.value?replace('\\s+', '_', 'r')}",
-                    "description": "${op.title}",
-                    "dataType": "${dataType}",
-                    "source": {
-                      "fileObject": { "@id": "${filesetOp.includes}" },
-                      "extract": {
-                        "column": "${op.value}"
-                      }
-                    }
-                  }
-                <#sep>,</#sep></#list>
+      <#assign fileName = filesetOp.filesetName?replace('\\s+', '-', 'r')>
+      {
+        "@type": "cr:RecordSet",
+        "@id": "${fileName}-recordSet",
+        "field": [
+          <#if filesetOp.observedProperty?has_content>
+            <#list filesetOp.observedProperty as op>
+              <#assign dataType = "sc:Text">
+              <#if op.type == 'integer'>
+                <#assign dataType = "sc:Integer">
+              <#elseif op.type == 'number'>
+                <#assign dataType = "sc:Float">
+              <#elseif op.type == 'date'>
+                <#assign dataType = "sc:Date">
+              <#elseif op.type == 'datetime'>
+                <#assign dataType = "sc:DateTime">
               </#if>
-            ]
-          }
+              {
+                "@type": "cr:Field",
+                "@id": "${fileName}-recordSet/${op.value?replace('\\s+', '-', 'r')}",
+                "description": "${op.title}",
+                "dataType": "${dataType}",
+                "source": {
+                  "fileObject": { "@id": "${fileName}" },
+                  "extract": {
+                    "column": "${op.value}"
+                  }
+                }
+              }
+            <#sep>,</#sep></#list>
+          </#if>
+        ]
+      }
       <#sep>,</#sep></#list>
     ]
   </#if>

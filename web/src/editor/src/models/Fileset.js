@@ -6,6 +6,7 @@ export default NestedModel.extend({
     filesetName: '',
     encodingFormat: '',
     includes: '',
+    filesetRegex: '',
     observedProperty: []
   },
 
