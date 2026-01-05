@@ -167,14 +167,9 @@ main {
             width: 8px;
         }
 
-        .facet-filter::-webkit-scrollbar-track {
-            /*background: var(--primary-colour);*/
-        }
-
         .facet-filter::-webkit-scrollbar-thumb {
             background-color: white;
             border-radius: 20px;
-            /*border: 1px solid var(--primary-colour);*/
         }
 
         .mapsearch {

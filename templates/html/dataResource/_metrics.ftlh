@@ -1,7 +1,7 @@
 <#if catalogue.id=="eidc">
 <#assign
   totalViews = 0
-  totalDownloads =0
+  totalDownloads = 0
 
   viewsBaseline = "2023-06-01"
   ordersBaseline = "2021-11-11"

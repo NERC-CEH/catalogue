@@ -56,6 +56,30 @@ public class GeminiDocumentTest {
     }
 
     @Test
+    void getAllKeywordsWithValuesFromMultipleKeywords() {
+        //given
+        val document = new GeminiDocument();
+        document.setKeywordsOther(List.of(
+            Keyword.builder().value("other 1").build(),
+            Keyword.builder().value("other 2").build()
+        ));
+        document.setKeywordsDiscipline(List.of(
+            Keyword.builder().value("discipline 1").build(),
+            Keyword.builder().value("discipline 2").build()
+        ));
+        document.setKeywordsPlace(List.of(
+            Keyword.builder().value("place 1").build(),
+            Keyword.builder().value("place 2").build()
+        ));
+
+        //when
+        val actual = document.getAllKeywords();
+
+        //then
+        assertThat(actual.size(), equalTo(6));
+    }
+
+    @Test
     void relationshipsFromRelatedRecordsNonePopulated() {
         // given
         val expected = Sets.newHashSet();
