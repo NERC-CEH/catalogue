@@ -144,7 +144,6 @@ public class CroissantTest {
 
         //when
         val actual = template("croissant/croissant.ftl");
-        log.debug(actual);
 
         //then
         JSONAssert.assertEquals(expected, actual, true);
@@ -162,7 +161,6 @@ public class CroissantTest {
 
         //when
         val actual = template("croissant/croissant.ftl");
-        log.debug(actual);
 
         //then
         JSONAssert.assertEquals(expected, actual, true);
@@ -180,7 +178,6 @@ public class CroissantTest {
 
         //when
         val actual = template("croissant/croissant.ftl");
-        log.debug(actual);
 
         //then
         JSONAssert.assertEquals(expected, actual, true);
