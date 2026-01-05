@@ -1,16 +1,21 @@
-<#assign displayButtonRow = false>
-<#if onlineResources?? >
+
+<#if onlineResources??>
   <#assign downloadOrder=downloadOrderDetails.from(onlineResources) >
 </#if>
-<#if (resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'model' || resourceType.value == 'software' || resourceType.value == 'computationalNotebook' || resourceType.value == 'method' || resourceType.value == 'service') && (resourceStatus == "Available" || resourceStatus == "Embargoed" || resourceStatus == "Controlled") >
-  <#assign displayButtonRow = true>
-</#if>
 
-<#if displayButtonRow>
-  <div class="py-3 d-flex flex-row align-items-center flex-wrap accessButtons d-print-none border-bottom border-1">
 
-    <@exploreButton />
+<div class="accessButtons"><#t/>
+  <@exploreButton />
+  <@accessButton />
+  <@documentsButton />
+  <@citeButton />
+<#t/></div>
 
+<@citationModal />
+<@offcanvasAccess />
+
+<#macro accessButton>
+  <#if resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'model' || resourceType.value == 'software' || resourceType.value == 'computationalNotebook' || resourceType.value == 'method'>
     <#if resourceStatus == "Available" || resourceStatus == "Controlled" >
       <#if downloadOrder?? && downloadOrder?string?contains("isOrderable=true") >
         <a class="btn btn-ukceh" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
@@ -19,83 +24,24 @@
         </a>
       <#elseif externalLinks?? && externalLinks?has_content>
         <a class="btn btn-ukceh" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
-        Access
-        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          Access <i class="fa-solid fa-arrow-up-right-from-square"></i>
         </a>
       </#if>
     </#if>
-
-    <#if resourceType.value == 'service' && mapViewable >
-      <a class="btn btn-ukceh" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
-        Access
-        <i class="fa-solid fa-arrows-rotate fa-fw"></i>
-      </a>
-    </#if>
-
-    <#if (downloadOrder.supportingDocumentsUrl)?has_content>
-      <a class="btn btn-ukceh" href="${downloadOrder.supportingDocumentsUrl}" title="Supporting information important for the re-use of this dataset">
-        Supporting docs
-        <i class="fa-solid fa-file fa-fw"></i></span>
-      </a>
-    </#if>
-
-    <@citeButton />
-  </div>
-</#if>
-
-<@citationModal />
-<@offcanvasAccess />
-
-<#macro downloadButton onlineResource>
-  <#assign onlineResourceUrl = onlineResource.url>
-
-    <#if onlineResourceUrl?matches(downloadUrlRegexes.getRegexDatastore(), "i")>
-      <#assign downloadType="direct"/>
-    <#elseif onlineResourceUrl?matches(downloadUrlRegexes.getRegexPackage(), "i")>
-      <#assign downloadType="package"/>
-      <#assign onlineResourceUrl = onlineResourceUrl + '.zip'>
-    <#elseif onlineResourceUrl?matches(downloadUrlRegexes.getRegexOrder(), "i")>
-      <#assign downloadType="order"/>
-    </#if>
-
-    <#assign onlineResourceLabel = "Order/download">
-    <#if onlineResource.name?has_content>
-      <#assign onlineResourceLabel = onlineResource.name>
-    </#if>
-
-    <#if onlineResource.size?has_content>
-      <#if onlineResource.size?number gt 1073741824>
-        <#assign sizeLabel = 'approx. ' + (onlineResource.size?number / 1073741824)?string["0.#"]  + 'Gb'>
-      <#elseif onlineResource.size?number gt 10485760>
-          <#assign sizeLabel = 'approx. ' + (onlineResource.size?number / 1048576)?string["0.#"]  + 'Mb'>
-      <#elseif onlineResource.size?number lte 10485760 && onlineResource.size?number gt 5242880>
-          <#assign sizeLabel = '< 10 Mb'>
-      <#elseif onlineResource.size?number lte 5242880 && onlineResource.size?number gt 1048576>
-          <#assign sizeLabel = '< 5 Mb'>
-      <#else>
-        <#assign sizeLabel = '< 1 Mb'>
-      </#if>
-    </#if>
-
-    <a href="/download/${id}?url=${onlineResourceUrl?url}" class="btn btn-ukceh">
-      ${onlineResourceLabel}
-      <#if sizeLabel??>
-        <small>(${sizeLabel})</small>
-      </#if>
-      <span class="fa-solid fa-arrow-down"></span>
+  <#elseif resourceType.value == 'service' && mapViewable >
+    <a class="btn btn-ukceh" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
+      Access <i class="fa-solid fa-arrows-rotate fa-fw"></i>
     </a>
+  </#if>
+</#macro>
 
-    <#if downloadType?? && downloadType=="direct">
-      <div class="py-3">
-        <hr>
-        <h5 class="my-3">Bulk download options</h5>
-        <p>You can use WGET to download data. For example<br>
-          <code> wget --user=YOUR_USERNAME --password=YOUR_PASSWORD --auth-no-challenge ${onlineResourceUrl}</code>
-        </p>
-        <p><a href="https://eidc.ac.uk/help/getdata/downloadData#programmaticAccess" rel="nofollow noreferrer" target="_blank">Further information and help &raquo;</a></p>
-      </div>
-    </#if>
-
+<#macro documentsButton>
+  <#if (downloadOrder.supportingDocumentsUrl)?has_content>
+    <a class="btn btn-ukceh" href="${downloadOrder.supportingDocumentsUrl}" title="Supporting information important for the re-use of this dataset">
+      Supporting docs
+      <i class="fa-solid fa-file fa-fw"></i></span>
+    </a>
+  </#if>
 </#macro>
 
 <#macro exploreButton>
@@ -180,18 +126,16 @@
           <#list downloadOrder.orderResources as item>
             <@downloadButton item/>
           </#list>
+        <#elseif externalLinks?? && externalLinks?has_content>
+          <#list externalLinks as item>
+            <p>
+              <a href="${item.url}" class="link-offset-2" target="_blank" rel="noopener noreferrer">
+                <b>Access</b>
+                <span class="ms-3 fw-light">(${item.url})</span>
+              </a>
+            </p>
+          </#list>
         </#if>
-
-
-
-      <#if externalLinks?? && externalLinks?has_content>
-        <#list externalLinks as item>
-          <p><a href="${item.url}" class="link-offset-2" target="_blank" rel="noopener noreferrer"><b>Access</b> &nbsp; <span class="fw-light">(${item.url})</span></a></p>
-
-        </#list>
-      </#if>
-
-
 
       </#if>
 
@@ -210,4 +154,56 @@
 
     </div>
   </div>
+</#macro>
+
+<#macro downloadButton onlineResource>
+  <#assign onlineResourceUrl = onlineResource.url>
+
+    <#if onlineResourceUrl?matches(downloadUrlRegexes.getRegexDatastore(), "i")>
+      <#assign downloadType="direct"/>
+    <#elseif onlineResourceUrl?matches(downloadUrlRegexes.getRegexPackage(), "i")>
+      <#assign downloadType="package"/>
+      <#assign onlineResourceUrl = onlineResourceUrl + '.zip'>
+    <#elseif onlineResourceUrl?matches(downloadUrlRegexes.getRegexOrder(), "i")>
+      <#assign downloadType="order"/>
+    </#if>
+
+    <#assign onlineResourceLabel = "Order/download">
+    <#if onlineResource.name?has_content>
+      <#assign onlineResourceLabel = onlineResource.name>
+    </#if>
+
+    <#if onlineResource.size?has_content>
+      <#if onlineResource.size?number gt 1073741824>
+        <#assign sizeLabel = 'approx. ' + (onlineResource.size?number / 1073741824)?string["0.#"]  + 'Gb'>
+      <#elseif onlineResource.size?number gt 10485760>
+          <#assign sizeLabel = 'approx. ' + (onlineResource.size?number / 1048576)?string["0.#"]  + 'Mb'>
+      <#elseif onlineResource.size?number lte 10485760 && onlineResource.size?number gt 5242880>
+          <#assign sizeLabel = '< 10 Mb'>
+      <#elseif onlineResource.size?number lte 5242880 && onlineResource.size?number gt 1048576>
+          <#assign sizeLabel = '< 5 Mb'>
+      <#else>
+        <#assign sizeLabel = '< 1 Mb'>
+      </#if>
+    </#if>
+
+    <a href="/download/${id}?url=${onlineResourceUrl?url}" class="btn btn-ukceh">
+      ${onlineResourceLabel}
+      <#if sizeLabel??>
+        <small>(${sizeLabel})</small>
+      </#if>
+      <span class="fa-solid fa-arrow-down"></span>
+    </a>
+
+    <#if downloadType?? && downloadType=="direct">
+      <div class="py-3">
+        <hr>
+        <h5 class="my-3">Bulk download options</h5>
+        <p>You can use WGET to download data. For example<br>
+          <code> wget --user=YOUR_USERNAME --password=YOUR_PASSWORD --auth-no-challenge ${onlineResourceUrl}</code>
+        </p>
+        <p><a href="https://eidc.ac.uk/help/getdata/downloadData#programmaticAccess" rel="nofollow noreferrer" target="_blank">Further information and help &raquo;</a></p>
+      </div>
+    </#if>
+
 </#macro>

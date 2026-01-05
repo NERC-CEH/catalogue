@@ -59,14 +59,9 @@ public class GeminiDocumentTest {
     void getAllKeywordsWithValuesFromMultipleKeywords() {
         //given
         val document = new GeminiDocument();
-        document.setDescriptiveKeywords(List.of(
-            DescriptiveKeywords.builder()
-                .type("test")
-                .keywords(List.of(
-                    Keyword.builder().value("four").build(),
-                    Keyword.builder().value("five").build()
-                ))
-                .build()
+        document.setKeywordsOther(List.of(
+            Keyword.builder().value("other 1").build(),
+            Keyword.builder().value("other 2").build()
         ));
         document.setKeywordsDiscipline(List.of(
             Keyword.builder().value("discipline 1").build(),

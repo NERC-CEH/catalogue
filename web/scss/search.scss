@@ -167,14 +167,9 @@ main {
             width: 8px;
         }
 
-        .facet-filter::-webkit-scrollbar-track {
-            background: var(--primary-colour);
-        }
-
         .facet-filter::-webkit-scrollbar-thumb {
             background-color: white;
             border-radius: 20px;
-            border: 1px solid var(--primary-colour);
         }
 
         .mapsearch {
@@ -250,7 +245,7 @@ main {
 
             &:hover,
             &:focus-visible {
-                background-color: rgba(0, 0, 0, 0.06);
+                background-color: rgb(0 0 0 / 0.06);
                 outline: 2px solid var(--link-hover-colour);
                 text-decoration: none;
                 transform: scale(100%);
@@ -325,7 +320,7 @@ main {
 
             &--pending {
                 --border-colour: darkorange;
-                background-color: rgba(0, 0, 0, 0.1);
+                background-color: rgb(0 0 0 / 0.1);
             }
 
             &--draft {
@@ -334,7 +329,7 @@ main {
                 background-image: repeating-linear-gradient(315deg,
                         transparent,
                         transparent 18px,
-                        rgba(139, 0, 0, 0.15) 20px);
+                        rgb(139 0 0 / 0.15) 20px);
                 opacity: 0.65;
 
                 &:hover,
@@ -392,13 +387,13 @@ main {
 
         li.active {
             span {
-                background-color: var(--primary-colour);
-                border-color: var(--primary-colour);
+                background-color: var(--link-colour);
             }
         }
 
         a:hover {
-            background-color: var(--ukceh-colour-data);
+            background-color: var(--link-hover-colour);
+            text-decoration: none;
         }
     }
 }

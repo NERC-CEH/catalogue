@@ -135,7 +135,7 @@
         <footer>
 
           <#if metadataDateTime?has_content>
-            <div class="section-grey">
+            <div class="footer-subsection">
               <div class="container">
                 <div class="small"><b>Last updated</b> ${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</div>
               </div>

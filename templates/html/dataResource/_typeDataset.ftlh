@@ -22,7 +22,7 @@
     <div class="${mainColClasses} py-3">
 
       <#if resourceStatus?? && resourceStatus?has_content && resourceStatus != "Available" && resourceStatus != "Controlled"  && resourceStatus != "Unknown"  >
-        <div class="alert alert-primary" role="alert">
+        <div class="alert alert-${resourceStatus}" role="alert">
           <#include "_status.ftlh">
         </div>
       </#if>
@@ -65,7 +65,7 @@
       <#include "_supplemental.ftlh">
       <#include "_contacts.ftlh">
 
-      <#if topicCategories?? || descriptiveKeywords?? || inspireTheme?? || funding?? >
+      <#if topicCategories?? || allKeywords?has_content || inspireTheme?? || funding?? >
         <div id="segment-additional">
           <h2>Additional metadata</h2>
           <#include "_tags.ftlh">

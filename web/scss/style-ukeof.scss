@@ -1,28 +1,26 @@
 @use "theme";
 
 :root {
-    --primary-colour: hsl(84, 55%, 48%);
-    --secondary-colour: hsl(84, 55%, 48%);
-    --teritary-colour: #BF3888;
-
+    --link-colour: hsl(204, 55%, 48%);
     --link-hover-colour: hsl(204, 55%, 48%);
 
     --header-height: 100px;
     --header-background-colour: white;
     --header-link-background-colour: var(--header-background-colour);
     --header-link-hover-background-colour: color-mix(in lab, var(--header-link-background-colour), black 5%);
-    --header-link-colour: var(--primary-colour);
+    --header-link-colour: var(--link-colour);
     --header-link-hover-colour: var(--link-hover-colour);
-    --header-border-bottom-colour: var(--primary-colour);
+    --header-border-bottom-colour:  hsl(84, 55%, 48%);;
     --header-border-bottom-width: 4px;
     --ukceh-brand-display: none;
+
+     --footer-subsection-background-colour: #ddd;
 }
 
 header {
     .toolbar {
         .siteLogo {
             img {
-                max-height: calc(var(--header-height) - 60px);
                 margin-inline-end: 1em;
             }
         }

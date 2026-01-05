@@ -38,10 +38,12 @@ body {
 a {
     text-decoration: none;
     @extend .link-offset-2 !optional;
+    color: var(--link-colour);
 
     &:hover,
     &:focus-visible {
         text-decoration: underline;
+        color: var(--link-hover-colour);
     }
 }
 
@@ -75,7 +77,24 @@ main {
 
         &.section {
             &-grey {
-                background-color: #EEE;
+                background-color: #DDD;
+            }
+
+            &-air {
+                background-color: var(--ukceh-colour-air);
+            }
+
+            &-data {
+                background-color: var(--ukceh-colour-data);
+            }
+
+            &-earth {
+                background-color: var(--ukceh-colour-earth);
+            }
+
+            &-water {
+                background-color: var(--ukceh-colour-water);
+                color: white
             }
         }
 
@@ -89,6 +108,9 @@ main {
 }
 
 header {
+    container-type: scroll-state;
+    container-name: sticky-header;
+    transition: height 0.25s ease-in;
     position: sticky;
     top: 0;
     z-index: 1025;
@@ -133,8 +155,8 @@ header {
 footer {
     margin-block-start: auto;
 
-    .section-grey {
-        background-color: #DDD;
+    .footer-subsection {
+        background-color: var(--footer-subsection-background-colour);
 
         >div {
             padding-block: 1rem;
@@ -247,11 +269,9 @@ h6 {
     font-family: var(--font-family-headers);
 
     a {
-        color: var(--link-colour);
 
         &:hover,
         &:focus-visible {
-            color: var(--link-hover-colour);
             text-decoration: none;
         }
     }
@@ -270,14 +290,23 @@ h4 {
 }
 
 .btn-ukceh {
+    border-radius: 0;
     --bs-btn-bg: var(--ukceh-colour-night);
     --bs-btn-color: var(--ukceh-colour-day);
     --bs-btn-border-color: transparent;
-    --bs-btn-hover-bg: color-mix(in oklab, white 25%, var(--ukceh-colour-night));
-    --bs-btn-hover-color: var(--ukceh-colour-data);
-    --bs-btn-hover-border-color: var(--ukceh-colour-data);
+    --bs-btn-hover-bg: var(--ukceh-colour-data);
+    --bs-btn-hover-color: var(--ukceh-colour-night);
+    --bs-btn-hover-border-color: var(--ukceh-colour-night);
 }
 
+.locationConfidential {
+    font-weight: 600;
+    outline: 1px solid;
+    padding: .65em;
+    margin-block-end: -1em;
+    background-color: var(--ukceh-colour-water);
+    color: var(--ukceh-colour-day);
+}
 
 @media only screen and (min-width: 800px) {
     footer {
@@ -311,21 +340,23 @@ h4 {
 
 /* -- START Navigation*/
 header {
-
     .toolbar {
-        height: var(--header-height);
+        //height: var(--header-height);
+        height:auto;
         display: flex;
         flex-wrap: nowrap;
         font-family: sans-serif;
         color: white;
+        transition: height 0.25s ease-in;
 
         .siteLogo {
             display: flex;
             align-items: center;
             height: var(--header-height);
+            transition: height 0.25s ease-in;
 
             img {
-                max-block-size: calc(var(--header-height) * 0.65);
+                max-block-size: calc(var(--header-height) * 0.5);
                 margin-inline-end: 1em;
             }
         }
@@ -420,7 +451,6 @@ header {
 
 @media only screen and (max-width: 980px) {
     header {
-
         .container,
         .container-fluid {
             padding: 0 !important;
@@ -497,7 +527,7 @@ header {
 /* -- END Navigation */
 
 .search-form .btn {
-    background-color: var(--primary-colour);
+    background-color: var(--header-background-colour);
     color: white;
 }
 
