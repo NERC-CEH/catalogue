@@ -88,7 +88,7 @@ body {
         }
 
         .usage {
-            flex: 1 0 24ch;
+            flex: 1 0 14ch;
 
             >div {
                 background-color: #eee;
@@ -123,6 +123,12 @@ body {
                         background-color: var(--ukceh-colour-night);
                         color: var(--ukceh-colour-day);
                         padding: .25em 1em;
+                    }
+
+                    >div a {
+                        margin-block-start: 0.65em;
+                        display: block;
+                        line-height: 1rem;
                     }
                 }
 
