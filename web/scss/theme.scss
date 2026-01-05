@@ -108,6 +108,9 @@ main {
 }
 
 header {
+    container-type: scroll-state;
+    container-name: sticky-header;
+    transition: height 0.25s ease-in;
     position: sticky;
     top: 0;
     z-index: 1025;
@@ -266,6 +269,7 @@ h6 {
     font-family: var(--font-family-headers);
 
     a {
+
         &:hover,
         &:focus-visible {
             text-decoration: none;
@@ -293,6 +297,15 @@ h4 {
     --bs-btn-hover-bg: var(--ukceh-colour-data);
     --bs-btn-hover-color: var(--ukceh-colour-night);
     --bs-btn-hover-border-color: var(--ukceh-colour-night);
+}
+
+.locationConfidential {
+    font-weight: 600;
+    outline: 1px solid;
+    padding: .65em;
+    margin-block-end: -1em;
+    background-color: var(--ukceh-colour-water);
+    color: var(--ukceh-colour-day);
 }
 
 @media only screen and (min-width: 800px) {
@@ -327,21 +340,23 @@ h4 {
 
 /* -- START Navigation*/
 header {
-
     .toolbar {
-        height: var(--header-height);
+        //height: var(--header-height);
+        height:auto;
         display: flex;
         flex-wrap: nowrap;
         font-family: sans-serif;
         color: white;
+        transition: height 0.25s ease-in;
 
         .siteLogo {
             display: flex;
             align-items: center;
             height: var(--header-height);
+            transition: height 0.25s ease-in;
 
             img {
-                max-block-size: calc(var(--header-height) * 0.65);
+                max-block-size: calc(var(--header-height) * 0.5);
                 margin-inline-end: 1em;
             }
         }
@@ -436,7 +451,6 @@ header {
 
 @media only screen and (max-width: 980px) {
     header {
-
         .container,
         .container-fluid {
             padding: 0 !important;

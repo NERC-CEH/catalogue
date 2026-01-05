@@ -7,7 +7,7 @@ $card-default-text: #FFF;
 
 /* CSS custom properties */
 :root {
-    --header-height: 80px;
+    --header-height: 120px;
     --header-logo-size: calc(var(--header-height) * 0.55);
     --ukceh-brand-display: none;
     --eidc-component-display: block;
@@ -22,11 +22,6 @@ html {
 header {
     .siteLogo {
         margin-inline-end: 3.5rem;
-
-        img {
-            max-height: 100px;
-            max-width: 300px;
-        }
     }
 
     .btn-create {

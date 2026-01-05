@@ -21,7 +21,6 @@ header {
     .toolbar {
         .siteLogo {
             img {
-                max-height: calc(var(--header-height) - 60px);
                 margin-inline-end: 1em;
             }
         }
