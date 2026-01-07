@@ -116,9 +116,9 @@ public class CroissantTest {
         ObservedProperty observedProperty = ObservedProperty.builder().value("header").title("obTitle").type("text").build();
         return Fileset.builder()
             .filesetName("test-fileset")
-            .filesetRegex("^data-.*\\.csv$")
+            .filesetRegex("^data-.+\\.csv$")
             .encodingFormat("text/csv")
-            .includes("data")
+            .includes("data-*.csv")
             .observedProperty(List.of(observedProperty))
             .build();
     }
