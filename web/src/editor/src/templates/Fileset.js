@@ -17,10 +17,10 @@ export default _.template(`
   </div>
   <div class="row">
       <div class="col-xxl-2">
-          <label class="control-label">Files included (glob)</label>
+          <label class="control-label">Files included</label>
       </div>
       <div class="col-xxl-4">
-          <input data-name='includes' placeholder="e.g., *.csv" class="editor-input" value="<%= data.includes %>">
+          <input data-name='includes' placeholder="Use wildcards. E.g., *.csv or data_20??.cf" class="editor-input" value="<%= data.includes %>">
       </div>
       <div class="col-xxl-6 d-flex">
         <% if (data.fetchVariablesButton) { %>
