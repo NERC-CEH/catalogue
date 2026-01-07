@@ -66,7 +66,7 @@
         {
             "@type": "cr:FileSet",
             "@id": "test-fileset",
-            "includes": "^data-.*\\.csv$",
+            "includes": "data-*.csv",
             "encodingFormat": "text/csv"
         }
     ],

@@ -100,8 +100,9 @@
           <#if matchingFiles?size gt 0>
             <#assign filesetGroups = filesetGroups + {filesetOp.filesetName: {
             "id": filesetOp.filesetName,
-            "regex": filesetOp.filesetRegex,
-            "files": matchingFiles
+            "includes": filesetOp.includes,
+            "files": matchingFiles,
+            "encodingFormat": filesetOp.encodingFormat
             }}>
           </#if>
         </#list>
@@ -112,12 +113,10 @@
           {
           "@type": "cr:FileSet",
           "@id": "${group.id?replace('\\s+', '-', 'r')}",
-          "includes": "${group.regex?json_string}",
+          "includes": "${group.includes}"
           <#assign firstFile = group.files[0]>
-          <#if firstFile?lower_case?ends_with(".parquet")>
-            "encodingFormat": "application/vnd.apache.parquet"
-          <#else>
-            "encodingFormat": "text/csv"
+          <#if group.encodingFormat?has_content >
+            ,"encodingFormat": "${group.encodingFormat}"
           </#if>
           }<#sep>,</#sep>
         </#list>
@@ -126,17 +125,15 @@
     <#else>
       ,"distribution":[
       <#list files as file>
-        <#if file.id?has_content && (file.id?ends_with(".csv") || file.id?ends_with(".parquet"))>
-          {
-            "@type": "cr:FileObject",
-            <#t>"@id": "${file.id}"
-            <#if file.encodingFormat?? && file.encodingFormat?has_content>,<#t>"encodingFormat": "${file.encodingFormat}"</#if>
-            <#if file.sha256?? && file.sha256?has_content>,<#t>"sha256": "${file.sha256}"</#if>
-            <#if file.contentUrl?? && file.contentUrl?has_content>,<#t>"contentUrl": "${file.contentUrl}"</#if>
-            <#if file.bytes?? && file.bytes?has_content>,<#t>"contentSize": "${file.bytes?long?c} B"</#if>
-          }
-          <#sep>,</#sep><#t>
-        </#if>
+        {
+          "@type": "cr:FileObject",
+          <#t>"@id": "${file.id}"
+          <#if file.encodingFormat?? && file.encodingFormat?has_content>,<#t>"encodingFormat": "${file.encodingFormat}"</#if>
+          <#if file.sha256?? && file.sha256?has_content>,<#t>"sha256": "${file.sha256}"</#if>
+          <#if file.contentUrl?? && file.contentUrl?has_content>,<#t>"contentUrl": "${file.contentUrl}"</#if>
+          <#if file.bytes?? && file.bytes?has_content>,<#t>"contentSize": "${file.bytes?long?c} B"</#if>
+        }
+        <#sep>,</#sep><#t>
       </#list>
       ]
     </#if>

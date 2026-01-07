@@ -12,7 +12,7 @@ export default _.template(`
         <label for="schema-type<%= data.index %>">Type</label>
     </div>
     <div class="col-sm-4">
-        <input list="typeList" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" autocomplete="off" aria-autocomplete="none" />
+        <input list="dataTypeList" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" autocomplete="off" aria-autocomplete="none" />
     </div>
 </div>
 <div class="row">
@@ -32,20 +32,13 @@ export default _.template(`
     </div>
 </div>
 
-
-<datalist id="typeList">
+<datalist id="dataTypeList">
+    <option value="float">Decimal number/float</option>
+    <option value="integer">Integer</option>
+    <option value="text">Text string</option>
     <option value="boolean">True or false</option>
     <option value="date">Date (without time)</option>
-    <option value="datetime">Date AND time</option>
-    <option value="number">Decimal number </option>
-    <option value="email">Email address</option>
-    <option value="geopoint">Geographic point (e.g. lon, lat)</option>
-    <option value="integer">Integer</option>
-    <option value="string">Text string</option>
     <option value="time">Time</option>
-    <option value="uri">URI such as a web address or urn</option>
-    <option value="uuid">UUID/GUID</option>
-    <option value="year">Four digit year</option>
-    <option value="yearmonth">Year and month (e.g. 2015-07)</option>
+    <option value="dateTime">Date AND time</option>
 </datalist>
 `)
