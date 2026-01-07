@@ -4,12 +4,12 @@ import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
-import uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.HubbubResponse;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
 
@@ -28,7 +28,6 @@ public class DataPreviewerService {
         "http://purl.org/coar/access_right/c_abf2";
 
     public Object preview(String id) throws DocumentRepositoryException {
-
         GeminiDocument doc = (GeminiDocument) documentRepository.read(id);
 
         if (doc == null) {
@@ -45,7 +44,6 @@ public class DataPreviewerService {
     }
 
     private DatasetPreviewResponse previewDataset(GeminiDocument dataset) {
-
         enforcePublicAccess(dataset);
 
         List<PreviewDatasetFile> files = fetchDatasetFiles(dataset.getId());
@@ -64,63 +62,32 @@ public class DataPreviewerService {
     private CollectionPreviewResponse previewCollection(
         GeminiDocument collection
     ) throws DocumentRepositoryException {
-
         String collectionUri = collection.getUri();
 
         if (collectionUri == null || collectionUri.isBlank()) {
             throw new IllegalStateException("Collection has no URI");
         }
 
-        List<String> datasetIds =
-            resolveCollectionDatasetIds(collectionUri);
+        Set<String> visited = new HashSet<>();
+        visited.add(collection.getId());
 
-        Map<String, String> aggregatedObservedProperties =
-            new LinkedHashMap<>();
-
-        List<CollectionPreviewResponse.DatasetEntry> datasets =
-            new ArrayList<>();
-
-        for (String datasetId : datasetIds) {
-
-            GeminiDocument dataset =
-                (GeminiDocument) documentRepository.read(datasetId);
-
-            if (dataset == null) {
-                continue;
-            }
-
-            try {
-                enforcePublicAccess(dataset);
-            } catch (SecurityException e) {
-                continue;
-            }
-
-            extractObservedProperties(dataset)
-                .forEach(aggregatedObservedProperties::putIfAbsent);
-
-            List<PreviewDatasetFile> files =
-                fetchDatasetFiles(datasetId);
-
-            datasets.add(
-                new CollectionPreviewResponse.DatasetEntry(
-                    dataset.getId(),
-                    dataset.getTitle(),
-                    files
-                )
-            );
-        }
+        CollectionBuildResult result = buildCollectionResponse(
+            collection,
+            visited,
+            true
+        );
 
         return new CollectionPreviewResponse(
             "aggregate",
             collection.getId(),
             collection.getTitle(),
-            aggregatedObservedProperties,
-            datasets
+            result.observedProperties(),
+            result.datasets(),
+            result.collections()
         );
     }
 
     private void enforcePublicAccess(GeminiDocument document) {
-
         MetadataInfo metadataInfo = document.getMetadata();
         Multimap<Permission, String> permissions =
             metadataInfo.getPermissions();
@@ -163,7 +130,6 @@ public class DataPreviewerService {
     private Map<String, String> extractObservedProperties(
         GeminiDocument dataset
     ) {
-
         Map<String, String> result = new LinkedHashMap<>();
 
         if (dataset.getFileset() == null) {
@@ -186,22 +152,104 @@ public class DataPreviewerService {
         return result;
     }
 
+    private CollectionBuildResult buildCollectionResponse(
+        GeminiDocument collection,
+        Set<String> visited,
+        boolean isRoot
+    ) throws DocumentRepositoryException {
+        String collectionUri = collection.getUri();
+        if (collectionUri == null || collectionUri.isBlank()) {
+            if (isRoot) {
+                throw new IllegalStateException("Collection has no URI");
+            }
+            return new CollectionBuildResult(
+                Map.of(),
+                List.of(),
+                List.of()
+            );
+        }
 
-    private List<String> resolveCollectionDatasetIds(String collectionUri) {
+        Map<String, String> aggregatedObservedProperties =
+            new LinkedHashMap<>();
 
-        return jenaLookupService
-            .inverseRelationships(collectionUri, Ontology.EIDC_MEMBER_OF.getURI())
-            .stream()
-            .map(link -> extractIdFromUri(link.getHref()))
-            .filter(Objects::nonNull)
-            .distinct()
-            .toList();
+        List<CollectionPreviewResponse.DatasetEntry> datasets =
+            new ArrayList<>();
+
+        List<CollectionPreviewResponse.CollectionEntry> collections =
+            new ArrayList<>();
+
+        var links = jenaLookupService.inverseRelationships(
+            collectionUri,
+            Ontology.EIDC_MEMBER_OF.getURI()
+        );
+
+        for (var link : links) {
+            String childId = extractIdFromUri(link.getHref());
+            if (childId == null) {
+                continue;
+            }
+
+            GeminiDocument child =
+                (GeminiDocument) documentRepository.read(childId);
+
+            if (child == null) {
+                continue;
+            }
+
+            if (!visited.add(child.getId())) {
+                continue;
+            }
+
+            if ("dataset".equals(child.getType())) {
+                try {
+                    enforcePublicAccess(child);
+                } catch (SecurityException e) {
+                    continue;
+                }
+
+                extractObservedProperties(child)
+                    .forEach(aggregatedObservedProperties::putIfAbsent);
+
+                datasets.add(
+                    new CollectionPreviewResponse.DatasetEntry(
+                        child.getId(),
+                        child.getTitle(),
+                        fetchDatasetFiles(child.getId())
+                    )
+                );
+            } else if ("aggregate".equals(child.getType())) {
+                CollectionBuildResult childResult =
+                    buildCollectionResponse(child, visited, false);
+
+                childResult.observedProperties()
+                    .forEach(aggregatedObservedProperties::putIfAbsent);
+
+                collections.add(
+                    new CollectionPreviewResponse.CollectionEntry(
+                        child.getId(),
+                        child.getTitle(),
+                        childResult.datasets(),
+                        childResult.collections()
+                    )
+                );
+            }
+        }
+
+        return new CollectionBuildResult(
+            aggregatedObservedProperties,
+            datasets,
+            collections
+        );
     }
 
     private String extractIdFromUri(String uri) {
-        if (uri == null) {
-            return null;
-        }
+        if (uri == null) return null;
         return uri.substring(uri.lastIndexOf('/') + 1);
     }
+
+    private record CollectionBuildResult(
+        Map<String, String> observedProperties,
+        List<CollectionPreviewResponse.DatasetEntry> datasets,
+        List<CollectionPreviewResponse.CollectionEntry> collections
+    ) {}
 }

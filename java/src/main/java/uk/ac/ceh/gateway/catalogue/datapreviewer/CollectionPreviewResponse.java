@@ -8,11 +8,19 @@ public record CollectionPreviewResponse(
     String id,
     String title,
     Map<String, String> observedProperties,
-    List<DatasetEntry> datasets
+    List<DatasetEntry> datasets,
+    List<CollectionEntry> collections
 ) {
     public record DatasetEntry(
         String id,
         String title,
         List<PreviewDatasetFile> files
+    ) {}
+
+    public record CollectionEntry(
+        String id,
+        String title,
+        List<DatasetEntry> datasets,
+        List<CollectionEntry> collections
     ) {}
 }
