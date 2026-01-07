@@ -293,10 +293,15 @@ h4 {
     border-radius: 0;
     --bs-btn-bg: var(--ukceh-colour-night);
     --bs-btn-color: var(--ukceh-colour-day);
-    --bs-btn-border-color: transparent;
     --bs-btn-hover-bg: var(--ukceh-colour-data);
     --bs-btn-hover-color: var(--ukceh-colour-night);
-    --bs-btn-hover-border-color: var(--ukceh-colour-night);
+    outline: var(--ukceh-btn-outline-colour, transparent) 2px solid;
+    outline-offset: 2px;
+    border: none;
+
+    &:hover {
+       --ukceh-btn-outline-colour: var(--bs-btn-hover-bg);
+    }
 }
 
 .locationConfidential {
@@ -342,7 +347,7 @@ h4 {
 header {
     .toolbar {
         //height: var(--header-height);
-        height:auto;
+        height: auto;
         display: flex;
         flex-wrap: nowrap;
         font-family: sans-serif;
@@ -451,6 +456,7 @@ header {
 
 @media only screen and (max-width: 980px) {
     header {
+
         .container,
         .container-fluid {
             padding: 0 !important;

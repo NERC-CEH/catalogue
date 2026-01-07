@@ -26,7 +26,20 @@ public class Fileset {
         this.filesetName = nullToEmpty(filesetName);
         this.encodingFormat = nullToEmpty(encodingFormat);
         this.includes = nullToEmpty(includes);
-        this.filesetRegex = nullToEmpty(filesetRegex);
+
+        String computedRegex;
+            if (!includes.isEmpty()) {
+                computedRegex = "^" +
+                    includes
+                        .replace(".", "\\.")  // escape literal dot
+                        .replace("*", ".+")   // glob * => regex .+
+                        .replace("?", ".")    // glob ? => regex .
+                    + "$";
+            } else {
+                computedRegex = nullToEmpty(filesetRegex);
+            }
+        this.filesetRegex = computedRegex;
+
         this.observedProperty = (observedProperty == null)? new ArrayList<>(): observedProperty;
     }
 }

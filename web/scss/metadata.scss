@@ -66,23 +66,12 @@ body {
         .description-text {
             flex: 2 0 65ch;
 
-            .browseGraphic {
-                @extend .float-end !optional;
-                margin: 0 0 1em 2em;
-                max-width: min(100dvw, 350px);
-                max-height: 195px;
+            img.browseGraphic {
+                @extend .float-md-end  !optional;
+                @extend .col-md-6 !optional;
+                @extend .mb-3 !optional;
+                @extend .ms-md-3 !optional;
                 mix-blend-mode: multiply;
-                display: none;
-
-                img {
-                    padding: 1em;
-                    max-width: 300px;
-                    max-height: 600px;
-                }
-
-                @media (width >=768px) {
-                    display: block;
-                }
             }
 
         }

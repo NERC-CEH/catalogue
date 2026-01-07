@@ -112,7 +112,7 @@
           {
           "@type": "cr:FileSet",
           "@id": "${group.id?replace('\\s+', '-', 'r')}",
-          "includes": "${group.regex?json_string}",
+          "includes": "${group.includes}",
           <#assign firstFile = group.files[0]>
           <#if firstFile?lower_case?ends_with(".parquet")>
             "encodingFormat": "application/vnd.apache.parquet"
