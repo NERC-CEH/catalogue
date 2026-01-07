@@ -100,8 +100,9 @@
           <#if matchingFiles?size gt 0>
             <#assign filesetGroups = filesetGroups + {filesetOp.filesetName: {
             "id": filesetOp.filesetName,
-            "regex": filesetOp.filesetRegex,
-            "files": matchingFiles
+            "includes": filesetOp.includes,
+            "files": matchingFiles,
+            "encodingFormat": filesetOp.encodingFormat
             }}>
           </#if>
         </#list>
