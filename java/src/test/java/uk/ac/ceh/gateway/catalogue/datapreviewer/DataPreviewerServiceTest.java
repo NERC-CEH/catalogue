@@ -70,6 +70,7 @@ class DataPreviewerServiceTest {
 
         Fileset fileset = Fileset.builder()
             .observedProperty(List.of(prop))
+            .includes("")
             .build();
 
         when(dataset.getFileset()).thenReturn(List.of(fileset));
