@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,10 @@ class DataPreviewerControllerTest {
                 "dataset",
                 "dataset-id",
                 "Test Dataset",
+                List.of(TimePeriod.builder()
+                    .begin("2020-01-01")
+                    .end("2020-12-31")
+                    .build()),
                 Map.of("TEMP", "Temperature"),
                 List.of(
                     new PreviewDatasetFile(

@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.datapreviewer;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 import uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology;
 import uk.ac.ceh.gateway.catalogue.model.Fileset;
 import uk.ac.ceh.gateway.catalogue.model.Link;
@@ -43,6 +45,30 @@ class DataPreviewerServiceTest {
     @InjectMocks
     private DataPreviewerService service;
 
+    private List<Fileset> filesetList;
+    private List<TimePeriod> timePeriodsList;
+
+    @BeforeEach
+    void setup() {
+        ObservedProperty prop = ObservedProperty.builder()
+            .value(" temp ")
+            .title(" Temperature ")
+            .build();
+
+        filesetList = List.of(Fileset.builder()
+            .observedProperty(List.of(prop))
+            .includes("")
+            .build()
+        );
+
+        timePeriodsList = List.of(
+            TimePeriod.builder()
+                .begin("2020-01-01")
+                .end("2020-12-31")
+                .build()
+        );
+    }
+
     @Test
     void previewDatasetReturnsFilesAndObservedProperties() throws Exception {
         GeminiDocument dataset = mock(GeminiDocument.class);
@@ -63,17 +89,7 @@ class DataPreviewerServiceTest {
         );
         when(metadata.getPermissions()).thenReturn(perms);
 
-        ObservedProperty prop = ObservedProperty.builder()
-            .value(" temp ")
-            .title(" Temperature ")
-            .build();
-
-        Fileset fileset = Fileset.builder()
-            .observedProperty(List.of(prop))
-            .includes("")
-            .build();
-
-        when(dataset.getFileset()).thenReturn(List.of(fileset));
+        when(dataset.getFileset()).thenReturn(filesetList);
 
         HubbubResponse.FileInfo dataFile = new HubbubResponse.FileInfo(
             12345L, "ds1", "eidchub", "csv", "hash", 0.1,
@@ -94,6 +110,8 @@ class DataPreviewerServiceTest {
 
         when(documentRepository.read("ds1")).thenReturn(dataset);
 
+        when(dataset.getTemporalExtents()).thenReturn(timePeriodsList);
+
         DatasetPreviewResponse result =
             (DatasetPreviewResponse) service.preview("ds1");
 
@@ -102,6 +120,7 @@ class DataPreviewerServiceTest {
         assertThat(result.files()).hasSize(2);
         assertThat(result.observedProperties())
             .containsEntry("temp", "Temperature");
+        assertThat(result.timePeriods()).containsAll(timePeriodsList);
     }
 
     @Test
@@ -128,7 +147,8 @@ class DataPreviewerServiceTest {
                 "Open", "", "", "http://purl.org/coar/access_right/c_abf2"
             )
         );
-        when(dataset.getFileset()).thenReturn(List.of());
+        when(dataset.getFileset()).thenReturn(filesetList);
+        when(dataset.getTemporalExtents()).thenReturn(timePeriodsList);
         when(metadata.getPermissions()).thenReturn(perms);
 
         when(documentRepository.read("col1")).thenReturn(collection);
@@ -147,6 +167,9 @@ class DataPreviewerServiceTest {
         assertThat(result.type()).isEqualTo("aggregate");
         assertThat(result.datasets()).hasSize(1);
         assertThat(result.datasets().get(0).id()).isEqualTo("ds1");
+        assertThat(result.datasets().get(0).observedProperties())
+            .containsEntry("temp", "Temperature");
+        assertThat(result.datasets().get(0).timePeriods()).containsAll(timePeriodsList);
         assertThat(result.collections()).isEmpty();
     }
 
