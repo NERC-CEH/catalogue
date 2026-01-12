@@ -54,6 +54,7 @@ public class DataPreviewerService {
             "dataset",
             dataset.getId(),
             dataset.getTitle(),
+            dataset.getTemporalExtents(),
             observedProperties,
             files
         );
@@ -207,13 +208,15 @@ public class DataPreviewerService {
                     continue;
                 }
 
-                extractObservedProperties(child)
-                    .forEach(aggregatedObservedProperties::putIfAbsent);
+                Map<String, String> childObservedProperties = extractObservedProperties(child);
+                childObservedProperties.forEach(aggregatedObservedProperties::putIfAbsent);
 
                 datasets.add(
                     new CollectionPreviewResponse.DatasetEntry(
                         child.getId(),
                         child.getTitle(),
+                        child.getTemporalExtents(),
+                        childObservedProperties,
                         fetchDatasetFiles(child.getId())
                     )
                 );
