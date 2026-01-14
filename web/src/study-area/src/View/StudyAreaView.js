@@ -81,7 +81,7 @@ export default Backbone.View.extend({
     map.setZoom(9)
   },
 
-  addFeatureToMap (featureLayer, features, studyArea, map, style) {
+  addFeatureToMap (featureLayer, features, studyArea, map, style, enableZoomThreshold = false) {
     const numberOfLayers = Object.keys(featureLayer._layers).length
 
     const layer = L.geoJson(features, {
@@ -108,6 +108,26 @@ export default Backbone.View.extend({
         }
 
         layer.bindPopup(content)
+
+        const geomType = feature.geometry.type.toLowerCase()
+        if (enableZoomThreshold && ['polygon', 'multipolygon'].includes(geomType)) {
+          const centroidLayer = L.geoJSON(this.centerPointOfPolygon(layer))
+          centroidLayer.bindPopup(content)
+
+          let zoomThreshold = map.getBoundsZoom(layer.getBounds()) - 3
+          zoomThreshold = zoomThreshold < 0 ? 0 : zoomThreshold
+          const updateHandler = () => {
+            if (map.getZoom() < zoomThreshold) {
+              if (map.hasLayer(layer)) map.removeLayer(layer)
+              if (!map.hasLayer(centroidLayer)) map.addLayer(centroidLayer)
+            } else {
+              if (!map.hasLayer(layer)) map.addLayer(layer)
+              if (map.hasLayer(centroidLayer)) map.removeLayer(centroidLayer)
+            }
+          }
+          updateHandler()
+          map.on('zoomend', updateHandler)
+        }
       }
     })
 
@@ -170,8 +190,12 @@ export default Backbone.View.extend({
       }
     })
 
-    this.addFeatureToMap(feature, parentFeatures, studyArea, map, { interactive: false })
-    this.addFeatureToMap(feature, childFeatures, studyArea, map, { interactive: true, color: '#89A1FA' })
+    if (childFeatures.length > 0) {
+      this.addFeatureToMap(feature, parentFeatures, studyArea, map, { interactive: false }, false)
+      this.addFeatureToMap(feature, childFeatures, studyArea, map, { interactive: true, color: '#89A1FA' }, true)
+    } else {
+      this.addFeatureToMap(feature, parentFeatures, studyArea, map, { interactive: false }, true)
+    }
   },
 
   // TODO: Consider returning centroid of polygon within the polygon itself
