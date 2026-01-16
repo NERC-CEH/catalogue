@@ -10,14 +10,6 @@
         animation: fa-spin 1s infinite linear;
     }
 
-    .browseGraphic {
-        text-align: center;
-
-        img {
-            max-width: 100%;
-        }
-    }
-
     .row.role {
         @extend .visually-hidden !optional;
     }
