@@ -418,7 +418,7 @@ export default EditorView.extend({
         new PredefinedParentView({
           model: this.model,
           modelAttribute: 'useConstraints',
-          label: 'Use constraints',
+          label: 'Licence/conditions of use',
           ObjectInputView: ResourceConstraintView,
           multiline: true,
           predefined: {
@@ -430,12 +430,11 @@ export default EditorView.extend({
           },
           helpText: `\
 <p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed. For example:</p>
-<ul class="list-unstyled">
-    <li>"Licence conditions apply"</li>
-    <li>"If you reuse this data you must cite …"</li>
-    <li>"Do not use for navigation purposes"</li>
+<ul>
+  <li>Licence terms and conditions</li>
+  <li>Any obligations to provide credit to organisations/individuals</li>
+  <li>Any purposes for which the data may <strong>NOT</strong> be used. For example, "<i>Do not use for navigation purposes</i>"</li>
 </ul>
-<p>Where possible include a link to a document describing the terms and conditions.</p>
 <p>You MUST enter something even if there are no constraints. In the rare case that there are none, enter "no conditions apply".</p>\
 `
         }),

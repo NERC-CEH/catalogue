@@ -30,17 +30,13 @@
           </div>
         </#items>
 
-      <#if authors?size gt authorMaxSize >
-        <p class="responsiblePartyCollapse trigger">
-          <small>
-            <a href=".responsiblePartyCollapse" class="moreAuthors" data-bs-toggle="collapse"
-            aria-controls="responsiblePartyCollapse" area-expanded="false" role="button">
-              <span>${moreAuthors} more authors. </span>Show
-            </a>
-          </small>
-        </p>
-      </#if>
       </#list>
+
+      <#if authors?size gt authorMaxSize >
+        <a href=".responsiblePartyCollapse" class="moreAuthors" data-extra-authors="${moreAuthors}" data-bs-toggle="collapse" aria-controls="responsiblePartyCollapse" area-expanded="false" role="button">
+          authors
+        </a>
+      </#if>
 
   </div>
 </#if>

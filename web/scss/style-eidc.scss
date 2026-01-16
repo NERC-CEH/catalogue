@@ -9,7 +9,6 @@ $card-default-text: #FFF;
 :root {
     --header-height: 120px;
     --header-logo-size: calc(var(--header-height) * 0.55);
-    --ukceh-brand-display: none;
     --eidc-component-display: block;
     --display-navbar-title: none;
 }
@@ -55,6 +54,12 @@ footer {
 
 .option-eidc {
     --display-option: block;
+}
+
+[id^="useConstraints"] {
+    option:not([class]) {
+        display: none;
+    }
 }
 
 .adminToolbar {

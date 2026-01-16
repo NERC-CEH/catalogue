@@ -110,46 +110,11 @@ main {
 header {
     container-type: scroll-state;
     container-name: sticky-header;
-    transition: height 0.25s ease-in;
     position: sticky;
     top: 0;
     z-index: 1025;
     background-color: var(--header-background-colour);
     border-block-end: solid var(--header-border-bottom-colour) var(--header-border-bottom-width);
-
-    .ukcehBrand {
-        display: var(--ukceh-brand-display, block);
-        background-color: #eee;
-
-        .ukcehBrand-toolbar {
-            display: var(--display-brandbar, none); //hide the brand toolbar by default
-            flex-wrap: nowrap;
-            justify-content: space-between;
-            align-items: center;
-            font-size: .85em;
-
-            &:before,
-            &:after {
-                all: unset //this is to deal with some bootstrap 3 issues
-            }
-
-            img {
-                max-height: 40px;
-            }
-
-            a {
-                background-color: #222;
-                display: block;
-                padding: .7em 1em;
-                color: white;
-            }
-
-            >div {
-                flex: 0 0 fit-content;
-                padding: 0.25em;
-            }
-        }
-    }
 }
 
 footer {
@@ -178,6 +143,10 @@ footer {
                 &:hover,
                 &:focus-visible {
                     color: var(--footer-link-hover-colour);
+
+                    img {
+                        filter: opacity(70%) grayscale(100%);
+                    }
                 }
             }
 
@@ -300,7 +269,7 @@ h4 {
     border: none;
 
     &:hover {
-       --ukceh-btn-outline-colour: var(--bs-btn-hover-bg);
+        --ukceh-btn-outline-colour: var(--bs-btn-hover-bg);
     }
 }
 
@@ -352,17 +321,16 @@ header {
         flex-wrap: nowrap;
         font-family: sans-serif;
         color: white;
-        transition: height 0.25s ease-in;
 
         .siteLogo {
             display: flex;
             align-items: center;
             height: var(--header-height);
-            transition: height 0.25s ease-in;
 
             img {
                 max-block-size: calc(var(--header-height) * 0.5);
                 margin-inline-end: 1em;
+
             }
         }
 
@@ -551,6 +519,15 @@ i.fa-brands {
 
         .result--title {
             font-weight: 600;
+        }
+    }
+}
+
+
+@container sticky-header scroll-state(stuck: top) {
+    header {
+        .container {
+            --header-height: 85px;
         }
     }
 }

@@ -67,7 +67,7 @@ body {
             flex: 2 0 65ch;
 
             img.browseGraphic {
-                @extend .float-md-end  !optional;
+                @extend .float-md-end !optional;
                 @extend .col-md-6 !optional;
                 @extend .mb-3 !optional;
                 @extend .ms-md-3 !optional;
@@ -252,7 +252,7 @@ body {
     }
 
 
-    .accessButtons:not(:empty){
+    .accessButtons:not(:empty) {
         @extend .py-3 !optional;
         @extend .d-flex !optional;
         @extend .flex-row !optional;
@@ -444,9 +444,9 @@ body {
         }
 
         a.ukcehcard:hover {
-            --_ukcehcard-background: var(--ukceh-colour-night);
+            --_ukcehcard-background: var(--eidc-blue);
             --_ukcehcard-text-colour: white;
-            --_ukcehcard-icon-colour: var(--ukceh-colour-data);
+            --_ukcehcard-icon-colour: white;
 
             text-decoration: none;
 
@@ -602,37 +602,19 @@ body {
         address {
             margin-block-end: 0;
         }
+    }
 
-        &.trigger {
-            &:not(.show) {
-                a.moreAuthors {
-                    &::after {
-                        content: "more ↓";
-                    }
+    div#segment-authors {
+        .moreAuthors:before {
+            content: var(--_link_before, "Show " attr(data-extra-authors) " more");
+        }
 
-                    span {
-                        display: inline;
-                    }
-                }
-            }
-
-            &.show {
-                a.moreAuthors {
-                    &::after {
-                        content: "fewer ↑";
-                    }
-
-                    span {
-                        display: none;
-                    }
-                }
-            }
-
-            &.collapse {
-                display: block
-            }
+        &:has(.show) {
+            --_link_before: "Collapse ";
         }
     }
+
+
 
     #document-upload-panel {
         border-radius: 0;
