@@ -22,13 +22,11 @@
 
         <#if description??>
           <div class="description">
-            <div class="description-text">
-              <@b.linebreaksAndLinks description/>
-            </div>
-            <div class="browseGraphic">
+            <div class="clearfix">
               <#if images?? && images?has_content>
-                <img src="${images?first.url}" alt="${images?first.name}"/>
+                <img src="${images?first.url}" alt="${images?first.name}" class="d-none d-md-block mb-md-3 float-end ms-3 col-lg-4 col-md-6 "/>
               </#if>
+              <@b.linebreaksAndLinks description/>
             </div>
           </div>
         </#if>
