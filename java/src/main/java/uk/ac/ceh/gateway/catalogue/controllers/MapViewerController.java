@@ -33,7 +33,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.MAPSERVER_GML_VALU
 @RequestMapping(value="maps")
 public class MapViewerController {
     public static final String INFO_FORMAT = "INFO_FORMAT";
-    public static final String MAPSERVER = "http://mapserver/{id}";
+    public static final String MAPSERVER = "http://mapserver/mapserver/{id}";
     private final static Set<String> LOCAL_INFO_FORMATS = ImmutableSet.of("text/xml", "application/json");
 
     private final RestTemplate rest;
@@ -84,10 +84,16 @@ public class MapViewerController {
     }
 
     private URI getLocalWMSRequest(String id, MultiValueMap<String, String> params) {
-        return UriComponentsBuilder
+        if (!params.containsKey("map")) {
+            params.set("map", "/maps/" + id + "_default.map");
+        }
+        URI uri = UriComponentsBuilder
             .fromUriString(MAPSERVER)
             .queryParams(params)
             .buildAndExpand(id)
             .toUri();
+
+        log.info("WMS request URL built: {}", uri);
+        return uri;
     }
 }

@@ -49,7 +49,7 @@ public class MapServerDetailsServiceTest {
         String request = service.rewriteToLocalWmsRequest(localRequest);
 
         //Then
-        assertEquals(request, "http://mapserver/ID?REQUEST=WMS");
+        assertEquals(request, "http://mapserver/mapserver/ID?REQUEST=WMS");
     }
 
     @Test
@@ -74,7 +74,7 @@ public class MapServerDetailsServiceTest {
         String request = service.getLocalWMSRequest(file, queryString);
 
         //Then
-        assertEquals(request, "http://mapserver/myfileid?query");
+        assertEquals(request, "http://mapserver/mapserver/myfileid?query");
     }
 
     @Test
