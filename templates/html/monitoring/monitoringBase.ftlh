@@ -28,7 +28,12 @@
                   ${codes.lookup('metadata.resourceType', type)!''}
                 </span>
               </div>
-              <div> ${title}</div>
+              <div>
+                ${title}
+                <#if operationalStatus?? && operationalStatus == "Inactive">
+                  <span class="fw-bolder px-2 py-1 ms-3 text-bg-danger fs-6 text-uppercase">inactive</span>
+                </#if>
+              </div>
 
               <@alternativeNames />
             </h1>

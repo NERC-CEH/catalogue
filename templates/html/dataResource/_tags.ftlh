@@ -49,7 +49,7 @@
 
       <#if op.uri?has_content>
         <span><abbr title="${op.uri?trim}">${opLabel}</abbr></span>
-        <a href="${op.uri?trim}" target="_blank" rel="noopener noreferrer" class="externalVocabularyLink"><sup class="fa-solid fa-xs fa-arrow-up-right-from-square"></sup></a>
+        <a href="${op.uri?trim}" target="_blank" rel="noopener noreferrer" class="externalVocabularyLink" aria-label="link to external vocabulary ${op.uri?trim}" title="link to external vocabulary"><sup class="fa-solid fa-xs fa-arrow-up-right-from-square"></sup></a>
       <#else>
         <span>${opLabel}</span>
       </#if>
@@ -74,7 +74,7 @@
 <#macro displayLinkedKeyword value="" uri="">
   <#if uri?has_content>
     <span><abbr title="${uri?trim}">${value?trim}</abbr></span>
-    <a href="${uri?trim}" target="_blank" rel="noopener noreferrer" class="externalVocabularyLink"><sup class="fa-solid fa-xs fa-arrow-up-right-from-square"></sup></a>
+    <a href="${uri?trim}" target="_blank" rel="noopener noreferrer"  aria-label="link to external vocabulary ${uri?trim}" class="externalVocabularyLink" title="link to external vocabulary"><sup class="fa-solid fa-xs fa-arrow-up-right-from-square"></sup></a>
   <#else>
     <span>${value?trim}</span>
   </#if>

@@ -2,7 +2,7 @@
   <#if citation?has_content>
     <div class="authorList text-body-secondary">
       <#if citation.authors?size gte 8>
-        ${citation.authors?first} <em>et al</em>
+        ${citation.authors?first} et al <a class="ms-5 fst-italic" href="#segment-authors">see all authors</a>
       <#else>
         <#list citation.authors as author>
           <span>${author}</span><#sep>; </#sep>
