@@ -25,12 +25,10 @@
         <#if description??>
           <div class="description">
             <div class="description-text">
-              <@b.linebreaksAndLinks description/>
-            </div>
-            <div class="browseGraphic">
               <#if images?? && images?has_content>
-                <img src="${images?first.url}" alt="${images?first.name}"/>
+                <img src="${images?first.url}" alt="${images?first.name}" class="browseGraphic"/>
               </#if>
+              <@b.linebreaksAndLinks description/>
             </div>
           </div>
         </#if>

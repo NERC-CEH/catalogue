@@ -64,16 +64,20 @@ body {
         flex-wrap: wrap;
 
         .description-text {
-            flex: 2 0 65ch;
+            flex: 2 1 65ch;
 
             img.browseGraphic {
-                @extend .float-md-end !optional;
-                @extend .col-md-6 !optional;
-                @extend .mb-3 !optional;
-                @extend .ms-md-3 !optional;
+                @extend .mb-3;
+                @extend .float-md-end;
+                @extend .col-md-6;
+                @extend .ms-md-5;
                 mix-blend-mode: multiply;
-            }
+                width: auto;
+                height: auto;
+                max-width: max(100%, 350px);
+                max-height: 250px;
 
+            }
         }
 
         .usage {
