@@ -11,7 +11,7 @@
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
   <div id="metadata" class="metadata sampleArchive-metadata">
-    <div class="section section-grey">
+    <section class="section section-grey">
       <div class="container">
         <@b.admin />
 
@@ -24,23 +24,24 @@
         <div class="description">
           <#if description?? && description?has_content>
             <div class="description-text">
+              <#if image?? && image?has_content>
+                <#if image?first.url?matches("^.+(jpg|jpeg|gif|png)$")>
+                  <img src="${image?first.url}" alt="${image?first.name}" class="browseGraphic" />
+                </#if>
+              </#if>
+
               <@b.linebreaks description />
             </div>
           </#if>
 
-          <div class="browseGraphic">
-            <#if image?? && image?has_content>
-              <#if image?first.url?matches("^.+(jpg|jpeg|gif|png)$")>
-                <img src="${image?first.url}" alt="${image?first.name}" class="browseGraphic" />
-              </#if>
-            </#if>
-          </div>
+
+
         </div>
 
       </div>
-    </div>
+    </section>
 
-    <div class="section">
+    <section class="section">
       <div class="container">
         <div class="metadata-grid">
           <div class="col1">
@@ -146,22 +147,6 @@
               </@key>
             </#if>
 
-            <div class="record-metadata">
-              <#if metadataContacts?? && metadataContacts?has_content>
-                <@key "Author of this record">
-                  <#list metadataContacts as contact>
-                    <div class="responsibleParty">
-                      <@func.displayContact contact, true, true />
-                    </div>
-                  </#list>
-                </@key>
-              </#if>
-
-              <@key "Permanent link">
-                  <a href="https://catalogue.ceh.ac.uk/documents/${id}">https://catalogue.ceh.ac.uk/id/${id}</a>
-              </@key>
-            </div>
-
           </div>
 
           <#if archiveContacts?? && archiveContacts?has_content>
@@ -176,7 +161,28 @@
           </#if>
 
       </div>
-    </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="record-metadata">
+          <#if metadataContacts?? && metadataContacts?has_content>
+            <@key "Author of this record">
+              <#list metadataContacts as contact>
+                <div class="responsibleParty">
+                  <@func.displayContact contact, true, true />
+                </div>
+              </#list>
+            </@key>
+          </#if>
+
+          <@key "Permanent link">
+              <a href="https://catalogue.ceh.ac.uk/documents/${id}">https://catalogue.ceh.ac.uk/id/${id}</a>
+          </@key>
+        </div>
+      </div>
+    </section>
+
 
   </div>
 </@skeleton.master>
