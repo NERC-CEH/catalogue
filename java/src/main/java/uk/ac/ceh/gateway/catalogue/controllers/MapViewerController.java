@@ -84,8 +84,11 @@ public class MapViewerController {
     }
 
     private URI getLocalWMSRequest(String id, MultiValueMap<String, String> params) {
-        if (!params.containsKey("map")) {
+        if (params.keySet().stream().noneMatch(key -> key.equalsIgnoreCase("map"))) {
             params.set("map", "/maps/" + id + "_default.map");
+        }
+        if (params.keySet().stream().noneMatch(key -> key.equalsIgnoreCase("STYLES"))) {
+            params.set("STYLES", "");
         }
         URI uri = UriComponentsBuilder
             .fromUriString(MAPSERVER)
