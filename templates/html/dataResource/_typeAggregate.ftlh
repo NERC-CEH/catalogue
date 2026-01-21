@@ -9,6 +9,8 @@
     <#include "_title.ftlh">
   </#if>
 
+  <#include "_aggregateAccessButtons.ftlh">
+
   <#if description??>
     <#include "_description.ftlh">
   </#if>
