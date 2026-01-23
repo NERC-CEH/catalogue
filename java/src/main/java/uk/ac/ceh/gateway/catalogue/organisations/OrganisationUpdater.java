@@ -34,6 +34,7 @@ public class OrganisationUpdater {
     private final String configFile;
     private final String dataFile;
     private final String downloadKey = "latest.download";
+    private String rorFileName = "";
 
     public OrganisationUpdater(
         @Qualifier("normal") RestTemplate restTemplate,
@@ -127,9 +128,12 @@ public class OrganisationUpdater {
     public String getDownloadLink(String dataDumpUrl) throws Exception {
         String response = restTemplate.getForObject(dataDumpUrl, String.class);
         JsonNode jsonNode = (new ObjectMapper()).readTree(response);
-        JsonPointer jsonPointer = JsonPointer.compile("/hits/hits/0/files/0/links/self");
-        String downloadUrl = jsonNode.at(jsonPointer).asText();
-        return downloadUrl == null ? "" : downloadUrl;
+
+        JsonPointer jsonPointer = JsonPointer.compile("/hits/hits/0/files/0/key");
+        rorFileName = jsonNode.at(jsonPointer).asText().replace(".zip", ".csv");
+
+        jsonPointer = JsonPointer.compile("/hits/hits/0/files/0/links/self");
+        return jsonNode.at(jsonPointer).asText();
     }
 
     public boolean downloadFile(String downloadUrl, File data) throws Exception {
@@ -142,7 +146,7 @@ public class OrganisationUpdater {
         ZipInputStream zipStream = new ZipInputStream(downloadStream);
         ZipEntry entry;
         while ((entry = zipStream.getNextEntry()) != null) {
-            if (entry.getName().contains("ror-data_schema_v2.csv")) {
+            if (entry.getName().contains(rorFileName)) {
                 CSVReader csvReader = new CSVReader(new BufferedReader(new InputStreamReader(zipStream)));
                 String[] header;
                 HashMap<String, Integer> map = null;
