@@ -5,9 +5,9 @@
     <#assign supersededContact="UK-SCAPE Programme Office">
 </#if>
 
-<#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn" || resourceStatus == "Deleted">
+<#if availability == "Superseded" || availability == "Withdrawn" || availability == "Deleted">
     <div>
-        <strong>THIS ${recordType?upper_case} HAS BEEN ${resourceStatus?upper_case}</strong>
+        <strong>THIS ${recordType?upper_case} HAS BEEN ${availability?upper_case}</strong>
         <#if superseded?has_content>
             The latest version is <a href="${superseded?first.href}">${superseded?first.title}</a>
         </#if>
@@ -16,14 +16,14 @@
         <div><@blocks.linebreaksAndLinks reasonChanged/></div>
     </#if>
 
-    <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn">
+    <#if availability == "Superseded" || availability == "Withdrawn">
       <div>If you need access to the archived version, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact the ${supersededContact}</a></div>
     </#if>
 
-<#elseif resourceStatus == "Restricted">
+<#elseif availability == "Restricted">
     <span>ACCESS TO THIS ${recordType?upper_case} IS RESTRICTED</span>
     <br>${accessLimitation.description} If you need access, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact ${supersededContact}</a>
-<#elseif resourceStatus == "Embargoed">
+<#elseif availability == "Embargoed">
     <div>
         <strong>This ${recordType} is under embargo</strong>
         <#if datasetReferenceDate?? && datasetReferenceDate.releasedDate?has_content>
@@ -31,7 +31,7 @@
         </#if>
         &nbsp;<a href="https://www.eidc.ac.uk/help/faq/embargos" target="_blank" rel="noopener noreferrer" title="more information about embargoes"> <small> Find out more &raquo;</small></a>
     </div>
-<#elseif resourceStatus == "In-progress">
+<#elseif availability == "In-progress">
     <div>
         <strong>This ${recordType} is currently being generated</strong>
         <#if datasetReferenceDate?? && datasetReferenceDate.releasedDate?has_content>

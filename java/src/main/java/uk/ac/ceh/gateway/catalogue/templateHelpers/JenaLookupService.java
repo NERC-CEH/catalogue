@@ -112,7 +112,7 @@ public class JenaLookupService {
             "WHERE {?me ?rel ?node; ?relation ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type. " +
             "OPTIONAL {?node ef:hasGeometry ?geom} " +
             "OPTIONAL {?node dcterms:available ?publicationDate} " +
-            "OPTIONAL {?node eidc:resourceStatus ?availability} " +
+            "OPTIONAL {?node eidc:availability ?availability} " +
             "OPTIONAL {?node ef:hasStatus ?availability}} " +
             "ORDER BY DESC(?publicationDate) ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
@@ -127,7 +127,7 @@ public class JenaLookupService {
             "WHERE {?node ?rel ?me; ?relation ?me. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type. " +
             "OPTIONAL {?node ef:hasGeometry ?geo} " +
             "OPTIONAL {?node dcterms:available ?publicationDate} " +
-            "OPTIONAL {?node eidc:resourceStatus ?availability} " +
+            "OPTIONAL {?node eidc:availability ?availability} " +
             "OPTIONAL {?node ef:hasStatus ?availability}} " +
             "GROUP BY ?node ?title ?publicationStatus ?availability ?type ?rel ?publicationDate " +
             "ORDER BY DESC(?publicationDate) ?title";
@@ -142,7 +142,7 @@ public class JenaLookupService {
             "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom " +
             "WHERE {{?me dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; ef:hasGeometry ?geom. BIND(?me as ?node)} " +
             "UNION {?me ?relation ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; ef:hasGeometry ?geom. BIND(?relation as ?rel)} " +
-            "OPTIONAL {?node eidc:resourceStatus ?availability} " +
+            "OPTIONAL {?node eidc:availability ?availability} " +
             "OPTIONAL {?node ef:hasStatus ?availability}}" +
             "ORDER BY ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
@@ -156,7 +156,7 @@ public class JenaLookupService {
             "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom " +
             "WHERE {{?me ef:utilises ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type; ef:hasGeometry ?geom} " +
             "UNION {?me ef:utilises ?network. ?node ef:belongsTo ?network; dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; ef:hasGeometry ?geom. BIND(ef:utilises as ?rel)}" +
-            "OPTIONAL {?node eidc:resourceStatus ?availability} " +
+            "OPTIONAL {?node eidc:availability ?availability} " +
             "OPTIONAL {?node ef:hasStatus ?availability}}";
 
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);

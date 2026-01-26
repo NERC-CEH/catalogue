@@ -2,7 +2,7 @@
   "resourceType": {
     "value": "dataset"
   },
-  "resourceStatus": "Available",
+  "availability": "Available",
   "onlineResources": [
     {
       "url": "https://example.com/order0",

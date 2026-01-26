@@ -16,7 +16,7 @@
 
 <#macro accessButton>
   <#if resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'model' || resourceType.value == 'software' || resourceType.value == 'computationalNotebook' || resourceType.value == 'method'>
-    <#if resourceStatus == "Available" || resourceStatus == "Controlled" >
+    <#if availability == "Available" || availability == "Controlled" >
       <#if downloadOrder?? && downloadOrder?string?contains("isOrderable=true") >
         <a class="btn btn-ukceh" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
           Download
@@ -93,7 +93,7 @@
         <#assign constraints += "<p class='constraints'>Providing access to this " + recordType?lower_case + " does not signify any endorsement or approval. By accessing and using the resource, you acknowledge that it is entirely at your own risk and you are solely responsible for any loss or liability that may arise</p>" />
       </#if>
 
-      <#if resourceStatus == "Available" || resourceStatus == "Controlled">
+      <#if availability == "Available" || availability == "Controlled">
 
         <div class="card text-bg-primary mb-3">
           <div class="card-body">

@@ -82,7 +82,7 @@ public class SearchQuery {
                 .setQuery(term)
                 .setParam("defType", "edismax")
                 .setParam("qf", "title^50 description^25 keyword^5 lineage organisation familyName altTitle resourceIdentifier identifier supplementalDescription supplementalName infrastructureCapabilities^2 keywordsParameters^5 observedPropertyTitle^10 observedPropertyValue^5 operatingPeriod objectives^25 responsibleParties")
-                .setParam("bq", "resourceType:Aggregation^20, resourceStatus:Available^100, resourceStatus:Controlled^100, resourceStatus:Embargoed^80, resourceStatus:Restricted^80, resourceStatus:Superseded^1")
+                .setParam("bq", "resourceType:Aggregation^20, availability:Available^100, availability:Controlled^100, availability:Embargoed^80, availability:Restricted^80, availability:Superseded^1")
                 .setParam("bf", "version")
                 .setParam("ps", "5")
                 .setParam("pf", "title^50 description^25 keyword^5 supplementalDescription")
@@ -326,7 +326,7 @@ public class SearchQuery {
         if (user.isPublic()) {
             query.addFilterQuery("{!term f=state}published");
             query.addFilterQuery("{!term f=view}public");
-            query.addFilterQuery("NOT resourceStatus:(Superseded OR Withdrawn)");
+            query.addFilterQuery("NOT availability:(Superseded OR Withdrawn)");
         } else {
             List<String> groups = groupStore.getGroups(user)
                 .stream()

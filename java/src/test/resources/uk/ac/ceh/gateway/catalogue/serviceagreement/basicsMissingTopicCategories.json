@@ -5,7 +5,7 @@
     "depositorContactDetails": "depositor@ceh.ac.uk",
     "depositReference": "EIDCHELP-5",
     "lineage": "lineage",
-    "resourceStatus": "resourceStatus",
+    "availability": "availability",
     "transferMethod": "transferMethod",
     "keywordsPlace": "keywordsPlace",
     "keywordsProject": "keywordsProject",

@@ -6,7 +6,7 @@
     <#list licences as licence>
         <p class="licenceText">
 
-        <#if resourceStatus?? && resourceStatus == "Embargoed">
+        <#if availability?? && availability == "Embargoed">
           <#assign licenceText = licence.value?replace("is made available","will be available")?replace("is available","will be available") >
         <#else>
           <#assign licenceText = licence.value >

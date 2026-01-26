@@ -63,7 +63,7 @@
 
           <#include "dataResource/_admin.ftlh">
 
-          <#if resourceStatus = "Deleted">
+          <#if availability = "Deleted">
             <#include "dataResource/_typeTombstone.ftlh">
           <#else>
               <#if resourceType.value == 'aggregate' || resourceType.value == 'collection'>

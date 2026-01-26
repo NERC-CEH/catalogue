@@ -83,7 +83,7 @@ public class SolrIndexingService extends AbstractIndexingService<MetadataDocumen
             return false;
         }
         if (doc instanceof GeminiDocument gemini) {
-            if (UNINDEXED_RESOURCE_STATUS.contains(gemini.getResourceStatus())) {
+            if (UNINDEXED_RESOURCE_STATUS.contains(gemini.getAvailability())) {
                 unindexDocuments(List.of(gemini.getId())); // Needed to remove existing superseded or deleted record from Solr
                 return false;
             } else {

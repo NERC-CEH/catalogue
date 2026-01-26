@@ -4,16 +4,16 @@
     <#assign abstract = description?replace("\n", " ") >
 </#if>
 
-<#if resourceStatus?? && resourceStatus?has_content >
-    <#if resourceStatus == "Withdrawn" || resourceStatus == "Superseded" >
+<#if availability?? && availability?has_content >
+    <#if availability == "Withdrawn" || availability == "Superseded" >
         <#assign statusMsg = "THIS " + resourceType.value?upper_case + " HAS BEEN WITHDRAWN">
-    <#elseif resourceStatus == "Embargoed" >
+    <#elseif availability == "Embargoed" >
         <#assign statusMsg = "This " + resourceType.value + " is embargoed">
         <#if datasetReferenceDate.releasedDate??>
             <#assign statusMsg = statusMsg + " until "+ datasetReferenceDate.releasedDate?date?string.long>
         </#if>
     </#if>
-    
+
     <#if statusMsg?has_content >
         <#assign abstract = "[" + statusMsg + "]. " + abstract >
     </#if>

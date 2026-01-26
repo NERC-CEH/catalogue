@@ -176,7 +176,7 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .admin(true)
                     .build();
             case "status" -> Facet.builder()
-                .fieldName("resourceStatus")
+                .fieldName("availability")
                     .displayName("Availability")
                     .hierarchical(false)
                     .admin(true)

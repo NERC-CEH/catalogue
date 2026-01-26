@@ -81,7 +81,7 @@ class DataPreviewerServiceTest {
         when(dataset.getId()).thenReturn("ds1");
         when(dataset.getTitle()).thenReturn("Dataset 1");
         when(dataset.getMetadata()).thenReturn(metadata);
-        when(dataset.getResourceStatus()).thenReturn("Available");
+        when(dataset.getAvailability()).thenReturn("Available");
         when(dataset.getAccessLimitation()).thenReturn(
             new AccessLimitation(
                 "Open", "", "", "http://purl.org/coar/access_right/c_abf2"
@@ -141,7 +141,7 @@ class DataPreviewerServiceTest {
         when(dataset.getId()).thenReturn("ds1");
         when(dataset.getTitle()).thenReturn("Dataset 1");
         when(dataset.getMetadata()).thenReturn(metadata);
-        when(dataset.getResourceStatus()).thenReturn("Available");
+        when(dataset.getAvailability()).thenReturn("Available");
         when(dataset.getAccessLimitation()).thenReturn(
             new AccessLimitation(
                 "Open", "", "", "http://purl.org/coar/access_right/c_abf2"
@@ -228,7 +228,7 @@ class DataPreviewerServiceTest {
         when(dataset.getId()).thenReturn("ds1");
         when(dataset.getTitle()).thenReturn("Dataset 1");
         when(dataset.getMetadata()).thenReturn(metadata);
-        when(dataset.getResourceStatus()).thenReturn("Available");
+        when(dataset.getAvailability()).thenReturn("Available");
         when(dataset.getAccessLimitation()).thenReturn(
             new AccessLimitation(
                 "Open", "", "", "http://purl.org/coar/access_right/c_abf2"

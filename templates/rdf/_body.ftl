@@ -8,7 +8,7 @@
       dcterms:bibliographicCitation <@displayLiteral citationString/> ;
   </#if>
 
-  <#if resourceStatus != "Deleted">
+  <#if availability != "Deleted">
     <#if description?has_content>
       dcterms:description <@displayLiteral description /> ;
     </#if>

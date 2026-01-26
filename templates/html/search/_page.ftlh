@@ -46,8 +46,8 @@
   <#if result.operationalStatus??>
     <#assign status = result.operationalStatus?lower_case>
   </#if>
-  <#if result.resourceStatus??>
-    <#assign status = result.resourceStatus?lower_case>
+  <#if result.availability??>
+    <#assign status = result.availability?lower_case>
   </#if>
 
   <a href="/${docroot}/${result.identifier}" class="result result--${result.state} result--${status}" data-location="${(result.locations?join('|'))!}" id="${result.identifier}">
@@ -68,8 +68,8 @@
             </#if>
           </span>
 
-          <#if result.resourceStatus?? >
-            <span class="resourceStatus resourceStatus-${result.resourceStatus}">${result.resourceStatus}</span>
+          <#if result.availability?? >
+            <span class="availability availability-${result.availability}">${result.availability}</span>
           </#if>
       </div>
       <div class="result__title">${result.title} </div>

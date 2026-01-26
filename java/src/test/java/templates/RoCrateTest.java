@@ -183,7 +183,7 @@ public class RoCrateTest {
                     .resourceTypeGeneral("resourceType")
                 .build());
 
-            // resourceStatus not Deleted
+            // availability not Deleted
             gemini.setAccessLimitation(AccessLimitation.builder()
                     .code("Available")
                 .build());
