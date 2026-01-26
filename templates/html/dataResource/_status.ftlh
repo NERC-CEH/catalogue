@@ -31,12 +31,6 @@
         </#if>
         &nbsp;<a href="https://www.eidc.ac.uk/help/faq/embargos" target="_blank" rel="noopener noreferrer" title="more information about embargoes"> <small> Find out more &raquo;</small></a>
     </div>
-<#elseif availability == "In-progress">
-    <div>
-        <strong>This ${recordType} is currently being generated</strong>
-        <#if datasetReferenceDate?? && datasetReferenceDate.releasedDate?has_content>
-            and is expected to become available by ${datasetReferenceDate.releasedDate?date?string["d MMMM yyyy"]}
-        </#if>
-    </div>
+
 </#if>
 

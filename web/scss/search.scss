@@ -340,8 +340,7 @@ main {
 
             &--available,
             &--unknown,
-            &--controlled,
-            &--in-progress {
+            &--controlled {
                 .availability {
                     display: none;
                 }
