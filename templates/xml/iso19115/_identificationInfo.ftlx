@@ -34,6 +34,20 @@
 					</gmd:CI_Date>
 				</gmd:date>
 				</#if>
+
+				<#if datasetReferenceDate.releasedDate?has_content && datasetReferenceDate.releasedDate?date gt .now?date >
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>${datasetReferenceDate.releasedDate}</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="released">released</gmd:CI_DateTypeCode>
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+				</#if>
+
 				<#if datasetReferenceDate.revisionDate?has_content>
 				<gmd:date>
 					<gmd:CI_Date>
