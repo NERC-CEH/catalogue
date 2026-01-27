@@ -24,7 +24,7 @@ export default _.template(`
         <label for="<%= data.modelAttribute %><%= data.index %>Value">Text</label>
     </div>
     <div class="col-xl-11">
-        <input data-name="value" id="<%= data.modelAttribute %><%= data.index %>Value" class="editor-input" value="<%= data.value %>">
+      <textarea data-name="value" id="<%= data.modelAttribute %><%= data.index %>Value" class="editor-textarea"><%= data.value %></textarea>
     </div>
 </div>
 <div class="row">
