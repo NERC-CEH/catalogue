@@ -295,7 +295,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         val licences = parsed.read("$.useConstraints[*][?(@.code == 'license')]", typeRefStringString);
 
         if (availabilityIsUnknown(parsed)) {
-            toReturn.add(new MetadataCheck("Resource status is missing", ERROR));
+            toReturn.add(new MetadataCheck("Availability is missing", ERROR));
         }
 
         if (licences == null || licences.isEmpty()) {
