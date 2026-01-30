@@ -491,7 +491,11 @@ Symmetrical relationships
   <#if resourceIdentifiers?? && resourceIdentifiers?has_content>
     <#list resourceIdentifiers as identifier>
       <#if !identifier.code?matches("^http.+[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}$")>
-        <#assign altNames = altNames + [identifier.code] />
+        <#if identifier.codeSpace?has_content>
+          <#assign altNames = altNames + [identifier.codeSpace + "/" + identifier.code] />
+        <#else>
+          <#assign altNames = altNames + [identifier.code] />
+        </#if>
       </#if>
     </#list>
   </#if>

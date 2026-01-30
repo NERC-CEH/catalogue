@@ -1,7 +1,7 @@
 <#compress>
 <#import "../schema.org/macros.ftl" as m>
 <#if (type=='dataset' || type=='nonGeographicDataset')>
-  <#if resourceStatus?lower_case != "deleted">
+  <#if availability?lower_case != "deleted">
     <#assign fileList = fileListService.getFileList(id)>
     <#if fileList?size gt 10>
       <@croissant fileList/>

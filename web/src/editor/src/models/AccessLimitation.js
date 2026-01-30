@@ -28,7 +28,6 @@ export default Backbone.Model.extend({
     'Registration is required to access this data': 'Available',
     'no limitations to public access': 'Available',
     embargoed: 'Embargoed',
-    'in-progress': 'In-progress',
     superseded: 'Superseded',
     unknown: 'Unknown',
     withdrawn: 'Withdrawn',

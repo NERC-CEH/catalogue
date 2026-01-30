@@ -105,10 +105,10 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'accessLimitation',
           ModelType: AccessLimitation,
-          label: 'Resource status',
+          label: 'Conditions of access',
           ObjectInputView: AccessLimitationView,
           helpText: `\
-<p>Access status of resource.  For example, is the resource embargoed or are restrictions imposed for reasons of confidentiality or security.</p>
+<p>For example, is the resource embargoed or are restrictions imposed for reasons of confidentiality or security.</p>
 <p><b>NOTE</b>: if access is Embargoed, you must also complete the <i>Release date</i>.</p>\
 `
         }),

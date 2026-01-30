@@ -99,7 +99,7 @@ class EidcApplicationContextTest {
         gemini.setType("dataset");
         val outputStream = new ByteArrayOutputStream();
 
-        val expected = "{\"type\":\"dataset\",\"title\":\"Test\",\"resourceType\":{\"value\":\"dataset\"},\"notGEMINI\":false,\"resourceStatus\":\"Unknown\",\"incomingCitationCount\":0}";
+        val expected = "{\"type\":\"dataset\",\"title\":\"Test\",\"resourceType\":{\"value\":\"dataset\"},\"notGEMINI\":false,\"availability\":\"Unknown\",\"incomingCitationCount\":0}";
         //when
         val documentWritingService = applicationContext.getBean(DocumentWritingService.class);
         assertNotNull(documentWritingService);

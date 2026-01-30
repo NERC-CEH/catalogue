@@ -282,9 +282,9 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             return toReturn;
         }
 
-        val requiredKeys = ImmutableSet.of("resourceStatus", "lineage");
+        val requiredKeys = ImmutableSet.of("availability", "lineage");
         val toCheck = parsed.read(
-                "$.['resourceStatus', 'lineage']",
+                "$.['availability', 'lineage']",
                 new TypeRef<Map<String, String>>() {}
         );
         requiredKeys.forEach(key -> {
@@ -294,8 +294,8 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         });
         val licences = parsed.read("$.useConstraints[*][?(@.code == 'license')]", typeRefStringString);
 
-        if (resourceStatusIsUnknown(parsed)) {
-            toReturn.add(new MetadataCheck("Resource status is missing", ERROR));
+        if (availabilityIsUnknown(parsed)) {
+            toReturn.add(new MetadataCheck("Availability is missing", ERROR));
         }
 
         if (licences == null || licences.isEmpty()) {
@@ -626,7 +626,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
 
     List<MetadataCheck> checkDownloadAndOrderLinks(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
-        if (!resourceStatusIsAvailable(parsed) || notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
+        if (!availabilityIsAvailable(parsed) || notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
             return toReturn;
         }
 
@@ -666,7 +666,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     }
 
     List<MetadataCheck> checkEmbargo(DocumentContext parsed) {
-        if (!resourceStatusIsEmbargoed(parsed) || notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
+        if (!availabilityIsEmbargoed(parsed) || notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
             return Collections.emptyList();
         }
 
@@ -691,19 +691,19 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             || !map.get(key).matches(value);
     }
 
-    boolean resourceStatusIsAvailable(DocumentContext parsed) {
-        val resourceStatus = parsed.read("$.resourceStatus", String.class);
-        return resourceStatus != null && resourceStatus.equals("Available");
+    boolean availabilityIsAvailable(DocumentContext parsed) {
+        val availability = parsed.read("$.availability", String.class);
+        return availability != null && availability.equals("Available");
     }
 
-    boolean resourceStatusIsUnknown(DocumentContext parsed) {
-        val resourceStatus = parsed.read("$.resourceStatus", String.class);
-        return resourceStatus != null && resourceStatus.equals("Unknown");
+    boolean availabilityIsUnknown(DocumentContext parsed) {
+        val availability = parsed.read("$.availability", String.class);
+        return availability != null && availability.equals("Unknown");
     }
 
-    boolean resourceStatusIsEmbargoed(DocumentContext parsed) {
-        val resourceStatus = parsed.read("$.resourceStatus", String.class);
-        return resourceStatus != null && resourceStatus.equals("Embargoed");
+    boolean availabilityIsEmbargoed(DocumentContext parsed) {
+        val availability = parsed.read("$.availability", String.class);
+        return availability != null && availability.equals("Embargoed");
     }
 
     boolean descriptionTooShort(DocumentContext parsed) {

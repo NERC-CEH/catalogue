@@ -9,7 +9,7 @@
       </#if>
     <#elseif licence.value?has_content>
       [ a dcterms:LicenseDocument;
-      rdfs:label <@displayLiteral licence.value />;
+      rdfs:label <@displayLiteral licence.value?replace("\n", " ") />;
       ]
     </#if>
   <#sep>,</#sep>
@@ -22,7 +22,7 @@
     dcterms:rights <#t>
     <#list copyrights as copyright>
         [ a dcterms:RightsStatement ;
-        odrs:copyrightNotice  <@displayLiteral copyright.value?replace("©","copyright") />;
+        odrs:copyrightNotice  <@displayLiteral copyright.value?replace("©","copyright")?replace("\n", " ") />;
         ]
     <#sep>,</#sep>
     </#list>;

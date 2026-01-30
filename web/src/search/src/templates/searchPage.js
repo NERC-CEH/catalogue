@@ -43,7 +43,7 @@ export default _.template(`
 <% _.each(results, function(result) { %>
 
   <%
-    const statusValue = result.resourceStatus || result.operationalStatus;
+    const statusValue = result.availability || result.operationalStatus;
     const status = (typeof statusValue === 'string' && statusValue.trim() !== '')
       ? statusValue.toLowerCase()
       : 'unknown';
@@ -73,8 +73,8 @@ export default _.template(`
               <%=result.recordType %>
             </span>
 
-            <% if (result.resourceStatus != '') {  %>
-              <span class="resourceStatus resourceStatus-<%=result.resourceStatus %>"><%=result.resourceStatus %></span>
+            <% if (result.availability != '') {  %>
+              <span class="availability availability-<%=result.availability %>"><%=result.availability %></span>
             <% } %>
           </div>
           <div class="result__title"><%=result.title%></div>

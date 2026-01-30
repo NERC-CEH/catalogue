@@ -97,7 +97,7 @@ public class DataPreviewerService {
             permissions.containsEntry(Permission.VIEW, "public");
 
         boolean isAvailable =
-            "Available".equalsIgnoreCase(document.getResourceStatus());
+            "Available".equalsIgnoreCase(document.getAvailability());
 
         boolean isFreelyAvailable =
             document.getAccessLimitation() != null &&

@@ -47,11 +47,11 @@ public class DatasetFilesController {
 
             MetadataInfo metadataInfo = document.getMetadata();
             Multimap<Permission, String> permissions = metadataInfo.getPermissions();
-            String resourceStatus = document.getResourceStatus();
+            String availability = document.getAvailability();
             AccessLimitation limitation = document.getAccessLimitation();
 
             boolean hasPublicView = permissions.containsEntry(Permission.VIEW, "public");
-            boolean isAvailable = "Available".equalsIgnoreCase(resourceStatus);
+            boolean isAvailable = "Available".equalsIgnoreCase(availability);
             boolean isFreelyAvailable =
                 limitation != null && OPEN_ACCESS_URI.equals(limitation.getUri());
 

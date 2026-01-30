@@ -443,24 +443,24 @@ public class GeminiMetadataQualityServiceTest {
     }
 
     @Test
-    public void checkResourceStatusAvailable() {
+    public void checkAvailabilityAvailable() {
         //given
-        val parsed = JsonPath.parse(getClass().getResourceAsStream("resourceStatusAvailable.json"), this.config);
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("availabilityAvailable.json"), this.config);
 
         //when
-        val actual = this.service.resourceStatusIsAvailable(parsed);
+        val actual = this.service.availabilityIsAvailable(parsed);
 
         //then
         assertThat(actual, is(true));
     }
 
     @Test
-    public void checkResourceStatusNotAvailable() {
+    public void checkAvailabilityNotAvailable() {
         //given
-        val parsed = JsonPath.parse(getClass().getResourceAsStream("resourceStatusNotAvailable.json"), this.config);
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("availabilityNotAvailable.json"), this.config);
 
         //when
-        val actual = this.service.resourceStatusIsAvailable(parsed);
+        val actual = this.service.availabilityIsAvailable(parsed);
 
         //then
         assertThat(actual, is(false));

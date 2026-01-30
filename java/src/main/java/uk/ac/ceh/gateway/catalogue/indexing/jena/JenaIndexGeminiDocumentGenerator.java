@@ -109,7 +109,7 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 ));
             });
 
-        toReturn.add(createStatement(me, RESOURCE_STATUS, createTypedLiteral(document.getResourceStatus())));
+        toReturn.add(createStatement(me, RESOURCE_STATUS, createTypedLiteral(document.getAvailability())));
         return toReturn;
     }
 }

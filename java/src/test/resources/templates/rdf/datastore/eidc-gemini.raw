@@ -363,7 +363,7 @@
       "fullName": "Contact, A."
     }
   ],
-  "resourceStatus": "Available",
+  "availability": "Available",
   "topics": [
     "http://onto.nerc.ac.uk/CEHMD/topic/1"
   ],

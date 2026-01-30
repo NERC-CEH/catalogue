@@ -192,25 +192,25 @@ public class GeminiDocumentTest {
     }
 
     @Test
-    public void unknownResourceStatus() {
+    public void unknownAvailability() {
         //given
         val document = new GeminiDocument();
 
         //when
-        val actual = document.getResourceStatus();
+        val actual = document.getAvailability();
 
         //then
         assertThat(actual, equalTo("Unknown"));
     }
 
     @Test
-    public void accessLimitationAndResourceStatus() {
+    public void accessLimitationAndAvailability() {
         //given
         val document = new GeminiDocument();
         document.setAccessLimitation(AccessLimitation.builder().build());
 
         //when
-        val actual = document.getResourceStatus();
+        val actual = document.getAvailability();
 
         //then
         assertThat(actual, equalTo("Unknown"));

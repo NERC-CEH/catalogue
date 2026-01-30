@@ -12,7 +12,6 @@ export default _.template(`
 </optgroup>
 <optgroup label="Unavailable">
     <option value="embargoed">EMBARGOED - This resource is not yet available but a date has been set for its release</option>
-    <option value="in-progress">IN PROGRESS - This resource is not yet available as is still being completed</option>
     <option value="superseded">SUPERSEDED - This resource has been withdrawn and has been replaced by an updated version</option>
     <option value="withdrawn">WITHDRAWN - This resource has been withdrawn but has not been replaced</option>
     <option value="deleted">DELETED - This resource has been permanently deleted</option>

@@ -35,10 +35,10 @@
   "@id": "${uri?trim}",
   <@doi/>
   <@partsList parts/>
-  <#if resourceStatus?lower_case != "deleted">
+  <#if availability?lower_case != "deleted">
     <#if description?has_content>"description":<@displayLiteral description/>,</#if>
     <@alternateTitlesList/>
-    <#if resourceStatus == "Available">"isAccessibleForFree": true,</#if>
+    <#if availability == "Available">"isAccessibleForFree": true,</#if>
     <@creationDate/>
     <@publicationDate/>
     <@observedPropertiesList/>

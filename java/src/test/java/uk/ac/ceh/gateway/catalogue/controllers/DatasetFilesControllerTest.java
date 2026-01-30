@@ -59,7 +59,7 @@ class DatasetFilesControllerTest {
         permissions.put(Permission.VIEW, "public");
 
         Mockito.when(metadata.getPermissions()).thenReturn(permissions);
-        Mockito.when(document.getResourceStatus()).thenReturn("Available");
+        Mockito.when(document.getAvailability()).thenReturn("Available");
         Mockito.when(document.getAccessLimitation())
             .thenReturn(new AccessLimitation("Open", "", "", "http://purl.org/coar/access_right/c_abf2"));
         Mockito.when(documentRepository.read("abc123")).thenReturn(document);
@@ -102,7 +102,7 @@ class DatasetFilesControllerTest {
     void shouldReturnForbiddenWhenDatasetNotPublic() throws Exception {
         Multimap<Permission, String> permissions = ArrayListMultimap.create();
         Mockito.when(metadata.getPermissions()).thenReturn(permissions);
-        Mockito.when(document.getResourceStatus()).thenReturn("Available");
+        Mockito.when(document.getAvailability()).thenReturn("Available");
         Mockito.when(document.getAccessLimitation())
             .thenReturn(new AccessLimitation("Restricted", "", "", "http://purl.org/coar/access_right/c_16ec"));
         Mockito.when(documentRepository.read("abc123")).thenReturn(document);
@@ -127,7 +127,7 @@ class DatasetFilesControllerTest {
         permissions.put(Permission.VIEW, "public");
 
         Mockito.when(metadata.getPermissions()).thenReturn(permissions);
-        Mockito.when(document.getResourceStatus()).thenReturn("Available");
+        Mockito.when(document.getAvailability()).thenReturn("Available");
         Mockito.when(document.getAccessLimitation())
             .thenReturn(new AccessLimitation("Open", "", "", "http://purl.org/coar/access_right/c_abf2"));
         Mockito.when(documentRepository.read("abc123")).thenReturn(document);
