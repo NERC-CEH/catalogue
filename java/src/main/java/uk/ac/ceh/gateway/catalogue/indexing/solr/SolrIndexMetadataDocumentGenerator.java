@@ -18,6 +18,8 @@ import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /**
  * The following class is responsible for taking a metadata document and creating
@@ -55,6 +57,11 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setAssistResearchThemes(grab(getKeywordsByVocabulary(document, VocabularyFacet.ASSIST_RESEARCH_THEMES.getFacetName()), Keyword::getValue))
             .setAssistTopics(grab(getKeywordsByVocabulary(document, VocabularyFacet.ASSIST_TOPICS.getFacetName()), Keyword::getValue))
             .setCatalogue(document.getCatalogue())
+            .setMetadataDate(
+                Date.from(document.getMetadataDate()
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant())
+            )
             .setDescription(document.getDescription())
             .setDocumentType(getDocumentType(document))
             .setIdentifier(identifierService.generateFileId(document.getId()))
