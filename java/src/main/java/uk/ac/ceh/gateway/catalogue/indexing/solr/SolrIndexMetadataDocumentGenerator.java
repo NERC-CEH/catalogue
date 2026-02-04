@@ -58,9 +58,13 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setAssistTopics(grab(getKeywordsByVocabulary(document, VocabularyFacet.ASSIST_TOPICS.getFacetName()), Keyword::getValue))
             .setCatalogue(document.getCatalogue())
             .setMetadataDate(
-                Date.from(document.getMetadataDate()
-                    .atZone(ZoneId.systemDefault())
-                    .toInstant())
+                document.getMetadataDate() != null
+                    ? Date.from(
+                        document.getMetadataDate()
+                            .atZone(ZoneId.systemDefault())
+                            .toInstant()
+                    )
+                    : Date.from(java.time.Instant.EPOCH) // default: 1970‑01‑01
             )
             .setDescription(document.getDescription())
             .setDocumentType(getDocumentType(document))
