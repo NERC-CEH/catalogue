@@ -4,6 +4,7 @@
             {
                 "files": [
                     {
+                        "key": "v2.1-2026-01-15-ror-data.zip",
                         "links": {
                             "self": "http://download-url"
                         }
@@ -14,6 +15,7 @@
             {
                 "files": [
                     {
+                        "key": "v2.1-2025-01-15-ror-data.zip",
                         "links": {
                             "self": "http://download-url-older"
                         }
