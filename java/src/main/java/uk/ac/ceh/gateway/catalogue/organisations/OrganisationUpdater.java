@@ -129,11 +129,11 @@ public class OrganisationUpdater {
         String response = restTemplate.getForObject(dataDumpUrl, String.class);
         JsonNode jsonNode = (new ObjectMapper()).readTree(response);
 
-        JsonPointer jsonPointer = JsonPointer.compile("/hits/hits/0/files/0/key");
-        rorFileName = jsonNode.at(jsonPointer).asText().replace(".zip", ".csv");
+        JsonPointer fileNamePointer = JsonPointer.compile("/hits/hits/0/files/0/key");
+        rorFileName = jsonNode.at(fileNamePointer).asText().replace(".zip", ".csv");
 
-        jsonPointer = JsonPointer.compile("/hits/hits/0/files/0/links/self");
-        return jsonNode.at(jsonPointer).asText();
+        JsonPointer downloadLinkPointer = JsonPointer.compile("/hits/hits/0/files/0/links/self");
+        return jsonNode.at(downloadLinkPointer).asText();
     }
 
     public boolean downloadFile(String downloadUrl, File data) throws Exception {
