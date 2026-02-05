@@ -1,8 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -16,7 +17,7 @@ import uk.ac.ceh.gateway.catalogue.userdetails.SecurityUserInfo;
 import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
 
 @Configuration
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FreemarkerConfig {
     private final CatalogueService catalogueService;
     private final CodeLookupService codeLookupService;
@@ -33,6 +34,7 @@ public class FreemarkerConfig {
     private final FileListService fileListService;
     @Nullable private final ServiceAgreementQualityService serviceAgreementQualityService;
     @Nullable private final MetricsService metricsService;
+    @Value("${access-button.collection.link}") private String collectionAccessButtonLink;
 
     @SneakyThrows
     @PostConstruct
@@ -50,6 +52,7 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("fileDetails", fileDetailsService);
         freemarkerConfiguration.setSharedVariable("downloadUrlRegexes", downloadUrlProperties);
         freemarkerConfiguration.setSharedVariable("fileListService", fileListService);
+        freemarkerConfiguration.setSharedVariable("collectionAccessButtonLink", collectionAccessButtonLink);
 
         if (serviceAgreementQualityService != null) {
             freemarkerConfiguration.setSharedVariable("serviceAgreementQuality", serviceAgreementQualityService);
