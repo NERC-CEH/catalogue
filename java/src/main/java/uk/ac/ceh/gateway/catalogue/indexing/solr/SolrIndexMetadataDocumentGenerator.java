@@ -57,15 +57,6 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setAssistResearchThemes(grab(getKeywordsByVocabulary(document, VocabularyFacet.ASSIST_RESEARCH_THEMES.getFacetName()), Keyword::getValue))
             .setAssistTopics(grab(getKeywordsByVocabulary(document, VocabularyFacet.ASSIST_TOPICS.getFacetName()), Keyword::getValue))
             .setCatalogue(document.getCatalogue())
-            .setMetadataDate(
-                document.getMetadataDate() != null
-                    ? Date.from(
-                        document.getMetadataDate()
-                            .atZone(ZoneId.systemDefault())
-                            .toInstant()
-                    )
-                    : Date.from(java.time.Instant.EPOCH) // default: 1970‑01‑01
-            )
             .setDescription(document.getDescription())
             .setDocumentType(getDocumentType(document))
             .setIdentifier(identifierService.generateFileId(document.getId()))
@@ -87,6 +78,12 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setUkcehService(grab(getKeywordsByVocabulary(document, VocabularyFacet.UKCEH_SERVICE.getFacetName()), Keyword::getValue))
             .setView(getViews(document))
             .setResourceIdentifier(buildResourceIdentifiers(document.getResourceIdentifiers()))
+            .setMetadataDate(
+                Optional.ofNullable(document.getMetadataDate())
+                    .map(date -> date.atZone(ZoneId.of("UTC")))
+                    .map(zonedDateTime -> Date.from(zonedDateTime.toInstant()))
+                    .orElse(Date.from(java.time.Instant.EPOCH))
+            )
             ;
     }
 
