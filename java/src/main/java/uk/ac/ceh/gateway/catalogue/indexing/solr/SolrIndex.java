@@ -13,6 +13,7 @@ import java.util.Date;
 public class SolrIndex {
     protected static final int MAX_DESCRIPTION_CHARACTER_LENGTH = 265;
     private @Field Date publicationDate;
+    private @Field Date metadataDate;
     private @Field List<String> altTitle;
     private @Field List<String> assistResearchThemes;
     private @Field List<String> assistTopics;
@@ -84,7 +85,6 @@ public class SolrIndex {
     private @Field List<String> ukcehResearchTheme;
     private @Field List<String> ukcehScienceChallenge;
     private @Field List<String> ukcehService;
-    private @Field Date updatedDate;
     private @Field Number version;
     private @Field List<String> view;
     // infrastructure catalogue

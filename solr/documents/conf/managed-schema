@@ -94,6 +94,7 @@
     </fieldType>
 
     <field name="publicationDate" type="pdate"/>
+    <field name="metadataDate" type="pdate" multiValued="false"/>
     <field name="_text_" type="text_general" stored="false"/>
     <field name="_version_" type="plong" indexed="false" stored="false"/>
     <field name="altTitle" type="text_general"/>
@@ -166,7 +167,6 @@
     <field name="ukcehResearchTheme" type="keywords"/>
     <field name="ukcehScienceChallenge" type="keywords"/>
     <field name="ukcehService" type="keywords"/>
-    <field name="updatedDate" type="pdate"/>
     <field name="version" type="pfloat" default="1"/>
     <field name="dataLevel" type="keywords" multiValued="false"/>
     <field name="view" type="keywords"/>

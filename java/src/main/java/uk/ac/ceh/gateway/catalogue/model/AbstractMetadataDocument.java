@@ -59,13 +59,6 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
             .orElse("");
     }
 
-    public Date getUpdatedDate() {
-        return Optional.ofNullable(metadataDate)
-            .map(date -> date.atZone(ZoneId.of("UTC")))
-            .map(zonedDateTime -> Date.from(zonedDateTime.toInstant()))
-            .orElse(null);
-    }
-
     @Override
     @JsonIgnore
     public List<Keyword> getAllKeywords() {
