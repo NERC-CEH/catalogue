@@ -142,10 +142,13 @@ body {
     }
 
     .alert {
-        border-radius: 0;
 
         &-data {
             background-color: var(--ukceh-colour-data);
+        }
+
+        &-earth {
+            background-color: var(--ukceh-colour-earth);
         }
 
         &-water {
@@ -159,10 +162,9 @@ body {
 
         &-Embargoed,
         &-Superseded,
-        &-Withdrawn {
-            @extend .alert !optional;
-            @extend .alert-data !optional;
-            outline:2px solid var(--ukceh-colour-water);
+        &-Withdrawn,
+        &-Restricted {
+            @extend .alert-water;
         }
     }
 
