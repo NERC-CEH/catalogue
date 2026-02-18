@@ -131,8 +131,7 @@
 
       <#if isEidcCatalogue && (isDraft || isEidcCustodian)>
         <li class="dropdown-divider"></li>
-        <@menuLink link="https://jira.ceh.ac.uk/issues/?jql=cf%5B13250%5D%3D%22${id}%22" target="_blank">Jira issues for this resource</@menuLink>
-        <@menuLink link="https://eidc.ceh.ac.uk/metadata/${id}" target="_blank">DRH admin folder</@menuLink>
+        <@menuLink link="https://jira.ceh.ac.uk/issues/?jql=cf%5B13250%5D%3D%22${id}%22" target="_blank"><i class="fa-brands fa-jira"></i> Jira issues</@menuLink>
       </#if>
 
       <#list orders>
