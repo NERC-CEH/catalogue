@@ -7,10 +7,13 @@
 
 <#if availability == "Superseded" || availability == "Withdrawn" || availability == "Deleted">
     <div>
-        <strong>THIS ${recordType?upper_case} HAS BEEN ${availability?upper_case}</strong>
-        <#if superseded?has_content>
-            The latest version is <a href="${superseded?first.href}">${superseded?first.title}</a>
-        </#if>
+        <strong>
+          THIS ${recordType?upper_case} WAS ${availability?upper_case}
+          <#if superseded?has_content>
+            <#if datasetReferenceDate.supersededDate??>on ${datasetReferenceDate.supersededDate?date?string['dd MMM yyyy']}</#if>
+            by <a href="${superseded?first.href}">${superseded?first.title}</a>
+          </#if>
+        </strong>
     </div>
     <#if reasonChanged??>
         <div><@blocks.linebreaksAndLinks reasonChanged/></div>
