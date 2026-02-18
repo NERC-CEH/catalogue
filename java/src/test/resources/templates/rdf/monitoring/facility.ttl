@@ -18,8 +18,8 @@ ef:narrower <https://catalogue.ceh.ac.uk/id/000000003>;
 ef:supersedes <https://catalogue.ceh.ac.uk/id/000000004>;
 ef:belongsTo <https://catalogue.ceh.ac.uk/id/000000005>;
 .
-
 :id0 a adms:Identifier ;
 skos:notation "123456" ;
 adms:schemaAgency <https://ror.org/00pggkr55> ;
 dcterms:conformsTo "UKCEH" ;
+.
