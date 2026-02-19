@@ -10,6 +10,7 @@ import {
   FundingView,
   IncomingCitationView,
   MapDataSourceView,
+  MetadataStandardView,
   OnlineResourceView,
   ParentStringView,
   ParentView,
@@ -827,6 +828,29 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
             'Date & time': {
               type: 'datetime',
               format: 'YYYY-MM-DDThh:mm:ss'
+            }
+          }
+        }),
+
+        new PredefinedParentView({
+          model: this.model,
+          modelAttribute: 'metadataStandards',
+          //ModelType: MetadataStandard,
+          label: 'Metadata standards',
+          ObjectInputView: MetadataStandardView,
+          multiline: true,
+          predefined: {
+            'Datacite 4.6': {
+              title: 'DataCite',
+              edition: '4.6',
+              date: '2024-12-05',
+              onlineLink: 'https://doi.org/10.14454/mzv1-5b55'
+            },
+            'Croissant v1': {
+              title: 'Croissant Format Specification',
+              edition: '1.0',
+              date: '2024-03-01',
+              onlineLink: 'http://mlcommons.org/croissant/1.0'
             }
           }
         }),
