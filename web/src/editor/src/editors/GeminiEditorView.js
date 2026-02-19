@@ -835,7 +835,6 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
         new PredefinedParentView({
           model: this.model,
           modelAttribute: 'metadataStandards',
-          //ModelType: MetadataStandard,
           label: 'Metadata standards',
           ObjectInputView: MetadataStandardView,
           multiline: true,

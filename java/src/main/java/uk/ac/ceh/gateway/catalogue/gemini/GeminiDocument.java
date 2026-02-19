@@ -259,7 +259,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             //.filter(ms -> "Conformant".equalsIgnoreCase(Optional.ofNullable(ms.getConformity()).orElse("")))
             .collect(Collectors.toList());
     }
-
+    @JsonIgnore
     public boolean isCroissant() {
         return !getCroissantConformity().isEmpty();
     }
