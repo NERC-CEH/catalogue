@@ -9,7 +9,7 @@ export default ObjectInputView.extend({
 
     const date = formatDateForInput(this.model.get('date'))
     this.$(`#metadataStandard${this.data.index}Date`).val(date)
-    this.$(`#metadataStandard${this.data.index}Date`).on('input', (event) => {this.model.set('date', this.value)})
+    this.$(`#metadataStandard${this.data.index}Date`).on('input', (event) => { this.model.set('date', this.value) })
   },
   render () {
     ObjectInputView.prototype.render.apply(this)
