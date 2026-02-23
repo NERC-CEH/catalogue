@@ -37,7 +37,7 @@ public class GeminiDocumentTest {
         ));
 
         //when
-        val actual = gemini.getFileAccess();
+        val actual = gemini.getDistributions();
 
         //then
         assertThat(actual.size(), equalTo(3));
