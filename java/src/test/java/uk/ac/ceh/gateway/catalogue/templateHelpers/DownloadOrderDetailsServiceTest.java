@@ -45,7 +45,7 @@ public class DownloadOrderDetailsServiceTest {
 
         //Then
         assertThat(order.isDataAccessible(), is(true));
-        assertThat(order.getdataAccessResources().contains(onlineResource), is(true));
+        assertThat(order.getDataAccessResources().contains(onlineResource), is(true));
     }
 
     @Test
@@ -62,7 +62,7 @@ public class DownloadOrderDetailsServiceTest {
 
         //Then
         assertThat(order.isDataAccessible(), is(true));
-        assertThat(order.getdataAccessResources().contains(onlineResource), is(true));
+        assertThat(order.getDataAccessResources().contains(onlineResource), is(true));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class DownloadOrderDetailsServiceTest {
 
         //Then
         assertThat(order.isDataAccessible(), is(true));
-        assertThat(order.getdataAccessResources().contains(onlineResource), is(true));
+        assertThat(order.getDataAccessResources().contains(onlineResource), is(true));
     }
 
     @Test
@@ -96,7 +96,7 @@ public class DownloadOrderDetailsServiceTest {
 
         //Then
         assertThat(order.isDataAccessible(), is(true));
-        assertThat(order.getdataAccessResources().contains(onlineResource), is(true));
+        assertThat(order.getDataAccessResources().contains(onlineResource), is(true));
     }
 
     @Test
@@ -115,7 +115,7 @@ public class DownloadOrderDetailsServiceTest {
 
         //Then
         assertThat(order.isDataAccessible(), is(true));
-        assertThat(order.getdataAccessResources().contains(orderable), is(true));
+        assertThat(order.getDataAccessResources().contains(orderable), is(true));
     }
 
     @Test
@@ -132,7 +132,7 @@ public class DownloadOrderDetailsServiceTest {
 
         //Then
         assertThat(order.isDataAccessible(), is(false));
-        assertThat(order.getdataAccessResources().contains(onlineResource), is(true));
+        assertThat(order.getDataAccessResources().contains(onlineResource), is(true));
     }
 
     @Test
