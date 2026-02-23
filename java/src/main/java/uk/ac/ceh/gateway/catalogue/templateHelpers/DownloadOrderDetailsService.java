@@ -52,28 +52,32 @@ public class DownloadOrderDetailsService {
     @lombok.Value
     public class DownloadOrder {
         String supportingDocumentsUrl;
-        List<OnlineResource> orderResources;
+        List<OnlineResource> dataAccessResources;
 
         // Decide if we should show an unavailable message on the UI. This value
         // will be false if the dataset is embargoed or unavailable
-        boolean isOrderable;
+        boolean isDataAccessible, isDataAddressable;
 
         public DownloadOrder(List<OnlineResource> onlineResources) {
+
+            var fileAccessUrls = extractFileAccessUrl(onlineResources);
+
             supportingDocumentsUrl = extractSupportingDocumentUrl(onlineResources);
-            orderResources = Lists.newArrayList(Iterables.concat(
+            dataAccessResources = Lists.newArrayList(Iterables.concat(
                 extractDownloadUrl(onlineResources),
                 extractOrderUrl(onlineResources),
-                extractFileAccessUrl(onlineResources)
+                fileAccessUrls
             ));
-            isOrderable = !orderResources.isEmpty();
+            isDataAccessible = !dataAccessResources.isEmpty();
+            isDataAddressable = !fileAccessUrls.isEmpty();
 
-            if (!isOrderable) {
-                // No DOWNLOADs or order manager ORDERs were found. Does a
+            if (!isDataAccessible) {
+                // No downloads or order manager ORDERs were found. Does a
                 // message exist as a dummy order?
                 onlineResources
                     .stream()
                     .filter(r -> r.getFunction().equals("offlineAccess"))
-                    .forEach(orderResources::add);
+                    .forEach(dataAccessResources::add);
             }
         }
 

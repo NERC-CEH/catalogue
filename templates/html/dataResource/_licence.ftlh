@@ -13,9 +13,6 @@
 
         <#if licence.uri?has_content><a rel="license" href="${licence.uri}"></#if>
           ${licenceText}
-          <#if licenceText?contains("Open Government Licence")>
-            <img class="ogl-logo" src='/static/img/ogl_16.png' alt='OGL'>
-          </#if>
         <#if licence.uri?has_content></a></#if>
       </p>
 

@@ -20,8 +20,8 @@
 
   <#if onlineResources?? >
     <#assign downloadList=downloadOrderDetails.from(onlineResources) >
-    <#if downloadList?? && downloadList.orderResources??&& downloadList.orderResources?has_content>
-      <#assign downloadUrl = downloadList.orderResources?first.url >
+    <#if downloadList?? && downloadList.dataAccessResources??&& downloadList.dataAccessResources?has_content>
+      <#assign downloadUrl = downloadList.dataAccessResources?first.url >
     </#if>
   </#if>
 

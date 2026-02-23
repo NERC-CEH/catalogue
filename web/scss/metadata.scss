@@ -287,6 +287,37 @@ body {
 
     .offcanvas-access {
         --bs-offcanvas-width: min(700px, 70%);
+
+        .accessOptions {
+
+            margin: 1em;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1em;
+
+            a.access {
+                line-height:1.25rem;
+                background-color: #eee;
+                color:var(--ukceh-colour-night);
+                text-decoration: none;
+                padding:0.35rem;
+                flex: 1 0 100%;
+                display: flex;
+                flex-wrap: nowrap;
+                align-items: center;
+
+                >* {
+                    margin: 0.65em;
+                }
+
+                .btn { min-width:115px;}
+
+                .accessText {
+                    flex-grow: 1;
+                }
+                &:hover { background-color: #ddd;}
+            }
+        }
     }
 
     #segment-description {

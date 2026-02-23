@@ -195,7 +195,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @JsonIgnore
-    public List<OnlineResource> getDownloads() {
+    public List<OnlineResource> getDataAccess() {
         Set<String> downloadRoles = Set.of("download", "order", "fileAccess");
         return getOnlineResources()
             .stream()
@@ -414,8 +414,18 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @JsonIgnore
-    public List<OnlineResource> getOrderResources() {
-        return filterOnlineResources(onlineResources, "order");
+    public List<OnlineResource> getOrders() {
+        return filterOnlineResources(getDataAccess(), "order");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getFileAccess() {
+        return filterOnlineResources(getDataAccess(), "fileAccess");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getDownloads() {
+        return filterOnlineResources(getDataAccess(), "fileAccess");
     }
 
     @JsonIgnore
@@ -426,11 +436,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     @JsonIgnore
     public List<OnlineResource> getMapservices() {
         return filterOnlineResourcesUrl(onlineResources, ".+catalogue\\.ceh\\.ac\\.uk\\/maps\\/.+");
-    }
-
-    @JsonIgnore
-    public List<OnlineResource> getOrders() {
-        return filterOnlineResourcesUrl(getOrderResources(), ".+\\.order-eidc\\.ceh\\.ac\\.uk\\/resources\\/.+");
     }
 
     @JsonIgnore
@@ -451,11 +456,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     @JsonIgnore
     public List<OnlineResource> getSearch() {
         return filterOnlineResources(onlineResources, "search");
-    }
-
-    @JsonIgnore
-    public List<OnlineResource> getFileAccess() {
-        return filterOnlineResources(getDownloads(), "fileAccess");
     }
 
     @JsonIgnore
