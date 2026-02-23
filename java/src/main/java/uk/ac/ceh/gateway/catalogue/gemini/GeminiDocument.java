@@ -425,7 +425,14 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     @JsonIgnore
     public List<OnlineResource> getDownloads() {
-        return filterOnlineResources(getDataAccess(), "fileAccess");
+        return filterOnlineResources(getDataAccess(), "download");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getDistributions() {
+        return Stream.of(getOrders(), getFileAccess(), getDownloads())
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
     }
 
     @JsonIgnore

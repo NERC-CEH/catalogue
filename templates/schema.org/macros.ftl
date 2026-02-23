@@ -51,7 +51,7 @@
     <#if funding?has_content>"funder": [<@itemList funding "fund"/>],</#if>
     <#if docType == "Dataset" || docType == "SoftwareSourceCode">
       <@licencesLink/>
-      <#if downloads?has_content>"distribution": [<@itemList downloads "distribution" />],</#if>
+      <#if distributions?has_content>"distribution": [<@itemList distributions "distribution" />],</#if>
       <@publisherLink/>
     </#if>
     "provider" : {"@id":"https://ror.org/04xw4m193"},
@@ -83,7 +83,7 @@
   <#if incomingCitations?has_content>,<@citationDetails/></#if>
   <#if funding?has_content>,<@fundDetails/></#if>
   <#if parts?has_content>,<@partDetails parts/></#if>
-  <#if downloads?has_content>,<@distributionDetails/></#if>
+  <#if distributions?has_content>,<@distributionDetails/></#if>
   <#if authorPointOfContactWithRORs?has_content>,<@organisationRORs/></#if>
 </#macro>
 
@@ -406,7 +406,7 @@
 </#macro>
 
 <#macro distributionDetails>
-  <#list downloads as distribution>
+  <#list distributions as distribution>
     {
     "@id": "#distribution${distribution?index}",
     "@type":"DataDownload",
