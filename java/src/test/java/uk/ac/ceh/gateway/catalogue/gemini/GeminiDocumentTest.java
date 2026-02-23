@@ -32,7 +32,7 @@ public class GeminiDocumentTest {
         gemini.setOnlineResources(List.of(
             OnlineResource.builder().function("download").build(),
             OnlineResource.builder().function("order").build(),
-            OnlineResource.builder().function("fileAccess").build()
+            OnlineResource.builder().function("fileAccess").build(),
             OnlineResource.builder().function("somethingElse").build()
         ));
 
