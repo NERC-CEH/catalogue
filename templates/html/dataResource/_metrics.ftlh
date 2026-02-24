@@ -69,17 +69,22 @@
               </#if>
 
               <#if totalDownloads gt 0 >
-                <#assign showToggle = true>
                 <#if datasetReferenceDate?? && datasetReferenceDate.publicationDate??>
-                  <#if downloadUrl?contains("order-eidc")>
-                    <#if (datasetReferenceDate.publicationDate)?date lt ordersBaseline?date >
-                    <#assign toggleText += "<div>Download numbers valid from " + ordersBaseline?date?string['dd MMMM yyyy'] + "</div>">
+                  <#if (datasetReferenceDate.publicationDate)?date lt downloadsBaseline?date >
+                    <#if downloadUrl?contains("order-eidc")>
+                      <#if (datasetReferenceDate.publicationDate)?date lt ordersBaseline?date >
+                      <#assign
+                        showToggle = true
+                        toggleText += "<div>Download numbers valid from " + ordersBaseline?date?string['dd MMMM yyyy'] + "</div>">
+                      </#if>
+                    <#else>
+                      <#if (datasetReferenceDate.publicationDate)?date lt downloadsBaseline?date >
+                      <#assign
+                        showToggle = true
+                        toggleText += "<div>Download numbers valid from " + downloadsBaseline?date?string['dd MMMM yyyy'] + "</div>">
+                      </#if>
                     </#if>
-                  <#else>
-                    <#if (datasetReferenceDate.publicationDate)?date lt downloadsBaseline?date >
-                    <#assign toggleText += "<div>Download numbers valid from " + downloadsBaseline?date?string['dd MMMM yyyy'] + "</div>">
-                    </#if>
-                  </#if>
+                 </#if>
                 </#if>
               </#if>
 
