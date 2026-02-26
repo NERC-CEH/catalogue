@@ -74,9 +74,8 @@ body {
                 mix-blend-mode: multiply;
                 width: auto;
                 height: auto;
-                max-width: max(100%, 350px);
+                max-width: min(100%, 350px);
                 max-height: 250px;
-
             }
         }
 

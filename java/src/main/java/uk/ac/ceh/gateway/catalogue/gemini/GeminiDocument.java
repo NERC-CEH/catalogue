@@ -48,13 +48,13 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
                     "^https://.*/maps/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*",
                     CASE_INSENSITIVE
             );
-    private String otherCitationDetails, lineage, reasonChanged,
-            metadataStandardName, metadataStandardVersion;
+    private String otherCitationDetails, lineage, reasonChanged;
     private Number version;
     private List<String> alternateTitles, spatialRepresentationTypes, temporalResolution, datasetLanguages,
             securityConstraints;
     private List<Keyword> topicCategories, keywordsDiscipline, keywordsInstrument,
             keywordsPlace, keywordsProject, keywordsTheme, keywordsOther;
+    private List<MetadataStandard> metadataStandards;
     private List<Geometry> geometries;
     private List<Fileset> fileset;
     private List<DistributionInfo> distributionFormats;
@@ -246,6 +246,22 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     public List<ResponsibleParty> getResponsibleParties() {
         return Optional.ofNullable(responsibleParties)
             .orElseGet(ArrayList::new);
+    }
+
+    @JsonIgnore
+    private List<MetadataStandard> getCroissantConformity() {
+        return Optional.ofNullable(getMetadataStandards())
+            .orElseGet(Collections::emptyList).stream()
+            .filter(Objects::nonNull)
+            .filter(ms -> ms.getTitle().equalsIgnoreCase("Croissant Format Specification"))
+            .filter(ms -> ms.getConformity().equalsIgnoreCase("Conformant"))
+            //.filter(ms -> "Croissant Format Specification".equalsIgnoreCase(Optional.ofNullable(ms.getTitle()).orElse("")))
+            //.filter(ms -> "Conformant".equalsIgnoreCase(Optional.ofNullable(ms.getConformity()).orElse("")))
+            .collect(Collectors.toList());
+    }
+    @JsonIgnore
+    public boolean isCroissant() {
+        return !getCroissantConformity().isEmpty();
     }
 
     private List<ResponsibleParty> responsiblePartyByRole(String role) {

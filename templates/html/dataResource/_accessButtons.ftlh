@@ -141,7 +141,7 @@
 
       <#include "_status.ftlh">
 
-      <#if mapViewable?? >
+      <#if mapViewable>
         <#if mapservices?? && mapservices?has_content>
         <div class="mb-1">Add to your GIS application:</div>
         <div class="ms-3">
