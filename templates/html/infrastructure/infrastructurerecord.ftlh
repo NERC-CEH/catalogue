@@ -22,9 +22,9 @@
 
         <#if description??>
           <div class="description">
-            <div class="clearfix">
+            <div class="clearfix description-text">
               <#if images?? && images?has_content>
-                <img src="${images?first.url}" alt="${images?first.name}" class="d-none d-md-block mb-md-3 float-end ms-3 col-lg-4 col-md-6 "/>
+                <img src="${images?first.url}" alt="${images?first.name}" class="browseGraphic"/>
               </#if>
               <@b.linebreaksAndLinks description/>
             </div>
