@@ -284,8 +284,73 @@ body {
         }
     }
 
+
+
+
+
+
+
+
+
     .offcanvas-access {
         --bs-offcanvas-width: min(700px, 70%);
+
+        .accessOptions {
+
+            margin: 1em;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1em;
+
+            a.access {
+
+                line-height: 1.25rem;
+                background-color: #eee;
+                color: var(--ukceh-colour-night);
+                text-decoration: none;
+                padding: 0.35rem;
+                flex: 1 0 100%;
+                flex-direction: var(--_optionDirection, row);
+                display: flex;
+                flex-wrap: nowrap;
+                align-items: center;
+
+                >* {
+                    margin: var(--_optionMargin, 0.65em);
+                }
+
+                .btn {
+                    min-width: var(--_optionBtnWidth, 115px);
+                }
+
+                .accessText {
+                    flex-grow: 1;
+                }
+
+                &:hover {
+                    background-color: #ddd;
+                }
+
+                @media (width <=40rem) {
+                    .fa-xl {
+                        display: none;
+                    }
+
+                    .btn {
+                        font-size: 80%;
+                       --_optionBtnWidth: 80px;
+                    }
+                }
+
+                @media (width <=36rem) {
+                    flex-direction: column;
+                    align-items: start;
+                    --_optionMargin: 0.35rem;
+                    _optionDirection: column;
+                }
+
+            }
+        }
     }
 
     #segment-description {

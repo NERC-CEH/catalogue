@@ -44,8 +44,8 @@ public class DownloadOrderDetailsServiceTest {
         DownloadOrder order = service.from(onlineResources);
 
         //Then
-        assertThat(order.isOrderable(), is(true));
-        assertThat(order.getOrderResources().contains(onlineResource), is(true));
+        assertThat(order.isDataAccessible(), is(true));
+        assertThat(order.getDataAccessResources().contains(onlineResource), is(true));
     }
 
     @Test
@@ -61,8 +61,8 @@ public class DownloadOrderDetailsServiceTest {
         DownloadOrder order = service.from(onlineResources);
 
         //Then
-        assertThat(order.isOrderable(), is(true));
-        assertThat(order.getOrderResources().contains(onlineResource), is(true));
+        assertThat(order.isDataAccessible(), is(true));
+        assertThat(order.getDataAccessResources().contains(onlineResource), is(true));
     }
 
     @Test
@@ -78,8 +78,8 @@ public class DownloadOrderDetailsServiceTest {
         DownloadOrder order = service.from(onlineResources);
 
         //Then
-        assertThat(order.isOrderable(), is(true));
-        assertThat(order.getOrderResources().contains(onlineResource), is(true));
+        assertThat(order.isDataAccessible(), is(true));
+        assertThat(order.getDataAccessResources().contains(onlineResource), is(true));
     }
 
     @Test
@@ -95,8 +95,8 @@ public class DownloadOrderDetailsServiceTest {
         DownloadOrder order = service.from(onlineResources);
 
         //Then
-        assertThat(order.isOrderable(), is(true));
-        assertThat(order.getOrderResources().contains(onlineResource), is(true));
+        assertThat(order.isDataAccessible(), is(true));
+        assertThat(order.getDataAccessResources().contains(onlineResource), is(true));
     }
 
     @Test
@@ -114,8 +114,8 @@ public class DownloadOrderDetailsServiceTest {
         DownloadOrder order = service.from(onlineResources);
 
         //Then
-        assertThat(order.isOrderable(), is(true));
-        assertThat(order.getOrderResources().contains(orderable), is(true));
+        assertThat(order.isDataAccessible(), is(true));
+        assertThat(order.getDataAccessResources().contains(orderable), is(true));
     }
 
     @Test
@@ -131,8 +131,8 @@ public class DownloadOrderDetailsServiceTest {
         DownloadOrder order = service.from(onlineResources);
 
         //Then
-        assertThat(order.isOrderable(), is(false));
-        assertThat(order.getOrderResources().contains(onlineResource), is(true));
+        assertThat(order.isDataAccessible(), is(false));
+        assertThat(order.getDataAccessResources().contains(onlineResource), is(true));
     }
 
     @Test
