@@ -26,19 +26,18 @@ public class Fileset {
         this.filesetName = nullToEmpty(filesetName);
         this.encodingFormat = nullToEmpty(encodingFormat);
         this.includes = nullToEmpty(includes);
+        String safeRegex = nullToEmpty(filesetRegex);
 
-        String computedRegex;
-            if (!includes.isEmpty()) {
-                computedRegex = "^" +
-                    includes
+        if (!this.includes.isEmpty()) {
+            this.filesetRegex = "^" +
+                    this.includes
                         .replace(".", "\\.")  // escape literal dot
                         .replace("*", ".+")   // glob * => regex .+
                         .replace("?", ".")    // glob ? => regex .
                     + "$";
-            } else {
-                computedRegex = nullToEmpty(filesetRegex);
-            }
-        this.filesetRegex = computedRegex;
+        } else {
+            this.filesetRegex = safeRegex;
+        }
 
         this.observedProperty = (observedProperty == null)? new ArrayList<>(): observedProperty;
     }

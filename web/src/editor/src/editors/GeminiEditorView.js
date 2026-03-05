@@ -799,7 +799,7 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
           modelAttribute: 'fileset',
           ModelType: Fileset,
           multiline: true,
-          label: 'Observed properties',
+          label: 'Fileset structure',
           ObjectInputView: FilesetView,
           fetchVariablesButton: true,
           predefined: {
