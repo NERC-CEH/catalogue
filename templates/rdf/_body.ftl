@@ -42,7 +42,7 @@
     </#if>
 
     <#--Relationships-->
-    <#list jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")>
+    <#list jena.relationships(uri, "http://purl.org/dc/terms/isPartOf")>
       dcterms:isPartOf <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
     <#list jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")>

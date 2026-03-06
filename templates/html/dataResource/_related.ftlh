@@ -1,5 +1,5 @@
 
-<#if (rel_memberOf?has_content && rel_memberOf?size gt 0) || (rel_usedBy?has_content && rel_usedBy?size gt 0) || (rel_uses?has_content && rel_uses?size gt 0) || (rel_generatedBy?has_content && rel_generatedBy?size gt 0) || (rel_generates?has_content && rel_generates?size gt 0) || (rel_related?has_content && rel_related?size gt 0) >
+<#if (rel_partOf?has_content && rel_partOf?size gt 0) || (rel_usedBy?has_content && rel_usedBy?size gt 0) || (rel_uses?has_content && rel_uses?size gt 0) || (rel_generatedBy?has_content && rel_generatedBy?size gt 0) || (rel_generates?has_content && rel_generates?size gt 0) || (rel_related?has_content && rel_related?size gt 0) >
 
     <#macro displayRelatives id title array>
       <#if array?has_content && array?size gt 0>
@@ -32,7 +32,7 @@
       <@displayRelatives "datasets" "Datasets associated with this service" rel_uses />
 
       <#-- PARENT record(s) -->
-      <@displayRelatives "parents" "This ${recordType} is included in the following collections" rel_memberOf />
+      <@displayRelatives "parents" "This ${recordType} is included in the following collections" rel_partOf />
 
     </div>
 </#if>

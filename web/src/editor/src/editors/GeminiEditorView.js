@@ -485,11 +485,11 @@ export default EditorView.extend({
           options: [
             {
               value: 'https://vocabs.ceh.ac.uk/eidc#generates',
-              label: 'Generates (e.g. a model generates a dataset)'
+              label: 'Generates (e.g., a model generates a dataset)'
             },
             {
-              value: 'https://vocabs.ceh.ac.uk/eidc#memberOf',
-              label: 'Member of (e.g. a dataset is a member of a data collection)'
+              value: 'http://purl.org/dc/terms/isPartOf',
+              label: 'Part of (e.g., a dataset is a part of a data collection)'
             },
             {
               value: 'https://vocabs.ceh.ac.uk/eidc#relatedTo',

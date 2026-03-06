@@ -147,7 +147,7 @@ public class RdfTurtleTest {
     class Dataset {
 
         private void givenRelationshipMemberOf(String uri) {
-            given(jenaLookupService.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf"))
+            given(jenaLookupService.relationships(uri, "http://purl.org/dc/terms/isPartOf"))
                 .willReturn(
                     List.of(
                         Link.builder().href("https://example.com/id/283746").build(),

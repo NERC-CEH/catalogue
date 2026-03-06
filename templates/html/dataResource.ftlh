@@ -10,11 +10,11 @@
     rel_related=jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo") + jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")
     rel_generates = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#generates")
     rel_uses = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
-    rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
+    rel_partOf = jena.relationships(uri, "http://purl.org/dc/terms/isPartOf")
     rel_generatedBy= jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#generates")
     rel_supersededBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")
     rel_usedBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
-    rel_hasMember = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
+    rel_hasPart = jena.inverseRelationships(uri, "http://purl.org/dc/terms/isPartOf")
     rel_supersedes = jena.supersedes(uri)
     rel_source = jena.relationships(uri, "http://purl.org/dc/terms/source")
 
