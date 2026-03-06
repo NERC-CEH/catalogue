@@ -380,14 +380,8 @@ public class JenaLookupService {
      * @return List of relations
      */
     public List<Link> incomingEidcRelations(String uri) {
-        val query = "SELECT * " +
-                    "WHERE { " +
-                    "  ?node ?rel ?me ; " +
-                    "  <http://purl.org/dc/terms/title> ?title ; " +
-                    "  <http://purl.org/spar/pso/PublicationStatus> ?publicationStatus ; " +
-                    "  <http://purl.org/dc/terms/type>  ?type . " +
-                    "FILTER(strstarts(str(?rel), 'https://vocabs.ceh.ac.uk/eidc#'))" +
-                    "}";
+        val query = "PREFIX dct: <http://purl.org/dc/terms/> SELECT * WHERE {?node dct:isPartOf ?me ; dct:title ?title; <http://purl.org/spar/pso/PublicationStatus> ?publicationStatus; dct:type ?type .}";
         return links(uri, query);
     }
+    //WRONG
 }
