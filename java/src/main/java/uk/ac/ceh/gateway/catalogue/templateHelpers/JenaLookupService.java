@@ -261,7 +261,7 @@ public class JenaLookupService {
     }
 
     public List<Link> allRelatedRecords(String uri) {
-        String sparql = "PREFIX dct: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?rel ?title ?publicationStatus ?type WHERE {{?me ?rel ?node. ?node dct:title ?title; pso:PublicationStatus ?publicationStatus; dct:type ?type.} UNION {?node ?rel ?me. ?node dct:title ?title; pso:PublicationStatus ?publicationStatus; dct:type ?type.}FILTER(REGEX(STR(?rel),'^https://vocabs.ceh.ac.uk/eidc#'))}";
+        String sparql = "PREFIX dct: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?rel ?title ?publicationStatus ?type WHERE {{?me ?rel ?node. ?node dct:title ?title; pso:PublicationStatus ?publicationStatus; dct:type ?type.} UNION {?node ?rel ?me. ?node dct:title ?title; pso:PublicationStatus ?publicationStatus; dct:type ?type.} FILTER (?rel IN (dct:references, dct:replaces, dct:requires, dct:isPartOf, dct:relation))}";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         return links(pss);

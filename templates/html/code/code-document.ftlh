@@ -3,8 +3,8 @@
 <#assign
   rel_partOf = jena.relationships(uri, "http://purl.org/dc/terms/isPartOf")
   rel_hasPart = jena.inverseRelationships(uri, "http://purl.org/dc/terms/isPartOf")
-  rel_related = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo") + jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")
-  relationships = rel_partOf + rel_hasPart + rel_related
+  rel_relation = jena.inverseRelationships(uri, "http://purl.org/dc/terms/relation") + jena.relationships(uri, "http://purl.org/dc/terms/relation")
+  relationships = rel_partOf + rel_hasPart + rel_relation
 >
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
@@ -157,8 +157,8 @@
                 <@displayRelations rel_hasPart "This project uses" />
               </#if>
 
-              <#if rel_related?has_content>
-                <@displayRelations rel_related "Other related records" />
+              <#if rel_relation?has_content>
+                <@displayRelations rel_relation "Other related records" />
               </#if>
 
             </#if>

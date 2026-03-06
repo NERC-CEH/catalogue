@@ -24,8 +24,8 @@ public class Ontology {
     public static final Property PUBLICATION_DATE = ResourceFactory.createProperty("http://purl.org/dc/terms/available");
     public static final Property METADATA_STATUS = ResourceFactory.createProperty("http://purl.org/spar/pso/PublicationStatus");
     public static final Property RESOURCE_STATUS = ResourceFactory.createProperty("https://vocabs.ceh.ac.uk/eidc#availability");
-    public static final Property ANYREL = ResourceFactory.createProperty("https://vocabs.ceh.ac.uk/eidc#");
-    public static final Property EIDC_USES = ResourceFactory.createProperty("https://vocabs.ceh.ac.uk/eidc#uses");
+    public static final Property REQUIRES = ResourceFactory.createProperty("http://purl.org/dc/terms/requires");
+
     public static final Property SET_UP_FOR = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#setUpFor");
     public static final Property USES = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#uses");
     public static final Property INVOLVED_IN = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#involvedIn");

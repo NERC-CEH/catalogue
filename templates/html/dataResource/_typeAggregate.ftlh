@@ -58,13 +58,13 @@
     </div>
   </#if>
 
-  <#if (rel_related?has_content && rel_hasPart?size gt 0) || (otherSupplemental?has_content && otherSupplemental?size gt 0) >
+  <#if (rel_relation?has_content && rel_hasPart?size gt 0) || (otherSupplemental?has_content && otherSupplemental?size gt 0) >
     <div id="segment-related" class="mt-5">
 
       <h3 class="my-3">Other related resources</h3>
 
       <div class="ukcehcards ukcehcards-small">
-        <#list rel_related>
+        <#list rel_relation>
           <#items as item>
             <#if item.associationType = 'dataset' ||  item.associationType = 'nonGeographicDataset' ||  item.associationType = 'signpost'>
               <#assign type="Dataset" icon="fa-solid fa-chart-column" >

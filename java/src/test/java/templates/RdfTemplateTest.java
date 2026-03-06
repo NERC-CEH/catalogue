@@ -130,7 +130,7 @@ public class RdfTemplateTest {
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/111112345").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/111154321").build()
             ));
-            given(jena.relationships(geminiDocument.getUri(), "https://vocabs.ceh.ac.uk/eidc#relatedTo")).willReturn(List.of(
+            given(jena.relationships(geminiDocument.getUri(), "http://purl.org/dc/terms/relation")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/222212345").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/222254321").build()
             ));

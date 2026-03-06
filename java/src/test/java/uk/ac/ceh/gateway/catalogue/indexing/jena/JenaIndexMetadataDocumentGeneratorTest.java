@@ -85,7 +85,7 @@ public class JenaIndexMetadataDocumentGeneratorTest {
         val document = new GeminiDocument();
         document.setId("1234-5678");
         document.setRelationships(Set.of(
-                new Relationship("https://vocabs.ceh.ac.uk/eidc#uses", "https://example.com/12")
+                new Relationship("http://purl.org/dc/terms/requires", "https://example.com/12")
         ));
 
         //when
