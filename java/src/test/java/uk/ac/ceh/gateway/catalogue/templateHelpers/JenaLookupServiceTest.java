@@ -49,11 +49,11 @@ public class JenaLookupServiceTest {
         triples.add(createResource(dataset1), TITLE, "Dataset 1");
         triples.add(createResource(dataset1), METADATA_STATUS, "published");
         triples.add(createResource(dataset1), TYPE, "dataset");
-        triples.add(createResource(dataset1), EIDC_MEMBER_OF, createResource(collection));
+        triples.add(createResource(dataset1), IS_PART_OF, createResource(collection));
         triples.add(createResource(dataset2), TITLE, "Dataset 2");
         triples.add(createResource(dataset2), METADATA_STATUS, "published");
         triples.add(createResource(dataset2), TYPE, "dataset");
-        triples.add(createResource(dataset2), EIDC_MEMBER_OF, createResource(collection));
+        triples.add(createResource(dataset2), IS_PART_OF, createResource(collection));
         triples.add(createResource(other), REFERENCES, createResource(collection));
         triples.add(createResource(other), METADATA_STATUS, "published");
 
