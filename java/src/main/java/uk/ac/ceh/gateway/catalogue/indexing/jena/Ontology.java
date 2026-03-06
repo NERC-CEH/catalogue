@@ -29,8 +29,6 @@ public class Ontology {
     public static final Property SET_UP_FOR = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#setUpFor");
     public static final Property USES = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#uses");
     public static final Property INVOLVED_IN = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#involvedIn");
-    public static final Property SUPERSEDES = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#supersedes");
-    public static final Property SUPERSEDED_BY = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#supersededBy");
     public static final Property BROADER = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#broader");
     public static final Property NARROWER = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#narrower");
     public static final Property HASCHILD = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#hasChild");

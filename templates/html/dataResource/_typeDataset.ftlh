@@ -27,7 +27,7 @@
         </div>
       </#if>
 
-      <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
+      <#if rel_replaces?has_content && rel_replaces?size gt 0>
         <#include "_latestVersion.ftlh">
       </#if>
 

@@ -9,7 +9,7 @@
           (view other versions)
         </span>
         <ul class="dropdown-menu dropdown-menu-end">
-            <#list rel_supersedes as item>
+            <#list rel_replaces as item>
               <li><a class="dropdown-item" href="${item.href}">${item.title}</a></li>
             </#list>
         </ul>

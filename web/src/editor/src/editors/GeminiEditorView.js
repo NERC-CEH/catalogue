@@ -496,8 +496,8 @@ export default EditorView.extend({
               label: 'Related To'
             },
             {
-              value: 'https://vocabs.ceh.ac.uk/eidc#supersedes',
-              label: 'Supersedes'
+              value: 'http://purl.org/dc/terms/replaces',
+              label: 'Replaces (supersedes)'
             },
             {
               value: 'https://vocabs.ceh.ac.uk/eidc#uses',

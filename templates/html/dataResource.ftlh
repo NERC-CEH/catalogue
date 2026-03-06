@@ -12,10 +12,9 @@
     rel_uses = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
     rel_partOf = jena.relationships(uri, "http://purl.org/dc/terms/isPartOf")
     rel_generatedBy= jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#generates")
-    rel_supersededBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")
     rel_usedBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
     rel_hasPart = jena.inverseRelationships(uri, "http://purl.org/dc/terms/isPartOf")
-    rel_supersedes = jena.supersedes(uri)
+    rel_replaces = jena.replaces(uri)
     rel_source = jena.relationships(uri, "http://purl.org/dc/terms/source")
 
     MD_checks = metadataQuality.check(id)

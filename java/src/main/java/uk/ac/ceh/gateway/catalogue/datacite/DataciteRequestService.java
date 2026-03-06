@@ -129,12 +129,12 @@ public class DataciteRequestService {
 
         List<Link> relSupersedes = jenaLookupService.relationships(
             subjectUri,
-            "https://vocabs.ceh.ac.uk/eidc#supersedes"
+            "http://purl.org/dc/terms/replaces"
         );
 
         List<Link> relSupersedesBy = jenaLookupService.inverseRelationships(
             subjectUri,
-            "https://vocabs.ceh.ac.uk/eidc#supersedes"
+            "http://purl.org/dc/terms/replaces"
         );
 
         for (Link link : relSupersedes) {
