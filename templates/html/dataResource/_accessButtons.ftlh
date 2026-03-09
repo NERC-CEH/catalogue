@@ -152,7 +152,7 @@
 
 <#macro accessOptions resources>
     <#list resources as item>
-
+        <#assign optionDescription = "">
         <#if item.name?has_content>
           <#assign optionLabel = item.name>
         </#if>
