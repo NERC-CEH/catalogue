@@ -180,7 +180,11 @@
           </#if>
         </#if>
 
+      <#if catalogue.id == 'eidc'>
         <@accessOption "/download/${id}?url=${item.url}" optionLabel optionDescription optionIcon/>
+      <#else>
+        <@accessOption "${item.url}" optionLabel optionDescription optionIcon/>
+      </#if>
 
     </#list>
 </#macro>
