@@ -15,16 +15,6 @@
   </#if>
 </#if>
 
-<#assign
-  hasOrders = false
->
-<#if onlineResources?has_content>
-  <#assign
-    hasOrders = orders?size gt 0
-  >
-</#if>
-
-
 <#if resourceType?? && permission.userCanEdit(id)>
   <div class="row d-print-none" id="adminPanel">
     <div class="d-flex gap-2 justify-content-end flex-wrap adminToolbar" role="toolbar">
@@ -38,7 +28,7 @@
 
         <@cloneRecord />
 
-        <#if isSimpleUpload || hasOrders || isEidcCustodian || isEidcWithResourceType>
+        <#if isSimpleUpload|| isEidcCustodian || isEidcWithResourceType>
           <@moreButton />
         </#if>
       </#if>
@@ -134,12 +124,8 @@
         <@menuLink link="https://jira.ceh.ac.uk/issues/?jql=cf%5B13250%5D%3D%22${id}%22" target="_blank"><i class="fa-brands fa-jira"></i> Jira issues</@menuLink>
       </#if>
 
-      <#list orders>
-        <#items as testLink>
-          <#if testLink.function == "order">
-            <@menuLink link="${testLink.url}?test=true">Test order</@menuLink>
-          </#if>
-        </#items>
+      <#list orders as order>
+        <@menuLink link="${order.url}?test=true">Test order</@menuLink>
       </#list>
     </ul>
   </div>

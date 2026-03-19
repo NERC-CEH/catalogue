@@ -27,7 +27,13 @@
 
     <div class="${mainColClasses} py-3">
 
-      <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
+      <#if availability?? && availability?has_content && availability != "Available" && availability != "Controlled"  && availability != "Unknown"  >
+        <div class="alert alert-${availability}" role="alert">
+          <#include "_status.ftlh">
+        </div>
+      </#if>
+
+      <#if rel_replaces?has_content && rel_replaces?size gt 0>
         <#include "_latestVersion.ftlh">
       </#if>
 

@@ -10,6 +10,7 @@ import {
   FundingView,
   IncomingCitationView,
   MapDataSourceView,
+  MetadataStandardView,
   OnlineResourceView,
   ParentStringView,
   ParentView,
@@ -483,24 +484,20 @@ export default EditorView.extend({
           multiline: true,
           options: [
             {
-              value: 'https://vocabs.ceh.ac.uk/eidc#generates',
-              label: 'Generates (e.g. a model generates a dataset)'
+              value: 'http://purl.org/dc/terms/isPartOf',
+              label: 'Part of (e.g., a dataset is a part of a data collection)'
             },
             {
-              value: 'https://vocabs.ceh.ac.uk/eidc#memberOf',
-              label: 'Member of (e.g. a dataset is a member of a data collection)'
+              value: 'http://purl.org/dc/terms/relation',
+              label: 'Relation'
             },
             {
-              value: 'https://vocabs.ceh.ac.uk/eidc#relatedTo',
-              label: 'Related To'
+              value: 'http://purl.org/dc/terms/replaces',
+              label: 'Replaces (supersedes)'
             },
             {
-              value: 'https://vocabs.ceh.ac.uk/eidc#supersedes',
-              label: 'Supersedes'
-            },
-            {
-              value: 'https://vocabs.ceh.ac.uk/eidc#uses',
-              label: 'Uses'
+              value: 'http://purl.org/dc/terms/requires',
+              label: 'Requires - a related resource that is required by this resource to support its function/delivery'
             }
           ],
           helpText: `
@@ -798,7 +795,7 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
           modelAttribute: 'fileset',
           ModelType: Fileset,
           multiline: true,
-          label: 'Observed properties',
+          label: 'Fileset structure',
           ObjectInputView: FilesetView,
           fetchVariablesButton: true,
           predefined: {
@@ -827,6 +824,28 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
             'Date & time': {
               type: 'datetime',
               format: 'YYYY-MM-DDThh:mm:ss'
+            }
+          }
+        }),
+
+        new PredefinedParentView({
+          model: this.model,
+          modelAttribute: 'metadataStandards',
+          label: 'Metadata standards',
+          ObjectInputView: MetadataStandardView,
+          multiline: true,
+          predefined: {
+            'Datacite 4.6': {
+              title: 'DataCite',
+              edition: '4.6',
+              date: '2024-12-05',
+              onlineLink: 'https://doi.org/10.14454/mzv1-5b55'
+            },
+            'Croissant v1': {
+              title: 'Croissant Format Specification',
+              edition: '1.0',
+              date: '2024-03-01',
+              onlineLink: 'http://mlcommons.org/croissant/1.0'
             }
           }
         }),

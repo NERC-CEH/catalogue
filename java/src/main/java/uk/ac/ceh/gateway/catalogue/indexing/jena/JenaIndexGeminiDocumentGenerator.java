@@ -98,7 +98,7 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .stream()
             .filter(r -> !r.isEmpty())
             .forEach(r ->
-                toReturn.add(createStatement(me, EIDC_USES, createResource(r)))
+                toReturn.add(createStatement(me, REQUIRES, createResource(r)))
             );
         Optional.ofNullable(document.getPublicationDate())
             .ifPresent(publicationDate -> {

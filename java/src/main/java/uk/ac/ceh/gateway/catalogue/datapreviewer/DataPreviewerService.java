@@ -181,7 +181,7 @@ public class DataPreviewerService {
 
         var links = jenaLookupService.inverseRelationships(
             collectionUri,
-            Ontology.EIDC_MEMBER_OF.getURI()
+            Ontology.IS_PART_OF.getURI()
         );
 
         for (var link : links) {

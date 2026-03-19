@@ -1,6 +1,6 @@
 
-<#if onlineResources??>
-  <#assign downloadOrder=downloadOrderDetails.from(onlineResources) >
+<#if downloadOrderDetails??>
+  <#assign dataAccess=downloadOrderDetails.from(onlineResources) >
 </#if>
 
 
@@ -17,7 +17,7 @@
 <#macro accessButton>
   <#if resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'model' || resourceType.value == 'software' || resourceType.value == 'computationalNotebook' || resourceType.value == 'method'>
     <#if availability == "Available" || availability == "Controlled" >
-      <#if downloadOrder?? && downloadOrder?string?contains("isOrderable=true") >
+      <#if dataAccess?? && dataAccess.dataAccessible >
         <a class="btn btn-ukceh" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
           Download
           <i class="fa-solid fa-arrow-down fa-fw"></i>
@@ -36,8 +36,8 @@
 </#macro>
 
 <#macro documentsButton>
-  <#if (downloadOrder.supportingDocumentsUrl)?has_content>
-    <a class="btn btn-ukceh" href="${downloadOrder.supportingDocumentsUrl}" title="Supporting information important for the re-use of this dataset">
+  <#if (dataAccess.supportingDocumentsUrl)?has_content>
+    <a class="btn btn-ukceh" href="${dataAccess.supportingDocumentsUrl}" title="Supporting information important for the re-use of this dataset">
       Supporting docs
       <i class="fa-solid fa-file fa-fw"></i></span>
     </a>
@@ -95,37 +95,42 @@
 
       <#if availability == "Available" || availability == "Controlled">
 
-        <div class="card text-bg-primary mb-3">
-          <div class="card-body">
-            <strong>PLEASE NOTE:</strong>
-            <hr>
-            ${constraints?no_esc}
+        <#include "_licence.ftlh">
+        <div>
+          ${constraints?no_esc}
 
-            <#if otherConstraints?has_content>
-              <#list otherConstraints as oc>
+          <#if otherConstraints?has_content>
+            <#list otherConstraints as oc>
 
-                <#assign otherConstraintText = oc.value >
+              <#assign otherConstraintText = oc.value >
 
-                <#if recordType?? && recordType?has_content>
-                  <#assign otherConstraintText = otherConstraintText?replace("resource",recordType) >
-                </#if>
+              <#if recordType?? && recordType?has_content>
+                <#assign otherConstraintText = otherConstraintText?replace("resource",recordType) >
+              </#if>
 
-                <#if oc.uri?has_content>
-                  <#assign otherConstraintText = "<a href='${oc.uri}'>"+ otherConstraintText + '</a>'>
-                </#if>
+              <#if oc.uri?has_content>
+                <#assign otherConstraintText = "<a href='${oc.uri}'>"+ otherConstraintText + '</a>'>
+              </#if>
 
-                <p class="constraints">${otherConstraintText}</p>
-              </#list>
-            </#if>
-          </div>
+              <p class="constraints">${otherConstraintText}</p>
+            </#list>
+          </#if>
         </div>
 
-        <#include "_licence.ftlh">
+        <#if (dataAccess?? && dataAccess.dataAccessResources?has_content) || (resourceType.value?? && distributionFormats?? && distributionFormats?has_content)>
+          <div class="accessOptions">
+            <@accessOptions dataAccess.dataAccessResources/>
 
-        <#if downloadOrder?? && ((downloadOrder.orderResources)?has_content || (downloadOrder.supportingDocumentsUrl)?has_content) || ((resourceType.value)?? && distributionFormats?? && distributionFormats?has_content)>
-          <#list downloadOrder.orderResources as item>
-            <@downloadButton item/>
-          </#list>
+            <#if mapViewable>
+              <#if mapservices?? && mapservices?has_content>
+                <#list mapservices as wms>
+                  <@accessOption "${wms.url}" " Web map service" "Access a web map service (WMS) for use in a GIS application" "fa-globe" "Access"/>
+                </#list>
+              </#if>
+            </#if>
+          </div>
+
+          <@fileAccessInstructions />
         <#elseif externalLinks?? && externalLinks?has_content>
           <#list externalLinks as item>
             <p>
@@ -141,69 +146,90 @@
 
       <#include "_status.ftlh">
 
-      <#if mapViewable?? >
-        <#if mapservices?? && mapservices?has_content>
-        <div class="mb-1">Add to your GIS application:</div>
-        <div class="ms-3">
-          <#list mapservices as wms>
-            ${wms.url}<#sep><br></#sep>
-          </#list>
-        </div>
-        </#if>
-      </#if>
-
     </div>
   </div>
 </#macro>
 
-<#macro downloadButton onlineResource>
-  <#assign onlineResourceUrl = onlineResource.url>
+<#macro accessOptions resources>
+    <#list resources as item>
+        <#assign optionDescription = "">
+        <#if item.name?has_content>
+          <#assign optionLabel = item.name>
+        </#if>
 
-    <#if onlineResourceUrl?matches(downloadUrlRegexes.getRegexDatastore(), "i")>
-      <#assign downloadType="direct"/>
-    <#elseif onlineResourceUrl?matches(downloadUrlRegexes.getRegexPackage(), "i")>
-      <#assign downloadType="package"/>
-      <#assign onlineResourceUrl = onlineResourceUrl + '.zip'>
-    <#elseif onlineResourceUrl?matches(downloadUrlRegexes.getRegexOrder(), "i")>
-      <#assign downloadType="order"/>
-    </#if>
+        <#if catalogue.id == 'eidc'>
+          <#if item.function == "download" && item.url?matches("^https://data-package.ceh.ac.uk/data/.+")>
+            <#assign optionLabel = "Download the whole dataset">
+            <#assign optionDescription = "Download the whole dataset as a zip package">
+          <#elseif item.function == "order" && item.url?matches("^https://order-eidc.ceh.ac.uk/resources/.+")>
+            <#assign optionLabel = "Order the data">
+            <#assign optionDescription = "Select all or part of the data and receive by email">
+            <#assign optionIcon = "fa-arrow-right-from-bracket">
+          <#elseif item.function == "fileAccess" && item.url?matches("^https://catalogue.ceh.ac.uk/datastore/eidchub/.+")>
+            <#assign optionLabel = "Directly access files">
+            <#assign optionDescription = "Access individual files ">
+            <#assign optionIcon = "fa-folder-open">
+          </#if>
+        </#if>
 
-    <#assign onlineResourceLabel = "Order/download">
-    <#if onlineResource.name?has_content>
-      <#assign onlineResourceLabel = onlineResource.name>
-    </#if>
+        <#if item.size?has_content>
+          <#if item.function == "download">
+            <#assign optionDescription += " (" + calculateDownloadSize(item.size) + ")">
+          <#elseif item.function == "fileAccess">
+            <#assign optionDescription += " (total size " + calculateDownloadSize(item.size) + ")">
+          </#if>
+        </#if>
 
-    <#if onlineResource.size?has_content>
-      <#if onlineResource.size?number gt 1073741824>
-        <#assign sizeLabel = 'approx. ' + (onlineResource.size?number / 1073741824)?string["0.#"]  + 'Gb'>
-      <#elseif onlineResource.size?number gt 10485760>
-          <#assign sizeLabel = 'approx. ' + (onlineResource.size?number / 1048576)?string["0.#"]  + 'Mb'>
-      <#elseif onlineResource.size?number lte 10485760 && onlineResource.size?number gt 5242880>
-          <#assign sizeLabel = '< 10 Mb'>
-      <#elseif onlineResource.size?number lte 5242880 && onlineResource.size?number gt 1048576>
-          <#assign sizeLabel = '< 5 Mb'>
+      <#if catalogue.id == 'eidc'>
+        <@accessOption "/download/${id}?url=${item.url}" optionLabel optionDescription optionIcon/>
       <#else>
-        <#assign sizeLabel = '< 1 Mb'>
+        <@accessOption "${item.url}" optionLabel optionDescription optionIcon/>
       </#if>
-    </#if>
 
-    <a href="/download/${id}?url=${onlineResourceUrl?url}" class="btn btn-ukceh">
-      ${onlineResourceLabel}
-      <#if sizeLabel??>
-        <small>(${sizeLabel})</small>
-      </#if>
-      <span class="fa-solid fa-arrow-down"></span>
-    </a>
-
-    <#if downloadType?? && downloadType=="direct">
-      <div class="py-3">
-        <hr>
-        <h5 class="my-3">Bulk download options</h5>
-        <p>You can use WGET to download data. For example<br>
-          <code> wget --user=YOUR_USERNAME --password=YOUR_PASSWORD --auth-no-challenge ${onlineResourceUrl}</code>
-        </p>
-        <p><a href="https://eidc.ac.uk/help/getdata/downloadData#programmaticAccess" rel="nofollow noreferrer" target="_blank">Further information and help &raquo;</a></p>
-      </div>
-    </#if>
-
+    </#list>
 </#macro>
+
+<#macro accessOption link="#" title="Order/download" description="" icon="fa-download" buttonLabel="Download">
+    <a class="access"  href="${link}">
+      <div class="fa-solid fa-xl ${icon}"></div>
+      <div class="accessText">
+        <b>${title}</b>
+        <#if description?? && description?has_content>
+        <br><small class="text-body-secondary">${description}</small>
+        </#if>
+      </div>
+      <span class="btn btn-ukceh text-nowrap">${buttonLabel}</span>
+    </a>
+</#macro>
+
+<#macro fileAccessInstructions>
+  <#if dataAccess?? && dataAccess.dataAddressable>
+    <div class="py-3">
+      <hr class="my-5 ">
+      <h5 class="my-3">Bulk download options</h5>
+      <p>You can use WGET to download data. For example<br>
+        <code>
+          wget https://catalogue.ceh.ac.uk/datastore/eidchub/${id}
+          --user=YOUR_USERNAME --password=YOUR_PASSWORD --auth-no-challenge
+        <#t></code>
+      </p>
+      <p><a href="https://eidc.ac.uk/help/getdata/downloadData#programmaticAccess" rel="nofollow noreferrer" target="_blank">Further information and help &raquo;</a></p>
+    </div>
+  </#if>
+</#macro>
+
+<#function calculateDownloadSize size>
+    <#if size?number gt 1073741824>
+      <#local sizeLabel = 'approx. ' + (size?number / 1073741824)?string["0.#"]  + 'Gb'>
+    <#elseif size?number gt 10485760>
+      <#local sizeLabel = 'approx. ' + (size?number / 1048576)?string["0.#"]  + 'Mb'>
+    <#elseif size?number lte 10485760 && size?number gt 5242880>
+      <#local sizeLabel = '< 10 Mb'>
+    <#elseif size?number lte 5242880 && size?number gt 1048576>
+      <#local sizeLabel = '< 5 Mb'>
+    <#else>
+      <#local sizeLabel = '< 1 Mb'>
+    </#if>
+
+    <#return sizeLabel>
+</#function>
