@@ -156,7 +156,7 @@ class DataPreviewerServiceTest {
 
         when(jenaLookupService.inverseRelationships(
             "http://example.org/id/col1",
-            Ontology.EIDC_MEMBER_OF.getURI()
+            Ontology.IS_PART_OF.getURI()
         )).thenReturn(
             List.of(Link.builder().href("http://example.org/id/ds1").build())
         );
@@ -194,7 +194,7 @@ class DataPreviewerServiceTest {
 
         when(jenaLookupService.inverseRelationships(
             "http://example.org/id/col1",
-            Ontology.EIDC_MEMBER_OF.getURI()
+            Ontology.IS_PART_OF.getURI()
         )).thenReturn(
             List.of(Link.builder().href("http://example.org/id/ds1").build())
         );
@@ -243,14 +243,14 @@ class DataPreviewerServiceTest {
 
         when(jenaLookupService.inverseRelationships(
             "http://example.org/id/col1",
-            Ontology.EIDC_MEMBER_OF.getURI()
+            Ontology.IS_PART_OF.getURI()
         )).thenReturn(
             List.of(Link.builder().href("http://example.org/id/col2").build())
         );
 
         when(jenaLookupService.inverseRelationships(
             "http://example.org/id/col2",
-            Ontology.EIDC_MEMBER_OF.getURI()
+            Ontology.IS_PART_OF.getURI()
         )).thenReturn(
             List.of(Link.builder().href("http://example.org/id/ds1").build())
         );

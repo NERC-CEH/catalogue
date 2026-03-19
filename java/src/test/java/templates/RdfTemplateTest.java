@@ -122,16 +122,15 @@ public class RdfTemplateTest {
 
             val geminiDocument = objectMapper.readValue(expected("rdf/datastore/eidc-gemini.raw"), GeminiDocument.class);
 
-            String predicateURI="https://vocabs.ceh.ac.uk/eidc#";
-            given(jena.relationships(geminiDocument.getUri(), predicateURI + "memberOf")).willReturn(List.of(
+            given(jena.relationships(geminiDocument.getUri(), "http://purl.org/dc/terms/isPartOf")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000012345").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000054321").build()
             ));
-            given(jena.relationships(geminiDocument.getUri(), predicateURI + "supersedes")).willReturn(List.of(
+            given(jena.relationships(geminiDocument.getUri(), "http://purl.org/dc/terms/replaces")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/111112345").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/111154321").build()
             ));
-            given(jena.relationships(geminiDocument.getUri(), predicateURI + "relatedTo")).willReturn(List.of(
+            given(jena.relationships(geminiDocument.getUri(), "http://purl.org/dc/terms/relation")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/222212345").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/222254321").build()
             ));

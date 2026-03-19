@@ -127,17 +127,17 @@ public class DataciteRequestService {
             subjectUri = uri;
         }
 
-        List<Link> relSupersedes = jenaLookupService.relationships(
+        List<Link> relReplaces = jenaLookupService.relationships(
             subjectUri,
-            "https://vocabs.ceh.ac.uk/eidc#supersedes"
+            "http://purl.org/dc/terms/replaces"
         );
 
-        List<Link> relSupersedesBy = jenaLookupService.inverseRelationships(
+        List<Link> relReplacedBy = jenaLookupService.inverseRelationships(
             subjectUri,
-            "https://vocabs.ceh.ac.uk/eidc#supersedes"
+            "http://purl.org/dc/terms/replaces"
         );
 
-        for (Link link : relSupersedes) {
+        for (Link link : relReplaces) {
             String href = link.getHref();
             String uuid = href.substring(href.lastIndexOf("/") + 1);
             String doi = "10.5285/" + uuid;
@@ -145,7 +145,7 @@ public class DataciteRequestService {
                 doi, "DOI", "IsNewVersionOf", "Dataset"
             ));
         }
-        for (Link link : relSupersedesBy) {
+        for (Link link : relReplacedBy) {
             String href = link.getHref();
             String uuid = href.substring(href.lastIndexOf("/") + 1);
             String doi = "10.5285/" + uuid;

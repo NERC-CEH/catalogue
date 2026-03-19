@@ -484,24 +484,20 @@ export default EditorView.extend({
           multiline: true,
           options: [
             {
-              value: 'https://vocabs.ceh.ac.uk/eidc#generates',
-              label: 'Generates (e.g. a model generates a dataset)'
+              value: 'http://purl.org/dc/terms/isPartOf',
+              label: 'Part of (e.g., a dataset is a part of a data collection)'
             },
             {
-              value: 'https://vocabs.ceh.ac.uk/eidc#memberOf',
-              label: 'Member of (e.g. a dataset is a member of a data collection)'
+              value: 'http://purl.org/dc/terms/relation',
+              label: 'Relation'
             },
             {
-              value: 'https://vocabs.ceh.ac.uk/eidc#relatedTo',
-              label: 'Related To'
+              value: 'http://purl.org/dc/terms/replaces',
+              label: 'Replaces (supersedes)'
             },
             {
-              value: 'https://vocabs.ceh.ac.uk/eidc#supersedes',
-              label: 'Supersedes'
-            },
-            {
-              value: 'https://vocabs.ceh.ac.uk/eidc#uses',
-              label: 'Uses'
+              value: 'http://purl.org/dc/terms/requires',
+              label: 'Requires - a related resource that is required by this resource to support its function/delivery'
             }
           ],
           helpText: `

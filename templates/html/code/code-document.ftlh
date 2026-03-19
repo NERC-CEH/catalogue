@@ -1,10 +1,10 @@
 <#import "../skeleton.ftlh" as skeleton>
 
 <#assign
-  rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
-  rel_hasMember = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
-  rel_related = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo") + jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")
-  relationships = rel_memberOf + rel_hasMember + rel_related
+  rel_partOf = jena.relationships(uri, "http://purl.org/dc/terms/isPartOf")
+  rel_hasPart = jena.inverseRelationships(uri, "http://purl.org/dc/terms/isPartOf")
+  rel_relation = jena.inverseRelationships(uri, "http://purl.org/dc/terms/relation") + jena.relationships(uri, "http://purl.org/dc/terms/relation")
+  relationships = rel_partOf + rel_hasPart + rel_relation
 >
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
@@ -149,16 +149,16 @@
             <#if relationships?has_content>
               <h3>Related record<#if relationships?size gt 1>s</#if></h3>
 
-              <#if rel_memberOf?has_content>
-                <@displayRelations rel_memberOf "This notebook is used in" />
+              <#if rel_partOf?has_content>
+                <@displayRelations rel_partOf "This notebook is used in" />
               </#if>
 
-              <#if rel_hasMember?has_content>
-                <@displayRelations rel_hasMember "This project uses" />
+              <#if rel_hasPart?has_content>
+                <@displayRelations rel_hasPart "This project uses" />
               </#if>
 
-              <#if rel_related?has_content>
-                <@displayRelations rel_related "Other related records" />
+              <#if rel_relation?has_content>
+                <@displayRelations rel_relation "Other related records" />
               </#if>
 
             </#if>
