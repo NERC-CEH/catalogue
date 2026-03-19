@@ -24,7 +24,7 @@
     <span>ACCESS TO THIS ${recordType?upper_case} IS RESTRICTED</span>
     <br>${accessLimitation.description} If you need access, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact ${catalogueContact}</a>
 <#elseif availability == "Embargoed">
-    <div>
+    <div class="embargoNote">
         <strong>This ${recordType} is under embargo</strong>
         <#if datasetReferenceDate?? && datasetReferenceDate.releasedDate?has_content>
             and will be made available by ${datasetReferenceDate.releasedDate?date?string["d MMMM yyyy"]} at the latest

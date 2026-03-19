@@ -345,7 +345,7 @@ body {
 
                     .btn {
                         font-size: 80%;
-                       --_optionBtnWidth: 80px;
+                        --_optionBtnWidth: 80px;
                     }
                 }
 
@@ -402,6 +402,14 @@ body {
 
         ::-webkit-scrollbar-thumb {
             background: #888;
+        }
+    }
+
+    #segment-constraints {
+        .embargoNote {
+            a {
+                display: none
+            }
         }
     }
 
