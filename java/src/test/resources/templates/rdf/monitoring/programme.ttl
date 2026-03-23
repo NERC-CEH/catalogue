@@ -1,13 +1,15 @@
 PREFIX : <http://localhost:8080/id/>
 PREFIX dcterms: <http://purl.org/dc/terms/>
-PREFIX skos: <http://www.w3.org/2008/05/skos#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX ef: <http://onto.ceh.ac.uk/EF#>
 PREFIX doo: <https://digital.ceh.ac.uk/ontology/doo/>
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX adms: <http://www.w3.org/ns/adms#>
 :43414cbf-03ab-4f5a-a581-b01ce145d312
 a doo:EnvironmentalMonitoringProgramme ;
 dcterms:title "Test programme name" ;
+adms:identifier :id0 ;
 dcterms:description "Test programme description" ;
 ef:boundingBox "POLYGON((-8.64 54.634, -8.64 60.861, -0.72 60.861, -0.72 54.634, -8.64 54.634))"^^geo:wktLiteral ;
 dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en>;
@@ -16,4 +18,9 @@ dcterms:replaces <https://catalogue.ceh.ac.uk/id/000000003>;
 doo:utilises <https://catalogue.ceh.ac.uk/id/000000004>;
 skos:narrower <https://catalogue.ceh.ac.uk/id/000000005>;
 doo:triggers <https://catalogue.ceh.ac.uk/id/000000006>;
+.
+:id0 a adms:Identifier ;
+skos:notation "http://localhost:8080/id/43414cbf-03ab-4f5a-a581-b01ce145d312" ;
+adms:schemaAgency <https://ror.org/00pggkr55> ;
+dcterms:conformsTo "UKCEH" ;
 .

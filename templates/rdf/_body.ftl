@@ -4,7 +4,7 @@
   <@identifiers resourceIdentifiers />
 
   <#if datacitable?string=='true' && citation?has_content>
-      <#assign citationString =  citation.authors?join(', ') + " (" + citation.year?string("0") +"}. " + citation.title + ". " + citation.publisher + ". " + citation.url?trim>
+      <#assign citationString =  citation.authors?join(', ') + " (" + citation.year?string("0") +"). " + citation.title + ". " + citation.publisher + ". " + citation.url?trim>
       dcterms:bibliographicCitation <@displayLiteral citationString/> ;
   </#if>
 

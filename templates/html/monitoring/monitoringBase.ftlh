@@ -12,7 +12,6 @@
     infoList = MD_checks.getInfoList()
     warningList = MD_checks.getWarningList()
     totalIssues = errors + infos +  warnings
-    metadataClass="warning"
 >
 
 <#macro base>

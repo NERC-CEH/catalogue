@@ -38,5 +38,4 @@
 
     <@m.symmetricRelationships "http://purl.org/dc/terms/related" "Related"/>
   </#compress></div>
-
 </@m.base>
