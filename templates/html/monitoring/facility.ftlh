@@ -27,8 +27,8 @@
   <div class="relationships"><#compress>
     <@m.relationships "http://purl.org/dc/terms/isPartOf" "Is part of these networks"/>
 
-    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#uses" "Used by"  />
-    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#utilises" "Used by"  />
+    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/uses" "Used by"  />
+    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/utilises" "Used by"  />
 
     <@m.relationships "http://purl.org/dc/terms/replaces" "Replaces" />
     <@m.inverseRelationships "http://purl.org/dc/terms/replaces" "Replaced by"  />

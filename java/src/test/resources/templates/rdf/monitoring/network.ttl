@@ -2,10 +2,11 @@ PREFIX : <http://localhost:8080/id/>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX skos: <http://www.w3.org/2008/05/skos#>
 PREFIX ef: <http://onto.ceh.ac.uk/EF#>
+PREFIX doo: <https://digital.ceh.ac.uk/ontology/doo/>
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 :09b6b7f5-1bc3-4d21-864a-adf249e86618
-a ef:Network ;
+a doo:EnvironmentalMonitoringNetwork ;
 dcterms:title "Test network name" ;
 dcterms:description "Test network description" ;
 dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en>;

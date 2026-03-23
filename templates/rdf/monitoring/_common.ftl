@@ -37,10 +37,9 @@
     <@c.jenaLinks "http://www.w3.org/2004/02/skos/core#narrower" />
     <@c.jenaLinks "http://purl.org/dc/terms/replaces" />
     <@c.jenaLinks "http://purl.org/dc/terms/isPartOf" />
-    <@c.jenaLinks "http://onto.ceh.ac.uk/EF#uses" />
-    <@c.jenaLinks "http://onto.ceh.ac.uk/EF#utilises" />
-    <@c.jenaLinks "http://onto.ceh.ac.uk/EF#hasChild" />
-    <@c.jenaLinks "http://onto.ceh.ac.uk/EF#triggers" />
+    <@c.jenaLinks "https://digital.ceh.ac.uk/ontology/doo/uses" />
+    <@c.jenaLinks "https://digital.ceh.ac.uk/ontology/doo/utilises" />
+    <@c.jenaLinks "https://digital.ceh.ac.uk/ontology/doo/triggers" />
     .
 </#macro>
 

@@ -2,13 +2,14 @@ PREFIX : <http://localhost:8080/id/>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX skos: <http://www.w3.org/2008/05/skos#>
 PREFIX ef: <http://onto.ceh.ac.uk/EF#>
+PREFIX doo: <https://digital.ceh.ac.uk/ontology/doo/>
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 :6b9a9875-5077-4641-b4b4-1a4c6e48988d
-a ef:Activity ;
+a doo:EnvironmentalMonitoringActivity ;
 dcterms:title "Test activity name" ;
 dcterms:description "Test activity description" ;
 ef:boundingBox "POLYGON((-6.45 49.864, -6.45 55.812, 1.76 55.812, 1.76 49.864, -6.45 49.864))"^^geo:wktLiteral ;
 dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en>;
-ef:uses <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue.ceh.ac.uk/id/000000002>;
+doo:uses <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue.ceh.ac.uk/id/000000002>;
 .

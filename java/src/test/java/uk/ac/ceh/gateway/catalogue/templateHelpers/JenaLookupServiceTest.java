@@ -184,8 +184,8 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://facility2"), PSO_METADATASTATUS, "published");
         triples.add(createResource("http://facility2"), DCTERMS_TYPE, "facility");
         triples.add(createResource("http://facility2"), SF_GEOMETRY, geometryString2);
-        triples.add(createResource("http://programme"), createProperty("http://onto.ceh.ac.uk/EF#utilises"), createResource("http://facility1"));
-        triples.add(createResource("http://programme"), createProperty("http://onto.ceh.ac.uk/EF#utilises"), createResource("http://facility2"));
+        triples.add(createResource("http://programme"), createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises"), createResource("http://facility1"));
+        triples.add(createResource("http://programme"), createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises"), createResource("http://facility2"));
 
         // When
         List<Link> actual = service.programmeFeatures("http://programme");
@@ -215,8 +215,8 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://facility2"), PSO_METADATASTATUS, "published");
         triples.add(createResource("http://facility2"), DCTERMS_TYPE, "facility");
         triples.add(createResource("http://facility2"), SF_GEOMETRY, geometryString2);
-        triples.add(createResource("http://programme"), createProperty("http://onto.ceh.ac.uk/EF#utilises"), createResource("http://facility1"));
-        triples.add(createResource("http://programme"), createProperty("http://onto.ceh.ac.uk/EF#utilises"), createResource("http://facility2"));
+        triples.add(createResource("http://programme"), createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises"), createResource("http://facility1"));
+        triples.add(createResource("http://programme"), createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises"), createResource("http://facility2"));
 
         // When
         String actual = service.programmeCombinedGeometries("http://programme");
