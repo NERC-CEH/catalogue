@@ -38,5 +38,4 @@
 
     <@m.symmetricRelationships "http://onto.ceh.ac.uk/EF#associatedWith" "Related"/>
   </#compress></div>
-
 </@m.base>

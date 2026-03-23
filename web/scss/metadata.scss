@@ -9,6 +9,10 @@ body {
 
 .metadata {
 
+    div:empty {
+        display: none;
+    }
+
     a {
         word-break: break-word;
     }
@@ -137,10 +141,13 @@ body {
     }
 
     .alert {
-        border-radius: 0;
 
         &-data {
             background-color: var(--ukceh-colour-data);
+        }
+
+        &-earth {
+            background-color: var(--ukceh-colour-earth);
         }
 
         &-water {
@@ -154,9 +161,9 @@ body {
 
         &-Embargoed,
         &-Superseded,
-        &-Withdrawn {
-            @extend .alert !optional;
-            @extend .alert-water !optional;
+        &-Withdrawn,
+        &-Restricted {
+            @extend .alert-water;
         }
     }
 
@@ -338,7 +345,7 @@ body {
 
                     .btn {
                         font-size: 80%;
-                       --_optionBtnWidth: 80px;
+                        --_optionBtnWidth: 80px;
                     }
                 }
 
@@ -395,6 +402,14 @@ body {
 
         ::-webkit-scrollbar-thumb {
             background: #888;
+        }
+    }
+
+    #segment-constraints {
+        .embargoNote {
+            a {
+                display: none
+            }
         }
     }
 
@@ -613,20 +628,6 @@ body {
         margin: 0 1em;
     }
 
-    .card {
-        --_border-radius: 0.5em;
-        overflow-wrap: break-word;
-        border-radius: var(--_border-radius);
-
-        &,
-        &-header {
-            border-radius: var(--_border-radius) var(--_border-radius) 0 0;
-        }
-
-        &-header {
-            padding: 0.5em 1em;
-        }
-    }
 
     .externalVocabularyLink {
         font-size: 0.85em;
@@ -681,8 +682,6 @@ body {
         }
     }
 
-
-
     #document-upload-panel {
         border-radius: 0;
 
@@ -729,52 +728,31 @@ body {
         }
     }
 
-    .metadataQuality {
-        --_quality-warning: hsl(34, 100%, 50%);
-        --_quality-error: hsl(0, 100%, 50%);
 
-        &_error {
-            --_qualityColor: var(--_quality-error);
+    .card-metadataQuality {
+        --_qualityColor: blue;
 
-            li {
-                font-weight: bold;
+        .card-header {
+            background-color: var(--_qualityColor);
+            color: white;
+            font-weight: 600;
+
+            small {
+                font-weight: 200;
+                opacity: .75
             }
         }
 
-        &_warning {
-            --_qualityColor: var(--_quality-warning);
+        &-error {
+            --_qualityColor: red;
         }
 
-        &_info {
-            --_qualityColor: var(--ukceh-colour-water);
+        &-warning {
+            --_qualityColor: orange;
         }
 
-        span {
-            margin: 0 1.2em;
-        }
-
-        &-report {
-            .qualityHeader {
-                padding: 0.65em;
-                color: #fff;
-                background-color: var(--_qualityColor);
-            }
-
-            li {
-                background-color: color-mix(in oklab, var(--_qualityColor), white 70%);
-            }
-
-            span {
-                color: #00d;
-
-                &::before {
-                    content: " «";
-                }
-
-                &::after {
-                    content: "» ";
-                }
-            }
+        li {
+            background-color: color-mix(in oklab, var(--_qualityColor), white 85%);
         }
     }
 

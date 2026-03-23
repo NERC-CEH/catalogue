@@ -14,18 +14,18 @@
 
     <#assign mainColClasses="">
 
+    <#if availability?? && availability?has_content && availability != "Available" && availability != "Controlled"  && availability != "Unknown"  >
+      <div class="alert alert-${availability}" role="alert">
+        <#include "_status.ftlh">
+      </div>
+    </#if>
+
     <#if toc>
       <#assign mainColClasses="content">
       <#include "_toc.ftlh">
     </#if>
 
     <div class="${mainColClasses} py-3">
-
-      <#if availability?? && availability?has_content && availability != "Available" && availability != "Controlled"  && availability != "Unknown"  >
-        <div class="alert alert-${availability}" role="alert">
-          <#include "_status.ftlh">
-        </div>
-      </#if>
 
       <#if rel_replaces?has_content && rel_replaces?size gt 0>
         <#include "_latestVersion.ftlh">

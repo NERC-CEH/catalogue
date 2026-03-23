@@ -2,6 +2,18 @@
 <#import "../blocks.ftlh" as b>
 <#import "../../functions.ftlh" as func>
 
+<#assign
+    MD_checks = metadataQuality.check(id)
+    problems = MD_checks.getProblems()
+    errors = MD_checks.getErrors()
+    infos =  MD_checks.getInfo()
+    warnings = MD_checks.getWarnings()
+    errorList = MD_checks.getErrorList()
+    infoList = MD_checks.getInfoList()
+    warningList = MD_checks.getWarningList()
+    totalIssues = errors + infos +  warnings
+>
+
 <#macro base>
   <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
     <div id="metadata" class="metadata metadata-monitoring ${metadata.state?lower_case} <#if operationalStatus?? && operationalStatus == "Inactive">inactive</#if>">

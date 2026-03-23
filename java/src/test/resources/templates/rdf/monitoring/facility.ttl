@@ -1,12 +1,14 @@
 PREFIX : <http://localhost:8080/id/>
 PREFIX dcterms: <http://purl.org/dc/terms/>
-PREFIX skos: <http://www.w3.org/2008/05/skos#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX ef: <http://onto.ceh.ac.uk/EF#>
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX adms: <http://www.w3.org/ns/adms#>
 :de64ac2e-4fd4-4dcb-9e83-1464219bb1c2
 a sosa:Platform, ef:Facility ;
 dcterms:title "Test facility name" ;
+adms:identifier :id0 ;
 dcterms:description "Test facitlity description" ;
 dcterms:geometry "POLYGON((-3.27393 56.84071, 0.68115 54.61423, -0.37354 52.47358, -5.03174 52.25891, -5.64697 54.76663, -3.27393 56.84071))"^^geo:wktLiteral ;
 ef:mediaMonitored <http://ex.org/domain/atmosphere> ;
@@ -15,4 +17,9 @@ ef:associatedWith <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue
 ef:narrower <https://catalogue.ceh.ac.uk/id/000000003>;
 ef:supersedes <https://catalogue.ceh.ac.uk/id/000000004>;
 ef:belongsTo <https://catalogue.ceh.ac.uk/id/000000005>;
+.
+:id0 a adms:Identifier ;
+skos:notation "123456" ;
+adms:schemaAgency <https://ror.org/00pggkr55> ;
+dcterms:conformsTo "UKCEH" ;
 .
