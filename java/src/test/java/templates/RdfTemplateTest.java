@@ -178,7 +178,7 @@ public class RdfTemplateTest {
             val facilityDocument = objectMapper.readValue(expected("rdf/datastore/monitoring-facility.raw"), MonitoringFacility.class);
 
             String predicateURI="http://onto.ceh.ac.uk/EF#";
-            given(jena.relationships(facilityDocument.getUri(), predicateURI + "associatedWith")).willReturn(List.of(
+            given(jena.relationships(facilityDocument.getUri(), "http://purl.org/dc/terms/related")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000001").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000002").build()
             ));
@@ -188,7 +188,7 @@ public class RdfTemplateTest {
             given(jena.relationships(facilityDocument.getUri(), predicateURI + "supersedes")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000004").build()
             ));
-            given(jena.relationships(facilityDocument.getUri(), predicateURI + "belongsTo")).willReturn(List.of(
+            given(jena.relationships(facilityDocument.getUri(), "http://purl.org/dc/terms/isPartOf")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000005").build()
             ));
 
@@ -209,7 +209,7 @@ public class RdfTemplateTest {
             val networkDocument = objectMapper.readValue(expected("rdf/datastore/monitoring-network.raw"), MonitoringNetwork.class);
 
             String predicateURI="http://onto.ceh.ac.uk/EF#";
-            given(jena.relationships(networkDocument.getUri(), predicateURI + "associatedWith")).willReturn(List.of(
+            given(jena.relationships(networkDocument.getUri(), "http://purl.org/dc/terms/related")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000001").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000002").build()
             ));
@@ -237,7 +237,7 @@ public class RdfTemplateTest {
             val programmeDocument = objectMapper.readValue(expected("rdf/datastore/monitoring-programme.raw"), MonitoringProgramme.class);
 
             String predicateURI="http://onto.ceh.ac.uk/EF#";
-            given(jena.relationships(programmeDocument.getUri(), predicateURI + "associatedWith")).willReturn(List.of(
+            given(jena.relationships(programmeDocument.getUri(),  "http://purl.org/dc/terms/related")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000001").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000002").build()
             ));

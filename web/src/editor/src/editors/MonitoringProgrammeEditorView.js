@@ -260,8 +260,8 @@ export default EditorView.extend({
           options: [
             { value: 'http://onto.ceh.ac.uk/EF#utilises', label: 'Uses (facility or network)' },
             { value: 'http://onto.ceh.ac.uk/EF#hasChild', label: 'Has child programme' },
-            { value: 'http://onto.ceh.ac.uk/EF#associatedWith', label: 'Related to' },
-            { value: 'http://onto.ceh.ac.uk/EF#supersedes', label: 'Supersedes' },
+            { value: 'http://purl.org/dc/terms/related', label: 'Related' },
+            { value: 'http://purl.org/dc/terms/replaces', label: 'Replaces' },
             { value: 'http://onto.ceh.ac.uk/EF#triggers', label: 'Triggers (activity)' }
           ],
           helpText: `

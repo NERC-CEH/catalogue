@@ -13,7 +13,7 @@ import java.util.Optional;
 
 import static org.apache.jena.rdf.model.ResourceFactory.createPlainLiteral;
 import static org.apache.jena.rdf.model.ResourceFactory.createStatement;
-import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.IDENTIFIER;
+import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 
 /**
  * The following class extracts semantic details from a InfrastructureRecord and
@@ -36,14 +36,14 @@ public class JenaIndexInfrastructureRecordGenerator implements IndexGenerator<In
         List<Statement> toReturn = generator.generateIndex(document);
 
         Resource me = generator.resource(document.getId());
-        toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(me.getURI()))); //Add as an identifier of itself
+        toReturn.add(createStatement(me, DCTERMS_IDENTIFIER, createPlainLiteral(me.getURI()))); //Add as an identifier of itself
 
         Optional.ofNullable(document.getResourceIdentifiers())
             .orElse(Collections.emptyList())
             .stream()
             .filter(r -> !r.getCoupledResource().isEmpty())
             .forEach(r ->
-                toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(r.getCoupledResource())))
+                toReturn.add(createStatement(me, DCTERMS_IDENTIFIER, createPlainLiteral(r.getCoupledResource())))
             );
 
         return toReturn;

@@ -33,22 +33,21 @@
     ${other}
 
     <#-- Relationships between records -->
-    <@c.jenaLinks "associatedWith" />
-    <@c.jenaLinks "narrower" />
-    <@c.jenaLinks "supersedes" />
-    <@c.jenaLinks "belongsTo" />
-    <@c.jenaLinks "uses" />
-    <@c.jenaLinks "utilises" />
-    <@c.jenaLinks "hasChild" />
-    <@c.jenaLinks "triggers" />
+    <@c.jenaLinks "http://purl.org/dc/terms/related" />
+    <@c.jenaLinks "http://www.w3.org/2004/02/skos/core#narrower" />
+    <@c.jenaLinks "http://purl.org/dc/terms/replaces" />
+    <@c.jenaLinks "http://purl.org/dc/terms/isPartOf" />
+    <@c.jenaLinks "http://onto.ceh.ac.uk/EF#uses" />
+    <@c.jenaLinks "http://onto.ceh.ac.uk/EF#utilises" />
+    <@c.jenaLinks "http://onto.ceh.ac.uk/EF#hasChild" />
+    <@c.jenaLinks "http://onto.ceh.ac.uk/EF#triggers" />
     .
 </#macro>
 
-<#macro jenaLinks predicate="associatedWith">
-  <#local predicateURI="http://onto.ceh.ac.uk/EF#" + predicate>
-  <#local links=jena.relationships(uri, predicateURI) />
+<#macro jenaLinks predicate="http://purl.org/dc/terms/related">
+  <#local links=jena.relationships(uri, predicate) />
   <#if links?has_content>
-    ef:${predicate} <#t><#list links as link>
+    ${predicate} <#t><#list links as link>
       <${link.href}><#sep>, <#sep><#t>
     </#list>;
   </#if>

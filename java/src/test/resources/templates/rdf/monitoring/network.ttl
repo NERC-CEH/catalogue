@@ -9,7 +9,7 @@ a ef:Network ;
 dcterms:title "Test network name" ;
 dcterms:description "Test network description" ;
 dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en>;
-ef:associatedWith <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue.ceh.ac.uk/id/000000002>;
-ef:narrower <https://catalogue.ceh.ac.uk/id/000000003>;
-ef:supersedes <https://catalogue.ceh.ac.uk/id/000000004>;
+dcterms:related <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue.ceh.ac.uk/id/000000002>;
+skos:narrower <https://catalogue.ceh.ac.uk/id/000000003>;
+dcterms:replaces <https://catalogue.ceh.ac.uk/id/000000004>;
 .

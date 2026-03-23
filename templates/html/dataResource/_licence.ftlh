@@ -1,20 +1,32 @@
-<#if licences?has_content>
-  <#list licences as licence>
-      <p class="licenceText">
+<#if licences?has_content || otherConstraints?has_content>
+  <div id="segment-constraints">
+    <h2>Licensing and constraints</h2>
+    <#include "_status.ftlh">
 
-       <#if availability?? && availability == "Embargoed">
-        <#assign licenceText = licence.value?replace("is made available","will be available")?replace("is available","will be available") >
-       <#else>
-        <#assign licenceText = licence.value >
-      </#if>
-      <#if recordType?? && recordType?has_content>
-        <#assign licenceText = licenceText?replace("resource",recordType) >
-      </#if>
+    <#list licences as licence>
+        <p class="licenceLabel">
+        <#assign licenceLabel = "Licence terms and conditions apply" >
+        <#if licence.value ?? && licence.value?has_content>
+          <#assign licenceLabel = licence.value >
+        </#if>
 
-        <#if licence.uri?has_content><a rel="license" href="${licence.uri}"></#if>
-          ${licenceText}
-        <#if licence.uri?has_content></a></#if>
-      </p>
+        <#if availability?? && availability == "Embargoed">
+          <#assign licenceLabel = licenceLabel?replace("is made available","will be available")?replace("is available","will be available") >
+        </#if>
+        <#if recordType?? && recordType?has_content>
+          <#assign licenceLabel = licenceLabel?replace("resource",recordType) >
+        </#if>
 
-  </#list>
+          <#if licence.uri?has_content><a rel="license" href="${licence.uri}"></#if>
+            ${licenceLabel}
+            <#if licenceLabel?contains("Open Government Licence")>
+              <img class="ogl-logo" src='/static/img/ogl_16.png' alt='OGL'>
+            </#if>
+          <#if licence.uri?has_content></a></#if>
+        </p>
+    </#list>
+
+    <#include "_citation.ftlh">
+    <#include "_otherUseConstraints.ftlh">
+  </div>
 </#if>

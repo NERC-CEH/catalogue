@@ -13,7 +13,7 @@ import java.util.Optional;
 
 import static com.google.common.base.Strings.emptyToNull;
 import static org.apache.jena.rdf.model.ResourceFactory.createStatement;
-import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.SOURCE;
+import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 
 @Slf4j
 @ToString
@@ -31,7 +31,7 @@ public class JenaIndexLinkDocumentGenerator implements IndexGenerator<LinkDocume
 
         Resource me = generator.resource(document.getId());
         Optional.ofNullable(emptyToNull(document.getLinkedDocumentId())).ifPresent( ld -> {
-            toReturn.add(createStatement(me, SOURCE, generator.resource(ld)));
+            toReturn.add(createStatement(me, DCTERMS_SOURCE, generator.resource(ld)));
         });
 
         return toReturn;

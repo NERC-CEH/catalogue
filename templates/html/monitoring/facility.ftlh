@@ -2,7 +2,7 @@
 
 <@m.base>
   <#assign relationshipCombinedGeometriesOutput>
-    <@m.relationshipCombinedGeometriesWithOwner "http://onto.ceh.ac.uk/EF#narrower" locationConfidential />
+    <@m.relationshipCombinedGeometriesWithOwner "http://www.w3.org/2004/02/skos/core#narrower" locationConfidential />
   </#assign>
 
 
@@ -25,18 +25,18 @@
   </#if>
 
   <div class="relationships"><#compress>
-    <@m.relationships "http://onto.ceh.ac.uk/EF#belongsTo" "Belongs to these networks"/>
+    <@m.relationships "http://purl.org/dc/terms/isPartOf" "Is part of these networks"/>
 
     <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#uses" "Used by"  />
     <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#utilises" "Used by"  />
 
-    <@m.relationships "http://onto.ceh.ac.uk/EF#supersedes" "Supersedes" />
-    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#supersedes" "Superseded by"  />
+    <@m.relationships "http://purl.org/dc/terms/replaces" "Replaces" />
+    <@m.inverseRelationships "http://purl.org/dc/terms/replaces" "Replaced by"  />
 
-    <@m.relationships "http://onto.ceh.ac.uk/EF#narrower" "Child facilities" />
-    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#narrower" "Parent facilities"  />
+    <@m.relationships "http://www.w3.org/2004/02/skos/core#narrower" "Child facilities" />
+    <@m.inverseRelationships "http://www.w3.org/2004/02/skos/core#narrower" "Parent facilities"  />
 
-    <@m.symmetricRelationships "http://onto.ceh.ac.uk/EF#associatedWith" "Related"/>
+    <@m.symmetricRelationships "http://purl.org/dc/terms/related" "Related"/>
   </#compress></div>
 
 </@m.base>

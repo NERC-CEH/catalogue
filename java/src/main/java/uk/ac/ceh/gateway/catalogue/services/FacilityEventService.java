@@ -98,13 +98,13 @@ public class FacilityEventService {
     }
 
     /**
-     * This will return the list of ids of documents a monitoring facility 'belongsTo'
+     * This will return the list of ids of documents a monitoring facility 'isPartOf'
      * @param facility the monitoring facility
-     * @return a list of ids of documents that the facility 'belongsTo'
+     * @return a list of ids of documents that the facility 'isPartOf'
      */
     protected List<String> getBelongToIds(MonitoringFacility facility) {
             return facility.getRelationships().stream()
-                .filter(r -> r.getRelation().equals(Ontology.BELONGS_TO.getURI()))
+                .filter(r -> r.getRelation().equals(Ontology.DCTERMS_ISPARTOF.getURI()))
                 .map(r -> r.getTarget())
                 .toList();
         }

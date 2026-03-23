@@ -24,14 +24,14 @@
   <div class="relationships">
     <#if !CombinedGeometriesOutput?has_content><@m.relationships "http://onto.ceh.ac.uk/EF#utilises" "Uses"  /></#if>
 
-    <@m.relationships  "http://onto.ceh.ac.uk/EF#supersedes" "Supersedes" />
-    <@m.inverseRelationships  "http://onto.ceh.ac.uk/EF#supersedes" "Superseded by"/>
+    <@m.relationships  "http://purl.org/dc/terms/replaces" "Replaces" />
+    <@m.inverseRelationships  "http://purl.org/dc/terms/replaces" "Replaced by"/>
 
     <@m.relationships "http://onto.ceh.ac.uk/EF#triggers" "Activities set up for this programme"  />
 
     <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#hasChild" "Parent programmes"  />
     <@m.relationships "http://onto.ceh.ac.uk/EF#hasChild" "Child programmes"  />
 
-    <@m.symmetricRelationships "http://onto.ceh.ac.uk/EF#associatedWith" "Related"/>
+    <@m.symmetricRelationships "http://purl.org/dc/terms/related" "Related"/>
   </div>
 </@m.base>

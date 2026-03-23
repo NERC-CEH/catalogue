@@ -127,7 +127,7 @@ public class NetworkIndexingService {
      */
     @SneakyThrows
     private void updateBoundingBox(MonitoringNetwork networkDoc, Optional<String> mustIncludeFacility, Optional<String> mustExcludeFacility, String intiatingFacility){
-        List<Link> linkedFacilities = lookupService.inverseRelationships(networkDoc.getUri(), Ontology.BELONGS_TO.getURI());
+        List<Link> linkedFacilities = lookupService.inverseRelationships(networkDoc.getUri(), Ontology.DCTERMS_ISPARTOF.getURI());
         List<BoundingBox> extantFacilityBBoxes = getBboxesWithoutExcluded(linkedFacilities, mustExcludeFacility);
         addFacility(linkedFacilities, extantFacilityBBoxes, mustIncludeFacility);
         Optional<BoundingBox> combinedBbox = getEnvelope(extantFacilityBBoxes);
@@ -181,6 +181,6 @@ public class NetworkIndexingService {
     }
 
     protected boolean isBelongsTo(Relationship r) {
-        return (r.getRelation() != null) && r.getRelation().equals(Ontology.BELONGS_TO.getURI());
+        return (r.getRelation() != null) && r.getRelation().equals(Ontology.DCTERMS_ISPARTOF.getURI());
     }
 }
