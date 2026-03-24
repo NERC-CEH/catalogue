@@ -14,7 +14,7 @@
   PREFIX : <${uri?replace(id,"")}>
   PREFIX dcterms: <http://purl.org/dc/terms/>
   PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-  PREFIX ef: <http://onto.ceh.ac.uk/EF#>
+  PREFIX doo: <https://digital.ceh.ac.uk/ontology/doo/>
   PREFIX sosa: <http://www.w3.org/ns/sosa/>
   PREFIX geo: <http://www.opengis.net/ont/geosparql#>
   PREFIX adms: <http://www.w3.org/ns/adms#>
