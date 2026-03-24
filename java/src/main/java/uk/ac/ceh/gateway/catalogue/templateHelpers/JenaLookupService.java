@@ -107,13 +107,13 @@ public class JenaLookupService {
     }
 
     public List<Link> relationships(String uri, String relation) {
-        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> PREFIX geo: <http://www.opengis.net/ont/geosparql#>" +
-            "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom (IF(BOUND(?geom), true, false) AS ?hasGeom)" +
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX doo: <https://digital.ceh.ac.uk/ontology/doo/>" +
+            "SELECT DISTINCT ?node ?title ?publicationStatus ?status ?type ?rel ?geom (IF(BOUND(?geom), true, false) AS ?hasGeom)" +
             "WHERE {?me ?rel ?node; ?relation ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type. " +
             "OPTIONAL {?node <http://www.opengis.net/ont/sf#Geometry> ?geom} " +
             "OPTIONAL {?node dcterms:available ?publicationDate} " +
-            "OPTIONAL {?node eidc:availability ?availability} " +
-            "OPTIONAL {?node ef:hasStatus ?availability}} " +
+            "OPTIONAL {?node eidc:availability ?status} " +
+            "OPTIONAL {?node doo:operationalStatus ?status}} " +
             "ORDER BY DESC(?publicationDate) ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
@@ -122,14 +122,14 @@ public class JenaLookupService {
     }
 
     public List<Link> inverseRelationships(String uri, String relation) {
-        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> PREFIX geo: <http://www.opengis.net/ont/geosparql#>" +
-            "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?publicationDate (GROUP_CONCAT(?geo; separator=', ') AS ?geom)" +
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX doo: <https://digital.ceh.ac.uk/ontology/doo/>" +
+            "SELECT DISTINCT ?node ?title ?publicationStatus ?status ?type ?rel ?publicationDate (GROUP_CONCAT(?geo; separator=', ') AS ?geom)" +
             "WHERE {?node ?rel ?me; ?relation ?me. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type. " +
             "OPTIONAL {?node <http://www.opengis.net/ont/sf#Geometry> ?geo} " +
             "OPTIONAL {?node dcterms:available ?publicationDate} " +
-            "OPTIONAL {?node eidc:availability ?availability} " +
-            "OPTIONAL {?node ef:hasStatus ?availability}} " +
-            "GROUP BY ?node ?title ?publicationStatus ?availability ?type ?rel ?publicationDate " +
+            "OPTIONAL {?node eidc:availability ?status} " +
+            "OPTIONAL {?node doo:operationalStatus ?status}} " +
+            "GROUP BY ?node ?title ?publicationStatus ?status ?type ?rel ?publicationDate " +
             "ORDER BY DESC(?publicationDate) ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
@@ -138,12 +138,12 @@ public class JenaLookupService {
     }
 
     public List<Link> relationshipsWithOwner(String uri, String relation) {
-        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> PREFIX geo: <http://www.opengis.net/ont/geosparql#>" +
-            "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom " +
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX doo: <https://digital.ceh.ac.uk/ontology/doo/>" +
+            "SELECT DISTINCT ?node ?title ?publicationStatus ?status ?type ?rel ?geom " +
             "WHERE {{?me dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; <http://www.opengis.net/ont/sf#Geometry> ?geom. BIND(?me as ?node)} " +
             "UNION {?me ?relation ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; <http://www.opengis.net/ont/sf#Geometry> ?geom. BIND(?relation as ?rel)} " +
-            "OPTIONAL {?node eidc:availability ?availability} " +
-            "OPTIONAL {?node ef:hasStatus ?availability}}" +
+            "OPTIONAL {?node eidc:availability ?status} " +
+            "OPTIONAL {?node doo:operationalStatus ?status}}" +
             "ORDER BY ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
@@ -152,12 +152,12 @@ public class JenaLookupService {
     }
 
     public List<Link> programmeFeatures(String uri) {
-        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX doo: <https://digital.ceh.ac.uk/ontology/doo/> PREFIX ef: <http://onto.ceh.ac.uk/EF#> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX geo: <http://www.opengis.net/ont/geosparql#> " +
-            "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom " +
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX doo: <https://digital.ceh.ac.uk/ontology/doo/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX geo: <http://www.opengis.net/ont/geosparql#> " +
+            "SELECT DISTINCT ?node ?title ?publicationStatus ?status ?type ?rel ?geom " +
             "WHERE {{?me doo:utilises ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type; <http://www.opengis.net/ont/sf#Geometry> ?geom} " +
             "UNION {?me doo:utilises ?network. ?node dcterms:isPartOf ?network; dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; <http://www.opengis.net/ont/sf#Geometry> ?geom. BIND(doo:utilises as ?rel)}" +
-            "OPTIONAL {?node eidc:availability ?availability} " +
-            "OPTIONAL {?node ef:hasStatus ?availability}}";
+            "OPTIONAL {?node eidc:availability ?status} " +
+            "OPTIONAL {?node doo:operationalStatus ?status}}";
 
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
@@ -189,7 +189,7 @@ public class JenaLookupService {
                 }
                 propertiesNode.put("title", link.getTitle());
                 propertiesNode.put("link", link.getHref());
-                propertiesNode.put("availability", link.getAvailability());
+                propertiesNode.put("availability", link.getStatus());
                 features.add(jsonNode);
             }
         }
@@ -243,7 +243,7 @@ public class JenaLookupService {
                 } else {
                     propertiesNode.put("link", link.getHref());
                 }
-                propertiesNode.put("availability", link.getAvailability());
+                propertiesNode.put("availability", link.getStatus());
                 propertiesNode.put("locationConfidential", locationConfidential);
                 features.add(jsonNode);
             }
@@ -313,7 +313,7 @@ public class JenaLookupService {
                 Link.builder()
                     .title(s.getLiteral("title").getString())
                     .publicationStatus(s.getLiteral("publicationStatus").getString())
-                    .availability(s.getLiteral("availability") != null ? s.getLiteral("availability").getString() : "")
+                    .status(s.getLiteral("status") != null ? s.getLiteral("status").getString() : "")
                     .href(s.getResource("node").getURI())
                     .associationType(s.getLiteral("type").getString())
                     .rel(s.getResource("rel") != null ? s.getResource("rel").getURI() : "")

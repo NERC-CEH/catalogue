@@ -52,7 +52,7 @@ public class JenaIndexMonitoringFacilityGenerator implements IndexGenerator<Moni
             });
 
         Optional.ofNullable(document.getOperationalStatus())
-            .ifPresent(s -> toReturn.add(createStatement(me, HAS_STATUS, createPlainLiteral(s)))
+            .ifPresent(s -> toReturn.add(createStatement(me, DOO_OPERATIONALSTATUS, createPlainLiteral(s)))
             );
 
         return toReturn;

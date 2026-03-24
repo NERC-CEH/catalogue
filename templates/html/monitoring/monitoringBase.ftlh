@@ -365,8 +365,8 @@ Symmetrical relationships
 <#macro geomUrl link >
   <div>
       <#local linkClass = "">
-      <#if link.availability?has_content>
-        <#local linkClass =  "link-" + link.availability?lower_case>
+      <#if link.status?has_content>
+        <#local linkClass =  "link-" + link.status?lower_case>
       </#if>
       <#if link.associationType=="monitoringFacility" && !link.geometry?has_content>
         <#local linkClass += " nogeom">
@@ -378,7 +378,7 @@ Symmetrical relationships
           link
         </#if>
       </a>
-      <#if link.availability?has_content && link.availability == "Inactive">
+      <#if link.status?has_content && link.status == "Inactive">
         <small class="text-body-tertiary small"> (INACTIVE)</small>
       </#if>
   </div>

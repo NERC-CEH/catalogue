@@ -35,9 +35,10 @@ public class Ontology {
     public static final Property DOO_USES = ResourceFactory.createProperty("https://digital.ceh.ac.uk/ontology/doo/uses");
     public static final Property DOO_UTILISES = ResourceFactory.createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises");
     public static final Property DOO_TRIGGERS = ResourceFactory.createProperty("https://digital.ceh.ac.uk/ontology/doo/triggers");
+    public static final Property DOO_OPERATIONALSTATUS = ResourceFactory.createProperty("https://digital.ceh.ac.uk/ontology/doo/operationalStatus");
 
+    //This needs to be replaced by http://www.w3.org/ns/adms#status when a suitable vocabulary is available
     public static final Property RESOURCE_STATUS = ResourceFactory.createProperty("https://vocabs.ceh.ac.uk/eidc#availability");
-    public static final Property HAS_STATUS = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#hasStatus");
 
     // Datatypes
     public static final RDFDatatype GEO_WKTLITERAL = new BaseDatatype("http://www.opengis.net/ont/geosparql#wktLiteral");
