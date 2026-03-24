@@ -31,8 +31,9 @@
     <#if description?has_content>
       dcterms:description <@displayLiteral description /> ;
     </#if>
+
     <#if boundingBox?has_content>
-      ef:boundingBox "POLYGON${boundingBox.coordinates?replace('[[[','((')?replace(']]]','))')?replace('[^]], ',' ','r')?replace(']', '')?replace('[', '')}"^^geo:wktLiteral ;
+      geo:hasBoundingBox :bbox ;
     </#if>
 
     <#nested>
@@ -53,6 +54,13 @@
 
     <#if localIDs?has_content>
       <@idNodes localIDs/>
+    </#if>
+
+    <#if boundingBox?has_content>
+    <#-- Bounding box node -->
+      :bbox
+          a geo:Geometry ;
+          geo:asEnvelope "ENVELOPE(${boundingBox.westBoundLongitude}, ${boundingBox.eastBoundLongitude}, ${boundingBox.southBoundLatitude}, ${boundingBox.northBoundLatitude})"^^geo:envelopeLiteral .
     </#if>
 
 </#macro>
