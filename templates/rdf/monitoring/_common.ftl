@@ -43,13 +43,13 @@
     ${other}
 
     <#-- Relationships between records -->
-    <@c.jenaLinks "http://purl.org/dc/terms/related" />
-    <@c.jenaLinks "http://www.w3.org/2004/02/skos/core#narrower" />
-    <@c.jenaLinks "http://purl.org/dc/terms/replaces" />
-    <@c.jenaLinks "http://purl.org/dc/terms/isPartOf" />
-    <@c.jenaLinks "https://digital.ceh.ac.uk/ontology/doo/uses" />
-    <@c.jenaLinks "https://digital.ceh.ac.uk/ontology/doo/utilises" />
-    <@c.jenaLinks "https://digital.ceh.ac.uk/ontology/doo/triggers" />
+    <@jenaLinks "http://purl.org/dc/terms/related" />
+    <@jenaLinks "http://www.w3.org/2004/02/skos/core#narrower" />
+    <@jenaLinks "http://purl.org/dc/terms/replaces" />
+    <@jenaLinks "http://purl.org/dc/terms/isPartOf" />
+    <@jenaLinks "https://digital.ceh.ac.uk/ontology/doo/uses" />
+    <@jenaLinks "https://digital.ceh.ac.uk/ontology/doo/utilises" />
+    <@jenaLinks "https://digital.ceh.ac.uk/ontology/doo/triggers" />
     .
 
     <#if localIDs?has_content>

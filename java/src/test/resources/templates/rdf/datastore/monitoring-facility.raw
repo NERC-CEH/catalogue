@@ -17,11 +17,11 @@
   ],
   "relationships": [
     {
-      "relation": "http://purl.org/dc/terms/relation"
+      "relation": "http://purl.org/dc/terms/relation",
       "target": "0246d1a0-3077-4578-8746-34c08c48bdf6"
     },
     {
-      "relation": "http://purl.org/dc/terms/replaces"
+      "relation": "http://purl.org/dc/terms/replaces",
       "target": "0246d1a0-3077-4578-8746-34c08c48bdf6"
     },
     {
