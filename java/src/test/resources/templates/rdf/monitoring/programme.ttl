@@ -5,7 +5,6 @@ PREFIX doo: <https://digital.ceh.ac.uk/ontology/doo/>
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 PREFIX adms: <http://www.w3.org/ns/adms#>
-
 :43414cbf-03ab-4f5a-a581-b01ce145d312
 a doo:EnvironmentalMonitoringProgramme ;
 dcterms:title "Test programme name" ;
@@ -26,5 +25,4 @@ dcterms:conformsTo "UKCEH" ;
 .
 :bbox
 a geo:Geometry ;
-geo:asEnvelope "ENVELOPE(-8.648, -0.728, 54.634, 60.861)"^^geo:envelopeLiteral
-.
+geo:asEnvelope "ENVELOPE(-8.648, -0.728, 54.634, 60.861)"^^geo:envelopeLiteral .

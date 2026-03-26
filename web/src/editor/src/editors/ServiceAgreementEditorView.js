@@ -157,8 +157,13 @@ export default EditorView.extend({
           model: this.model,
           label: 'Naming convention',
           text: `\
-<p>Please describe a convention, or multiple conventions, that cover any files to be deposited not described in the previous field. Indicate sizes (or a size range) for each file covered by the convention and also the total size of the files covered by the naming convention.</p>
-<p>Example: 200 files CP_&lt;REGION&gt;_MInv_&lt;determinandLabel&gt;Stats_&lt;startDate-endDate&gt;.csv. Where &lt;REGION&gt; is the Region code: &lt;startDate-endDate&gt; correspond to date format YYYYMMDD-YYYYMMDD and &lt;determinandlLabel&gt; is the chemical determinand name. Size range: 2-2.5 MB Total size: 443.1 MB</p>\
+<p>Please describe a convention, or multiple conventions, that cover any files to be deposited not
+described in the previous field. Indicate sizes (or a size range) for each file covered by the convention
+and also the total size of the files covered by the naming convention For example:</p>
+<p><i>200 files <b>CP_&lt;REGION&gt;_MInv_&lt;determinandLabel&gt;Stats_&lt;startDate-endDate&gt;.csv</b>,
+where <b>&lt;REGION&gt;</b> is the Region code: <b>&lt;startDate-endDate&gt;</b> correspond to date format YYYYMMDD-YYYYMMDD
+and <b>&lt;determinandlLabel&gt;</b> is the chemical determinand name. Size range: 2-2.5 MB Total size: 443.1 MB</i></p>
+\
 `
         }),
 
@@ -380,7 +385,7 @@ export default EditorView.extend({
           text: `
 <p>Please identify any related data resources already curated by, or being deposited with, the EIDC that you wish to link your data resource to, and the nature of the relationship.
 Details of relationships we can accommodate are available at: <a href='https://eidc.ac.uk/metadata/relationships' target='_blank' rel='noopener noreferrer'>eidc.ac.uk/metadata/relationships</a></p>
-<p>e.g. Related data resource: 2e3bec6e-1e62-42d5-a221-016d0ad447d9. Relationship: uses.</p>
+<p>e.g. Related data resource: 2e3bec6e-1e62-42d5-a221-016d0ad447d9. Relationship: part of.</p>
 `
         }),
 

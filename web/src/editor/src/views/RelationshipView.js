@@ -69,24 +69,28 @@ export default ObjectInputView.extend({
   async render () {
     ObjectInputView.prototype.render.apply(this)
 
-    if (this.existingRecord) {
-      const infoString = await generateInformationString(this.model.get('target'))
-      this.$('.read-only-identifier').val(infoString)
-      this.$('.relationshipRecord').removeClass('d-none')
-      this.$('.relationshipSearch').addClass('d-none')
-    }
+    const opts = [...this.options] // clone to avoid mutation
 
-    // If there is no relationship, add an option that's used to indicate that the user needs to choose a relationship
     if (!this.model.attributes.relation) {
-      this.options.unshift({ value: '', label: 'Choose a relationship', selected: 'selected' })
+      opts.unshift({
+        value: '',
+        label: 'Choose a relationship',
+        selected: 'selected'
+      })
     }
 
-    this.options.forEach(option => {
-      // If relationship is defined OR it matches the "Choose a Relationship" option then make it the selected option in the UI
-      option.selected = (option.value === this.model.attributes.relation || option.value === '') ? 'selected' : ''
+    this.$('.relationshipList').empty()
 
-      return this.$('.relationshipList').append(this.optionTemplate(option))
+    opts.forEach(option => {
+      option.selected =
+        (option.value === this.model.attributes.relation || option.value === '')
+          ? 'selected'
+          : ''
+
+      this.$('.relationshipList').append(this.optionTemplate(option))
     })
+
     return this
   }
 })
+

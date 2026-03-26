@@ -1,17 +1,19 @@
 <#import "skeleton.ftlh" as skeleton>
 <@skeleton.master title="Publication" catalogue=catalogues.retrieve(catalogue)>
   <div id="publication" class="container">
-    <h2 class="mt-5">Current status: <span class="text-primary">${title}</span></h2>
+    <h1 class="mt-5">Change the publication state of this record</h1>
+    <div class="alert alert-primary text-uppercase fw-bold fs-4 state-${title}?lower_case">Current state: ${title}</div>
     <div>
-    <p><b>Change the publication status of this record</b></p>
-
       <#list transitions as transition>
         <form method="post" action="/${basePath}/${metadataId}/publication/${transition.id}">
           <p><button type="submit" class="btn btn-outline-secondary" title="${transition.helpText} title="${transition.cssClass}">${transition.title}</button></p>
         </form>
       </#list>
-
-      <a href="/${basePath}/${metadataId}" class="btn btn-outline-secondary" title="Take no action and return to the metadata record">Cancel</a>
     </div>
+
+    <div>
+      <a href="/${basePath}/${metadataId}"><i class="fa-solid fa-arrow-left"></i>Return to the metadata record</a>
+    </div>
+
   </div>
 </@skeleton.master>

@@ -379,7 +379,7 @@ Symmetrical relationships
         </#if>
       </a>
       <#if link.status?has_content && link.status == "Inactive">
-        <small class="text-body-tertiary small"> (INACTIVE)</small>
+        <span class="badge rounded-pill text-bg-secondary">INACTIVE</span>
       </#if>
   </div>
 </#macro>

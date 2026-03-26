@@ -850,7 +850,7 @@ body {
 
 #publication {
     div {
-        margin: 4em auto;
+        margin: 2em auto;
         text-align: center;
 
         .btn {
@@ -982,6 +982,11 @@ body {
 
             .link-inactive {
                 @extend .link-secondary !optional;
+            }
+
+            .badge {
+                font-size: .65rem;
+                margin-inline-start: .5rem;
             }
         }
     }
