@@ -9,6 +9,6 @@ export default ObjectInputView.extend({
   render () {
     ObjectInputView.prototype.render.apply(this)
     this.$('select').val(this.model.get('code'))
-    return this
+    return this //
   }
 })
