@@ -44,7 +44,6 @@
     <@observedPropertiesList/>
     <@keywordsList/>
     <#if authors?has_content>"creator": [<@contactList authors "creator"/>],</#if>
-    <#if pointsOfContact?has_content>"contactPoint": [<@contactList pointsOfContact/>],</#if>
     <@citationList/>
     <@temporalExtentsList/>
     <#if boundingBoxes?has_content>"spatialCoverage": [<@itemList boundingBoxes "bbox"/>],</#if>
@@ -79,7 +78,6 @@
   <@doiDetail/>
   <#if boundingBoxes?has_content>,<@bboxDetails/></#if>
   <#if authors?has_content>,<@contactDetails authors "creator"/></#if>
-  <#if pointsOfContact?has_content>,<@contactDetails pointsOfContact/></#if>
   <#if incomingCitations?has_content>,<@citationDetails/></#if>
   <#if funding?has_content>,<@fundDetails/></#if>
   <#if parts?has_content>,<@partDetails parts/></#if>
