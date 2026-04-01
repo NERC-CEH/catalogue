@@ -499,7 +499,10 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             return Collections.singletonList(new MetadataCheck("Spatial resolutions is missing", WARNING));
         }
         if (spatialResolutions.stream().anyMatch(spatialResolution -> fieldIsMissing(spatialResolution, "distance"))) {
-            return Collections.singletonList(new MetadataCheck("Spatial resolution is empty", ERROR));
+            return Collections.singletonList(new MetadataCheck("Spatial resolution (distance) is missing", ERROR));
+        }
+        if (spatialResolutions.stream().anyMatch(spatialResolution -> fieldIsMissing(spatialResolution, "uom"))) {
+            return Collections.singletonList(new MetadataCheck("Spatial resolution (units) is missing", ERROR));
         }
         return Collections.emptyList();
     }
