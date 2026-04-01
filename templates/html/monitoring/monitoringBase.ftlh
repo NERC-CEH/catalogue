@@ -425,7 +425,7 @@ Symmetrical relationships
           ${contact.fullName}
           <#if contact.nameIdentifier?has_content>
             <a href="${contact.nameIdentifier}" target="_blank" rel="noopener noreferrer">
-              <img src="/static/img/orcid_16x16.png" alt="ORCID iD icon" title="ORCID iD">
+              <i class="fa-brands fa-orcid fa-xl" aria-label="ORCID iD" role="img"></i>
             </a>
           </#if>
         </span>

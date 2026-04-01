@@ -26,6 +26,10 @@ body {
         }
     }
 
+    .fa-orcid {
+        color: #a6ce39
+    }
+
     .tableOfContents {
 
         @extend .d-print-none !optional;

@@ -91,7 +91,7 @@
         <#if contact.isOrcid() && showOrcid>
             <div class="nameIdentifier">
               <a href="${contact.nameIdentifier}" target="_blank" rel="noopener noreferrer" title="View this authors record on ORCID.org">
-                <img src="/static/img/orcid_16x16.png" alt="ORCID iD icon" title="ORCID iD">&nbsp;${contact.nameIdentifier}
+                <i class="fa-brands fa-orcid fa-xl" aria-label="ORCID iD" role="img"></i> ${contact.nameIdentifier}
               </a>
             </div>
         </#if>
