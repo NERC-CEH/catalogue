@@ -68,7 +68,7 @@
 <#macro jenaLinks predicate="http://purl.org/dc/terms/related">
   <#local links=jena.relationships(uri, predicate) />
 
-  <#local displayPredicate="dcterms:related">
+  <#local displayPredicate="dcterms:relation">
   <#if predicate?starts_with("https://digital.ceh.ac.uk/ontology/doo/")>
      <#local displayPredicate=predicate?replace("https://digital.ceh.ac.uk/ontology/doo/","doo:")>
   <#elseif predicate?starts_with("http://www.w3.org/2004/02/skos/core#")>
