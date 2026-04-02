@@ -1,16 +1,16 @@
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
-@prefix dct: <http://purl.org/dc/terms/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix dcmitype: <http://purl.org/dc/dcmitype/> .
 @prefix geo: <http://www.opengis.net/ont/geosparql#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
 <https://example.com/M3tADATA_ID>
-dct:title "Example Gemini Document" ;
-dct:bbox "POLYGON((-1.091 31.109, -1.091 59.456, 2.574 59.456, 2.574 31.109, -1.091 31.109))"^^geo:wktLiteral ;
-dct:language <http://id.loc.gov/vocabulary/iso639-1/en> ;
+dcterms:title "Example Gemini Document" ;
+dcterms:bbox "POLYGON((-1.091 31.109, -1.091 59.456, 2.574 59.456, 2.574 31.109, -1.091 31.109))"^^geo:wktLiteral ;
+dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en> ;
 a dcat:Dataset;
-dct:type dcmitype:Dataset ;
+dcterms:type dcmitype:Dataset ;
 dcat:CatalogRecord <https://example.com/M3tADATA_ID> ;
 dcat:landingPage <https://example.com/M3tADATA_ID>;
 .

@@ -17,15 +17,15 @@
   ],
   "relationships": [
     {
-      "relation": "http://onto.ceh.ac.uk/EF#narrower",
+      "relation": "http://www.w3.org/2004/02/skos/core#narrower",
       "target": "0246d1a0-3077-4578-8746-34c08c48bdf6"
     },
     {
-      "relation": "http://onto.ceh.ac.uk/EF#associatedWith",
+      "relation": "http://purl.org/dc/terms/relation",
       "target": "09b6b7f5-1bc3-4d21-864a-adf249e86618"
     },
     {
-      "relation": "http://onto.ceh.ac.uk/EF#supersedes",
+      "relation": "http://purl.org/dc/terms/replaces",
       "target": "09b6b7f5-1bc3-4d21-864a-adf249e86618"
     }
   ],

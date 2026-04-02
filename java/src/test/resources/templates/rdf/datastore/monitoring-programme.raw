@@ -17,23 +17,23 @@
   ],
   "relationships": [
     {
-      "relation": "http://onto.ceh.ac.uk/EF#hasChild",
+      "relation": "http://www.w3.org/2004/02/skos/core#narrower",
       "target": "de64ac2e-4fd4-4dcb-9e83-1464219bb1c2"
     },
     {
-      "relation": "http://onto.ceh.ac.uk/EF#triggers",
+      "relation": "https://digital.ceh.ac.uk/ontology/doo/triggers",
       "target": "09b6b7f5-1bc3-4d21-864a-adf249e86618"
     },
     {
-      "relation": "http://onto.ceh.ac.uk/EF#associatedWith",
+      "relation": "http://purl.org/dc/terms/relation",
       "target": "cfa36a6b-1aa5-48c8-86f4-862558c41f43"
     },
     {
-      "relation": "http://onto.ceh.ac.uk/EF#supersedes",
+      "relation": "http://purl.org/dc/terms/replaces",
       "target": "09b6b7f5-1bc3-4d21-864a-adf249e86618"
     },
     {
-      "relation": "http://onto.ceh.ac.uk/EF#utilises",
+      "relation": "https://digital.ceh.ac.uk/ontology/doo/utilises",
       "target": "09b6b7f5-1bc3-4d21-864a-adf249e86618"
     }
   ],

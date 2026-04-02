@@ -224,7 +224,7 @@ export default EditorView.extend({
           ObjectInputView: RelationshipView,
           multiline: true,
           options: [
-            { value: 'http://onto.ceh.ac.uk/EF#uses', label: 'Uses' }
+            { value: 'https://digital.ceh.ac.uk/ontology/doo/uses', label: 'Uses' }
           ],
           helpText: `
 <p>Facilities and networks used by this activity</p>

@@ -28,7 +28,7 @@
     "dct": "http://purl.org/dc/terms/",
     "citeAs": "cr:citeAs",
     "column": "cr:column",
-    "conformsTo": "dct:conformsTo",
+    "conformsTo": "dcterms:conformsTo",
     "data": {
       "@id": "cr:data",
       "@type": "@json"
@@ -69,7 +69,7 @@
   "@type": "sc:Dataset", <#--check what if type = model code ?? -->
   "name":<@m.displayLiteral title/>,
   "url": "${uri?trim}",
-  "dct:conformsTo": "http://mlcommons.org/croissant/1.0",
+  "dcterms:conformsTo": "http://mlcommons.org/croissant/1.0",
   "version":<#if version?has_content><@m.displayLiteral version/><#else>1</#if>
   <#if description?has_content>,"description":<@m.displayLiteral description/></#if>
   <@citeAs/>

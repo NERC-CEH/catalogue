@@ -23,19 +23,19 @@
             "target": "https://catalogue.ceh.ac.uk/id/6795cf1b-9204-451e-99f1-f9b90658537f"
         },
         {
-            "relation": "https://vocabs.ceh.ac.uk/eidc#relatedTo",
+            "relation": "http://purl.org/dc/terms/relation",
             "target": "https://catalogue.ceh.ac.uk/id/9461f9d7-f7a5-4328-a395-50a3b25da190"
         },
         {
-            "relation": "https://vocabs.ceh.ac.uk/eidc#relatedTo",
+            "relation": "http://purl.org/dc/terms/relation",
             "target": "https://catalogue.ceh.ac.uk/id/1e7d5e08-9e24-471b-ae37-49b477f695e3"
         },
         {
-            "relation": "https://vocabs.ceh.ac.uk/eidc#relatedTo",
+            "relation": "http://purl.org/dc/terms/relation",
             "target": "https://catalogue.ceh.ac.uk/id/c63c543f-3e95-4c1c-8c69-12f942271813"
         },
         {
-            "relation": "https://vocabs.ceh.ac.uk/eidc#relatedTo",
+            "relation": "http://purl.org/dc/terms/relation",
             "target": "https://catalogue.ceh.ac.uk/id/03fbc322-967a-44aa-aab9-0281d9f53d84"
         }
     ],
@@ -259,28 +259,28 @@
             "associationType": "Aggregation"
         },
         {
-            "rel": "https://vocabs.ceh.ac.uk/eidc#relatedTo",
+            "rel": "http://purl.org/dc/terms/relation",
             "identifier": "1e7d5e08-9e24-471b-ae37-49b477f695e3",
             "href": "https://catalogue.ceh.ac.uk/id/1e7d5e08-9e24-471b-ae37-49b477f695e3",
             "title": "Land Cover Map 2007 (1km raster, percentage aggregate class, N.Ireland)",
             "associationType": "Dataset"
         },
         {
-            "rel": "https://vocabs.ceh.ac.uk/eidc#relatedTo",
+            "rel": "http://purl.org/dc/terms/relation",
             "identifier": "03fbc322-967a-44aa-aab9-0281d9f53d84",
             "href": "https://catalogue.ceh.ac.uk/id/03fbc322-967a-44aa-aab9-0281d9f53d84",
             "title": "United Kingdom Butterfly Monitoring Scheme:site location data 2013",
             "associationType": "Dataset"
         },
         {
-            "rel": "https://vocabs.ceh.ac.uk/eidc#relatedTo",
+            "rel": "http://purl.org/dc/terms/relation",
             "identifier": "c63c543f-3e95-4c1c-8c69-12f942271813",
             "href": "https://catalogue.ceh.ac.uk/id/c63c543f-3e95-4c1c-8c69-12f942271813",
             "title": "Annual Forest Loss at 15m resolution in the Corridor Ankeniheny-Zahamena (CAZ), Madagascar, 2006-2014",
             "associationType": "Dataset"
         },
         {
-            "rel": "https://vocabs.ceh.ac.uk/eidc#relatedTo",
+            "rel": "http://purl.org/dc/terms/relation",
             "identifier": "9461f9d7-f7a5-4328-a395-50a3b25da190",
             "href": "https://catalogue.ceh.ac.uk/id/9461f9d7-f7a5-4328-a395-50a3b25da190",
             "title": "Can Paying for Global Ecosystem Services reduce poverty? (P4GES)",
