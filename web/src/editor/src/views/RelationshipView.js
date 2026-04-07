@@ -84,8 +84,6 @@ export default ObjectInputView.extend({
       this.options.unshift({ value: '', label: 'Choose a relationship' })
     }
 
-
-
     this.options.forEach(option => {
       // If relationship is defined OR it matches the "Choose a Relationship" option then make it the selected option in the UI
       option.selected = (option.value === this.model.attributes.relation || option.value === '') ? 'selected' : ''
