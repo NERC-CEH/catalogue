@@ -163,7 +163,7 @@ export default EditorView.extend({
           options: [
             { value: 'http://purl.org/dc/terms/relation', label: 'Related to' },
             { value: 'http://purl.org/dc/terms/replaces', label: 'Supersedes' },
-            { value: 'http://www.w3.org/2004/02/skos/core#narrower', label: 'Has child network' }
+            { value: 'https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork', label: 'Has child network' }
           ],
           helpText: `
 <p>Relationships to other records</p>

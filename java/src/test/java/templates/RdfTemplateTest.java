@@ -181,7 +181,7 @@ public class RdfTemplateTest {
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000001").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000002").build()
             ));
-            given(jena.relationships(facilityDocument.getUri(), "http://www.w3.org/2004/02/skos/core#narrower")).willReturn(List.of(
+            given(jena.relationships(facilityDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000003").build()
             ));
             given(jena.relationships(facilityDocument.getUri(), "http://purl.org/dc/terms/replaces")).willReturn(List.of(
@@ -211,7 +211,7 @@ public class RdfTemplateTest {
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000001").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000002").build()
             ));
-            given(jena.relationships(networkDocument.getUri(), "http://www.w3.org/2004/02/skos/core#narrower")).willReturn(List.of(
+            given(jena.relationships(networkDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000003").build()
             ));
             given(jena.relationships(networkDocument.getUri(), "http://purl.org/dc/terms/replaces")).willReturn(List.of(
@@ -244,7 +244,7 @@ public class RdfTemplateTest {
             given(jena.relationships(programmeDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/utilises")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000004").build()
             ));
-            given(jena.relationships(programmeDocument.getUri(), "http://www.w3.org/2004/02/skos/core#narrower")).willReturn(List.of(
+            given(jena.relationships(programmeDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000005").build()
             ));
             given(jena.relationships(programmeDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/triggers")).willReturn(List.of(

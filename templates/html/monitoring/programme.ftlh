@@ -22,16 +22,16 @@
 
 
   <div class="relationships">
-    <#if !CombinedGeometriesOutput?has_content><@m.relationships "https://digital.ceh.ac.uk/ontology/doo/utilises" "Uses"  /></#if>
+    <#if !CombinedGeometriesOutput?has_content><@m.relationships "https://digital.ceh.ac.uk/ontology/doo/utilises" "Uses" /></#if>
 
     <@m.relationships  "http://purl.org/dc/terms/replaces" "Supersedes" />
     <@m.inverseRelationships  "http://purl.org/dc/terms/replaces" "Superseded by"/>
 
-    <@m.relationships "https://digital.ceh.ac.uk/ontology/doo/triggers" "Activities set up for this programme"  />
+    <@m.relationships "https://digital.ceh.ac.uk/ontology/doo/triggers" "Activities set up for this programme" />
 
-    <@m.inverseRelationships "http://www.w3.org/2004/02/skos/core#narrower" "Parent programmes"  />
-    <@m.relationships "http://www.w3.org/2004/02/skos/core#narrower" "Child programmes"  />
+    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme" "Parent programmes" />
+    <@m.relationships "https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme" "Child programmes" />
 
-    <@m.symmetricRelationships "http://purl.org/dc/terms/relation" "Related"/>
+    <@m.symmetricRelationships "http://purl.org/dc/terms/relation" "Related" />
   </div>
 </@m.base>

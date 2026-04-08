@@ -17,7 +17,7 @@
   ],
   "relationships": [
     {
-      "relation": "http://www.w3.org/2004/02/skos/core#narrower",
+      "relation": "https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme",
       "target": "de64ac2e-4fd4-4dcb-9e83-1464219bb1c2"
     },
     {

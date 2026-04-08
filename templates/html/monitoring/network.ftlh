@@ -22,8 +22,8 @@
     <@m.relationships "http://purl.org/dc/terms/replaces" "Supersedes" />
     <@m.inverseRelationships "http://purl.org/dc/terms/replaces" "Superseded by"  />
 
-    <@m.relationships "http://www.w3.org/2004/02/skos/core#narrower" "Child networks" />
-    <@m.inverseRelationships "http://www.w3.org/2004/02/skos/core#narrower" "Parent networks"  />
+    <@m.relationships "https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork" "Child networks" />
+    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork" "Parent networks"  />
 
     <@m.symmetricRelationships "http://purl.org/dc/terms/relation" "Related"/>
   </div>

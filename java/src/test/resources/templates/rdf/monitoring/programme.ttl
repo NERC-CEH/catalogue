@@ -13,7 +13,7 @@ adms:identifier :id0 ;
 dcterms:description "Test programme description" ;
 geo:hasBoundingBox :bbox ;
 dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en>;
-skos:narrower <https://catalogue.ceh.ac.uk/id/000000005>;
+doo:hasChildProgramme <https://catalogue.ceh.ac.uk/id/000000005>;
 dcterms:relation <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue.ceh.ac.uk/id/000000002>;
 dcterms:replaces <https://catalogue.ceh.ac.uk/id/000000003>;
 doo:utilises <https://catalogue.ceh.ac.uk/id/000000004>;

@@ -30,7 +30,7 @@ public class JenaLookupServiceTest {
 
     private static final Property DCTERMS_SOURCE = ResourceFactory.createProperty("http://purl.org/dc/terms/source");
     private static final Property DCTERMS_ISPARTOF = ResourceFactory.createProperty("http://purl.org/dc/terms/isPartOf");
-    private static final Property SKOS_NARROWER = ResourceFactory.createProperty("http://www.w3.org/2004/02/skos/core#narrower");
+    private static final Property CHILD_FACILITY = ResourceFactory.createProperty("https://digital.ceh.ac.uk/ontology/doo/hasChildFacility");
 
     @BeforeEach
     void init() {
@@ -159,12 +159,12 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://monitoringFacility"), DOO_OPERATIONALSTATUS, "Inactive");
         triples.add(createResource("http://monitoringFacility2"), DCTERMS_TITLE, "Monitoring Facility 2");
         triples.add(createResource("http://monitoringFacility2"), METADATA_STATUS, "published");
-        triples.add(createResource("http://monitoringFacility2"), SKOS_NARROWER, createResource("http://monitoringFacility"));
+        triples.add(createResource("http://monitoringFacility2"), CHILD_FACILITY, createResource("http://monitoringFacility"));
         triples.add(createResource("http://monitoringFacility2"), DCTERMS_TYPE, "Monitoring Facility");
         triples.add(createResource("http://monitoringFacility2"), SF_GEOMETRY, geometryString2);
 
         //When
-        String actual = service.relationshipCombinedGeometriesWithOwner("http://monitoringFacility2", SKOS_NARROWER.toString(), false);
+        String actual = service.relationshipCombinedGeometriesWithOwner("http://monitoringFacility2", CHILD_FACILITY.toString(), false);
 
         //Then
         assertThat("Generates correct combined GeoJSON with owner", actual, equalTo(combinedGeometry));

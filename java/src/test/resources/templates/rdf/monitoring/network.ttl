@@ -12,7 +12,7 @@ dcterms:title "Test network name" ;
 adms:identifier :id0 ;
 dcterms:description "Test network description" ;
 dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en>;
-skos:narrower <https://catalogue.ceh.ac.uk/id/000000003>;
+doo:hasChildNetwork <https://catalogue.ceh.ac.uk/id/000000003>;
 dcterms:relation <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue.ceh.ac.uk/id/000000002>;
 dcterms:replaces <https://catalogue.ceh.ac.uk/id/000000004>;
 .

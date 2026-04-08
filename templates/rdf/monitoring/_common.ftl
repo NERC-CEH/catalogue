@@ -58,7 +58,9 @@
     ${other}
 
     <#-- Relationships between records -->
-    <@c.jenaLinks "http://www.w3.org/2004/02/skos/core#narrower" />
+    <@c.jenaLinks "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility" />
+    <@c.jenaLinks "https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork" />
+    <@c.jenaLinks "https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme" />
     <@c.jenaLinks "http://purl.org/dc/terms/relation" />
     <@c.jenaLinks "http://purl.org/dc/terms/replaces" />
     <@c.jenaLinks "http://purl.org/dc/terms/isPartOf" />

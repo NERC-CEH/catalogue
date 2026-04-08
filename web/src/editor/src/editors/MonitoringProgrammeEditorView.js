@@ -259,7 +259,7 @@ export default EditorView.extend({
           multiline: true,
           options: [
             { value: 'https://digital.ceh.ac.uk/ontology/doo/utilises', label: 'Uses (facility or network)' },
-            { value: 'http://www.w3.org/2004/02/skos/core#narrower', label: 'Has child programme' },
+            { value: 'https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme', label: 'Has child programme' },
             { value: 'http://purl.org/dc/terms/relation', label: 'Related to' },
             { value: 'http://purl.org/dc/terms/replaces', label: 'Supersedes' },
             { value: 'https://digital.ceh.ac.uk/ontology/doo/triggers', label: 'Triggers (activity)' }

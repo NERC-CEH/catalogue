@@ -2,7 +2,7 @@
 
 <@m.base>
   <#assign relationshipCombinedGeometriesOutput>
-    <@m.relationshipCombinedGeometriesWithOwner "http://www.w3.org/2004/02/skos/core#narrower" locationConfidential />
+    <@m.relationshipCombinedGeometriesWithOwner "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility" locationConfidential />
   </#assign>
 
 
@@ -33,8 +33,8 @@
     <@m.relationships "http://purl.org/dc/terms/replaces" "Supersedes" />
     <@m.inverseRelationships "http://purl.org/dc/terms/replaces" "Superseded by"  />
 
-    <@m.relationships "http://www.w3.org/2004/02/skos/core#narrower" "Child facilities" />
-    <@m.inverseRelationships "http://www.w3.org/2004/02/skos/core#narrower" "Parent facilities"  />
+    <@m.relationships "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility" "Child facilities" />
+    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility" "Parent facilities"  />
 
     <@m.symmetricRelationships "http://purl.org/dc/terms/relation" "Related"/>
   </#compress></div>

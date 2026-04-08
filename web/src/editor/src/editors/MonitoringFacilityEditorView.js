@@ -225,7 +225,7 @@ export default EditorView.extend({
             { value: 'http://purl.org/dc/terms/isPartOf', label: 'Is part of' },
             { value: 'http://purl.org/dc/terms/relation', label: 'Relation' },
             { value: 'http://purl.org/dc/terms/replaces', label: 'Replaces' },
-            { value: 'http://www.w3.org/2004/02/skos/core#narrower', label: 'Has child facility' }
+            { value: 'https://digital.ceh.ac.uk/ontology/doo/hasChildFacility', label: 'Has child facility' }
           ],
           helpText: `
 <p>Relationships to other records</p>

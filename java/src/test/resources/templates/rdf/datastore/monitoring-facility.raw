@@ -25,7 +25,7 @@
       "target": "0246d1a0-3077-4578-8746-34c08c48bdf6"
     },
     {
-      "relation": "http://www.w3.org/2004/02/skos/core#narrower",
+      "relation": "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility",
       "target": "b1a617c6-5f20-4384-af3c-069b2ff79e61"
     },
     {
