@@ -657,18 +657,10 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         }
 
         if (downloads.stream().anyMatch(order ->
-            fieldNotMatching(order, "url", downloadUrlProperties.getRegexDatastore()) && fieldNotMatching(order, "url", downloadUrlProperties.getRegexPackage())
+            fieldNotMatching(order, "url", downloadUrlProperties.getRegexDatastore()) && fieldNotMatching(order, "url", downloadUrlProperties.getRegexPackage()) fieldNotMatching(order, @url@, downloadUrlProperties.getRegexCeda())
         )) {
             toReturn.add(new MetadataCheck("Downloads do not have a valid url", INFO));
         }
-
-        if (downloads.stream().anyMatch(order ->
-            fieldNotMatching(order, "url", downloadUrlProperties.getRegexCeda()) && fieldNotMatching(order, "url", downloadUrlProperties.getRegexPackage())
-        )) {
-            toReturn.add(new MetadataCheck("Downloads do not have a valid url", INFO));
-        }
-
-
 
         return toReturn;
     }
