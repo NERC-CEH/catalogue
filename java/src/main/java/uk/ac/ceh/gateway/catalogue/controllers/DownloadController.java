@@ -35,14 +35,16 @@ public class DownloadController {
         @Value("#{'${metrics.users.excluded}'.split(',')}") List<String> excludedUsers,
         @NotNull @Value("${download.url.regexOrder}") String orderUrlRegex,
         @NotNull @Value("${download.url.regexPackage}") String packageUrlRegex,
-        @NotNull @Value("${download.url.regexDatastore}") String datastoreUrlRegex
+        @NotNull @Value("${download.url.regexDatastore}") String datastoreUrlRegex,
+        @NotNull @Value("${download.url.regexCeda}") String cedaUrlRegex
     ) {
         this.metricsService = metricsService;
         this.excludedUsers = excludedUsers;
         this.validUrls = List.of(
             Pattern.compile(orderUrlRegex),
             Pattern.compile(packageUrlRegex),
-            Pattern.compile(datastoreUrlRegex)
+            Pattern.compile(datastoreUrlRegex),
+            Pattern.compile(cedaUrlRegex)
         );
         log.info("Creating");
     }

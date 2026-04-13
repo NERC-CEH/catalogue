@@ -40,6 +40,7 @@ public class DownloadControllerTest {
     @NotNull @Value("${download.url.regexOrder}") private String orderUrlRegex;
     @NotNull @Value("${download.url.regexPackage}") private String packageUrlRegex;
     @NotNull @Value("${download.url.regexDatastore}") private String datastoreUrlRegex;
+    @NotNull @Value("${download.url.regexCeda}") private String CedaUrlRegex;
 
     @MockitoBean
     private MetricsService metricsService;
@@ -91,16 +92,17 @@ public class DownloadControllerTest {
         List<String> validUrls = List.of(
             "https://catalogue.ceh.ac.uk/datastore/eidchub/abcdef12-3456-1234-0987-6876abcd1234",
             "https://data-package.ceh.ac.uk/data/c63c543f-3e95-4c1c-8c69-12f942271813",
-            "https://order-eidc.ceh.ac.uk/resources/KBAHWTRW/order"
+            "https://order-eidc.ceh.ac.uk/resources/KBAHWTRW/order",
+            "https://data.ceda.ac.uk/eidc/f5ce92b0-03e8-4719-82ff-c62e6ebe927b"
         );
         List<String> users = List.of("foo", "bar");
-        DownloadController controller = new DownloadController(metricsService, users, orderUrlRegex, packageUrlRegex, datastoreUrlRegex);
+        DownloadController controller = new DownloadController(metricsService, users, orderUrlRegex, packageUrlRegex, datastoreUrlRegex, CedaUrlRegex);
 
         //when
         List<String> actual = validUrls.stream().filter(url -> controller.valid(url)).collect(Collectors.toList());
 
         //then
-        assertThat("All urls should be valid", actual.size(), equalTo(3));
+        assertThat("All urls should be valid", actual.size(), equalTo(4));
     }
 
     @Test
@@ -112,7 +114,7 @@ public class DownloadControllerTest {
             "https://invalid.com"
         );
         List<String> users = List.of("foo", "bar");
-        DownloadController controller = new DownloadController(metricsService, users, orderUrlRegex, packageUrlRegex, datastoreUrlRegex);
+        DownloadController controller = new DownloadController(metricsService, users, orderUrlRegex, packageUrlRegex, datastoreUrlRegex, CedaUrlRegex);
 
         //when
         List<String> actual = validUrls.stream().filter(url -> controller.valid(url)).collect(Collectors.toList());
