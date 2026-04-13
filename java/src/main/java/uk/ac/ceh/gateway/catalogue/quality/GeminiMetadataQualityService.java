@@ -16,6 +16,7 @@ import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -41,6 +42,9 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     );
     private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<>() {};
     private final DownloadUrlProperties downloadUrlProperties;
+
+    private static final Pattern ORCID_PATTERN = Pattern.compile("^https://orcid.org/0000-\\d{4}-\\d{4}-[0-9X]{4}$");
+    private static final Pattern ROR_PATTERN = Pattern.compile("^https://ror.org/\\w{9}$");
 
     public GeminiMetadataQualityService(
             @NonNull DocumentReader documentReader,
@@ -307,6 +311,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         toReturn.addAll(
             Stream.of(
                 checkAuthors(parsed).stream(),
+                checkContributors(parsed).stream(),
                 checkKeywords(parsed).stream(),
                 checkTopicCategories(parsed).stream(),
                 checkDataFormat(parsed).stream(),
@@ -585,24 +590,81 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
 
     List<MetadataCheck> checkAuthors(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
-        val authors = parsed.read(
-                "$.responsibleParties[*][?(@.role == 'author')].['familyName','givenName','displayName','organisationName','email']",
-                typeRefStringString
+
+        List<Map<String, String>> authors = parsed.read(
+            "$.responsibleParties[*][?(@.role == 'author')].['familyName','givenName','displayName','organisationName','contributorType','organisationIdentifier','nameIdentifier', 'email']",
+            typeRefStringString
         );
+
         if (authors.isEmpty()) {
             toReturn.add(new MetadataCheck("There are no authors", INFO));
         }
-        if (authors.stream().anyMatch(author -> fieldIsMissing(author, "displayName") && (fieldIsMissing(author, "familyName") || fieldIsMissing(author, "givenName")))) {
-            toReturn.add(new MetadataCheck("Author name is missing or incomplete", ERROR));
+
+        for (int i = 0; i < authors.size(); i++) {
+            Map<String, String> author = authors.get(i);
+            int authorIndex = i + 1;
+
+            if (fieldIsMissing(author, "displayName")
+                && (fieldIsMissing(author, "familyName")
+                    || fieldIsMissing(author, "givenName"))) {
+                toReturn.add(new MetadataCheck("Author [" + authorIndex + "] name is missing or incomplete", ERROR));
+            }
+
+            if (fieldIsMissing(author, "organisationName")) {
+                toReturn.add(new MetadataCheck("Author [" + authorIndex + "] organisation name is missing", ERROR));
+            }
+
+            if (isInvalidRoR(author, "organisationIdentifier")) {
+                toReturn.add(new MetadataCheck("Author [" + authorIndex + "] ROR identifier is invalid", ERROR));
+            }
+
+            if (isInvalidOrcid(author, "nameIdentifier")) {
+                toReturn.add(new MetadataCheck("Author [" + authorIndex + "] ORCID identifier is invalid", ERROR));
+            }
+
+            String email = author.get("email");
+            if (email != null
+                && email.endsWith("@ceh.ac.uk")
+                && !email.equalsIgnoreCase("enquiries@ceh.ac.uk")
+                && !email.equalsIgnoreCase("info@eidc.ac.uk")) {
+                    toReturn.add(new MetadataCheck(String.format("Author [%d] email address is %s", authorIndex, email), ERROR));
+            }
         }
-        if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {
-            toReturn.add(new MetadataCheck("Author's affiliation (organisation name) is missing", ERROR));
+
+        return toReturn;
+    }
+
+    List<MetadataCheck> checkContributors(DocumentContext parsed) {
+        val toReturn = new ArrayList<MetadataCheck>();
+
+        List<Map<String, String>> contributors = parsed.read(
+            "$.contributors[*].['familyName','givenName','displayName','organisationName','contributorType','organisationIdentifier','nameIdentifier']",
+            typeRefStringString
+        );
+
+        for (int i = 0; i < contributors.size(); i++) {
+            Map<String, String> contributor = contributors.get(i);
+            int contributorIndex = i + 1;
+
+            if (fieldIsMissing(contributor, "organisationName")
+                && fieldIsMissing(contributor, "displayName")
+                && (fieldIsMissing(contributor, "familyName")
+                    || fieldIsMissing(contributor, "givenName"))) {
+                toReturn.add(new MetadataCheck("Contributor [" + contributorIndex + "] must have a name and/or an organisation", ERROR));
+            }
+
+            if (fieldIsMissing(contributor, "contributorType")) {
+                toReturn.add(new MetadataCheck("Contributor [" + contributorIndex + "] contributor type is missing", ERROR));
+            }
+
+            if (isInvalidRoR(contributor, "organisationIdentifier")) {
+                toReturn.add(new MetadataCheck("Contributor [" + contributorIndex + "] ROR identifier is invalid", ERROR));
+            }
+
+            if (isInvalidOrcid(contributor, "nameIdentifier")) {
+                toReturn.add(new MetadataCheck("Contributor [" + contributorIndex + "] ORCID identifier is invalid", ERROR ));
+            }
         }
-        authors.stream()
-            .map(author -> author.get("email"))
-            .flatMap(Stream::ofNullable)
-            .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk") && !email.equals("info@eidc.ac.uk"))
-            .forEach(email -> toReturn.add(new MetadataCheck(format("Author's email address is %s", email), ERROR)));
 
         return toReturn;
     }
@@ -611,6 +673,24 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         return map == null
             || map.get(key) == null
             || map.get(key).isBlank();
+    }
+
+    private boolean isInvalidRoR(Map<String, String> map, String key) {
+        String value = map.get(key);
+        if (value == null || value.isBlank()) {
+            return false;
+        }
+
+        return !ROR_PATTERN.matcher(value).matches();
+    }
+
+    private boolean isInvalidOrcid(Map<String, String> map, String key) {
+        String value = map.get(key);
+        if (value == null || value.isBlank()) {
+            return false;
+        }
+
+        return !ORCID_PATTERN.matcher(value).matches();
     }
 
     private boolean fieldListIsMissing(Map<String, List> map, String key) {
@@ -657,7 +737,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         }
 
         if (downloads.stream().anyMatch(order ->
-            fieldNotMatching(order, "url", downloadUrlProperties.getRegexDatastore()) && fieldNotMatching(order, "url", downloadUrlProperties.getRegexPackage()) fieldNotMatching(order, @url@, downloadUrlProperties.getRegexCeda())
+            fieldNotMatching(order, "url", downloadUrlProperties.getRegexDatastore()) && fieldNotMatching(order, "url", downloadUrlProperties.getRegexPackage())  && fieldNotMatching(order, "url", downloadUrlProperties.getRegexCeda())
         )) {
             toReturn.add(new MetadataCheck("Downloads do not have a valid url", INFO));
         }
