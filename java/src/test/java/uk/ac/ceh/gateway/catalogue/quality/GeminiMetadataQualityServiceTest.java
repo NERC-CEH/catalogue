@@ -388,6 +388,7 @@ public class GeminiMetadataQualityServiceTest {
         when(downloadUrlProperties.getRegexDatastore()).thenReturn("https://catalogue\\.ceh\\.ac\\.uk/datastore/eidchub/.*");
         when(downloadUrlProperties.getRegexOrder()).thenReturn("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*");
         when(downloadUrlProperties.getRegexPackage()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/.*");
+        when(downloadUrlProperties.getRegexCeda()).thenReturn("https://catalogue\\.ceh\\.ac\\.uk/datastore/eidchub/.*");
         val actual = this.service.checkDownloadAndOrderLinks(parsed);
 
         //then
