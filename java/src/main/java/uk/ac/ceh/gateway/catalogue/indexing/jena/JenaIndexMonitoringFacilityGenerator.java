@@ -32,7 +32,7 @@ public class JenaIndexMonitoringFacilityGenerator implements IndexGenerator<Moni
         Resource me = generator.resource(document.getId());
 
         Optional.ofNullable(document.getGeometry())
-            .ifPresent(b -> toReturn.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(b.getGeometryString(), GEOJSON_LITERAL)))
+            .ifPresent(b -> toReturn.add(createStatement(me, SF_GEOMETRY, createTypedLiteral(b.getGeometryString(), GEOJSON_LITERAL)))
             );
 
         Optional.ofNullable(document.getGeometry())
@@ -52,7 +52,7 @@ public class JenaIndexMonitoringFacilityGenerator implements IndexGenerator<Moni
             });
 
         Optional.ofNullable(document.getOperationalStatus())
-            .ifPresent(s -> toReturn.add(createStatement(me, HAS_STATUS, createPlainLiteral(s)))
+            .ifPresent(s -> toReturn.add(createStatement(me, DOO_OPERATIONALSTATUS, createPlainLiteral(s)))
             );
 
         return toReturn;

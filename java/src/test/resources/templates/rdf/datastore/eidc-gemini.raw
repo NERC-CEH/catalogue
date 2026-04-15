@@ -12,11 +12,11 @@
   ],
   "relationships": [
     {
-      "relation": "https://vocabs.ceh.ac.uk/eidc#relatedTo",
+      "relation": "http://purl.org/dc/terms/relation",
       "target": "c88921ba-f871-44c3-9339-51c5bee4024a"
     },
     {
-      "relation": "https://vocabs.ceh.ac.uk/eidc#supersedes",
+      "relation": "http://purl.org/dc/terms/replaces",
       "target": "c88921ba-f871-44c3-9339-51c5bee4024a"
     },
     {
@@ -25,10 +25,6 @@
     },
     {
       "relation": "https://vocabs.ceh.ac.uk/eidc#generates",
-      "target": "c88921ba-f871-44c3-9339-51c5bee4024a"
-    },
-    {
-      "relation": "https://vocabs.ceh.ac.uk/eidc#uses",
       "target": "c88921ba-f871-44c3-9339-51c5bee4024a"
     }
   ],

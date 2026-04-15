@@ -35,12 +35,12 @@ public class JenaIndexCodeDocumentGenerator implements IndexGenerator<CodeDocume
         List<Statement> toReturn = generator.generateIndex(document);
 
         Resource me = generator.resource(document.getId());
-        toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(me.getURI()))); //Add as an identifier of itself
+        toReturn.add(createStatement(me, DCTERMS_IDENTIFIER, createPlainLiteral(me.getURI()))); //Add as an identifier of itself
 
         Optional.ofNullable(document.getBoundingBoxes())
             .orElse(Collections.emptyList())
             .forEach(b ->
-                toReturn.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(b.getWkt(), WKT_LITERAL)))
+                toReturn.add(createStatement(me, SF_GEOMETRY, createTypedLiteral(b.getWkt(), WKT_LITERAL)))
             );
 
         return toReturn;

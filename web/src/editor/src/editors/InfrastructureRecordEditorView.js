@@ -273,7 +273,7 @@ export default EditorView.extend({
           multiline: true,
           options: [
             { value: 'http://onto.nerc.ac.uk/CEHMD/rels/related', label: 'Related' },
-            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces' },
+            { value: 'http://purl.org/dc/terms/source', label: 'Produces' },
             { value: 'http://onto.nerc.ac.uk/CEHMD/rels/uses', label: 'Uses' }
           ]
         })

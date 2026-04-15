@@ -17,19 +17,19 @@
   ],
   "relationships": [
     {
-      "relation": "http://onto.ceh.ac.uk/EF#associatedWith",
+      "relation": "http://purl.org/dc/terms/relation",
       "target": "0246d1a0-3077-4578-8746-34c08c48bdf6"
     },
     {
-      "relation": "http://onto.ceh.ac.uk/EF#supersedes",
+      "relation": "http://purl.org/dc/terms/replaces",
       "target": "0246d1a0-3077-4578-8746-34c08c48bdf6"
     },
     {
-      "relation": "http://onto.ceh.ac.uk/EF#narrower",
+      "relation": "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility",
       "target": "b1a617c6-5f20-4384-af3c-069b2ff79e61"
     },
     {
-      "relation": "http://onto.ceh.ac.uk/EF#belongsTo",
+      "relation": "http://purl.org/dc/terms/isPartOf",
       "target": "0246d1a0-3077-4578-8746-34c08c48bdf6"
     }
   ],

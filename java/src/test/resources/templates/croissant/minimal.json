@@ -8,7 +8,7 @@
         "dct": "http://purl.org/dc/terms/",
         "citeAs": "cr:citeAs",
         "column": "cr:column",
-        "conformsTo": "dct:conformsTo",
+        "conformsTo": "dcterms:conformsTo",
         "data": {
             "@id": "cr:data",
             "@type": "@json"
@@ -49,6 +49,6 @@
     "@type": "sc:Dataset",
     "name": "Title",
     "url": "https://example.org/id/123456789",
-    "dct:conformsTo": "http://mlcommons.org/croissant/1.0",
+    "dcterms:conformsTo": "http://mlcommons.org/croissant/1.0",
     "version": 1
 }

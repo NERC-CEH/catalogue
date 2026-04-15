@@ -229,7 +229,7 @@ class FacilityEventServiceTest {
         if(network != null) {
             mf.setRelationships(
                 com.google.common.collect.Sets.newHashSet(
-                    new Relationship(Ontology.BELONGS_TO.getURI(), network.getUri())
+                    new Relationship(Ontology.DCTERMS_ISPARTOF.getURI(), network.getUri())
                 )
             );
         }
