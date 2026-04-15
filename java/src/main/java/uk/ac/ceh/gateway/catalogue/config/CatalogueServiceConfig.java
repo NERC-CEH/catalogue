@@ -88,6 +88,7 @@ public class CatalogueServiceConfig {
                 .logo("eidc.png")
                 .facetKey("topic")
                 .facetKey("recordType")
+                .facetKey("dataFormat")
                 .facetKey("rightsHolder")
                 .facetKey("funder")
                 .facetKey("status")
