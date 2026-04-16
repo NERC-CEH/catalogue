@@ -203,7 +203,7 @@
 </#macro>
 
 <#macro fileAccessInstructions>
-  <#if dataAccess?? && dataAccess.dataAddressable>
+  <#if dataAccess?? && dataAccess.dataAddressable && dataAccess?string?matches(".+http(|s)://catalogue.ceh.ac.uk/datastore/.+")>
     <div class="py-3">
       <hr class="my-5 ">
       <h5 class="my-3">Bulk download options</h5>
@@ -233,3 +233,6 @@
 
     <#return sizeLabel>
 </#function>
+
+
+
