@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@Profile("upload:hubbub")
+@Profile("upload-hubbub")
 @RequestMapping("/documents")
 @RequiredArgsConstructor
 public class DataPreviewerController {

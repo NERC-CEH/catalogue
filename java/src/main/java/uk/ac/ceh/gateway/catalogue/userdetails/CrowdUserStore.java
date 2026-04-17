@@ -20,7 +20,7 @@ import java.util.Optional;
 import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
-@Profile("auth:crowd")
+@Profile("auth-crowd")
 @Service
 public class CrowdUserStore implements UserStore<CatalogueUser> {
     private final String address;

@@ -145,11 +145,11 @@ export_default LEGILO_USER user
 export_default LEGILO_PASSWORD password
 export_default FUSEKI_URL http://localhost:3030
 
-spring_profile='development,server:eidc,search:basic,cache,service-agreement'
+spring_profile='development,server-eidc,search-basic,cache,service-agreement'
 if [[ $with_hubbub = true ]]; then
-    spring_profile="$spring_profile,upload:hubbub"
+    spring_profile="$spring_profile,upload-hubbub"
 else
-    spring_profile="$spring_profile,upload:simple"
+    spring_profile="$spring_profile,upload-simple"
 fi
 if [[ $with_legilo = true ]]; then
     spring_profile="$spring_profile,keyword-suggestions"

@@ -32,7 +32,7 @@ import static java.lang.String.format;
 @ToString
 @Controller
 @RequestMapping("upload")
-@Profile("upload:simple")
+@Profile("upload-simple")
 public class UploadController {
     private final DocumentRepository documentRepository;
     private final StorageService storageService;

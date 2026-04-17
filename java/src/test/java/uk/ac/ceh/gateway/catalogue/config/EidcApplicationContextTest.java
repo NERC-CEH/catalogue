@@ -12,7 +12,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ac.ceh.gateway.catalogue.CatalogueWebTest;
@@ -26,13 +25,11 @@ import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
-@ActiveProfiles({"auth:crowd", "upload:hubbub", "server:eidc", "search:basic", "service-agreement"})
+@ActiveProfiles({"auth-crowd", "upload-hubbub", "server-eidc", "search-basic", "service-agreement"})
 @CatalogueWebTest
 @DisplayName("EIDC production context")
 class EidcApplicationContextTest {

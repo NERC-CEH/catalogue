@@ -25,7 +25,7 @@ public class MapServerGetFeatureInfoErrorHandler implements ResponseErrorHandler
     }
 
     @Override
-    public void handleError(ClientHttpResponse response) throws IOException {
+    public void handleError(URI url, HttpMethod method, ClientHttpResponse response) throws IOException {
         val body = IOUtils.toString(response.getBody(), StandardCharsets.UTF_8);
         val httpStatus = HttpStatus.valueOf(response.getStatusCode().value());
         throw new MapServerException(body, httpStatus, response.getHeaders().getContentType());

@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockCatalogueUser
-@ActiveProfiles({"server:eidc", "test"})
+@ActiveProfiles({"server-eidc", "test"})
 @DisplayName("KeywordVocabularyController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 @WebMvcTest(KeywordVocabularyController.class)

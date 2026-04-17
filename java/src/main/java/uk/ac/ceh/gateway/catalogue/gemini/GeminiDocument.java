@@ -71,8 +71,10 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     @JsonIgnore
     private Citation citation;
     @JsonIgnore
+    @Getter(onMethod_ = @JsonIgnore)
     private boolean isDataciteMintable;
     @JsonIgnore
+    @Getter(onMethod_ = @JsonIgnore)
     private boolean isDatacitable;
     private DatasetReferenceDate datasetReferenceDate;
     private List<ResourceMaintenance> resourceMaintenance;

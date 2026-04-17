@@ -1,6 +1,6 @@
 //file:noinspection GradlePackageUpdate
 plugins {
-    id 'org.springframework.boot' version '3.4.2'
+    id 'org.springframework.boot' version '3.5.13'
     id 'io.freefair.lombok' version '9.2.0'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'java'
@@ -28,14 +28,14 @@ java.sourceCompatibility = JavaVersion.VERSION_23
 
 dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava'
-    implementation 'com.google.guava:guava:33.2.1-jre'
+    implementation 'com.google.guava:guava:33.4.8-jre'
     implementation 'com.jayway.jsonpath:json-path'
-    implementation 'com.nimbusds:nimbus-jose-jwt:9.40'
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.48'
     implementation 'com.vividsolutions:jts:1.13'
     implementation 'javax.cache:cache-api:1.1.1'
-    implementation 'org.apache.jena:apache-jena-libs:5.3.0'
-    implementation 'org.apache.jena:jena-geosparql:5.3.0'
-    implementation 'org.apache.solr:solr-solrj:9.6.1'
+    implementation 'org.apache.jena:apache-jena-libs:5.6.0'
+    implementation 'org.apache.jena:jena-geosparql:5.6.0'
+    implementation 'org.apache.solr:solr-solrj:9.10.1'
     implementation 'org.ehcache:ehcache'
     implementation 'org.hibernate.validator:hibernate-validator'
     implementation 'org.yaml:snakeyaml:1.8'
@@ -64,6 +64,15 @@ dependencies {
     testImplementation 'org.xmlunit:xmlunit-core'
     testImplementation 'org.xmlunit:xmlunit-matchers'
     testImplementation 'com.h2database:h2'
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == 'org.apache.commons' && details.requested.name == 'commons-lang3') {
+            details.useVersion '3.19.0'
+            details.because 'Jena 5.6.0 requires BasicThreadFactory.builder() added in 3.19.0'
+        }
+    }
 }
 
 test {

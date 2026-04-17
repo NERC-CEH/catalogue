@@ -21,7 +21,7 @@ import static java.lang.String.format;
 
 @Slf4j
 @Service
-@Profile("upload:simple")
+@Profile("upload-simple")
 @ToString
 public class FileSystemStorageService implements StorageService {
     private final String datastore;

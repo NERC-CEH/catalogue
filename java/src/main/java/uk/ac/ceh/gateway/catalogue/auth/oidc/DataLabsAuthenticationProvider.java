@@ -31,7 +31,7 @@ import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTEN
 @Slf4j
 @ToString(onlyExplicitlyIncluded = true)
 @Service
-@Profile("auth:datalabs")
+@Profile("auth-datalabs")
 public class DataLabsAuthenticationProvider implements AuthenticationProvider {
     private final RestTemplate restTemplate;
     @ToString.Include

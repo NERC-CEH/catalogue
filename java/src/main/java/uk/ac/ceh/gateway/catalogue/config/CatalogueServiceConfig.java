@@ -28,7 +28,7 @@ public class CatalogueServiceConfig {
         .build();
 
     @Bean
-    @Profile("server:datalabs")
+    @Profile("server-datalabs")
     public CatalogueService datalabsCatalogue() {
         String defaultCatalogueKey = "datalabs";
 
@@ -55,7 +55,7 @@ public class CatalogueServiceConfig {
     }
 
     @Bean
-    @Profile("server:eidc")
+    @Profile("server-eidc")
     public CatalogueService eidcCatalogue() {
         String defaultCatalogueKey = "eidc";
 
@@ -240,7 +240,7 @@ public class CatalogueServiceConfig {
     }
 
     @Bean
-    @Profile("server:inms")
+    @Profile("server-inms")
     public CatalogueService inmsCatalogue() {
         String defaultCatalogueKey = "inms";
 
@@ -272,7 +272,7 @@ public class CatalogueServiceConfig {
     }
 
     @Bean
-    @Profile("server:pimfe")
+    @Profile("server-pimfe")
     public CatalogueService pimfeCatalogue() {
         String defaultCatalogueKey = "pimfe";
 

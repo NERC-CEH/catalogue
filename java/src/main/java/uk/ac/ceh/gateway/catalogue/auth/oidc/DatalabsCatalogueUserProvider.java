@@ -20,7 +20,7 @@ import java.util.stream.StreamSupport;
 import static uk.ac.ceh.gateway.catalogue.auth.oidc.DataLabsAuthenticationProvider.withAccessTokenAuthorization;
 
 @Slf4j
-@Profile("auth:datalabs")
+@Profile("auth-datalabs")
 @Service
 @ToString(onlyExplicitlyIncluded = true)
 public class DatalabsCatalogueUserProvider implements CatalogueUserProvider {

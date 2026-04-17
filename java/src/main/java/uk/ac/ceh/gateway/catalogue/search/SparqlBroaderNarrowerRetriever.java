@@ -24,7 +24,7 @@ import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.vocabularies.SparqlKeywordVocabulary.*;
 
 @Slf4j
-@Profile("search:enhanced")
+@Profile("search-enhanced")
 @Service
 public class SparqlBroaderNarrowerRetriever  implements BroaderNarrowerRetriever {
     private final RestTemplate restTemplate;

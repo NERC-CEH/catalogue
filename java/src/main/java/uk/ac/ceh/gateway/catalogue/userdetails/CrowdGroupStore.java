@@ -27,7 +27,7 @@ import java.util.stream.StreamSupport;
 import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
-@Profile("auth:crowd")
+@Profile("auth-crowd")
 @Service
 public class CrowdGroupStore implements GroupStore<CatalogueUser> {
     private final String address;

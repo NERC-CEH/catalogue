@@ -15,7 +15,7 @@ import uk.ac.ceh.gateway.catalogue.vocabularies.SparqlKeywordVocabulary;
 @Configuration
 public class KeywordVocabulariesConfig {
 
-    @Profile("server:eidc")
+    @Profile("server-eidc")
     @Bean
     public KeywordVocabulary assistTopicsVocabulary(
             @Qualifier("sparql") RestTemplate restTemplate,
@@ -33,7 +33,7 @@ public class KeywordVocabulariesConfig {
                 );
             }
 
-    @Profile("server:eidc")
+    @Profile("server-eidc")
     @Bean
     public KeywordVocabulary assistResearchThemesVocabulary(
             @Qualifier("sparql") RestTemplate restTemplate,
@@ -51,7 +51,7 @@ public class KeywordVocabulariesConfig {
                 );
             }
 
-    @Profile("server:eidc")
+    @Profile("server-eidc")
     @Bean
     public KeywordVocabulary castVocabulary(
             @Qualifier("sparql") RestTemplate restTemplate,
@@ -69,7 +69,7 @@ public class KeywordVocabulariesConfig {
                 );
             }
 
-    @Profile("server:datalabs")
+    @Profile("server-datalabs")
     @Bean
     public KeywordVocabulary dukemsPollutant(
             @Qualifier("sparql") RestTemplate restTemplate,
@@ -88,7 +88,7 @@ public class KeywordVocabulariesConfig {
                 );
             }
 
-    @Profile("server:datalabs")
+    @Profile("server-datalabs")
     @Bean
     public KeywordVocabulary dukemsSector(
             @Qualifier("sparql") RestTemplate restTemplate,
@@ -107,7 +107,7 @@ public class KeywordVocabulariesConfig {
                 );
             }
 
-    @Profile("server:eidc")
+    @Profile("server-eidc")
     @Bean
     public KeywordVocabulary gemetVocabulary(
             SolrClient solrClient,
@@ -134,7 +134,7 @@ public class KeywordVocabulariesConfig {
                 );
             }
 
-    @Profile("server:inms")
+    @Profile("server-inms")
     @Bean
     public KeywordVocabulary inmsVocabulary(
             @Qualifier("sparql") RestTemplate restTemplate,
@@ -152,7 +152,7 @@ public class KeywordVocabulariesConfig {
                 );
             }
 
-    @Profile("server:pimfe")
+    @Profile("server-pimfe")
     @Bean
     public KeywordVocabulary pimfeCastVocabulary(
             @Qualifier("sparql") RestTemplate restTemplate,
@@ -170,7 +170,7 @@ public class KeywordVocabulariesConfig {
                 );
             }
 
-    @Profile("server:pimfe")
+    @Profile("server-pimfe")
     @Bean
     public KeywordVocabulary pimfeResearchThemeVocabulary(
             @Qualifier("sparql") RestTemplate restTemplate,
@@ -188,7 +188,7 @@ public class KeywordVocabulariesConfig {
                 );
             }
 
-    @Profile("server:eidc")
+    @Profile("server-eidc")
     @Bean
     public KeywordVocabulary ukcehResearchProjectVocabulary(
             @Qualifier("sparql") RestTemplate restTemplate,
@@ -206,7 +206,7 @@ public class KeywordVocabulariesConfig {
                 );
             }
 
-    @Profile("server:eidc")
+    @Profile("server-eidc")
     @Bean
     public KeywordVocabulary ukcehResearchThemeVocabulary(
             @Qualifier("sparql") RestTemplate restTemplate,
@@ -224,7 +224,7 @@ public class KeywordVocabulariesConfig {
                 );
             }
 
-    @Profile("server:eidc")
+    @Profile("server-eidc")
     @Bean
     public KeywordVocabulary ukcehScienceChallengeVocabulary(
             @Qualifier("sparql") RestTemplate restTemplate,
@@ -242,7 +242,7 @@ public class KeywordVocabulariesConfig {
                 );
             }
 
-    @Profile("server:eidc")
+    @Profile("server-eidc")
     @Bean
     public KeywordVocabulary ukcehServiceVocabulary(
             @Qualifier("sparql") RestTemplate restTemplate,
