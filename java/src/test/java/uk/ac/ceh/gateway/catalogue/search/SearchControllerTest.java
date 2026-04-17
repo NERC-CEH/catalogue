@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.catalogue.InMemoryCatalogueService;
+import uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndex;
@@ -34,8 +36,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UNPRIVILEGED_USERNAME;
@@ -71,19 +73,13 @@ class SearchControllerTest {
         .contactUrl("")
         .logo("eidc.png")
         .build();
-
-    private void givenDefaultCatalogue() {
-        given(catalogueService.defaultCatalogue())
-            .willReturn(
-                Catalogue.builder()
-                    .id("default")
-                    .title("test")
-                    .url("https://example.com")
-                    .contactUrl("")
-                    .logo("eidc.png")
-                    .build()
-            );
-    }
+    private final Catalogue allCatalogues = Catalogue.builder()
+        .id("all")
+        .title("All catalogues")
+        .url("")
+        .contactUrl("")
+        .logo("ukceh.png")
+        .build();
 
     private void givenCatalogue() {
         given(catalogueService.retrieve(catalogueKey))
@@ -96,6 +92,38 @@ class SearchControllerTest {
                     .logo("eidc.png")
                     .build()
             );
+    }
+
+    @SneakyThrows
+    private void givenSearchResultsForAllCatalogues() {
+        val endpoint = "http://localhost/documents";
+        val term = "carbon";
+        val results = Arrays.asList(create("0"), create("1"));
+        val searchResults = new SearchResults(
+            20,
+            term,
+            1,
+            20,
+            endpoint,
+            null,
+            null,
+            null,
+            null,
+            null,
+            results,
+            Collections.emptyList(),
+            allCatalogues,
+            Collections.emptyList(),
+            null,
+            "asc"
+        );
+        given(searcher.search(
+            any(), any(), any(), any(), any(), anyInt(), anyInt(), any(),
+            eq("all"),
+            any(), any()
+        )).willReturn(searchResults);
+
+        given(codeLookupService.lookup("publication.state", "public")).willReturn("Public");
     }
 
     @SneakyThrows
@@ -164,19 +192,37 @@ class SearchControllerTest {
     }
 
     @Test
-    @DisplayName("redirect to default catalogue")
+    @DisplayName("GET /documents returns unified search results as HTML")
     @SneakyThrows
-    void redirectToDefaultCatalogue() {
+    void getUnifiedSearchPageHtml() {
         //given
-        givenDefaultCatalogue();
+        givenSearchResultsForAllCatalogues();
+        givenFreemarkerConfiguration();
 
         //when
-        mvc.perform(get("/documents"))
-            .andExpect(status().is3xxRedirection())
-            .andExpect(header().string("location", "http://localhost:8080/default/documents"));
+        mvc.perform(
+            get("/documents")
+                .queryParam("term", "carbon")
+                .accept(MediaType.TEXT_HTML)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.TEXT_HTML));
+    }
 
-        //then
-        verifyNoInteractions(solrClient, facetFactory);
+    @Test
+    @DisplayName("GET /documents returns unified search results as JSON")
+    @SneakyThrows
+    void getUnifiedSearchResultsJson() {
+        //given
+        givenSearchResultsForAllCatalogues();
+
+        //when
+        mvc.perform(
+            get("/documents")
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test

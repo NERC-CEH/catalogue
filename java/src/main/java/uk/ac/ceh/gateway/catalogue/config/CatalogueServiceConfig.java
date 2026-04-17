@@ -13,6 +13,20 @@ import static uk.ac.ceh.gateway.catalogue.DocumentTypes.*;
 @Configuration
 public class CatalogueServiceConfig {
 
+    private static final Catalogue ALL_CATALOGUES = Catalogue.builder()
+        .id(CatalogueService.ALL_CATALOGUES_ID)
+        .title("All catalogues")
+        .url("")
+        .contactUrl("")
+        .logo("ukceh.png")
+        .facetKey("catalogue")
+        .facetKey("resourceType")
+        .facetKey("topic")
+        .facetKey("licence")
+        .facetKey("recordType")
+        .fileUpload(false)
+        .build();
+
     @Bean
     @Profile("server:datalabs")
     public CatalogueService datalabsCatalogue() {
@@ -20,6 +34,8 @@ public class CatalogueServiceConfig {
 
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
+
+            ALL_CATALOGUES,
 
             Catalogue.builder()
                 .id(defaultCatalogueKey)
@@ -45,6 +61,8 @@ public class CatalogueServiceConfig {
 
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
+
+            ALL_CATALOGUES,
 
             Catalogue.builder()
                 .id("assist")
@@ -229,6 +247,8 @@ public class CatalogueServiceConfig {
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
 
+            ALL_CATALOGUES,
+
             Catalogue.builder()
                 .id(defaultCatalogueKey)
                 .title("International Nitrogen Management System")
@@ -258,6 +278,8 @@ public class CatalogueServiceConfig {
 
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
+
+            ALL_CATALOGUES,
 
             Catalogue.builder()
                 .id(defaultCatalogueKey)

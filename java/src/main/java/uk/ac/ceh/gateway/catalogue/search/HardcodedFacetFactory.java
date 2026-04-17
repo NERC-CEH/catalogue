@@ -88,6 +88,11 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Record type")
                     .hierarchical(false)
                     .build();
+            case "catalogue" -> Facet.builder()
+                .fieldName("catalogue")
+                    .displayName("Catalogue")
+                    .hierarchical(false)
+                    .build();
             case "dataLevel" -> Facet.builder()
                 .fieldName("dataLevel")
                     .displayName("Data level")
