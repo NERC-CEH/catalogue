@@ -106,11 +106,9 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         this.responsibleParties.addAll(convertEmails(serviceAgreement.getAuthors()));
         this.responsibleParties.addAll(convertEmails(serviceAgreement.getOwnersOfIpr()));
         Optional.ofNullable(serviceAgreement.getAvailability())
-            .ifPresent(availability -> {
-                this.datasetReferenceDate = DatasetReferenceDate.builder()
-                    .releasedDate(LocalDate.parse(availability))
-                    .build();
-        });
+            .ifPresent(availability -> this.datasetReferenceDate = DatasetReferenceDate.builder()
+                .releasedDate(LocalDate.parse(availability))
+                .build());
         this.topicCategories = serviceAgreement.getTopicCategories();
         this.keywordsDiscipline = serviceAgreement.getKeywordsDiscipline();
         this.keywordsTheme = serviceAgreement.getKeywordsTheme();

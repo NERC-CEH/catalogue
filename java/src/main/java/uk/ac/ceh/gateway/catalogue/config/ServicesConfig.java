@@ -190,7 +190,6 @@ public class ServicesConfig {
     }
 
     @Bean
-    @SuppressWarnings("UnstableApiUsage") // Because EventBus is still @Beta!
     public EventBus communicationBus() {
         return new EventBus();
     }

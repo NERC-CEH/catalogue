@@ -15,6 +15,7 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.Serial;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -83,7 +84,7 @@ public class JiraService {
             .path("issue/{key}/transitions")
             .buildAndExpand(key)
             .toUri();
-        val transitionRequest = String.format("{\"transition\":{\"id\":\"%s\"}}", id);;
+        val transitionRequest = String.format("{\"transition\":{\"id\":\"%s\"}}", id);
         log.debug("Transition url: {}", url);
         log.debug("Transition request body: {}", transitionRequest);
         val headers = withBasicAuth(username, password);
@@ -126,6 +127,7 @@ public class JiraService {
         reason = "Can not finish, contact admin to resolve issue clash"
     )
     static class NonUniqueJiraIssue extends RuntimeException {
-        static final long serialVersionUID = 1L;
+        @Serial
+        private static final long serialVersionUID = 1L;
     }
 }

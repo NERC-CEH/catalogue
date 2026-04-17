@@ -15,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
@@ -76,8 +75,7 @@ public class UploadController {
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("@permission.userCanUpload(#id)")
     public ResponseEntity<List<FileInfo>> filenames (
-            @PathVariable("id") String id,
-            UriComponentsBuilder builder
+            @PathVariable("id") String id
     ) {
         log.info("For {} getting filenames", id);
         return ResponseEntity.ok(storageService.filenames(id));

@@ -72,7 +72,7 @@ class EidcApplicationContextTest {
     @Test
     @DisplayName("Freemarker shared variables present")
     void freemarkerConfiguredCorrectly() {
-        val freemarkerConfiguration = (Configuration) applicationContext.getBean(freemarker.template.Configuration.class);
+        val freemarkerConfiguration = applicationContext.getBean(Configuration.class);
         assertNotNull(freemarkerConfiguration);
         assertNotNull(freemarkerConfiguration.getSharedVariable("catalogues"));
         assertNotNull(freemarkerConfiguration.getSharedVariable("codes"));

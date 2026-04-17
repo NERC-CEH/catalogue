@@ -385,7 +385,7 @@ public class JenaLookupServiceTest {
 
         //Then
         assertThat(wkt.size(), is(1));
-        assertThat(wkt.get(0), equalTo("Polygon(12,23)"));
+        assertThat(wkt.getFirst(), equalTo("Polygon(12,23)"));
     }
 
     @Test
