@@ -364,7 +364,7 @@ export default EditorView.extend({
               function: 'order'
             },
             'Direct access (CEDA)': {
-              url: 'https://data.ceda.ac.uk/eidc/xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+              url: 'https://data.ceda.ac.uk/eidc/{filePath}',
               name: 'Download the data',
               description: 'Download a copy of this data',
               function: 'fileAccess'
