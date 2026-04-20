@@ -2,7 +2,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.stereotype.Service;
 

@@ -3,10 +3,9 @@ package uk.ac.ceh.gateway.catalogue.indexing.solr;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -109,7 +108,7 @@ class SolrIndexingServiceTest {
         //then
         verify(indexGenerator, never()).generateIndex(any(GeminiDocument.class));
         verify(solrClient, never()).addBean(eq(DOCUMENTS), any(SolrIndex.class));
-        verify(solrClient).deleteById(eq(DOCUMENTS), any(List.class));
+        verify(solrClient).deleteById(eq(DOCUMENTS), anyList());
     }
 
     @Test

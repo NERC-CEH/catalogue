@@ -1,4 +1,4 @@
-FROM solr:9.10.1
+FROM solr:10.0.0
 LABEL maintainer="oss@ceh.ac.uk"
 
 COPY jts-core-1.20.0.jar /opt/solr/server/solr-webapp/webapp/WEB-INF/lib/

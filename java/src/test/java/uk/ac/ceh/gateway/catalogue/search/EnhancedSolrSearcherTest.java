@@ -4,7 +4,7 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrRequest;
-import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.client.solrj.request.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.params.SolrParams;
 import org.junit.jupiter.api.BeforeEach;
