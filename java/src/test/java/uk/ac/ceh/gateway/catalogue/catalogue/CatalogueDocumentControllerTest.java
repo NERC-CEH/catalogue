@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockCatalogueUser
-@ActiveProfiles({"test", "server:eidc"})
+@ActiveProfiles({"test", "server-eidc"})
 @DisplayName("CatalogueDocumentController")
 @Import({
     SecurityConfig.class,

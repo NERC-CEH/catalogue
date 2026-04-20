@@ -24,7 +24,7 @@ import static uk.ac.ceh.gateway.catalogue.search.SearchQuery.DEFAULT_SEARCH_TERM
 import static uk.ac.ceh.gateway.catalogue.vocabularies.SparqlKeywordVocabulary.COLLECTION;
 
 @Slf4j
-@Profile("search:enhanced")
+@Profile("search-enhanced")
 @Service
 public class EnhancedSolrSearcher extends SolrSearcher {
     private final BroaderNarrowerRetriever retriever;

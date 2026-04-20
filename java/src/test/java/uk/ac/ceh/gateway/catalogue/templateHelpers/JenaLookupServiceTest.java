@@ -3,11 +3,12 @@ package uk.ac.ceh.gateway.catalogue.templateHelpers;
 import lombok.val;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.tdb1.TDB1Factory;
+import org.apache.jena.tdb2.TDB2Factory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.model.Link;
@@ -34,7 +35,7 @@ public class JenaLookupServiceTest {
 
     @BeforeEach
     void init() {
-        jenaTdb = TDB1Factory.createDataset();
+        jenaTdb = TDB2Factory.createDataset();
         service = new JenaLookupService(jenaTdb);
     }
 
@@ -45,6 +46,7 @@ public class JenaLookupServiceTest {
         val dataset1 = "http://dataset1";
         val dataset2 = "http://dataset2";
         val other = "http://other";
+        jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource(dataset1), DCTERMS_TITLE, "Dataset 1");
         triples.add(createResource(dataset1), METADATA_STATUS, "published");
@@ -56,6 +58,7 @@ public class JenaLookupServiceTest {
         triples.add(createResource(dataset2), DCTERMS_ISPARTOF, createResource(collection));
         triples.add(createResource(other), DCTERMS_REFERENCES, createResource(collection));
         triples.add(createResource(other), METADATA_STATUS, "published");
+        jenaTdb.commit();
 
         //when
         List<Link> actual = service.incomingEidcRelations(collection);
@@ -68,11 +71,13 @@ public class JenaLookupServiceTest {
     @Test
     public void lookupRelationships() {
         //Given
+        jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://dataset1"), DCTERMS_TITLE, "Dataset 1");
         triples.add(createResource("http://dataset1"), METADATA_STATUS, "published");
         triples.add(createResource("http://dataset1"), DCTERMS_TYPE, "dataset");
         triples.add(createResource("http://monitoringActivity"), DCTERMS_SOURCE, createResource("http://dataset1"));
+        jenaTdb.commit();
 
         //When
         List<Link> actual = service.relationships("http://monitoringActivity", DCTERMS_SOURCE.toString());
@@ -85,11 +90,13 @@ public class JenaLookupServiceTest {
     @Test
     public void lookupInverseRelationships() {
         //Given
+        jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://monitoringActivity"), DCTERMS_TITLE, "Monitoring Activity");
         triples.add(createResource("http://monitoringActivity"), METADATA_STATUS, "published");
         triples.add(createResource("http://monitoringActivity"), DCTERMS_SOURCE, createResource("http://dataset1"));
         triples.add(createResource("http://monitoringActivity"), DCTERMS_TYPE, "dataset");
+        jenaTdb.commit();
 
         //When
         List<Link> actual = service.inverseRelationships("http://dataset1", DCTERMS_SOURCE.toString());
@@ -102,6 +109,7 @@ public class JenaLookupServiceTest {
     @Test
     public void lookupInverseRelationshipsWithGeometries() {
         //Given
+        jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
         String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
         triples.add(createResource("http://monitoringFacility"), DCTERMS_TITLE, "Monitoring Facility");
@@ -109,6 +117,7 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://monitoringFacility"), DCTERMS_ISPARTOF, createResource("http://network1"));
         triples.add(createResource("http://monitoringFacility"), DCTERMS_TYPE, "Monitoring Facility");
         triples.add(createResource("http://monitoringFacility"), SF_GEOMETRY, geometryString);
+        jenaTdb.commit();
 
         //When
         List<Link> actual = service.inverseRelationships("http://network1", DCTERMS_ISPARTOF.toString());
@@ -122,6 +131,7 @@ public class JenaLookupServiceTest {
     @Test
     public void inverseRelationshipCombinedGeometries() throws JsonProcessingException {
         //Given
+        jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
         String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
         String geometryString2 = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}";
@@ -137,6 +147,7 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://monitoringFacility2"), DCTERMS_ISPARTOF, createResource("http://network1"));
         triples.add(createResource("http://monitoringFacility2"), DCTERMS_TYPE, "Monitoring Facility");
         triples.add(createResource("http://monitoringFacility2"), SF_GEOMETRY, geometryString2);
+        jenaTdb.commit();
 
         //When
         String actual = service.inverseRelationshipCombinedGeometries("http://network1", DCTERMS_ISPARTOF.toString());
@@ -148,6 +159,7 @@ public class JenaLookupServiceTest {
     @Test
     public void relationshipCombinedGeometriesWithOwner() throws JsonProcessingException {
         //Given
+        jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
         String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
         String geometryString2 = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}";
@@ -162,6 +174,7 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://monitoringFacility2"), CHILD_FACILITY, createResource("http://monitoringFacility"));
         triples.add(createResource("http://monitoringFacility2"), DCTERMS_TYPE, "Monitoring Facility");
         triples.add(createResource("http://monitoringFacility2"), SF_GEOMETRY, geometryString2);
+        jenaTdb.commit();
 
         //When
         String actual = service.relationshipCombinedGeometriesWithOwner("http://monitoringFacility2", CHILD_FACILITY.toString(), false);
@@ -173,6 +186,7 @@ public class JenaLookupServiceTest {
     @Test
     public void lookupProgrammeFeatures() {
         // Given
+        jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
         String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Facility 1\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
         String geometryString2 = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Facility 2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}";
@@ -186,6 +200,7 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://facility2"), SF_GEOMETRY, geometryString2);
         triples.add(createResource("http://programme"), createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises"), createResource("http://facility1"));
         triples.add(createResource("http://programme"), createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises"), createResource("http://facility2"));
+        jenaTdb.commit();
 
         // When
         List<Link> actual = service.programmeFeatures("http://programme");
@@ -199,6 +214,7 @@ public class JenaLookupServiceTest {
     @Test
     public void programmeCombinedGeometries() throws JsonProcessingException {
         // Given
+        jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
         String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Facility 1\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
         String geometryString2 = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Facility 2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}";
@@ -217,6 +233,7 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://facility2"), SF_GEOMETRY, geometryString2);
         triples.add(createResource("http://programme"), createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises"), createResource("http://facility1"));
         triples.add(createResource("http://programme"), createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises"), createResource("http://facility2"));
+        jenaTdb.commit();
 
         // When
         String actual = service.programmeCombinedGeometries("http://programme");
@@ -229,11 +246,13 @@ public class JenaLookupServiceTest {
     public void lookupMetadata() {
         //Given
         String id = "7e1c18b2-ff78-4979-9a90-f7ae20b9d75b";
+        jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://model"), DCTERMS_TITLE, "Model");
         triples.add(createResource("http://model"), METADATA_STATUS, "published");
         triples.add(createResource("http://model"), DCTERMS_IDENTIFIER, id);
         triples.add(createResource("http://model"), DCTERMS_TYPE, "dataset");
+        jenaTdb.commit();
 
         //When
         Link actual = service.metadata(id);
@@ -248,10 +267,12 @@ public class JenaLookupServiceTest {
     public void lookupNonExistentMetadata() {
         //Given
         String id = "7e1c18b2-ff78-4979-9a90-f7ae20b9d75b";
+        jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://model"), DCTERMS_TITLE, "Model");
         triples.add(createResource("http://model"), METADATA_STATUS, "published");
         triples.add(createResource("http://model"), DCTERMS_IDENTIFIER, id);
+        jenaTdb.commit();
 
         //When
         Link actual = service.metadata("a different id");
@@ -263,6 +284,7 @@ public class JenaLookupServiceTest {
     @Test
     public void lookupModelApplications() {
         //Given
+        jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://modelApplication1"), DCTERMS_TITLE, "Model Application 1");
         triples.add(createResource("http://modelApplication1"), METADATA_STATUS, "published");
@@ -272,6 +294,7 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://modelApplication2"), METADATA_STATUS, "published");
         triples.add(createResource("http://modelApplication2"), DCTERMS_TYPE, "modelApplication");
         triples.add(createResource("http://modelApplication2"), DCTERMS_REFERENCES, createResource("http://model"));
+        jenaTdb.commit();
 
         //When
         List<Link> actual = service.modelApplications("http://model");
@@ -283,6 +306,7 @@ public class JenaLookupServiceTest {
     @Test
     public void lookupModels() {
         //Given
+        jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://model1"), DCTERMS_TITLE, "Model 1");
         triples.add(createResource("http://model1"), METADATA_STATUS, "published");
@@ -292,6 +316,7 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://model2"), METADATA_STATUS, "published");
         triples.add(createResource("http://model2"), DCTERMS_TYPE, "model");
         triples.add(createResource("http://modelApplication"), DCTERMS_REFERENCES, createResource("http://model2"));
+        jenaTdb.commit();
 
         //When
         List<Link> actual = service.models("http://modelApplication");
@@ -303,6 +328,7 @@ public class JenaLookupServiceTest {
     @Test
     public void lookupDatasets() {
         //Given
+        jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://dataset1"), DCTERMS_TITLE, "Dataset 1");
         triples.add(createResource("http://dataset1"), DCTERMS_TYPE, "dataset");
@@ -315,6 +341,7 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://dataset2"), METADATA_STATUS, "published");
         triples.add(createResource("http://model"), DCTERMS_REFERENCES, createResource("http://dataset1"));
         triples.add(createResource("http://dataset2"), DCTERMS_REFERENCES, createResource("http://model"));
+        jenaTdb.commit();
 
         //When
         List<Link> actual = service.datasets("http://model");
@@ -326,6 +353,7 @@ public class JenaLookupServiceTest {
     @Test
     public void lookupLinkDatasets() {
         //Given
+        jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://link1"), DCTERMS_TITLE, "Link 1");
         triples.add(createResource("http://link1"), METADATA_STATUS, "published");
@@ -335,6 +363,7 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://dataset1"), DCTERMS_TITLE, "Dataset 1");
         triples.add(createResource("http://dataset1"), METADATA_STATUS, "published");
         triples.add(createResource("http://dataset1"), DCTERMS_TYPE, "dataset");
+        jenaTdb.commit();
 
         //When
         List<Link> actual = service.datasets("http://model");
@@ -346,20 +375,23 @@ public class JenaLookupServiceTest {
     @Test
     public void checkThatCanLookupWkt() {
         //Given
+        jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://doc1"), SF_GEOMETRY, createTypedLiteral("Polygon(12,23)", WKT_LITERAL));
+        jenaTdb.commit();
 
         //When
         List<String> wkt = service.wkt("http://doc1");
 
         //Then
         assertThat(wkt.size(), is(1));
-        assertThat(wkt.get(0), equalTo("Polygon(12,23)"));
+        assertThat(wkt.getFirst(), equalTo("Polygon(12,23)"));
     }
 
     @Test
     public void CanLookupLinked() {
         //Given
+        jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
         Resource master = createResource("http://master");
         Resource link1 = createResource("http://link1");
@@ -376,6 +408,7 @@ public class JenaLookupServiceTest {
             createStatement(link2, DCTERMS_IDENTIFIER, createTypedLiteral("https://catalogue.ceh.ac.uk/id/d8234690-1b61-4084-a349-eb53467383fe9")),
             createStatement(link2, DCTERMS_IDENTIFIER, createTypedLiteral("d8234690-1b61-4084-a349-eb53467383fe"))
         ));
+        jenaTdb.commit();
 
         //When
         List<String> actual = service.linked("http://master");

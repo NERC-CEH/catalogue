@@ -31,7 +31,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.TEXT_CSV_VALUE;
 
 @SuppressWarnings("SpringMVCViewInspection")
 @Controller
-@Profile("upload:hubbub")
+@Profile("upload-hubbub")
 @Slf4j
 @ToString(onlyExplicitlyIncluded = true)
 @RequestMapping("upload/{datasetId}")

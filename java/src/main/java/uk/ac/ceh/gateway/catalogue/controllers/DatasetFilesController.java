@@ -20,7 +20,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@Profile("upload:hubbub")
+@Profile("upload-hubbub")
 @RequestMapping("/documents")
 @RequiredArgsConstructor
 public class DatasetFilesController {

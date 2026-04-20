@@ -8,9 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.tdb1.TDB1Factory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -105,8 +105,7 @@ public class RdfTemplateTest {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         jena = mock(JenaLookupService.class);
         configuration.setSharedVariable("jena", jena);
-        val jenaTdb = TDB1Factory.createDataset();
-        model = jenaTdb.getDefaultModel();
+        model = ModelFactory.createDefaultModel();
     }
 
     @Nested

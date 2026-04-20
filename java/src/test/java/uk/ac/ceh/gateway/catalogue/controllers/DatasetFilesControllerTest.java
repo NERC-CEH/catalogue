@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(DatasetFilesController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@ActiveProfiles("upload:hubbub")
+@ActiveProfiles("upload-hubbub")
 class DatasetFilesControllerTest {
 
     @Autowired

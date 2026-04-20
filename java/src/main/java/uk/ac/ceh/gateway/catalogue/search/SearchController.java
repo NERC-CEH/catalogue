@@ -4,9 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
@@ -35,29 +33,53 @@ public class SearchController {
     public static final int PAGE_DEFAULT = Integer.parseInt(PAGE_DEFAULT_STRING);
     public static final int ROWS_DEFAULT = Integer.parseInt(ROWS_DEFAULT_STRING);
 
-    private final CatalogueService catalogueService;
     private final Searcher searcher;
 
-    @Value("${documents.baseUri}") String baseUri;
-
     public SearchController(
-        CatalogueService catalogueService,
         Searcher searcher
     ) {
-        this.catalogueService = catalogueService;
         this.searcher = searcher;
         log.info("Creating");
     }
 
     @CrossOrigin
+    @SneakyThrows
+    @ResponseBody
     @GetMapping("documents")
-    public String redirectToDefaultCatalogue(
-            HttpServletRequest request
+    public SearchResults searchAllCatalogues(
+        @ActiveUser
+        CatalogueUser user,
+        @RequestParam(value=TERM_QUERY_PARAM, defaultValue=SearchQuery.DEFAULT_SEARCH_TERM)
+        String term,
+        @RequestParam(value=BBOX_QUERY_PARAM, required = false)
+        String bbox,
+        @RequestParam(value=OP_QUERY_PARAM, defaultValue=OP_DEFAULT_STRING)
+        String op,
+        @RequestParam(value=PAGE_QUERY_PARAM, defaultValue=PAGE_DEFAULT_STRING)
+        int page,
+        @RequestParam(value=ROWS_QUERY_PARAM, defaultValue=ROWS_DEFAULT_STRING)
+        int rows,
+        @RequestParam(value=FACET_QUERY_PARAM, defaultValue = "")
+        List<FacetFilter> facetFilters,
+        @RequestParam(value=SORT_FIELD_PARAM, required = false)
+        String sortField,
+        @RequestParam(value=SORT_ORDER_PARAM, defaultValue = "asc")
+        String sortOrder,
+        HttpServletRequest request
     ) {
-        val defaultCatalogueId = catalogueService.defaultCatalogue().getId();
-        val redirectUrl = String.format("%s/%s/documents", baseUri, defaultCatalogueId);
-        log.info("Redirecting to {}", redirectUrl);
-        return "redirect:" + redirectUrl;
+        return searcher.search(
+            request.getRequestURL().toString(),
+            user,
+            term,
+            bbox,
+            SpatialOperation.valueOf(op.toUpperCase()),
+            page,
+            rows,
+            facetFilters,
+            CatalogueService.ALL_CATALOGUES_ID,
+            sortField,
+            "desc".equals(sortOrder) ? SolrQuery.ORDER.desc : SolrQuery.ORDER.asc
+        );
     }
 
     @CrossOrigin

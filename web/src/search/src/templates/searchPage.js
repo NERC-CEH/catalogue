@@ -73,6 +73,10 @@ export default _.template(`
               <%=result.recordType %>
             </span>
 
+            <% if (catalogueId === 'all') { %>
+              <span class="catalogue-label small text-body-tertiary"><%=result.catalogue%></span>
+            <% } %>
+
             <% if (result.availability != '') {  %>
               <span class="availability availability-<%=result.availability %>"><%=result.availability %></span>
             <% } %>

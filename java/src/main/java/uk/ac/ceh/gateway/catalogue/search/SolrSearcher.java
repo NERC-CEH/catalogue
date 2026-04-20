@@ -15,7 +15,7 @@ import java.util.List;
 
 import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
 
-@Profile("search:basic")
+@Profile("search-basic")
 @Service
 public class SolrSearcher implements Searcher {
     final SolrClient solrClient;

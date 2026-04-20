@@ -8,7 +8,7 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.tdb1.TDB1Factory;
+import org.apache.jena.tdb2.TDB2Factory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +50,7 @@ public class JenaIndexingServiceTest {
 
     @BeforeEach
     public void init() {
-        jenaTdb = TDB1Factory.createDataset();
+        jenaTdb = TDB2Factory.createDataset();
         service = spy(new JenaIndexingService(reader, listingService, repo, indexGenerator, documentIdentifierService, jenaTdb));
     }
 
@@ -88,7 +88,9 @@ public class JenaIndexingServiceTest {
         Resource subject = ResourceFactory.createResource("http://www.google.com");
         Property predicate = ResourceFactory.createProperty("http://www.google.com");
         Resource object = ResourceFactory.createResource("http://www.google.com");
+        jenaTdb.begin(ReadWrite.WRITE);
         service.index(List.of(ResourceFactory.createStatement(subject, predicate, object)));
+        jenaTdb.commit();
 
         //When
         boolean isEmpty = service.isIndexEmpty();
@@ -103,10 +105,14 @@ public class JenaIndexingServiceTest {
         Resource subject = ResourceFactory.createResource("http://www.google.com");
         Property predicate = ResourceFactory.createProperty("http://www.google.com");
         Resource object = ResourceFactory.createResource("http://www.google.com");
+        jenaTdb.begin(ReadWrite.WRITE);
         service.index(List.of(ResourceFactory.createStatement(subject, predicate, object)));
+        jenaTdb.commit();
 
         //When
+        jenaTdb.begin(ReadWrite.WRITE);
         service.clearIndex();
+        jenaTdb.commit();
 
         //Then
         assertTrue(service.isIndexEmpty());
@@ -119,7 +125,9 @@ public class JenaIndexingServiceTest {
         val subject = ResourceFactory.createResource(subjectUri);
         val predicate = ResourceFactory.createProperty("https://ceh.ac.uk/property");
         val object = ResourceFactory.createResource("https://ceh.ac.uk/linkedId");
+        jenaTdb.begin(ReadWrite.WRITE);
         service.index(List.of(ResourceFactory.createStatement(subject, predicate, object)));
+        jenaTdb.commit();
 
         given(documentIdentifierService.generateUri("removeMe"))
             .willReturn(subjectUri);
@@ -146,7 +154,9 @@ public class JenaIndexingServiceTest {
         val subject = ResourceFactory.createResource("https://www.external.com/subject");
         val predicate = ResourceFactory.createProperty("https://ceh.ac.uk/property");
         val object = ResourceFactory.createResource(objectUri);
+        jenaTdb.begin(ReadWrite.WRITE);
         service.index(List.of(ResourceFactory.createStatement(subject, predicate, object)));
+        jenaTdb.commit();
 
         given(documentIdentifierService.generateUri("removeMe"))
             .willReturn(objectUri);
@@ -168,7 +178,9 @@ public class JenaIndexingServiceTest {
         val subject = ResourceFactory.createResource(subjectUri);
         val predicate = ResourceFactory.createProperty("https://ceh.ac.uk/property");
         val object = ResourceFactory.createResource("https://ceh.ac.uk/linkedId");
+        jenaTdb.begin(ReadWrite.WRITE);
         service.index(List.of(ResourceFactory.createStatement(subject, predicate, object)));
+        jenaTdb.commit();
 
         given(documentIdentifierService.generateUri("removeMe"))
             .willReturn(subjectUri);

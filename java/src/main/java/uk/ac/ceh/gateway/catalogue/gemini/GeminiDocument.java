@@ -71,8 +71,10 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     @JsonIgnore
     private Citation citation;
     @JsonIgnore
+    @Getter(onMethod_ = @JsonIgnore)
     private boolean isDataciteMintable;
     @JsonIgnore
+    @Getter(onMethod_ = @JsonIgnore)
     private boolean isDatacitable;
     private DatasetReferenceDate datasetReferenceDate;
     private List<ResourceMaintenance> resourceMaintenance;
@@ -104,11 +106,9 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         this.responsibleParties.addAll(convertEmails(serviceAgreement.getAuthors()));
         this.responsibleParties.addAll(convertEmails(serviceAgreement.getOwnersOfIpr()));
         Optional.ofNullable(serviceAgreement.getAvailability())
-            .ifPresent(availability -> {
-                this.datasetReferenceDate = DatasetReferenceDate.builder()
-                    .releasedDate(LocalDate.parse(availability))
-                    .build();
-        });
+            .ifPresent(availability -> this.datasetReferenceDate = DatasetReferenceDate.builder()
+                .releasedDate(LocalDate.parse(availability))
+                .build());
         this.topicCategories = serviceAgreement.getTopicCategories();
         this.keywordsDiscipline = serviceAgreement.getKeywordsDiscipline();
         this.keywordsTheme = serviceAgreement.getKeywordsTheme();

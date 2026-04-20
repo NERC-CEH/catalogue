@@ -7,9 +7,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.jena.geosparql.configuration.GeoSPARQLConfig;
-import org.apache.jena.geosparql.implementation.index.IndexConfiguration;
 import org.apache.jena.sparql.function.FunctionRegistry;
-import org.apache.jena.tdb1.TDB1Factory;
+import org.apache.jena.tdb2.TDB2Factory;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpJdkSolrClient;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -191,7 +190,6 @@ public class ServicesConfig {
     }
 
     @Bean
-    @SuppressWarnings("UnstableApiUsage") // Because EventBus is still @Beta!
     public EventBus communicationBus() {
         return new EventBus();
     }
@@ -245,7 +243,7 @@ public class ServicesConfig {
         @Value("${jena.location}") String location
     ) {
         log.info("Creating Dataset at: {}", location);
-        return TDB1Factory.createDataset(location);
+        return TDB2Factory.connectDataset(location);
     }
 
     @Bean

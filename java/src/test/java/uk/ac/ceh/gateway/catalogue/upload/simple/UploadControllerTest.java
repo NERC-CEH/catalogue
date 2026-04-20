@@ -44,7 +44,7 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UPLO
 
 @WithMockCatalogueUser
 @Slf4j
-@ActiveProfiles({"test", "upload:simple"})
+@ActiveProfiles({"test", "upload-simple"})
 @Import({
     SecurityConfig.class,
     SecurityConfigCrowd.class,

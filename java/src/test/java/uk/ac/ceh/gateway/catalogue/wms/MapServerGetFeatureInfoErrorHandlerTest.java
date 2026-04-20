@@ -62,7 +62,7 @@ public class MapServerGetFeatureInfoErrorHandlerTest {
             given(response.getBody()).willReturn(inputStream);
 
             //When
-            handler.handleError(response);
+            handler.handleError(null, null, response);
 
             //Then
             fail("Expected an exception");

@@ -48,7 +48,7 @@ import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.*;
 
 @WithMockCatalogueUser(username = UPLOADER_USERNAME)
 @Slf4j
-@ActiveProfiles({"test", "upload:hubbub"})
+@ActiveProfiles({"test", "upload-hubbub"})
 @Import({
     SecurityConfig.class,
     SecurityConfigCrowd.class,

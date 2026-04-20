@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(DataPreviewerController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@ActiveProfiles("upload:hubbub")
+@ActiveProfiles("upload-hubbub")
 class DataPreviewerControllerTest {
 
     @Autowired

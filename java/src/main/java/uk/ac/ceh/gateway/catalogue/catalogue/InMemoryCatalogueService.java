@@ -5,6 +5,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @ToString
@@ -40,9 +41,10 @@ public class InMemoryCatalogueService implements CatalogueService {
 
     @Override
     public List<Catalogue> retrieveAll() {
-        List<Catalogue> toReturn = new ArrayList<>(catalogues.values());
-        Collections.sort(toReturn);
-        return toReturn;
+        return catalogues.values().stream()
+            .filter(c -> !ALL_CATALOGUES_ID.equals(c.getId()))
+            .sorted()
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
 }

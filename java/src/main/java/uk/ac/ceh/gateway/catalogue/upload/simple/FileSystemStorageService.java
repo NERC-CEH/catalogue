@@ -12,16 +12,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
 @Slf4j
 @Service
-@Profile("upload:simple")
+@Profile("upload-simple")
 @ToString
 public class FileSystemStorageService implements StorageService {
     private final String datastore;
