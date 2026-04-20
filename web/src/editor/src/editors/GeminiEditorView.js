@@ -351,11 +351,11 @@ export default EditorView.extend({
           ObjectInputView: OnlineResourceView,
           multiline: true,
           predefined: {
-            'Data package': {
-              url: 'https://data-package.ceh.ac.uk/data/{fileIdentifier}',
-              name: 'Download the data',
-              description: 'Download a copy of this data',
-              function: 'download'
+            'Supporting documents': {
+              url: 'https://data-package.ceh.ac.uk/sd/{fileIdentifier}.zip',
+              name: 'Supporting information',
+              description: 'Supporting information available to assist in re-use of this dataset',
+              function: 'information'
             },
             'Order manager data': {
               url: 'https://order-eidc.ceh.ac.uk/resources/{ORDER_REF}/order',
@@ -363,17 +363,23 @@ export default EditorView.extend({
               description: 'Download a copy of this data',
               function: 'order'
             },
-            'Direct access': {
+            'Direct access (CEDA)': {
+              url: 'https://data.ceda.ac.uk/eidc/{filePath}',
+              name: 'Download the data',
+              description: 'Download a copy of this data',
+              function: 'fileAccess'
+            },
+            'Direct access (UKCEH)': {
               url: 'https://catalogue.ceh.ac.uk/datastore/eidchub/{fileIdentifier}',
               name: 'Download the data',
               description: 'Download a copy of this data',
               function: 'fileAccess'
             },
-            'Supporting documents': {
-              url: 'https://data-package.ceh.ac.uk/sd/{fileIdentifier}.zip',
-              name: 'Supporting information',
-              description: 'Supporting information available to assist in re-use of this dataset',
-              function: 'information'
+            'Data package': {
+              url: 'https://data-package.ceh.ac.uk/data/{fileIdentifier}',
+              name: 'Download the data',
+              description: 'Download a copy of this data',
+              function: 'download'
             }
           },
           helpText: `\

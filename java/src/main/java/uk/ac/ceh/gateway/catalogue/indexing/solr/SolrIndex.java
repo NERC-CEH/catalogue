@@ -86,6 +86,7 @@ public class SolrIndex {
     private @Field List<String> ukcehScienceChallenge;
     private @Field List<String> ukcehService;
     private @Field Number version;
+    private @Field List<String> dataFormat;
     private @Field List<String> view;
     // infrastructure catalogue
     private @Field String scienceArea;
