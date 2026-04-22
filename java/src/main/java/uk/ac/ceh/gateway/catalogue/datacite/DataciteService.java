@@ -116,7 +116,7 @@ public class DataciteService {
         return ResourceIdentifier
                 .builder()
                 .code(generateDoiString(document))
-                .codeSpace("doi:")
+                .codeSpace("doi")
                 .build();
 
     }

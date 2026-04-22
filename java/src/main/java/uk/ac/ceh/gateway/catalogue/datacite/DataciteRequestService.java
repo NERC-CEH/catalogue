@@ -176,7 +176,7 @@ public class DataciteRequestService {
 
     public List<DataciteRequest.Attributes.Identifier> getAlternateResourceIdentifiers(List<ResourceIdentifier> resourceIdentifiers, String url) {
         return resourceIdentifiers.stream()
-            .filter(resourceIdentifier -> (!"doi:".equals(resourceIdentifier.getCodeSpace())))
+            .filter(resourceIdentifier -> (!"doi".equals(resourceIdentifier.getCodeSpace())))
             .filter(resourceIdentifier -> !url.equals(resourceIdentifier.getCoupledResource()))
             .map(resourceIdentifier -> new DataciteRequest.Attributes.Identifier(
                 resourceIdentifier.getCoupledResource(),

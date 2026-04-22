@@ -61,7 +61,7 @@ public class JenaLookupService {
             .stream()
             .map(Literal::getString)
             .filter(l -> !l.startsWith("CEH:EIDC:"))
-            .filter(l -> !l.startsWith("doi:"))
+            .filter(l -> !l.startsWith("doi"))
             .filter(l -> !l.startsWith("http"))
             .collect(Collectors.toList());
     }

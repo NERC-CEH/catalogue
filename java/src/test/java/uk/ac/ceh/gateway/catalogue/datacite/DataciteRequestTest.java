@@ -139,7 +139,7 @@ public class DataciteRequestTest {
     @Test
     void testGetAlternateResourceIdentifiers() {
 
-        ResourceIdentifier r1 = ResourceIdentifier.builder().codeSpace("doi:").code("YP").build();
+        ResourceIdentifier r1 = ResourceIdentifier.builder().codeSpace("doi").code("YP").build();
         ResourceIdentifier r2 = ResourceIdentifier.builder().codeSpace("https://example.org/other1").code("YP").build();
         ResourceIdentifier r3 = ResourceIdentifier.builder().codeSpace("YP-MPA").code("yum").build();
         ResourceIdentifier r4 = ResourceIdentifier.builder().codeSpace("https://main-resource.com").code("").build();

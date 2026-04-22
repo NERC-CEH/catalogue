@@ -141,7 +141,7 @@
       "@id": "${citation.url}",
       "@type":"PropertyValue",
       "propertyID": "https://registry.identifiers.org/registry/doi",
-      "value": "doi:${citation.doi}",
+      "value": "${citation.doi}",
       "url": "${citation.url}"
     }
   </#if>
