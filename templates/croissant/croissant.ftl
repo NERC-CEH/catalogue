@@ -92,7 +92,7 @@
         <#list fileset as filesetOp>
           <#assign matchingFiles = []>
           <#list files as file>
-            <#if file?has_content && file?lower_case?matches(filesetOp.filesetRegex)>
+            <#if file?has_content && file?lower_case?matches(filesetOp.filesetRegex?lower_case)>
               <#assign matchingFiles = matchingFiles + [file]>
             </#if>
           </#list>
@@ -127,7 +127,7 @@
       <#list files as file>
         {
           "@type": "cr:FileObject",
-          <#t>"@id": "${file.id}"
+          <#t>"@id": "${file.id?keep_before_last('.')?replace('\\s+', '-', 'r')}"
           <#if file.encodingFormat?? && file.encodingFormat?has_content>,<#t>"encodingFormat": "${file.encodingFormat}"</#if>
           <#if file.sha256?? && file.sha256?has_content>,<#t>"sha256": "${file.sha256}"</#if>
           <#if file.contentUrl?? && file.contentUrl?has_content>,<#t>"contentUrl": "${file.contentUrl}"</#if>
