@@ -16,7 +16,6 @@ import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
