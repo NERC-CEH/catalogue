@@ -27,11 +27,11 @@ public class InMemoryCatalogueService implements CatalogueService {
 
     @Override
     public Catalogue retrieve(@NonNull String key) {
-        try {
-            return catalogues.get(key.toLowerCase());
-        } catch (NullPointerException ex) {
-            throw new CatalogueException(String.format("Could not retrieve catalogue for: %s", key), ex);
+        Catalogue catalogue = catalogues.get(key.toLowerCase());
+        if (catalogue == null) {
+            throw new CatalogueException(String.format("Could not retrieve catalogue for: %s", key));
         }
+        return catalogue;
     }
 
     @Override
