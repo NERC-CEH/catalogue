@@ -117,21 +117,17 @@
           </#if>
         </div>
 
-        <#if (dataAccess?? && dataAccess.dataAccessResources?has_content) || (resourceType.value?? && distributionFormats?? && distributionFormats?has_content)>
-          <div class="accessOptions">
-            <@accessOptions dataAccess.dataAccessResources/>
+        <#if dataAccess?? && dataAccess.dataAccessResources?has_content || mapViewable>
 
-            <#if mapViewable>
-              <#if mapservices?? && mapservices?has_content>
-                <#list mapservices as wms>
-                  <@accessOption "${wms.url}" " Web map service" "Access a web map service (WMS) for use in a GIS application" "fa-globe" "Access"/>
-                </#list>
-              </#if>
-            </#if>
+          <div class="accessOptions">
+            <@downloadOptions dataAccess.dataAccessResources/>
+            <@wmsButton/>
           </div>
 
           <@fileAccessInstructions />
+
         <#elseif externalLinks?? && externalLinks?has_content>
+
           <#list externalLinks as item>
             <p>
               <a href="${item.url}" class="link-offset-2" target="_blank" rel="noopener noreferrer">
@@ -140,6 +136,7 @@
               </a>
             </p>
           </#list>
+
         </#if>
 
       </#if>
@@ -150,7 +147,7 @@
   </div>
 </#macro>
 
-<#macro accessOptions resources>
+<#macro downloadOptions resources>
     <#list resources as item>
         <#assign optionDescription = "">
         <#if item.name?has_content>
@@ -189,9 +186,19 @@
     </#list>
 </#macro>
 
+<#macro wmsButton>
+  <#if mapViewable>
+    <#if mapservices?? && mapservices?has_content>
+      <#list mapservices as wms>
+        <@accessOption "${wms.url}" " Web map service" "Access a web map service (WMS) for use in a GIS application" "fa-globe" "Access"/>
+      </#list>
+    </#if>
+  </#if>
+</#macro>
+
 <#macro accessOption link="#" title="Order/download" description="" icon="fa-download" buttonLabel="Download">
-    <a class="access"  href="${link}">
-      <div class="fa-solid fa-xl ${icon}"></div>
+    <a class="access" href="${link}">
+      <div><span class="fa-solid fa-xl ${icon}"/></div>
       <div class="accessText">
         <b>${title}</b>
         <#if description?? && description?has_content>
@@ -203,7 +210,7 @@
 </#macro>
 
 <#macro fileAccessInstructions>
-  <#if dataAccess?? && dataAccess.dataAddressable>
+  <#if dataAccess?? && dataAccess.dataAddressable && dataAccess?string?matches(".+http(|s)://catalogue.ceh.ac.uk/datastore/.+")>
     <div class="py-3">
       <hr class="my-5 ">
       <h5 class="my-3">Bulk download options</h5>
@@ -233,3 +240,6 @@
 
     <#return sizeLabel>
 </#function>
+
+
+

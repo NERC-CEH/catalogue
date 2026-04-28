@@ -5,10 +5,21 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class InMemoryCatalogueServiceTest {
     private CatalogueService catalogueService;
+
+    @Test
+    public void retrieveUnknownCatalogueThrows() {
+        //given
+        Catalogue t1 = Catalogue.builder().id("t1").title("t").url("u").contactUrl("").logo("eidc.png").build();
+        catalogueService = new InMemoryCatalogueService("t1", t1);
+
+        //when/then
+        assertThrows(CatalogueException.class, () -> catalogueService.retrieve("unknown"));
+    }
 
     @Test
     public void retrieveAllCatalogues() {
