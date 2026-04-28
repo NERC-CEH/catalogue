@@ -9,7 +9,8 @@
   <#if contacts?has_content>
     <#list contacts as contact>
 
-      <#assign contactIdentifier= ":" + prefix +  contact?index>
+      <#assign contactIdentifier= id + "_" + prefix +  contact?index>
+      <#--assign contactIdentifier= id + "_" + prefix +  contact?index-->
 
       <#if contact.fullName?has_content>
         <#if contact.isOrcid()>
@@ -30,7 +31,7 @@
   <#if contacts?has_content>
     <#list contacts as contact>
 
-      <#local contactIdentifier= ":" + prefix + contact?index >
+      <#local contactIdentifier = id + "_" + prefix + contact?index >
 
       <#if contact.fullName?has_content>
         <#local contactType="foaf:Person">
@@ -68,7 +69,7 @@
   <#if funding?has_content>
     <#list funding as fund>
 
-      <#assign fundIdentifier= ":fund" + fund?index>
+      <#assign fundIdentifier= id + "_fund" + fund?index>
       <#if fund.awardURI?has_content>
         <#assign fundIdentifier ="\l" + fund.awardURI?trim+ "\g">
       </#if>
@@ -81,7 +82,7 @@
   <#if  funding?has_content>
     <#list funding as fund>
 
-      <#assign fundIdentifier= ":proj" + fund?index>
+      <#assign fundIdentifier= id + "_proj" + fund?index>
       <#if fund.awardURI?has_content>
         <#assign fundIdentifier ="\l" + fund.awardURI?trim+ "\g">
       </#if>
@@ -157,7 +158,7 @@
   <#if incomingCitations?has_content>
     <#list incomingCitations as citation>
 
-      <#assign citationIdentifier= ":citation" + citation?index>
+      <#assign citationIdentifier= id + "_citation" + citation?index>
       <#if citation.url?has_content>
         <#assign citationIdentifier ="\l" + citation.url?trim + "\g">
       </#if>
@@ -170,7 +171,7 @@
   <#if incomingCitations?has_content>
     <#list incomingCitations as citation>
 
-      <#assign citationIdentifier= ":citation" + citation?index>
+      <#assign citationIdentifier= id + "_citation" + citation?index>
       <#if citation.url?has_content>
         <#assign citationIdentifier ="\l" + citation.url?trim + "\g">
       </#if>
