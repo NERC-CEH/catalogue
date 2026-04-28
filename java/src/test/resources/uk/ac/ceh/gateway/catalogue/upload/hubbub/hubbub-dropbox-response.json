@@ -10,7 +10,8 @@
       "lastModified": "2002-12-19T23:34:12",
       "lastValidated": "2021-09-02T08:21:08",
       "path": "CBESS_Eddy_Covariance_data_Cartmel_Sands.csv",
-      "status": "WRITING"
+      "status": "WRITING",
+      "sha256": "aaaa1111aaaa1111aaaa1111aaaa1111aaaa1111aaaa1111aaaa1111aaaa1111"
     },
     {
       "bytes": 578982,
@@ -22,7 +23,8 @@
       "lastModified": "2002-12-19T23:34:12",
       "lastValidated": "2021-09-02T08:21:08",
       "path": "CBESS_data_Cartmel_Sands.csv",
-      "status": "WRITING"
+      "status": "WRITING",
+      "sha256": "bbbb2222bbbb2222bbbb2222bbbb2222bbbb2222bbbb2222bbbb2222bbbb2222"
     }
   ],
   "links":{
@@ -35,7 +37,7 @@
   "meta": {
     "currentPage": 1,
     "pageSize": 2,
-    "lastPage": 3,
-    "totalFiles": 5
+    "lastPage": 1,
+    "totalFiles": 2
   }
 }

@@ -40,7 +40,7 @@ public class UploadService {
     @ToString.Include
     private final String uploadLocation;
 
-    static final int BIG_PAGE_SIZE = 1000000;
+    static final int PAGE_SIZE = 100000;
 
     public UploadService(
         @Qualifier("normal") RestTemplate restTemplate,
@@ -88,22 +88,39 @@ public class UploadService {
     @SneakyThrows
     public void csv(PrintWriter writer, String datasetId) {
         log.debug("Getting CSV for {}", datasetId);
-        val response = get(datasetId, "eidchub", 1, BIG_PAGE_SIZE);
-        boolean withMD5 = response.getData().stream()
-            .anyMatch(fileInfo ->
-                (fileInfo.getHash() != null) && (!fileInfo.getHash().isBlank())
-            );
 
-        if (withMD5) {
-            writer.println("path,MD5_checksum,SHA256_checksum");
-            response.getData().forEach(fileInfo ->
-                writer.println(format("%s/%s,%s,%s", fileInfo.getDatasetId(), fileInfo.getPath(), fileInfo.getHash(), fileInfo.getSha256()))
+        writer.println("path,SHA256_checksum");
+        writer.flush();
+
+        int page = 1;
+        while (true) {
+            HubbubResponse current;
+            try {
+                current = get(datasetId, "eidchub", page, PAGE_SIZE);
+            } catch (Exception ex) {
+                log.error("Failed to fetch page {} for {} — CSV will be truncated", page, datasetId, ex);
+                writer.println(format(
+                    "# ERROR: checksum report incomplete — failed to retrieve page %d. This file is a partial export.",
+                    page));
+                writer.flush();
+                return;
+            }
+
+            if (current.getData().isEmpty()) {
+                return;
+            }
+
+            current.getData().forEach(fileInfo ->
+                writer.println(format("%s/%s,%s",
+                    fileInfo.getDatasetId(), fileInfo.getPath(),
+                    fileInfo.getSha256()))
             );
-        } else {
-            writer.println("path,SHA256_checksum");
-            response.getData().forEach(fileInfo ->
-                writer.println(format("%s/%s,%s", fileInfo.getDatasetId(), fileInfo.getPath(), fileInfo.getSha256()))
-            );
+            writer.flush();
+
+            if (current.getMeta().getCurrentPage() >= current.getMeta().getLastPage()) {
+                return;
+            }
+            page++;
         }
     }
 
