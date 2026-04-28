@@ -1,8 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.organisations;
 
-import com.fasterxml.jackson.core.JsonPointer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JsonPointer;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import lombok.extern.slf4j.Slf4j;
@@ -125,15 +125,15 @@ public class OrganisationUpdater {
         }
     }
 
-    public String getDownloadLink(String dataDumpUrl) throws Exception {
+    public String getDownloadLink(String dataDumpUrl) {
         String response = restTemplate.getForObject(dataDumpUrl, String.class);
         JsonNode jsonNode = (new ObjectMapper()).readTree(response);
 
         JsonPointer fileNamePointer = JsonPointer.compile("/hits/hits/0/files/0/key");
-        rorFileName = jsonNode.at(fileNamePointer).asText().replace(".zip", ".csv");
+        rorFileName = jsonNode.at(fileNamePointer).asString().replace(".zip", ".csv");
 
         JsonPointer downloadLinkPointer = JsonPointer.compile("/hits/hits/0/files/0/links/self");
-        return jsonNode.at(downloadLinkPointer).asText();
+        return jsonNode.at(downloadLinkPointer).asString();
     }
 
     public boolean downloadFile(String downloadUrl, File data) throws Exception {

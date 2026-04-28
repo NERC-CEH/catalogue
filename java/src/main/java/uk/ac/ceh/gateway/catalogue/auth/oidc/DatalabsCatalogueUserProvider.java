@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.auth.oidc;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -52,11 +52,10 @@ public class DatalabsCatalogueUserProvider implements CatalogueUserProvider {
 
         if (usersNode.isArray()) {
             val name = StreamSupport.stream(usersNode.spliterator(), false)
-                .filter(node -> node.get("userId").asText().equals(subject))
+                .filter(node -> node.get("userId").asString().equals(subject))
                 .findFirst()
                 .orElseThrow(() -> new AuthenticationException("No user found for " + subject))
-                .get("name")
-                .asText();
+                .get("name").asString();
             return new CatalogueUser(name, name);
         } else {
             throw new AuthenticationException("No Users array present for " + subject);

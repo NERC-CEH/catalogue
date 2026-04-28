@@ -5,14 +5,13 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -28,14 +27,12 @@ import static org.hamcrest.core.IsEqual.equalTo;
 
 @Slf4j
 @WithMockCatalogueUser
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("DownloadController")
-@WebMvcTest(
-    controllers=DownloadController.class,
-    properties="metrics.users.excluded=dummy,another,i_am_excluded"
-)
 
-public class DownloadControllerTest {
+
+public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="metrics.users.excluded=dummy,another,i_am_excluded")
+class DownloadControllerTest extends AbstractMvcTest {
 
     @NotNull @Value("${download.url.regexOrder}") private String orderUrlRegex;
     @NotNull @Value("${download.url.regexPackage}") private String packageUrlRegex;
@@ -44,8 +41,6 @@ public class DownloadControllerTest {
 
     @MockitoBean
     private MetricsService metricsService;
-
-    @Autowired private MockMvc mvc;
 
     @Test
     @SneakyThrows
@@ -99,7 +94,7 @@ public class DownloadControllerTest {
         DownloadController controller = new DownloadController(metricsService, users, orderUrlRegex, packageUrlRegex, datastoreUrlRegex, CedaUrlRegex);
 
         //when
-        List<String> actual = validUrls.stream().filter(url -> controller.valid(url)).collect(Collectors.toList());
+        List<String> actual = validUrls.stream().filter(controller::valid).toList();
 
         //then
         assertThat("All urls should be valid", actual.size(), equalTo(4));
@@ -117,7 +112,7 @@ public class DownloadControllerTest {
         DownloadController controller = new DownloadController(metricsService, users, orderUrlRegex, packageUrlRegex, datastoreUrlRegex, CedaUrlRegex);
 
         //when
-        List<String> actual = validUrls.stream().filter(url -> controller.valid(url)).collect(Collectors.toList());
+        List<String> actual = validUrls.stream().filter(controller::valid).toList();
 
         //then
         assertThat("No urls should be valid", actual.size(), equalTo(0));

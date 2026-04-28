@@ -1,16 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.depositRequest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.util.List;
 
@@ -21,13 +21,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WithMockCatalogueUser
-@ActiveProfiles("test")
-@WebMvcTest(controllers = DepositRequestController.class)
-@DisplayName("DepositRequestController")
-class DepositRequestControllerTest {
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 
-    @Autowired MockMvc mvc;
-    @Autowired ObjectMapper mapper;
+@DisplayName("DepositRequestController")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+class DepositRequestControllerTest extends AbstractMvcTest {
+    @Autowired JsonMapper mapper;
 
     @MockitoBean
     DepositRequestService service;
@@ -53,7 +52,7 @@ class DepositRequestControllerTest {
                 "1000", false)),
             "Some notes");
 
-        ObjectNode mockResponse = new ObjectMapper().createObjectNode();
+        ObjectNode mockResponse = JsonMapper.builder().build().createObjectNode();
         mockResponse.put("key", "TEST-123");
         mockResponse.put("componentName", "Deposit Request");
 

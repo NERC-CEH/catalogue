@@ -8,18 +8,15 @@ import org.apache.solr.client.solrj.SolrClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
-import uk.ac.ceh.gateway.catalogue.catalogue.InMemoryCatalogueService;
-import uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndex;
@@ -27,6 +24,7 @@ import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,15 +42,13 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UNPR
 
 @WithMockCatalogueUser
 @Slf4j
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("SearchController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(
-    controllers=SearchController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
-)
+
 @TestPropertySource(locations="classpath:test.properties")
-class SearchControllerTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+class SearchControllerTest extends AbstractMvcTest {
     @MockitoBean private SolrClient solrClient;
     @MockitoBean private CatalogueService catalogueService;
     @MockitoBean private FacetFactory facetFactory;
@@ -60,8 +56,6 @@ class SearchControllerTest {
     @MockitoBean(name="permission") private PermissionService permissionService;
     @MockitoBean private ProfileService profileService;
     @MockitoBean private Searcher searcher;
-
-    @Autowired private MockMvc mvc;
     @Autowired Configuration configuration;
 
     private final String catalogueKey = "eidc";

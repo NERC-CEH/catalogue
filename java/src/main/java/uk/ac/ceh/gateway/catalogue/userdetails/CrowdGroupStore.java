@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.userdetails;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -66,7 +66,7 @@ public class CrowdGroupStore implements GroupStore<CatalogueUser> {
             if (node.isArray()) {
                 return StreamSupport.stream(node.spliterator(), false)
                     .map(groupNode -> {
-                        val name = groupNode.get("name").asText();
+                        val name = groupNode.get("name").asString();
                         return new CatalogueGroup(name);
                     })
                     .collect(Collectors.toList());

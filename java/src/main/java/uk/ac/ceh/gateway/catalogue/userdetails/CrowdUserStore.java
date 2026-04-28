@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.userdetails;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,8 +55,8 @@ public class CrowdUserStore implements UserStore<CatalogueUser> {
             val node = Optional.ofNullable(response.getBody())
                 .orElseThrow(() -> new UserDetailsException(format("No body for %s %s", uriTemplate, username)));
             return new CatalogueUser(
-                node.get("name").asText(),
-                node.get("email").asText()
+                node.get("name").asString(),
+                node.get("email").asString()
             );
         } catch (HttpClientErrorException.NotFound ex) {
             throw new UnknownUserException(username);

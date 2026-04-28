@@ -5,13 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.StreamUtils;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
@@ -23,6 +21,7 @@ import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.citation.CitationService;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -38,19 +37,15 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC
 
 @WithMockCatalogueUser
 @Slf4j
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("CitationController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(
-    controllers=CitationController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
-)
-class CitationControllerTest {
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+class CitationControllerTest extends AbstractMvcTest {
     @MockitoBean DocumentRepository documentRepository;
     @MockitoBean CitationService citationService;
     @MockitoBean(name="permission") PermissionService permission;
-
-    @Autowired private MockMvc mvc;
 
     private static final String file = "file";
     private static final String revision = "revision";

@@ -7,9 +7,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import java.util.Objects;
@@ -34,6 +37,7 @@ class DatalabsCatalogueUserProviderTest {
     @SneakyThrows
     void init() {
         val restTemplate = new RestTemplate();
+        restTemplate.setMessageConverters(List.of(new JacksonJsonHttpMessageConverter()));
         val usersEndpoint = "https://example.com/api?query={users{userId,name}}";
         mockServer = MockRestServiceServer.bindTo(restTemplate).build();
         provider = new DatalabsCatalogueUserProvider(restTemplate, usersEndpoint);

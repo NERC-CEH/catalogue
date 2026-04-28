@@ -7,12 +7,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
@@ -25,6 +24,7 @@ import uk.ac.ceh.gateway.catalogue.publication.State;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.util.HashSet;
 
@@ -41,25 +41,21 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC
 //TODO: complete testing of other endpoints
 
 @WithMockCatalogueUser
-@ActiveProfiles({"test", "service-agreement"})
+@ActiveProfiles({"test", "service-agreement", "server-eidc", "search-basic"})
 @DisplayName("ServiceAgreementPublicationController")
 @Import({
     SecurityConfig.class,
     SecurityConfigCrowd.class,
     DevelopmentUserStoreConfig.class
 })
-@WebMvcTest(
-    controllers=ServiceAgreementPublicationController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
-)
-class ServiceAgreementPublicationControllerTest {
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+class ServiceAgreementPublicationControllerTest extends AbstractMvcTest {
     @MockitoBean @Qualifier("service-agreement") private PublicationService publicationService;
     @MockitoBean ServiceAgreementService serviceAgreementService;
     @MockitoBean(name="permission") private PermissionService permissionService;
     @MockitoBean private CatalogueService catalogueService;
     @MockitoBean private ProfileService profileService;
-
-    @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
 
     private final String file = "345-678";

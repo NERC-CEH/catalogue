@@ -3,16 +3,15 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.services.GeminiWafService;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,17 +22,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.GEMINI_XML_SHORT;
 
 @WithMockCatalogueUser
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("GeminiWafController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(
-    controllers=GeminiWafController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
-)
-class GeminiWafControllerTest {
-    @MockitoBean private GeminiWafService geminiWafService;
 
-    @Autowired private MockMvc mvc;
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+class GeminiWafControllerTest extends AbstractMvcTest {
+    @MockitoBean private GeminiWafService geminiWafService;
 
     @Test
     @SneakyThrows

@@ -1,9 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.templateHelpers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -170,7 +170,7 @@ public class JenaLookupService {
     /**
      * Function to compile a FeatureCollection for programmes - directly linked facilities and child facilities of networks
      */
-    public String programmeCombinedGeometries(String uri) throws JsonProcessingException {
+    public String programmeCombinedGeometries(String uri) throws JacksonException {
         List<Link> links = programmeFeatures(uri);
         // Return if no links found
         if (links.isEmpty()) {
@@ -211,17 +211,17 @@ public class JenaLookupService {
     /**
      * Function to compile a FeatureCollection from Geometries found in inversely related records
      */
-    public String inverseRelationshipCombinedGeometries(String uri, String relation) throws JsonProcessingException {
+    public String inverseRelationshipCombinedGeometries(String uri, String relation) throws JacksonException {
         List<Link> links = inverseRelationships(uri, relation);
         return getCombinedGeometriesString(links, uri, false);
     }
 
-    public String relationshipCombinedGeometriesWithOwner(String uri, String relation, boolean locationConfidential) throws JsonProcessingException {
+    public String relationshipCombinedGeometriesWithOwner(String uri, String relation, boolean locationConfidential) throws JacksonException {
         List<Link> links = relationshipsWithOwner(uri, relation);
         return getCombinedGeometriesString(links, uri, locationConfidential);
     }
 
-    private String getCombinedGeometriesString(List<Link> links, String uri, boolean locationConfidential) throws JsonProcessingException {
+    private String getCombinedGeometriesString(List<Link> links, String uri, boolean locationConfidential) throws JacksonException {
         // Return if no links found
         if (links.isEmpty()) {
             return "";

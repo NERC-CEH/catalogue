@@ -4,12 +4,10 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
@@ -18,6 +16,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.util.List;
 
@@ -29,19 +28,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockCatalogueUser
-@ActiveProfiles({"test"})
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("CatalogueController")
 @Import({
     SecurityConfigCrowd.class,
     DevelopmentUserStoreConfig.class,
     CatalogueModelAssembler.class
 })
-@WebMvcTest(CatalogueController.class)
-public class CatalogueControllerTest {
+
+public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+class CatalogueControllerTest extends AbstractMvcTest {
     private @MockitoBean DocumentRepository documentRepository;
     private @MockitoBean CatalogueService catalogueService;
-
-    @Autowired private MockMvc mvc;
 
     private void givenCataloguesRetrieveAll() {
         Catalogue a = Catalogue.builder().id("a").title("a").url("a").contactUrl("").logo("eidc.png").build();

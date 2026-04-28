@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.auth.oidc;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -92,7 +92,7 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
             .at("/data/userPermissions");
         if (userPermissionsNode.isArray()) {
             return StreamSupport.stream(userPermissionsNode.spliterator(), false)
-                .map(JsonNode::asText)
+                .map(JsonNode::asString)
                 .map(this::mapDataLabsPermissionsToCatalogueRoles)
                 .filter(Optional::isPresent)
                 .map(Optional::get)

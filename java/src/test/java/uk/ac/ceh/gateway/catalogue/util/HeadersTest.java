@@ -19,7 +19,7 @@ public class HeadersTest {
         val headers = Headers.withBasicAuth("username", "password");
 
         //then
-        assertTrue(headers.containsKey("Authorization"));
+        assertTrue(headers.containsHeader("Authorization"));
         assertThat(headers.get("Authorization").toString(), is("[Basic dXNlcm5hbWU6cGFzc3dvcmQ=]"));
     }
 
@@ -29,7 +29,7 @@ public class HeadersTest {
             //given
 
             //when
-            val headers = Headers.withBasicAuth(null, null);
+            Headers.withBasicAuth(null, null);
 
             //then
             fail();
@@ -42,7 +42,7 @@ public class HeadersTest {
             //given
 
             //when
-            val headers = Headers.withBasicAuth("", "");
+            Headers.withBasicAuth("", "");
 
             //then
             fail();

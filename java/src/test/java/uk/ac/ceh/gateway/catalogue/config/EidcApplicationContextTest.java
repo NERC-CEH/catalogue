@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +47,6 @@ class EidcApplicationContextTest {
         assertNotNull(applicationContext.getBean("permission"));
         val objectMapper = applicationContext.getBean(ObjectMapper.class);
         assertNotNull(objectMapper);
-        objectMapper.getRegisteredModuleIds().forEach(module -> log.debug(module.toString()));
     }
 
     @Test
