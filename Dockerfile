@@ -17,7 +17,7 @@ COPY --chown=gradle:gradle java/lombok.config .
 COPY --chown=gradle:gradle java/src src/
 RUN gradle bootJar
 WORKDIR build/libs
-RUN java -Djarmode=tools extract --layers --launcher
+RUN java -Djarmode=tools -jar app.jar extract --layers --launcher
 
 # Create production image
 FROM eclipse-temurin:25-alpine AS prod
