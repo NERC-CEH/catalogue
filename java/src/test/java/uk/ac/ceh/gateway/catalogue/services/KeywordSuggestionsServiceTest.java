@@ -84,7 +84,7 @@ public class KeywordSuggestionsServiceTest {
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> service.getKeywordsSuggestions(FILE_ID, "eidc"));
 
         //then
-        assertEquals("422 UNPROCESSABLE_CONTENT \"Unprocessable Entity\"", exception.getMessage());
+        assertEquals("422 UNPROCESSABLE_CONTENT \"Unprocessable Content\"", exception.getMessage());
     }
 
     @Test
