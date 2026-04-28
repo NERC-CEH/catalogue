@@ -24,7 +24,7 @@ public class KeywordSuggestionsService {
     // variables a reasonably high confidence as compared to keywords
     // extracted from supporting documents by text mining.
     private static final double VARIABLE_CONFIDENCE = 0.2;
-    private RestClient restClient;
+    private final RestClient restClient;
 
     public record KeywordsSuggestion(String name, double confidence, String matched_url) { }
     public record VariablesSuggestion(String name, String longName, String units, String meaning, double confidence) { }
@@ -54,8 +54,8 @@ public class KeywordSuggestionsService {
             .orElseGet(Collections::emptyList);
 
         if (!errorList.isEmpty()) {
-            int statusCode = (int) errorList.get(0).get("statusCode");
-            String statusTxt = (String) errorList.get(0).get("statusTxt");
+            int statusCode = (int) errorList.getFirst().get("statusCode");
+            String statusTxt = (String) errorList.getFirst().get("statusTxt");
             throw new ResponseStatusException(HttpStatus.valueOf(statusCode), statusTxt);
         }
 
@@ -69,8 +69,8 @@ public class KeywordSuggestionsService {
 
         Optional<VariablesResponse> variablesResponse = getVariables(restClient, file, errorList);
         if (!errorList.isEmpty()) {
-            int statusCode = (int) errorList.get(0).get("statusCode");
-            String statusTxt = (String) errorList.get(0).get("statusTxt");
+            int statusCode = (int) errorList.getFirst().get("statusCode");
+            String statusTxt = (String) errorList.getFirst().get("statusTxt");
             throw new ResponseStatusException(HttpStatus.valueOf(statusCode), statusTxt);
         }
 
@@ -80,8 +80,10 @@ public class KeywordSuggestionsService {
             .map(vars ->
                 vars.keySet().stream()
                     .map(varName -> {
-                        ArrayList<Object> dataArray = (ArrayList) vars.get(varName);
-                        Map<String, Object> dataMap = (Map) dataArray.get(0);
+                        @SuppressWarnings("unchecked")
+                        ArrayList<Object> dataArray = (ArrayList<Object>) vars.get(varName);
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> dataMap = (Map<String, Object>) dataArray.getFirst();
                         String longName = (String) dataMap.getOrDefault("long_name", "");
                         String units = (String) dataMap.getOrDefault("units", "");
                         String meaning = (String) dataMap.getOrDefault("meaning", "");
@@ -127,7 +129,7 @@ public class KeywordSuggestionsService {
         );
     }
 
-    private double getDoubleValue(Map map, String key) {
+    private double getDoubleValue(Map<?, ?> map, String key) {
         double value = 0.0;
         if (map.containsKey(key)) {
             Object v = map.get(key);

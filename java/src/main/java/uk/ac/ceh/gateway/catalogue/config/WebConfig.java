@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -129,13 +130,10 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Override
-    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-        // Before standard Spring message converters
-        converters.addAll(0, beforeStandardMessageConverters);
-        // Cannot add to beforeStandardMessageConverters as need to call 'httpClient()' once bean created
-        converters.addFirst(new TransparentProxyMessageConverter(httpClient()));
-        // After standard Spring message converters
-        converters.addAll(afterStandardMessageConverters);
+    public void configureMessageConverters(HttpMessageConverters.ServerBuilder builder) {
+        builder.addCustomConverter(new TransparentProxyMessageConverter(httpClient()));
+        beforeStandardMessageConverters.forEach(builder::addCustomConverter);
+        builder.configureMessageConvertersList(converters -> converters.addAll(afterStandardMessageConverters));
     }
 
     @Bean
