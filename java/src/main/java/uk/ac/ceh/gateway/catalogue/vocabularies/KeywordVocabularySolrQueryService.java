@@ -4,10 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.client.solrj.request.SolrQuery;
+import org.apache.solr.client.solrj.request.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.BaseHttpSolrClient;
+import org.apache.solr.client.solrj.RemoteSolrException;
 import org.apache.solr.common.params.CommonParams;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +37,7 @@ public class KeywordVocabularySolrQueryService {
 
             return solrClient.query(COLLECTION, query, POST).getBeans(Keyword.class);
 
-        } catch (IOException | SolrServerException | BaseHttpSolrClient.RemoteSolrException ex) {
+        } catch (IOException | SolrServerException | RemoteSolrException ex) {
             throw new SolrServerException(ex);
         }
     }
@@ -47,16 +47,14 @@ public class KeywordVocabularySolrQueryService {
         if(vocabIds.isEmpty())
             return "vocabId:__NO_MATCH__";
 
-        StringBuilder toReturn = new StringBuilder("vocabId:(" + vocabIds.get(0));
+        StringBuilder toReturn = new StringBuilder("vocabId:(" + vocabIds.getFirst());
         if(vocabIds.size() > 1) {
             vocabIds
                     .stream()
                     .skip(1)
-                    .forEach(v -> {
-                        toReturn
-                                .append(" OR ")
-                                .append(v);
-                    });
+                    .forEach(v -> toReturn
+                            .append(" OR ")
+                            .append(v));
         }
         return toReturn.append(")").toString();
     }

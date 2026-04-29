@@ -3,9 +3,9 @@ package uk.ac.ceh.gateway.catalogue.serviceagreement;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.BaseHttpSolrClient;
+import org.apache.solr.client.solrj.RemoteSolrException;
 import org.apache.solr.common.params.CommonParams;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -38,7 +38,7 @@ public class SolrServiceAgreementSearch implements ServiceAgreementSearch {
             val response = solrClient.query(SERVICE_AGREEMENT, query, POST);
             return response.getBeans(ServiceAgreementSolrIndex.class);
 
-        } catch (IOException | SolrServerException | BaseHttpSolrClient.RemoteSolrException ex) {
+        } catch (IOException | SolrServerException | RemoteSolrException ex) {
             throw new ServiceAgreementException(ex);
         }
     }

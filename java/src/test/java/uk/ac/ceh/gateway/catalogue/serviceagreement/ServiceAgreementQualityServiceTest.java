@@ -1,10 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
@@ -40,16 +35,10 @@ import static uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreeme
 @ExtendWith(MockitoExtension.class)
 public class ServiceAgreementQualityServiceTest {
     private ServiceAgreementQualityService service;
-    // Keep ObjectMapper options same as ObjectMapper in config/ApplicationConfig.java
-    private ObjectMapper objectMapper = new ObjectMapper()
-            .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-            .registerModule(new GuavaModule())
-            .registerModule(new JaxbAnnotationModule())
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-    private Configuration config = Configuration.defaultConfiguration()
-            .jsonProvider(new JacksonJsonProvider(objectMapper))
-            .mappingProvider(new JacksonMappingProvider(objectMapper))
+    private final Configuration config = Configuration.defaultConfiguration()
+            .jsonProvider(new JacksonJsonProvider())
+            .mappingProvider(new JacksonMappingProvider())
             .addOptions(
                     Option.DEFAULT_PATH_LEAF_TO_NULL,
                     Option.SUPPRESS_EXCEPTIONS
@@ -60,7 +49,7 @@ public class ServiceAgreementQualityServiceTest {
 
     @BeforeEach
     public void setup() {
-        this.service = new ServiceAgreementQualityService(documentReader, objectMapper, "EIDCHELP-");
+        this.service = new ServiceAgreementQualityService(documentReader, "EIDCHELP-");
     }
 
 
@@ -99,7 +88,7 @@ public class ServiceAgreementQualityServiceTest {
         //then
         assertThat(actual, not(empty()));
         assertThat(actual.size(), equalTo(1));
-        assertThat(actual.get(0).getTest(), containsString("topic categories"));
+        assertThat(actual.getFirst().getTest(), containsString("topic categories"));
     }
 
     @Test

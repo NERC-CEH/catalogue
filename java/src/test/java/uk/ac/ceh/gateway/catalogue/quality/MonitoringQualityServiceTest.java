@@ -1,10 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.quality;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,18 +18,13 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 public class MonitoringQualityServiceTest {
     private MonitoringQualityService service;
-    private ObjectMapper objectMapper = new ObjectMapper()
-        .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-        .registerModule(new GuavaModule())
-        .registerModule(new JaxbAnnotationModule())
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     @Mock
     private DocumentReader documentReader;
 
     @BeforeEach
     public void setup() {
-        this.service = new MonitoringQualityService(documentReader, objectMapper);
+        this.service = new MonitoringQualityService(documentReader);
     }
 
     @Test
@@ -139,7 +129,7 @@ public class MonitoringQualityServiceTest {
         //then
         verify(documentReader).read("monitoringNetworkNoKeywords", "raw");
         verify(documentReader).read("monitoringNetworkNoKeywords", "meta");
-        val problems = results.getProblems().stream().map(check -> check.getTest()).toList();
+        val problems = results.getProblems().stream().map(MetadataCheck::getTest).toList();
         assertThat(problems, contains("Keywords is empty"));
     }
 
@@ -161,7 +151,7 @@ public class MonitoringQualityServiceTest {
         //then
         verify(documentReader).read("monitoringFacilityWrong", "raw");
         verify(documentReader).read("monitoringFacilityWrong", "meta");
-        val problems = results.getProblems().stream().map(check -> check.getTest()).toList();
+        val problems = results.getProblems().stream().map(MetadataCheck::getTest).toList();
         assertThat(problems, containsInAnyOrder("Operating period is empty", "Geometry is missing", "Facility type is missing"));
     }
 
@@ -183,7 +173,7 @@ public class MonitoringQualityServiceTest {
         //then
         verify(documentReader).read("monitoringProgrammeMissingFields", "raw");
         verify(documentReader).read("monitoringProgrammeMissingFields", "meta");
-        val problems = results.getProblems().stream().map(check -> check.getTest()).toList();
+        val problems = results.getProblems().stream().map(MetadataCheck::getTest).toList();
         assertThat(problems, contains("Bounding box is missing"));
     }
 
@@ -205,7 +195,7 @@ public class MonitoringQualityServiceTest {
         //then
         verify(documentReader).read("monitoringActivityBoundingBox", "raw");
         verify(documentReader).read("monitoringActivityBoundingBox", "meta");
-        val problems = results.getProblems().stream().map(check -> check.getTest()).toList();
+        val problems = results.getProblems().stream().map(MetadataCheck::getTest).toList();
         assertThat(problems, containsInAnyOrder(
             "westBoundLongitude is out of range",
             "eastBoundLongitude is missing from bounding box",
@@ -232,7 +222,7 @@ public class MonitoringQualityServiceTest {
         //then
         verify(documentReader).read("monitoringNetworkEmptyKeywords", "raw");
         verify(documentReader).read("monitoringNetworkEmptyKeywords", "meta");
-        val problems = results.getProblems().stream().map(check -> check.getTest()).toList();
+        val problems = results.getProblems().stream().map(MetadataCheck::getTest).toList();
         assertThat(problems, contains("Keyword is empty"));
     }
 
@@ -254,7 +244,7 @@ public class MonitoringQualityServiceTest {
         //then
         verify(documentReader).read("monitoringProgrammeEmptyOperatingPeriod", "raw");
         verify(documentReader).read("monitoringProgrammeEmptyOperatingPeriod", "meta");
-        val problems = results.getProblems().stream().map(check -> check.getTest()).toList();
+        val problems = results.getProblems().stream().map(MetadataCheck::getTest).toList();
         assertThat(problems, contains("Operating period is empty"));
     }
 
@@ -276,7 +266,7 @@ public class MonitoringQualityServiceTest {
         //then
         verify(documentReader).read("monitoringActivityBoundingBox", "raw");
         verify(documentReader).read("monitoringActivityBoundingBox", "meta");
-        val problems = results.getProblems().stream().map(check -> check.getTest()).toList();
+        val problems = results.getProblems().stream().map(MetadataCheck::getTest).toList();
         assertThat(problems, containsInAnyOrder(
             "westBoundLongitude is out of range",
             "eastBoundLongitude is missing from bounding box",

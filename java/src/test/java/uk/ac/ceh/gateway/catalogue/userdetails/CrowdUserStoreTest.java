@@ -7,9 +7,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 import uk.ac.ceh.components.userstore.UnknownUserException;
 import uk.ac.ceh.components.userstore.UserStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -29,6 +32,7 @@ class CrowdUserStoreTest {
     @BeforeEach
     void setup() {
         val restTemplate = new RestTemplate();
+        restTemplate.setMessageConverters(List.of(new JacksonJsonHttpMessageConverter()));
         userStore = new CrowdUserStore(
                 "https://example.com/latest",
                 "abc",

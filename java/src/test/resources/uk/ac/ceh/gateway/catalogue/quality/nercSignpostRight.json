@@ -7,5 +7,37 @@
     {
       "function": "information"
     }
+  ],
+  "responsibleParties": [
+    {
+      "role": "author",
+      "givenName": "Jane",
+      "familyName": "Smith",
+      "organisationName": "Test Organisation"
+    },
+    {
+      "role": "pointOfContact",
+      "displayName": "Test Contact",
+      "organisationName": "Test Organisation",
+      "email": "contact@test.ac.uk"
+    }
+  ],
+  "distributorContacts": [
+    {
+      "role": "distributor",
+      "organisationName": "Test Distributor",
+      "email": "distributor@test.ac.uk"
+    }
+  ],
+  "topicCategories": [
+    {
+      "value": "environment"
+    }
+  ],
+  "distributionFormats": [
+    {
+      "name": "CSV",
+      "version": "1.0"
+    }
   ]
 }

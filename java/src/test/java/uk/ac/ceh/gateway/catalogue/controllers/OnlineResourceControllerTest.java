@@ -12,13 +12,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
@@ -31,6 +29,7 @@ import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.wms.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
 import uk.ac.ceh.gateway.catalogue.wms.TMSToWMSGetMapService;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -43,15 +42,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WithMockCatalogueUser
 @Slf4j
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("OnlineResourceController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(
-    controllers=OnlineResourceController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
-)
-public class OnlineResourceControllerTest {
-    @Autowired private MockMvc mvc;
+
+public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+class OnlineResourceControllerTest extends AbstractMvcTest {
 
     @MockitoBean private BundledReaderService<MetadataDocument> documentBundleReader;
     @MockitoBean private GetCapabilitiesObtainerService getCapabilitiesObtainerService;

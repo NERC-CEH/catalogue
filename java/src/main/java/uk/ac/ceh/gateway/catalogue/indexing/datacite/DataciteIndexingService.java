@@ -1,9 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.indexing.datacite;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -64,12 +64,12 @@ public class DataciteIndexingService implements DocumentIndexingService {
      * submit an update.
      * @param document to check if updates are required
      */
-    private void indexDocument(GeminiDocument document) throws JsonProcessingException {
+    private void indexDocument(GeminiDocument document) throws JacksonException {
         if(datacite.isDatacited(document)) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                  .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-                  .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
+            JsonMapper mapper = JsonMapper.builder()
+                  .changeDefaultPropertyInclusion(v -> v.withValueInclusion(JsonInclude.Include.NON_EMPTY))
+                  .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
+                  .build();
             String lastRequest = mapper.writeValueAsString(datacite.getDoiMetadata(document));
             String newRequest = mapper.writeValueAsString(datacite.getNewDataciteRequest(document));
             if(!newRequest.equals(lastRequest)) {
@@ -91,7 +91,7 @@ public class DataciteIndexingService implements DocumentIndexingService {
 
     // Do nothing here
     @Override
-    public void rebuildIndex() throws DocumentIndexingException {}
+    public void rebuildIndex() {}
 
     // Do nothing here
     @Override

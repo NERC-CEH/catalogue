@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.templateHelpers;
 
 import lombok.val;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -129,7 +129,7 @@ public class JenaLookupServiceTest {
     }
 
     @Test
-    public void inverseRelationshipCombinedGeometries() throws JsonProcessingException {
+    public void inverseRelationshipCombinedGeometries() throws JacksonException {
         //Given
         jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
@@ -157,7 +157,7 @@ public class JenaLookupServiceTest {
     }
 
     @Test
-    public void relationshipCombinedGeometriesWithOwner() throws JsonProcessingException {
+    public void relationshipCombinedGeometriesWithOwner() throws JacksonException {
         //Given
         jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
@@ -212,7 +212,7 @@ public class JenaLookupServiceTest {
     }
 
     @Test
-    public void programmeCombinedGeometries() throws JsonProcessingException {
+    public void programmeCombinedGeometries() throws JacksonException {
         // Given
         jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();

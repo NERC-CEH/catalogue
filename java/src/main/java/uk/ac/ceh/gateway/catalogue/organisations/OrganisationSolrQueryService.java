@@ -4,10 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.client.solrj.request.SolrQuery;
+import org.apache.solr.client.solrj.request.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.BaseHttpSolrClient;
+import org.apache.solr.client.solrj.RemoteSolrException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class OrganisationSolrQueryService {
 
             return solrClient.query(COLLECTION, query, POST).getBeans(Organisation.class);
 
-        } catch (IOException | SolrServerException | BaseHttpSolrClient.RemoteSolrException ex) {
+        } catch (IOException | SolrServerException | RemoteSolrException ex) {
             throw new SolrServerException(ex);
         }
     }

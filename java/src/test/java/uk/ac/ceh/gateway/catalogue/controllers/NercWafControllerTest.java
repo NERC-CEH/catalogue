@@ -4,12 +4,10 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
@@ -18,6 +16,7 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.util.List;
 
@@ -29,20 +28,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.GEMINI_XML_SHORT;
 
 @WithMockCatalogueUser
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("NercWafController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(
-    controllers=NercWafController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
-)
-class NercWafControllerTest {
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+class NercWafControllerTest extends AbstractMvcTest {
 
     @MockitoBean private DataRepository<CatalogueUser> repo;
     @MockitoBean private MetadataListingService listing;
-
-    @Autowired
-    private MockMvc mvc;
 
     @SneakyThrows
     private void givenLatestRevision() {
@@ -77,7 +71,7 @@ class NercWafControllerTest {
         mvc.perform(get("/documents/nerc/waf/"))
             .andExpect(status().isOk())
             .andExpect(view().name("/html/waf"))
-            .andExpect(model().attribute("files", List.of("a.xml", "b.xml", "c.xml")));;
+            .andExpect(model().attribute("files", List.of("a.xml", "b.xml", "c.xml")));
     }
 
     @Test

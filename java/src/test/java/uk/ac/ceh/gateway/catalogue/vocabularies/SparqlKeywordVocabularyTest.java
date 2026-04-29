@@ -13,12 +13,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URLEncoder;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -50,6 +51,7 @@ class SparqlKeywordVocabularyTest {
     @BeforeEach
     public void init() {
         val restTemplate = new RestTemplate();
+        restTemplate.setMessageConverters(List.of(new JacksonJsonHttpMessageConverter()));
         target = new SparqlKeywordVocabulary(restTemplate, solrClient, SPARQL_ENDPOINT,GRAPH,WHERE,
                 VOCABULARY_ID, "vocabularyName");
         mockServer = MockRestServiceServer.createServer(restTemplate);

@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.depositRequest;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.ObjectNode;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -49,8 +49,8 @@ public class DepositRequestController {
         }
 
         ObjectNode jiraResponse = depositRequestService.handleSubmission(depositRequest);
-        session.setAttribute("referenceNumber", jiraResponse.get("key").asText());
-        session.setAttribute("componentName", jiraResponse.get("componentName").asText());
+        session.setAttribute("referenceNumber", jiraResponse.get("key").asString());
+        session.setAttribute("componentName", jiraResponse.get("componentName").asString());
 
         return ResponseEntity.status(201)
                 .header("Location", "/deposit-request/success")

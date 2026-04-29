@@ -8,12 +8,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 import uk.ac.ceh.gateway.catalogue.vocabularies.Keyword;
 import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
 
-import java.util.List;
 import java.util.Objects;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -56,6 +58,7 @@ class SparqlBroaderNarrowerRetrieverTest {
     @BeforeEach
     void setup() {
         val restTemplate = new RestTemplate();
+        restTemplate.setMessageConverters(List.of(new JacksonJsonHttpMessageConverter()));
         retriever = new SparqlBroaderNarrowerRetriever(
             restTemplate,
             sparqlEndpoint,
@@ -86,7 +89,7 @@ class SparqlBroaderNarrowerRetrieverTest {
         );
 
         val determinands = new Keyword("determinands", "cast", "http://onto.nerc.ac.uk/CAST/1");
-        val dissolvedCerium = new Keyword("dissolved cerium", "cast", "http://onto.nerc.ac.uk/CAST/41");;
+        val dissolvedCerium = new Keyword("dissolved cerium", "cast", "http://onto.nerc.ac.uk/CAST/41");
 
         //when
         val links = retriever.retrieve(keyword);

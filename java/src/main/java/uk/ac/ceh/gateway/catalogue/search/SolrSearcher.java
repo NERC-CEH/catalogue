@@ -3,7 +3,7 @@ package uk.ac.ceh.gateway.catalogue.search;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.request.SolrQuery;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.userstore.GroupStore;

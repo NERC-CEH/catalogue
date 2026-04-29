@@ -1,7 +1,7 @@
 package templates;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
 @DisplayName("Rdf template")
 public class RdfTemplateTest {
     Configuration configuration;
-    ObjectMapper objectMapper;
+    JsonMapper objectMapper;
     JenaLookupService jena;
     Model model;
 
@@ -101,8 +101,7 @@ public class RdfTemplateTest {
     void init() {
         configuration = new Configuration(Configuration.VERSION_2_3_23);
         configuration.setDirectoryForTemplateLoading(new File("../templates"));
-        objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper = JsonMapper.builder().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
         jena = mock(JenaLookupService.class);
         configuration.setSharedVariable("jena", jena);
         model = ModelFactory.createDefaultModel();

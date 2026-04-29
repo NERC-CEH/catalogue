@@ -5,18 +5,17 @@ import lombok.val;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,11 +28,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockCatalogueUser
-@ActiveProfiles({"server-eidc", "test"})
+@ActiveProfiles({"server-eidc", "test", "search-basic"})
 @DisplayName("KeywordVocabularyController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(KeywordVocabularyController.class)
-class KeywordVocabularyControllerTest {
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+class KeywordVocabularyControllerTest extends AbstractMvcTest {
 
     public static final String LABEL_1 = "assist-topics";
     public static final String LABEL_2 = "label";
@@ -45,9 +45,6 @@ class KeywordVocabularyControllerTest {
 
     @MockitoBean
     private KeywordVocabularySolrQueryService keywordService;
-
-    @Autowired
-    private MockMvc mvc;
 
     @SneakyThrows
     private void givenQueryResponse() {

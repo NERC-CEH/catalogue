@@ -1,8 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.vocabularies;
 
-import com.fasterxml.jackson.core.JsonPointer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JsonPointer;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
@@ -90,8 +89,8 @@ public class LocalKeywordVocabulary implements KeywordVocabulary {
                             return null;
                         }
 
-                        String url = uriNode.asText();
-                        String label = labelNode.asText();
+                        String url = uriNode.asString();
+                        String label = labelNode.asString();
 
                         return new Keyword(label, vocabularyId, url);
                     })

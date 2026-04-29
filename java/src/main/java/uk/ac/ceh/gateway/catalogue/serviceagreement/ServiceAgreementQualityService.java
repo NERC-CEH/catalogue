@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import com.jayway.jsonpath.*;
 import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
@@ -46,13 +45,12 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
 
     public ServiceAgreementQualityService(
             @NonNull DocumentReader documentReader,
-            @NonNull ObjectMapper objectMapper,
             @NonNull @Value("${jira.serviceAgreement.prefix}") String jiraPrefix
             ) {
         this.documentReader = documentReader;
         this.config = Configuration.defaultConfiguration()
-                .jsonProvider(new JacksonJsonProvider(objectMapper))
-                .mappingProvider(new JacksonMappingProvider(objectMapper))
+                .jsonProvider(new JacksonJsonProvider())
+                .mappingProvider(new JacksonMappingProvider())
                 .addOptions(
                         Option.DEFAULT_PATH_LEAF_TO_NULL,
                         Option.SUPPRESS_EXCEPTIONS
@@ -111,7 +109,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
 
         // Build string to check for missing fields
         val keysToCheck = new StringJoiner(",");
-        requiredKeys.forEach((key, value) -> keysToCheck.add("'" + key + "'"));
+        requiredKeys.forEach((key, _) -> keysToCheck.add("'" + key + "'"));
         String joinedKeysToCheck = keysToCheck.toString();
         joinedKeysToCheck = "$.[" + joinedKeysToCheck + "]";
 
@@ -251,7 +249,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
 
             if (fieldIsMissing(file, "name")) {
                 toReturn.add(new MetadataCheck("File " + index + " name is missing ", ERROR));
-            } else if (!file.get("name").matches("^[\\w\\-\\_\\.]*$")) {
+            } else if (!file.get("name").matches("^[\\w\\-_.]*$")) {
                 toReturn.add(new MetadataCheck("File " + index + " name should only consist of alphanumeric characters, underscores, dots, and hyphens", ERROR));
             }
 
@@ -328,35 +326,14 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             || email.equals("info@eidc.ac.uk");
     }
 
-    private List<MetadataCheck> checkAvailability(List<Map<String, String>> maps, String errorMessage) {
-        return maps.stream()
-            .map(map -> map.get("email"))
-            .flatMap(Stream::ofNullable)
-            .filter(this::isInvalidEmail)
-            .map(email -> new MetadataCheck(format(errorMessage, email), ERROR))
-            .toList();
-    }
-
     List<MetadataCheck> checkKeywords(DocumentContext parsed) {
         val keywordsOther = parsed.read("$.keywordsOther[*]", typeRefStringString);
-        val allKeywords = new ArrayList<Map<String, String>>();
-        allKeywords.addAll(keywordsOther);
+        val allKeywords = new ArrayList<>(keywordsOther);
         if (allKeywords.stream().anyMatch(keyword -> fieldIsMissing(keyword, "value"))) {
             return Collections.singletonList(new MetadataCheck("Keyword is empty", ERROR));
         }
         return Collections.emptyList();
     }
-
-
-/*     private List<MetadataCheck> checkPublicationDate(DocumentContext parsedDoc, DocumentContext parsedMeta) {
-        val mapTypeRef = new TypeRef<Map<String, String>>() {};
-        val state = parsedMeta.read("$.state", String.class);
-        val datasetReferenceDate = parsedDoc.read("$.datasetReferenceDate", mapTypeRef);
-        if (!state.equals("draft") && fieldIsMissing(datasetReferenceDate, "publicationDate")) {
-            return Collections.singletonList(new MetadataCheck("Publication date is missing", ERROR));
-        }
-        return Collections.emptyList();
-    } */
 
     private boolean isQualifyingDocument(DocumentContext parsedMeta) {
         val docType = parsedMeta.read("$.documentType", String.class);
@@ -384,7 +361,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
     private boolean fieldObjectIsMissing(Map<String, Object> map, String key) {
         return map == null
             || map.get(key) == null
-            || ((map.get(key) instanceof String) ? ((String)map.get(key)).isBlank() : false)
-            || ((map.get(key) instanceof List) ? ((List)map.get(key)).size() == 0 : false);
+            || (map.get(key) instanceof String && ((String) map.get(key)).isBlank())
+            || (map.get(key) instanceof List && ((List<?>) map.get(key)).isEmpty());
     }
 }

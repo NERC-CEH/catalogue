@@ -4,17 +4,16 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.services.ResourceIdentifierLookupService;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.util.Optional;
 
@@ -25,14 +24,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Slf4j
 @WithMockCatalogueUser
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("IdController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(IdController.class)
-@TestPropertySource(locations="classpath:test.properties")
-class IdControllerTest {
 
-    @Autowired private MockMvc mvc;
+@TestPropertySource(locations="classpath:test.properties")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+class IdControllerTest extends AbstractMvcTest {
     @MockitoBean
     private ResourceIdentifierLookupService resolver;
 

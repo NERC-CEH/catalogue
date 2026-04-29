@@ -78,13 +78,13 @@ public class KeywordSuggestionsServiceTest {
             .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/keywords?location=eidc")))
             .andExpect(method(HttpMethod.GET))
             .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
-            .andRespond(withStatus(HttpStatus.UNPROCESSABLE_ENTITY));
+            .andRespond(withStatus(HttpStatus.UNPROCESSABLE_CONTENT));
 
         //when
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> service.getKeywordsSuggestions(FILE_ID, "eidc"));
 
         //then
-        assertEquals("422 UNPROCESSABLE_ENTITY \"Unprocessable Entity\"", exception.getMessage());
+        assertEquals("422 UNPROCESSABLE_CONTENT \"Unprocessable Content\"", exception.getMessage());
     }
 
     @Test
@@ -124,7 +124,7 @@ public class KeywordSuggestionsServiceTest {
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> service.getVariablesSuggestions(FILE_ID));
 
         //then
-        assertEquals("422 UNPROCESSABLE_ENTITY \"Not Found\"", exception.getMessage());
+        assertEquals("422 UNPROCESSABLE_CONTENT \"Not Found\"", exception.getMessage());
     }
 
     private FeatureMatcher<KeywordSuggestionsService.KeywordsSuggestion, String> name(Matcher<String> matcher) {

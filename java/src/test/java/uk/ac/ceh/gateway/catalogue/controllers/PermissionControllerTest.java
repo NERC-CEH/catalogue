@@ -7,14 +7,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
@@ -28,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.permission.CataloguePermission;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.util.Collections;
 
@@ -45,22 +45,18 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC
 // TODO: convert remaining tests to use mvc
 
 @WithMockCatalogueUser
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("PermissionController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(
-    controllers=PermissionController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
-)
-public class PermissionControllerTest {
+
+public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+class PermissionControllerTest extends AbstractMvcTest {
     @MockitoBean(name="permission") private PermissionService permissionService;
     @MockitoBean private DocumentRepository documentRepository;
     @MockitoBean private CatalogueService catalogueService;
     @MockitoBean private ProfileService profileService;
 
     private PermissionController permissionController;
-
-    @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
 
     private final String file = "12345";

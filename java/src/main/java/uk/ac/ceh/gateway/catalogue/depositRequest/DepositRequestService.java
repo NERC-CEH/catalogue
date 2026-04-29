@@ -1,8 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.depositRequest;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,7 +31,7 @@ public class DepositRequestService {
     private final String username;
     private final String password;
     private final String projectKey;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final JsonMapper mapper = JsonMapper.builder().build();
 
     public DepositRequestService(
         @Qualifier("normal") RestTemplate restTemplate,
@@ -74,7 +74,7 @@ public class DepositRequestService {
             log.info("JIRA responded with: {}", response.getStatusCode());
             log.debug("JIRA response body: {}", response.getBody());
 
-            ObjectMapper mapper = new ObjectMapper();
+            JsonMapper mapper = JsonMapper.builder().build();
             JsonNode responseNode = mapper.readTree(response.getBody());
             ObjectNode modifiedResponse = mapper.createObjectNode();
             modifiedResponse.setAll((ObjectNode) responseNode);
@@ -119,7 +119,7 @@ public class DepositRequestService {
         return componentName;
     }
 
-    private String buildJiraPayload(DepositRequestModel form) throws Exception {
+    private String buildJiraPayload(DepositRequestModel form) {
         val payload = mapper.createObjectNode();
         val fields = payload.putObject("fields");
 

@@ -25,10 +25,10 @@ Local or override environment variables can be placed in override.env
 
 ## Project Structure
 
+- **/datastore**  - Git-backed document store created at runtime (local development only; do not edit). The source records are in `/fixtures/datastore/REV-1/` — edit `.raw` and `.meta` files there to change the demo data that gets loaded on startup
 - **/docs**       - Documentation
 - **/fixtures**   - Test data
 - **/java**       - Standard `gradle` project which powers the server side of the catalogue
-- **/schemas**    - XSD Schemas which are used to validate the various output xml files
 - **/solr**       - `Solr` web application, this handles the free-text indexing and searching of the application
 - **/templates**  - `Freemarker` templates which are used by the `java` application for generating the different metadata views
 - **/web**        - Location of the web component of the project, this is mainly `JavaScript` and `less` style sheets
@@ -58,7 +58,7 @@ FUSEKI_PASSWORD=
 
 The catalogue requires a few tools:
 
-- Java (OpenJDK)
+- Java 23+ (OpenJDK)
 - Git
 - Docker
 - Docker Compose
@@ -104,8 +104,8 @@ Now you can make changes to the front end without restarting docker and rebuildi
 
       npm run test
 
-Karma tests are found in each module in web/scripts if you need to edit or add new tests.
-For example the tests for the editor module are in `web/scripts/editor/test`.
+Karma tests are found in each module in `web/src/` if you need to edit or add new tests.
+For example the tests for the editor module are in `web/src/editor/test/`.
 The Karma tests are configured in `karma.conf.js`.
 
 ### Java
@@ -115,35 +115,42 @@ Java unit tests can be run through IntelliJ.
 ### Spring profiles
 Spring Profiles provide a way to segregate parts of your application configuration and make it only available in certain environments.
 Any @Component or @Configuration can be marked with @Profile to limit when it is loaded.
-The active profiles are configured in `docker-compose.yaml`
+The active profiles are set by `start-catalogue.sh` (and can be overridden in `docker-compose.override.yml`).
 The catalogue contains the following Spring profiles:
 ##### development
 The development profile runs code that is only available when developing such as the `DevelopmentUserStoreConfig.java` which makes testing code locally easier as it allows the user access to more user permissions.
-##### upload:simple/hubbub
-Allows the user to upload their documents using `FileSystemStorageService.java` when `upload:simple` is active or the Hubbub API which `UploadService.java` interfaces with when `upload:hubbub` is active.
-##### server:eidc/datalabs/inms
-The server profile e.g. `server:eidc` decides which catalogue you will use and which documents that you will use with it. For example the EIDC catalogue will use Gemini documents.
-##### search:basic/enhanced
+##### upload-simple / upload-hubbub
+Allows the user to upload their documents using `FileSystemStorageService.java` when `upload-simple` is active or the Hubbub API which `UploadService.java` interfaces with when `upload-hubbub` is active (enabled with the `-b` flag).
+##### keyword-suggestions
+Enables the Legilo keyword suggestion service (enabled with the `-l` flag).
+##### server-eidc / server-datalabs / server-inms
+The server profile e.g. `server-eidc` decides which catalogue you will use and which documents that you will use with it. For example the EIDC catalogue will use Gemini documents.
+##### search-basic / search-enhanced
 Select which algorithm Solr uses to search for documents.
 ##### service-agreement
 Allows the user to create online service agreements for datasets.
+##### exports
+Enables SPARQL/RDF export endpoints; requires Fuseki (enabled with the `-f` flag).
+##### cache
+Enables EHCache-based response caching. Active by default in development.
 ##### metrics
 Creates the embedded sqlite database for the metric reporting.
 
 ### Developing LESS
 In the web directory run
 
-    npm install -g grunt-cli
-    node_modules/.bin/grunt
-
-will run a process that watches the less directories and recompiles the files on any changes.
+    npm run build-css-dev   # one-off dev build
+    npm run watch-css       # watch and recompile on changes
+    npm run build-css       # production build
 
 ## Adding new document types to the catalogue
 
-If you need to add a new document type to the catalogue like  GeminiDocument.java
-extend your new class with AbstractMetadataDocument.java and configure it in the following classes:
-CatalogueMediaTypes.java, CatalogueServiceConfig.java, ServicesConfig.java and WebConfig.java.
-For an example of how to do this Look at how the GeminiDocuments are configured in each of these classes.
+See [Adding a new document type](docs/newDocumentType.md) for step-by-step instructions.
+
+If you need to add a new document type to the catalogue like `GeminiDocument.java`,
+extend your new class with `AbstractMetadataDocument.java` and configure it in the following classes:
+`CatalogueMediaTypes.java`, `CatalogueServiceConfig.java`, `ServicesConfig.java` and `WebConfig.java`.
+For an example of how to do this look at how the GeminiDocuments are configured in each of these classes.
 
 ## Multiple Catalogues
 
@@ -199,11 +206,11 @@ services:
       - ./templates:/opt/ceh-catalogue/templates
       - ./web/scripts/dist/main.bundle.js:/opt/ceh-catalogue/static/scripts/main.bundle.js
     environment:
-      - spring.profiles.active=development,upload:hubbub,server:eidc,search:basic
+      - spring.profiles.active=development,upload-hubbub,server-eidc,search-basic
 ```
 
 ```commandline
-docker compose -f docker-compose.yml -f docker-compose.hubbub.yml -f docker-compose.override.yml up -d --build
+docker compose --profile hubbub up -d --build
 ```
 ### Populate the database
 

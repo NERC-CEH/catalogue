@@ -10,14 +10,14 @@ RUN npm run build-css
 RUN npm run build-prod
 
 # Build Java
-FROM gradle:8.12.1-jdk23-alpine AS build-java
+FROM gradle:9.4.1-jdk25-alpine AS build-java
 WORKDIR /app
 COPY --chown=gradle:gradle java/build.gradle .
 COPY --chown=gradle:gradle java/lombok.config .
 COPY --chown=gradle:gradle java/src src/
 RUN gradle bootJar
 WORKDIR build/libs
-RUN java -Djarmode=layertools -jar app.jar extract
+RUN java -Djarmode=tools -jar app.jar extract --layers --launcher
 
 # Create production image
 FROM eclipse-temurin:25-alpine AS prod
@@ -27,10 +27,10 @@ RUN apk --no-cache add curl
 RUN addgroup -g 1001 -S spring && adduser -u 1001 -S spring -G spring
 RUN mkdir -p /var/ceh-catalogue/datastore /var/ceh-catalogue/dropbox /var/ceh-catalogue/mapfiles /var/ceh-catalogue/tdb /var/upload/datastore /var/ceh-catalogue/metrics-db /var/ceh-catalogue/ror
 WORKDIR /app
-COPY --chown=spring:spring --from=build-java /app/build/libs/dependencies/ ./
-COPY --chown=spring:spring --from=build-java /app/build/libs/spring-boot-loader/ ./
-COPY --chown=spring:spring --from=build-java /app/build/libs/snapshot-dependencies/ ./
-COPY --chown=spring:spring --from=build-java /app/build/libs/application/ ./
+COPY --chown=spring:spring --from=build-java /app/build/libs/app/dependencies/ ./
+COPY --chown=spring:spring --from=build-java /app/build/libs/app/spring-boot-loader/ ./
+COPY --chown=spring:spring --from=build-java /app/build/libs/app/snapshot-dependencies/ ./
+COPY --chown=spring:spring --from=build-java /app/build/libs/app/application/ ./
 COPY --chown=spring:spring templates /opt/ceh-catalogue/templates
 COPY --chown=spring:spring --from=build-web /web/img /opt/ceh-catalogue/static/img
 COPY --chown=spring:spring --from=build-web /web/dist /opt/ceh-catalogue/static/scripts

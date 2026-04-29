@@ -7,13 +7,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
@@ -27,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -43,22 +42,18 @@ import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTEN
     username=ADMIN,
     grantedAuthorities=MAINTENANCE_ROLE
 )
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("MaintenanceController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(
-    controllers=MaintenanceController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
-)
-public class MaintenanceControllerTest {
+
+public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+class MaintenanceControllerTest extends AbstractMvcTest {
     @MockitoBean DataRepositoryOptimizingService repoService;
     @MockitoBean @Qualifier("solr-index") SolrIndexingService indexService;
     @MockitoBean @Qualifier("jena-index") JenaIndexingService linkingService;
     @MockitoBean @Qualifier("mapserver-index") MapServerIndexingService mapserverService;
     @MockitoBean CatalogueService catalogueService;
     @MockitoBean ProfileService profileService;
-
-    @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
 
     private MaintenanceController controller;
@@ -110,7 +105,7 @@ public class MaintenanceControllerTest {
         //Given
         //Nothing
         //When
-        HttpEntity<MaintenanceResponse> reindexDocuments = controller.reindexDocuments();
+        controller.reindexDocuments();
 
         //Then
         verify(indexService).rebuildIndex();
@@ -121,14 +116,14 @@ public class MaintenanceControllerTest {
         //Given
         //Nothing
         //When
-        HttpEntity<MaintenanceResponse> reindexDocuments = controller.recreateMapFiles();
+        controller.recreateMapFiles();
 
         //Then
         verify(mapserverService).rebuildIndex();
     }
 
     @Test
-    public void checkThatReindexingDelegatesToLinkingService() throws DocumentIndexingException {
+    public void checkThatReindexingDelegatesToLinkingService() {
         //Given
         //Nothing
 

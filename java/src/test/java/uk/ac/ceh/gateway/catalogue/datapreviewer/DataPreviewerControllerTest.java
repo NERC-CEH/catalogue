@@ -1,14 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.datapreviewer;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.util.List;
 import java.util.Map;
@@ -17,13 +15,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(DataPreviewerController.class)
-@AutoConfigureMockMvc(addFilters = false)
-@ActiveProfiles("upload-hubbub")
-class DataPreviewerControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+@ActiveProfiles({"test", "server-eidc", "search-basic", "upload-hubbub"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+class DataPreviewerControllerTest extends AbstractMvcTest {
 
     @MockitoBean
     private DataPreviewerService dataPreviewerService;
@@ -53,7 +48,7 @@ class DataPreviewerControllerTest {
         when(dataPreviewerService.preview("dataset-id"))
             .thenReturn(response);
 
-        mockMvc.perform(
+        mvc.perform(
                 get("/documents/dataset-id/preview")
                     .accept(MediaType.APPLICATION_JSON)
             )
@@ -68,7 +63,7 @@ class DataPreviewerControllerTest {
         when(dataPreviewerService.preview("missing-id"))
             .thenThrow(new IllegalArgumentException("Document not found"));
 
-        mockMvc.perform(
+        mvc.perform(
                 get("/documents/missing-id/preview")
             )
             .andExpect(status().isNotFound());
@@ -79,7 +74,7 @@ class DataPreviewerControllerTest {
         when(dataPreviewerService.preview("private-id"))
             .thenThrow(new SecurityException("Dataset not publicly accessible"));
 
-        mockMvc.perform(
+        mvc.perform(
                 get("/documents/private-id/preview")
             )
             .andExpect(status().isForbidden());
@@ -90,7 +85,7 @@ class DataPreviewerControllerTest {
         when(dataPreviewerService.preview("boom"))
             .thenThrow(new RuntimeException("boom"));
 
-        mockMvc.perform(get("/documents/boom/preview"))
+        mvc.perform(get("/documents/boom/preview"))
             .andExpect(status().isInternalServerError())
             .andExpect(content().string("Failed to generate preview"));
     }

@@ -3,12 +3,10 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
@@ -21,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -34,24 +33,20 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC
 import static uk.ac.ceh.gateway.catalogue.controllers.DataciteController.DATACITE_ROLE;
 
 @WithMockCatalogueUser
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("DataciteController")
 @Import({
     SecurityConfig.class,
     SecurityConfigCrowd.class,
     DevelopmentUserStoreConfig.class
 })
-@WebMvcTest(
-    controllers=DataciteController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
-)
-class DataciteControllerTest {
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+class DataciteControllerTest extends AbstractMvcTest {
     @MockitoBean private DocumentRepository documentRepository;
     @MockitoBean private DocumentIdentifierService identifierService;
     @MockitoBean private DataciteService dataciteService;
     @MockitoBean private JenaLookupService jenaLookupService;
-
-    @Autowired private MockMvc mvc;
 
     private final String file = "1234";
     private final GeminiDocument gemini = new GeminiDocument();
