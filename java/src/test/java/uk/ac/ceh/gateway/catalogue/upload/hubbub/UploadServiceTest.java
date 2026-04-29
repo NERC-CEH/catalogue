@@ -108,7 +108,7 @@ class UploadServiceTest {
             .expect(requestTo(startsWith("https://example.com/v7/c5db2755-bdbb-470f-987b-da71d9489fd0/eidchub")))
             .andExpect(method(GET))
             .andExpect(queryParam("page", "1"))
-            .andExpect(queryParam("size", "1000000"))
+            .andExpect(queryParam("size", String.valueOf(UploadService.PAGE_SIZE)))
             .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
             .andRespond(withSuccess(success, MediaType.APPLICATION_JSON));
 
@@ -116,7 +116,9 @@ class UploadServiceTest {
         service.csv(printWriter, datasetId);
 
         //then
-        verify(printWriter, times(3)).println(any(String.class));
+        verify(printWriter).println("path,SHA256_checksum");
+        verify(printWriter).println("c5db2755-bdbb-470f-987b-da71d9489fd0/CBESS_Eddy_Covariance_data_Cartmel_Sands.csv,aaaa1111aaaa1111aaaa1111aaaa1111aaaa1111aaaa1111aaaa1111aaaa1111");
+        verify(printWriter).println("c5db2755-bdbb-470f-987b-da71d9489fd0/CBESS_data_Cartmel_Sands.csv,bbbb2222bbbb2222bbbb2222bbbb2222bbbb2222bbbb2222bbbb2222bbbb2222");
         mockServer.verify();
     }
 
