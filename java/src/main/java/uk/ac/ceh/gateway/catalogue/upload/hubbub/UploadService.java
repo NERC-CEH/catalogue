@@ -18,6 +18,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
@@ -106,18 +107,20 @@ public class UploadService {
                 return;
             }
 
-            if (current.getData().isEmpty()) {
+            List<HubbubResponse.FileInfo> fileInfos = current.getData();
+            if (fileInfos.isEmpty()) {
                 return;
             }
 
-            current.getData().forEach(fileInfo ->
+            fileInfos.forEach(fileInfo ->
                 writer.println(format("%s/%s,%s",
                     fileInfo.getDatasetId(), fileInfo.getPath(),
                     fileInfo.getSha256()))
             );
             writer.flush();
 
-            if (current.getMeta().getCurrentPage() >= current.getMeta().getLastPage()) {
+            HubbubResponse.Meta meta = current.getMeta();
+            if (meta.getCurrentPage() >= meta.getLastPage()) {
                 return;
             }
             page++;
