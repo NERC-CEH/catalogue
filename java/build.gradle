@@ -12,12 +12,12 @@ repositories {
 
 ext {
     cehComponentsVersion = '1.0.51'
-    jenaVersion = '6.0.0'
+    jenaVersion = '5.6.0'
     solrVersion = '10.0.0'
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_23
+    sourceCompatibility = JavaVersion.VERSION_25
 }
 
 bootJar {

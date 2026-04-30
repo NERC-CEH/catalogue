@@ -49,7 +49,7 @@ public class SparqlController {
         ARQ.getContext().set(ARQConstants.registryFunctions, FunctionRegistry.get());
         try ( QueryExecution qExec = QueryExecutionFactory.create(query, jenaTdb)) {
             qExec.getContext().set(ARQConstants.registryFunctions, FunctionRegistry.get());
-            FunctionFactory f = FunctionRegistry.get().getFunctionFactory("http://www.opengis.net/def/function/geosparql/distance");
+            FunctionFactory f = FunctionRegistry.get().get("http://www.opengis.net/def/function/geosparql/distance");
             log.info("Function instance: {}", f.getClass().getName());
 
             if(query.isSelectType()) {
