@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.services;
+package uk.ac.ceh.gateway.catalogue.maintenance;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.controllers;
+package uk.ac.ceh.gateway.catalogue.sparql;
 
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;

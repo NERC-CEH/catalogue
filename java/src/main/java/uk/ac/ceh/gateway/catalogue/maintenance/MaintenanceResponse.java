@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.model;
+package uk.ac.ceh.gateway.catalogue.maintenance;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 @ConvertUsing({
     @Template(called="html/maintenance.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)

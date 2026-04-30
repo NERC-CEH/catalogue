@@ -11,7 +11,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import java.util.Arrays;
 
-import static uk.ac.ceh.gateway.catalogue.controllers.DataciteController.DATACITE_ROLE;
+import static uk.ac.ceh.gateway.catalogue.datacite.DataciteController.DATACITE_ROLE;
 import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTENANCE_ROLE;
 import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.READONLY_GROUP;
 

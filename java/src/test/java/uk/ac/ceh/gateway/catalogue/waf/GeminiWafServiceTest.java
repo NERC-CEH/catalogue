@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.services;
+package uk.ac.ceh.gateway.catalogue.waf;
 
 import lombok.SneakyThrows;
 import lombok.val;
@@ -11,6 +11,7 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.permission.CrowdPermissionServiceTest;
+import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 
 import java.util.ArrayList;
 import java.util.Arrays;

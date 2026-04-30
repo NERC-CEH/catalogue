@@ -38,7 +38,7 @@ class OpenApiTest extends AbstractMvcTest {
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.openapi").value(containsString("3.")))
-            .andExpect(jsonPath("$.info.title").value("EIP Catalogue API"));
+            .andExpect(jsonPath("$.info.title").value("Environmental Information Data Centre (EIDC) Catalogue API"));
     }
 
     @Test

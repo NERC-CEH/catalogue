@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.controllers;
+package uk.ac.ceh.gateway.catalogue.waf;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -68,4 +68,3 @@ public class NercWafController {
         return "forward:/documents/" + id + "?format=" + GEMINI_XML_SHORT;
     }
 }
-

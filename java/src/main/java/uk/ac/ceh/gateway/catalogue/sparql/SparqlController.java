@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.controllers;
+package uk.ac.ceh.gateway.catalogue.sparql;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,7 @@ import org.apache.jena.sparql.function.FunctionFactory;
 import org.apache.jena.sparql.function.FunctionRegistry;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
-import uk.ac.ceh.gateway.catalogue.sparql.SparqlResponse;
+import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 
 @Slf4j
 @ToString

@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.controllers;
+package uk.ac.ceh.gateway.catalogue.sparql;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;

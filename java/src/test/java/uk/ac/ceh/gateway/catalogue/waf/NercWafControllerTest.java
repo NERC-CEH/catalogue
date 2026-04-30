@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.controllers;
+package uk.ac.ceh.gateway.catalogue.waf;
 
 import lombok.SneakyThrows;
 import lombok.val;
