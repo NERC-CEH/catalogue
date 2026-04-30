@@ -14,6 +14,7 @@ ext {
     cehComponentsVersion = '1.0.51'
     jenaVersion = '6.0.0'
     solrVersion = '10.0.0'
+    springdocVersion = '3.0.3'
 }
 
 java {
@@ -54,6 +55,9 @@ dependencies {
     implementation "uk.ac.ceh.components:springsecurity-userstore:${cehComponentsVersion}"
     implementation "uk.ac.ceh.components:userstore-crowd:${cehComponentsVersion}"
     implementation "uk.ac.ceh.components:userstore-inmemory:${cehComponentsVersion}"
+
+    // OpenAPI
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
 
     // Third-party
     implementation 'tools.jackson.datatype:jackson-datatype-guava'
