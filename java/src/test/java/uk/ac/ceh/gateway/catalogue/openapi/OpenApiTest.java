@@ -43,22 +43,20 @@ class OpenApiTest extends AbstractMvcTest {
 
     @Test
     @SneakyThrows
-    @DisplayName("GET /v3/api-docs describes document endpoints")
-    void apiDocsDescribesDocumentEndpoints() {
+    @DisplayName("GET /v3/api-docs describes search endpoints")
+    void apiDocsDescribesSearchEndpoints() {
         mvc.perform(get("/v3/api-docs"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.paths['/documents/{file}/publication']").exists());
+            .andExpect(jsonPath("$.paths['/documents']").exists());
     }
 
     @Test
     @SneakyThrows
     @DisplayName("@ActiveUser injected parameters are not exposed in operation parameter lists")
     void activeUserParametersAreExcluded() {
-        // CitationController.getCitationByFormat has @ActiveUser CatalogueUser user plus
-        // @PathVariable file and @RequestParam format — only the latter two should appear.
         mvc.perform(get("/v3/api-docs"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.paths['/documents/{file}/citation'].get.parameters[*].name",
+            .andExpect(jsonPath("$.paths['/documents'].get.parameters[*].name",
                 not(hasItem("user"))));
     }
 
