@@ -1,0 +1,121 @@
+{
+  "success": {
+    "pool_carbon_data_si.docx": [
+      {
+        "name": "pool",
+        "confidence": 0.66
+      },
+      {
+        "name": "pools",
+        "confidence": 0.39
+      },
+      {
+        "name": "date",
+        "confidence": 0.27
+      },
+      {
+        "name": "year",
+        "confidence": 0.27
+      },
+      {
+        "name": "week",
+        "confidence": 0.23
+      },
+      {
+        "name": "sample collection",
+        "confidence": 0.18
+      },
+      {
+        "name": "restoration pools",
+        "confidence": 0.18
+      },
+      {
+        "name": "data",
+        "confidence": 0.18
+      },
+      {
+        "name": "cl",
+        "confidence": 0.18
+      },
+      {
+        "name": "soil solution water",
+        "confidence": 0.16
+      },
+      {
+        "name": "absorbance",
+        "confidence": 0.14
+      },
+      {
+        "name": "art",
+        "confidence": 0.14
+      }
+    ]
+  },
+  "errors": {
+    "readme.html": {
+      "description": "Unsupported file type: .html"
+    }
+  },
+  "summary": [
+    {
+      "name": "pool",
+      "confidence": 0.66,
+      "matched_url": null
+    },
+    {
+      "name": "pools",
+      "confidence": 0.39,
+      "matched_url": null
+    },
+    {
+      "name": "date",
+      "confidence": 0.27,
+      "matched_url": null
+    },
+    {
+      "name": "year",
+      "confidence": 0.27,
+      "matched_url": null
+    },
+    {
+      "name": "week",
+      "confidence": 0.23,
+      "matched_url": null
+    },
+    {
+      "name": "sample collection",
+      "confidence": 0.18,
+      "matched_url": null
+    },
+    {
+      "name": "restoration pools",
+      "confidence": 0.18,
+      "matched_url": null
+    },
+    {
+      "name": "data",
+      "confidence": 0.18,
+      "matched_url": null
+    },
+    {
+      "name": "cl",
+      "confidence": 0.18,
+      "matched_url": null
+    },
+    {
+      "name": "soil solution water",
+      "confidence": 0.16,
+      "matched_url": null
+    },
+    {
+      "name": "absorbance",
+      "confidence": 0.14,
+      "matched_url": null
+    },
+    {
+      "name": "art",
+      "confidence": 0.14,
+      "matched_url": null
+    }
+  ]
+}
