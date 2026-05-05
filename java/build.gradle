@@ -10,15 +10,14 @@ repositories {
     mavenCentral()
 }
 
-ext {
-    cehComponentsVersion = '1.0.51'
-    jenaVersion = '6.0.0'
-    solrVersion = '10.0.0'
-    springdocVersion = '3.0.3'
+configurations {
+    mockitoAgent
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_23
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(23)
+    }
 }
 
 bootJar {
@@ -46,18 +45,14 @@ dependencies {
     implementation 'org.springframework.security:spring-security-oauth2-resource-server'
 
     // Apache
-    implementation "org.apache.jena:apache-jena-libs:${jenaVersion}"
-    implementation "org.apache.jena:jena-geosparql:${jenaVersion}"
-    implementation "org.apache.solr:solr-solrj:${solrVersion}"
+    implementation(libs.bundles.jena)
+    implementation "org.apache.solr:solr-solrj:10.0.0"
 
     // CEH Components
-    implementation "uk.ac.ceh.components:datastore-git:${cehComponentsVersion}"
-    implementation "uk.ac.ceh.components:springsecurity-userstore:${cehComponentsVersion}"
-    implementation "uk.ac.ceh.components:userstore-crowd:${cehComponentsVersion}"
-    implementation "uk.ac.ceh.components:userstore-inmemory:${cehComponentsVersion}"
+    implementation(libs.bundles.ukceh)
 
     // OpenAPI
-    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3"
 
     // Third-party
     implementation 'tools.jackson.datatype:jackson-datatype-guava'
@@ -71,9 +66,12 @@ dependencies {
     implementation 'org.ehcache:ehcache'
     implementation 'org.hibernate.validator:hibernate-validator'
     implementation 'org.xerial:sqlite-jdbc'
-    implementation 'org.yaml:snakeyaml:2.6'
+    implementation 'org.yaml:snakeyaml'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    testImplementation(libs.mockito)
+    mockitoAgent(libs.mockito) { transitive = false}
 
     testImplementation 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -82,18 +80,9 @@ dependencies {
     testImplementation 'org.xmlunit:xmlunit-matchers'
 }
 
-configurations.configureEach {
-    resolutionStrategy.eachDependency { details ->
-        if (details.requested.group == 'org.apache.commons' && details.requested.name == 'commons-lang3') {
-            details.useVersion '3.19.0'
-            details.because 'Jena 5.6.0 requires BasicThreadFactory.builder() added in 3.19.0'
-        }
-    }
-}
-
-test {
-    useJUnitPlatform()
-    testLogging {
-        events "skipped", "failed"
+tasks {
+    test {
+        useJUnitPlatform()
+        jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
     }
 }
