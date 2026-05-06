@@ -66,7 +66,7 @@ public class SearchController {
         @Parameter(description = "Free-text search term. Use * to return all records.", example = "nitrogen deposition")
         @RequestParam(value=TERM_QUERY_PARAM, defaultValue=SearchQuery.DEFAULT_SEARCH_TERM)
         String term,
-        @Parameter(description = "Bounding box filter in WGS84 decimal degrees: minLon,minLat,maxLon,maxLat.", example = "-3.5,50.0,1.8,53.0")
+        @Parameter(description = "Bounding box filter in WGS84 decimal degrees: minLon,maxLon,maxLat,minLat.", example = "-3.5,1.8,53.0,50.0")
         @RequestParam(value=BBOX_QUERY_PARAM, required = false)
         String bbox,
         @Parameter(description = "Spatial relationship between the result geometry and the bounding box.",
@@ -127,7 +127,7 @@ public class SearchController {
         @Parameter(description = "Free-text search term. Use * to return all records.", example = "nitrogen deposition")
         @RequestParam(value=TERM_QUERY_PARAM, defaultValue=SearchQuery.DEFAULT_SEARCH_TERM)
         String term,
-        @Parameter(description = "Bounding box filter in WGS84 decimal degrees: minLon,minLat,maxLon,maxLat.", example = "-3.5,50.0,1.8,53.0")
+        @Parameter(description = "Bounding box filter in WGS84 decimal degrees: minLon,maxLon,maxLat,minLat.", example = "-3.5,1.8,53.0,50.0")
         @RequestParam(value=BBOX_QUERY_PARAM, required = false)
         String bbox,
         @Parameter(description = "Spatial relationship between the result geometry and the bounding box.",
