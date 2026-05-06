@@ -30,6 +30,7 @@ import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.document.writing.MessageConverterWritingService;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.maintenance.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;

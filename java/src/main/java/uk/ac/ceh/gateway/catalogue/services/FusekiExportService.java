@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.exports.CatalogueExportService;
+import uk.ac.ceh.gateway.catalogue.exports.DocumentsToTurtleService;
 
 import java.util.List;
 import java.util.stream.Collectors;
