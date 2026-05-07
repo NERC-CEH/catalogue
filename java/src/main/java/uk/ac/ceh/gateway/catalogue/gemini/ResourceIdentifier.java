@@ -32,7 +32,8 @@ public class ResourceIdentifier {
         if (isInternal()) {
             return format("%s#%s", codeSpace, code);
         } else {
-            return format("%s%s", codeSpace, code);
+            return (codeSpace.isEmpty() || code.isEmpty()) ?
+                format("%s%s", codeSpace, code) : format("%s/%s", codeSpace, code);
         }
     }
 

@@ -23,7 +23,7 @@
 								<gco:CharacterString>10.5285/05e5d538-6be7-476d-9141-76d9328738a4</gco:CharacterString>
 							</gmd:code>
 							<gmd:codeSpace>
-								<gco:CharacterString>doi:</gco:CharacterString>
+								<gco:CharacterString>doi</gco:CharacterString>
 							</gmd:codeSpace>
 						</gmd:RS_Identifier>
 					</gmd:identifier>
@@ -33,7 +33,7 @@
 								<gco:CharacterString>10/nt9</gco:CharacterString>
 							</gmd:code>
 							<gmd:codeSpace>
-								<gco:CharacterString>doi:</gco:CharacterString>
+								<gco:CharacterString>doi</gco:CharacterString>
 							</gmd:codeSpace>
 						</gmd:RS_Identifier>
 					</gmd:identifier>

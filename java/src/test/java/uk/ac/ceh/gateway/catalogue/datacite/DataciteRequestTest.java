@@ -139,7 +139,7 @@ public class DataciteRequestTest {
     @Test
     void testGetAlternateResourceIdentifiers() {
 
-        ResourceIdentifier r1 = ResourceIdentifier.builder().codeSpace("doi:").code("YP").build();
+        ResourceIdentifier r1 = ResourceIdentifier.builder().codeSpace("doi").code("YP").build();
         ResourceIdentifier r2 = ResourceIdentifier.builder().codeSpace("https://example.org/other1").code("YP").build();
         ResourceIdentifier r3 = ResourceIdentifier.builder().codeSpace("YP-MPA").code("yum").build();
         ResourceIdentifier r4 = ResourceIdentifier.builder().codeSpace("https://main-resource.com").code("").build();
@@ -151,10 +151,10 @@ public class DataciteRequestTest {
         // Then
         assertEquals(2, result.size());
 
-        assertEquals("https://example.org/other1YP", result.get(0).identifier());
+        assertEquals("https://example.org/other1/YP", result.get(0).identifier());
         assertEquals("URL", result.get(0).identifierType());
 
-        assertEquals("YP-MPAyum", result.get(1).identifier());
+        assertEquals("YP-MPA/yum", result.get(1).identifier());
         assertEquals("URN", result.get(1).identifierType());
     }
     @Test

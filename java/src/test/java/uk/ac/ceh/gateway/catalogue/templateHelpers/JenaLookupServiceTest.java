@@ -399,12 +399,12 @@ public class JenaLookupServiceTest {
         triples.add(Arrays.asList(
             createStatement(link1, DCTERMS_SOURCE, master),
             createStatement(link1, DCTERMS_IDENTIFIER, createTypedLiteral("CEH:EIDC:12309843234")),
-            createStatement(link1, DCTERMS_IDENTIFIER, createTypedLiteral("doi:10.5285/049283da-ee18-4b46-b714-d76f9a1ee479")),
+            createStatement(link1, DCTERMS_IDENTIFIER, createTypedLiteral("doi/10.5285/049283da-ee18-4b46-b714-d76f9a1ee479")),
             createStatement(link1, DCTERMS_IDENTIFIER, createTypedLiteral("https://catalogue.ceh.ac.uk/id/049283da-ee18-4b46-b714-d76f9a1ee479")),
             createStatement(link1, DCTERMS_IDENTIFIER, createTypedLiteral("049283da-ee18-4b46-b714-d76f9a1ee479")),
             createStatement(link2, DCTERMS_SOURCE, master),
             createStatement(link2, DCTERMS_IDENTIFIER, createTypedLiteral("CEH:EIDC:9482349527435")),
-            createStatement(link2, DCTERMS_IDENTIFIER, createTypedLiteral("doi:10.5285/d8234690-1b61-4084-a349-eb53467383fe")),
+            createStatement(link2, DCTERMS_IDENTIFIER, createTypedLiteral("doi/10.5285/d8234690-1b61-4084-a349-eb53467383fe")),
             createStatement(link2, DCTERMS_IDENTIFIER, createTypedLiteral("https://catalogue.ceh.ac.uk/id/d8234690-1b61-4084-a349-eb53467383fe9")),
             createStatement(link2, DCTERMS_IDENTIFIER, createTypedLiteral("d8234690-1b61-4084-a349-eb53467383fe"))
         ));

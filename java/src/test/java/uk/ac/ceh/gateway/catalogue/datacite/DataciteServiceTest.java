@@ -333,7 +333,7 @@ public class DataciteServiceTest {
         //given
         val document = getGeminiDocument();
         document.setResourceIdentifiers(Collections.singletonList(
-            ResourceIdentifier.builder().codeSpace("doi:").code(doiPrefix + "/" + ID).build()
+            ResourceIdentifier.builder().codeSpace("doi").code(doiPrefix + "/" + ID).build()
         ));
         mockServer.expect(requestTo("https://example.com/doi/10.8268/d4bdc836-5b89-44c5-aca2-2880a5d5a5be?affiliation=true&publisher=true"))
             .andExpect(method(HttpMethod.GET))

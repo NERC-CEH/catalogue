@@ -115,7 +115,7 @@ public class DataciteService {
         return ResourceIdentifier
                 .builder()
                 .code(generateDoiString(document))
-                .codeSpace("doi:")
+                .codeSpace("doi")
                 .build();
 
     }
@@ -259,7 +259,7 @@ public class DataciteService {
         return Optional.ofNullable(document.getResourceIdentifiers())
                 .orElse(Collections.emptyList())
                 .stream()
-                .filter((i) -> i.getCodeSpace().equals("doi:"))
+                .filter((i) -> i.getCodeSpace().equals("doi"))
                 .map(ResourceIdentifier::getCode)
                 .filter(code -> code.startsWith(prefix))
                 .findFirst();

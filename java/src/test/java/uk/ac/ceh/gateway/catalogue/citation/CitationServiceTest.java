@@ -112,7 +112,7 @@ public class CitationServiceTest {
             ResourceIdentifier
                 .builder()
                 .code("10.123456789/myDoI")
-                .codeSpace("doi:")
+                .codeSpace("doi")
                 .build()
         ));
         when(document.getResponsibleParties()).thenReturn(Arrays.asList(
@@ -144,7 +144,7 @@ public class CitationServiceTest {
         return ResourceIdentifier
                         .builder()
                         .code("10.5285/myDoI")
-                        .codeSpace("doi:")
+                        .codeSpace("doi")
                         .build();
     }
 
