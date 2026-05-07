@@ -82,11 +82,12 @@ public class SearchQuery {
         SolrQuery query = new SolrQuery()
                 .setQuery(term)
                 .setParam("defType", "edismax")
-                .setParam("qf", "title^50 description^25 keyword^5 lineage organisation familyName altTitle resourceIdentifier identifier supplementalDescription supplementalName infrastructureCapabilities^2 keywordsParameters^5 observedPropertyTitle^10 observedPropertyValue^5 operatingPeriod objectives^25 responsibleParties")
-                .setParam("bq", "resourceType:Aggregation^20, availability:Available^100, availability:Controlled^100, availability:Embargoed^80, availability:Restricted^80, availability:Superseded^1")
+                .setParam("mm", "2<-1 5<-2 6<90%")
+                .setParam("qf", "title^5 description^2 keyword^5 lineage organisation familyName altTitle resourceIdentifier identifier supplementalDescription supplementalName infrastructureCapabilities^2 keywordsParameters^5 observedPropertyTitle^10 observedPropertyValue^5 operatingPeriod objectives^2 responsibleParties")
+                .setParam("bq", "resourceType:Aggregation^5, availability:Available^10, availability:Controlled^10, availability:Embargoed^5, availability:Restricted^5, availability:Superseded^1")
                 .setParam("bf", "version")
                 .setParam("ps", "5")
-                .setParam("pf", "title^50 description^25 keyword^5 supplementalDescription")
+                .setParam("pf", "title^5 description^2 keyword^5 objectives^2 lineage altTitle supplementalDescription supplementalName")
                 .setStart((page-1)*rows)
                 .setRows(rows);
         setSpatialFilter(query);

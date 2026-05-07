@@ -1,8 +1,8 @@
 # Build webpack (javascript & css)
-FROM node:21.5.0-alpine3.19 AS build-web
+FROM node:22-alpine AS build-web
 WORKDIR /web
 COPY web/package.json web/package-lock.json web/webpack.js web/gulpfile.js ./
-RUN --mount=type=cache,target=/web/.npm npm ci --no-audit
+RUN --mount=type=cache,target=/web/.npm npm ci --cache /web/.npm --no-audit
 COPY web/img ./img
 COPY web/scss ./scss
 COPY web/src ./src
@@ -12,18 +12,18 @@ RUN npm run build-prod
 # Build Java
 FROM gradle:9.4.1-jdk25-alpine AS build-java
 WORKDIR /app
-COPY --chown=gradle:gradle java/build.gradle .
 COPY --chown=gradle:gradle java/lombok.config .
+COPY --chown=gradle:gradle java/build.gradle .
+COPY --chown=gradle:gradle gradle/libs.versions.toml gradle/
 COPY --chown=gradle:gradle java/src src/
-RUN gradle bootJar
+RUN --mount=type=cache,target=/root/.gradle gradle bootJar --no-daemon
 WORKDIR build/libs
 RUN java -Djarmode=tools -jar app.jar extract --layers --launcher
 
 # Create production image
 FROM eclipse-temurin:25-alpine AS prod
 LABEL maintainer="oss@ceh.ac.uk"
-RUN apk --no-cache upgrade
-RUN apk --no-cache add curl
+RUN apk --no-cache upgrade && apk --no-cache add curl
 RUN addgroup -g 1001 -S spring && adduser -u 1001 -S spring -G spring
 RUN mkdir -p /var/ceh-catalogue/datastore /var/ceh-catalogue/dropbox /var/ceh-catalogue/mapfiles /var/ceh-catalogue/tdb /var/upload/datastore /var/ceh-catalogue/metrics-db /var/ceh-catalogue/ror
 WORKDIR /app

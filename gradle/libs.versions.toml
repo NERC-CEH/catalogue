@@ -1,0 +1,16 @@
+[versions]
+jena = "5.6.0"
+ukceh = "1.0.51"
+
+[libraries]
+jena-libs = { module = "org.apache.jena:apache-jena-libs", version.ref = "jena" }
+jena-geosparql = { module = "org.apache.jena:jena-geosparql", version.ref = "jena" }
+mockito = { module = "org.mockito:mockito-core" }
+ukceh-datastore = { module = "uk.ac.ceh.components:datastore-git", version.ref = "ukceh" }
+ukceh-springsecurity = { module = "uk.ac.ceh.components:springsecurity-userstore", version.ref = "ukceh" }
+ukceh-userstore = { module = "uk.ac.ceh.components:userstore-crowd", version.ref = "ukceh" }
+ukceh-inmemory = { module = "uk.ac.ceh.components:userstore-inmemory", version.ref = "ukceh" }
+
+[bundles]
+jena = ["jena-libs", "jena-geosparql"]
+ukceh = ["ukceh-datastore", "ukceh-springsecurity", "ukceh-userstore", "ukceh-inmemory"]
