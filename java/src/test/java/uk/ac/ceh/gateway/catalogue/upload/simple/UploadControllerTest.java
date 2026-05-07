@@ -8,13 +8,12 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.StreamUtils;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
@@ -27,6 +26,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -44,26 +44,22 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UPLO
 
 @WithMockCatalogueUser
 @Slf4j
-@ActiveProfiles({"test", "upload:simple"})
+@ActiveProfiles({"test", "upload-simple", "server-eidc", "search-basic"})
 @Import({
     SecurityConfig.class,
     SecurityConfigCrowd.class,
     DevelopmentUserStoreConfig.class
 })
 @DisplayName("Simple Upload Controller")
-@WebMvcTest(
-    controllers = UploadController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
-)
-class UploadControllerTest {
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+class UploadControllerTest extends AbstractMvcTest {
     @MockitoBean private StorageService storageService;
     @MockitoBean private DocumentRepository documentRepository;
     @MockitoBean private CatalogueService catalogueService;
     // Needed for security preauthorise method decisions
     @MockitoBean(name="permission") private PermissionService permission;
     @MockitoBean private ProfileService profileService;
-
-    @Autowired private MockMvc mvc;
     @Autowired Configuration configuration;
 
     private static final String ID = "993c5778-e139-4171-a57f-7a0f396be4b8";

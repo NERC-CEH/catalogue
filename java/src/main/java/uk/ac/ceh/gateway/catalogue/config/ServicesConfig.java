@@ -1,15 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import com.google.common.eventbus.EventBus;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.jena.geosparql.configuration.GeoSPARQLConfig;
-import org.apache.jena.geosparql.implementation.index.IndexConfiguration;
 import org.apache.jena.sparql.function.FunctionRegistry;
-import org.apache.jena.tdb1.TDB1Factory;
+import org.apache.jena.tdb2.TDB2Factory;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpJdkSolrClient;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.git.GitDataRepository;
@@ -83,9 +83,9 @@ public class ServicesConfig {
 
     @Bean
     @Qualifier("sparql")
-    public RestTemplate sparqlRestTemplate(ObjectMapper objectMapper) {
+    public RestTemplate sparqlRestTemplate(JsonMapper objectMapper) {
         log.info("Creating SPARQL RestTemplate");
-        val messageConverter = new MappingJackson2HttpMessageConverter(objectMapper);
+        val messageConverter = new JacksonJsonHttpMessageConverter(objectMapper);
         val supportedMediaTypes = Arrays.asList(
             MediaType.APPLICATION_JSON,
             new MediaType("application", "*+json")
@@ -123,10 +123,10 @@ public class ServicesConfig {
 
     @Bean
     public DocumentReadingService documentReadingService(
-        ObjectMapper objectMapper
+        JsonMapper objectMapper
     ) {
         return new MessageConverterReadingService()
-            .addMessageConverter(new MappingJackson2HttpMessageConverter(objectMapper));
+            .addMessageConverter(new JacksonJsonHttpMessageConverter(objectMapper));
     }
 
     @Bean
@@ -191,7 +191,6 @@ public class ServicesConfig {
     }
 
     @Bean
-    @SuppressWarnings("UnstableApiUsage") // Because EventBus is still @Beta!
     public EventBus communicationBus() {
         return new EventBus();
     }
@@ -245,7 +244,7 @@ public class ServicesConfig {
         @Value("${jena.location}") String location
     ) {
         log.info("Creating Dataset at: {}", location);
-        return TDB1Factory.createDataset(location);
+        return TDB2Factory.connectDataset(location);
     }
 
     @Bean

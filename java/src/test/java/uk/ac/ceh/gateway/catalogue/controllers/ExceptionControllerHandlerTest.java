@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
@@ -32,14 +32,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @WithMockCatalogueUser
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("ExceptionController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(
-    controllers=DataciteController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
-)
-public class ExceptionControllerHandlerTest {
+
+public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+class ExceptionControllerHandlerTest {
     private ExceptionControllerHandler controller;
 
     @MockitoBean private DocumentRepository repo;
@@ -47,8 +45,6 @@ public class ExceptionControllerHandlerTest {
     @MockitoBean private DataciteService dataciteService;
     @MockitoBean(name="permission") private PermissionService permissionService;
 
-    @Autowired
-    private ExceptionControllerHandler exceptionControllerHandler;
     @Autowired
     private Environment env;
 
@@ -68,6 +64,7 @@ public class ExceptionControllerHandlerTest {
         ErrorResponse res = (ErrorResponse) controller.handleExternalResourceFailureException(ex).getBody();
 
         //Then
+        assert res != null;
         assertThat("Expected message to be pulled of exception", res.getMessage(), equalTo(mess));
     }
 
@@ -134,6 +131,7 @@ public class ExceptionControllerHandlerTest {
         ClassPathResource body = (ClassPathResource)response.getBody();
 
         //Then
+        assert body != null;
         assertTrue(body.exists());
         assertThat(headers.getContentType(), equalTo(MediaType.IMAGE_PNG));
     }

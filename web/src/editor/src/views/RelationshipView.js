@@ -77,8 +77,11 @@ export default ObjectInputView.extend({
     }
 
     // If there is no relationship, add an option that's used to indicate that the user needs to choose a relationship
-    if (!this.model.attributes.relation) {
-      this.options.unshift({ value: '', label: 'Choose a relationship', selected: 'selected' })
+    if (
+      !this.model.attributes.relation &&
+      !this.options.some(o => o.value === '')
+    ) {
+      this.options.unshift({ value: '', label: 'Choose a relationship' })
     }
 
     this.options.forEach(option => {

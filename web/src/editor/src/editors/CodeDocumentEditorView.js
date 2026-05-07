@@ -284,7 +284,7 @@ export default EditorView.extend({
             { value: 'http://onto.nerc.ac.uk/CEHMD/rels/cites', label: 'Cites' },
             { value: 'http://onto.nerc.ac.uk/CEHMD/rels/related', label: 'Related' },
             { value: 'http://onto.nerc.ac.uk/CEHMD/rels/supersedes', label: 'Supersedes' },
-            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces' },
+            { value: 'http://purl.org/dc/terms/source', label: 'Produces' },
             { value: 'http://onto.nerc.ac.uk/CEHMD/rels/uses', label: 'Uses' }
           ]
         })

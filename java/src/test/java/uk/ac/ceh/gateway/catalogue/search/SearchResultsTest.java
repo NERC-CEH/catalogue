@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
 import lombok.val;
-import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.util.NamedList;

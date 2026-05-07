@@ -3,12 +3,13 @@ package uk.ac.ceh.gateway.catalogue.search;
 import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
@@ -341,6 +342,12 @@ public class SearchQuery {
     }
 
     private boolean userIsPublisher(List<String> groups) {
+        if (CatalogueService.ALL_CATALOGUES_ID.equals(catalogue.getId())) {
+            // Never bypass visibility filtering for cross-catalogue search.
+            // Publishers should use the catalogue-specific endpoint to see
+            // unpublished records in their catalogue.
+            return false;
+        }
         return groups.contains(
             String.format(
                 MetadataInfo.PUBLISHER_GROUP,
@@ -401,9 +408,11 @@ public class SearchQuery {
     }
 
     private void setCatalogueFilter(SolrQuery query) {
-        query.addFilterQuery(
-            String.format("{!term f=catalogue}%s", catalogue.getId())
-        );
+        if (!CatalogueService.ALL_CATALOGUES_ID.equals(catalogue.getId())) {
+            query.addFilterQuery(
+                String.format("{!term f=catalogue}%s", catalogue.getId())
+            );
+        }
     }
 
     private void setSortOrder(SolrQuery query) {

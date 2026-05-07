@@ -1,27 +1,28 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ServiceTest {
-    private ObjectMapper mapper;
+    private JsonMapper mapper;
 
     @BeforeEach
     public void setup() {
-        mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        mapper = JsonMapper.builder()
+            .changeDefaultPropertyInclusion(v -> v.withValueInclusion(JsonInclude.Include.NON_EMPTY))
+            .build();
     }
 
     @Test
-    public void readServiceFromString() throws IOException {
+    public void readServiceFromString() {
         //Given
         String json = "{\"type\":\"view\",\"couplingType\":\"tight\",\"versions\":[\"1.1.1\",\"1.3.0\"],\"coupledResources\":[{\"operationName\":\"GetMap\",\"identifier\":\"123\"},{\"operationName\":\"GetCapabilities\",\"identifier\":\"1234\"}],\"containsOperations\":[{\"operationName\":\"GetMap\",\"platform\":\"WebService\",\"url\":\"url2\"}]}";
         Service expected = Service.builder()
@@ -32,7 +33,7 @@ public class ServiceTest {
                 Service.CoupledResource.builder().operationName("GetMap").identifier("123").build(),
                 Service.CoupledResource.builder().operationName("GetCapabilities").identifier("1234").build()
             ))
-            .containsOperations(Arrays.asList(
+            .containsOperations(Collections.singletonList(
                 Service.OperationMetadata.builder().operationName("GetMap")
                     .platform("WebService")
                     .url("url2")

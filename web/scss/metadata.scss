@@ -1,6 +1,5 @@
 @use "sass:color";
 
-
 body {
     display: flex;
     flex-direction: column;
@@ -8,7 +7,6 @@ body {
 }
 
 .metadata {
-
     div:empty {
         display: none;
     }
@@ -26,8 +24,11 @@ body {
         }
     }
 
-    .tableOfContents {
+    .fa-orcid {
+        color: #a6ce39
+    }
 
+    .tableOfContents {
         @extend .d-print-none !optional;
 
         >div {
@@ -60,7 +61,6 @@ body {
             scroll-margin-top: 120px
         }
     }
-
 
     .description {
         display: flex;
@@ -850,7 +850,7 @@ body {
 
 #publication {
     div {
-        margin: 4em auto;
+        margin: 2em auto;
         text-align: center;
 
         .btn {
@@ -982,6 +982,11 @@ body {
 
             .link-inactive {
                 @extend .link-secondary !optional;
+            }
+
+            .badge {
+                font-size: .65rem;
+                margin-inline-start: .5rem;
             }
         }
     }

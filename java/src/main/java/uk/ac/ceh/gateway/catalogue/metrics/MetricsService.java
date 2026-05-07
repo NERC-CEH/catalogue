@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.metrics;
 
 import org.springframework.context.annotation.Profile;
-import org.springframework.lang.NonNull;
+import org.jspecify.annotations.NonNull;
 
 import java.time.Instant;
 import java.util.List;

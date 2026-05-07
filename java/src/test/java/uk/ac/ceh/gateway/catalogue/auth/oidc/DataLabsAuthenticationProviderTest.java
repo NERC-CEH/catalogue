@@ -7,11 +7,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -38,6 +41,7 @@ class DataLabsAuthenticationProviderTest {
     @BeforeEach
     void init() {
         restTemplate = new RestTemplate();
+        restTemplate.setMessageConverters(List.of(new JacksonJsonHttpMessageConverter()));
         target = new DataLabsAuthenticationProvider(restTemplate, ADDRESS);
         mockServer = MockRestServiceServer.bindTo(restTemplate).build();
     }

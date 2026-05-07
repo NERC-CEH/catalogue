@@ -3,8 +3,8 @@ package uk.ac.ceh.gateway.catalogue.geometry;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import lombok.Value;
@@ -45,7 +45,7 @@ public class Geometry {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode root = objectMapper.readTree(geometryString);
-            String type = root.at("/geometry/type").asText().toLowerCase();
+            String type = root.at("/geometry/type").asString().toLowerCase();
             JsonNode coordinates = root.at("/geometry/coordinates");
 
             if (!coordinates.isArray()) {

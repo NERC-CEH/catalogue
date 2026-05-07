@@ -12,7 +12,7 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
-import uk.ac.ceh.gateway.catalogue.controllers.DataciteController;
+import uk.ac.ceh.gateway.catalogue.datacite.DataciteController;
 import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;

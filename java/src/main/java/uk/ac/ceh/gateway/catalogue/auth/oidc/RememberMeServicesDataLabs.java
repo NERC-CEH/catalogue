@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 @Slf4j
-@Profile("auth:datalabs")
+@Profile("auth-datalabs")
 @Service
 @ToString(onlyExplicitlyIncluded = true)
 public class RememberMeServicesDataLabs implements RememberMeServices {

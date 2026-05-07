@@ -5,11 +5,10 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -21,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -31,24 +31,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.CODE_JSON_VALUE;
 
 @WithMockCatalogueUser
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("CodeDocumentController")
 @Import({
     SecurityConfig.class,
     SecurityConfigCrowd.class,
     DevelopmentUserStoreConfig.class
 })
-@WebMvcTest(
-    controllers=CodeDocumentController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
-)
-class CodeDocumentControllerTest {
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+class CodeDocumentControllerTest extends AbstractMvcTest {
     @MockitoBean private DocumentRepository documentRepository;
     @MockitoBean(name="permission") private PermissionService permissionService;
     @Autowired private Configuration configuration;
     @MockitoBean private CatalogueService catalogueService;
-
-    @Autowired private MockMvc mvc;
 
     private final String catalogue = "datalabs";
     private final String id = "123-test";

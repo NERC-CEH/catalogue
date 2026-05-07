@@ -4,16 +4,15 @@ import lombok.SneakyThrows;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,11 +23,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockCatalogueUser
-@ActiveProfiles({"server:eidc", "test"})
+@ActiveProfiles({"server-eidc", "test", "search-basic"})
 @DisplayName("OrganisationController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(OrganisationController.class)
-class OrganisationControllerTest {
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+class OrganisationControllerTest extends AbstractMvcTest {
 
     public static final String QUERY = "queryTest";
     List<Organisation> orgList = List.of(
@@ -39,9 +39,6 @@ class OrganisationControllerTest {
 
     @MockitoBean
     private OrganisationSolrQueryService organisationService;
-
-    @Autowired
-    private MockMvc mvc;
 
     @Test
     @SneakyThrows

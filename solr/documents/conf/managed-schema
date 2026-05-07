@@ -168,10 +168,9 @@
     <field name="ukcehScienceChallenge" type="keywords"/>
     <field name="ukcehService" type="keywords"/>
     <field name="version" type="pfloat" default="1"/>
+    <field name="dataFormat" type="keywords"/>
     <field name="dataLevel" type="keywords" multiValued="false"/>
     <field name="view" type="keywords"/>
-
-
     <field name="infrastructureCategory" type="keywords" multiValued="false"/>
     <field name="scienceArea" type="keywords" multiValued="false"/>
     <field name="infrastructureScale" type="keywords" multiValued="false"/>

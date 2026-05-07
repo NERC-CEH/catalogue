@@ -4,7 +4,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.common.params.CommonParams;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ import static uk.ac.ceh.gateway.catalogue.search.SearchQuery.DEFAULT_SEARCH_TERM
 import static uk.ac.ceh.gateway.catalogue.vocabularies.SparqlKeywordVocabulary.COLLECTION;
 
 @Slf4j
-@Profile("search:enhanced")
+@Profile("search-enhanced")
 @Service
 public class EnhancedSolrSearcher extends SolrSearcher {
     private final BroaderNarrowerRetriever retriever;

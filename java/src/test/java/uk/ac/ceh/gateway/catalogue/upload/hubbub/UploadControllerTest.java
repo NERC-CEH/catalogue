@@ -7,13 +7,12 @@ import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -27,6 +26,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
@@ -48,18 +48,16 @@ import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.*;
 
 @WithMockCatalogueUser(username = UPLOADER_USERNAME)
 @Slf4j
-@ActiveProfiles({"test", "upload:hubbub"})
+@ActiveProfiles({"test", "server-eidc", "search-basic", "upload-hubbub"})
 @Import({
     SecurityConfig.class,
     SecurityConfigCrowd.class,
     DevelopmentUserStoreConfig.class
 })
 @DisplayName("HubbubUploadController")
-@WebMvcTest(
-    controllers = UploadController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
-)
-class UploadControllerTest {
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+class UploadControllerTest extends AbstractMvcTest {
 
     @MockitoBean private UploadService uploadService;
     @MockitoBean private DocumentRepository documentRepository;
@@ -67,8 +65,6 @@ class UploadControllerTest {
     @MockitoBean(name="permission") private PermissionService permissionService;
     @MockitoBean private CatalogueService catalogueService;
     @MockitoBean private ProfileService profileService;
-
-    @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
 
     private final String datasetId = "164ef14f-95a5-45c7-8f36-d2000ba45516";

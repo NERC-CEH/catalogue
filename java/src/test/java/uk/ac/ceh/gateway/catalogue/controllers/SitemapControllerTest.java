@@ -3,13 +3,11 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
@@ -17,6 +15,7 @@ import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.util.Arrays;
 
@@ -26,20 +25,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WithMockCatalogueUser
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("SitemapController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(
-    controllers=SitemapController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
-)
-class SitemapControllerTest {
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+class SitemapControllerTest extends AbstractMvcTest {
     @MockitoBean private CatalogueService catalogueService;
     @MockitoBean private DocumentIdentifierService documentIdentifierService;
     @MockitoBean private MetadataListingService metadataListingService;
-
-    @Autowired
-    private MockMvc mvc;
 
     private final String catalogueKey = "eidc";
 

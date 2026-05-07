@@ -160,7 +160,7 @@ class FileListServiceTest {
             eq(HttpMethod.GET),
             isNull(),
             any(ParameterizedTypeReference.class)
-        )).thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
+        )).thenReturn(new ResponseEntity<>((List<String>) null, HttpStatus.OK));
 
         // When
         List<String> result = service.getFileList(DATASET_ID);

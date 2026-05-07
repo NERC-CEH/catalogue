@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.StreamUtils;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
@@ -34,7 +33,6 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
@@ -47,7 +45,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
-import uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService;
+import uk.ac.ceh.gateway.catalogue.quality.MultiDocumentTypeMetadataQualityService;
 import uk.ac.ceh.gateway.catalogue.quality.Results;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
@@ -56,6 +54,7 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FileDetailsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -69,7 +68,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.Matchers.empty;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -85,18 +83,16 @@ import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
 
 @Slf4j
 @WithMockCatalogueUser
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("DocumentController")
 @Import({
     SecurityConfig.class,
     SecurityConfigCrowd.class,
     DevelopmentUserStoreConfig.class
 })
-@WebMvcTest(
-    controllers=DocumentController.class,
-    properties={"spring.freemarker.template-loader-path=file:../templates","metrics.users.excluded=i_am_excluded"}
-)
-class DocumentControllerTest {
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+class DocumentControllerTest extends AbstractMvcTest {
     @MockitoBean private CatalogueService catalogueService;
     @MockitoBean private CodeLookupService codeLookupService;
     @MockitoBean private DocumentRepository documentRepository;
@@ -105,7 +101,7 @@ class DocumentControllerTest {
     @MockitoBean private ProfileService profileService;
     @MockitoBean private MetricsService metricsService;
     @MockitoBean private FileDetailsService fileDetailsService;
-    @MockitoBean private MetadataQualityService metadataQualityService;
+    @MockitoBean private MultiDocumentTypeMetadataQualityService metadataQualityService;
 
     @NotNull DownloadUrlProperties downloadUrlProperties;
 
@@ -114,9 +110,6 @@ class DocumentControllerTest {
          of the DownloadOrderDetailsService. It is needed in the given() method of the mock.
         */
     private DownloadOrderDetailsService downloadOrderDetailsService;
-
-
-    @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
 
     private DocumentController controller;
@@ -134,6 +127,7 @@ class DocumentControllerTest {
         when(downloadUrlProperties.getRegexOrder()).thenReturn("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*");
         when(downloadUrlProperties.getRegexPackage()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/.*");
         when(downloadUrlProperties.getRegexDatastore()).thenReturn("https://catalogue\\.ceh\\.ac\\.uk/datastore/eidchub/.*");
+        when(downloadUrlProperties.getRegexCeda()).thenReturn("https://data\\.ceda\\.ac\\.uk/eidc/.*");
         when(downloadUrlProperties.getRegexSupportingDocs()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/sd/.*");
         when(downloadUrlProperties.getRegexOrderManDownload()).thenReturn("http(s?)://catalogue\\.ceh\\.ac\\.uk/download\\?fileIdentifier=.*");
         this.downloadOrderDetailsService =

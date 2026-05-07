@@ -2,7 +2,7 @@
 
 <@m.base>
   <#assign relationshipCombinedGeometriesOutput>
-    <@m.relationshipCombinedGeometriesWithOwner "http://onto.ceh.ac.uk/EF#narrower" locationConfidential />
+    <@m.relationshipCombinedGeometriesWithOwner "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility" locationConfidential />
   </#assign>
 
 
@@ -25,17 +25,17 @@
   </#if>
 
   <div class="relationships"><#compress>
-    <@m.relationships "http://onto.ceh.ac.uk/EF#belongsTo" "Belongs to these networks"/>
+    <@m.relationships "http://purl.org/dc/terms/isPartOf" "Belongs to these networks"/>
 
-    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#uses" "Used by"  />
-    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#utilises" "Used by"  />
+    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/uses" "Used by"  />
+    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/utilises" "Used by"  />
 
-    <@m.relationships "http://onto.ceh.ac.uk/EF#supersedes" "Supersedes" />
-    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#supersedes" "Superseded by"  />
+    <@m.relationships "http://purl.org/dc/terms/replaces" "Supersedes" />
+    <@m.inverseRelationships "http://purl.org/dc/terms/replaces" "Superseded by"  />
 
-    <@m.relationships "http://onto.ceh.ac.uk/EF#narrower" "Child facilities" />
-    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#narrower" "Parent facilities"  />
+    <@m.relationships "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility" "Child facilities" />
+    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility" "Parent facilities"  />
 
-    <@m.symmetricRelationships "http://onto.ceh.ac.uk/EF#associatedWith" "Related"/>
+    <@m.symmetricRelationships "http://purl.org/dc/terms/relation" "Related"/>
   </#compress></div>
 </@m.base>

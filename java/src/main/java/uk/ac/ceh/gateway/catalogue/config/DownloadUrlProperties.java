@@ -18,6 +18,8 @@ public class DownloadUrlProperties {
     @NotNull
     private String regexDatastore;
     @NotNull
+    private String regexCeda;
+    @NotNull
     private String regexSupportingDocs;
     @NotNull
     private String regexOrderManDownload;

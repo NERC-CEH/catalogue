@@ -2,8 +2,8 @@ package uk.ac.ceh.gateway.catalogue.search;
 
 import lombok.SneakyThrows;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrRequest;
+import org.apache.solr.client.solrj.request.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.params.SolrParams;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,8 +18,6 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import java.util.List;
 
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;

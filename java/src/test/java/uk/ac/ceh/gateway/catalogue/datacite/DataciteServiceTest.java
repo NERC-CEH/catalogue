@@ -2,11 +2,8 @@ package uk.ac.ceh.gateway.catalogue.datacite;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import freemarker.template.Configuration;
+import tools.jackson.databind.json.JsonMapper;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
@@ -61,17 +58,15 @@ public class DataciteServiceTest {
         configuration = new Configuration(Configuration.VERSION_2_3_23);
         configuration.setDirectoryForTemplateLoading(new File("../templates"));
         configuration.setSharedVariable("jena", jenaLookupService);
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        JsonMapper mapper = JsonMapper.builder()
+            .changeDefaultVisibility(v -> v.withVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY))
+            .findAndAddModules()
+            .build();
+        JacksonJsonHttpMessageConverter converter = new JacksonJsonHttpMessageConverter(mapper);
         converter.setSupportedMediaTypes(List.of(
             MediaType.APPLICATION_JSON,
             MediaType.valueOf("application/vnd.api+json")
         ));
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new ParameterNamesModule());
-        mapper.registerModule(new Jdk8Module());
-        mapper.registerModule(new JavaTimeModule());
-        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-        converter.setObjectMapper(mapper);
         val restTemplate = new RestTemplate(List.of(new StringHttpMessageConverter(), converter));
         service = new DataciteService(
                 "https://example.com/doi",

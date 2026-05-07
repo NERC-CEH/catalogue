@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Profile;
 import java.net.URI;
 
 @Configuration
-@Profile("auth:datalabs")
+@Profile("auth-datalabs")
 public class OidcConfig {
     @Value("${datalabs.remoteJwks}")
     private String remoteJwks;

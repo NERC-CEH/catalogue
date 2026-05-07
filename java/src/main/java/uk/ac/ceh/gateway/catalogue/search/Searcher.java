@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.request.SolrQuery;
 
 import java.util.List;
 

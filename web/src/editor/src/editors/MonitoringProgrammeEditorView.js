@@ -258,11 +258,11 @@ export default EditorView.extend({
           ObjectInputView: RelationshipView,
           multiline: true,
           options: [
-            { value: 'http://onto.ceh.ac.uk/EF#utilises', label: 'Uses (facility or network)' },
-            { value: 'http://onto.ceh.ac.uk/EF#hasChild', label: 'Has child programme' },
-            { value: 'http://onto.ceh.ac.uk/EF#associatedWith', label: 'Related to' },
-            { value: 'http://onto.ceh.ac.uk/EF#supersedes', label: 'Supersedes' },
-            { value: 'http://onto.ceh.ac.uk/EF#triggers', label: 'Triggers (activity)' }
+            { value: 'https://digital.ceh.ac.uk/ontology/doo/utilises', label: 'Uses (facility or network)' },
+            { value: 'https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme', label: 'Has child programme' },
+            { value: 'http://purl.org/dc/terms/relation', label: 'Related to' },
+            { value: 'http://purl.org/dc/terms/replaces', label: 'Supersedes' },
+            { value: 'https://digital.ceh.ac.uk/ontology/doo/triggers', label: 'Triggers (activity)' }
           ],
           helpText: `
 <p>Links to other records</p>

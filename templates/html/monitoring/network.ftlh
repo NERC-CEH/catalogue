@@ -2,7 +2,7 @@
 
 <@m.base>
   <#assign inverseRelationshipCombinedGeometriesOutput>
-    <@m.inverseRelationshipCombinedGeometries "http://onto.ceh.ac.uk/EF#belongsTo" />
+    <@m.inverseRelationshipCombinedGeometries "http://purl.org/dc/terms/isPartOf" />
   </#assign>
 
   <div class="displayFeatures">
@@ -10,22 +10,22 @@
      <div class="featureMap">${inverseRelationshipCombinedGeometriesOutput}</div>
     </#if>
     <div class="featureList">
-      <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#belongsTo" />
+      <@m.inverseRelationships "http://purl.org/dc/terms/isPartOf" />
     </div>
   </div>
 
   <div class="relationships">
 
-    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#uses" "Used by"  />
-    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#utilises" "Used by"  />
+    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/uses" "Used by"  />
+    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/utilises" "Used by"  />
 
-    <@m.relationships "http://onto.ceh.ac.uk/EF#supersedes" "Supersedes" />
-    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#supersedes" "Superseded by"  />
+    <@m.relationships "http://purl.org/dc/terms/replaces" "Supersedes" />
+    <@m.inverseRelationships "http://purl.org/dc/terms/replaces" "Superseded by"  />
 
-    <@m.relationships "http://onto.ceh.ac.uk/EF#narrower" "Child networks" />
-    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#narrower" "Parent networks"  />
+    <@m.relationships "https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork" "Child networks" />
+    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork" "Parent networks"  />
 
-    <@m.symmetricRelationships "http://onto.ceh.ac.uk/EF#associatedWith" "Related"/>
+    <@m.symmetricRelationships "http://purl.org/dc/terms/relation" "Related"/>
   </div>
 
 </@m.base>

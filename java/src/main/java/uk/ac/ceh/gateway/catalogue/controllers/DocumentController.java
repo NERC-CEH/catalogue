@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -133,7 +133,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @RequestBody MonitoringActivity document,
         @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException  {
+    ) {
         return saveNewMetadataDocument(
             user,
             document,
@@ -150,7 +150,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file,
         @RequestBody MonitoringActivity document
-    ) throws DocumentRepositoryException  {
+    ) {
         return saveMetadataDocument(
             user,
             file,
@@ -166,7 +166,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @RequestBody MonitoringFacility document,
         @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException  {
+    ) {
         return saveNewMetadataDocument(
             user,
             document,
@@ -183,7 +183,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file,
         @RequestBody MonitoringFacility document
-    ) throws DocumentRepositoryException  {
+    ) {
         return saveMetadataDocument(
             user,
             file,
@@ -199,7 +199,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @RequestBody MonitoringNetwork document,
         @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException  {
+    ) {
         return saveNewMetadataDocument(
             user,
             document,
@@ -216,7 +216,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file,
         @RequestBody MonitoringNetwork document
-    ) throws DocumentRepositoryException  {
+    ) {
         return saveMetadataDocument(
             user,
             file,
@@ -231,7 +231,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @RequestBody MonitoringProgramme document,
         @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException  {
+    ) {
         return saveNewMetadataDocument(
             user,
             document,
@@ -248,7 +248,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file,
         @RequestBody MonitoringProgramme document
-    ) throws DocumentRepositoryException  {
+    ) {
         return saveMetadataDocument(
             user,
             file,

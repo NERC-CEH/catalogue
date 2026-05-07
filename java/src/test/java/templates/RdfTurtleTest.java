@@ -5,9 +5,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.tdb1.TDB1Factory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -50,8 +50,7 @@ public class RdfTurtleTest {
         configuration.setDirectoryForTemplateLoading(new File("../templates"));
         configuration.setSharedVariable("jena", jenaLookupService);
 
-        val jenaTdb = TDB1Factory.createDataset();
-        model = jenaTdb.getDefaultModel();
+        model = ModelFactory.createDefaultModel();
     }
 
     @SneakyThrows
@@ -89,7 +88,7 @@ public class RdfTurtleTest {
                     createStatement(
                         createResource("https://example.com/id/9371"),
                         createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                        createResource("http://onto.ceh.ac.uk/EF#Activity")
+                        createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringActivity")
                     )
                 )
             );
@@ -112,7 +111,7 @@ public class RdfTurtleTest {
                     createStatement(
                         createResource("https://example.com/id/1234"),
                         createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                        createResource("http://onto.ceh.ac.uk/EF#Facility")
+                        createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringFacility")
                     )
                 )
             );
@@ -135,7 +134,7 @@ public class RdfTurtleTest {
                     createStatement(
                         createResource("https://example.com/id/7453"),
                         createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                        createResource("http://onto.ceh.ac.uk/EF#Network")
+                        createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringNetwork")
                     )
                 )
             );

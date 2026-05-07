@@ -4,7 +4,7 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;

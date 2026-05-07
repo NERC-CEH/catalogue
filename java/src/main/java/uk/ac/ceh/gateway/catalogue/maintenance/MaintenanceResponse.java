@@ -1,0 +1,30 @@
+package uk.ac.ceh.gateway.catalogue.maintenance;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import lombok.Data;
+import org.springframework.http.MediaType;
+import uk.ac.ceh.components.datastore.DataRevision;
+import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
+import uk.ac.ceh.gateway.catalogue.converters.Template;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+
+@ConvertUsing({
+    @Template(called="html/maintenance.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+})
+@Data
+public class MaintenanceResponse {
+    private List<String> messages = new ArrayList<>();
+    private boolean isLinked;
+    private boolean isIndexed;
+    private boolean isHasMapFiles;
+    private int indexedMapFilesCount;
+    private DataRevision<CatalogueUser> latestRevision;
+    private Date lastOptimized;
+
+    public MaintenanceResponse addMessage(String message) {
+        messages.add(message);
+        return this;
+    }
+}

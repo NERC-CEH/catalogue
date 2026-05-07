@@ -28,7 +28,7 @@
     "dct": "http://purl.org/dc/terms/",
     "citeAs": "cr:citeAs",
     "column": "cr:column",
-    "conformsTo": "dct:conformsTo",
+    "conformsTo": "dcterms:conformsTo",
     "data": {
       "@id": "cr:data",
       "@type": "@json"
@@ -69,7 +69,7 @@
   "@type": "sc:Dataset", <#--check what if type = model code ?? -->
   "name":<@m.displayLiteral title/>,
   "url": "${uri?trim}",
-  "dct:conformsTo": "http://mlcommons.org/croissant/1.0",
+  "dcterms:conformsTo": "http://mlcommons.org/croissant/1.0",
   "version":<#if version?has_content><@m.displayLiteral version/><#else>1</#if>
   <#if description?has_content>,"description":<@m.displayLiteral description/></#if>
   <@citeAs/>
@@ -92,7 +92,7 @@
         <#list fileset as filesetOp>
           <#assign matchingFiles = []>
           <#list files as file>
-            <#if file?has_content && file?lower_case?matches(filesetOp.filesetRegex)>
+            <#if file?has_content && file?lower_case?matches(filesetOp.filesetRegex?lower_case)>
               <#assign matchingFiles = matchingFiles + [file]>
             </#if>
           </#list>
@@ -127,7 +127,7 @@
       <#list files as file>
         {
           "@type": "cr:FileObject",
-          <#t>"@id": "${file.id}"
+          <#t>"@id": "${file.id?keep_before_last('.')?replace('\\s+', '-', 'r')}"
           <#if file.encodingFormat?? && file.encodingFormat?has_content>,<#t>"encodingFormat": "${file.encodingFormat}"</#if>
           <#if file.sha256?? && file.sha256?has_content>,<#t>"sha256": "${file.sha256}"</#if>
           <#if file.contentUrl?? && file.contentUrl?has_content>,<#t>"contentUrl": "${file.contentUrl}"</#if>

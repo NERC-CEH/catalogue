@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.upload.hubbub;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import lombok.ToString;
@@ -31,7 +31,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.TEXT_CSV_VALUE;
 
 @SuppressWarnings("SpringMVCViewInspection")
 @Controller
-@Profile("upload:hubbub")
+@Profile("upload-hubbub")
 @Slf4j
 @ToString(onlyExplicitlyIncluded = true)
 @RequestMapping("upload/{datasetId}")

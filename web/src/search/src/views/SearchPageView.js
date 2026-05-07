@@ -75,6 +75,7 @@ export default Backbone.View.extend({
 
     modelAttributes.sortField = this.model.get('sortField') || null
     modelAttributes.order = this.model.get('order') || 'asc'
+    modelAttributes.catalogueId = this.$el.closest('[data-catalogue]').data('catalogue')
 
     this.$el.html(this.template(modelAttributes))
     const $relatedSearches = this.$('.results__related_searches')

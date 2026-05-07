@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-set -u
+set -euo pipefail
 
-die () { exit 1; }
+die () { echo "Error: ${1:-command failed}" >&2; exit 1; }
 
 usage () {
     cat <<EOF
@@ -95,22 +95,22 @@ mkdir -p datastore &&
 ) || die
 
 echo 'Starting dependent services...'
-profile=''
+docker_profiles=()
 if [[ $with_hubbub = true ]]; then
-    profile="$profile --profile hubbub"
+    docker_profiles+=(--profile hubbub)
 fi
 if [[ $with_legilo = true ]]; then
-    profile="$profile --profile legilo"
+    docker_profiles+=(--profile legilo)
 fi
 if [[ $with_fuseki = true ]]; then
-    profile="$profile --profile fuseki"
+    docker_profiles+=(--profile fuseki)
 fi
-docker compose $profile up --wait --detach
+docker compose "${docker_profiles[@]}" up --wait --detach
 if [[ $with_hubbub = true ]]; then
-    db_init=`docker exec -it catalogue-hubbub-db-1 sh -c "test -f /hubbub_backup.sql && echo -n 'yes'"`
+    db_init=$(docker exec -i catalogue-hubbub-db-1 sh -c "test -f /hubbub_backup.sql && echo -n 'yes' || true")
     if [[ $db_init != 'yes' ]]; then
         docker cp ./fixtures/hubbub/init/hubbub_backup.sql catalogue-hubbub-db-1:/
-        docker exec -it catalogue-hubbub-db-1 psql -U gardener -d hubbub -f /hubbub_backup.sql 1>/dev/null
+        docker exec -i catalogue-hubbub-db-1 psql -U gardener -d hubbub -f /hubbub_backup.sql 1>/dev/null
     fi
 fi
 
@@ -145,11 +145,11 @@ export_default LEGILO_USER user
 export_default LEGILO_PASSWORD password
 export_default FUSEKI_URL http://localhost:3030
 
-spring_profile='development,server:eidc,search:basic,cache,service-agreement'
+spring_profile='development,server-eidc,search-basic,cache,service-agreement'
 if [[ $with_hubbub = true ]]; then
-    spring_profile="$spring_profile,upload:hubbub"
+    spring_profile="$spring_profile,upload-hubbub"
 else
-    spring_profile="$spring_profile,upload:simple"
+    spring_profile="$spring_profile,upload-simple"
 fi
 if [[ $with_legilo = true ]]; then
     spring_profile="$spring_profile,keyword-suggestions"

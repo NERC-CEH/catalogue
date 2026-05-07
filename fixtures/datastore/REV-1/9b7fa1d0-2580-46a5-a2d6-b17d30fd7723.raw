@@ -202,7 +202,7 @@
     ],
     "relatedRecords": [
         {
-            "rel": "https://vocabs.ceh.ac.uk/eidc#supersedes",
+            "rel": "http://purl.org/dc/terms/replaces",
             "identifier": "7e4ad816-0b9e-42f2-8b6f-a0e10442a1d3",
             "href": "https://catalogue.ceh.ac.uk/id/7e4ad816-0b9e-42f2-8b6f-a0e10442a1d3",
             "title": "United Kingdom Butterfly Monitoring Scheme:site location data 2014",
