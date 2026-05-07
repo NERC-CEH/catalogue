@@ -151,10 +151,10 @@ public class DataciteRequestTest {
         // Then
         assertEquals(2, result.size());
 
-        assertEquals("https://example.org/other1YP", result.get(0).identifier());
+        assertEquals("https://example.org/other/1YP", result.get(0).identifier());
         assertEquals("URL", result.get(0).identifierType());
 
-        assertEquals("YP-MPAyum", result.get(1).identifier());
+        assertEquals("YP-MPA/yum", result.get(1).identifier());
         assertEquals("URN", result.get(1).identifierType());
     }
     @Test
