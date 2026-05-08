@@ -4,6 +4,11 @@
 
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
     <fieldType name="booleans" class="solr.BoolField" sortMissingLast="true" multiValued="true"/>
+    <fieldType name="grantID" class="solr.TextField" sortMissingLast="true" omitNorms="true" multiValued="true">
+      <analyzer>
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
+      </analyzer>
+    </fieldType>
     <fieldType name="keywords" class="solr.TextField" sortMissingLast="true" omitNorms="true" multiValued="true">
       <analyzer>
         <tokenizer class="solr.KeywordTokenizerFactory"/>
@@ -39,15 +44,10 @@
         <tokenizer class="solr.PatternTokenizerFactory" pattern="(https?:\/\/orcid.org\/)(\d{4}-\d{4}-\d{4}-\d{3}[\d|X])" group="2"/>
       </analyzer>
     </fieldType>
-    <fieldType name="grantID" class="solr.TextField" sortMissingLast="true" omitNorms="true" multiValued="true">
-      <analyzer>
-        <tokenizer class="solr.ClassicTokenizerFactory"/>
-      </analyzer>
-    </fieldType>
     <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
-    <fieldType name="pdates" class="solr.DatePointField" docValues="true" multiValued="true"/>
     <fieldType name="pdaterange" class="solr.DateRangeField"/>
     <fieldType name="pdateranges" class="solr.DateRangeField" multiValued="true"/>
+    <fieldType name="pdates" class="solr.DatePointField" docValues="true" multiValued="true"/>
     <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>
     <fieldType name="pdoubles" class="solr.DoublePointField" docValues="true" multiValued="true"/>
     <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>
@@ -60,6 +60,16 @@
             <tokenizer class="solr.PatternTokenizerFactory" pattern="(https?:\/\/ror.org\/)(\w{8,10})" group="2"/>
         </analyzer>
     </fieldType>
+    <fieldType name="spatial"
+      class="solr.SpatialRecursivePrefixTreeFieldType"
+      spatialContextFactory="JTS"
+      autoIndex="true"
+      validationRule="repairBuffer0"
+      distErrPct="0.025"
+      maxDistErr="0.001"
+      distanceUnits="degrees"
+      multiValued="true"
+    />
     <fieldType name="string" class="solr.StrField" sortMissingLast="true" docValues="true"/>
     <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100" multiValued="true">
       <analyzer type="index">
@@ -79,16 +89,6 @@
         <filter class="solr.PorterStemFilterFactory"/>
       </analyzer>
     </fieldType>
-    <fieldType name="spatial"
-      class="solr.SpatialRecursivePrefixTreeFieldType"
-      spatialContextFactory="JTS"
-      autoIndex="true"
-      validationRule="repairBuffer0"
-      distErrPct="0.025"
-      maxDistErr="0.001"
-      distanceUnits="degrees"
-      multiValued="true"
-    />
     <fieldType name="text_sort_ignore_case" class="solr.TextField" sortMissingLast="true" omitNorms="true">
     <analyzer>
         <tokenizer class="solr.KeywordTokenizerFactory"/>
@@ -97,90 +97,90 @@
     </analyzer>
     </fieldType>
 
-    <field name="publicationDate" type="pdate"/>
-    <field name="metadataDate" type="pdate" multiValued="false"/>
     <field name="_text_" type="text_general" stored="false"/>
     <field name="_version_" type="plong" indexed="false" stored="false"/>
     <field name="altTitle" type="text_general"/>
     <field name="assistResearchThemes" type="keywords"/>
     <field name="assistTopics" type="keywords"/>
     <field name="authorAffiliation" type="keywords_lowercase"/>
-    <field name="authorGivenName" type="keywords" multiValued="true"/>
     <field name="authorFamilyName" type="names" multiValued="true"/>
     <field name="authorFullName" type="names" multiValued="true"/>
+    <field name="authorGivenName" type="keywords" multiValued="true"/>
     <field name="authorOrcid" type="orcids"/>
     <field name="authorRor" type="rors"/>
+    <field name="availability" type="keywords" multiValued="false"/>
     <field name="catalogue" type="keywords" multiValued="false"/>
-    <field name="incomingCitationCount" type="plong"/>
+    <field name="dataFormat" type="keywords"/>
+    <field name="dataLevel" type="keywords" multiValued="false"/>
     <field name="description" type="text_general" multiValued="false"/>
     <field name="documentType" type="keywords" multiValued="false"/>
-    <field name="funder" type="keywords_lowercase"/>
-    <field name="rightsHolder" type="keywords"/>
-    <field name="grant" type="grantID"/>
-    <field name="identifier" type="keywords" required="true" multiValued="false"/>
-    <field name="inmsScale" type="keywords"/>
-    <field name="inmsTopic" type="keywords"/>
-    <field name="givenName" type="keywords" multiValued="true"/>
+    <field name="environmentalDomains" type="keywords"/>
+    <field name="facilityType" type="keywords" multiValued="false"/>
     <field name="familyName" type="names" multiValued="true"/>
     <field name="fullName" type="names" multiValued="true"/>
+    <field name="funder" type="keywords"/>
+    <field name="givenName" type="keywords" multiValued="true"/>
+    <field name="grant" type="grantID"/>
+    <field name="identifier" type="keywords" required="true" multiValued="false"/>
+    <field name="incomingCitationCount" type="plong"/>
+    <field name="infrastructureCapabilities" type="text_general" multiValued="false"/>
+    <field name="infrastructureCategory" type="keywords" multiValued="false"/>
+    <field name="infrastructureChallenge" type="keywords"/>
+    <field name="infrastructureClass" type="keywords"/>
+    <field name="infrastructureScale" type="keywords" multiValued="false"/>
     <field name="inmsDemonstrationRegion" type="keywords"/>
     <field name="inmsPollutant" type="keywords"/>
     <field name="inmsProject" type="keywords"/>
+    <field name="inmsScale" type="keywords"/>
+    <field name="inmsTopic" type="keywords"/>
     <field name="keyword" type="keywords_lowercase"/>
     <field name="keywordsInstrument" type="keywords_lowercase"/>
+    <field name="keywordsOther" type="keywords_lowercase"/>
+    <field name="keywordsParameters" type="keywords_lowercase"/>
     <field name="keywordsPlace" type="keywords_lowercase"/>
     <field name="keywordsProject" type="keywords_lowercase"/>
     <field name="keywordsTheme" type="keywords_lowercase"/>
-    <field name="keywordsOther" type="keywords_lowercase"/>
-    <field name="observedPropertyValue" type="keywords_lowercase" />
-    <field name="observedPropertyTitle" type="keywords_lowercase" />
     <field name="licence" type="keywords" multiValued="false"/>
     <field name="lineage" type="text_general" multiValued="false"/>
     <field name="locations" type="spatial"/>
+    <field name="metadataDate" type="pdate" multiValued="false"/>
     <field name="modelType" type="keywords"/>
     <field name="ncAssets" type="keywords"/>
     <field name="ncCaseStudy" type="keywords"/>
     <field name="ncDrivers" type="keywords"/>
     <field name="ncEcosystemServices" type="keywords"/>
     <field name="ncGeographicalScale" type="keywords"/>
+    <field name="objectives" type="text_general" multiValued="false"/>
+    <field name="observedPropertyTitle" type="keywords_lowercase"/>
+    <field name="observedPropertyValue" type="keywords_lowercase"/>
+    <field name="operatingPeriod" type="pdateranges"/>
+    <field name="operationalStatus" type="string" multiValued="false"/>
     <field name="orcid" type="orcids"/>
-    <field name="organisation" type="keywords_lowercase"/>
+    <field name="organisation" type="keywords"/>
+    <field name="pointOfContact" type="keywords"/>
+    <field name="publicationDate" type="pdate"/>
     <field name="recordType" type="keywords" multiValued="false"/>
     <field name="resourceIdentifier" type="keywords_lowercase"/>
-    <field name="availability" type="keywords" multiValued="false"/>
     <field name="resourceType" type="keywords" multiValued="false"/>
-    <field name="environmentalDomains" type="keywords"/>
-    <field name="facilityType" type="keywords" multiValued="false"/>
-    <field name="keywordsParameters" type="keywords_lowercase"/>
-    <field name="operatingPeriod" type="pdateranges"/>
-    <field name="objectives" type="text_general" multiValued="false"/>
     <field name="responsibleParties" type="keywords_lowercase"/>
-    <field name="pointOfContact" type="keywords"/>
-    <field name="operationalStatus" type="keywords_lowercase" multiValued="false"/>
+    <field name="rightsHolder" type="keywords"/>
     <field name="ror" type="rors"/>
     <field name="saPhysicalState" type="keywords"/>
     <field name="saSpecimenType" type="keywords"/>
     <field name="saTaxon" type="keywords"/>
     <field name="saTissue" type="keywords"/>
+    <field name="scienceArea" type="keywords" multiValued="false"/>
     <field name="state" type="keywords" multiValued="false"/>
     <field name="supplementalDescription" type="text_general"/>
     <field name="supplementalName" type="text_general"/>
     <field name="title" type="text_general" required="true" multiValued="false"/>
-    <field name="topic" type="keywords_lowercase"/>
+    <field name="topic" type="keywords"/>
     <field name="ukcehResearchProject" type="keywords"/>
     <field name="ukcehResearchTheme" type="keywords"/>
     <field name="ukcehScienceChallenge" type="keywords"/>
     <field name="ukcehService" type="keywords"/>
     <field name="version" type="pfloat" default="1"/>
-    <field name="dataFormat" type="keywords"/>
-    <field name="dataLevel" type="keywords" multiValued="false"/>
     <field name="view" type="keywords"/>
-    <field name="infrastructureCategory" type="keywords" multiValued="false"/>
-    <field name="scienceArea" type="keywords" multiValued="false"/>
-    <field name="infrastructureScale" type="keywords" multiValued="false"/>
-    <field name="infrastructureCapabilities" type="text_general" multiValued="false"/>
-    <field name="infrastructureChallenge" type="keywords"/>
-    <field name="infrastructureClass" type="keywords"/>
 
     <!--
         Single-valued fields with a non-trivial tokenizer need to be
