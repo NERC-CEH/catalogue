@@ -53,7 +53,7 @@ public class DataciteIndexingService implements DocumentIndexingService {
                 }
             }
             catch(Exception ex) {
-                log.error("Failed to read metadata document", ex);
+                log.warn("Failed to read metadata document {}: {}", metadataId, ex.getMessage());
             }
         }
     }
@@ -80,9 +80,8 @@ public class DataciteIndexingService implements DocumentIndexingService {
     }
 
     /**
-     * Data citation repository is assumed to never be empty
+     * Datacite repository is assumed to never be empty
      * @return false
-     * @throws DocumentIndexingException
      */
     @Override
     public boolean isIndexEmpty() throws DocumentIndexingException {

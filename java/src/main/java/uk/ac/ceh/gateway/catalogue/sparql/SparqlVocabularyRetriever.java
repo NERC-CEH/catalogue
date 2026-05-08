@@ -51,7 +51,7 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
                 val response = template.getForEntity(query, SparqlQueryResponse.class);
                 Objects.requireNonNull(response.getBody()).getResults().getBindings().forEach(binding -> toReturn.put(facet, binding.getUri().getValue()));
                 } catch (Exception ex) {
-                    log.error("Failed to retrieve vocabulary", ex);
+                    log.warn("Failed to retrieve vocabulary for facet {}: {}", facet, ex.getMessage());
                 }
             }
         return toReturn;

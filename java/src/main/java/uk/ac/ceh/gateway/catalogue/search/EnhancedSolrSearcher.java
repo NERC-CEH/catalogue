@@ -97,7 +97,7 @@ public class EnhancedSolrSearcher extends SolrSearcher {
                 )
                 .collect(Collectors.toList());
         } catch (Exception ex) {
-            log.error("Cannot get related searches", ex);
+            log.warn("Cannot get related searches: {}", ex.getMessage());
             return Collections.emptyList();
         }
     }
