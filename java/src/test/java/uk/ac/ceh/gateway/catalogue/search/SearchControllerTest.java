@@ -36,6 +36,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UNPRIVILEGED_USERNAME;
@@ -316,6 +317,41 @@ class SearchControllerTest extends AbstractMvcTest {
         )
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("GET /{catalogue}/documents returns 400 for unknown facet field")
+    @SneakyThrows
+    void invalidFacetReturns400ForCatalogueSearch() {
+        //given
+        givenCatalogue();
+        willThrow(new InvalidFacetException("Unknown facet field(s): badField"))
+            .given(searcher).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any(), any());
+
+        //when/then
+        mvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .accept(MediaType.APPLICATION_JSON)
+                .param("facet", "badField|someValue")
+        )
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("GET /documents returns 400 for unknown facet field across all catalogues")
+    @SneakyThrows
+    void invalidFacetReturns400ForAllCataloguesSearch() {
+        //given
+        willThrow(new InvalidFacetException("Unknown facet field(s): badField"))
+            .given(searcher).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), eq("all"), any(), any());
+
+        //when/then
+        mvc.perform(
+            get("/documents")
+                .accept(MediaType.APPLICATION_JSON)
+                .param("facet", "badField|someValue")
+        )
+            .andExpect(status().isBadRequest());
     }
 
 }

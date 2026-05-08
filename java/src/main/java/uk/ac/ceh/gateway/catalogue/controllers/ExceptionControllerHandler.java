@@ -17,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueException;
+import uk.ac.ceh.gateway.catalogue.search.InvalidFacetException;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.model.*;
@@ -69,6 +70,11 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({HttpClientErrorException.BadRequest.class})
     public ResponseEntity<Object> handleBadRequestException(HttpClientErrorException.BadRequest ex) {
+        return handleExceptionInternal(ex, ex.getMessage(), BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidFacetException.class)
+    public ResponseEntity<Object> handleInvalidFacetException(InvalidFacetException ex) {
         return handleExceptionInternal(ex, ex.getMessage(), BAD_REQUEST);
     }
 
@@ -126,6 +132,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ModelAndView handleAccessDeniedException() {
         CatalogueUser user = (CatalogueUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        assert user != null;
         boolean isPublic = user.isPublic();
         return new ModelAndView("html/access-denied", "isPublic", isPublic);
     }

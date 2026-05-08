@@ -902,7 +902,7 @@ public class SearchQueryTest {
     }
 
     @Test
-    public void unknownFacetFilterFieldIsIgnored() {
+    public void unknownFacetFilterFieldThrowsInvalidFacetException() {
         // Given - resourceStatus was a real field that was renamed to availability
         SearchQuery query = new SearchQuery(
             ENDPOINT,
@@ -926,15 +926,42 @@ public class SearchQueryTest {
             null
         );
 
-        // When
-        SolrQuery solrQuery = query.build();
+        // When / Then
+        InvalidFacetException ex = assertThrows(InvalidFacetException.class, query::build);
+        assertThat(ex.getMessage(), containsString("resourceStatus"));
+    }
 
-        // Then
-        assertThat(
-            "Unknown facet field must not be forwarded to Solr",
-            Arrays.stream(solrQuery.getFilterQueries()).noneMatch(fq -> fq.contains("resourceStatus")),
-            is(true)
+    @Test
+    public void multipleUnknownFacetFieldsListedInException() {
+        // Given
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            List.of(
+                new FacetFilter("badField1", "foo"),
+                new FacetFilter("badField2", "bar")
+            ),
+            groupStore,
+            Catalogue.builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
+                .logo("")
+                .build(),
+            DEFAULT_FACETS,
+            null,
+            null
         );
+
+        // When / Then
+        InvalidFacetException ex = assertThrows(InvalidFacetException.class, query::build);
+        assertThat(ex.getMessage(), allOf(containsString("badField1"), containsString("badField2")));
     }
 
     @Test
