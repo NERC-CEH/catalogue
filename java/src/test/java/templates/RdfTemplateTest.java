@@ -27,12 +27,12 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import java.io.File;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -42,7 +42,6 @@ public class RdfTemplateTest {
     Configuration configuration;
     JsonMapper objectMapper;
     JenaLookupService jena;
-    Model model;
 
     @SneakyThrows
     private String expected(String filename) {
@@ -62,38 +61,26 @@ public class RdfTemplateTest {
     }
 
     private void compare(String expected, String actual, boolean fragment) {
-        if ( !fragment) {
-            RDFDataMgr.read(model, new StringReader(actual), "https://example.com/id/", Lang.TTL);
+        if (fragment) {
+            assertThat(actual.trim(), equalTo(expected.trim()));
+            return;
         }
+
+        Model expectedModel = ModelFactory.createDefaultModel();
+        RDFDataMgr.read(expectedModel, new StringReader(expected), "https://example.com/id/", Lang.TTL);
+
+        Model actualModel = ModelFactory.createDefaultModel();
+        RDFDataMgr.read(actualModel, new StringReader(actual), "https://example.com/id/", Lang.TTL);
 
         if (log.isDebugEnabled()) {
-            model.listStatements().forEachRemaining(s -> log.debug(s.toString()));
-
-            List<String> differences = findDifferences(expected, actual);
-
-            log.debug("Differences between the two strings:");
-            for (String diff : differences) {
-                log.debug(diff);
-            }
+            actualModel.listStatements().forEachRemaining(s -> log.debug(s.toString()));
         }
 
-        assertThat(actual.trim(), equalTo(expected.trim()));
-    }
-
-    private List<String> findDifferences(String str1, String str2) {
-        List<String> differences = new ArrayList<>();
-        int length = Math.max(str1.length(), str2.length());
-
-        for (int i = 0; i < length; i++) {
-            char char1 = i < str1.length() ? str1.charAt(i) : ' ';
-            char char2 = i < str2.length() ? str2.charAt(i) : ' ';
-
-            if (char1 != char2) {
-                differences.add("Difference at index " + i + ": '" + char1 + "' vs '" + char2 + "'");
-            }
-        }
-
-        return differences;
+        assertTrue(
+            actualModel.isIsomorphicWith(expectedModel),
+            () -> "RDF models differ.\nExtra triples in actual: " + actualModel.difference(expectedModel).size()
+                + "\nMissing triples from actual: " + expectedModel.difference(actualModel).size()
+        );
     }
 
     @SneakyThrows
@@ -104,7 +91,6 @@ public class RdfTemplateTest {
         objectMapper = JsonMapper.builder().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
         jena = mock(JenaLookupService.class);
         configuration.setSharedVariable("jena", jena);
-        model = ModelFactory.createDefaultModel();
     }
 
     @Nested

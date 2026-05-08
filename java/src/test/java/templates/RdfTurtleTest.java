@@ -23,6 +23,7 @@ import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.io.File;
@@ -138,6 +139,117 @@ public class RdfTurtleTest {
                     )
                 )
             );
+        }
+
+        @Test
+        void loadProgramme() {
+            //given
+            val programme = new MonitoringProgramme()
+                .setId("5566")
+                .setUri("https://example.com/id/5566")
+                .setTitle("Rainfall");
+
+            //when
+            template("rdf/monitoring/programme.ftl", programme);
+
+            //then
+            assertTrue(
+                model.contains(
+                    createStatement(
+                        createResource("https://example.com/id/5566"),
+                        createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                        createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringProgramme")
+                    )
+                )
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("Combined catalogue Turtle (FusekiExportService path)")
+    class CombinedCatalogueTurtle {
+
+        @SneakyThrows
+        private void combinedTemplate(String unprefixedTemplate, Object document) {
+            val catalogueModel = new HashMap<String, Object>();
+            catalogueModel.put("baseUri", "https://example.com");
+            catalogueModel.put("catalogue", "eidc");
+            catalogueModel.put("title", "Test");
+            catalogueModel.put("records", List.of());
+
+            val catalogueTtl = FreeMarkerTemplateUtils.processTemplateIntoString(
+                configuration.getTemplate("rdf/catalogue.ttl.ftl"), catalogueModel
+            );
+            val recordTtl = FreeMarkerTemplateUtils.processTemplateIntoString(
+                configuration.getTemplate(unprefixedTemplate), document
+            );
+            val combined = catalogueTtl + "\n" + recordTtl;
+            log.debug("Combined: {}", combined);
+            RDFDataMgr.read(model, new StringReader(combined), "https://example.com/id/", Lang.TTL);
+        }
+
+        @Test
+        void unprefixedActivityParses() {
+            val activity = new MonitoringActivity()
+                .setId("9371")
+                .setUri("https://example.com/id/9371")
+                .setTitle("Kelp");
+            combinedTemplate("rdf/monitoring/unprefixed/activity.ftl", activity);
+            assertTrue(model.contains(
+                createStatement(
+                    createResource("https://example.com/id/9371"),
+                    createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                    createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringActivity")
+                )
+            ));
+        }
+
+        @Test
+        void unprefixedFacilityParses() {
+            val facility = new MonitoringFacility()
+                .setId("1234")
+                .setUri("https://example.com/id/1234")
+                .setTitle("Test");
+            combinedTemplate("rdf/monitoring/unprefixed/facility.ftl", facility);
+            assertTrue(model.contains(
+                createStatement(
+                    createResource("https://example.com/id/1234"),
+                    createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                    createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringFacility")
+                )
+            ));
+        }
+
+        @Test
+        void unprefixedNetworkParses() {
+            val network = new MonitoringNetwork()
+                .setId("7453")
+                .setUri("https://example.com/id/7453")
+                .setTitle("Newton");
+            combinedTemplate("rdf/monitoring/unprefixed/network.ftl", network);
+            assertTrue(model.contains(
+                createStatement(
+                    createResource("https://example.com/id/7453"),
+                    createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                    createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringNetwork")
+                )
+            ));
+        }
+
+        @Test
+        void unprefixedProgrammeParses() {
+            val programme = new MonitoringProgramme()
+                .setId("5566")
+                .setUri("https://example.com/id/5566")
+                .setTitle("Rainfall");
+            combinedTemplate("rdf/monitoring/unprefixed/programme.ftl", programme);
+            assertTrue(model.contains(
+                createStatement(
+                    createResource("https://example.com/id/5566"),
+                    createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                    createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringProgramme")
+                )
+            ));
         }
     }
 
