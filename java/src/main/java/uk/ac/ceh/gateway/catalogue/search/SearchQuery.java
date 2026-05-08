@@ -375,14 +375,16 @@ public class SearchQuery {
             .map(Facet::getFieldName)
             .collect(Collectors.toSet());
 
+        Set<String> unknownFields = facetFilters.stream()
+            .map(FacetFilter::getField)
+            .filter(f -> !knownFields.contains(f))
+            .collect(Collectors.toSet());
+
+        if (!unknownFields.isEmpty()) {
+            throw new InvalidFacetException("Unknown facet field(s): " + String.join(", ", unknownFields));
+        }
+
         Map<String, List<FacetFilter>> groupedFilters = facetFilters.stream()
-            .filter(f -> {
-                if (!knownFields.contains(f.getField())) {
-                    log.info("Ignoring facet filter for unknown Solr field: {}", f.getField());
-                    return false;
-                }
-                return true;
-            })
             .collect(Collectors.groupingBy(FacetFilter::getField));
 
         groupedFilters.forEach((field, filters) -> {

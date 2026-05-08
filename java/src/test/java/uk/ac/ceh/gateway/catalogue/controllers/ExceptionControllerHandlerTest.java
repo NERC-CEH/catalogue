@@ -22,6 +22,7 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
+import uk.ac.ceh.gateway.catalogue.search.InvalidFacetException;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
@@ -30,6 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @WithMockCatalogueUser
 @ActiveProfiles({"test", "server-eidc", "search-basic"})
@@ -124,6 +126,21 @@ class ExceptionControllerHandlerTest {
 
         //Then
         assertResponseImageExists(response);
+    }
+
+    @Test
+    public void checkThatInvalidFacetExceptionReturnsBadRequest() {
+        //Given
+        String mess = "Unknown facet field(s): badField";
+        InvalidFacetException ex = new InvalidFacetException(mess);
+
+        //When
+        ResponseEntity<Object> response = controller.handleInvalidFacetException(ex);
+
+        //Then
+        assertThat(response.getStatusCode(), equalTo(BAD_REQUEST));
+        assert response.getBody() != null;
+        assertThat(((ErrorResponse) response.getBody()).getMessage(), equalTo(mess));
     }
 
     private void assertResponseImageExists(ResponseEntity<Object> response) {
