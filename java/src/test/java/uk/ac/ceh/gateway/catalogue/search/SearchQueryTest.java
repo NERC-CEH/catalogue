@@ -859,10 +859,10 @@ public class SearchQueryTest {
     public void testFacetFiltersCombinedWithOr() {
         // Given
         List<FacetFilter> facetFilters = List.of(
-            new FacetFilter("topic", "Agriculture"),
-            new FacetFilter("topic", "Biodiversity"),
-            new FacetFilter("dataType", "Dataset"),
-            new FacetFilter("dataType", "Data Collection")
+            new FacetFilter("resourceType", "Dataset"),
+            new FacetFilter("resourceType", "Data Collection"),
+            new FacetFilter("licence", "OGL"),
+            new FacetFilter("licence", "CC-BY")
         );
 
         SearchQuery query = new SearchQuery(
@@ -895,19 +895,54 @@ public class SearchQueryTest {
         assertThat(
             Arrays.asList(solrQuery.getFilterQueries()),
             allOf(
-                hasItem(containsString("topic:(\"Agriculture\" OR \"Biodiversity\")")),
-                hasItem(containsString("dataType:(\"Dataset\" OR \"Data\\ Collection\")"))
+                hasItem(containsString("resourceType:(\"Dataset\" OR \"Data\\ Collection\")")),
+                hasItem(containsString("licence:(\"OGL\" OR \"CC\\-BY\")"))
             )
+        );
+    }
+
+    @Test
+    public void unknownFacetFilterFieldIsIgnored() {
+        // Given - resourceStatus was a real field that was renamed to availability
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            List.of(new FacetFilter("resourceStatus", "Available")),
+            groupStore,
+            Catalogue.builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
+                .logo("")
+                .build(),
+            DEFAULT_FACETS,
+            null,
+            null
+        );
+
+        // When
+        SolrQuery solrQuery = query.build();
+
+        // Then
+        assertThat(
+            "Unknown facet field must not be forwarded to Solr",
+            Arrays.stream(solrQuery.getFilterQueries()).noneMatch(fq -> fq.contains("resourceStatus")),
+            is(true)
         );
     }
 
     @Test
     public void testFacetExclusionTagsAppliedCorrectly() {
         // Given
-
         List<FacetFilter> facetFilters = List.of(
-            new FacetFilter("topic", "Agriculture"),
-            new FacetFilter("recordType", "Dataset")
+            new FacetFilter("resourceType", "Dataset"),
+            new FacetFilter("licence", "OGL")
         );
 
         SearchQuery query = new SearchQuery(
@@ -950,8 +985,8 @@ public class SearchQueryTest {
         assertThat(
             Arrays.asList(solrQuery.getFilterQueries()),
             allOf(
-                hasItem(containsString("{!tag=topic}topic:\"Agriculture\"")),
-                hasItem(containsString("{!tag=recordType}recordType:\"Dataset\"")),
+                hasItem(containsString("{!tag=resourceType}resourceType:\"Dataset\"")),
+                hasItem(containsString("{!tag=licence}licence:\"OGL\"")),
                 hasItem(containsString("{!term f=catalogue}eidc"))
             )
         );
