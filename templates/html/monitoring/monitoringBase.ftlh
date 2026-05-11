@@ -205,12 +205,12 @@
         <li class="dropdown-divider"></li>
       </#if>
 
-      <@menuLink "/documents/${id}/permission" "fa-solid fa-users">Permissions</@menuLink>
-      <@menuLink "/documents/${id}/publication" "fa-solid fa-eye">Publication status</@menuLink>
+      <@menuLink "/documents/${id}/permission">Permissions</@menuLink>
+      <@menuLink "/documents/${id}/publication">Publication status</@menuLink>
 
       <span class="catalogue-control">
         <li class="dropdown-divider"></li>
-        <@menuLink "/documents/${id}/catalogue" "fa-solid fa-right-from-bracket">Move to a different catalogue</@menuLink>
+        <@menuLink "/documents/${id}/catalogue">Move to a different catalogue</@menuLink>
       </span>
     </ul>
   </div>
