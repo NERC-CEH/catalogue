@@ -21,7 +21,7 @@
           <option value="">Relevance</option>
           <option class="option-eidc" value="publicationDate-desc">Published date (newest first)</option>
           <option class="option-eidc" value="publicationDate-asc">Published date (oldest first)</option>
-          <option class="option-eidc" value="incomingCitationCount-desc">Number of citatons</option>
+          <option class="option-eidc" value="incomingCitationCount-desc">Number of citations</option>
           <option value="title-asc">Title (A-Z)</option>
           <option value="title-desc">Title (Z-A)</option>
         </select>
