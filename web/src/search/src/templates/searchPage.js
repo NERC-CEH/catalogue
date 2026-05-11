@@ -26,7 +26,7 @@ export default _.template(`
             <option value="" <%= !sortField ? 'selected' : '' %>>Relevance</option>
             <option class="option-eidc" value="publicationDate-desc" <%= sortField === 'publicationDate' && order === 'desc' ? 'selected' : '' %>>Published date (newest first)</option>
             <option class="option-eidc" value="publicationDate-asc" <%= sortField === 'publicationDate' && order === 'asc' ? 'selected' : '' %>>Published date (oldest first)</option>
-            <option class="option-eidc" value="incomingCitationCount-desc" <%= sortField === 'incomingCitationCount' && order === 'asc' ? 'selected' : '' %>>Number of citatons</option>
+            <option class="option-eidc" value="incomingCitationCount-desc" <%= sortField === 'incomingCitationCount' && order === 'asc' ? 'selected' : '' %>>Number of citations</option>
             <option value="title-asc" <%= sortField === 'title' && order === 'asc' ? 'selected' : '' %>>Title (A-Z)</option>
             <option value="title-desc" <%= sortField === 'title' && order === 'desc' ? 'selected' : '' %>>Title (Z-A)</option>
         </select>
