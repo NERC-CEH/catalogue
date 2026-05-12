@@ -52,7 +52,7 @@ public class MapViewerController {
     @ResponseBody
     @SneakyThrows
     public Object wmsService(
-            @PathVariable("file") String file,
+            @PathVariable String file,
             @RequestParam MultiValueMap<String, String> params
     ) {
         if (log.isDebugEnabled()) {

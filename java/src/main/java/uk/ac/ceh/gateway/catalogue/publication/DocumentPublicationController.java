@@ -25,7 +25,7 @@ public class DocumentPublicationController {
     @GetMapping("documents/{file}/publication")
     public HttpEntity<StateResource> currentPublication(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file) {
+            @PathVariable String file) {
         return ResponseEntity.ok(publicationService.current(user, file));
     }
 
@@ -33,8 +33,8 @@ public class DocumentPublicationController {
     @PostMapping("documents/{file}/publication/{toState}")
     public HttpEntity<StateResource> transitionPublication(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
-            @PathVariable("toState") String toState) {
+            @PathVariable String file,
+            @PathVariable String toState) {
         log.debug("Transition {} to {}", file, toState);
         return ResponseEntity.ok(publicationService.transition(user, file, toState));
     }

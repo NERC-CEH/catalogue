@@ -113,10 +113,10 @@ public class DocumentController extends AbstractDocumentController {
     method = RequestMethod.PUT,
     consumes = GEMINI_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateGeminiDocument(
-            @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
-            @RequestBody GeminiDocument document
-            ) {
+        @ActiveUser CatalogueUser user,
+        @PathVariable String file,
+        @RequestBody GeminiDocument document
+    ) {
         return saveMetadataDocument(
                 user,
                 file,
@@ -148,7 +148,7 @@ public class DocumentController extends AbstractDocumentController {
         consumes = MONITORING_ACTIVITY_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateMonitoringActivity(
         @ActiveUser CatalogueUser user,
-        @PathVariable("file") String file,
+        @PathVariable String file,
         @RequestBody MonitoringActivity document
     ) {
         return saveMetadataDocument(
@@ -181,7 +181,7 @@ public class DocumentController extends AbstractDocumentController {
         consumes = MONITORING_FACILITY_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateMonitoringFacility(
         @ActiveUser CatalogueUser user,
-        @PathVariable("file") String file,
+        @PathVariable String file,
         @RequestBody MonitoringFacility document
     ) {
         return saveMetadataDocument(
@@ -214,7 +214,7 @@ public class DocumentController extends AbstractDocumentController {
         consumes = MONITORING_NETWORK_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateMonitoringNetwork(
         @ActiveUser CatalogueUser user,
-        @PathVariable("file") String file,
+        @PathVariable String file,
         @RequestBody MonitoringNetwork document
     ) {
         return saveMetadataDocument(
@@ -246,7 +246,7 @@ public class DocumentController extends AbstractDocumentController {
         consumes = MONITORING_PROGRAMME_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateMonitoringProgramme(
         @ActiveUser CatalogueUser user,
-        @PathVariable("file") String file,
+        @PathVariable String file,
         @RequestBody MonitoringProgramme document
     ) {
         return saveMetadataDocument(
@@ -279,7 +279,7 @@ public class DocumentController extends AbstractDocumentController {
     consumes = CEH_MODEL_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateCehModelDocument(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
+            @PathVariable String file,
             @RequestBody CehModel document
             ) {
         return saveMetadataDocument(
@@ -312,7 +312,7 @@ public class DocumentController extends AbstractDocumentController {
     consumes = DATA_TYPE_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateDataType(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
+            @PathVariable String file,
             @RequestBody DataType document
             ) {
         return saveMetadataDocument(
@@ -345,7 +345,7 @@ public class DocumentController extends AbstractDocumentController {
     consumes = CEH_MODEL_APPLICATION_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateCehModelApplicationDocument(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
+            @PathVariable String file,
             @RequestBody CehModelApplication document
             ) {
         return saveMetadataDocument(
@@ -378,7 +378,7 @@ public class DocumentController extends AbstractDocumentController {
     consumes = LINKED_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateLinkDocument(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
+            @PathVariable String file,
             @RequestBody LinkDocument document
             ) {
         return saveMetadataDocument(
@@ -395,7 +395,7 @@ public class DocumentController extends AbstractDocumentController {
     @GetMapping("documents/{file}")
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
+            @PathVariable String file,
             HttpServletRequest request
         ) {
         MetadataDocument document = documentRepository.read(file);
@@ -411,7 +411,7 @@ public class DocumentController extends AbstractDocumentController {
     @GetMapping("documents/{file}.xml")
     public String readMetadataXml(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file
+            @PathVariable String file
             ) {
         return "forward:/documents/" + file + "?format=" + GEMINI_XML_SHORT;
             }
@@ -422,7 +422,7 @@ public class DocumentController extends AbstractDocumentController {
     @GetMapping(value = "documents/{file}", produces = LINKED_JSON_VALUE)
     public MetadataDocument readLinkDocument(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file
+            @PathVariable String file
             ) {
         return documentRepository.read(file);
             }
@@ -434,8 +434,8 @@ public class DocumentController extends AbstractDocumentController {
     @GetMapping(value = "history/{revision}/{file}")
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
-            @PathVariable("revision") String revision
+            @PathVariable String file,
+            @PathVariable String revision
             ) {
         return postProcessLinkDocument(documentRepository.read(file, revision));
             }
@@ -469,7 +469,7 @@ public class DocumentController extends AbstractDocumentController {
     @SneakyThrows
     public DataRevision<CatalogueUser> deleteDocument(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file
+            @PathVariable String file
             ) {
         return documentRepository.delete(user, file);
             }
@@ -478,7 +478,7 @@ public class DocumentController extends AbstractDocumentController {
     @PostMapping("documents/{file}/clone")
     public ResponseEntity<Void> cloneAsNewVersion(
         @ActiveUser CatalogueUser user,
-        @PathVariable("file") String file
+        @PathVariable String file
     ) throws DocumentRepositoryException
     {
         MetadataDocument source = documentRepository.read(file);

@@ -39,7 +39,7 @@ public class NercModelController extends AbstractDocumentController {
     @PutMapping(value = "{file}", consumes = NERC_MODEL_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateNercModel(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
+            @PathVariable String file,
             @RequestBody NercModel document
     ) {
         return saveMetadataDocument(user, file, document);
@@ -59,7 +59,7 @@ public class NercModelController extends AbstractDocumentController {
     @PutMapping(value = "{file}", consumes = NERC_MODEL_USE_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateNercModelUse(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
+            @PathVariable String file,
             @RequestBody NercModelUse document
     ) {
         return saveMetadataDocument(user, file, document);

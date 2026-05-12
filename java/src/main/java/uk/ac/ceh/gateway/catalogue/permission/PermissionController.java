@@ -38,7 +38,7 @@ public class PermissionController {
     @ResponseBody
     public HttpEntity<PermissionResource> currentPermission (
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file
+            @PathVariable String file
     ) throws DocumentRepositoryException {
         return ResponseEntity.ok(
             new PermissionResource(
@@ -93,7 +93,7 @@ public class PermissionController {
     @ResponseBody
     public HttpEntity<PermissionResource> updatePermission (
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
+            @PathVariable String file,
             @RequestBody PermissionResource permissionResource)
         throws DocumentRepositoryException {
         MetadataDocument document = documentRepository.read(file);

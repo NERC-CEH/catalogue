@@ -41,7 +41,7 @@ public class OnlineResourceController {
 
     @SneakyThrows
     @GetMapping("documents/{file}/onlineResources")
-    public List<OnlineResource> getOnlineResources(@PathVariable("file") String file) {
+    public List<OnlineResource> getOnlineResources(@PathVariable String file) {
         log.debug("hit endpoint {}", file);
         return getOnlineResources(documentBundleReader.readBundle(file));
     }
@@ -49,16 +49,15 @@ public class OnlineResourceController {
     @SneakyThrows
     @GetMapping("history/{revision}/{file}/onlineResources")
     public List<OnlineResource> getOnlineResources(
-            @PathVariable("revision") String revision,
-            @PathVariable("file") String file
+            @PathVariable String revision,
+            @PathVariable String file
     ) {
         return getOnlineResources(documentBundleReader.readBundle(file, revision));
     }
 
     private List<OnlineResource> getOnlineResources(MetadataDocument document) {
         log.debug("Looking for {}", document);
-        if(document instanceof GeminiDocument) {
-            GeminiDocument geminiDocument = (GeminiDocument)document;
+        if(document instanceof GeminiDocument geminiDocument) {
             return geminiDocument.getOnlineResources();
         }
         else {
@@ -68,17 +67,17 @@ public class OnlineResourceController {
 
     @GetMapping("documents/{file}/onlineResources/{index}")
     public Object processOrRedirectToOnlineResource(
-            @PathVariable("file") String file,
-            @PathVariable("index") int index
+            @PathVariable String file,
+            @PathVariable int index
     ) {
         return processOrRedirectToOnlineResource(getOnlineResource(file, index));
     }
 
     @GetMapping("history/{revision}/{file}/onlineResources/{index}")
     public Object processOrRedirectToOnlineResource(
-            @PathVariable("revision") String revision,
-            @PathVariable("file") String file,
-            @PathVariable("index") int index
+            @PathVariable String revision,
+            @PathVariable String file,
+            @PathVariable int index
     ) {
         return processOrRedirectToOnlineResource(getOnlineResource(revision, file, index));
     }
@@ -92,25 +91,25 @@ public class OnlineResourceController {
 
     @GetMapping("documents/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png")
     public TransparentProxy proxyMapProxyTileRequest(
-            @PathVariable("file") String file,
-            @PathVariable("index") int index,
-            @PathVariable("layer") String layer,
-            @PathVariable("z") int z,
-            @PathVariable("x") int x,
-            @PathVariable("y") int y
+            @PathVariable String file,
+            @PathVariable int index,
+            @PathVariable String layer,
+            @PathVariable int z,
+            @PathVariable int x,
+            @PathVariable int y
     ) {
         return proxyMapProxyTileRequest(getOnlineResource(file, index), layer, z, x, y);
     }
 
     @GetMapping("history/{revision}/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png")
     public TransparentProxy proxyMapProxyTileRequest(
-            @PathVariable("revision") String revision,
-            @PathVariable("file") String file,
-            @PathVariable("index") int index,
-            @PathVariable("layer") String layer,
-            @PathVariable("z") int z,
-            @PathVariable("x") int x,
-            @PathVariable("y") int y
+            @PathVariable String revision,
+            @PathVariable String file,
+            @PathVariable int index,
+            @PathVariable String layer,
+            @PathVariable int z,
+            @PathVariable int x,
+            @PathVariable int y
     ) {
         return proxyMapProxyTileRequest(getOnlineResource(revision, file, index), layer, z, x, y);
     }
@@ -125,19 +124,19 @@ public class OnlineResourceController {
 
     @GetMapping("documents/{file}/onlineResources/{index}/{layer}/legend")
     public TransparentProxy getMapLayerLegend(
-            @PathVariable("file") String file,
-            @PathVariable("index") int index,
-            @PathVariable("layer") String layer
+            @PathVariable String file,
+            @PathVariable int index,
+            @PathVariable String layer
     ) {
         return getMapLayerLegend(getOnlineResource(file, index), layer);
     }
 
     @GetMapping("history/{revision}/{file}/onlineResources/{index}/{layer}/legend")
     public TransparentProxy getMapLayerLegend(
-            @PathVariable("revision") String revision,
-            @PathVariable("file") String file,
-            @PathVariable("index") int index,
-            @PathVariable("layer") String layer
+            @PathVariable String revision,
+            @PathVariable String file,
+            @PathVariable int index,
+            @PathVariable String layer
     ) {
         return getMapLayerLegend(getOnlineResource(revision, file, index), layer);
     }

@@ -51,7 +51,7 @@ public class DownloadController {
     @GetMapping("download/{uuid}")
     public String download(
         @ActiveUser CatalogueUser user,
-        @PathVariable("uuid") String uuid,
+        @PathVariable String uuid,
         @RequestParam("url") String url,
         HttpServletRequest request
     ) {
