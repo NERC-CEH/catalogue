@@ -48,7 +48,7 @@
     </#if>
 
     <#if boundingBox?has_content>
-      geo:hasBoundingBox :bbox ;
+      geo:hasBoundingBox :${id}_bbox ;
     </#if>
 
     <#nested>
@@ -75,7 +75,7 @@
 
     <#if boundingBox?has_content>
     <#-- Bounding box node -->
-      :bbox
+      :${id}_bbox
           a geo:Geometry ;
           geo:asEnvelope "ENVELOPE(${boundingBox.westBoundLongitude}, ${boundingBox.eastBoundLongitude}, ${boundingBox.southBoundLatitude}, ${boundingBox.northBoundLatitude})"^^geo:envelopeLiteral .
     </#if>
@@ -92,17 +92,19 @@
 </#macro>
 
 <#macro idList ids>
+  <#assign docId = id>
   <#list ids as id>
     <#if id.codeSpace?has_content && !id.codeSpace?starts_with("doi")>
-    :id${id?index}<#sep>, <#sep><#t>
+    :${docId}_id${id?index}<#sep>, <#sep><#t>
     </#if>
   </#list>
 </#macro>
 
 <#macro idNodes ids>
+  <#assign docId = id>
   <#list ids as id>
   <#if id.codeSpace?has_content && !id.codeSpace?starts_with("doi")>
-  :id${id?index} a adms:Identifier ;
+  :${docId}_id${id?index} a adms:Identifier ;
       skos:notation "${id.code}" ;
       adms:schemaAgency <https://ror.org/00pggkr55> ;
       dcterms:conformsTo "UKCEH" ;

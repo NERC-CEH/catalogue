@@ -19,7 +19,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockCatalogueUser
 @ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("WholeCatalogueTurtleController")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties={
+    "spring.freemarker.template-loader-path=file:../templates",
+    "fuseki.catalogueIds=eidc"
+})
 class WholeCatalogueTurtleControllerTest extends AbstractMvcTest {
 
     @MockitoBean
@@ -40,6 +43,33 @@ class WholeCatalogueTurtleControllerTest extends AbstractMvcTest {
                 status().isOk(),
                 content().contentType("text/turtle")
             );
+    }
+
+    @SneakyThrows
+    @Test
+    void getFusekiCataloguesTtl() {
+        //Given
+        given(documentsToTurtleService.getBigTtl(catalogueKey))
+            .willReturn(Optional.of("some ttl"));
+
+        //When
+        mvc.perform(get("/catalogue.ttl"))
+            .andExpectAll(
+                status().isOk(),
+                content().contentType("text/turtle")
+            );
+    }
+
+    @SneakyThrows
+    @Test
+    void getFusekiCataloguesTtlNotFound() {
+        //Given
+        given(documentsToTurtleService.getBigTtl(catalogueKey))
+            .willReturn(Optional.empty());
+
+        //When
+        mvc.perform(get("/catalogue.ttl"))
+            .andExpect(status().isNotFound());
     }
 
     @SneakyThrows

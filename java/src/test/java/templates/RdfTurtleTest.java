@@ -16,10 +16,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.model.Link;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
@@ -410,6 +413,88 @@ public class RdfTurtleTest {
                     )
                 )
             );
+        }
+
+        @Test
+        void loadGeminiWithNonOrcidContact() {
+            // Contacts without ORCID/ROR fall back to prefixed-name identifiers (:docId_c0).
+            // This test catches regressions where the `:` prefix is dropped, producing invalid Turtle.
+            val uri = "https://example.com/id/conttest";
+            GeminiDocument document = new GeminiDocument();
+            document.setType("dataset");
+            document.setId("conttest");
+            document.setUri(uri);
+            document.setTitle("Contact test");
+            document.setResponsibleParties(List.of(
+                ResponsibleParty.builder()
+                    .familyName("Smith")
+                    .givenName("John")
+                    .organisationName("Test Organisation")
+                    .role("pointOfContact")
+                    .build()
+            ));
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(model.contains(
+                createStatement(
+                    createResource(uri),
+                    createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                    createResource("http://www.w3.org/ns/dcat#Dataset")
+                )
+            ));
+        }
+
+        @Test
+        void loadGeminiWithFundingNoAwardUri() {
+            // Funding without awardURI falls back to prefixed-name identifier (:docId_fund0).
+            // This test catches regressions where the `:` prefix is dropped on that branch.
+            val uri = "https://example.com/id/fundtest";
+            GeminiDocument document = new GeminiDocument();
+            document.setType("dataset");
+            document.setId("fundtest");
+            document.setUri(uri);
+            document.setTitle("Funding test");
+            document.setFunding(List.of(Funding.builder().awardTitle("Grant X").build()));
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(model.contains(
+                createStatement(
+                    createResource(uri),
+                    createProperty("http://www.w3.org/ns/prov#wasGeneratedBy"),
+                    model.listObjectsOfProperty(
+                        createResource(uri),
+                        createProperty("http://www.w3.org/ns/prov#wasGeneratedBy")
+                    ).next().asResource()
+                )
+            ));
+        }
+
+        @Test
+        void loadGeminiWithCitationNoUrl() {
+            // Incoming citations without a URL fall back to prefixed-name identifier (:docId_citation0).
+            // This test catches regressions where the `:` prefix is dropped on that branch.
+            val uri = "https://example.com/id/citationtest";
+            GeminiDocument document = new GeminiDocument();
+            document.setType("dataset");
+            document.setId("citationtest");
+            document.setUri(uri);
+            document.setTitle("Citation test");
+            document.setIncomingCitations(List.of(Supplemental.builder().description("Test citation desc").build()));
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(model.contains(
+                createStatement(
+                    createResource(uri),
+                    createProperty("http://purl.org/dc/terms/isReferencedBy"),
+                    model.listObjectsOfProperty(
+                        createResource(uri),
+                        createProperty("http://purl.org/dc/terms/isReferencedBy")
+                    ).next().asResource()
+                )
+            ));
         }
 
         @Nested
