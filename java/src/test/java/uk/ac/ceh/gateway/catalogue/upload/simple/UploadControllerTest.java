@@ -52,7 +52,7 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UPLO
 })
 @DisplayName("Simple Upload Controller")
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class UploadControllerTest extends AbstractMvcTest {
     @MockitoBean private StorageService storageService;
     @MockitoBean private DocumentRepository documentRepository;

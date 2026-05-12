@@ -32,7 +32,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.GEMINI_XML_SHORT;
 @DisplayName("NercWafController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class NercWafControllerTest extends AbstractMvcTest {
 
     @MockitoBean private DataRepository<CatalogueUser> repo;

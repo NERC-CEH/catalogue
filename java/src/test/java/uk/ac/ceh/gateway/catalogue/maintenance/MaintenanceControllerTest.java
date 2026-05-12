@@ -44,7 +44,7 @@ import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTEN
 @DisplayName("MaintenanceController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 
-public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class MaintenanceControllerTest extends AbstractMvcTest {
     @MockitoBean DataRepositoryOptimizingService repoService;
     @MockitoBean @Qualifier("solr-index") SolrIndexingService indexService;

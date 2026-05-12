@@ -39,7 +39,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @DisplayName("ExceptionController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 
-public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class ExceptionControllerHandlerTest {
     private ExceptionControllerHandler controller;
 

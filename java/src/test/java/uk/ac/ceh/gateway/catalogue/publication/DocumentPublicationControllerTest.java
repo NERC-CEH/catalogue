@@ -46,7 +46,7 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC
     DevelopmentUserStoreConfig.class
 })
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class DocumentPublicationControllerTest extends AbstractMvcTest {
     @MockitoBean @Qualifier("document")
     private PublicationService publicationService;

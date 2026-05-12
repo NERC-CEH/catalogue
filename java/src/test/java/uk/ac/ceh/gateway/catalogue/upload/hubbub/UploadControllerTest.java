@@ -56,7 +56,7 @@ import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.*;
 })
 @DisplayName("HubbubUploadController")
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class UploadControllerTest extends AbstractMvcTest {
 
     @MockitoBean private UploadService uploadService;

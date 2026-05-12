@@ -19,10 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockCatalogueUser
 @ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("WholeCatalogueTurtleController")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties={
-    "spring.freemarker.template-loader-path=file:../templates",
-    "fuseki.catalogueIds=eidc"
-})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="fuseki.catalogueIds=eidc")
 class WholeCatalogueTurtleControllerTest extends AbstractMvcTest {
 
     @MockitoBean

@@ -40,7 +40,7 @@ import static uk.ac.ceh.gateway.catalogue.datacite.DataciteController.DATACITE_R
     DevelopmentUserStoreConfig.class
 })
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class DataciteControllerTest extends AbstractMvcTest {
     @MockitoBean private DocumentRepository documentRepository;
     @MockitoBean private DocumentIdentifierService identifierService;

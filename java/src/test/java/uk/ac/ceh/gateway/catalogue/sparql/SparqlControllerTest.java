@@ -43,7 +43,7 @@ import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTEN
     DevelopmentUserStoreConfig.class
 })
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class SparqlControllerTest extends AbstractMvcTest {
     @MockitoBean private CatalogueService catalogueService;
     @MockitoBean private Dataset jenaTdb;

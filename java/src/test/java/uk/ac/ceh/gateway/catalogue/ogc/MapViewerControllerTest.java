@@ -63,7 +63,7 @@ import static uk.ac.ceh.gateway.catalogue.ogc.MapViewerController.INFO_FORMAT;
 @DisplayName("MapViewerController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 
-public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class MapViewerControllerTest extends AbstractMvcTest {
     @MockitoBean @Qualifier("wms") private RestTemplate rest;
     @MockitoBean private CatalogueService catalogueService;

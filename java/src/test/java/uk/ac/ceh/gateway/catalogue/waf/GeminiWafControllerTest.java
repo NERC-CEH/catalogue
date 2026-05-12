@@ -25,7 +25,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.GEMINI_XML_SHORT;
 @DisplayName("GeminiWafController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class GeminiWafControllerTest extends AbstractMvcTest {
     @MockitoBean private GeminiWafService geminiWafService;
 

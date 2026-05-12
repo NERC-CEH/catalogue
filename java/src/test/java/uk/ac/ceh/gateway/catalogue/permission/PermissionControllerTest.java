@@ -47,7 +47,7 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC
 @DisplayName("PermissionController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 
-public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class PermissionControllerTest extends AbstractMvcTest {
     @MockitoBean(name="permission") private PermissionService permissionService;
     @MockitoBean private DocumentRepository documentRepository;

@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles({"metrics", "test", "server-eidc", "search-basic"})
 @DisplayName("MetricsController")
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class MetricsReportControllerTest extends AbstractMvcTest {
 
     @MockitoBean private MetricsService metricsService;

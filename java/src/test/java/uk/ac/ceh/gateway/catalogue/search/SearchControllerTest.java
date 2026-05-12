@@ -48,7 +48,7 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UNPR
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 
 @TestPropertySource(locations="classpath:test.properties")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class SearchControllerTest extends AbstractMvcTest {
     @MockitoBean private SolrClient solrClient;
     @MockitoBean private CatalogueService catalogueService;
