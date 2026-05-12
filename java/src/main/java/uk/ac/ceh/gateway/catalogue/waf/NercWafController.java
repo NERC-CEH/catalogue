@@ -64,7 +64,7 @@ public class NercWafController {
     }
 
     @GetMapping("{id}.xml")
-    public String forwardToMetadata(@PathVariable("id") String id) {
+    public String forwardToMetadata(@PathVariable String id) {
         return "forward:/documents/" + id + "?format=" + GEMINI_XML_SHORT;
     }
 }

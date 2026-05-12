@@ -49,7 +49,7 @@ public class UploadController {
     @PreAuthorize("@permission.userCanUpload(#id)")
     @SneakyThrows(DocumentRepositoryException.class)
     public String page (
-            @PathVariable("id") String id,
+            @PathVariable String id,
             Model model
     ) {
         try {
@@ -75,7 +75,7 @@ public class UploadController {
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("@permission.userCanUpload(#id)")
     public ResponseEntity<List<FileInfo>> filenames (
-            @PathVariable("id") String id
+            @PathVariable String id
     ) {
         log.info("For {} getting filenames", id);
         return ResponseEntity.ok(storageService.filenames(id));
@@ -85,7 +85,7 @@ public class UploadController {
     @PreAuthorize("@permission.userCanUpload(#id)")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void upload(
-            @PathVariable("id") String id,
+            @PathVariable String id,
             @RequestParam("file") MultipartFile file,
             @RequestParam("filename") String filename
     ) {
@@ -97,7 +97,7 @@ public class UploadController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("@permission.userCanUpload(#id)")
     public void delete(
-        @PathVariable("id") String id,
+        @PathVariable String id,
         HttpServletRequest request
     ) {
         // /upload/id/<path we want>

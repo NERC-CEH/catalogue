@@ -60,7 +60,7 @@ public class CatalogueController {
 
     @GetMapping("{id}")
     public CatalogueModel get(
-        @PathVariable("id") String id
+        @PathVariable String id
     ) {
         val catalogue = catalogueService.retrieve(id);
         return catalogueModelAssembler.toModel(catalogue);

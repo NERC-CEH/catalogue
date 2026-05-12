@@ -37,7 +37,7 @@ public class InfrastructureRecordController extends AbstractDocumentController {
     @PutMapping(value = "{file}", consumes = INFRASTRUCTURERECORD_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateInfrastructureRecord(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
+            @PathVariable String file,
             @RequestBody InfrastructureRecord document
     ) {
         return saveMetadataDocument(user, file, document);

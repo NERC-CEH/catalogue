@@ -76,7 +76,7 @@ public class UploadController {
     @PreAuthorize("@permission.userCanUpload(#datasetId)")
     @GetMapping
     public String getPage(
-        @PathVariable("datasetId") String datasetId,
+        @PathVariable String datasetId,
         Model model
     ) {
         log.info("Requesting upload page for {}", datasetId);
@@ -127,8 +127,8 @@ public class UploadController {
     @GetMapping("{datastore}")
     public HubbubResponse get(
         @ActiveUser CatalogueUser user,
-        @PathVariable("datasetId") String datasetId,
-        @PathVariable("datastore") String datastore,
+        @PathVariable String datasetId,
+        @PathVariable String datastore,
         @RequestParam(value = "path", required = false) Optional<String> possiblePath,
         @RequestParam(value = "page", defaultValue = "1") int page,
         @RequestParam(value = "size", defaultValue = "5000") int size
@@ -145,7 +145,7 @@ public class UploadController {
     @GetMapping(produces = TEXT_CSV_VALUE)
     public void csv(
         @ActiveUser CatalogueUser user,
-        @PathVariable("datasetId") String datasetId,
+        @PathVariable String datasetId,
         HttpServletResponse response
     ) {
         response.setContentType(TEXT_CSV_VALUE);
@@ -158,7 +158,7 @@ public class UploadController {
     @PostMapping
     public void upload(
         @ActiveUser CatalogueUser user,
-        @PathVariable("datasetId") String datasetId,
+        @PathVariable String datasetId,
         @RequestParam("file") MultipartFile multipartFile,
         @RequestParam("filename") String filename
     ) {
@@ -170,8 +170,8 @@ public class UploadController {
     @DeleteMapping("{datastore}")
     public void delete(
         @ActiveUser CatalogueUser user,
-        @PathVariable("datasetId") String datasetId,
-        @PathVariable("datastore") String datastore,
+        @PathVariable String datasetId,
+        @PathVariable String datastore,
         @RequestParam("path") String path
     ) {
         uploadService.delete(datasetId, datastore, path, user.getUsername());
@@ -183,7 +183,7 @@ public class UploadController {
     @PostMapping("finish")
     public void finish(
         @ActiveUser CatalogueUser user,
-        @PathVariable("datasetId") String datasetId
+        @PathVariable String datasetId
     ) {
         transitionIssueToStartProgress(user, datasetId);
         removeUploadPermission(user, datasetId);
@@ -195,7 +195,7 @@ public class UploadController {
     @PostMapping("hash")
     public void hashDropbox(
         @ActiveUser CatalogueUser user,
-        @PathVariable("datasetId") String datasetId
+        @PathVariable String datasetId
     ) {
         uploadService.hashDropbox(datasetId, user.getUsername());
     }
@@ -205,7 +205,7 @@ public class UploadController {
     @PostMapping("register")
     public void register(
         @ActiveUser CatalogueUser user,
-        @PathVariable("datasetId") String datasetId
+        @PathVariable String datasetId
     ) {
         uploadService.register(datasetId, user.getUsername());
     }
@@ -215,8 +215,8 @@ public class UploadController {
     @PostMapping("{datastore}/unregister")
     public void unregister(
         @ActiveUser CatalogueUser user,
-        @PathVariable("datasetId") String datasetId,
-        @PathVariable("datastore") String datastore,
+        @PathVariable String datasetId,
+        @PathVariable String datastore,
         @RequestParam("path") String path
     ) {
         uploadService.unregister(datasetId, datastore, path, user.getUsername());
@@ -227,7 +227,7 @@ public class UploadController {
     @PostMapping("schedule")
     public void schedule(
         @ActiveUser CatalogueUser user,
-        @PathVariable("datasetId") String datasetId
+        @PathVariable String datasetId
     ) {
         transitionIssueToSchedule(user, datasetId);
     }
@@ -237,7 +237,7 @@ public class UploadController {
     @PostMapping("reschedule")
     public void reschedule(
         @ActiveUser CatalogueUser user,
-        @PathVariable("datasetId") String datasetId
+        @PathVariable String datasetId
     ) {
         transitionIssueToScheduled(user, datasetId);
     }
@@ -247,8 +247,8 @@ public class UploadController {
     @PostMapping("{datastore}/accept")
     public void accept(
         @ActiveUser CatalogueUser user,
-        @PathVariable("datasetId") String datasetId,
-        @PathVariable("datastore") String datastore,
+        @PathVariable String datasetId,
+        @PathVariable String datastore,
         @RequestParam("path") String path
     ) {
         uploadService.accept(datasetId, datastore, path, user.getUsername());
@@ -259,8 +259,8 @@ public class UploadController {
     @PostMapping("{datastore}/cancel")
     public void cancel(
         @ActiveUser CatalogueUser user,
-        @PathVariable("datasetId") String datasetId,
-        @PathVariable("datastore") String datastore,
+        @PathVariable String datasetId,
+        @PathVariable String datastore,
         @RequestParam("path") String path
     ) {
         uploadService.cancel(datasetId, datastore, path, user.getUsername());
@@ -271,8 +271,8 @@ public class UploadController {
     @PostMapping("{datastore}/validate")
     public void validate(
         @ActiveUser CatalogueUser user,
-        @PathVariable("datasetId") String datasetId,
-        @PathVariable("datastore") String datastore,
+        @PathVariable String datasetId,
+        @PathVariable String datastore,
         @RequestParam(value="path", required=false) Optional<String> possiblePath
     ) {
         uploadService.validate(datasetId, datastore, possiblePath, user.getUsername());
@@ -283,8 +283,8 @@ public class UploadController {
     @PostMapping("{datastore}/move")
     public void move(
         @ActiveUser CatalogueUser user,
-        @PathVariable("datasetId") String datasetId,
-        @PathVariable("datastore") String datastore,
+        @PathVariable String datasetId,
+        @PathVariable String datastore,
         @RequestParam(value="path", required=false) Optional<String> possiblePath,
         @RequestParam("to") String to
     ) {

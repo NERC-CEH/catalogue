@@ -46,7 +46,7 @@ public class DataciteController {
     @Secured(DATACITE_ROLE)
     @GetMapping(value="{file}/datacite/getDoi", produces=DATACITE_JSON_VALUE)
     public DataciteRequest getDataciteRequestDOI(
-        @PathVariable("file") String file
+        @PathVariable String file
     ) {
         GeminiDocument document = getDocument(file);
         log.info("getDoi endpoint hit");
@@ -57,7 +57,7 @@ public class DataciteController {
     @PostMapping(value="{file}/datacite")
     public RedirectView mintDoi(
         @ActiveUser CatalogueUser user,
-        @PathVariable("file") String file
+        @PathVariable String file
     ) throws DocumentRepositoryException {
         GeminiDocument geminiDocument = getDocument(file);
         log.info("hit endpoint for post mintDoi");
@@ -82,7 +82,7 @@ public class DataciteController {
     @PutMapping(value="{file}/datacite/update")
     public void updateDoi(
         @ActiveUser CatalogueUser user,
-        @PathVariable("file") String file
+        @PathVariable String file
     ) throws DocumentRepositoryException {
         GeminiDocument geminiDocument = getDocument(file);
         log.info("hit endpoint for updating Doi");

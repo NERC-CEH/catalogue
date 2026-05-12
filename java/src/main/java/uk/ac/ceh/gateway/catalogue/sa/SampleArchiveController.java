@@ -33,7 +33,7 @@ public class SampleArchiveController extends AbstractDocumentController {
 
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = SAMPLE_ARCHIVE_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> updateSampleArchive(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
+    public ResponseEntity<MetadataDocument> updateSampleArchive(@ActiveUser CatalogueUser user, @PathVariable String file,
             @RequestBody SampleArchive document) {
         return saveMetadataDocument(user, file, document);
     }

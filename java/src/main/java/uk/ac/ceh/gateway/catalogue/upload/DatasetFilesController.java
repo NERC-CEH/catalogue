@@ -32,7 +32,7 @@ public class DatasetFilesController {
 
     @GetMapping("/{datasetId}/files")
     public ResponseEntity<?> listDatasetFiles(
-        @PathVariable("datasetId") String datasetId,
+        @PathVariable String datasetId,
         @RequestParam(value = "page", defaultValue = "1") int page,
         @RequestParam(value = "size", defaultValue = "10000") int size
     ) {

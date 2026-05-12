@@ -36,7 +36,7 @@ public class QualityController {
     @ResponseBody
     public HttpEntity<CatalogueResults> quality(
         @ActiveUser CatalogueUser user,
-        @PathVariable("catalogue") String catalogue
+        @PathVariable String catalogue
     ) {
         return ResponseEntity.ok(
             new CatalogueResults(
@@ -52,13 +52,10 @@ public class QualityController {
     @ResponseBody
     public HttpEntity<Results> quality(
         @ActiveUser CatalogueUser user,
-        @PathVariable("catalogue") String catalogue,
-        @PathVariable("id") String id
+        @PathVariable String catalogue,
+        @PathVariable String id
     ) {
         return ResponseEntity.ok(metadataQualityService.check(id));
     }
 
-    public MetadataListingService getMetadataListingService() {
-        return metadataListingService;
-    }
 }

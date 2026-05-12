@@ -34,7 +34,7 @@ public class CitationController {
     @GetMapping("documents/{file}/citation")
     public ResponseEntity<Citation> getCitationByFormat(
         @ActiveUser CatalogueUser user,
-        @PathVariable("file") String file,
+        @PathVariable String file,
         @RequestParam(value = "format", required = false) String format
     ) throws DocumentRepositoryException {
         Citation citation = getCitation(documentRepository.read(file));
@@ -52,16 +52,15 @@ public class CitationController {
     @GetMapping("history/{revision}/{file}/citation")
     public Citation getCitationHistory(
         @ActiveUser CatalogueUser user,
-        @PathVariable("file") String file,
-        @PathVariable("revision") String revision
+        @PathVariable String file,
+        @PathVariable String revision
     ) throws DocumentRepositoryException  {
         return getCitation(documentRepository.read(file, revision));
     }
 
     private Citation getCitation(MetadataDocument document) {
         log.debug("Citation for: {}", document.getId());
-        if(document instanceof GeminiDocument) {
-            GeminiDocument gemini = (GeminiDocument)document;
+        if(document instanceof GeminiDocument gemini) {
             return citationService.getCitation(gemini)
                 .orElseThrow(
                     () -> new ResourceNotFoundException("The Document is not citable")
