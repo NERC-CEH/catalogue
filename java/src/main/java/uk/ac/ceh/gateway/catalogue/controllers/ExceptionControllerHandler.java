@@ -25,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementException;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadException;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URISyntaxException;
 
 import static org.springframework.http.HttpStatus.*;
@@ -74,7 +75,12 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(InvalidFacetException.class)
-    public ResponseEntity<Object> handleInvalidFacetException(InvalidFacetException ex) {
+    public ResponseEntity<Object> handleInvalidFacetException(InvalidFacetException ex, HttpServletRequest request) {
+        String qs = request.getQueryString();
+        String fullUrl = request.getRequestURL() + (qs != null ? "?" + qs : "");
+        String[] parts = request.getServletPath().split("/");
+        String catalogue = parts.length >= 3 ? parts[1] : "all";
+        log.warn("Invalid facet in catalogue [{}] for URL [{}]: {}", catalogue, fullUrl, ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), BAD_REQUEST);
     }
 

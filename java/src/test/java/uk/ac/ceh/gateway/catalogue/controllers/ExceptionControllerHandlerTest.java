@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.mock.web.MockHttpServletRequest;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
@@ -133,9 +134,12 @@ class ExceptionControllerHandlerTest {
         //Given
         String mess = "Unknown facet field(s): badField";
         InvalidFacetException ex = new InvalidFacetException(mess);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setServletPath("/eidc/documents");
+        request.setQueryString("facet=badField:x");
 
         //When
-        ResponseEntity<Object> response = controller.handleInvalidFacetException(ex);
+        ResponseEntity<Object> response = controller.handleInvalidFacetException(ex, request);
 
         //Then
         assertThat(response.getStatusCode(), equalTo(BAD_REQUEST));
