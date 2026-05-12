@@ -39,7 +39,7 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC
 @DisplayName("CitationController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class CitationControllerTest extends AbstractMvcTest {
     @MockitoBean DocumentRepository documentRepository;
     @MockitoBean CitationService citationService;

@@ -9,9 +9,9 @@ PREFIX adms: <http://www.w3.org/ns/adms#>
 :43414cbf-03ab-4f5a-a581-b01ce145d312
 a doo:EnvironmentalMonitoringProgramme ;
 dcterms:title "Test programme name" ;
-adms:identifier :id0 ;
+adms:identifier :43414cbf-03ab-4f5a-a581-b01ce145d312_id0 ;
 dcterms:description "Test programme description" ;
-geo:hasBoundingBox :bbox ;
+geo:hasBoundingBox :43414cbf-03ab-4f5a-a581-b01ce145d312_bbox ;
 dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en>;
 doo:hasChildProgramme <https://catalogue.ceh.ac.uk/id/000000005>;
 dcterms:relation <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue.ceh.ac.uk/id/000000002>;
@@ -19,11 +19,11 @@ dcterms:replaces <https://catalogue.ceh.ac.uk/id/000000003>;
 doo:utilises <https://catalogue.ceh.ac.uk/id/000000004>;
 doo:triggers <https://catalogue.ceh.ac.uk/id/000000006>;
 .
-:id0 a adms:Identifier ;
+:43414cbf-03ab-4f5a-a581-b01ce145d312_id0 a adms:Identifier ;
 skos:notation "http://localhost:8080/id/43414cbf-03ab-4f5a-a581-b01ce145d312" ;
 adms:schemaAgency <https://ror.org/00pggkr55> ;
 dcterms:conformsTo "UKCEH" ;
 .
-:bbox
+:43414cbf-03ab-4f5a-a581-b01ce145d312_bbox
 a geo:Geometry ;
 geo:asEnvelope "ENVELOPE(-8.648, -0.728, 54.634, 60.861)"^^geo:envelopeLiteral .

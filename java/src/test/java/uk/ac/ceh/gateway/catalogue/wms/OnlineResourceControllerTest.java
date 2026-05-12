@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("OnlineResourceController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 
-public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class OnlineResourceControllerTest extends AbstractMvcTest {
 
     @MockitoBean private BundledReaderService<MetadataDocument> documentBundleReader;

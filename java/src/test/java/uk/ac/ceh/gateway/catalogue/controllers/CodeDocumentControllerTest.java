@@ -39,7 +39,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.CODE_JSON_VALUE;
     DevelopmentUserStoreConfig.class
 })
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class CodeDocumentControllerTest extends AbstractMvcTest {
     @MockitoBean private DocumentRepository documentRepository;
     @MockitoBean(name="permission") private PermissionService permissionService;

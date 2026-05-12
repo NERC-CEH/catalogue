@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verify;
 @DisplayName("UkemsDocumentController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class UkemsDocumentControllerTest {
     @MockitoBean private DocumentRepository documentRepository;
 

@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("SitemapController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties="spring.freemarker.template-loader-path=file:../templates")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class SitemapControllerTest extends AbstractMvcTest {
     @MockitoBean private CatalogueService catalogueService;
     @MockitoBean private DocumentIdentifierService documentIdentifierService;

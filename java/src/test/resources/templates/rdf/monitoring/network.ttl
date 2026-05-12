@@ -9,14 +9,14 @@ PREFIX adms: <http://www.w3.org/ns/adms#>
 :09b6b7f5-1bc3-4d21-864a-adf249e86618
 a doo:EnvironmentalMonitoringNetwork ;
 dcterms:title "Test network name" ;
-adms:identifier :id0 ;
+adms:identifier :09b6b7f5-1bc3-4d21-864a-adf249e86618_id0 ;
 dcterms:description "Test network description" ;
 dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en>;
 doo:hasChildNetwork <https://catalogue.ceh.ac.uk/id/000000003>;
 dcterms:relation <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue.ceh.ac.uk/id/000000002>;
 dcterms:replaces <https://catalogue.ceh.ac.uk/id/000000004>;
 .
-:id0 a adms:Identifier ;
+:09b6b7f5-1bc3-4d21-864a-adf249e86618_id0 a adms:Identifier ;
 skos:notation "http://localhost:8080/id/09b6b7f5-1bc3-4d21-864a-adf249e86618" ;
 adms:schemaAgency <https://ror.org/00pggkr55> ;
 dcterms:conformsTo "UKCEH" ;
