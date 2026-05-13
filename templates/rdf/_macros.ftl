@@ -117,9 +117,8 @@
 </#macro>
 
 <#macro opList >
-  <#list fileset as filesetOp>
-    <#if filesetOp.observedProperty?has_content>
-      <#list filesetOp.observedProperty as op>
+  <#list fileset?filter(fs -> fs.observedProperty?has_content) as filesetOp>
+    <#list filesetOp.observedProperty as op>
         <#if op.uri?has_content>
           <#assign keyword ="\l" + op.uri?trim+ "\g">
         <#elseif op.title?has_content>
@@ -129,7 +128,6 @@
         </#if>
         ${keyword}<#sep>,</#sep><#t>
       </#list>
-    </#if>
     <#sep>,</#sep><#t>
   </#list>
 </#macro>
