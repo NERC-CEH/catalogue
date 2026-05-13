@@ -53,7 +53,9 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         boolean showStackTrace = "always".equalsIgnoreCase(includeStackTrace);
 
         if (ex instanceof PermissionDeniedException) {
-            logger.error("Permission denied: " + ex.getMessage());
+            logger.warn("Permission denied: " + ex.getMessage());
+        } else if (NOT_FOUND.equals(statusCode)) {
+            logger.warn(message);
         } else {
             if (showStackTrace) {
                 logger.error(message, ex);
