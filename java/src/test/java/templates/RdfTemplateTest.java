@@ -9,6 +9,8 @@ import lombok.val;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.junit.jupiter.api.BeforeEach;
@@ -124,6 +126,29 @@ public class RdfTemplateTest {
 
             //then
             compare(expected, actual, false);
+        }
+
+        @Test
+        @SneakyThrows
+        @DisplayName("no trailing comma when last fileset has no observed properties")
+        void datasetWithEmptyTrailingFileset() {
+            val doc = objectMapper.readValue(
+                expected("rdf/datastore/eidc-gemini-multi-fileset.raw"), GeminiDocument.class);
+
+            given(jena.relationships(doc.getUri(), "http://purl.org/dc/terms/isPartOf")).willReturn(List.of());
+            given(jena.relationships(doc.getUri(), "http://purl.org/dc/terms/replaces")).willReturn(List.of());
+            given(jena.relationships(doc.getUri(), "http://purl.org/dc/terms/relation")).willReturn(List.of());
+
+            val actual = template("rdf/ttl.ftl", doc);
+
+            // If trailing comma is present, Jena throws RiotException on invalid Turtle
+            Model model = ModelFactory.createDefaultModel();
+            RDFDataMgr.read(model, new StringReader(actual), doc.getUri() + "/", Lang.TTL);
+
+            Resource subject = model.createResource(doc.getUri());
+            Property varMeasured = model.createProperty("https://schema.org/variableMeasured");
+            assertTrue(model.contains(subject, varMeasured, model.createResource("https://prop-a.example.com")));
+            assertTrue(model.contains(subject, varMeasured, model.createResource("https://prop-b.example.com")));
         }
 
         @Test

@@ -1,0 +1,29 @@
+{
+  "id": "aaa00000-0000-0000-0000-000000000001",
+  "uri": "http://localhost:8080/id/aaa00000-0000-0000-0000-000000000001",
+  "type": "dataset",
+  "title": "Multi-fileset regression test",
+  "availability": "Available",
+  "resourceIdentifiers": [],
+  "fileset": [
+    {
+      "filesetName": "fileset-with-props",
+      "observedProperty": [
+        {
+          "value": "",
+          "uri": "https://prop-a.example.com",
+          "title": "Property A"
+        },
+        {
+          "value": "",
+          "uri": "https://prop-b.example.com",
+          "title": "Property B"
+        }
+      ]
+    },
+    {
+      "filesetName": "fileset-without-props",
+      "observedProperty": []
+    }
+  ]
+}
