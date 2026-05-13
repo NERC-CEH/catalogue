@@ -62,6 +62,15 @@ class OpenApiTest extends AbstractMvcTest {
 
     @Test
     @SneakyThrows
+    @DisplayName("GET /v3/api-docs servers[0] is the HTTPS base URI")
+    void apiDocsHasCorrectServerUrl() {
+        mvc.perform(get("/v3/api-docs"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.servers[0].url").value("https://catalogue.ceh.ac.uk"));
+    }
+
+    @Test
+    @SneakyThrows
     @DisplayName("Swagger UI is accessible")
     void swaggerUiIsAccessible() {
         mvc.perform(get("/swagger-ui.html"))
