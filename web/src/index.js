@@ -1,4 +1,4 @@
-/* global window */
+/* global window IntersectionObserver */
 /* eslint no-new: "off" */
 import './globals'
 import $ from 'jquery'
