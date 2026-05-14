@@ -107,8 +107,6 @@ main {
 }
 
 header {
-    container-type: scroll-state;
-    container-name: sticky-header;
     position: sticky;
     top: 0;
     z-index: 1025;
@@ -527,10 +525,13 @@ i.fa-brands {
 }
 
 
-@container sticky-header scroll-state(stuck: top) {
-    header {
-        .container {
-            --header-height: 85px;
-        }
+#header-sentinel {
+    height: 0;
+    pointer-events: none;
+}
+
+header.stuck {
+    .container {
+        --header-height: 85px;
     }
 }
