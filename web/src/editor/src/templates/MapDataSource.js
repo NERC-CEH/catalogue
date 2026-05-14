@@ -23,6 +23,19 @@ export default _.template(`
 
 <div class="reprojections"></div>
 
+<div class="row layer-box">
+    <div class="col-lg-1">
+        <label class="control-label">Layer</label>
+    </div>
+    <div class="col-lg-11">
+        <input data-name='layer' class="editor-input"
+               value="<%= data.layer ? data.layer : '' %>"
+               placeholder="Optional — name of the layer inside a multi-layer container (e.g. a GeoPackage table)"
+               <%= data.disabled%>>
+    </div>
+</div>
+
+
 <div class="row">
     <div class="col-lg-1">
         <label class="control-label">Type</label>
