@@ -760,17 +760,20 @@ export default EditorView.extend({
           label: 'Web map service',
           ObjectInputView: MapDataSourceView,
           helpText: `\
-<p>Link this metadata record to an ingested geospatial file and create a WMS (<strong>https://catalogue.ceh.ac.uk/maps/{METADATA_ID}?request=getCapabilities&service=WMS</strong>). The supported formats are:</p>
-<ul>
-    <li>Shapefiles - Vector (ignore the .shp extension when specifying the path) </li>
-    <li>GeoTiff - Raster</li>
-</ul>
-<p>To maximise performance, it is generally best to provide reprojected variants of data sources in common EPSG codes.</p>
-<p>Vector datasets should be spatially indexed (using <a href="https://mapserver.org/utilities/shptree.html">shptree</a>)</p>
-<p>Raster datasets should be provided with <a href="https://www.gdal.org/gdaladdo.html">overviews</a>. GeoTiff supports internal overviews.</p>
-<p>The 'Byte?' option that appears for raster (GeoTiff) datasets is used to indicate whether the GeoTiff is a 'byte' or 'non-byte' datatype.
-This is only needed if you configure 'Styling=Classification' for your GeoTiff.</p>
-<p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>\
+<p>Link this metadata record to an ingested geospatial file and create a WMS (<strong>https://catalogue.ceh.ac.uk/maps/{METADATA_ID}?request=getCapabilities&service=WMS</strong>). The supported formats
+   are:</p>
+  <ul>
+      <li>Shapefiles - Vector (ignore the .shp extension when specifying the path)</li>
+      <li>GeoPackages - Vector container (specify the .gpkg path AND the layer name within the container in the 'Layer' field)</li>
+      <li>GeoTiff - Raster</li>
+  </ul>
+  <p>To maximise performance, it is generally best to provide reprojected variants of data sources in common EPSG codes.</p>
+  <p>Vector datasets should be spatially indexed (using <a href="https://mapserver.org/utilities/shptree.html">shptree</a>)</p>
+  <p>Raster datasets should be provided with <a href="https://www.gdal.org/gdaladdo.html">overviews</a>. GeoTiff supports internal overviews.</p>
+  <p>The 'Layer' field is only required for multi-layer containers (e.g. GeoPackages with multiple tables). For shapefiles and rasters, leave it blank.</p>
+  <p>The 'Byte?' option that appears for raster (GeoTiff) datasets is used to indicate whether the GeoTiff is a 'byte' or 'non-byte' datatype.
+  This is only needed if you configure 'Styling=Classification' for your GeoTiff.</p>
+  <p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>\\
 `
         })
       ]
