@@ -10,16 +10,18 @@ export default ObjectInputView.extend({
     'click a[data-symbol]': 'setSymbol'
   },
 
-  buttonColour: '#fff',
+  buttonColour: '#ffffff',
 
-  defaultColour: '#fff',
+  defaultColour: '#ffffff',
 
   symbols: {
     circle: {
-      icon: '⬤', label: 'Circle'
+      icon: '<span class="icon icon--circle"></span>',
+      label: 'Circle'
     },
     square: {
-      icon: '⬛', label: 'Square'
+      icon: '<span class="icon"></span>',
+      label: 'Square'
     }
   },
 
@@ -37,12 +39,18 @@ export default ObjectInputView.extend({
       that.$('#picker').change(function () {
         that.model.set('colour', that.$('#picker').val())
       })
+      that.$('#colorCode').on('input change', function (ev) {
+        that.model.set('colour', ev.target.value)
+      })
     })
   },
 
   update () {
-    const color = this.model.get('colour')
-    this.$('input').val(color)
+    let color = this.model.get('colour')
+    this.$('#colorCode').val(color)
+    if (!(/^#([0-9A-Fa-f]{6})$/.test(color))) {
+      color = this.defaultColour
+    }
     if (this.model.has('symbol')) {
       const symbol = this.model.get('symbol')
       this.$('.selected').html(this.symbols[symbol].icon)
@@ -52,12 +60,12 @@ export default ObjectInputView.extend({
       this.$('button').css({ backgroundColor: color })
     }
 
-    this.$('.icon').css({ color })
+    this.$('.icon').css({ backgroundColor: color })
     this.$('#picker').val(color)
   },
 
   setColour () {
-    this.model.set('colour', this.$('input').val())
+    this.model.set('colour', this.$('#colorCode').val())
   },
 
   setSymbol (e) {
