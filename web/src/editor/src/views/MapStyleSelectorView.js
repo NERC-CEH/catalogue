@@ -10,13 +10,13 @@ export default ObjectInputView.extend({
     'click a[data-symbol]': 'setSymbol'
   },
 
-  buttonColour: '#fff',
+  buttonColour: '#ffffff',
 
-  defaultColour: '#fff',
+  defaultColour: '#ffffff',
 
   symbols: {
     circle: {
-      icon: '<span class="icon" style="border-radius: 50%;"></span>',
+      icon: '<span class="icon icon--circle"></span>',
       label: 'Circle'
     },
     square: {
@@ -39,7 +39,7 @@ export default ObjectInputView.extend({
       that.$('#picker').change(function () {
         that.model.set('colour', that.$('#picker').val())
       })
-      that.$('#color_code').on('input change', function (ev) {
+      that.$('#colorCode').on('input change', function (ev) {
         that.model.set('colour', ev.target.value)
       })
     })
@@ -47,7 +47,7 @@ export default ObjectInputView.extend({
 
   update () {
     let color = this.model.get('colour')
-    this.$('#color_code').val(color)
+    this.$('#colorCode').val(color)
     if (!(/^#([0-9A-Fa-f]{6})$/.test(color))) {
       color = this.defaultColour
     }
@@ -65,7 +65,7 @@ export default ObjectInputView.extend({
   },
 
   setColour () {
-    this.model.set('colour', this.$('input').val())
+    this.model.set('colour', this.$('#colorCode').val())
   },
 
   setSymbol (e) {
