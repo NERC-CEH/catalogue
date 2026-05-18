@@ -60,7 +60,7 @@ export default ObjectInputView.extend({
       this.$('button').css({ backgroundColor: color })
     }
 
-    this.$('.icon').css({backgroundColor: color})
+    this.$('.icon').css({ backgroundColor: color })
     this.$('#picker').val(color)
   },
 
