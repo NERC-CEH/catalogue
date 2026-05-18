@@ -115,7 +115,7 @@ services:
     working_dir: /app/web
     volumes:
       - ./web:/app/web
-    command: sh -c "npm run watch & npm run watch-css"
+    command: sh -c "npm install && (npm run watch & npm run watch-css)"
 volumes:
   dropbox:
   mapfiles:
