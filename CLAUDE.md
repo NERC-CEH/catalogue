@@ -64,6 +64,12 @@ The application is available at http://localhost:8080.
 | `templates/` | Refresh browser (Freemarker cache off) | instant |
 | `web/src/` JS | webpack watch rebuilds automatically | ~3–10s |
 | `web/scss/` CSS | gulp watch rebuilds automatically | ~2–5s |
+| `nginx.conf` | automatic with `docker compose watch` | ~1s |
+| `build.gradle` / `libs.versions.toml` | automatic with `docker compose watch` | rebuild |
+| `web/package.json` / `package-lock.json` | automatic with `docker compose watch` | rebuild |
+
+Use `docker compose watch` instead of `docker compose up` to enable automatic rebuilds when
+Dockerfiles, Gradle build files, or npm manifests change.
 
 **Optional services** use Docker Compose profiles:
 
@@ -72,12 +78,6 @@ docker compose --profile hubbub up --build   # include Hubbub upload service
 docker compose --profile legilo up --build   # include Legilo
 docker compose --profile fuseki  up --build  # include Fuseki SPARQL
 ```
-
-**Alternative: run the Java application on the host**
-
-`./start-catalogue.sh` still works if you prefer to run Gradle outside Docker.
-In that case update `nginx.conf` to proxy to `http://172.17.0.1:8090/` instead of
-`http://catalogue:8090/`.
 
 ## Architecture
 

@@ -13,10 +13,13 @@ including nginx, Solr, the Spring Boot application, and the webpack watcher:
 
 ```bash
 # First run, or after changing the Dockerfile or entrypoint script:
-docker compose up --build
+docker compose up --build --watch
 
 # Subsequent runs (reuses the built image and cached Gradle dependencies — much faster):
-docker compose up
+docker compose up --watch
+
+# Watch mode — auto-rebuilds when build.gradle, package.json, nginx.conf, or Dockerfile change:
+docker compose watch
 ```
 
 Browse to http://localhost:8080/eidc/documents to see the catalogue populated with demo records.
@@ -27,19 +30,6 @@ Optional services can be included with profiles:
 docker compose --profile hubbub up --build   # include Hubbub upload service
 docker compose --profile legilo up --build   # include Legilo
 docker compose --profile fuseki  up --build  # include Fuseki SPARQL
-```
-
-**Alternative: run the Java application directly on the host**
-
-`./start-catalogue.sh` starts only the supporting Docker services and then runs
-`./gradlew bootRun` on the host. This requires Java 25 installed locally.
-
-```bash
-./start-catalogue.sh           # builds web assets, then runs gradle bootRun
-./start-catalogue.sh -w        # skip web asset build
-./start-catalogue.sh -b        # include Hubbub
-./start-catalogue.sh -l        # include Legilo
-./start-catalogue.sh -f        # include Fuseki
 ```
 
 Local environment overrides can be placed in `override.env`.
@@ -83,8 +73,7 @@ The catalogue requires a few tools:
 - Docker
 - Docker Compose
 
-Java 25+ (OpenJDK) is only required if you want to run the application on the host using
-`./start-catalogue.sh` instead of Docker Compose.
+Java is not required locally — the application runs entirely inside Docker.
 
 You will then need to log in to the Gitlab Docker Registry, nb. this uses your Gitlab username/password or token, not Crowd, if they're not the same, this might catch you out.
 
@@ -95,6 +84,7 @@ Having installed these you can build and start the full application with:
 ```bash
 docker compose up --build   # first run
 docker compose up           # subsequent runs (faster — reuses cached Gradle dependencies)
+docker compose watch        # like `up`, but auto-rebuilds on Dockerfile/build file changes
 ```
 
 The EIDC catalogue is then available at http://localhost:8080/eidc/documents.
