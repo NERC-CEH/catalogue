@@ -12,9 +12,6 @@ The recommended way to run the application is with Docker Compose, which starts 
 including nginx, Solr, the Spring Boot application, and the webpack watcher:
 
 ```bash
-# First time only (or after pulling web dependency updates):
-cd web && npm install && cd ..
-
 # First run, or after changing the Dockerfile or entrypoint script:
 docker compose up --build
 
@@ -96,7 +93,6 @@ You will then need to log in to the Gitlab Docker Registry, nb. this uses your G
 Having installed these you can build and start the full application with:
 
 ```bash
-cd web && npm install && cd ..
 docker compose up --build   # first run
 docker compose up           # subsequent runs (faster — reuses cached Gradle dependencies)
 ```

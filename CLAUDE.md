@@ -44,9 +44,6 @@ The primary development workflow uses Docker Compose — a single command starts
 including the Java application and webpack watcher:
 
 ```bash
-# First time only (or after pulling web dependency updates):
-cd web && npm install
-
 # First run, or after changing the Dockerfile or entrypoint script:
 docker compose up --build
 
