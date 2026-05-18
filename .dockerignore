@@ -1,4 +1,5 @@
 *
+!docker/entrypoint-dev.sh
 !fixtures/datastore/REV-1
 !fixtures/vocabs/
 !gradle/libs.versions.toml
