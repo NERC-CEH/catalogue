@@ -51,6 +51,7 @@ VOLUME /var/ceh-catalogue/datastore \
        /var/ceh-catalogue/ror \
        /var/upload/datastore
 EXPOSE 8080 8081
+USER spring
 ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
 
 # Create resources for development only
