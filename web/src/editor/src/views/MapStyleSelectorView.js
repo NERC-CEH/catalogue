@@ -16,11 +16,11 @@ export default ObjectInputView.extend({
 
   symbols: {
     circle: {
-      icon: '︎<span class="icon" style="border-radius: 50%;"︎></span>',
+      icon: '<span class="icon" style="border-radius: 50%;"></span>',
       label: 'Circle'
     },
     square: {
-      icon: '︎<span class="icon"></span>',
+      icon: '<span class="icon"></span>',
       label: 'Square'
     }
   },
