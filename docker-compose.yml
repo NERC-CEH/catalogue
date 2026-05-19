@@ -6,6 +6,13 @@ services:
       - "8081:8081"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - catalogue
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./nginx.conf
+          target: /etc/nginx/conf.d/default.conf
   solr:
     build: "solr"
     ports:
@@ -65,6 +72,73 @@ services:
     ports:
       - '3030:3030'
     profiles: [fuseki]
+  catalogue:
+    build:
+      context: .
+      target: dev-run
+    volumes:
+      - ./:/app
+      - datastore:/var/ceh-catalogue/datastore
+      - gradle-cache:/root/.gradle
+    environment:
+      DATA_REPOSITORY_LOCATION: /var/ceh-catalogue/datastore
+      DOCUMENTS_BASEURI: http://localhost:8080
+      DOI_API: https://api.test.datacite.org/dois
+      GEMET_LOCAL: /app/fixtures/vocabs/gemet.json
+      ROR_LOCAL: /app/fixtures/solr/ror
+      HUBBUB_LOCATION: /app/dropbox
+      HUBBUB_URL: http://localhost:8082/v7
+      JENA_LOCATION: /app/fixtures/jena
+      JIRA_SERVICEAGREEMENT_PREFIX: "CT-"
+      JIRA_DEPOSITREQUEST_PROJECT: CT
+      MANAGEMENT_SERVER_PORT: "8091"
+      MAPS_LOCATION: /app/mapfiles
+      METRICS_DATABASE_URL: jdbc:sqlite:/app/metrics-db/metrics.db
+      SERVER_PORT: "8090"
+      SPRING_FREEMARKER_CACHE: "false"
+      SPRING_FREEMARKER_TEMPLATE_LOADER_PATH: file:/app/templates
+      SPRING_SERVLET_MULTIPART_LOCATION: /app/dropbox
+      SPRING_WEB_RESOURCES_STATIC_LOCATIONS: file:/app/static
+      UPLOAD_SIMPLE_DATASTORE: /var/ceh-catalogue/datastore
+      LEGILO_URL: http://legilo:8000
+      LEGILO_USER: user
+      LEGILO_PASSWORD: password
+      FUSEKI_URL: http://fuseki:3030
+      SPRING_PROFILES_ACTIVE: development,server-eidc,search-basic,cache,service-agreement,upload-simple
+    env_file:
+      - path: secrets.env
+        required: false
+      - path: override.env
+        required: false
+    ports:
+      - "8090:8090"
+      - "8091:8091"
+    depends_on:
+      - solr
+    develop:
+      watch:
+        - action: rebuild
+          path: ./build.gradle
+        - action: rebuild
+          path: ./gradle/libs.versions.toml
+        - action: rebuild
+          path: ./Dockerfile
+        - action: rebuild
+          path: ./docker/entrypoint-dev.sh
+  web:
+    image: node:22-alpine
+    working_dir: /app/web
+    volumes:
+      - ./web:/app/web
+    command: sh -c "npm install && (npm run watch & npm run watch-css)"
+    develop:
+      watch:
+        - action: rebuild
+          path: ./web/package.json
+        - action: rebuild
+          path: ./web/package-lock.json
 volumes:
   dropbox:
   mapfiles:
+  datastore:
+  gradle-cache:
