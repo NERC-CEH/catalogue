@@ -117,7 +117,7 @@ public class HardcodedFacetFactory implements FacetFactory {
                 .fieldName("grant")
                     .displayName("grant")
                     .hierarchical(false)
-                    .admin(true)
+                    .admin(false)
                     .build();
             case "pointOfContact" -> Facet.builder()
                 .fieldName("pointOfContact")
