@@ -18,7 +18,7 @@ docker compose up --build --watch
 # Subsequent runs (reuses the built image and cached Gradle dependencies — much faster):
 docker compose up --watch
 
-# Watch mode — auto-rebuilds when build.gradle, package.json, nginx.conf, or Dockerfile change:
+# Watch mode — auto-rebuilds when build.gradle, libs.versions.toml, Dockerfile, or entrypoint-dev.sh change:
 docker compose watch
 ```
 

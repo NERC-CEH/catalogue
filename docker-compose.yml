@@ -8,11 +8,6 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - catalogue
-    develop:
-      watch:
-        - action: sync+restart
-          path: ./nginx.conf
-          target: /etc/nginx/conf.d/default.conf
   solr:
     build: "solr"
     ports:
@@ -131,14 +126,6 @@ services:
     volumes:
       - ./web:/app/web
     command: sh -c "npm install && (npm run watch & npm run watch-css)"
-    develop:
-      watch:
-        - action: sync+restart
-          path: ./web/package.json
-          target: /app/web/package.json
-        - action: sync+restart
-          path: ./web/package-lock.json
-          target: /app/web/package-lock.json
 volumes:
   dropbox:
   mapfiles:

@@ -64,12 +64,12 @@ The application is available at http://localhost:8080.
 | `templates/` | Refresh browser (Freemarker cache off) | instant |
 | `web/src/` JS | webpack watch rebuilds automatically | ~3–10s |
 | `web/scss/` CSS | gulp watch rebuilds automatically | ~2–5s |
-| `nginx.conf` | automatic with `docker compose watch` | ~1s |
+| `nginx.conf` | `docker compose restart nginx` | ~1s |
 | `build.gradle` / `libs.versions.toml` | automatic with `docker compose watch` | rebuild |
-| `web/package.json` / `package-lock.json` | automatic with `docker compose watch` | rebuild |
+| `web/package.json` / `package-lock.json` | `docker compose restart web` | ~rebuild |
 
 Use `docker compose watch` instead of `docker compose up` to enable automatic rebuilds when
-Dockerfiles, Gradle build files, or npm manifests change.
+Dockerfiles, Gradle build files, or the entrypoint script change.
 
 **Optional services** use Docker Compose profiles:
 
