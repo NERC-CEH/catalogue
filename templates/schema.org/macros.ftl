@@ -230,9 +230,9 @@
             <#assign opLabel=op.value?trim>
           </#if>
 
-          <#if op.uri?has_content>
+          <#if op.uri?has_content && op.uri?matches("^http[s]?://.*")>
             {
-            "@type": "StatisticalVariable",
+            "@type": "PropertyValue",
             "@id": "${op.uri?trim}",
             "name": "${opLabel}"
             <#if op.unitsUri?has_content>,"unitCode": "${op.unitsUri?trim}"</#if>
