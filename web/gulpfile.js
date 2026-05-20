@@ -33,4 +33,4 @@ function watchStyles () {
 
 exports.dev = gulp.series(buildDevStyles)
 exports.prod = gulp.series(buildProdStyles)
-exports.watch = watchStyles
+exports.watch = gulp.series(buildDevStyles, watchStyles)
