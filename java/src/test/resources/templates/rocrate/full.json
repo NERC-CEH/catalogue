@@ -35,7 +35,7 @@
             "datePublished": "2024-09-07",
             "variableMeasured": [
                 {
-                    "@type": "StatisticalVariable",
+                    "@type": "PropertyValue",
                     "@id": "https://example.com/op/1",
                     "name": "observed property 1",
                     "unitCode": "https://example.com/units/m",
