@@ -208,6 +208,24 @@ public class KeywordVocabulariesConfig {
 
     @Profile("server-eidc")
     @Bean
+    public KeywordVocabulary ukcehResearchActivitiesVocabulary(
+            @Qualifier("sparql") RestTemplate restTemplate,
+            SolrClient solrClient,
+            @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint
+            ) {
+        return new SparqlKeywordVocabulary(
+                restTemplate,
+                solrClient,
+                sparqlEndpoint,
+                "<https://digital.ceh.ac.uk/vocab/ra/>",
+                "?uri skos:broader+ <https://digital.ceh.ac.uk/vocab/ra/1>; skos:prefLabel ?label. OPTIONAL { ?uri <http://www.w3.org/2002/07/owl#deprecated> ?deprecated.}FILTER (!BOUND(?deprecated) || ?deprecated = false)",
+                "research-activity",
+                "Research activities"
+                );
+            }
+
+    @Profile("server-eidc")
+    @Bean
     public KeywordVocabulary ukcehResearchThemeVocabulary(
             @Qualifier("sparql") RestTemplate restTemplate,
             SolrClient solrClient,
