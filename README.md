@@ -53,6 +53,52 @@ Local environment overrides can be placed in `override.env`.
 ## Enabling different features
 [Configure profiles](docs/profiles.md)
 
+## Semantic (vector) search
+
+Semantic search uses vector embeddings via Amazon Bedrock to find conceptually related records,
+even when search terms don't match document keywords exactly.
+
+Activate with the `vector-search` Spring profile and AWS Bedrock credentials:
+
+```bash
+# override.env
+SPRING_PROFILES_ACTIVE=development,server-eidc,search-basic,cache,service-agreement,upload-simple,vector-search
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+AWS_REGION=eu-west-2
+```
+
+Once active, add `?semantic=true` to any search request:
+
+```
+GET /eidc/documents?term=freshwater+invertebrate+monitoring&semantic=true
+```
+
+Documents without embeddings (e.g. newly indexed before the first flush) are excluded from
+semantic results but remain fully searchable via BM25. Embeddings are generated asynchronously
+every 5 minutes (configurable via `catalogue.embedding.flush-delay`).
+
+After changing `solr/documents/conf/managed-schema`, trigger a full reindex via the admin
+`/index` endpoint so all documents receive vector embeddings.
+
+## MCP server
+
+The MCP server exposes catalogue search to external LLMs (Claude Desktop, etc.) using the
+Model Context Protocol over SSE.
+
+Add `mcp-server` to `SPRING_PROFILES_ACTIVE`:
+
+```bash
+SPRING_PROFILES_ACTIVE=development,server-eidc,search-basic,cache,service-agreement,upload-simple,mcp-server
+```
+
+Available endpoints:
+- `GET  /mcp/sse`      — SSE event stream
+- `POST /mcp/messages` — client-to-server messages
+
+Available tools: `searchCatalogue`, `semanticSearch` (requires `vector-search` profile),
+`getDocument`, `listCatalogues`.
+
 ## Usernames and Passwords
 
 You will need to create a `secrets.env` file with the following. Ask one of the dev team for access to Keypass to retrieve the jira password.

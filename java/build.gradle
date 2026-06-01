@@ -8,6 +8,7 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven { url = 'https://repo.spring.io/milestone' }
 }
 
 configurations {
@@ -30,6 +31,11 @@ compileJava {
 }
 
 dependencies {
+    // Spring AI
+    implementation platform(libs.spring.ai.bom)
+    implementation libs.spring.ai.bedrock
+    implementation libs.spring.ai.mcp
+
     // Spring Boot starters
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-cache'

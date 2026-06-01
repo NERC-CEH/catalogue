@@ -18,7 +18,6 @@ import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 /**
@@ -38,22 +37,33 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
     private final VocabularyService vocabularyService;
+    private final Optional<PendingEmbeddingService> pendingEmbeddingService;
 
     public SolrIndexMetadataDocumentGenerator(
             CodeLookupService codeLookupService,
             DocumentIdentifierService identifierService,
             VocabularyService vocabularyService
     ) {
+        this(codeLookupService, identifierService, vocabularyService, Optional.empty());
+    }
+
+    public SolrIndexMetadataDocumentGenerator(
+            CodeLookupService codeLookupService,
+            DocumentIdentifierService identifierService,
+            VocabularyService vocabularyService,
+            Optional<PendingEmbeddingService> pendingEmbeddingService
+    ) {
         this.codeLookupService = codeLookupService;
         this.identifierService = identifierService;
         this.vocabularyService = vocabularyService;
+        this.pendingEmbeddingService = pendingEmbeddingService;
         log.info("Creating");
     }
 
     @Override
     public SolrIndex generateIndex(MetadataDocument document) {
         log.info("{} is a {}, {}", document.getId(), codeLookupService.lookup("metadata.resourceType", document.getType()), codeLookupService.lookup("metadata.recordType", document.getType()));
-        return new SolrIndex()
+        SolrIndex index = new SolrIndex()
             .setAssistResearchThemes(grab(getKeywordsByVocabulary(document, VocabularyFacet.ASSIST_RESEARCH_THEMES.getFacetName()), Keyword::getValue))
             .setAssistTopics(grab(getKeywordsByVocabulary(document, VocabularyFacet.ASSIST_TOPICS.getFacetName()), Keyword::getValue))
             .setCatalogue(document.getCatalogue())
@@ -83,8 +93,9 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                     .map(date -> date.atZone(ZoneId.of("UTC")))
                     .map(zonedDateTime -> Date.from(zonedDateTime.toInstant()))
                     .orElse(Date.from(java.time.Instant.EPOCH))
-            )
-            ;
+            );
+        pendingEmbeddingService.ifPresent(svc -> svc.mark(document.getId(), index));
+        return index;
     }
 
     private String getRecordType(MetadataDocument document) {

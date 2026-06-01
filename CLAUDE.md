@@ -15,6 +15,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - This project uses Java 25 with Gradle; prefer toolchain configuration over sourceCompatibility/targetCompatibility
 - Library versions live in `gradle/libs.versions.toml` (Gradle version catalog) — add/update versions there, not inline in `build.gradle`
 - Dockerfile multi-stage build: copy `gradle/libs.versions.toml` into the Gradle build stage alongside `build.gradle`, or `bootJar` will fail with missing catalog
+- Spring AI is on a milestone release (`2.0.0-M8`); `java/build.gradle` includes `repo.spring.io/milestone` repository. Before any production release, check if a Spring AI 2.0 GA version is available and switch to it (removing the milestone repo once it's on Maven Central)
+
+## Vector Search & MCP Server
+- Vector search (semantic KNN) is activated by the `vector-search` profile; it requires AWS Bedrock credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`). Without credentials, `EmbeddingModel` bean is absent and indexing continues via BM25 only
+- The MCP server (exposes catalogue search to external LLMs) is activated by the `mcp-server` profile. Properties live in `application-mcp-server.properties`
+- **PendingEmbeddingService**: embedding is decoupled from the indexing hot path. `SolrIndexMetadataDocumentGenerator` marks document IDs; a `@Scheduled` flush (default 5 min) calls Bedrock and does a partial Solr atomic update. Multiple saves of the same document deduplicate to one Bedrock call per flush cycle
+- Any change to `solr/documents/conf/managed-schema` (including the new `knn_vector_1024` field type) requires a full Solr reindex via the admin `/index` endpoint
+- Semantic search endpoint: `GET /{catalogue}/documents?term=...&semantic=true`
+- Access to `?semantic=true` can be restricted to a Crowd group via `catalogue.semantic.group=GROUP_NAME`. Empty (default) = unrestricted. Public users are implicitly excluded when a group is set (they have no Crowd groups). Unauthorised requests silently fall back to BM25
+- Service Agreements are excluded from vector indexing automatically via `SolrIndexingService.canIndex()` which returns `false` for them
 
 ## Commands
 

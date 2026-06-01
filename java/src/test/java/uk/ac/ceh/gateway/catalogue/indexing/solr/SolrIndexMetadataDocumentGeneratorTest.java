@@ -21,6 +21,7 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,6 +39,7 @@ class SolrIndexMetadataDocumentGeneratorTest {
     @Mock CodeLookupService codeLookupService;
     @Mock DocumentIdentifierService documentIdentifierService;
     @Mock VocabularyService vocabularyService;
+    @Mock PendingEmbeddingService pendingEmbeddingService;
     private SolrIndexMetadataDocumentGenerator generator;
 
     @BeforeEach
@@ -46,6 +49,38 @@ class SolrIndexMetadataDocumentGeneratorTest {
             documentIdentifierService,
             vocabularyService
         );
+    }
+
+    @Test
+    void pendingEmbeddingServiceMarkedWhenPresent() {
+        //Given
+        generator = new SolrIndexMetadataDocumentGenerator(
+            codeLookupService,
+            documentIdentifierService,
+            vocabularyService,
+            Optional.of(pendingEmbeddingService)
+        );
+        GeminiDocument document = new GeminiDocument();
+        document.setId("test-doc-id");
+        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+
+        //When
+        generator.generateIndex(document);
+
+        //Then
+        verify(pendingEmbeddingService).mark(eq("test-doc-id"), any(SolrIndex.class));
+    }
+
+    @Test
+    void generateIndexSucceedsWithoutPendingEmbeddingService() {
+        //Given — generator created without embedding service (the @BeforeEach default)
+        GeminiDocument document = new GeminiDocument();
+        document.setTitle("No embedding needed");
+        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+
+        //When / Then — must not throw
+        SolrIndex index = generator.generateIndex(document);
+        assertThat(index.getTitle(), equalTo("No embedding needed"));
     }
 
     @Test

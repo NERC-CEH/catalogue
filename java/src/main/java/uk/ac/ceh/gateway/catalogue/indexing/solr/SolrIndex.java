@@ -88,6 +88,10 @@ public class SolrIndex {
     private @Field Number version;
     private @Field List<String> dataFormat;
     private @Field List<String> view;
+    // Vector search — populated asynchronously by PendingEmbeddingService
+    private @Field List<Float> vector;
+    private @Field("embedding_text") String embeddingText;
+
     // infrastructure catalogue
     private @Field String scienceArea;
     private @Field String infrastructureCapabilities;

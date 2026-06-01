@@ -1,11 +1,15 @@
 [versions]
 jena = "5.6.0"
+spring-ai = "2.0.0-M8"
 ukceh = "1.0.51"
 
 [libraries]
 jena-libs = { module = "org.apache.jena:apache-jena-libs", version.ref = "jena" }
 jena-geosparql = { module = "org.apache.jena:jena-geosparql", version.ref = "jena" }
 mockito = { module = "org.mockito:mockito-core" }
+spring-ai-bom = { module = "org.springframework.ai:spring-ai-bom", version.ref = "spring-ai" }
+spring-ai-bedrock = { module = "org.springframework.ai:spring-ai-starter-model-bedrock" }
+spring-ai-mcp = { module = "org.springframework.ai:spring-ai-starter-mcp-server-webmvc" }
 ukceh-datastore = { module = "uk.ac.ceh.components:datastore-git", version.ref = "ukceh" }
 ukceh-springsecurity = { module = "uk.ac.ceh.components:springsecurity-userstore", version.ref = "ukceh" }
 ukceh-userstore = { module = "uk.ac.ceh.components:userstore-crowd", version.ref = "ukceh" }

@@ -45,6 +45,8 @@ import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.PendingEmbeddingService;
 
 @Slf4j
 @Configuration
@@ -124,12 +126,14 @@ public class IndexingServicesConfig {
             DocumentRepository documentRepository,
             JenaLookupService jenaLookupService,
             SolrClient solrClient,
-            VocabularyService vocabularyService
+            VocabularyService vocabularyService,
+            Optional<PendingEmbeddingService> pendingEmbeddingService
             ) {
         val metadataDocumentGenerator = new SolrIndexMetadataDocumentGenerator(
                 codeLookupService,
                 documentIdentifierService,
-                vocabularyService
+                vocabularyService,
+                pendingEmbeddingService
                 );
         val linkDocumentGenerator = new SolrIndexLinkDocumentGenerator();
         linkDocumentGenerator.setRepository(documentRepository);
