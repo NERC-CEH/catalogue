@@ -75,7 +75,9 @@ services:
       - ./:/app
       - datastore:/var/ceh-catalogue/datastore
       - gradle-cache:/root/.gradle
+      - ./fixtures/upload/supporting-documents:/var/ceh-catalogue/supporting-documents:ro
     environment:
+      CATALOGUE_SUPPORTING_DOCUMENTS_LOCATION: /var/ceh-catalogue/supporting-documents
       DATA_REPOSITORY_LOCATION: /var/ceh-catalogue/datastore
       DOCUMENTS_BASEURI: http://localhost:8080
       DOI_API: https://api.test.datacite.org/dois

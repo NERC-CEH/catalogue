@@ -91,6 +91,8 @@ public class SolrIndex {
     // Vector search — populated asynchronously by PendingEmbeddingService
     private @Field List<Float> vector;
     private @Field("embedding_text") String embeddingText;
+    private @Field("temporal_extent_text") String temporalExtentText;
+    private @Field("document_text") String documentText;
 
     // infrastructure catalogue
     private @Field String scienceArea;
@@ -101,12 +103,12 @@ public class SolrIndex {
     private @Field List<String> infrastructureClass;
 
     public String getShortenedDescription(){
-        return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);
+        return shortenLongString(description);
     }
 
-    private String shortenLongString(String toShorten, int desiredLength){
+    private String shortenLongString(String toShorten){
         toShorten = Strings.nullToEmpty(toShorten);
-        if(toShorten.length() > desiredLength){
+        if(toShorten.length() > MAX_DESCRIPTION_CHARACTER_LENGTH){
             return breakAtNextSpace(toShorten);
         }else{
             return toShorten;
@@ -119,7 +121,7 @@ public class SolrIndex {
         if(nextSpace != -1){
             toReturn = toBreak.substring(0,nextSpace);
         }else{
-            toReturn = toBreak.substring(0,MAX_DESCRIPTION_CHARACTER_LENGTH);
+            toReturn = toBreak.substring(0, MAX_DESCRIPTION_CHARACTER_LENGTH);
         }
         return toReturn + "...";
     }

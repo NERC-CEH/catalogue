@@ -83,7 +83,7 @@ public class SearchQuery {
                 .setQuery(term)
                 .setParam("defType", "edismax")
                 .setParam("mm", "1<1 3<-1 6<-2 9<75%")
-                .setParam("qf", "title^5 description^2 keyword^5 lineage familyName altTitle resourceIdentifier identifier supplementalDescription supplementalName infrastructureCapabilities^2 keywordsParameters^5 observedPropertyTitle^10 observedPropertyValue^5 operatingPeriod objectives^2 responsibleParties")
+                .setParam("qf", "title^5 description^2 keyword^5 lineage familyName altTitle resourceIdentifier identifier supplementalDescription supplementalName infrastructureCapabilities^2 keywordsParameters^5 observedPropertyTitle^10 observedPropertyValue^5 operatingPeriod objectives^2 responsibleParties document_text^1")
                 .setParam("bq", "resourceType:Aggregation^5, availability:Available^10, availability:Controlled^10, availability:Embargoed^5, availability:Restricted^5, availability:Superseded^1")
                 .setParam("bf", "version")
                 .setParam("ps", "5")

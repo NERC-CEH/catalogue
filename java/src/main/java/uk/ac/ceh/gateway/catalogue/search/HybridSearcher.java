@@ -19,14 +19,25 @@ import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
 @Slf4j
 @Service
 @ConditionalOnBean(EmbeddingModel.class)
-public class SemanticSearcher {
+public class HybridSearcher {
+
+    // Same field weights as SearchQuery.build() — keeps BM25 sub-query consistent with direct search
+    static final String QF =
+            "title^5 description^2 keyword^5 lineage familyName altTitle " +
+            "resourceIdentifier identifier supplementalDescription supplementalName " +
+            "infrastructureCapabilities^2 keywordsParameters^5 observedPropertyTitle^10 " +
+            "observedPropertyValue^5 operatingPeriod objectives^2 responsibleParties document_text^1";
+
+    static final int RRF_K = 60;
+    static final int KNN_MULTIPLIER = 5;
+    static final int KNN_MAX_TOP_K = 200;
 
     private final EmbeddingModel embeddingModel;
     private final SolrClient solrClient;
     private final GroupStore<CatalogueUser> groupStore;
     private final CatalogueService catalogueService;
 
-    public SemanticSearcher(
+    public HybridSearcher(
             EmbeddingModel embeddingModel,
             SolrClient solrClient,
             GroupStore<CatalogueUser> groupStore,
@@ -36,7 +47,7 @@ public class SemanticSearcher {
         this.solrClient = solrClient;
         this.groupStore = groupStore;
         this.catalogueService = catalogueService;
-        log.info("Creating");
+        log.info("Creating HybridSearcher");
     }
 
     @SneakyThrows
@@ -44,8 +55,6 @@ public class SemanticSearcher {
             String endpoint,
             CatalogueUser user,
             String term,
-            String bbox,
-            SpatialOperation spatialOperation,
             int page,
             int rows,
             String catalogueKey
@@ -55,26 +64,27 @@ public class SemanticSearcher {
         float[] vec = embeddingModel.embed(term);
         String vectorStr = buildVectorString(vec);
 
-        SolrQuery query = new SolrQuery("{!knn f=vector topK=" + rows + "}" + vectorStr)
-                .setStart((page - 1) * rows)
-                .setRows(rows);
+        // topK must exceed rows so the KNN side supplies enough distinct candidates for fusion
+        int knnTopK = Math.min(rows * KNN_MULTIPLIER, KNN_MAX_TOP_K);
 
-        if (bbox != null) {
-            query.addFilterQuery(String.format("locations:\"%s(ENVELOPE(%s))\"",
-                    spatialOperation.getOperation(), bbox));
-        }
-        applyVisibilityFilters(query, user, catalogue.getId(), catalogueKey);
+        SolrQuery query = new SolrQuery("{!rrf queries=$bm25q,$knnq k=" + RRF_K + "}");
+        query.setParam("bm25q", "{!edismax qf=\"" + QF + "\"}" + term);
+        query.setParam("knnq",  "{!knn f=vector topK=" + knnTopK + "}" + vectorStr);
+        query.setStart((page - 1) * rows);
+        query.setRows(rows);
+
+        SolrVisibilityFilter.apply(query, user, groupStore, catalogue.getId(), catalogueKey);
         if (!CatalogueService.ALL_CATALOGUES_ID.equals(catalogueKey)) {
             query.addFilterQuery("{!term f=catalogue}" + catalogueKey);
         }
 
-        log.debug("Semantic query: {}", query);
+        log.debug("Hybrid RRF query: {}", query);
 
         val response = solrClient.query("documents", query, POST);
 
-        // Construct a minimal SearchQuery for SearchResults pagination URLs
+        // Minimal SearchQuery used only for SearchResults pagination URL generation
         val searchQuery = new SearchQuery(
-                endpoint, user, term, bbox, spatialOperation,
+                endpoint, user, term, null, SpatialOperation.ISWITHIN,
                 page, rows,
                 Collections.emptyList(),
                 groupStore, catalogue,
@@ -82,10 +92,6 @@ public class SemanticSearcher {
                 null, SolrQuery.ORDER.asc
         );
         return new SearchResults(response, searchQuery, Collections.emptyList());
-    }
-
-    private void applyVisibilityFilters(SolrQuery query, CatalogueUser user, String catalogueId, String catalogueKey) {
-        SolrVisibilityFilter.apply(query, user, groupStore, catalogueId, catalogueKey);
     }
 
     private String buildVectorString(float[] vec) {

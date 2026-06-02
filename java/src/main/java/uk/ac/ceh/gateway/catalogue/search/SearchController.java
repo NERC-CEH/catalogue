@@ -122,11 +122,12 @@ public class SearchController {
     ) {
         val endpoint = request.getRequestURL().toString();
         val spatialOp = SpatialOperation.valueOf(op.toUpperCase());
-        if (semantic && semanticSearcher.isPresent() && userCanUseSemantic(user)) {
-            return semanticSearcher.get().search(endpoint, user, term, bbox, spatialOp, page, rows, CatalogueService.ALL_CATALOGUES_ID);
+        val canUseSemantic = semanticSearcher.isPresent() && userCanUseSemantic(user);
+        if (semantic && canUseSemantic) {
+            return new SearchResults(semanticSearcher.get().search(endpoint, user, term, bbox, spatialOp, page, rows, CatalogueService.ALL_CATALOGUES_ID), true);
         }
-        return searcher.search(endpoint, user, term, bbox, spatialOp, page, rows, facetFilters, CatalogueService.ALL_CATALOGUES_ID, sortField,
-            "desc".equals(sortOrder) ? SolrQuery.ORDER.desc : SolrQuery.ORDER.asc);
+        return new SearchResults(searcher.search(endpoint, user, term, bbox, spatialOp, page, rows, facetFilters, CatalogueService.ALL_CATALOGUES_ID, sortField,
+            "desc".equals(sortOrder) ? SolrQuery.ORDER.desc : SolrQuery.ORDER.asc), canUseSemantic);
     }
 
     @Operation(
@@ -183,10 +184,11 @@ public class SearchController {
     ) {
         val endpoint = request.getRequestURL().toString();
         val spatialOp = SpatialOperation.valueOf(op.toUpperCase());
-        if (semantic && semanticSearcher.isPresent() && userCanUseSemantic(user)) {
-            return semanticSearcher.get().search(endpoint, user, term, bbox, spatialOp, page, rows, catalogueKey);
+        val canUseSemantic = semanticSearcher.isPresent() && userCanUseSemantic(user);
+        if (semantic && canUseSemantic) {
+            return new SearchResults(semanticSearcher.get().search(endpoint, user, term, bbox, spatialOp, page, rows, catalogueKey), true);
         }
-        return searcher.search(endpoint, user, term, bbox, spatialOp, page, rows, facetFilters, catalogueKey, sortField,
-            "desc".equals(sortOrder) ? SolrQuery.ORDER.desc : SolrQuery.ORDER.asc);
+        return new SearchResults(searcher.search(endpoint, user, term, bbox, spatialOp, page, rows, facetFilters, catalogueKey, sortField,
+            "desc".equals(sortOrder) ? SolrQuery.ORDER.desc : SolrQuery.ORDER.asc), canUseSemantic);
     }
 }

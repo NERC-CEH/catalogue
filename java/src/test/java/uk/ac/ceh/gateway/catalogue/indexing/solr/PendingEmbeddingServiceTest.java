@@ -12,6 +12,7 @@ import org.springframework.ai.embedding.EmbeddingModel;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,7 +30,7 @@ class PendingEmbeddingServiceTest {
 
     @BeforeEach
     void setup() {
-        service = new PendingEmbeddingService(embeddingModel, solrClient, 50, 0);
+        service = new PendingEmbeddingService(embeddingModel, solrClient, Optional.empty(), 50, 0);
     }
 
     @Test
@@ -153,5 +154,87 @@ class PendingEmbeddingServiceTest {
         String text = service.buildEmbeddingText(idx);
 
         assertThat(text).isEqualTo("Minimal record");
+    }
+
+    @Test
+    void buildEmbeddingTextIncludesTemporalExtentText() {
+        SolrIndex idx = new SolrIndex()
+                .setTitle("River monitoring")
+                .setTemporalExtentText("Data collected from 1990 to 2020");
+
+        String text = service.buildEmbeddingText(idx);
+
+        assertThat(text).contains("Data collected from 1990 to 2020");
+    }
+
+    @Test
+    void documentExtractorTextAppendedToEmbedding() throws Exception {
+        //Given — service with a mock extractor
+        SupportingDocumentExtractor extractor = mock(SupportingDocumentExtractor.class);
+        given(extractor.extractText("doc-id")).willReturn("peat bog carbon flux methodology");
+        PendingEmbeddingService serviceWithExtractor = new PendingEmbeddingService(
+                embeddingModel, solrClient, Optional.of(extractor), 50, 0);
+
+        SolrIndex idx = new SolrIndex().setTitle("Peat study");
+        given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
+
+        serviceWithExtractor.mark("doc-id", idx);
+        serviceWithExtractor.flush();
+
+        //Then — embedding was called with combined text containing doc text
+        ArgumentCaptor<String> textCaptor = ArgumentCaptor.forClass(String.class);
+        verify(embeddingModel).embed(textCaptor.capture());
+        assertThat(textCaptor.getValue()).contains("peat bog carbon flux methodology");
+        assertThat(textCaptor.getValue()).contains("Peat study");
+    }
+
+    @Test
+    void documentTextFieldSetInSolrUpdateWhenExtractorPresent() throws Exception {
+        SupportingDocumentExtractor extractor = mock(SupportingDocumentExtractor.class);
+        given(extractor.extractText("doc-id")).willReturn("carbon flux methodology");
+        PendingEmbeddingService serviceWithExtractor = new PendingEmbeddingService(
+                embeddingModel, solrClient, Optional.of(extractor), 50, 0);
+
+        SolrIndex idx = new SolrIndex().setIdentifier("doc-id").setTitle("Peat study");
+        given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
+
+        serviceWithExtractor.mark("doc-id", idx);
+        serviceWithExtractor.flush();
+
+        ArgumentCaptor<SolrInputDocument> docCaptor = ArgumentCaptor.forClass(SolrInputDocument.class);
+        verify(solrClient).add(eq("documents"), docCaptor.capture());
+
+        // document_text must be SET in every atomic update — it is stored=false with no copyField,
+        // so Solr cannot read it back; omitting it would silently wipe BM25 keyword coverage
+        Object documentTextField = docCaptor.getValue().getFieldValue("document_text");
+        assertThat(documentTextField).isInstanceOf(Map.class);
+        assertThat(documentTextField.toString()).contains("carbon flux methodology");
+    }
+
+    @Test
+    void documentTextFieldAbsentWhenNoExtractorText() throws Exception {
+        SolrIndex idx = new SolrIndex().setIdentifier("doc-1").setTitle("Baseline");
+        given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
+
+        service.mark("doc-1", idx);
+        service.flush();
+
+        ArgumentCaptor<SolrInputDocument> docCaptor = ArgumentCaptor.forClass(SolrInputDocument.class);
+        verify(solrClient).add(eq("documents"), docCaptor.capture());
+
+        assertThat(docCaptor.getValue().getField("document_text")).isNull();
+    }
+
+    @Test
+    void documentExtractorAbsentBehaviourUnchanged() throws Exception {
+        //Given — service with no extractor (the default setup)
+        SolrIndex idx = new SolrIndex().setTitle("Baseline study");
+        given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.2f});
+
+        service.mark("base-id", idx);
+        service.flush();
+
+        //Then — embedding called with metadata-only text, no extractor interactions
+        verify(embeddingModel).embed(any(String.class));
     }
 }

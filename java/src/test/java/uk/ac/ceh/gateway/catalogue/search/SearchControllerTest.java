@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -114,7 +115,8 @@ class SearchControllerTest extends AbstractMvcTest {
             allCatalogues,
             Collections.emptyList(),
             null,
-            "asc"
+            "asc",
+            false
         );
         given(searcher.search(
             any(), any(), any(), any(), any(), anyInt(), anyInt(), any(),
@@ -163,7 +165,8 @@ class SearchControllerTest extends AbstractMvcTest {
             eidc,
             relatedSearches,
             "publicationDate",
-            "desc"
+            "desc",
+            false
         );
         given(searcher.search(
             any(),
@@ -367,7 +370,7 @@ class SearchControllerTest extends AbstractMvcTest {
         val searchResults = new SearchResults(
             5, "river", 1, 20, "http://localhost/eidc/documents",
             null, null, null, null, null,
-            Collections.emptyList(), Collections.emptyList(), eidc, Collections.emptyList(), null, "asc"
+            Collections.emptyList(), Collections.emptyList(), eidc, Collections.emptyList(), null, "asc", false
         );
         given(semanticSearcher.search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any()))
             .willReturn(searchResults);
@@ -403,6 +406,23 @@ class SearchControllerTest extends AbstractMvcTest {
 
         verify(searcher).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any(), any());
         verify(semanticSearcher, never()).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    @DisplayName("semanticEnabled=true in JSON when SemanticSearcher bean is present")
+    @SneakyThrows
+    void semanticEnabledTrueWhenSemanticSearcherPresent() {
+        //given
+        givenSearchResults();
+        givenCatalogue();
+
+        //when/then
+        mvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.semanticEnabled", is(true)));
     }
 
 }

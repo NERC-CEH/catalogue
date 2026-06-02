@@ -24,6 +24,7 @@ public class CatalogueMcpTools {
 
     private final Searcher searcher;
     private final Optional<SemanticSearcher> semanticSearcher;
+    private final Optional<HybridSearcher> hybridSearcher;
     private final DocumentRepository documentRepository;
     private final CatalogueService catalogueService;
     private final ObjectMapper objectMapper;
@@ -31,12 +32,14 @@ public class CatalogueMcpTools {
     public CatalogueMcpTools(
             Searcher searcher,
             Optional<SemanticSearcher> semanticSearcher,
+            Optional<HybridSearcher> hybridSearcher,
             DocumentRepository documentRepository,
             CatalogueService catalogueService,
             ObjectMapper objectMapper
     ) {
         this.searcher = searcher;
         this.semanticSearcher = semanticSearcher;
+        this.hybridSearcher = hybridSearcher;
         this.documentRepository = documentRepository;
         this.catalogueService = catalogueService;
         this.objectMapper = objectMapper;
@@ -76,6 +79,25 @@ public class CatalogueMcpTools {
                 "mcp", CatalogueUser.PUBLIC_USER, query,
                 null, SpatialOperation.ISWITHIN,
                 1, 20, catalogueKey
+        );
+        return objectMapper.writeValueAsString(toSummary(results));
+    }
+
+    @Tool(description = "Hybrid search combining keyword (BM25) and semantic (vector) ranking via Reciprocal Rank Fusion — balances exact-match precision with conceptual recall")
+    @SneakyThrows
+    public String hybridSearch(
+            @ToolParam(description = "Search term, e.g. 'upland river water quality'") String term,
+            @ToolParam(description = "Catalogue key to scope search, e.g. 'eidc'. Omit to search all catalogues.") String catalogue,
+            @ToolParam(description = "Maximum number of results to return (default 20)") Integer rows
+    ) {
+        if (hybridSearcher.isEmpty()) {
+            return "{\"error\": \"Hybrid search requires the vector-search profile to be active.\"}";
+        }
+        int resultRows = rows != null ? rows : 20;
+        String catalogueKey = catalogue != null ? catalogue : CatalogueService.ALL_CATALOGUES_ID;
+        SearchResults results = hybridSearcher.get().search(
+                "mcp", CatalogueUser.PUBLIC_USER, term,
+                1, resultRows, catalogueKey
         );
         return objectMapper.writeValueAsString(toSummary(results));
     }

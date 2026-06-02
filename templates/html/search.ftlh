@@ -51,6 +51,14 @@
             </button>
           </div>
         </div>
+        <#if semanticEnabled>
+        <div class="mt-2">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="semanticSearch" name="semantic" value="true">
+            <label class="form-check-label" for="semanticSearch">Semantic search</label>
+          </div>
+        </div>
+        </#if>
       </form>
 
       <div class="results">

@@ -8,11 +8,13 @@ export default Backbone.View.extend({
     "change [name='term']": 'handleTyping',
     "paste  [name='term']": 'handleTyping',
     "input  [name='term']": 'handleTyping',
+    "change [name='semantic']": 'handleSemanticToggle',
     submit: 'handleSubmit'
   },
 
   initialize () {
     this.listenTo(this.model, 'change:term', this.updateDisplayedTerm)
+    this.listenTo(this.model, 'change:semantic', this.updateSemanticCheckbox)
   },
 
   /*
@@ -59,5 +61,13 @@ export default Backbone.View.extend({
     if (term !== displayed) {
       this.$("[name='term']")
     }
+  },
+
+  handleSemanticToggle () {
+    this.model.set('semantic', this.$("[name='semantic']").is(':checked'))
+  },
+
+  updateSemanticCheckbox () {
+    this.$("[name='semantic']").prop('checked', this.model.get('semantic') === true)
   }
 })

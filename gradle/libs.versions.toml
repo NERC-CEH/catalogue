@@ -10,6 +10,7 @@ mockito = { module = "org.mockito:mockito-core" }
 spring-ai-bom = { module = "org.springframework.ai:spring-ai-bom", version.ref = "spring-ai" }
 spring-ai-bedrock = { module = "org.springframework.ai:spring-ai-starter-model-bedrock" }
 spring-ai-mcp = { module = "org.springframework.ai:spring-ai-starter-mcp-server-webmvc" }
+spring-ai-tika = { module = "org.springframework.ai:spring-ai-tika-document-reader" }
 ukceh-datastore = { module = "uk.ac.ceh.components:datastore-git", version.ref = "ukceh" }
 ukceh-springsecurity = { module = "uk.ac.ceh.components:springsecurity-userstore", version.ref = "ukceh" }
 ukceh-userstore = { module = "uk.ac.ceh.components:userstore-crowd", version.ref = "ukceh" }

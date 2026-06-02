@@ -29,22 +29,28 @@ public class PendingEmbeddingService {
 
     private final ConcurrentHashMap<String, SolrIndex> pending = new ConcurrentHashMap<>();
 
+    private static final int MAX_EMBED_CHARS = 30_000;
+
     private final EmbeddingModel embeddingModel;
     private final SolrClient solrClient;
+    private final Optional<SupportingDocumentExtractor> documentExtractor;
     private final int batchSize;
     private final long interBatchPauseMs;
 
     public PendingEmbeddingService(
             EmbeddingModel embeddingModel,
             SolrClient solrClient,
+            Optional<SupportingDocumentExtractor> documentExtractor,
             @Value("${catalogue.embedding.batch-size:50}") int batchSize,
             @Value("${catalogue.embedding.inter-batch-pause-ms:1000}") long interBatchPauseMs
     ) {
         this.embeddingModel = embeddingModel;
         this.solrClient = solrClient;
+        this.documentExtractor = documentExtractor;
         this.batchSize = batchSize;
         this.interBatchPauseMs = interBatchPauseMs;
-        log.info("Creating — batch-size={}, inter-batch-pause={}ms", batchSize, interBatchPauseMs);
+        log.info("Creating — batch-size={}, inter-batch-pause={}ms, doc-extraction={}",
+                batchSize, interBatchPauseMs, documentExtractor.isPresent());
     }
 
     /**
@@ -89,7 +95,7 @@ public class PendingEmbeddingService {
                     Thread.currentThread().interrupt();
                     log.warn("Embedding flush interrupted");
                     // Re-queue remaining entries
-                    batch.forEach((k, v) -> pending.putIfAbsent(k, v));
+                    batch.forEach(pending::putIfAbsent);
                     return;
                 }
             }
@@ -108,7 +114,12 @@ public class PendingEmbeddingService {
             String rawId = entry.getKey();
             SolrIndex idx = entry.getValue();
             try {
-                String text = buildEmbeddingText(idx);
+                String metadataText = buildEmbeddingText(idx);
+                String docText = documentExtractor.map(ext -> ext.extractText(rawId)).orElse("");
+                String text = docText.isBlank() ? metadataText : (metadataText + " " + docText).trim();
+                if (text.length() > MAX_EMBED_CHARS) {
+                    text = text.substring(0, MAX_EMBED_CHARS);
+                }
                 if (text.isBlank()) {
                     log.debug("Skipping embedding for {} — no embeddable text", rawId);
                     continue;
@@ -119,6 +130,11 @@ public class PendingEmbeddingService {
                 update.addField("identifier", idx.getIdentifier());
                 update.addField("vector", Map.of("set", toFloatList(vec)));
                 update.addField("embedding_text", Map.of("set", text));
+                // document_text is stored=false with no copyField, so it must be re-set
+                // on every atomic update or the BM25 keyword index loses supporting doc text
+                if (!docText.isBlank()) {
+                    update.addField("document_text", Map.of("set", docText));
+                }
                 solrClient.add("documents", update);
 
                 log.debug("Embedded document {}", rawId);
@@ -138,7 +154,8 @@ public class PendingEmbeddingService {
                 idx.getObjectives(),
                 joinList(idx.getObservedPropertyTitle()),
                 joinList(idx.getKeywordsParameters()),
-                joinList(idx.getSupplementalDescription())
+                joinList(idx.getSupplementalDescription()),
+                idx.getTemporalExtentText()
         )
         .filter(s -> s != null && !s.isBlank())
         .collect(Collectors.joining(" "));

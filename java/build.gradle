@@ -35,6 +35,7 @@ dependencies {
     implementation platform(libs.spring.ai.bom)
     implementation libs.spring.ai.bedrock
     implementation libs.spring.ai.mcp
+    implementation libs.spring.ai.tika
 
     // Spring Boot starters
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
