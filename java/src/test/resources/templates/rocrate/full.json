@@ -95,7 +95,7 @@
                 }
             ],
             "license": {
-                "@id": "#oglLicence"
+                "@id": "https://spdx.org/licenses/OGL-UK-3.0"
             },
             "distribution": [
                 {
@@ -123,11 +123,11 @@
             "email": "info@eidc.ac.uk"
         },
         {
-            "@id": "#oglLicence",
+            "@id": "https://spdx.org/licenses/OGL-UK-3.0",
             "@type": "CreativeWork",
             "name": "Open Government Licence v3",
             "alternateName": "OGL-UK-3.0",
-            "license": "https://spdx.org/licenses/OGL-UK-3.0.html"
+            "sameAs": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
         },
         {
             "@id": "https://doi.org/10.5285/882739943",
