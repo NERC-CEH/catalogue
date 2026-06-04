@@ -77,7 +77,7 @@ services:
     volumes:
       - ./:/app
       - datastore:/var/ceh-catalogue/datastore
-      - gradle-cache:/root/.gradle
+      - gradle-cache:/home/gradle/.gradle
     environment:
       DATA_REPOSITORY_LOCATION: /var/ceh-catalogue/datastore
       DOCUMENTS_BASEURI: http://localhost:8080
