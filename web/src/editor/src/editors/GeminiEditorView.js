@@ -289,7 +289,8 @@ export default EditorView.extend({
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
           vocabs: {
-            ukceh: ['research-project'],
+            ukceh: ['research-activity'],
+            eidc: ['research-activity'],
             inms: ['inms']
           },
           helpText: 'Controlled keywords describing projects that fund/support the creation of this resource',

@@ -65,6 +65,15 @@ jncc,joint nature conservation committee
 environment agency,ea
 natural england,ne
 forestry commission,forestry england
+flood and droughts digital research infrastructure, flood and droughts research infrastructure, fdri
+predatory bird monitoring scheme, pbms
+uk butterfly monitoring scheme, ukbms
+national river flow archive, nrfa
+uk environmental change network, environmental change network, ecn
+national capability for uk challenges, nc-uk, ncuk
+uk pollinator monitoring scheme, poms
+uk eutrophying & acidifying atmospheric pollutants, ukeap
+
 
 # Geographic
 great britain,uk,united kingdom
