@@ -2,7 +2,6 @@ package templates;
 
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,12 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Objects;
 
-@Slf4j
 public class SchemaDotOrgTest {
 
     Configuration configuration;
@@ -61,7 +61,24 @@ public class SchemaDotOrgTest {
 
         //when
         val actual = template("schema.org/schema.org.ftl");
-        log.info(actual);
+
+        //then
+        JSONAssert.assertEquals(expected, actual, true);
+    }
+
+    @SneakyThrows
+    @Test
+    void schemaDotOrgOglLicence() {
+        //given
+        val expected = expected("schemaDotOrg/ogl-licence.json");
+        val fileId = "123456789";
+        gemini = createGeminiDocument(fileId);
+        gemini.setUseConstraints(List.of(
+            ResourceConstraint.builder().code("license").uri("https://eidc.ac.uk/licences/ogl/plain").build()
+        ));
+
+        //when
+        val actual = template("schema.org/schema.org.ftl");
 
         //then
         JSONAssert.assertEquals(expected, actual, true);

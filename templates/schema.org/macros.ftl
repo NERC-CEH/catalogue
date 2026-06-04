@@ -182,7 +182,7 @@
   <#if licences?? && licences?has_content>
     <#if licences?first.uri?? && licences?first.uri?has_content>
       <#if licences?first.uri?matches("^http[s]?://eidc.ac.uk/licences/ogl/plain")>
-        "license": {"@id": "#oglLicence"},
+        "license": {"@id": "https://spdx.org/licenses/OGL-UK-3.0"},
       <#else>
         "license": "${licences?first.uri?trim}",
       </#if>
@@ -195,11 +195,11 @@
     <#if licences?first.uri?? && licences?first.uri?has_content>
       <#if licences?first.uri?matches("^http[s]?://eidc.ac.uk/licences/ogl.+$")>
         ,{
-        "@id": "#oglLicence",
+        "@id": "https://spdx.org/licenses/OGL-UK-3.0",
         "@type": "CreativeWork",
         "name": "Open Government Licence v3",
         "alternateName":"OGL-UK-3.0",
-        "license": "https://spdx.org/licenses/OGL-UK-3.0.html"
+        "sameAs": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
         }
       </#if>
     </#if>

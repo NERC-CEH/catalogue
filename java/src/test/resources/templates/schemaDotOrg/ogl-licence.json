@@ -1,0 +1,40 @@
+{
+    "@context": "http://schema.org/",
+    "@graph": [
+        {
+            "@type": "Dataset",
+            "name": "Title",
+            "@id": "https://example.org/id/123456789",
+            "url": "https://example.org/id/123456789",
+            "license": {
+                "@id": "https://spdx.org/licenses/OGL-UK-3.0"
+            },
+            "provider": {
+                "@id": "https://ror.org/04xw4m193"
+            },
+            "includedInDataCatalog": {
+                "@id": "#eidc-dataCatalogue"
+            }
+        },
+        {
+            "@id": "#eidc-dataCatalogue",
+            "@type": "DataCatalog",
+            "name": "Environmental Information Data Centre",
+            "alternateName": "EIDC",
+            "url": "https://catalogue.ceh.ac.uk/eidc/documents"
+        },
+        {
+            "@id": "https://ror.org/04xw4m193",
+            "@type": "Organization",
+            "name": "NERC EDS Environmental Information Data Centre",
+            "email": "info@eidc.ac.uk"
+        },
+        {
+            "@id": "https://spdx.org/licenses/OGL-UK-3.0",
+            "@type": "CreativeWork",
+            "name": "Open Government Licence v3",
+            "alternateName": "OGL-UK-3.0",
+            "sameAs": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+        }
+    ]
+}
