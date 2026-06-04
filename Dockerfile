@@ -74,7 +74,9 @@ RUN apk --no-cache add git vim
 FROM gradle:9.4.1-jdk25-alpine AS dev-run
 USER root
 COPY --from=datastore /datastore /var/ceh-catalogue/datastore
+RUN chown -R gradle:gradle /var/ceh-catalogue/datastore
 COPY docker/entrypoint-dev.sh /usr/local/bin/entrypoint-dev.sh
 RUN chmod +x /usr/local/bin/entrypoint-dev.sh
 WORKDIR /app
+USER gradle
 ENTRYPOINT ["/usr/local/bin/entrypoint-dev.sh"]

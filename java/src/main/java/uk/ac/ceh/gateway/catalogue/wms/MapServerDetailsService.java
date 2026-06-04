@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.nonNull;
-import static uk.ac.ceh.gateway.catalogue.ogc.MapViewerController.MAPSERVER;
 
 /**
  * The following service is a 'helper' which produces text which is useful in
@@ -34,20 +33,25 @@ import static uk.ac.ceh.gateway.catalogue.ogc.MapViewerController.MAPSERVER;
 @Service
 public class MapServerDetailsService {
     private final String hostUrl;
+    private final String mapserverUrl;
 
     public MapServerDetailsService(
-        @Value("${documents.baseUri}") String hostUrl
+        @Value("${documents.baseUri}") String hostUrl,
+        @Value("${mapserver.url:http://mapserver/{id}}") String mapserverUrl
     ) {
         this.hostUrl = hostUrl;
+        this.mapserverUrl = mapserverUrl;
         log.info("Creating");
     }
 
     /**
      * For the given document, return the potential wms endpoint where the
      * service could be hosted.
+     * Used in templates/mapfile/_web.map.ftl to set wms_onlineresource.
      * @param id of the document to generate a wms endpoint for
      * @return wms url
      */
+    @SuppressWarnings("unused")
     public String getWmsUrl(String id) {
         return String.format(
             "%s/maps/%s?",
@@ -101,8 +105,6 @@ public class MapServerDetailsService {
      * Scan the supplied datasource and locate projection details (path and
      * espgCode) which match the supplied desired epsgCode or fallback to the
      * default details (i.e. the supplied primary datasource)
-     * @param primary
-     * @param desiredEpsgCode
      * @return either a matching path and epsg code or the supplied datasource
      */
     public Projection getFavouredProjection(DataSource primary, String desiredEpsgCode) {
@@ -123,8 +125,6 @@ public class MapServerDetailsService {
      * to contact the hosted mapserver instance directly. This avoids a double
      * proxying of the request by contacting the hosted mapserver instance
      * directly.
-     * @param wmsUrl
-     * @return
      */
     public String rewriteToLocalWmsRequest(String wmsUrl) {
         UriComponents uri = UriComponentsBuilder.fromUriString(wmsUrl).build();
@@ -143,10 +143,11 @@ public class MapServerDetailsService {
      * @return min, max and smallest amount of equal sized buckets to create
      */
     public MapBucketDetails getScaledBuckets(List<Bucket> buckets) {
+        if (buckets == null || buckets.isEmpty()) return null;
         if(buckets.stream().allMatch((b) -> nonNull(b.getMin()) && nonNull(b.getMax()))) {
-            BigDecimal min = buckets.stream().map(Bucket::getMin).min(BigDecimal::compareTo).get();
-            BigDecimal max = buckets.stream().map(Bucket::getMax).max(BigDecimal::compareTo).get();
-            BigDecimal bucketSize = buckets.stream().map((b) -> b.getMax().subtract(b.getMin())).min(BigDecimal::compareTo).get();
+            BigDecimal min = buckets.stream().map(Bucket::getMin).min(BigDecimal::compareTo).orElseThrow();
+            BigDecimal max = buckets.stream().map(Bucket::getMax).max(BigDecimal::compareTo).orElseThrow();
+            BigDecimal bucketSize = buckets.stream().map((b) -> b.getMax().subtract(b.getMin())).min(BigDecimal::compareTo).orElseThrow();
             BigDecimal bucketCount = max.subtract(min).divide(bucketSize, RoundingMode.UP).setScale(0, RoundingMode.UP);
 
             if(bucketCount.compareTo(BigDecimal.ZERO) > 0) {
@@ -165,7 +166,7 @@ public class MapServerDetailsService {
      */
     public String getLocalWMSRequest(String id, String query) {
         return UriComponentsBuilder
-                .fromUriString(MAPSERVER)
+                .fromUriString(mapserverUrl)
                 .query(query)
                 .buildAndExpand(id)
                 .toUriString();
