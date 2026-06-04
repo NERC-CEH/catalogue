@@ -13,12 +13,15 @@ services:
     ports:
       - "8983:8983"
   mapserver:
-    image: registry.gitlab.ceh.ac.uk/eip/mapserver:2
+    image: camptocamp/mapserver:8.0
+    environment:
+      MAPSERVER_BASE_PATH: /mapserver
+      MS_MAP_PATTERN: "^\\/maps\\/([^\\.][-_A-Za-z0-9\\.]+\\/{1})*([-_A-Za-z0-9\\.]+)$$"
     ports:
       - "9000:80"
     volumes:
-      - mapfiles:/mapserver/maps
-      - ./fixtures/mapserver-data:/mapserver/data
+      - mapfiles:/maps
+      - ./fixtures/mapserver-data:/data
   hubbub-db:
     image: postgres:14.1-alpine
     environment:

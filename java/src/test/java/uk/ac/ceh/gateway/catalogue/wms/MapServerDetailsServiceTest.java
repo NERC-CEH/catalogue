@@ -24,7 +24,10 @@ public class MapServerDetailsServiceTest {
 
     @BeforeEach
     public void init() {
-        service = new MapServerDetailsService("https://catalogue.ceh.ac.uk");
+        service = new MapServerDetailsService(
+            "https://catalogue.ceh.ac.uk",
+            "http://mapserver/mapserver/{id}"
+        );
     }
 
     @Test
@@ -49,7 +52,7 @@ public class MapServerDetailsServiceTest {
         String request = service.rewriteToLocalWmsRequest(localRequest);
 
         //Then
-        assertEquals(request, "http://mapserver/mapserver/ID?REQUEST=WMS");
+        assertEquals("http://mapserver/mapserver/ID?REQUEST=WMS", request);
     }
 
     @Test
@@ -61,7 +64,7 @@ public class MapServerDetailsServiceTest {
         String request = service.rewriteToLocalWmsRequest(externalRequest);
 
         //Then
-        assertEquals(request, externalRequest);
+        assertEquals(externalRequest, request);
     }
 
     @Test
@@ -74,7 +77,7 @@ public class MapServerDetailsServiceTest {
         String request = service.getLocalWMSRequest(file, queryString);
 
         //Then
-        assertEquals(request, "http://mapserver/mapserver/myfileid?query");
+        assertEquals("http://mapserver/mapserver/myfileid?query", request);
     }
 
     @Test
@@ -173,9 +176,9 @@ public class MapServerDetailsServiceTest {
         MapBucketDetails details = service.getScaledBuckets(buckets);
 
         //Then
-        assertThat(details.getBuckets(), is(3));
-        assertThat(details.getMin(), is(new BigDecimal(0)));
-        assertThat(details.getMax(), is(new BigDecimal(300)));
+        assertThat(details.buckets(), is(3));
+        assertThat(details.min(), is(new BigDecimal(0)));
+        assertThat(details.max(), is(new BigDecimal(300)));
     }
 
     @Test
@@ -195,9 +198,9 @@ public class MapServerDetailsServiceTest {
         MapBucketDetails details = service.getScaledBuckets(buckets);
 
         //Then
-        assertThat(details.getBuckets(), is(4));
-        assertThat(details.getMin(), is(new BigDecimal("-1.5")));
-        assertThat(details.getMax(), is(new BigDecimal("4.5")));
+        assertThat(details.buckets(), is(4));
+        assertThat(details.min(), is(new BigDecimal("-1.5")));
+        assertThat(details.max(), is(new BigDecimal("4.5")));
     }
 
     @Test
@@ -207,15 +210,15 @@ public class MapServerDetailsServiceTest {
         b1.setMin(new BigDecimal("2"));
         b1.setMax(new BigDecimal("5"));
 
-        List<Bucket> buckets = Arrays.asList(b1);
+        List<Bucket> buckets = List.of(b1);
 
         //When
         MapBucketDetails details = service.getScaledBuckets(buckets);
 
         //Then
-        assertThat(details.getBuckets(), is(1));
-        assertThat(details.getMin(), is(new BigDecimal("2")));
-        assertThat(details.getMax(), is(new BigDecimal("5")));
+        assertThat(details.buckets(), is(1));
+        assertThat(details.min(), is(new BigDecimal("2")));
+        assertThat(details.max(), is(new BigDecimal("5")));
     }
 
     @Test
@@ -236,9 +239,15 @@ public class MapServerDetailsServiceTest {
         MapBucketDetails details = service.getScaledBuckets(buckets);
 
         //Then
-        assertThat(details.getBuckets(), is(4));
-        assertThat(details.getMin(), is(new BigDecimal("0.17")));
-        assertThat(details.getMax(), is(new BigDecimal("0.69")));
+        assertThat(details.buckets(), is(4));
+        assertThat(details.min(), is(new BigDecimal("0.17")));
+        assertThat(details.max(), is(new BigDecimal("0.69")));
+    }
+
+    @Test
+    public void checkThatReturnsNullForEmptyBuckets() {
+        MapBucketDetails details = service.getScaledBuckets(List.of());
+        assertNull(details);
     }
 
     @Test
@@ -247,7 +256,7 @@ public class MapServerDetailsServiceTest {
         Bucket b1 = new Bucket();
         b1.setMax(new BigDecimal("5"));
 
-        List<Bucket> buckets = Arrays.asList(b1);
+        List<Bucket> buckets = List.of(b1);
 
         //When
         MapBucketDetails details = service.getScaledBuckets(buckets);

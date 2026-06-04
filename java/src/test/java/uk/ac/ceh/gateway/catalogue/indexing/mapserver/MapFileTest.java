@@ -51,7 +51,10 @@ class MapFileTest {
         doc2.setUri("https://example.com/documents/" + id);
         doc2.setTitle("Foo");
 
-        MapServerDetailsService mapServerDetailsService = new MapServerDetailsService("https://example.com");
+        MapServerDetailsService mapServerDetailsService = new MapServerDetailsService(
+            "https://example.com",
+            "http://mapserver/mapserver/{id}"
+        );
         val mapDataDefinition = new MapDataDefinition();
 
         MapDataDefinition.Projection projection = new MapDataDefinition.Projection();
