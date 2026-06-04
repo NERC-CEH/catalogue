@@ -172,6 +172,9 @@ public class MapServerDetailsService {
                 .toUriString();
     }
 
-    public record MapBucketDetails(BigDecimal min, BigDecimal max, int buckets) {
+    @lombok.Value
+    public static class MapBucketDetails {
+        BigDecimal min, max;
+        int buckets;
     }
 }

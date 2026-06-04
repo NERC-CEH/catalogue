@@ -176,9 +176,9 @@ public class MapServerDetailsServiceTest {
         MapBucketDetails details = service.getScaledBuckets(buckets);
 
         //Then
-        assertThat(details.buckets(), is(3));
-        assertThat(details.min(), is(new BigDecimal(0)));
-        assertThat(details.max(), is(new BigDecimal(300)));
+        assertThat(details.getBuckets(), is(3));
+        assertThat(details.getMin(), is(new BigDecimal(0)));
+        assertThat(details.getMax(), is(new BigDecimal(300)));
     }
 
     @Test
@@ -198,9 +198,9 @@ public class MapServerDetailsServiceTest {
         MapBucketDetails details = service.getScaledBuckets(buckets);
 
         //Then
-        assertThat(details.buckets(), is(4));
-        assertThat(details.min(), is(new BigDecimal("-1.5")));
-        assertThat(details.max(), is(new BigDecimal("4.5")));
+        assertThat(details.getBuckets(), is(4));
+        assertThat(details.getMin(), is(new BigDecimal("-1.5")));
+        assertThat(details.getMax(), is(new BigDecimal("4.5")));
     }
 
     @Test
@@ -216,9 +216,9 @@ public class MapServerDetailsServiceTest {
         MapBucketDetails details = service.getScaledBuckets(buckets);
 
         //Then
-        assertThat(details.buckets(), is(1));
-        assertThat(details.min(), is(new BigDecimal("2")));
-        assertThat(details.max(), is(new BigDecimal("5")));
+        assertThat(details.getBuckets(), is(1));
+        assertThat(details.getMin(), is(new BigDecimal("2")));
+        assertThat(details.getMax(), is(new BigDecimal("5")));
     }
 
     @Test
@@ -239,9 +239,9 @@ public class MapServerDetailsServiceTest {
         MapBucketDetails details = service.getScaledBuckets(buckets);
 
         //Then
-        assertThat(details.buckets(), is(4));
-        assertThat(details.min(), is(new BigDecimal("0.17")));
-        assertThat(details.max(), is(new BigDecimal("0.69")));
+        assertThat(details.getBuckets(), is(4));
+        assertThat(details.getMin(), is(new BigDecimal("0.17")));
+        assertThat(details.getMax(), is(new BigDecimal("0.69")));
     }
 
     @Test
