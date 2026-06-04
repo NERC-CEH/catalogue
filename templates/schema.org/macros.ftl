@@ -20,7 +20,7 @@
 <#macro schemaDotOrg docType="", parts=[]>
   <#if docType?has_content>
     {
-    "@context":"http://schema.org/",
+    "@context":"https://schema.org/",
     "@graph": [
     <@schemaDocument docType parts/>
     ]
