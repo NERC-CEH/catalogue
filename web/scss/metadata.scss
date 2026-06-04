@@ -1,6 +1,5 @@
 @use "sass:color";
 
-
 body {
     display: flex;
     flex-direction: column;
@@ -8,6 +7,9 @@ body {
 }
 
 .metadata {
+    div:empty {
+        display: none;
+    }
 
     a {
         word-break: break-word;
@@ -22,8 +24,11 @@ body {
         }
     }
 
-    .tableOfContents {
+    .fa-orcid {
+        color: #a6ce39
+    }
 
+    .tableOfContents {
         @extend .d-print-none !optional;
 
         >div {
@@ -57,23 +62,25 @@ body {
         }
     }
 
-
     .description {
         display: flex;
         gap: 2em;
         flex-wrap: wrap;
 
         .description-text {
-            flex: 2 0 65ch;
+            flex: 2 1 65ch;
 
             img.browseGraphic {
-                @extend .float-md-end !optional;
-                @extend .col-md-6 !optional;
-                @extend .mb-3 !optional;
-                @extend .ms-md-3 !optional;
+                @extend .mb-3;
+                @extend .float-md-end;
+                @extend .col-md-6;
+                @extend .ms-md-5;
                 mix-blend-mode: multiply;
+                width: auto;
+                height: auto;
+                max-width: min(100%, 350px);
+                max-height: 250px;
             }
-
         }
 
         .usage {
@@ -134,10 +141,13 @@ body {
     }
 
     .alert {
-        border-radius: 0;
 
         &-data {
             background-color: var(--ukceh-colour-data);
+        }
+
+        &-earth {
+            background-color: var(--ukceh-colour-earth);
         }
 
         &-water {
@@ -149,12 +159,11 @@ body {
             }
         }
 
-        &-In-progress,
         &-Embargoed,
         &-Superseded,
-        &-Withdrawn {
-            @extend .alert !optional;
-            @extend .alert-water !optional;
+        &-Withdrawn,
+        &-Restricted {
+            @extend .alert-water;
         }
     }
 
@@ -282,8 +291,73 @@ body {
         }
     }
 
+
+
+
+
+
+
+
+
     .offcanvas-access {
         --bs-offcanvas-width: min(700px, 70%);
+
+        .accessOptions {
+
+            margin: 1em;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1em;
+
+            a.access {
+
+                line-height: 1.25rem;
+                background-color: #eee;
+                color: var(--ukceh-colour-night);
+                text-decoration: none;
+                padding: 0.35rem;
+                flex: 1 0 100%;
+                flex-direction: var(--_optionDirection, row);
+                display: flex;
+                flex-wrap: nowrap;
+                align-items: center;
+
+                >* {
+                    margin: var(--_optionMargin, 0.65em);
+                }
+
+                .btn {
+                    min-width: var(--_optionBtnWidth, 115px);
+                }
+
+                .accessText {
+                    flex-grow: 1;
+                }
+
+                &:hover {
+                    background-color: #ddd;
+                }
+
+                @media (width <=40rem) {
+                    .fa-xl {
+                        display: none;
+                    }
+
+                    .btn {
+                        font-size: 80%;
+                        --_optionBtnWidth: 80px;
+                    }
+                }
+
+                @media (width <=36rem) {
+                    flex-direction: column;
+                    align-items: start;
+                    --_optionMargin: 0.35rem;
+                    _optionDirection: column;
+                }
+
+            }
+        }
     }
 
     #segment-description {
@@ -328,6 +402,14 @@ body {
 
         ::-webkit-scrollbar-thumb {
             background: #888;
+        }
+    }
+
+    #segment-constraints {
+        .embargoNote {
+            a {
+                display: none
+            }
         }
     }
 
@@ -546,20 +628,6 @@ body {
         margin: 0 1em;
     }
 
-    .card {
-        --_border-radius: 0.5em;
-        overflow-wrap: break-word;
-        border-radius: var(--_border-radius);
-
-        &,
-        &-header {
-            border-radius: var(--_border-radius) var(--_border-radius) 0 0;
-        }
-
-        &-header {
-            padding: 0.5em 1em;
-        }
-    }
 
     .externalVocabularyLink {
         font-size: 0.85em;
@@ -614,8 +682,6 @@ body {
         }
     }
 
-
-
     #document-upload-panel {
         border-radius: 0;
 
@@ -662,52 +728,31 @@ body {
         }
     }
 
-    .metadataQuality {
-        --_quality-warning: hsl(34, 100%, 50%);
-        --_quality-error: hsl(0, 100%, 50%);
 
-        &_error {
-            --_qualityColor: var(--_quality-error);
+    .card-metadataQuality {
+        --_qualityColor: blue;
 
-            li {
-                font-weight: bold;
+        .card-header {
+            background-color: var(--_qualityColor);
+            color: white;
+            font-weight: 600;
+
+            small {
+                font-weight: 200;
+                opacity: .75
             }
         }
 
-        &_warning {
-            --_qualityColor: var(--_quality-warning);
+        &-error {
+            --_qualityColor: red;
         }
 
-        &_info {
-            --_qualityColor: var(--ukceh-colour-water);
+        &-warning {
+            --_qualityColor: orange;
         }
 
-        span {
-            margin: 0 1.2em;
-        }
-
-        &-report {
-            .qualityHeader {
-                padding: 0.65em;
-                color: #fff;
-                background-color: var(--_qualityColor);
-            }
-
-            li {
-                background-color: color-mix(in oklab, var(--_qualityColor), white 70%);
-            }
-
-            span {
-                color: #00d;
-
-                &::before {
-                    content: " «";
-                }
-
-                &::after {
-                    content: "» ";
-                }
-            }
+        li {
+            background-color: color-mix(in oklab, var(--_qualityColor), white 85%);
         }
     }
 
@@ -805,7 +850,7 @@ body {
 
 #publication {
     div {
-        margin: 4em auto;
+        margin: 2em auto;
         text-align: center;
 
         .btn {
@@ -937,6 +982,11 @@ body {
 
             .link-inactive {
                 @extend .link-secondary !optional;
+            }
+
+            .badge {
+                font-size: .65rem;
+                margin-inline-start: .5rem;
             }
         }
     }

@@ -19,7 +19,7 @@
   ],
   "relationships": [
     {
-      "relation": "https://vocabs.ceh.ac.uk/eidc#supersedes",
+      "relation": "http://purl.org/dc/terms/replaces",
       "target": "4fc0cda2-2d89-4971-9aad-07bea9955687"
     },
     {
@@ -31,7 +31,7 @@
       "target": "https://catalogue.ceh.ac.uk/id/0c26fb58-68ae-45a3-a404-62be2a2a527c"
     },
     {
-      "relation": "https://vocabs.ceh.ac.uk/eidc#supersedes",
+      "relation": "http://purl.org/dc/terms/replaces",
       "target": "https://catalogue.ceh.ac.uk/id/4fc0cda2-2d89-4971-9aad-07bea9955687"
     }
   ],

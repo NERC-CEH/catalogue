@@ -28,13 +28,6 @@
         }
     }
 
-    .browseGraphic {
-        max-width: min(100dvw, 350px);
-        max-height: 250px;
-        margin: 0 0 2em 2em;
-        @extend .float-end !optional;
-    }
-
     .record-metadata {
 
         .key,

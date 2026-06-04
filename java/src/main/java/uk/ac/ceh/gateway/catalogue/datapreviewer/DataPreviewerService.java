@@ -97,7 +97,7 @@ public class DataPreviewerService {
             permissions.containsEntry(Permission.VIEW, "public");
 
         boolean isAvailable =
-            "Available".equalsIgnoreCase(document.getResourceStatus());
+            "Available".equalsIgnoreCase(document.getAvailability());
 
         boolean isFreelyAvailable =
             document.getAccessLimitation() != null &&
@@ -181,7 +181,7 @@ public class DataPreviewerService {
 
         var links = jenaLookupService.inverseRelationships(
             collectionUri,
-            Ontology.EIDC_MEMBER_OF.getURI()
+            Ontology.DCTERMS_ISPARTOF.getURI()
         );
 
         for (var link : links) {

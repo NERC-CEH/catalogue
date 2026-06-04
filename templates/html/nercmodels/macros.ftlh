@@ -112,7 +112,7 @@ CEH dataInfo table
           <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
               <span class="nameIdentifier">
                 <a href="${contact.nameIdentifier}" target="_blank" rel="noopener noreferrer" title="View this authors ORCiD record ${contact.nameIdentifier}">
-                  <img src="/static/img/orcid_16x16.png" alt="ORCID iD icon">
+                  <i class="fa-brands fa-orcid fa-xl" aria-label="ORCiD" role="img"></i>
                 </a>
               </span>
           </#if>

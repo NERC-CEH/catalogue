@@ -1,10 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.quality;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.google.common.collect.ImmutableMap;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
@@ -40,15 +35,9 @@ import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.WARNING;
 @ExtendWith(MockitoExtension.class)
 public class GeminiMetadataQualityServiceTest {
     private GeminiMetadataQualityService service;
-    // Keep ObjectMapper options same as ObjectMapper in config/ApplicationConfig.java
-    private ObjectMapper objectMapper = new ObjectMapper()
-        .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-        .registerModule(new GuavaModule())
-        .registerModule(new JaxbAnnotationModule())
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    private Configuration config = Configuration.defaultConfiguration()
-        .jsonProvider(new JacksonJsonProvider(objectMapper))
-        .mappingProvider(new JacksonMappingProvider(objectMapper))
+    private final Configuration config = Configuration.defaultConfiguration()
+        .jsonProvider(new JacksonJsonProvider())
+        .mappingProvider(new JacksonMappingProvider())
         .addOptions(
             Option.DEFAULT_PATH_LEAF_TO_NULL,
             Option.SUPPRESS_EXCEPTIONS
@@ -61,7 +50,7 @@ public class GeminiMetadataQualityServiceTest {
 
     @BeforeEach
     public void setup() {
-        this.service = new GeminiMetadataQualityService(documentReader, objectMapper, downloadUrlProperties);
+        this.service = new GeminiMetadataQualityService(documentReader, downloadUrlProperties);
     }
 
     @Test
@@ -162,7 +151,7 @@ public class GeminiMetadataQualityServiceTest {
         assertThat(actual, not(empty()));
     }
 
-    //@Test
+    @Test
     public void checkSignpostHasCorrectOnlineResource() {
         //given
         val parsed = JsonPath.parse(getClass().getResourceAsStream("nercSignpostRight.json"), this.config);
@@ -388,6 +377,7 @@ public class GeminiMetadataQualityServiceTest {
         when(downloadUrlProperties.getRegexDatastore()).thenReturn("https://catalogue\\.ceh\\.ac\\.uk/datastore/eidchub/.*");
         when(downloadUrlProperties.getRegexOrder()).thenReturn("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*");
         when(downloadUrlProperties.getRegexPackage()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/.*");
+        when(downloadUrlProperties.getRegexCeda()).thenReturn("https://catalogue\\.ceh\\.ac\\.uk/datastore/eidchub/.*");
         val actual = this.service.checkDownloadAndOrderLinks(parsed);
 
         //then
@@ -443,24 +433,24 @@ public class GeminiMetadataQualityServiceTest {
     }
 
     @Test
-    public void checkResourceStatusAvailable() {
+    public void checkAvailabilityAvailable() {
         //given
-        val parsed = JsonPath.parse(getClass().getResourceAsStream("resourceStatusAvailable.json"), this.config);
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("availabilityAvailable.json"), this.config);
 
         //when
-        val actual = this.service.resourceStatusIsAvailable(parsed);
+        val actual = this.service.availabilityIsAvailable(parsed);
 
         //then
         assertThat(actual, is(true));
     }
 
     @Test
-    public void checkResourceStatusNotAvailable() {
+    public void checkAvailabilityNotAvailable() {
         //given
-        val parsed = JsonPath.parse(getClass().getResourceAsStream("resourceStatusNotAvailable.json"), this.config);
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("availabilityNotAvailable.json"), this.config);
 
         //when
-        val actual = this.service.resourceStatusIsAvailable(parsed);
+        val actual = this.service.availabilityIsAvailable(parsed);
 
         //then
         assertThat(actual, is(false));

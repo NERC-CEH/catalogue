@@ -1,4 +1,4 @@
-/* global window */
+/* global window IntersectionObserver */
 /* eslint no-new: "off" */
 import './globals'
 import $ from 'jquery'
@@ -99,6 +99,7 @@ if ($clone.length) {
 }
 
 Backbone.history.start()
+stickyHeader()
 
 /* Initialize the catalogue application */
 function initCatalogue () {
@@ -339,6 +340,15 @@ function initDepositRequest () {
     el: '#deposit-request',
     model: app
   })
+}
+
+function stickyHeader () {
+  const sentinel = document.getElementById('header-sentinel')
+  const header = document.querySelector('header')
+  if (!sentinel || !header) return
+  new IntersectionObserver(([entry]) => {
+    header.classList.toggle('stuck', !entry.isIntersecting)
+  }).observe(sentinel)
 }
 
 function initClone () {

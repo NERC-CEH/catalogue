@@ -161,9 +161,9 @@ export default EditorView.extend({
           ObjectInputView: RelationshipView,
           multiline: true,
           options: [
-            { value: 'http://onto.ceh.ac.uk/EF#associatedWith', label: 'Related to' },
-            { value: 'http://onto.ceh.ac.uk/EF#supersedes', label: 'Supersedes' },
-            { value: 'http://onto.ceh.ac.uk/EF#narrower', label: 'Has child network' }
+            { value: 'http://purl.org/dc/terms/relation', label: 'Related to' },
+            { value: 'http://purl.org/dc/terms/replaces', label: 'Supersedes' },
+            { value: 'https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork', label: 'Has child network' }
           ],
           helpText: `
 <p>Relationships to other records</p>

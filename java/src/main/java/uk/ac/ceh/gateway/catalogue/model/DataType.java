@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.Lists;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -15,11 +15,11 @@ import java.util.List;
 /**
  * The following abstract class defines the common structure for a
  * DocumentIndexingService which hydrates documents using a BundledReaderService.
- *
- * Ultimately the class backs on to an implementation of IndexGenerator. This is
+ * <p>
+ * Ultimately, the class backs on to an implementation of IndexGenerator. This is
  * used to create a required index object from a document which has been read
  * using the BundledReaderService.
- *
+ * <p>
  * Implementations of this class need to define the way in which the generated
  * index (I) gets indexed.
  *
@@ -108,14 +108,16 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
                 this.rebuildIndex();
             }
         } catch (Exception ex) {
-            log.error("Suppressed indexing errors", (Object[]) ex.getSuppressed());
+            for (Throwable suppressed : ex.getSuppressed()) {
+                log.warn("Indexing error: {}", suppressed.getMessage());
+            }
         }
     }
 
     /**
      * An overridable method which uses the message bundle reader to load a
      * particular document.
-     *
+     * <p>
      * Subclasses are free to adjust this method to add postprocessing
      * capabilities to the reading logic
      * @param document id of the document to read

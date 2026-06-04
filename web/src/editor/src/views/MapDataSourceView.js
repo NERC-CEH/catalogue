@@ -45,9 +45,11 @@ export default ObjectInputView.extend({
     this.setStyleMode(this.model.stylingMode)
 
     this.listenTo(this.model, 'change:type', this.handlerByteTypeVisibility)
+    this.listenTo(this.model, 'change:type', this.handlerLayerVisibility)
 
     // Set the radio button to the byteType of the model
     this.updateByteRadioButton()
+    this.updateLayerVisibility(this.model.get('type'))
   },
 
   addReprojection () {
@@ -99,6 +101,8 @@ export default ObjectInputView.extend({
 
   handlerByteTypeVisibility (e) { this.updateByteTypeVisibility(e.stylingMode, e.attributes.type) },
 
+  handlerLayerVisibility (e) { this.updateLayerVisibility(e.attributes.type) },
+
   /*
      * Update the bytetype radio button to match the model
      */
@@ -111,5 +115,16 @@ export default ObjectInputView.extend({
      */
   updateByteTypeVisibility (stylingMode, type) {
     if ((stylingMode.toLowerCase() === 'attributes') && (type.toLowerCase() === 'raster')) { this.$('.byte-box').show() } else { this.$('.byte-box').hide() }
+  },
+
+  /*
+   * Hide the layer field for raster sources
+   */
+  updateLayerVisibility (type) {
+    if (type && type.toLowerCase() === 'raster') {
+      this.$('.layer-box').hide()
+    } else {
+      this.$('.layer-box').show()
+    }
   }
 })

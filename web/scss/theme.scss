@@ -65,7 +65,6 @@ textarea.sparqlquery {
     padding: 1em;
 }
 
-
 main {
     ::selection {
         background-color: var(--ukceh-colour-data);
@@ -77,7 +76,7 @@ main {
 
         &.section {
             &-grey {
-                background-color: #DDD;
+                background-color: #EEE;
             }
 
             &-air {
@@ -108,8 +107,6 @@ main {
 }
 
 header {
-    container-type: scroll-state;
-    container-name: sticky-header;
     position: sticky;
     top: 0;
     z-index: 1025;
@@ -315,7 +312,6 @@ h4 {
 /* -- START Navigation*/
 header {
     .toolbar {
-        //height: var(--header-height);
         height: auto;
         display: flex;
         flex-wrap: nowrap;
@@ -330,6 +326,11 @@ header {
             img {
                 max-block-size: calc(var(--header-height) * 0.5);
                 margin-inline-end: 1em;
+
+                @media only screen and (max-width: 405px) {
+                    max-block-size: 40px;
+                }
+
 
             }
         }
@@ -417,12 +418,12 @@ header {
         .nav-toggle {
             color: var(--nav-toggle-colour);
             display: none;
-            padding: 1em;
+            margin: calc((var(--header-height) - 28px) /2) !important;
         }
     }
 }
 
-@media only screen and (max-width: 980px) {
+@media only screen and (max-width: 1200px) {
     header {
 
         .container,
@@ -524,10 +525,13 @@ i.fa-brands {
 }
 
 
-@container sticky-header scroll-state(stuck: top) {
-    header {
-        .container {
-            --header-height: 85px;
-        }
+#header-sentinel {
+    height: 0;
+    pointer-events: none;
+}
+
+header.stuck {
+    .container {
+        --header-height: 85px;
     }
 }

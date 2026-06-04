@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.quality;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.*;
 import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
@@ -34,13 +33,12 @@ public class MonitoringQualityService implements MetadataQualityService {
     private static final DateFormat operatingPeriodFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public MonitoringQualityService(
-            @NonNull DocumentReader documentReader,
-            @NonNull ObjectMapper objectMapper
+            @NonNull DocumentReader documentReader
     ) {
         this.documentReader = documentReader;
         this.config = Configuration.defaultConfiguration()
-            .jsonProvider(new JacksonJsonProvider(objectMapper))
-            .mappingProvider(new JacksonMappingProvider(objectMapper))
+            .jsonProvider(new JacksonJsonProvider())
+            .mappingProvider(new JacksonMappingProvider())
             .addOptions(Option.DEFAULT_PATH_LEAF_TO_NULL, Option.SUPPRESS_EXCEPTIONS);
         log.info("Creating");
     }
@@ -133,7 +131,7 @@ public class MonitoringQualityService implements MetadataQualityService {
             "eastBoundLongitude",
             "westBoundLongitude"
         ).forEach(key -> {
-            if (!boundingBox.containsKey(key)) {
+            if (!boundingBox.containsKey(key) || boundingBox.get(key) == null) {
                 toReturn.add(new MetadataCheck(key + " is missing from bounding box", ERROR));
             }
             val limit = key.endsWith("Latitude") ? 90 : 180;
@@ -150,8 +148,9 @@ public class MonitoringQualityService implements MetadataQualityService {
         ).forEach(pair -> {
             val shouldBeMore = pair.get(0);
             val shouldBeLess = pair.get(1);
-            if (boundingBox.keySet().containsAll(pair)
-                && boundingBox.get(shouldBeLess) > boundingBox.get(shouldBeMore)) {
+            val moreVal = boundingBox.get(shouldBeMore);
+            val lessVal = boundingBox.get(shouldBeLess);
+            if (moreVal != null && lessVal != null && lessVal > moreVal) {
                 toReturn.add(new MetadataCheck(
                     String.format("%s should be less than %s", shouldBeLess, shouldBeMore),
                     ERROR
@@ -178,14 +177,14 @@ public class MonitoringQualityService implements MetadataQualityService {
         return Stream.ofNullable(items)
             .flatMap(List::stream)
             .filter(Map::isEmpty)
-            .map(_m -> new MetadataCheck(field + " is empty", ERROR))
+            .map(_ -> new MetadataCheck(field + " is empty", ERROR))
             .limit(1);
     }
 
     private Stream<MetadataCheck> checkNonEmptyIfPresent(String field, List<?> list) {
         return Stream.ofNullable(list)
             .filter(List::isEmpty)
-            .map(_l -> new MetadataCheck(field + " is empty", ERROR));
+            .map(_ -> new MetadataCheck(field + " is empty", ERROR));
     }
 
     private Optional<Date> parseDate(String str) {

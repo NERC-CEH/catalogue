@@ -36,7 +36,7 @@ public class CodeDocumentController extends AbstractDocumentController {
     @PutMapping(value = "{file}", consumes = CODE_JSON_VALUE)
     public ResponseEntity<MetadataDocument> saveCodeDocument(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
+            @PathVariable String file,
             @RequestBody CodeDocument document
     ) {
         return saveMetadataDocument(user, file, document);

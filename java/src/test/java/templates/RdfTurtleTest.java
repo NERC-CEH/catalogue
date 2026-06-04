@@ -5,9 +5,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.tdb1.TDB1Factory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -16,13 +16,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.model.Link;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.io.File;
@@ -50,8 +54,7 @@ public class RdfTurtleTest {
         configuration.setDirectoryForTemplateLoading(new File("../templates"));
         configuration.setSharedVariable("jena", jenaLookupService);
 
-        val jenaTdb = TDB1Factory.createDataset();
-        model = jenaTdb.getDefaultModel();
+        model = ModelFactory.createDefaultModel();
     }
 
     @SneakyThrows
@@ -89,7 +92,7 @@ public class RdfTurtleTest {
                     createStatement(
                         createResource("https://example.com/id/9371"),
                         createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                        createResource("http://onto.ceh.ac.uk/EF#Activity")
+                        createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringActivity")
                     )
                 )
             );
@@ -112,7 +115,7 @@ public class RdfTurtleTest {
                     createStatement(
                         createResource("https://example.com/id/1234"),
                         createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                        createResource("http://onto.ceh.ac.uk/EF#Facility")
+                        createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringFacility")
                     )
                 )
             );
@@ -135,10 +138,121 @@ public class RdfTurtleTest {
                     createStatement(
                         createResource("https://example.com/id/7453"),
                         createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                        createResource("http://onto.ceh.ac.uk/EF#Network")
+                        createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringNetwork")
                     )
                 )
             );
+        }
+
+        @Test
+        void loadProgramme() {
+            //given
+            val programme = new MonitoringProgramme()
+                .setId("5566")
+                .setUri("https://example.com/id/5566")
+                .setTitle("Rainfall");
+
+            //when
+            template("rdf/monitoring/programme.ftl", programme);
+
+            //then
+            assertTrue(
+                model.contains(
+                    createStatement(
+                        createResource("https://example.com/id/5566"),
+                        createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                        createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringProgramme")
+                    )
+                )
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("Combined catalogue Turtle (FusekiExportService path)")
+    class CombinedCatalogueTurtle {
+
+        @SneakyThrows
+        private void combinedTemplate(String unprefixedTemplate, Object document) {
+            val catalogueModel = new HashMap<String, Object>();
+            catalogueModel.put("baseUri", "https://example.com");
+            catalogueModel.put("catalogue", "eidc");
+            catalogueModel.put("title", "Test");
+            catalogueModel.put("records", List.of());
+
+            val catalogueTtl = FreeMarkerTemplateUtils.processTemplateIntoString(
+                configuration.getTemplate("rdf/catalogue.ttl.ftl"), catalogueModel
+            );
+            val recordTtl = FreeMarkerTemplateUtils.processTemplateIntoString(
+                configuration.getTemplate(unprefixedTemplate), document
+            );
+            val combined = catalogueTtl + "\n" + recordTtl;
+            log.debug("Combined: {}", combined);
+            RDFDataMgr.read(model, new StringReader(combined), "https://example.com/id/", Lang.TTL);
+        }
+
+        @Test
+        void unprefixedActivityParses() {
+            val activity = new MonitoringActivity()
+                .setId("9371")
+                .setUri("https://example.com/id/9371")
+                .setTitle("Kelp");
+            combinedTemplate("rdf/monitoring/unprefixed/activity.ftl", activity);
+            assertTrue(model.contains(
+                createStatement(
+                    createResource("https://example.com/id/9371"),
+                    createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                    createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringActivity")
+                )
+            ));
+        }
+
+        @Test
+        void unprefixedFacilityParses() {
+            val facility = new MonitoringFacility()
+                .setId("1234")
+                .setUri("https://example.com/id/1234")
+                .setTitle("Test");
+            combinedTemplate("rdf/monitoring/unprefixed/facility.ftl", facility);
+            assertTrue(model.contains(
+                createStatement(
+                    createResource("https://example.com/id/1234"),
+                    createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                    createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringFacility")
+                )
+            ));
+        }
+
+        @Test
+        void unprefixedNetworkParses() {
+            val network = new MonitoringNetwork()
+                .setId("7453")
+                .setUri("https://example.com/id/7453")
+                .setTitle("Newton");
+            combinedTemplate("rdf/monitoring/unprefixed/network.ftl", network);
+            assertTrue(model.contains(
+                createStatement(
+                    createResource("https://example.com/id/7453"),
+                    createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                    createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringNetwork")
+                )
+            ));
+        }
+
+        @Test
+        void unprefixedProgrammeParses() {
+            val programme = new MonitoringProgramme()
+                .setId("5566")
+                .setUri("https://example.com/id/5566")
+                .setTitle("Rainfall");
+            combinedTemplate("rdf/monitoring/unprefixed/programme.ftl", programme);
+            assertTrue(model.contains(
+                createStatement(
+                    createResource("https://example.com/id/5566"),
+                    createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                    createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringProgramme")
+                )
+            ));
         }
     }
 
@@ -147,7 +261,7 @@ public class RdfTurtleTest {
     class Dataset {
 
         private void givenRelationshipMemberOf(String uri) {
-            given(jenaLookupService.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf"))
+            given(jenaLookupService.relationships(uri, "http://purl.org/dc/terms/isPartOf"))
                 .willReturn(
                     List.of(
                         Link.builder().href("https://example.com/id/283746").build(),
@@ -299,6 +413,88 @@ public class RdfTurtleTest {
                     )
                 )
             );
+        }
+
+        @Test
+        void loadGeminiWithNonOrcidContact() {
+            // Contacts without ORCID/ROR fall back to prefixed-name identifiers (:docId_c0).
+            // This test catches regressions where the `:` prefix is dropped, producing invalid Turtle.
+            val uri = "https://example.com/id/conttest";
+            GeminiDocument document = new GeminiDocument();
+            document.setType("dataset");
+            document.setId("conttest");
+            document.setUri(uri);
+            document.setTitle("Contact test");
+            document.setResponsibleParties(List.of(
+                ResponsibleParty.builder()
+                    .familyName("Smith")
+                    .givenName("John")
+                    .organisationName("Test Organisation")
+                    .role("pointOfContact")
+                    .build()
+            ));
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(model.contains(
+                createStatement(
+                    createResource(uri),
+                    createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                    createResource("http://www.w3.org/ns/dcat#Dataset")
+                )
+            ));
+        }
+
+        @Test
+        void loadGeminiWithFundingNoAwardUri() {
+            // Funding without awardURI falls back to prefixed-name identifier (:docId_fund0).
+            // This test catches regressions where the `:` prefix is dropped on that branch.
+            val uri = "https://example.com/id/fundtest";
+            GeminiDocument document = new GeminiDocument();
+            document.setType("dataset");
+            document.setId("fundtest");
+            document.setUri(uri);
+            document.setTitle("Funding test");
+            document.setFunding(List.of(Funding.builder().awardTitle("Grant X").build()));
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(model.contains(
+                createStatement(
+                    createResource(uri),
+                    createProperty("http://www.w3.org/ns/prov#wasGeneratedBy"),
+                    model.listObjectsOfProperty(
+                        createResource(uri),
+                        createProperty("http://www.w3.org/ns/prov#wasGeneratedBy")
+                    ).next().asResource()
+                )
+            ));
+        }
+
+        @Test
+        void loadGeminiWithCitationNoUrl() {
+            // Incoming citations without a URL fall back to prefixed-name identifier (:docId_citation0).
+            // This test catches regressions where the `:` prefix is dropped on that branch.
+            val uri = "https://example.com/id/citationtest";
+            GeminiDocument document = new GeminiDocument();
+            document.setType("dataset");
+            document.setId("citationtest");
+            document.setUri(uri);
+            document.setTitle("Citation test");
+            document.setIncomingCitations(List.of(Supplemental.builder().description("Test citation desc").build()));
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(model.contains(
+                createStatement(
+                    createResource(uri),
+                    createProperty("http://purl.org/dc/terms/isReferencedBy"),
+                    model.listObjectsOfProperty(
+                        createResource(uri),
+                        createProperty("http://purl.org/dc/terms/isReferencedBy")
+                    ).next().asResource()
+                )
+            ));
         }
 
         @Nested

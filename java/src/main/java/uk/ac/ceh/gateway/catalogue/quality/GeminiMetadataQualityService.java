@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.quality;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import com.jayway.jsonpath.*;
 import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
@@ -44,13 +43,12 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
 
     public GeminiMetadataQualityService(
             @NonNull DocumentReader documentReader,
-            @NonNull ObjectMapper objectMapper,
             @NonNull DownloadUrlProperties downloadUrlProperties
     ) {
         this.documentReader = documentReader;
         this.config = Configuration.defaultConfiguration()
-            .jsonProvider(new JacksonJsonProvider(objectMapper))
-            .mappingProvider(new JacksonMappingProvider(objectMapper))
+            .jsonProvider(new JacksonJsonProvider())
+            .mappingProvider(new JacksonMappingProvider())
             .addOptions(Option.DEFAULT_PATH_LEAF_TO_NULL, Option.SUPPRESS_EXCEPTIONS);
         this.downloadUrlProperties = downloadUrlProperties;
         log.info("Creating");
@@ -170,7 +168,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
                 "$.['boundingBoxes','spatialRepresentationTypes','spatialReferenceSystems','spatialResolutions']",
                 new TypeRef<Map<String, List>>() {}
         );
-        toCheck.forEach((key, value) -> {
+        toCheck.forEach((key, _) -> {
             if (!fieldListIsMissing(toCheck, key)) {
                 toReturn.add(new MetadataCheck("The record has " + key + " but the resource type is Non-geographic dataset", ERROR));
             }
@@ -238,7 +236,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         );
 
         boundingBoxes.forEach(boundingBox -> {
-            boundingBox.forEach((key, value) -> {
+            boundingBox.forEach((_, value) -> {
                 if (BigDecimal.valueOf(value).scale() > 3) {
                     toReturn.add(new MetadataCheck("Bounding box coordinates are too precise (max 3 decimal places)", ERROR));
                 }
@@ -282,9 +280,9 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             return toReturn;
         }
 
-        val requiredKeys = ImmutableSet.of("resourceStatus", "lineage");
+        val requiredKeys = ImmutableSet.of("availability", "lineage");
         val toCheck = parsed.read(
-                "$.['resourceStatus', 'lineage']",
+                "$.['availability', 'lineage']",
                 new TypeRef<Map<String, String>>() {}
         );
         requiredKeys.forEach(key -> {
@@ -294,8 +292,8 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         });
         val licences = parsed.read("$.useConstraints[*][?(@.code == 'license')]", typeRefStringString);
 
-        if (resourceStatusIsUnknown(parsed)) {
-            toReturn.add(new MetadataCheck("Resource status is missing", ERROR));
+        if (availabilityIsUnknown(parsed)) {
+            toReturn.add(new MetadataCheck("Availability is missing", ERROR));
         }
 
         if (licences == null || licences.isEmpty()) {
@@ -352,7 +350,6 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     }
 
     List<MetadataCheck> checkDistributor(DocumentContext parsed) {
-        val toReturn = new ArrayList<MetadataCheck>();
         val distributors = parsed.read(
                 "$.distributorContacts[*][?(@.role == 'distributor')].['organisationName','email']",
                 typeRefStringString
@@ -362,11 +359,11 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
                 typeRefStringString
         );
 
-        toReturn.addAll(checkAddress(distributors, "Distributor"));
+        val toReturn = new ArrayList<>(checkAddress(distributors, "Distributor"));
         if (distributors.size() > 1) {
             toReturn.add(new MetadataCheck("There should be only ONE distributor", ERROR));
         }
-        if (nonDistributors.size() > 0) {
+        if (!nonDistributors.isEmpty()) {
             toReturn.add(new MetadataCheck("Distributor contact must have role 'distributor'", ERROR));
         }
         if (distributors.stream().anyMatch(distributor -> fieldIsMissing(distributor, "email"))) {
@@ -396,12 +393,11 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     }
 
     List<MetadataCheck> checkPublisher(DocumentContext parsed) {
-        val toReturn = new ArrayList<MetadataCheck>();
         val publishers = parsed.read(
                 "$.responsibleParties[*][?(@.role == 'publisher')].['organisationName','email']",
                 typeRefStringString
         );
-        toReturn.addAll(checkAddress(publishers, "Publisher"));
+        val toReturn = new ArrayList<>(checkAddress(publishers, "Publisher"));
         if (publishers.size() > 1) {
             toReturn.add(new MetadataCheck("There should be only ONE publisher", ERROR));
         }
@@ -422,12 +418,11 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     }
 
     List<MetadataCheck> checkCustodian(DocumentContext parsed) {
-        val toReturn = new ArrayList<MetadataCheck>();
         val custodians = parsed.read(
                 "$.responsibleParties[*][?(@.role == 'custodian')].['organisationName','email']",
                 typeRefStringString
                 );
-        toReturn.addAll(checkAddress(custodians, "Custodian"));
+        val toReturn = new ArrayList<>(checkAddress(custodians, "Custodian"));
         if (custodians.size() > 1) {
             toReturn.add(new MetadataCheck("There should be only ONE custodian", ERROR));
         }
@@ -499,7 +494,10 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             return Collections.singletonList(new MetadataCheck("Spatial resolutions is missing", WARNING));
         }
         if (spatialResolutions.stream().anyMatch(spatialResolution -> fieldIsMissing(spatialResolution, "distance"))) {
-            return Collections.singletonList(new MetadataCheck("Spatial resolution is empty", ERROR));
+            return Collections.singletonList(new MetadataCheck("Spatial resolution (distance) is missing", ERROR));
+        }
+        if (spatialResolutions.stream().anyMatch(spatialResolution -> fieldIsMissing(spatialResolution, "uom"))) {
+            return Collections.singletonList(new MetadataCheck("Spatial resolution (units) is missing", ERROR));
         }
         return Collections.emptyList();
     }
@@ -626,7 +624,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
 
     List<MetadataCheck> checkDownloadAndOrderLinks(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
-        if (!resourceStatusIsAvailable(parsed) || notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
+        if (!availabilityIsAvailable(parsed) || notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
             return toReturn;
         }
 
@@ -653,20 +651,20 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         if (orders.stream().anyMatch(order ->
             fieldNotMatching(order, "url", downloadUrlProperties.getRegexOrder())
         )) {
-            toReturn.add(new MetadataCheck("Orders do not have a valid EIDC url", INFO));
+            toReturn.add(new MetadataCheck("Orders do not have a valid url", INFO));
         }
 
         if (downloads.stream().anyMatch(order ->
-            fieldNotMatching(order, "url", downloadUrlProperties.getRegexDatastore()) && fieldNotMatching(order, "url", downloadUrlProperties.getRegexPackage())
+            fieldNotMatching(order, "url", downloadUrlProperties.getRegexDatastore()) && fieldNotMatching(order, "url", downloadUrlProperties.getRegexPackage())   && fieldNotMatching(order, "url", downloadUrlProperties.getRegexCeda())
         )) {
-            toReturn.add(new MetadataCheck("Downloads do not have a valid EIDC url", INFO));
+            toReturn.add(new MetadataCheck("Downloads do not have a valid url", INFO));
         }
 
         return toReturn;
     }
 
     List<MetadataCheck> checkEmbargo(DocumentContext parsed) {
-        if (!resourceStatusIsEmbargoed(parsed) || notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
+        if (!availabilityIsEmbargoed(parsed) || notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
             return Collections.emptyList();
         }
 
@@ -691,32 +689,26 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             || !map.get(key).matches(value);
     }
 
-    boolean resourceStatusIsAvailable(DocumentContext parsed) {
-        val resourceStatus = parsed.read("$.resourceStatus", String.class);
-        return resourceStatus != null && resourceStatus.equals("Available");
+    boolean availabilityIsAvailable(DocumentContext parsed) {
+        val availability = parsed.read("$.availability", String.class);
+        return availability != null && availability.equals("Available");
     }
 
-    boolean resourceStatusIsUnknown(DocumentContext parsed) {
-        val resourceStatus = parsed.read("$.resourceStatus", String.class);
-        return resourceStatus != null && resourceStatus.equals("Unknown");
+    boolean availabilityIsUnknown(DocumentContext parsed) {
+        val availability = parsed.read("$.availability", String.class);
+        return availability != null && availability.equals("Unknown");
     }
 
-    boolean resourceStatusIsEmbargoed(DocumentContext parsed) {
-        val resourceStatus = parsed.read("$.resourceStatus", String.class);
-        return resourceStatus != null && resourceStatus.equals("Embargoed");
-    }
-
-    boolean descriptionTooShort(DocumentContext parsed) {
-        val description = parsed.read("$.description", String.class);
-        return description.length() < 5;
+    boolean availabilityIsEmbargoed(DocumentContext parsed) {
+        val availability = parsed.read("$.availability", String.class);
+        return availability != null && availability.equals("Embargoed");
     }
 
     private boolean notRequiredResourceTypes(DocumentContext parsed, String... resourceTypes) {
-        val testPath = new StringBuilder("$.resourceType[?(@.value in [");
-        testPath.append(String.join(",",
+        String testPath = "$.resourceType[?(@.value in [" + String.join(",",
             Stream.of(resourceTypes).map(type -> format("'%s'", type)).toList()
-        ));
-        testPath.append("])].value");
-        return parsed.read(testPath.toString(), List.class).isEmpty();
+        ) +
+            "])].value";
+        return parsed.read(testPath, List.class).isEmpty();
     }
 }

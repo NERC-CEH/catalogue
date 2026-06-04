@@ -13,13 +13,29 @@ import static uk.ac.ceh.gateway.catalogue.DocumentTypes.*;
 @Configuration
 public class CatalogueServiceConfig {
 
+    private static final Catalogue ALL_CATALOGUES = Catalogue.builder()
+        .id(CatalogueService.ALL_CATALOGUES_ID)
+        .title("All catalogues")
+        .url("")
+        .contactUrl("")
+        .logo("ukceh.png")
+        .facetKey("catalogue")
+        .facetKey("resourceType")
+        .facetKey("topic")
+        .facetKey("licence")
+        .facetKey("recordType")
+        .fileUpload(false)
+        .build();
+
     @Bean
-    @Profile("server:datalabs")
+    @Profile("server-datalabs")
     public CatalogueService datalabsCatalogue() {
         String defaultCatalogueKey = "datalabs";
 
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
+
+            ALL_CATALOGUES,
 
             Catalogue.builder()
                 .id(defaultCatalogueKey)
@@ -39,12 +55,14 @@ public class CatalogueServiceConfig {
     }
 
     @Bean
-    @Profile("server:eidc")
+    @Profile("server-eidc")
     public CatalogueService eidcCatalogue() {
         String defaultCatalogueKey = "eidc";
 
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
+
+            ALL_CATALOGUES,
 
             Catalogue.builder()
                 .id("assist")
@@ -88,6 +106,7 @@ public class CatalogueServiceConfig {
                 .logo("eidc.png")
                 .facetKey("topic")
                 .facetKey("recordType")
+                .facetKey("dataFormat")
                 .facetKey("rightsHolder")
                 .facetKey("funder")
                 .facetKey("status")
@@ -222,12 +241,14 @@ public class CatalogueServiceConfig {
     }
 
     @Bean
-    @Profile("server:inms")
+    @Profile("server-inms")
     public CatalogueService inmsCatalogue() {
         String defaultCatalogueKey = "inms";
 
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
+
+            ALL_CATALOGUES,
 
             Catalogue.builder()
                 .id(defaultCatalogueKey)
@@ -252,12 +273,14 @@ public class CatalogueServiceConfig {
     }
 
     @Bean
-    @Profile("server:pimfe")
+    @Profile("server-pimfe")
     public CatalogueService pimfeCatalogue() {
         String defaultCatalogueKey = "pimfe";
 
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
+
+            ALL_CATALOGUES,
 
             Catalogue.builder()
                 .id(defaultCatalogueKey)

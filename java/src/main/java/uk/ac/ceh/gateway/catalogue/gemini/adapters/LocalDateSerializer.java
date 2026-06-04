@@ -1,16 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.gemini.adapters;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 import java.time.LocalDate;
 
-public class LocalDateSerializer extends JsonSerializer<LocalDate>{
+public class LocalDateSerializer extends ValueSerializer<LocalDate> {
 
     @Override
-    public void serialize(LocalDate localDate, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException {
+    public void serialize(LocalDate localDate, JsonGenerator generator, SerializationContext provider) throws JacksonException {
         generator.writeString(localDate.toString());
     }
 }

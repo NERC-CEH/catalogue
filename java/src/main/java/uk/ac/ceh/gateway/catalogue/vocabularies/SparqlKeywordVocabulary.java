@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.vocabularies;
 
-import com.fasterxml.jackson.core.JsonPointer;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.core.JsonPointer;
+import tools.jackson.databind.JsonNode;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,6 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
@@ -90,8 +89,8 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
                 solrClient.deleteByQuery(COLLECTION, "vocabId:" + vocabularyId);
                 StreamSupport.stream(vocabularyNode.spliterator(), false)
                     .map(node -> {
-                        val url = node.at(uriPointer).asText();
-                        val label = node.at(labelPointer).asText();
+                        val url = node.at(uriPointer).asString();
+                        val label = node.at(labelPointer).asString();
                         return new Keyword(label, vocabularyId, url);
                     })
                     .forEach(keyword -> {

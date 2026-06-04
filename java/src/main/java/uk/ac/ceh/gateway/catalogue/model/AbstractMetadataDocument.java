@@ -1,8 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
@@ -14,7 +14,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeSerializer;
 import uk.ac.ceh.gateway.catalogue.util.CollectionFilter;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -57,13 +56,6 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
         return Optional.ofNullable(metadataDate)
             .map(md -> md.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
             .orElse("");
-    }
-
-    public Date getUpdatedDate() {
-        return Optional.ofNullable(metadataDate)
-            .map(date -> date.atZone(ZoneId.of("UTC")))
-            .map(zonedDateTime -> Date.from(zonedDateTime.toInstant()))
-            .orElse(null);
     }
 
     @Override

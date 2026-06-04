@@ -2,8 +2,8 @@ package uk.ac.ceh.gateway.catalogue.gemini;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 import lombok.Value;
 import lombok.Builder;
 import java.time.LocalDate;
@@ -14,7 +14,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateSerializer;
 public class DatasetReferenceDate {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    private final LocalDate creationDate, publicationDate, revisionDate, unavailableDate, supersededDate, deprecatedDate, releasedDate;
+    LocalDate creationDate, publicationDate, revisionDate, unavailableDate, supersededDate, deprecatedDate, releasedDate;
 
     @Builder
     @JsonCreator

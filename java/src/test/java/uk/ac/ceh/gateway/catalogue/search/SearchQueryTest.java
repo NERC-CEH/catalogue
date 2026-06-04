@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.request.SolrQuery;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -8,12 +8,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,6 +38,81 @@ public class SearchQueryTest {
     private static final String sortField = "publicationDate";
     private static final SolrQuery.ORDER sortOrder = SolrQuery.ORDER.desc;
 
+    private static Catalogue buildCatalogue(String id) {
+        return Catalogue.builder()
+            .id(id)
+            .title("Environmental Information Data Centre")
+            .url("https://eidc-catalogue.ceh.ac.uk")
+            .contactUrl("")
+            .logo("")
+            .build();
+    }
+
+    @Test
+    public void allCataloguesQueryHasNoCatalogueFilter() {
+        //Given
+        SearchQuery query = new SearchQuery(
+                ENDPOINT,
+                CatalogueUser.PUBLIC_USER,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                DEFAULT_PAGE,
+                DEFAULT_ROWS,
+                DEFAULT_FILTERS,
+                groupStore,
+                buildCatalogue(CatalogueService.ALL_CATALOGUES_ID),
+                DEFAULT_FACETS,
+                null,
+                null
+                );
+
+        //When
+        SolrQuery solrQuery = query.build();
+
+        //Then
+        String[] filterQueries = solrQuery.getFilterQueries();
+        assertThat(
+            "All-catalogues query must not contain a catalogue filter",
+            Arrays.stream(filterQueries).noneMatch(fq -> fq.contains("catalogue")),
+            is(true)
+        );
+    }
+
+    @Test
+    public void allCataloguesPublisherStillGetsViewFilter() {
+        //Given
+        CatalogueUser user = new CatalogueUser("publisher", "publisher");
+        given(groupStore.getGroups(user)).willReturn(List.of(createGroup("ROLE_EIDC_PUBLISHER")));
+
+        SearchQuery query = new SearchQuery(
+                ENDPOINT,
+                user,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                DEFAULT_PAGE,
+                DEFAULT_ROWS,
+                DEFAULT_FILTERS,
+                groupStore,
+                buildCatalogue(CatalogueService.ALL_CATALOGUES_ID),
+                DEFAULT_FACETS,
+                null,
+                null
+                );
+
+        //When
+        SolrQuery solrQuery = query.build();
+
+        //Then
+        assertThat(
+            "Publisher must not bypass visibility filtering in all-catalogues search",
+            Arrays.stream(solrQuery.getFilterQueries())
+                .anyMatch(fq -> fq.startsWith("view:")),
+            is(true)
+        );
+    }
+
     @Test
     public void queryHasCatalogueAsViewFilter() {
         //Given
@@ -51,14 +126,7 @@ public class SearchQueryTest {
                 DEFAULT_ROWS,
                 DEFAULT_FILTERS,
                 groupStore,
-                Catalogue
-                .builder()
-                .id("eidc")
-                .title("Environmental Information Data Centre")
-                .url("https://eidc-catalogue.ceh.ac.uk")
-                .contactUrl("")
-                .logo("")
-                .build(),
+                buildCatalogue("eidc"),
                 DEFAULT_FACETS,
                 sortField,
                 sortOrder
@@ -232,7 +300,7 @@ public class SearchQueryTest {
         assertThat(solrQuery.getStart(), is(equalTo(0)));
         assertThat(solrQuery.getRows(), is(equalTo(DEFAULT_ROWS)));
         assertThat(solrQuery.getFacetMinCount(), is(equalTo(1)));
-        assertThat(solrQuery.getSorts().get(0).getItem().substring(0, 6), is(equalTo("random")));
+        assertThat(solrQuery.getSorts().getFirst().getItem().substring(0, 6), is(equalTo("random")));
         assertThat("Facets should have a default limit of -1 (ie infinite)", solrQuery.getFacetLimit(), equalTo(-1));
     }
 
@@ -791,10 +859,10 @@ public class SearchQueryTest {
     public void testFacetFiltersCombinedWithOr() {
         // Given
         List<FacetFilter> facetFilters = List.of(
-            new FacetFilter("topic", "Agriculture"),
-            new FacetFilter("topic", "Biodiversity"),
-            new FacetFilter("dataType", "Dataset"),
-            new FacetFilter("dataType", "Data Collection")
+            new FacetFilter("resourceType", "Dataset"),
+            new FacetFilter("resourceType", "Data Collection"),
+            new FacetFilter("licence", "OGL"),
+            new FacetFilter("licence", "CC-BY")
         );
 
         SearchQuery query = new SearchQuery(
@@ -827,19 +895,81 @@ public class SearchQueryTest {
         assertThat(
             Arrays.asList(solrQuery.getFilterQueries()),
             allOf(
-                hasItem(containsString("topic:(\"Agriculture\" OR \"Biodiversity\")")),
-                hasItem(containsString("dataType:(\"Dataset\" OR \"Data\\ Collection\")"))
+                hasItem(containsString("resourceType:(\"Dataset\" OR \"Data\\ Collection\")")),
+                hasItem(containsString("licence:(\"OGL\" OR \"CC\\-BY\")"))
             )
         );
     }
 
     @Test
+    public void unknownFacetFilterFieldThrowsInvalidFacetException() {
+        // Given - resourceStatus was a real field that was renamed to availability
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            List.of(new FacetFilter("resourceStatus", "Available")),
+            groupStore,
+            Catalogue.builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
+                .logo("")
+                .build(),
+            DEFAULT_FACETS,
+            null,
+            null
+        );
+
+        // When / Then
+        InvalidFacetException ex = assertThrows(InvalidFacetException.class, query::build);
+        assertThat(ex.getMessage(), containsString("resourceStatus"));
+    }
+
+    @Test
+    public void multipleUnknownFacetFieldsListedInException() {
+        // Given
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            List.of(
+                new FacetFilter("badField1", "foo"),
+                new FacetFilter("badField2", "bar")
+            ),
+            groupStore,
+            Catalogue.builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
+                .logo("")
+                .build(),
+            DEFAULT_FACETS,
+            null,
+            null
+        );
+
+        // When / Then
+        InvalidFacetException ex = assertThrows(InvalidFacetException.class, query::build);
+        assertThat(ex.getMessage(), allOf(containsString("badField1"), containsString("badField2")));
+    }
+
+    @Test
     public void testFacetExclusionTagsAppliedCorrectly() {
         // Given
-
         List<FacetFilter> facetFilters = List.of(
-            new FacetFilter("topic", "Agriculture"),
-            new FacetFilter("recordType", "Dataset")
+            new FacetFilter("resourceType", "Dataset"),
+            new FacetFilter("licence", "OGL")
         );
 
         SearchQuery query = new SearchQuery(
@@ -882,8 +1012,8 @@ public class SearchQueryTest {
         assertThat(
             Arrays.asList(solrQuery.getFilterQueries()),
             allOf(
-                hasItem(containsString("{!tag=topic}topic:\"Agriculture\"")),
-                hasItem(containsString("{!tag=recordType}recordType:\"Dataset\"")),
+                hasItem(containsString("{!tag=resourceType}resourceType:\"Dataset\"")),
+                hasItem(containsString("{!tag=licence}licence:\"OGL\"")),
                 hasItem(containsString("{!term f=catalogue}eidc"))
             )
         );

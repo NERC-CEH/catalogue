@@ -4,7 +4,7 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -83,7 +83,7 @@ public class SolrIndexingService extends AbstractIndexingService<MetadataDocumen
             return false;
         }
         if (doc instanceof GeminiDocument gemini) {
-            if (UNINDEXED_RESOURCE_STATUS.contains(gemini.getResourceStatus())) {
+            if (UNINDEXED_RESOURCE_STATUS.contains(gemini.getAvailability())) {
                 unindexDocuments(List.of(gemini.getId())); // Needed to remove existing superseded or deleted record from Solr
                 return false;
             } else {

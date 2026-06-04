@@ -6,29 +6,40 @@
 
 ## Installation
 
-### Demo current development
+### Running the application
 
-The current code can be built and demoed with the following script:
+The recommended way to run the application is with Docker Compose, which starts all services
+including nginx, Solr, the Spring Boot application, and the webpack watcher:
 
-```commandline
-./start-catalogue.sh
+```bash
+# First run, or after changing the Dockerfile or entrypoint script:
+docker compose up --build --watch
+
+# Subsequent runs (reuses the built image and cached Gradle dependencies — much faster):
+docker compose up --watch
+
+# Watch mode — auto-rebuilds when build.gradle, libs.versions.toml, Dockerfile, or entrypoint-dev.sh change:
+docker compose watch
 ```
-Browse to http://localhost:8080/eidc/documents to see the catalogue populated with some demo records.
 
-The `start-catalogue.sh` script accepts options and environment variables to control some of the build and run options.  These include:
-- `-b` to enable and launch Hubbub
-- `-l` to enable and launch Legilo
-- `-f` to enable and launch Fuseki
-- `-w` to skip building the web components
+Browse to http://localhost:8080/eidc/documents to see the catalogue populated with demo records.
 
-Local or override environment variables can be placed in override.env
+Optional services can be included with profiles:
+
+```bash
+docker compose --profile hubbub up --build   # include Hubbub upload service
+docker compose --profile legilo up --build   # include Legilo
+docker compose --profile fuseki  up --build  # include Fuseki SPARQL
+```
+
+Local environment overrides can be placed in `override.env`.
 
 ## Project Structure
 
+- **/datastore**  - Git-backed document store created at runtime (local development only; do not edit). The source records are in `/fixtures/datastore/REV-1/` — edit `.raw` and `.meta` files there to change the demo data that gets loaded on startup
 - **/docs**       - Documentation
 - **/fixtures**   - Test data
 - **/java**       - Standard `gradle` project which powers the server side of the catalogue
-- **/schemas**    - XSD Schemas which are used to validate the various output xml files
 - **/solr**       - `Solr` web application, this handles the free-text indexing and searching of the application
 - **/templates**  - `Freemarker` templates which are used by the `java` application for generating the different metadata views
 - **/web**        - Location of the web component of the project, this is mainly `JavaScript` and `less` style sheets
@@ -58,22 +69,25 @@ FUSEKI_PASSWORD=
 
 The catalogue requires a few tools:
 
-- Java (OpenJDK)
 - Git
 - Docker
 - Docker Compose
+
+Java is not required locally — the application runs entirely inside Docker.
 
 You will then need to log in to the Gitlab Docker Registry, nb. this uses your Gitlab username/password or token, not Crowd, if they're not the same, this might catch you out.
 
     $ docker login registry.gitlab.ceh.ac.uk
 
-Having installed these you can then build the catalogue code base by running:
+Having installed these you can build and start the full application with:
 
-    docker compose up -d --build
+```bash
+docker compose up --build   # first run
+docker compose up           # subsequent runs (faster — reuses cached Gradle dependencies)
+docker compose watch        # like `up`, but auto-rebuilds on Dockerfile/build file changes
+```
 
-the EIDC catalogue is then available on:
-
-    http://localhost:8080/eidc/documents
+The EIDC catalogue is then available at http://localhost:8080/eidc/documents.
 
 ### Intellij set-up
 
@@ -81,69 +95,92 @@ Make sure that you have the Lombok plugin installed, if not you can download it 
 Check that annotation processing is enabled in `settings -> Build, Execution, Deployment -> compiler -> Annotation processors`.
 
 
-### Developing Javascript with Webpack
+### Developing JavaScript and CSS
 
-You can change code while the catalogue is still running using the following commands in a separate terminal or via your IDE:
+The `web` service in Docker Compose runs the webpack and gulp CSS watchers automatically.
+Any changes to `web/src/` or `web/scss/` are rebuilt within a few seconds — refresh the
+browser to see the result; no container restart is needed.
 
-    cd web
-    npm run watch
+```bash
+# Run JS tests (single run):
+docker compose exec web npm run test
+# Or on the host:
+cd web && npm run test
 
-The watch will detect any changes to the Javascript code and automatically compile.
-Uncomment the following line in your `docker-compose.override.yaml`:
+# Lint:
+cd web && npm run standard
+```
 
-    -./web/dist:/opt/ceh-catalogue/static/scripts
-
-Instructions on making a `docker-compose.override.yml` are in `docker-compose.yml`.
-Start up the catalogue with `docker-compose up --build` then connect to the docker service using the services tab in
-IntelliJ. You might need to add your user to the docker user group before connecting to the service.
-Now you can make changes to the front end without restarting docker and rebuilding the backend.
-
-#### Note - there are many uses of JQuery's $(document).ready() function in the editor module of the frontend. Do not just remove them as they are there to prevent timing issues with views of existing documents in the editor. Unless of course you can find a better alternative.
+#### Note — there are many uses of JQuery's `$(document).ready()` in the editor module. Do not remove them as they prevent timing issues with views of existing documents in the editor.
 
 ### Test JavaScript using Karma
 
       npm run test
 
-Karma tests are found in each module in web/scripts if you need to edit or add new tests.
-For example the tests for the editor module are in `web/scripts/editor/test`.
+Karma tests are found in each module in `web/src/` if you need to edit or add new tests.
+For example, the tests for the editor module are in `web/src/editor/test/`.
 The Karma tests are configured in `karma.conf.js`.
 
 ### Java
-Java files will be built automatically when `docker-compose up -d --build` is run.
-Java unit tests can be run through IntelliJ.
+
+**Running tests:**
+
+```bash
+# On the host (fastest for iteration):
+./gradlew :java:test
+./gradlew :java:test --tests uk.ac.ceh.gateway.catalogue.search.SearchControllerTest
+
+# Inside the Docker container (same classpath as the running app):
+docker compose exec catalogue ./gradlew :java:test
+docker compose exec catalogue ./gradlew :java:test \
+    --tests uk.ac.ceh.gateway.catalogue.search.SearchControllerTest
+```
+
+After editing a `.java` file, run `./gradlew :java:compileJava` on the host — Spring DevTools
+detects the new class files and restarts the application context in ~5–15s without a full
+container restart.
+
+Tests can also be run through IntelliJ using the standard run configurations.
 
 ### Spring profiles
 Spring Profiles provide a way to segregate parts of your application configuration and make it only available in certain environments.
 Any @Component or @Configuration can be marked with @Profile to limit when it is loaded.
-The active profiles are configured in `docker-compose.yaml`
+The active profiles are set via the `SPRING_PROFILES_ACTIVE` environment variable in `docker-compose.yml` (and can be overridden in `docker-compose.override.yml` or `override.env`).
 The catalogue contains the following Spring profiles:
 ##### development
 The development profile runs code that is only available when developing such as the `DevelopmentUserStoreConfig.java` which makes testing code locally easier as it allows the user access to more user permissions.
-##### upload:simple/hubbub
-Allows the user to upload their documents using `FileSystemStorageService.java` when `upload:simple` is active or the Hubbub API which `UploadService.java` interfaces with when `upload:hubbub` is active.
-##### server:eidc/datalabs/inms
-The server profile e.g. `server:eidc` decides which catalogue you will use and which documents that you will use with it. For example the EIDC catalogue will use Gemini documents.
-##### search:basic/enhanced
+##### upload-simple / upload-hubbub
+Allows the user to upload their documents using `FileSystemStorageService.java` when `upload-simple` is active or the Hubbub API which `UploadService.java` interfaces with when `upload-hubbub` is active (enabled with the `-b` flag).
+##### keyword-suggestions
+Enables the Legilo keyword suggestion service (enabled with the `-l` flag).
+##### server-eidc / server-datalabs / server-inms
+The server profile e.g. `server-eidc` decides which catalogue you will use and which documents that you will use with it. For example the EIDC catalogue will use Gemini documents.
+##### search-basic / search-enhanced
 Select which algorithm Solr uses to search for documents.
 ##### service-agreement
 Allows the user to create online service agreements for datasets.
+##### exports
+Enables SPARQL/RDF export endpoints; requires Fuseki (enabled with the `-f` flag).
+##### cache
+Enables EHCache-based response caching. Active by default in development.
 ##### metrics
 Creates the embedded sqlite database for the metric reporting.
 
 ### Developing LESS
 In the web directory run
 
-    npm install -g grunt-cli
-    node_modules/.bin/grunt
-
-will run a process that watches the less directories and recompiles the files on any changes.
+    npm run build-css-dev   # one-off dev build
+    npm run watch-css       # watch and recompile on changes
+    npm run build-css       # production build
 
 ## Adding new document types to the catalogue
 
-If you need to add a new document type to the catalogue like  GeminiDocument.java
-extend your new class with AbstractMetadataDocument.java and configure it in the following classes:
-CatalogueMediaTypes.java, CatalogueServiceConfig.java, ServicesConfig.java and WebConfig.java.
-For an example of how to do this Look at how the GeminiDocuments are configured in each of these classes.
+See [Adding a new document type](docs/newDocumentType.md) for step-by-step instructions.
+
+If you need to add a new document type to the catalogue like `GeminiDocument.java`,
+extend your new class with `AbstractMetadataDocument.java` and configure it in the following classes:
+`CatalogueMediaTypes.java`, `CatalogueServiceConfig.java`, `ServicesConfig.java` and `WebConfig.java`.
+For an example of how to do this look at how the GeminiDocuments are configured in each of these classes.
 
 ## Multiple Catalogues
 
@@ -177,33 +214,10 @@ Other users are configured in [DevelopmentUserStoreConfig](java/src/main/java/uk
 ## Developing Upload - Hubbub API
 Getting everything running
 
-Minimum configuration needed in `docker-compose.override.yml`
-```yaml
-version: "3.7"
-services:
-  nginx:
-    image: nginx:latest
-    depends_on:
-      - web
-    ports:
-      - "8080:8080"
-      - "8081:8081"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    restart: always
-  web:
-    build: .
-    depends_on:
-      - solr
-    volumes:
-      - ./templates:/opt/ceh-catalogue/templates
-      - ./web/scripts/dist/main.bundle.js:/opt/ceh-catalogue/static/scripts/main.bundle.js
-    environment:
-      - spring.profiles.active=development,upload:hubbub,server:eidc,search:basic
-```
+Start with the Hubbub profile:
 
-```commandline
-docker compose -f docker-compose.yml -f docker-compose.hubbub.yml -f docker-compose.override.yml up -d --build
+```bash
+docker compose --profile hubbub up --build
 ```
 ### Populate the database
 
@@ -213,7 +227,7 @@ Postgres database needs the schema creating.
 
 2. In the Hubbub repo project directory
     ```commandline
-    . venv/bin/activate
+    source venv/bin/activate
     python -m migration.schema --user gardener --password cabbages
     ```
 
@@ -268,9 +282,11 @@ The wms get capabilities returned a malformed reference to either a GetLegend or
 
 ## Logging level during development
 
-The logging level of individual components can be controlled by adding them to the service's environment in the docker-compose.override.yml, like the following:
+The logging level of individual components can be controlled by adding them to the service's environment in a `docker-compose.override.yml`, like the following:
 
-        services:
-          web:
-            environment:
-              - LOGGING_LEVEL_UK_AC_CEH_CATALOGUE_GEMINI_GEOMETRY=DEBUG
+```yaml
+services:
+  catalogue:
+    environment:
+      - LOGGING_LEVEL_UK_AC_CEH_CATALOGUE_GEMINI_GEOMETRY=DEBUG
+```

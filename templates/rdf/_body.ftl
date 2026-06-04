@@ -4,11 +4,11 @@
   <@identifiers resourceIdentifiers />
 
   <#if datacitable?string=='true' && citation?has_content>
-      <#assign citationString =  citation.authors?join(', ') + " (" + citation.year?string("0") +"}. " + citation.title + ". " + citation.publisher + ". " + citation.url?trim>
+      <#assign citationString =  citation.authors?join(', ') + " (" + citation.year?string("0") +"). " + citation.title + ". " + citation.publisher + ". " + citation.url?trim>
       dcterms:bibliographicCitation <@displayLiteral citationString/> ;
   </#if>
 
-  <#if resourceStatus != "Deleted">
+  <#if availability != "Deleted">
     <#if description?has_content>
       dcterms:description <@displayLiteral description /> ;
     </#if>
@@ -42,13 +42,13 @@
     </#if>
 
     <#--Relationships-->
-    <#list jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")>
+    <#list jena.relationships(uri, "http://purl.org/dc/terms/isPartOf")>
       dcterms:isPartOf <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
-    <#list jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")>
+    <#list jena.relationships(uri, "http://purl.org/dc/terms/replaces")>
       dcterms:replaces <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
-    <#list jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")>
+    <#list jena.relationships(uri, "http://purl.org/dc/terms/relation")>
       dcterms:relation <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
 

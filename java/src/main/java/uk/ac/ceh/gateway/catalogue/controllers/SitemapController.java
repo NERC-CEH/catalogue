@@ -57,7 +57,7 @@ public class SitemapController {
 
     @GetMapping("{catalogue}/sitemap.txt")
     public ModelAndView sitemap(
-        @PathVariable("catalogue") String catalogue,
+        @PathVariable String catalogue,
         HttpServletResponse response
     ) {
         response.setContentType(MediaType.TEXT_PLAIN_VALUE);
@@ -66,7 +66,7 @@ public class SitemapController {
         }
         List<String> urls = listingService.getPublicDocumentsOfCatalogue(catalogue)
             .stream()
-            .map(id -> identifierService.generateUri(id))
+            .map(identifierService::generateUri)
             .collect(Collectors.toList());
         return new ModelAndView("sitemap/sitemap.txt", "urls", urls);
     }

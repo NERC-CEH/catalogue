@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.geometry;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 import java.util.Optional;
 

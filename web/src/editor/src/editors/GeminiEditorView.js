@@ -10,6 +10,7 @@ import {
   FundingView,
   IncomingCitationView,
   MapDataSourceView,
+  MetadataStandardView,
   OnlineResourceView,
   ParentStringView,
   ParentView,
@@ -105,10 +106,10 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'accessLimitation',
           ModelType: AccessLimitation,
-          label: 'Resource status',
+          label: 'Conditions of access',
           ObjectInputView: AccessLimitationView,
           helpText: `\
-<p>Access status of resource.  For example, is the resource embargoed or are restrictions imposed for reasons of confidentiality or security.</p>
+<p>For example, is the resource embargoed or are restrictions imposed for reasons of confidentiality or security.</p>
 <p><b>NOTE</b>: if access is Embargoed, you must also complete the <i>Release date</i>.</p>\
 `
         }),
@@ -350,11 +351,11 @@ export default EditorView.extend({
           ObjectInputView: OnlineResourceView,
           multiline: true,
           predefined: {
-            'Data package': {
-              url: 'https://data-package.ceh.ac.uk/data/{fileIdentifier}',
-              name: 'Download the data',
-              description: 'Download a copy of this data',
-              function: 'download'
+            'Supporting documents': {
+              url: 'https://data-package.ceh.ac.uk/sd/{fileIdentifier}.zip',
+              name: 'Supporting information',
+              description: 'Supporting information available to assist in re-use of this dataset',
+              function: 'information'
             },
             'Order manager data': {
               url: 'https://order-eidc.ceh.ac.uk/resources/{ORDER_REF}/order',
@@ -362,17 +363,23 @@ export default EditorView.extend({
               description: 'Download a copy of this data',
               function: 'order'
             },
-            'Direct access': {
+            'Direct access (CEDA)': {
+              url: 'https://data.ceda.ac.uk/eidc/{filePath}',
+              name: 'Download the data',
+              description: 'Download a copy of this data',
+              function: 'fileAccess'
+            },
+            'Direct access (UKCEH)': {
               url: 'https://catalogue.ceh.ac.uk/datastore/eidchub/{fileIdentifier}',
               name: 'Download the data',
               description: 'Download a copy of this data',
               function: 'fileAccess'
             },
-            'Supporting documents': {
-              url: 'https://data-package.ceh.ac.uk/sd/{fileIdentifier}.zip',
-              name: 'Supporting information',
-              description: 'Supporting information available to assist in re-use of this dataset',
-              function: 'information'
+            'Data package': {
+              url: 'https://data-package.ceh.ac.uk/data/{fileIdentifier}',
+              name: 'Download the data',
+              description: 'Download a copy of this data',
+              function: 'download'
             }
           },
           helpText: `\
@@ -483,24 +490,20 @@ export default EditorView.extend({
           multiline: true,
           options: [
             {
-              value: 'https://vocabs.ceh.ac.uk/eidc#generates',
-              label: 'Generates (e.g. a model generates a dataset)'
+              value: 'http://purl.org/dc/terms/isPartOf',
+              label: 'Part of (e.g., a dataset is a part of a data collection)'
             },
             {
-              value: 'https://vocabs.ceh.ac.uk/eidc#memberOf',
-              label: 'Member of (e.g. a dataset is a member of a data collection)'
+              value: 'http://purl.org/dc/terms/relation',
+              label: 'Relation'
             },
             {
-              value: 'https://vocabs.ceh.ac.uk/eidc#relatedTo',
-              label: 'Related To'
+              value: 'http://purl.org/dc/terms/replaces',
+              label: 'Replaces (supersedes)'
             },
             {
-              value: 'https://vocabs.ceh.ac.uk/eidc#supersedes',
-              label: 'Supersedes'
-            },
-            {
-              value: 'https://vocabs.ceh.ac.uk/eidc#uses',
-              label: 'Uses'
+              value: 'http://purl.org/dc/terms/requires',
+              label: 'Requires - a related resource that is required by this resource to support its function/delivery'
             }
           ],
           helpText: `
@@ -610,10 +613,10 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'spatialResolutions',
           ModelType: SpatialResolution,
-          label: 'Spatial resolution',
+          label: 'Spatial resolution/accuracy',
           ObjectInputView: SpatialResolutionView,
           helpText: `
-        <p>This is an indication of the level of spatial detail/accuracy.</p><p>For gridded data, distance is the area of the ground (in metres) represented in each pixel. For point data, it is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference, SN666781, the resolution would be 100m)</p>
+        <p>This is an indication of the level of spatial detail/accuracy.</p><p>For gridded data, it is the area of the ground (in metres) represented in each pixel. For point data, it is the degree of confidence in the point's location</p>
         `
         }),
 
@@ -757,17 +760,20 @@ export default EditorView.extend({
           label: 'Web map service',
           ObjectInputView: MapDataSourceView,
           helpText: `\
-<p>Link this metadata record to an ingested geospatial file and create a WMS (<strong>https://catalogue.ceh.ac.uk/maps/{METADATA_ID}?request=getCapabilities&service=WMS</strong>). The supported formats are:</p>
-<ul>
-    <li>Shapefiles - Vector (ignore the .shp extension when specifying the path) </li>
-    <li>GeoTiff - Raster</li>
-</ul>
-<p>To maximise performance, it is generally best to provide reprojected variants of data sources in common EPSG codes.</p>
-<p>Vector datasets should be spatially indexed (using <a href="https://mapserver.org/utilities/shptree.html">shptree</a>)</p>
-<p>Raster datasets should be provided with <a href="https://www.gdal.org/gdaladdo.html">overviews</a>. GeoTiff supports internal overviews.</p>
-<p>The 'Byte?' option that appears for raster (GeoTiff) datasets is used to indicate whether the GeoTiff is a 'byte' or 'non-byte' datatype.
-This is only needed if you configure 'Styling=Classification' for your GeoTiff.</p>
-<p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>\
+<p>Link this metadata record to an ingested geospatial file and create a WMS (<strong>https://catalogue.ceh.ac.uk/maps/{METADATA_ID}?request=getCapabilities&service=WMS</strong>). The supported formats
+   are:</p>
+  <ul>
+      <li>Shapefiles - Vector (ignore the .shp extension when specifying the path)</li>
+      <li>GeoPackages - Vector container (specify the .gpkg path AND the layer name within the container in the 'Layer' field)</li>
+      <li>GeoTiff - Raster</li>
+  </ul>
+  <p>To maximise performance, it is generally best to provide reprojected variants of data sources in common EPSG codes.</p>
+  <p>Vector datasets should be spatially indexed (using <a href="https://mapserver.org/utilities/shptree.html">shptree</a>)</p>
+  <p>Raster datasets should be provided with <a href="https://www.gdal.org/gdaladdo.html">overviews</a>. GeoTiff supports internal overviews.</p>
+  <p>The 'Layer' field is only required for multi-layer containers (e.g. GeoPackages with multiple tables). For shapefiles and rasters, leave it blank.</p>
+  <p>The 'Byte?' option that appears for raster (GeoTiff) datasets is used to indicate whether the GeoTiff is a 'byte' or 'non-byte' datatype.
+  This is only needed if you configure 'Styling=Classification' for your GeoTiff.</p>
+  <p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>\\
 `
         })
       ]
@@ -798,7 +804,7 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
           modelAttribute: 'fileset',
           ModelType: Fileset,
           multiline: true,
-          label: 'Observed properties',
+          label: 'Fileset structure',
           ObjectInputView: FilesetView,
           fetchVariablesButton: true,
           predefined: {
@@ -827,6 +833,28 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
             'Date & time': {
               type: 'datetime',
               format: 'YYYY-MM-DDThh:mm:ss'
+            }
+          }
+        }),
+
+        new PredefinedParentView({
+          model: this.model,
+          modelAttribute: 'metadataStandards',
+          label: 'Metadata standards',
+          ObjectInputView: MetadataStandardView,
+          multiline: true,
+          predefined: {
+            'Datacite 4.6': {
+              title: 'DataCite',
+              edition: '4.6',
+              date: '2024-12-05',
+              onlineLink: 'https://doi.org/10.14454/mzv1-5b55'
+            },
+            'Croissant v1': {
+              title: 'Croissant Format Specification',
+              edition: '1.0',
+              date: '2024-03-01',
+              onlineLink: 'http://mlcommons.org/croissant/1.0'
             }
           }
         }),

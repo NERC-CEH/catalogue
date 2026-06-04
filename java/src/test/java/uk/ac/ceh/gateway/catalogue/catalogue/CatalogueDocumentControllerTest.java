@@ -4,12 +4,10 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
@@ -19,6 +17,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -28,19 +27,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockCatalogueUser
-@ActiveProfiles({"test", "server:eidc"})
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("CatalogueDocumentController")
 @Import({
     SecurityConfig.class,
     SecurityConfigCrowd.class,
     DevelopmentUserStoreConfig.class
 })
-@WebMvcTest(CatalogueDocumentController.class)
-public class CatalogueDocumentControllerTest {
+
+public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+class CatalogueDocumentControllerTest extends AbstractMvcTest {
     private @MockitoBean DocumentRepository documentRepository;
     private @MockitoBean(name="permission") PermissionService permissionService;
-
-    @Autowired private MockMvc mvc;
 
     private final String file = "955b5a6e-dd3f-4b20-a3b5-a9d1d04ba052";
 

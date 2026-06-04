@@ -88,6 +88,11 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Record type")
                     .hierarchical(false)
                     .build();
+            case "catalogue" -> Facet.builder()
+                .fieldName("catalogue")
+                    .displayName("Catalogue")
+                    .hierarchical(false)
+                    .build();
             case "dataLevel" -> Facet.builder()
                 .fieldName("dataLevel")
                     .displayName("Data level")
@@ -127,6 +132,11 @@ public class HardcodedFacetFactory implements FacetFactory {
             case "rightsHolder" -> Facet.builder()
                 .fieldName("rightsHolder")
                     .displayName("Rights holder")
+                    .hierarchical(false)
+                    .build();
+            case "dataFormat" -> Facet.builder()
+                .fieldName("dataFormat")
+                    .displayName("Data format")
                     .hierarchical(false)
                     .build();
             case "infrastructureClass" -> Facet.builder()
@@ -176,7 +186,7 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .admin(true)
                     .build();
             case "status" -> Facet.builder()
-                .fieldName("resourceStatus")
+                .fieldName("availability")
                     .displayName("Availability")
                     .hierarchical(false)
                     .admin(true)

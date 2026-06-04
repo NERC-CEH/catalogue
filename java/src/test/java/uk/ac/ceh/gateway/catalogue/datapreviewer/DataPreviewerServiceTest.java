@@ -81,7 +81,7 @@ class DataPreviewerServiceTest {
         when(dataset.getId()).thenReturn("ds1");
         when(dataset.getTitle()).thenReturn("Dataset 1");
         when(dataset.getMetadata()).thenReturn(metadata);
-        when(dataset.getResourceStatus()).thenReturn("Available");
+        when(dataset.getAvailability()).thenReturn("Available");
         when(dataset.getAccessLimitation()).thenReturn(
             new AccessLimitation(
                 "Open", "", "", "http://purl.org/coar/access_right/c_abf2"
@@ -141,7 +141,7 @@ class DataPreviewerServiceTest {
         when(dataset.getId()).thenReturn("ds1");
         when(dataset.getTitle()).thenReturn("Dataset 1");
         when(dataset.getMetadata()).thenReturn(metadata);
-        when(dataset.getResourceStatus()).thenReturn("Available");
+        when(dataset.getAvailability()).thenReturn("Available");
         when(dataset.getAccessLimitation()).thenReturn(
             new AccessLimitation(
                 "Open", "", "", "http://purl.org/coar/access_right/c_abf2"
@@ -156,7 +156,7 @@ class DataPreviewerServiceTest {
 
         when(jenaLookupService.inverseRelationships(
             "http://example.org/id/col1",
-            Ontology.EIDC_MEMBER_OF.getURI()
+            Ontology.DCTERMS_ISPARTOF.getURI()
         )).thenReturn(
             List.of(Link.builder().href("http://example.org/id/ds1").build())
         );
@@ -194,7 +194,7 @@ class DataPreviewerServiceTest {
 
         when(jenaLookupService.inverseRelationships(
             "http://example.org/id/col1",
-            Ontology.EIDC_MEMBER_OF.getURI()
+            Ontology.DCTERMS_ISPARTOF.getURI()
         )).thenReturn(
             List.of(Link.builder().href("http://example.org/id/ds1").build())
         );
@@ -228,7 +228,7 @@ class DataPreviewerServiceTest {
         when(dataset.getId()).thenReturn("ds1");
         when(dataset.getTitle()).thenReturn("Dataset 1");
         when(dataset.getMetadata()).thenReturn(metadata);
-        when(dataset.getResourceStatus()).thenReturn("Available");
+        when(dataset.getAvailability()).thenReturn("Available");
         when(dataset.getAccessLimitation()).thenReturn(
             new AccessLimitation(
                 "Open", "", "", "http://purl.org/coar/access_right/c_abf2"
@@ -243,14 +243,14 @@ class DataPreviewerServiceTest {
 
         when(jenaLookupService.inverseRelationships(
             "http://example.org/id/col1",
-            Ontology.EIDC_MEMBER_OF.getURI()
+            Ontology.DCTERMS_ISPARTOF.getURI()
         )).thenReturn(
             List.of(Link.builder().href("http://example.org/id/col2").build())
         );
 
         when(jenaLookupService.inverseRelationships(
             "http://example.org/id/col2",
-            Ontology.EIDC_MEMBER_OF.getURI()
+            Ontology.DCTERMS_ISPARTOF.getURI()
         )).thenReturn(
             List.of(Link.builder().href("http://example.org/id/ds1").build())
         );

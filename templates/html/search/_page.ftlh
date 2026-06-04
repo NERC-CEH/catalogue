@@ -21,7 +21,7 @@
           <option value="">Relevance</option>
           <option class="option-eidc" value="publicationDate-desc">Published date (newest first)</option>
           <option class="option-eidc" value="publicationDate-asc">Published date (oldest first)</option>
-          <option class="option-eidc" value="incomingCitationCount-desc">Number of citatons</option>
+          <option class="option-eidc" value="incomingCitationCount-desc">Number of citations</option>
           <option value="title-asc">Title (A-Z)</option>
           <option value="title-desc">Title (Z-A)</option>
         </select>
@@ -46,8 +46,8 @@
   <#if result.operationalStatus??>
     <#assign status = result.operationalStatus?lower_case>
   </#if>
-  <#if result.resourceStatus??>
-    <#assign status = result.resourceStatus?lower_case>
+  <#if result.availability??>
+    <#assign status = result.availability?lower_case>
   </#if>
 
   <a href="/${docroot}/${result.identifier}" class="result result--${result.state} result--${status}" data-location="${(result.locations?join('|'))!}" id="${result.identifier}">
@@ -68,8 +68,12 @@
             </#if>
           </span>
 
-          <#if result.resourceStatus?? >
-            <span class="resourceStatus resourceStatus-${result.resourceStatus}">${result.resourceStatus}</span>
+          <#if catalogue.id == "all">
+            <span class="catalogue-label small text-body-tertiary">${result.catalogue!""}</span>
+          </#if>
+
+          <#if result.availability?? >
+            <span class="availability availability-${result.availability}">${result.availability}</span>
           </#if>
       </div>
       <div class="result__title">${result.title} </div>

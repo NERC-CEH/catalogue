@@ -7,15 +7,12 @@
     catalogue = catalogues.retrieve(metadata.catalogue)
 
     rel_all=jena.allRelatedRecords(uri)
-    rel_related=jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo") + jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")
-    rel_generates = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#generates")
-    rel_uses = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
-    rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
-    rel_generatedBy= jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#generates")
-    rel_supersededBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")
-    rel_usedBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
-    rel_hasMember = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
-    rel_supersedes = jena.supersedes(uri)
+    rel_relation=jena.relationships(uri, "http://purl.org/dc/terms/relation") + jena.inverseRelationships(uri, "http://purl.org/dc/terms/relation")
+    rel_requires = jena.relationships(uri, "http://purl.org/dc/terms/requires")
+    rel_partOf = jena.relationships(uri, "http://purl.org/dc/terms/isPartOf")
+    rel_isRequiredBy = jena.inverseRelationships(uri, "http://purl.org/dc/terms/requires")
+    rel_hasPart = jena.inverseRelationships(uri, "http://purl.org/dc/terms/isPartOf")
+    rel_replaces = jena.replaces(uri)
     rel_source = jena.relationships(uri, "http://purl.org/dc/terms/source")
 
     MD_checks = metadataQuality.check(id)
@@ -63,7 +60,7 @@
 
           <#include "dataResource/_admin.ftlh">
 
-          <#if resourceStatus = "Deleted">
+          <#if availability = "Deleted">
             <#include "dataResource/_typeTombstone.ftlh">
           <#else>
               <#if resourceType.value == 'aggregate' || resourceType.value == 'collection'>

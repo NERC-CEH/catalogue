@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.nonNull;
-import static uk.ac.ceh.gateway.catalogue.controllers.MapViewerController.MAPSERVER;
+import static uk.ac.ceh.gateway.catalogue.ogc.MapViewerController.MAPSERVER;
 
 /**
  * The following service is a 'helper' which produces text which is useful in

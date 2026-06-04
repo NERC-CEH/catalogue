@@ -6,15 +6,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -26,19 +26,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WithMockCatalogueUser
-@ActiveProfiles({"metrics", "test"})
+@ActiveProfiles({"metrics", "test", "server-eidc", "search-basic"})
 @DisplayName("MetricsController")
-@WebMvcTest(
-    controllers = MetricsReportController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
-)
-class MetricsReportControllerTest {
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+class MetricsReportControllerTest extends AbstractMvcTest {
 
     @MockitoBean private MetricsService metricsService;
     @MockitoBean private ProfileService profileService;
     @MockitoBean private CatalogueService catalogueService;
-
-    @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
 
     @BeforeEach
@@ -78,9 +74,9 @@ class MetricsReportControllerTest {
         givenDefaultCatalogue();
 
         String catalogueId = "testCatalogue";
-        List<Map<String, String>> mockReport = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> mockReport = new ArrayList<>();
 
-        given(metricsService.getMetricsReport(null, null, null, null, null, null, null)).willReturn(mockReport);;
+        given(metricsService.getMetricsReport(null, null, null, null, null, null, null)).willReturn(mockReport);
 
         mvc.perform(get("/{catalogue}/metrics", catalogueId)
             .with(csrf())
@@ -97,7 +93,7 @@ class MetricsReportControllerTest {
 
         String catalogueId = "testCatalogue";
         List<Map<String, String>> mockReport = new ArrayList<>();
-        mockReport.add(new HashMap<String, String>() {{
+        mockReport.add(new HashMap<>() {{
             put("document", "document");
             put("doc_title", "doc_title");
             put("record_type", "record_type");

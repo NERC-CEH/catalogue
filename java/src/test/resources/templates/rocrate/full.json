@@ -35,7 +35,7 @@
             "datePublished": "2024-09-07",
             "variableMeasured": [
                 {
-                    "@type": "StatisticalVariable",
+                    "@type": "PropertyValue",
                     "@id": "https://example.com/op/1",
                     "name": "observed property 1",
                     "unitCode": "https://example.com/units/m",
@@ -58,11 +58,6 @@
             "creator": [
                 {
                     "@id": "https://orcid.org/0000-1234-5678-9101"
-                }
-            ],
-            "contactPoint": [
-                {
-                    "@id": "https://example.com/TMSP"
                 }
             ],
             "@reverse": {
@@ -138,7 +133,7 @@
             "@id": "https://doi.org/10.5285/882739943",
             "@type":"PropertyValue",
             "propertyID": "https://registry.identifiers.org/registry/doi",
-            "value": "doi:10.5285/882739943",
+            "value": "10.5285/882739943",
             "url": "https://doi.org/10.5285/882739943"
         },
         {
@@ -172,13 +167,6 @@
             "familyName": "Duck",
             "givenName": "Donald",
             "email": "donald@example.com"
-        },
-        {
-            "@id": "https://example.com/TMSP",
-            "@type": "Organization",
-            "name": "TMSP",
-            "email": "pocs@example.com",
-            "identifier": "https://example.com/TMSP"
         },
         {
             "@id": "https://example.com/citations/0",

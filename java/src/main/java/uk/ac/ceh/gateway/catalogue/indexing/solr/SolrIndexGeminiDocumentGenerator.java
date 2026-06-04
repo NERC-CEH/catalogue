@@ -9,6 +9,7 @@ import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.gemini.DistributionInfo;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 
 import java.util.ArrayList;
@@ -73,14 +74,14 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setLineage(document.getLineage())
             .setOrcid(grab(document.getResponsibleParties(), ResponsibleParty::getNameIdentifier))
             .setOrganisation(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationName))
-            .setResourceStatus(document.getResourceStatus())
+            .setAvailability(document.getAvailability())
             .setRor(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationIdentifier))
             .setRightsHolder(grab(document.getRightsHolders(), ResponsibleParty::getOrganisationName))
             .setSupplementalDescription(grab(document.getSupplemental(), Supplemental::getDescription))
             .setSupplementalName(grab(document.getSupplemental(), Supplemental::getName))
             .setTopic(topicIndexer.index(document))
-            .setUpdatedDate(document.getUpdatedDate())
             .setVersion(document.getVersion())
+            .setDataFormat(grab(document.getDistributionFormats(), DistributionInfo::getName))
             ;
     }
 

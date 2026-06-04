@@ -270,7 +270,7 @@ main {
                         0 calc(50% - var(--_f) / 2));
             }
 
-            .resourceStatus {
+            .availability {
                 @extend .badge !optional;
 
                 &-Embargoed {
@@ -340,9 +340,8 @@ main {
 
             &--available,
             &--unknown,
-            &--controlled,
-            &--in-progress {
-                .resourceStatus {
+            &--controlled {
+                .availability {
                     display: none;
                 }
             }
@@ -353,7 +352,7 @@ main {
             }
 
             &--restricted {
-                .resourceStatus {
+                .availability {
                     color: red;
                     text-transform: uppercase;
 

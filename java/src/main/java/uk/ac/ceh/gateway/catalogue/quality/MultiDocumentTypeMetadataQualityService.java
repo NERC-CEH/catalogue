@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.quality;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
@@ -11,7 +10,6 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
@@ -32,14 +30,13 @@ public class MultiDocumentTypeMetadataQualityService implements MetadataQualityS
 
     public MultiDocumentTypeMetadataQualityService(
             @NonNull DocumentReader documentReader,
-            @NonNull ObjectMapper objectMapper,
             @NonNull GeminiMetadataQualityService geminiMetadataQualityService,
             @NonNull MonitoringQualityService monitoringQualityService
     ) {
         this.documentReader = documentReader;
         this.config = Configuration.defaultConfiguration()
-            .jsonProvider(new JacksonJsonProvider(objectMapper))
-            .mappingProvider(new JacksonMappingProvider(objectMapper))
+            .jsonProvider(new JacksonJsonProvider())
+            .mappingProvider(new JacksonMappingProvider())
             .addOptions(
                     Option.DEFAULT_PATH_LEAF_TO_NULL,
                     Option.SUPPRESS_EXCEPTIONS

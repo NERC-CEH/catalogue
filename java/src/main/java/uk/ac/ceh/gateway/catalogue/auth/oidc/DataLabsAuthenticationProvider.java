@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.auth.oidc;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -31,7 +31,7 @@ import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTEN
 @Slf4j
 @ToString(onlyExplicitlyIncluded = true)
 @Service
-@Profile("auth:datalabs")
+@Profile("auth-datalabs")
 public class DataLabsAuthenticationProvider implements AuthenticationProvider {
     private final RestTemplate restTemplate;
     @ToString.Include
@@ -92,7 +92,7 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
             .at("/data/userPermissions");
         if (userPermissionsNode.isArray()) {
             return StreamSupport.stream(userPermissionsNode.spliterator(), false)
-                .map(JsonNode::asText)
+                .map(JsonNode::asString)
                 .map(this::mapDataLabsPermissionsToCatalogueRoles)
                 .filter(Optional::isPresent)
                 .map(Optional::get)

@@ -54,6 +54,7 @@
       </#if>
     </head>
     <body data-edit-restricted="${can_edit_restricted?then('','disabled')}">
+      <div id="header-sentinel" aria-hidden="true"></div>
       <header>
         <div class="${containerClass}">
           <div class="toolbar">

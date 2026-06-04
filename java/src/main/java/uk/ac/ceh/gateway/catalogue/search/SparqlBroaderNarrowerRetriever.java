@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,7 +24,7 @@ import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.vocabularies.SparqlKeywordVocabulary.*;
 
 @Slf4j
-@Profile("search:enhanced")
+@Profile("search-enhanced")
 @Service
 public class SparqlBroaderNarrowerRetriever  implements BroaderNarrowerRetriever {
     private final RestTemplate restTemplate;
@@ -57,8 +57,8 @@ public class SparqlBroaderNarrowerRetriever  implements BroaderNarrowerRetriever
             log.debug("Retrieved {} keywords", resultsNode.size());
             return StreamSupport.stream(resultsNode.spliterator(), false)
                 .map(node -> {
-                    val url = node.at(uriPointer).asText();
-                    val label = node.at(labelPointer).asText();
+                    val url = node.at(uriPointer).asString();
+                    val label = node.at(labelPointer).asString();
                     val vocabId = keyword.getVocabId();
                     return new Keyword(label, vocabId, url);
                 })

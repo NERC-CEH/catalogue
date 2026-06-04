@@ -48,13 +48,13 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
                     "^https://.*/maps/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*",
                     CASE_INSENSITIVE
             );
-    private String otherCitationDetails, lineage, reasonChanged,
-            metadataStandardName, metadataStandardVersion;
+    private String otherCitationDetails, lineage, reasonChanged;
     private Number version;
     private List<String> alternateTitles, spatialRepresentationTypes, temporalResolution, datasetLanguages,
             securityConstraints;
     private List<Keyword> topicCategories, keywordsDiscipline, keywordsInstrument,
             keywordsPlace, keywordsProject, keywordsTheme, keywordsOther;
+    private List<MetadataStandard> metadataStandards;
     private List<Geometry> geometries;
     private List<Fileset> fileset;
     private List<DistributionInfo> distributionFormats;
@@ -71,8 +71,10 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     @JsonIgnore
     private Citation citation;
     @JsonIgnore
+    @Getter(onMethod_ = @JsonIgnore)
     private boolean isDataciteMintable;
     @JsonIgnore
+    @Getter(onMethod_ = @JsonIgnore)
     private boolean isDatacitable;
     private DatasetReferenceDate datasetReferenceDate;
     private List<ResourceMaintenance> resourceMaintenance;
@@ -104,11 +106,9 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         this.responsibleParties.addAll(convertEmails(serviceAgreement.getAuthors()));
         this.responsibleParties.addAll(convertEmails(serviceAgreement.getOwnersOfIpr()));
         Optional.ofNullable(serviceAgreement.getAvailability())
-            .ifPresent(availability -> {
-                this.datasetReferenceDate = DatasetReferenceDate.builder()
-                    .releasedDate(LocalDate.parse(availability))
-                    .build();
-        });
+            .ifPresent(availability -> this.datasetReferenceDate = DatasetReferenceDate.builder()
+                .releasedDate(LocalDate.parse(availability))
+                .build());
         this.topicCategories = serviceAgreement.getTopicCategories();
         this.keywordsDiscipline = serviceAgreement.getKeywordsDiscipline();
         this.keywordsTheme = serviceAgreement.getKeywordsTheme();
@@ -129,7 +129,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
                 .orElse("");
     }
 
-    public String getResourceStatus() {
+    public String getAvailability() {
         return Optional.ofNullable(accessLimitation)
                 .map(AccessLimitation::getCode)
                 .filter(code -> !code.isEmpty())
@@ -195,7 +195,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @JsonIgnore
-    public List<OnlineResource> getDownloads() {
+    public List<OnlineResource> getDataAccess() {
         Set<String> downloadRoles = Set.of("download", "order", "fileAccess");
         return getOnlineResources()
             .stream()
@@ -246,6 +246,22 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     public List<ResponsibleParty> getResponsibleParties() {
         return Optional.ofNullable(responsibleParties)
             .orElseGet(ArrayList::new);
+    }
+
+    @JsonIgnore
+    private List<MetadataStandard> getCroissantConformity() {
+        return Optional.ofNullable(getMetadataStandards())
+            .orElseGet(Collections::emptyList).stream()
+            .filter(Objects::nonNull)
+            .filter(ms -> ms.getTitle().equalsIgnoreCase("Croissant Format Specification"))
+            .filter(ms -> ms.getConformity().equalsIgnoreCase("Conformant"))
+            //.filter(ms -> "Croissant Format Specification".equalsIgnoreCase(Optional.ofNullable(ms.getTitle()).orElse("")))
+            //.filter(ms -> "Conformant".equalsIgnoreCase(Optional.ofNullable(ms.getConformity()).orElse("")))
+            .collect(Collectors.toList());
+    }
+    @JsonIgnore
+    public boolean isCroissant() {
+        return !getCroissantConformity().isEmpty();
     }
 
     private List<ResponsibleParty> responsiblePartyByRole(String role) {
@@ -414,8 +430,25 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @JsonIgnore
-    public List<OnlineResource> getOrderResources() {
-        return filterOnlineResources(onlineResources, "order");
+    public List<OnlineResource> getOrders() {
+        return filterOnlineResources(getDataAccess(), "order");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getFileAccess() {
+        return filterOnlineResources(getDataAccess(), "fileAccess");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getDownloads() {
+        return filterOnlineResources(getDataAccess(), "download");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getDistributions() {
+        return Stream.of(getOrders(), getFileAccess(), getDownloads())
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
     }
 
     @JsonIgnore
@@ -426,11 +459,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     @JsonIgnore
     public List<OnlineResource> getMapservices() {
         return filterOnlineResourcesUrl(onlineResources, ".+catalogue\\.ceh\\.ac\\.uk\\/maps\\/.+");
-    }
-
-    @JsonIgnore
-    public List<OnlineResource> getOrders() {
-        return filterOnlineResourcesUrl(getOrderResources(), ".+\\.order-eidc\\.ceh\\.ac\\.uk\\/resources\\/.+");
     }
 
     @JsonIgnore
@@ -451,11 +479,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     @JsonIgnore
     public List<OnlineResource> getSearch() {
         return filterOnlineResources(onlineResources, "search");
-    }
-
-    @JsonIgnore
-    public List<OnlineResource> getFileAccess() {
-        return filterOnlineResources(getDownloads(), "fileAccess");
     }
 
     @JsonIgnore

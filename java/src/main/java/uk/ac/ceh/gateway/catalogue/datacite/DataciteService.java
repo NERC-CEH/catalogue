@@ -1,8 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.datacite;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 import com.google.common.base.Strings;
 import lombok.NonNull;
 import lombok.ToString;
@@ -88,7 +87,7 @@ public class DataciteService {
                     .toUriString();
             DataciteRequest dataciteRequest = new DataciteRequest(request, identifierService.generateUri(document.getId()), jenaLookupService, dataciteRequestService);
             try {
-                ObjectMapper mapper = new ObjectMapper();
+                JsonMapper mapper = JsonMapper.builder().build();
                 String jsonPayload = mapper.writeValueAsString(dataciteRequest);
                 log.info("---- Datacite JSON Payload ----\n{}\n---- END Payload ----", jsonPayload);
 
@@ -105,7 +104,7 @@ public class DataciteService {
                 log.error("Failed to mint doi: {} - {} - {}", request.get("doi"), ex.getResponseBodyAsString(), ex.getStatusCode());
                 throw new DataciteException("Minting of the DOI failed, please review the datacite JSON (is it valid?) then try again", ex);
             }
-            catch(RestClientException | JsonProcessingException ex) {
+            catch(RestClientException | JacksonException ex) {
                 throw new DataciteException("Failed to communicate with the datacite api when trying to mint the doi", ex);
             }
         }
@@ -116,7 +115,7 @@ public class DataciteService {
         return ResourceIdentifier
                 .builder()
                 .code(generateDoiString(document))
-                .codeSpace("doi:")
+                .codeSpace("doi")
                 .build();
 
     }
@@ -144,14 +143,12 @@ public class DataciteService {
                     String.class
                 ).getBody();
 
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
+                JsonMapper objectMapper = JsonMapper.builder().build();
                 return objectMapper.readValue(retrievedDoiMetadataString, DataciteRequest.class);
             }
             catch(RestClientException ex) {
                 throw new DataciteException("Failed to obtain datacite metadata", ex);
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 throw new RuntimeException(e);
             }
         } else {
@@ -262,7 +259,7 @@ public class DataciteService {
         return Optional.ofNullable(document.getResourceIdentifiers())
                 .orElse(Collections.emptyList())
                 .stream()
-                .filter((i) -> i.getCodeSpace().equals("doi:"))
+                .filter((i) -> i.getCodeSpace().equals("doi"))
                 .map(ResourceIdentifier::getCode)
                 .filter(code -> code.startsWith(prefix))
                 .findFirst();
@@ -285,15 +282,14 @@ public class DataciteService {
     }
 
     private String getDataciteResourceType(MetadataDocument document) {
-        switch(document.getType()) {
-            case "nonGeographicDataset":
-            case "dataset":              return "Dataset";
-            case "application":          return "Other";
-            case "model":                return "Model";
-            case "service":              return "Service";
-            case "software":             return "Software";
-            default:                     return null;
-        }
+        return switch (document.getType()) {
+            case "nonGeographicDataset", "dataset" -> "Dataset";
+            case "application" -> "Other";
+            case "model" -> "Model";
+            case "service" -> "Service";
+            case "software" -> "Software";
+            default -> null;
+        };
     }
 
     private String generateDoiString(GeminiDocument document) {

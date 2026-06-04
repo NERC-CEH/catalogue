@@ -26,7 +26,7 @@ export default _.template(`
             <option value="" <%= !sortField ? 'selected' : '' %>>Relevance</option>
             <option class="option-eidc" value="publicationDate-desc" <%= sortField === 'publicationDate' && order === 'desc' ? 'selected' : '' %>>Published date (newest first)</option>
             <option class="option-eidc" value="publicationDate-asc" <%= sortField === 'publicationDate' && order === 'asc' ? 'selected' : '' %>>Published date (oldest first)</option>
-            <option class="option-eidc" value="incomingCitationCount-desc" <%= sortField === 'incomingCitationCount' && order === 'asc' ? 'selected' : '' %>>Number of citatons</option>
+            <option class="option-eidc" value="incomingCitationCount-desc" <%= sortField === 'incomingCitationCount' && order === 'asc' ? 'selected' : '' %>>Number of citations</option>
             <option value="title-asc" <%= sortField === 'title' && order === 'asc' ? 'selected' : '' %>>Title (A-Z)</option>
             <option value="title-desc" <%= sortField === 'title' && order === 'desc' ? 'selected' : '' %>>Title (Z-A)</option>
         </select>
@@ -43,7 +43,7 @@ export default _.template(`
 <% _.each(results, function(result) { %>
 
   <%
-    const statusValue = result.resourceStatus || result.operationalStatus;
+    const statusValue = result.availability || result.operationalStatus;
     const status = (typeof statusValue === 'string' && statusValue.trim() !== '')
       ? statusValue.toLowerCase()
       : 'unknown';
@@ -73,8 +73,12 @@ export default _.template(`
               <%=result.recordType %>
             </span>
 
-            <% if (result.resourceStatus != '') {  %>
-              <span class="resourceStatus resourceStatus-<%=result.resourceStatus %>"><%=result.resourceStatus %></span>
+            <% if (catalogueId === 'all') { %>
+              <span class="catalogue-label small text-body-tertiary"><%=result.catalogue%></span>
+            <% } %>
+
+            <% if (result.availability != '') {  %>
+              <span class="availability availability-<%=result.availability %>"><%=result.availability %></span>
             <% } %>
           </div>
           <div class="result__title"><%=result.title%></div>

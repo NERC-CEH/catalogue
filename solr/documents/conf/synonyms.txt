@@ -1,3 +1,6 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
 # The ASF licenses this file to You under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with
 # the License.  You may obtain a copy of the License at
@@ -10,21 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#-----------------------------------------------------------------------
-#some test synonym mappings unlikely to appear in real input text
-aaafoo => aaabar
-bbbfoo => bbbfoo bbbbar
-cccfoo => cccbar cccbaz
-fooaaa,baraaa,bazaaa
-
-# Some synonym groups specific to this example
-GB,gib,gigabyte,gigabytes
-MB,mib,megabyte,megabytes
-Television, Televisions, TV, TVs
-#notice we use "gib" instead of "GiB" so any WordDelimiterGraphFilter coming
-#after us won't split it into two words.
-
-# Synonym mappings can be used for spelling correction too
+# -----------------------------------------------------------------------
+# Irregular plurals / Latin forms
 analysis,analyses
 bacterium,bacteria
 crustacean,crustacea
@@ -33,36 +23,28 @@ fungus,fungi
 goose,geese
 isopod,isopoda
 louse,lice
-ethology,animal behaviour
-leptidopteran,butterfly,moth
 mouse,mice
 stratum,strata
 synthesis,syntheses
+
+# British / American spelling equivalents
 sulphur,sulfur
 sulphate,sulfate
 aluminium,aluminum
 centre,center
-biodiversity,biological variety,species richness
-invasive species,alien species,non-indigenous species
 meter,metre
-ecosystem services,eco-services,natural capital
-hedge,hedgerow
-great britain,uk,united kingdom
-renewable energy,sustainable energy,green energy
-carbon footprint,carbon emissions
-carbon dioxide,CO2
-ozone,O3
-agriculture,agribusiness,agriculture,farming,farming
-defra,department for environment food and rural affairs
-ukceh,uk centre for ecology hydrology,uk centre for ecology and hydrology,uk centre for ecology & hydrology
-climate change,global warming
+fertiliser,fertilizer
+behaviour,behavior
+modelling,modeling
+colour,color
+
+# Typo corrections (one-way)
 enviroment,enviromnent => environment
 teh => the
 governmnet => government
 supercede => supersede
 catagory => category
 guage => gauge
-ceh => ukceh
 license,lisence => licence
 occurrance,occurence => occurrence
 flourescent => fluorescent
@@ -72,5 +54,62 @@ publically => publicly
 referance,refrence => reference
 relevent,revelant => relevant
 vaccuum,vaccum,vacume => vacuum
+
+# Institutional abbreviations
+defra,department for environment food and rural affairs
+ukceh,uk centre for ecology hydrology,uk centre for ecology and hydrology,uk centre for ecology & hydrology
+ceh => ukceh
 scottish environmental protection agency,sepa
 nrw,natural resources wales,cyfoeth naturiol cymru
+jncc,joint nature conservation committee
+environment agency,ea
+natural england,ne
+forestry commission,forestry england
+
+# Geographic
+great britain,uk,united kingdom
+
+# Climate & atmosphere
+climate change,global warming
+carbon dioxide,CO2
+ozone,O3
+sulphur dioxide,SO2
+nitrous oxide,N2O
+methane,CH4
+carbon monoxide,CO
+greenhouse gas,ghg,greenhouse gases
+renewable energy,sustainable energy,green energy
+carbon footprint,carbon emissions
+
+# Ecology & biodiversity
+biodiversity,biological variety,species richness
+invasive species,alien species,non-indigenous species,non-native species
+ecosystem services,eco-services,natural capital
+ethology,animal behaviour
+hedge,hedgerow
+wildlife,fauna and flora
+abundance,population size
+
+# Land & habitat
+woodland,forest,forestry
+grassland,meadow,pasture
+wetland,marsh,bog,fen
+habitat,biotope
+
+# Water & hydrology
+river,watercourse,fluvial
+catchment,watershed,drainage basin
+groundwater,aquifer
+precipitation,rainfall
+
+# Agriculture
+agriculture,agribusiness,farming
+pesticide,herbicide,insecticide,agrochemical
+
+# Methods & remote sensing
+remote sensing,earth observation,satellite imagery
+modelling,simulation
+
+# Taxonomic groups
+macroinvertebrate,benthic invertebrate
+phytoplankton,microalgae

@@ -8,13 +8,12 @@ import org.apache.solr.client.solrj.SolrClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -25,6 +24,7 @@ import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,23 +34,22 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UNPRIVILEGED_USERNAME;
 
 @WithMockCatalogueUser
 @Slf4j
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("SearchController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(
-    controllers=SearchController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
-)
+
 @TestPropertySource(locations="classpath:test.properties")
-class SearchControllerTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+class SearchControllerTest extends AbstractMvcTest {
     @MockitoBean private SolrClient solrClient;
     @MockitoBean private CatalogueService catalogueService;
     @MockitoBean private FacetFactory facetFactory;
@@ -58,8 +57,6 @@ class SearchControllerTest {
     @MockitoBean(name="permission") private PermissionService permissionService;
     @MockitoBean private ProfileService profileService;
     @MockitoBean private Searcher searcher;
-
-    @Autowired private MockMvc mvc;
     @Autowired Configuration configuration;
 
     private final String catalogueKey = "eidc";
@@ -71,19 +68,13 @@ class SearchControllerTest {
         .contactUrl("")
         .logo("eidc.png")
         .build();
-
-    private void givenDefaultCatalogue() {
-        given(catalogueService.defaultCatalogue())
-            .willReturn(
-                Catalogue.builder()
-                    .id("default")
-                    .title("test")
-                    .url("https://example.com")
-                    .contactUrl("")
-                    .logo("eidc.png")
-                    .build()
-            );
-    }
+    private final Catalogue allCatalogues = Catalogue.builder()
+        .id("all")
+        .title("All catalogues")
+        .url("")
+        .contactUrl("")
+        .logo("ukceh.png")
+        .build();
 
     private void givenCatalogue() {
         given(catalogueService.retrieve(catalogueKey))
@@ -96,6 +87,38 @@ class SearchControllerTest {
                     .logo("eidc.png")
                     .build()
             );
+    }
+
+    @SneakyThrows
+    private void givenSearchResultsForAllCatalogues() {
+        val endpoint = "http://localhost/documents";
+        val term = "carbon";
+        val results = Arrays.asList(create("0"), create("1"));
+        val searchResults = new SearchResults(
+            20,
+            term,
+            1,
+            20,
+            endpoint,
+            null,
+            null,
+            null,
+            null,
+            null,
+            results,
+            Collections.emptyList(),
+            allCatalogues,
+            Collections.emptyList(),
+            null,
+            "asc"
+        );
+        given(searcher.search(
+            any(), any(), any(), any(), any(), anyInt(), anyInt(), any(),
+            eq("all"),
+            any(), any()
+        )).willReturn(searchResults);
+
+        given(codeLookupService.lookup("publication.state", "public")).willReturn("Public");
     }
 
     @SneakyThrows
@@ -164,19 +187,37 @@ class SearchControllerTest {
     }
 
     @Test
-    @DisplayName("redirect to default catalogue")
+    @DisplayName("GET /documents returns unified search results as HTML")
     @SneakyThrows
-    void redirectToDefaultCatalogue() {
+    void getUnifiedSearchPageHtml() {
         //given
-        givenDefaultCatalogue();
+        givenSearchResultsForAllCatalogues();
+        givenFreemarkerConfiguration();
 
         //when
-        mvc.perform(get("/documents"))
-            .andExpect(status().is3xxRedirection())
-            .andExpect(header().string("location", "http://localhost:8080/default/documents"));
+        mvc.perform(
+            get("/documents")
+                .queryParam("term", "carbon")
+                .accept(MediaType.TEXT_HTML)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.TEXT_HTML));
+    }
 
-        //then
-        verifyNoInteractions(solrClient, facetFactory);
+    @Test
+    @DisplayName("GET /documents returns unified search results as JSON")
+    @SneakyThrows
+    void getUnifiedSearchResultsJson() {
+        //given
+        givenSearchResultsForAllCatalogues();
+
+        //when
+        mvc.perform(
+            get("/documents")
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -276,6 +317,41 @@ class SearchControllerTest {
         )
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("GET /{catalogue}/documents returns 400 for unknown facet field")
+    @SneakyThrows
+    void invalidFacetReturns400ForCatalogueSearch() {
+        //given
+        givenCatalogue();
+        willThrow(new InvalidFacetException("Unknown facet field(s): badField"))
+            .given(searcher).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any(), any());
+
+        //when/then
+        mvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .accept(MediaType.APPLICATION_JSON)
+                .param("facet", "badField|someValue")
+        )
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("GET /documents returns 400 for unknown facet field across all catalogues")
+    @SneakyThrows
+    void invalidFacetReturns400ForAllCataloguesSearch() {
+        //given
+        willThrow(new InvalidFacetException("Unknown facet field(s): badField"))
+            .given(searcher).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), eq("all"), any(), any());
+
+        //when/then
+        mvc.perform(
+            get("/documents")
+                .accept(MediaType.APPLICATION_JSON)
+                .param("facet", "badField|someValue")
+        )
+            .andExpect(status().isBadRequest());
     }
 
 }

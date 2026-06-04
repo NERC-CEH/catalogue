@@ -63,7 +63,7 @@ class NetworkIndexingServiceTest {
         if(network != null) {
             mf.setRelationships(
                 com.google.common.collect.Sets.newHashSet(
-                    new Relationship(Ontology.BELONGS_TO.getURI(), network.getUri())
+                    new Relationship(Ontology.DCTERMS_ISPARTOF.getURI(), network.getUri())
                 )
             );
         }
@@ -106,7 +106,7 @@ class NetworkIndexingServiceTest {
         when(bundledReader.readBundle(f3.getId())).thenReturn(f3);
         when(bundledReader.readBundle(f4.getId())).thenReturn(f4);
         when(bundledReader.readBundle(n1.getId())).thenReturn(n1);
-        when(lookupService.inverseRelationships(n1.getUri(), Ontology.BELONGS_TO.getURI())).thenReturn(links);
+        when(lookupService.inverseRelationships(n1.getUri(), Ontology.DCTERMS_ISPARTOF.getURI())).thenReturn(links);
 
         networkIndexingService.indexDocuments(toIndex);
         verify(documentRepository, times(toIndex.size())).save(userCaptor.capture(), networkDocCaptor.capture(), commitMessageCaptor.capture());
@@ -145,7 +145,7 @@ class NetworkIndexingServiceTest {
 
         // when
         when(bundledReader.readBundle(n1.getId())).thenReturn(n1);
-        when(lookupService.inverseRelationships(n1.getUri(), Ontology.BELONGS_TO.getURI())).thenReturn(links);
+        when(lookupService.inverseRelationships(n1.getUri(), Ontology.DCTERMS_ISPARTOF.getURI())).thenReturn(links);
 
         networkIndexingService.unindexDocuments(f4.getId(), Arrays.asList(n1.getId()));
         verify(documentRepository, times(1)).save(userCaptor.capture(), networkDocCaptor.capture(), commitMessageCaptor.capture());

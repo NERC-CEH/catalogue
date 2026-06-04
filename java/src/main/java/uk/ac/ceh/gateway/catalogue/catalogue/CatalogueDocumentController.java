@@ -25,7 +25,7 @@ public class CatalogueDocumentController {
     @PreAuthorize("@permission.userCanView(#file)")
     @GetMapping("{file}/catalogue")
     public CatalogueResource currentCatalogue (
-        @PathVariable("file") String file
+        @PathVariable String file
     ) throws DocumentRepositoryException {
         return new CatalogueResource(documentRepository.read(file));
     }
@@ -34,7 +34,7 @@ public class CatalogueDocumentController {
     @PutMapping("{file}/catalogue")
     public CatalogueResource updateCatalogue (
         @ActiveUser CatalogueUser user,
-        @PathVariable("file") String file,
+        @PathVariable String file,
         @RequestBody CatalogueResource catalogueResource
     ) throws DocumentRepositoryException {
         val document = documentRepository.read(file);

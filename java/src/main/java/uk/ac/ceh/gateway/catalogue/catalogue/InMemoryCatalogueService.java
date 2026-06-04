@@ -5,6 +5,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @ToString
@@ -26,11 +27,11 @@ public class InMemoryCatalogueService implements CatalogueService {
 
     @Override
     public Catalogue retrieve(@NonNull String key) {
-        try {
-            return catalogues.get(key.toLowerCase());
-        } catch (NullPointerException ex) {
-            throw new CatalogueException(String.format("Could not retrieve catalogue for: %s", key), ex);
+        Catalogue catalogue = catalogues.get(key.toLowerCase());
+        if (catalogue == null) {
+            throw new CatalogueException(String.format("Could not retrieve catalogue for: %s", key));
         }
+        return catalogue;
     }
 
     @Override
@@ -40,9 +41,10 @@ public class InMemoryCatalogueService implements CatalogueService {
 
     @Override
     public List<Catalogue> retrieveAll() {
-        List<Catalogue> toReturn = new ArrayList<>(catalogues.values());
-        Collections.sort(toReturn);
-        return toReturn;
+        return catalogues.values().stream()
+            .filter(c -> !ALL_CATALOGUES_ID.equals(c.getId()))
+            .sorted()
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
 }

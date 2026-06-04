@@ -38,19 +38,19 @@ public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             toReturn.add(
                 createStatement(
                     me,
-                    IDENTIFIER,
+                    DCTERMS_IDENTIFIER,
                     createPlainLiteral(document.getId())
                 )
             );
 
             Optional.ofNullable(emptyToNull(document.getTitle()))
                     .ifPresent(t -> toReturn.add(
-                        createStatement(me, TITLE, createPlainLiteral(t)))
+                        createStatement(me, DCTERMS_TITLE, createPlainLiteral(t)))
                     );
 
             Optional.ofNullable(emptyToNull(document.getType()))
                 .ifPresent(t -> {
-                    toReturn.add(createStatement(me, TYPE, createPlainLiteral(t)));
+                    toReturn.add(createStatement(me, DCTERMS_TYPE, createPlainLiteral(t)));
 
                 });
 

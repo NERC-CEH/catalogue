@@ -2,6 +2,18 @@
 <#import "../blocks.ftlh" as b>
 <#import "../../functions.ftlh" as func>
 
+<#assign
+    MD_checks = metadataQuality.check(id)
+    problems = MD_checks.getProblems()
+    errors = MD_checks.getErrors()
+    infos =  MD_checks.getInfo()
+    warnings = MD_checks.getWarnings()
+    errorList = MD_checks.getErrorList()
+    infoList = MD_checks.getInfoList()
+    warningList = MD_checks.getWarningList()
+    totalIssues = errors + infos +  warnings
+>
+
 <#macro base>
   <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
     <div id="metadata" class="metadata metadata-monitoring ${metadata.state?lower_case} <#if operationalStatus?? && operationalStatus == "Inactive">inactive</#if>">
@@ -95,7 +107,6 @@
             </div>
           </#if>
 
-
           <#if linksData?has_content>
             <@displayLinks linksData "Links to data"/>
           </#if>
@@ -103,7 +114,6 @@
           <#if linksOther?has_content>
             <@displayLinks linksOther "Other links"/>
           </#if>
-
 
           <#if (additionalInfo?? && additionalInfo?has_content) || (keywordsParameters?? && keywordsParameters?has_content) || (keywords?? && keywords?has_content)>
             <div class="pb-5">
@@ -195,12 +205,12 @@
         <li class="dropdown-divider"></li>
       </#if>
 
-      <@menuLink "/documents/${id}/permission" "fa-solid fa-users">Permissions</@menuLink>
-      <@menuLink "/documents/${id}/publication" "fa-solid fa-eye">Publication status</@menuLink>
+      <@menuLink "/documents/${id}/permission">Permissions</@menuLink>
+      <@menuLink "/documents/${id}/publication">Publication status</@menuLink>
 
       <span class="catalogue-control">
         <li class="dropdown-divider"></li>
-        <@menuLink "/documents/${id}/catalogue" "fa-solid fa-right-from-bracket">Move to a different catalogue</@menuLink>
+        <@menuLink "/documents/${id}/catalogue">Move to a different catalogue</@menuLink>
       </span>
     </ul>
   </div>
@@ -413,7 +423,7 @@ Symmetrical relationships
           ${contact.fullName}
           <#if contact.nameIdentifier?has_content>
             <a href="${contact.nameIdentifier}" target="_blank" rel="noopener noreferrer">
-              <img src="/static/img/orcid_16x16.png" alt="ORCID iD icon" title="ORCID iD">
+              <i class="fa-brands fa-orcid fa-xl" aria-label="ORCiD" role="img"></i>
             </a>
           </#if>
         </span>
@@ -491,7 +501,11 @@ Symmetrical relationships
   <#if resourceIdentifiers?? && resourceIdentifiers?has_content>
     <#list resourceIdentifiers as identifier>
       <#if !identifier.code?matches("^http.+[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}$")>
-        <#assign altNames = altNames + [identifier.code] />
+        <#if identifier.codeSpace?has_content>
+          <#assign altNames = altNames + [identifier.codeSpace + "/" + identifier.code] />
+        <#else>
+          <#assign altNames = altNames + [identifier.code] />
+        </#if>
       </#if>
     </#list>
   </#if>

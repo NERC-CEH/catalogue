@@ -3,12 +3,13 @@ package uk.ac.ceh.gateway.catalogue.search;
 import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
@@ -81,11 +82,12 @@ public class SearchQuery {
         SolrQuery query = new SolrQuery()
                 .setQuery(term)
                 .setParam("defType", "edismax")
-                .setParam("qf", "title^50 description^25 keyword^5 lineage organisation familyName altTitle resourceIdentifier identifier supplementalDescription supplementalName infrastructureCapabilities^2 keywordsParameters^5 observedPropertyTitle^10 observedPropertyValue^5 operatingPeriod objectives^25 responsibleParties")
-                .setParam("bq", "resourceType:Aggregation^20, resourceStatus:Available^100, resourceStatus:Controlled^100, resourceStatus:Embargoed^80, resourceStatus:Restricted^80, resourceStatus:Superseded^1")
+                .setParam("mm", "1<1 3<-1 6<-2 9<75%")
+                .setParam("qf", "title^5 description^2 keyword^5 lineage familyName altTitle resourceIdentifier identifier supplementalDescription supplementalName infrastructureCapabilities^2 keywordsParameters^5 observedPropertyTitle^10 observedPropertyValue^5 operatingPeriod objectives^2 responsibleParties")
+                .setParam("bq", "resourceType:Aggregation^5, availability:Available^10, availability:Controlled^10, availability:Embargoed^5, availability:Restricted^5, availability:Superseded^1")
                 .setParam("bf", "version")
                 .setParam("ps", "5")
-                .setParam("pf", "title^50 description^25 keyword^5 supplementalDescription")
+                .setParam("pf", "title^5 description^2 keyword^5 objectives^2 lineage altTitle supplementalDescription supplementalName")
                 .setStart((page-1)*rows)
                 .setRows(rows);
         setSpatialFilter(query);
@@ -326,7 +328,7 @@ public class SearchQuery {
         if (user.isPublic()) {
             query.addFilterQuery("{!term f=state}published");
             query.addFilterQuery("{!term f=view}public");
-            query.addFilterQuery("NOT resourceStatus:(Superseded OR Withdrawn)");
+            query.addFilterQuery("NOT availability:(Superseded OR Withdrawn)");
         } else {
             List<String> groups = groupStore.getGroups(user)
                 .stream()
@@ -341,6 +343,12 @@ public class SearchQuery {
     }
 
     private boolean userIsPublisher(List<String> groups) {
+        if (CatalogueService.ALL_CATALOGUES_ID.equals(catalogue.getId())) {
+            // Never bypass visibility filtering for cross-catalogue search.
+            // Publishers should use the catalogue-specific endpoint to see
+            // unpublished records in their catalogue.
+            return false;
+        }
         return groups.contains(
             String.format(
                 MetadataInfo.PUBLISHER_GROUP,
@@ -363,6 +371,19 @@ public class SearchQuery {
     }
 
     private void setFacetFilters(SolrQuery query){
+        Set<String> knownFields = facets.stream()
+            .map(Facet::getFieldName)
+            .collect(Collectors.toSet());
+
+        Set<String> unknownFields = facetFilters.stream()
+            .map(FacetFilter::getField)
+            .filter(f -> !knownFields.contains(f))
+            .collect(Collectors.toSet());
+
+        if (!unknownFields.isEmpty()) {
+            throw new InvalidFacetException("Unknown facet field(s): " + String.join(", ", unknownFields));
+        }
+
         Map<String, List<FacetFilter>> groupedFilters = facetFilters.stream()
             .collect(Collectors.groupingBy(FacetFilter::getField));
 
@@ -401,9 +422,11 @@ public class SearchQuery {
     }
 
     private void setCatalogueFilter(SolrQuery query) {
-        query.addFilterQuery(
-            String.format("{!term f=catalogue}%s", catalogue.getId())
-        );
+        if (!CatalogueService.ALL_CATALOGUES_ID.equals(catalogue.getId())) {
+            query.addFilterQuery(
+                String.format("{!term f=catalogue}%s", catalogue.getId())
+            );
+        }
     }
 
     private void setSortOrder(SolrQuery query) {

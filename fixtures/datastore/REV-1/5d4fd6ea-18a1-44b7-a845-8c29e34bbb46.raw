@@ -11,7 +11,7 @@
     ],
     "relationships": [
         {
-            "relation": "http://onto.ceh.ac.uk/EF#belongsTo",
+            "relation": "http://purl.org/dc/terms/isPartOf",
             "target": "4d40c67c-2bd6-4461-a7c4-43058abf9a16"
         }
     ],

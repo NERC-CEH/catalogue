@@ -17,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueException;
+import uk.ac.ceh.gateway.catalogue.search.InvalidFacetException;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.model.*;
@@ -24,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementException;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadException;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URISyntaxException;
 
 import static org.springframework.http.HttpStatus.*;
@@ -51,7 +53,9 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         boolean showStackTrace = "always".equalsIgnoreCase(includeStackTrace);
 
         if (ex instanceof PermissionDeniedException) {
-            logger.error("Permission denied: " + ex.getMessage());
+            logger.warn("Permission denied: " + ex.getMessage());
+        } else if (NOT_FOUND.equals(statusCode)) {
+            logger.warn(message);
         } else {
             if (showStackTrace) {
                 logger.error(message, ex);
@@ -69,6 +73,16 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({HttpClientErrorException.BadRequest.class})
     public ResponseEntity<Object> handleBadRequestException(HttpClientErrorException.BadRequest ex) {
+        return handleExceptionInternal(ex, ex.getMessage(), BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidFacetException.class)
+    public ResponseEntity<Object> handleInvalidFacetException(InvalidFacetException ex, HttpServletRequest request) {
+        String qs = request.getQueryString();
+        String fullUrl = request.getRequestURL() + (qs != null ? "?" + qs : "");
+        String[] parts = request.getServletPath().split("/");
+        String catalogue = parts.length >= 3 ? parts[1] : "all";
+        log.warn("Invalid facet in catalogue [{}] for URL [{}]: {}", catalogue, fullUrl, ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), BAD_REQUEST);
     }
 
@@ -126,6 +140,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ModelAndView handleAccessDeniedException() {
         CatalogueUser user = (CatalogueUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        assert user != null;
         boolean isPublic = user.isPublic();
         return new ModelAndView("html/access-denied", "isPublic", isPublic);
     }

@@ -35,23 +35,22 @@
   "@id": "${uri?trim}",
   <@doi/>
   <@partsList parts/>
-  <#if resourceStatus?lower_case != "deleted">
+  <#if availability?lower_case != "deleted">
     <#if description?has_content>"description":<@displayLiteral description/>,</#if>
     <@alternateTitlesList/>
-    <#if resourceStatus == "Available">"isAccessibleForFree": true,</#if>
+    <#if availability == "Available">"isAccessibleForFree": true,</#if>
     <@creationDate/>
     <@publicationDate/>
     <@observedPropertiesList/>
     <@keywordsList/>
     <#if authors?has_content>"creator": [<@contactList authors "creator"/>],</#if>
-    <#if pointsOfContact?has_content>"contactPoint": [<@contactList pointsOfContact/>],</#if>
     <@citationList/>
     <@temporalExtentsList/>
     <#if boundingBoxes?has_content>"spatialCoverage": [<@itemList boundingBoxes "bbox"/>],</#if>
     <#if funding?has_content>"funder": [<@itemList funding "fund"/>],</#if>
     <#if docType == "Dataset" || docType == "SoftwareSourceCode">
       <@licencesLink/>
-      <#if downloads?has_content>"distribution": [<@itemList downloads "distribution" />],</#if>
+      <#if distributions?has_content>"distribution": [<@itemList distributions "distribution" />],</#if>
       <@publisherLink/>
     </#if>
     "provider" : {"@id":"https://ror.org/04xw4m193"},
@@ -79,11 +78,10 @@
   <@doiDetail/>
   <#if boundingBoxes?has_content>,<@bboxDetails/></#if>
   <#if authors?has_content>,<@contactDetails authors "creator"/></#if>
-  <#if pointsOfContact?has_content>,<@contactDetails pointsOfContact/></#if>
   <#if incomingCitations?has_content>,<@citationDetails/></#if>
   <#if funding?has_content>,<@fundDetails/></#if>
   <#if parts?has_content>,<@partDetails parts/></#if>
-  <#if downloads?has_content>,<@distributionDetails/></#if>
+  <#if distributions?has_content>,<@distributionDetails/></#if>
   <#if authorPointOfContactWithRORs?has_content>,<@organisationRORs/></#if>
 </#macro>
 
@@ -143,7 +141,7 @@
       "@id": "${citation.url}",
       "@type":"PropertyValue",
       "propertyID": "https://registry.identifiers.org/registry/doi",
-      "value": "doi:${citation.doi}",
+      "value": "${citation.doi}",
       "url": "${citation.url}"
     }
   </#if>
@@ -232,9 +230,9 @@
             <#assign opLabel=op.value?trim>
           </#if>
 
-          <#if op.uri?has_content>
+          <#if op.uri?has_content && op.uri?matches("^http[s]?://.*")>
             {
-            "@type": "StatisticalVariable",
+            "@type": "PropertyValue",
             "@id": "${op.uri?trim}",
             "name": "${opLabel}"
             <#if op.unitsUri?has_content>,"unitCode": "${op.unitsUri?trim}"</#if>
@@ -406,7 +404,7 @@
 </#macro>
 
 <#macro distributionDetails>
-  <#list downloads as distribution>
+  <#list distributions as distribution>
     {
     "@id": "#distribution${distribution?index}",
     "@type":"DataDownload",

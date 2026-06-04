@@ -25,22 +25,22 @@ public class GeminiDocumentTest {
     private final String doc2 = "https://example.com/doc/2";
     private final String doc3 = "https://example.com/doc/3";
 
-
     @Test
-    void getDownloads() {
+    void getDistributions() {
         //given
         val gemini = new GeminiDocument();
         gemini.setOnlineResources(List.of(
             OnlineResource.builder().function("download").build(),
             OnlineResource.builder().function("order").build(),
-            OnlineResource.builder().function("something").build()
+            OnlineResource.builder().function("fileAccess").build(),
+            OnlineResource.builder().function("somethingElse").build()
         ));
 
         //when
-        val actual = gemini.getDownloads();
+        val actual = gemini.getDistributions();
 
         //then
-        assertThat(actual.size(), equalTo(2));
+        assertThat(actual.size(), equalTo(3));
     }
 
     @Test
@@ -192,25 +192,25 @@ public class GeminiDocumentTest {
     }
 
     @Test
-    public void unknownResourceStatus() {
+    public void unknownAvailability() {
         //given
         val document = new GeminiDocument();
 
         //when
-        val actual = document.getResourceStatus();
+        val actual = document.getAvailability();
 
         //then
         assertThat(actual, equalTo("Unknown"));
     }
 
     @Test
-    public void accessLimitationAndResourceStatus() {
+    public void accessLimitationAndAvailability() {
         //given
         val document = new GeminiDocument();
         document.setAccessLimitation(AccessLimitation.builder().build());
 
         //when
-        val actual = document.getResourceStatus();
+        val actual = document.getAvailability();
 
         //then
         assertThat(actual, equalTo("Unknown"));

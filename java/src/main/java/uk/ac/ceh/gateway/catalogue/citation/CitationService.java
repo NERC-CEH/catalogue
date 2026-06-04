@@ -46,7 +46,7 @@ public class CitationService {
             .map(GeminiDocument::getResourceIdentifiers)
             .orElse(Collections.emptyList())
             .stream()
-            .filter((r)->r.getCodeSpace().equals("doi:"))
+            .filter((r)->r.getCodeSpace().equals("doi"))
             .filter((r)->r.getCode().startsWith(nercDoiPrefix))
             .findFirst();
         if  (log.isDebugEnabled() && citationResource.isPresent()) {

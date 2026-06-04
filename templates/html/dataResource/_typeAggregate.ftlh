@@ -9,6 +9,8 @@
     <#include "_title.ftlh">
   </#if>
 
+  <#include "_aggregateAccessButtons.ftlh">
+
   <#if description??>
     <#include "_description.ftlh">
   </#if>
@@ -17,13 +19,13 @@
     <#include "_spatialExplorer.ftlh">
   </#if>
 
-  <#if rel_hasMember?has_content && rel_hasMember?size gt 0 >
+  <#if rel_hasPart?has_content && rel_hasPart?size gt 0 >
     <div id="segment-members">
       <h2>
-      This collection contains <#if rel_hasMember?size gt 1>these<#else>this</#if> resource<#if rel_hasMember?size gt 1>s</#if></h2>
+      This collection contains <#if rel_hasPart?size gt 1>these<#else>this</#if> resource<#if rel_hasPart?size gt 1>s</#if></h2>
 
       <div class="ukcehcards">
-        <#list rel_hasMember>
+        <#list rel_hasPart>
             <#items as item>
               <#if item.associationType = 'dataset' ||  item.associationType = 'nonGeographicDataset' ||  item.associationType = 'signpost'>
                 <#assign type="Dataset" icon="fa-solid fa-chart-column" >
@@ -56,13 +58,13 @@
     </div>
   </#if>
 
-  <#if (rel_related?has_content && rel_hasMember?size gt 0) || (otherSupplemental?has_content && otherSupplemental?size gt 0) >
+  <#if (rel_relation?has_content && rel_hasPart?size gt 0) || (otherSupplemental?has_content && otherSupplemental?size gt 0) >
     <div id="segment-related" class="mt-5">
 
       <h3 class="my-3">Other related resources</h3>
 
       <div class="ukcehcards ukcehcards-small">
-        <#list rel_related>
+        <#list rel_relation>
           <#items as item>
             <#if item.associationType = 'dataset' ||  item.associationType = 'nonGeographicDataset' ||  item.associationType = 'signpost'>
               <#assign type="Dataset" icon="fa-solid fa-chart-column" >
@@ -96,10 +98,10 @@
     </div>
   </#if>
 
-  <#if rel_memberOf?has_content && rel_memberOf?size gt 0 >
-    <h2>This ${recordType} is included in the following collection<#if rel_memberOf?size gt 1>s</#if></h2>
+  <#if rel_partOf?has_content && rel_partOf?size gt 0 >
+    <h2>This ${recordType} is included in the following collection<#if rel_partOf?size gt 1>s</#if></h2>
     <div class="ukcehcards">
-      <#list rel_memberOf?sort_by("title") as item>
+      <#list rel_partOf?sort_by("title") as item>
         <@card item.href item.publicationStatus item.availability 'Data collection' item.title/>
       </#list>
     </div>

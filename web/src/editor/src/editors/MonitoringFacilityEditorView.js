@@ -222,10 +222,10 @@ export default EditorView.extend({
           ObjectInputView: RelationshipView,
           multiline: true,
           options: [
-            { value: 'http://onto.ceh.ac.uk/EF#belongsTo', label: 'Belongs to' },
-            { value: 'http://onto.ceh.ac.uk/EF#associatedWith', label: 'Related to' },
-            { value: 'http://onto.ceh.ac.uk/EF#supersedes', label: 'Supersedes' },
-            { value: 'http://onto.ceh.ac.uk/EF#narrower', label: 'Has child facility' }
+            { value: 'http://purl.org/dc/terms/isPartOf', label: 'Is part of' },
+            { value: 'http://purl.org/dc/terms/relation', label: 'Relation' },
+            { value: 'http://purl.org/dc/terms/replaces', label: 'Replaces' },
+            { value: 'https://digital.ceh.ac.uk/ontology/doo/hasChildFacility', label: 'Has child facility' }
           ],
           helpText: `
 <p>Relationships to other records</p>

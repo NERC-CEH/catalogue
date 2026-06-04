@@ -5,8 +5,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.NonNull;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
@@ -28,7 +27,7 @@ public class JDBCMetricsService implements MetricsService {
     @NonNull private final SimpleJdbcInsert viewInserter;
     @NonNull private final SimpleJdbcInsert downloadInserter;
     @NonNull private final JdbcTemplate jdbcTemplate;
-    @Nullable private long lastRun;
+    private long lastRun;
     private final DocumentRepository documentRepository;
 
     // SQLite has no built-in datetime type, so we store dates as Unix timestamps (seconds since 1 Jan 1970)
@@ -119,7 +118,7 @@ public class JDBCMetricsService implements MetricsService {
         distinctDocs.forEach((doc) -> {
             MetadataDocument document;
             try {
-                log.info("UPDATING title and type of document ID {} for {} table", doc, table);
+                log.debug("UPDATING title and type of document ID {} for {} table", doc, table);
                 document = documentRepository.read(doc);
                 jdbcTemplate.update(UPDATE_STATEMENT.formatted(table), document.getTitle(), document.getType(), doc);
             } catch (Exception e) {

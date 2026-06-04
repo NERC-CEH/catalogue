@@ -6,7 +6,7 @@
   "depositorContactDetails": "test@test.com",
   "description": "description of test1",
   "lineage": "lineage of test1",
-  "resourceStatus": "Available",
+  "availability": "Available",
   "endUserLicence": [
     {
       "code": "license"

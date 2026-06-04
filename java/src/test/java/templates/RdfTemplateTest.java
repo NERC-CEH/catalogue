@@ -1,16 +1,18 @@
 package templates;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.tdb1.TDB1Factory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,12 +29,12 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import java.io.File;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -40,9 +42,8 @@ import static org.mockito.Mockito.mock;
 @DisplayName("Rdf template")
 public class RdfTemplateTest {
     Configuration configuration;
-    ObjectMapper objectMapper;
+    JsonMapper objectMapper;
     JenaLookupService jena;
-    Model model;
 
     @SneakyThrows
     private String expected(String filename) {
@@ -62,38 +63,26 @@ public class RdfTemplateTest {
     }
 
     private void compare(String expected, String actual, boolean fragment) {
-        if ( !fragment) {
-            RDFDataMgr.read(model, new StringReader(actual), "https://example.com/id/", Lang.TTL);
+        if (fragment) {
+            assertThat(actual.trim(), equalTo(expected.trim()));
+            return;
         }
+
+        Model expectedModel = ModelFactory.createDefaultModel();
+        RDFDataMgr.read(expectedModel, new StringReader(expected), "https://example.com/id/", Lang.TTL);
+
+        Model actualModel = ModelFactory.createDefaultModel();
+        RDFDataMgr.read(actualModel, new StringReader(actual), "https://example.com/id/", Lang.TTL);
 
         if (log.isDebugEnabled()) {
-            model.listStatements().forEachRemaining(s -> log.debug(s.toString()));
-
-            List<String> differences = findDifferences(expected, actual);
-
-            log.debug("Differences between the two strings:");
-            for (String diff : differences) {
-                log.debug(diff);
-            }
+            actualModel.listStatements().forEachRemaining(s -> log.debug(s.toString()));
         }
 
-        assertThat(actual.trim(), equalTo(expected.trim()));
-    }
-
-    private List<String> findDifferences(String str1, String str2) {
-        List<String> differences = new ArrayList<>();
-        int length = Math.max(str1.length(), str2.length());
-
-        for (int i = 0; i < length; i++) {
-            char char1 = i < str1.length() ? str1.charAt(i) : ' ';
-            char char2 = i < str2.length() ? str2.charAt(i) : ' ';
-
-            if (char1 != char2) {
-                differences.add("Difference at index " + i + ": '" + char1 + "' vs '" + char2 + "'");
-            }
-        }
-
-        return differences;
+        assertTrue(
+            actualModel.isIsomorphicWith(expectedModel),
+            () -> "RDF models differ.\nExtra triples in actual: " + actualModel.difference(expectedModel).size()
+                + "\nMissing triples from actual: " + expectedModel.difference(actualModel).size()
+        );
     }
 
     @SneakyThrows
@@ -101,12 +90,9 @@ public class RdfTemplateTest {
     void init() {
         configuration = new Configuration(Configuration.VERSION_2_3_23);
         configuration.setDirectoryForTemplateLoading(new File("../templates"));
-        objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper = JsonMapper.builder().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
         jena = mock(JenaLookupService.class);
         configuration.setSharedVariable("jena", jena);
-        val jenaTdb = TDB1Factory.createDataset();
-        model = jenaTdb.getDefaultModel();
     }
 
     @Nested
@@ -122,16 +108,15 @@ public class RdfTemplateTest {
 
             val geminiDocument = objectMapper.readValue(expected("rdf/datastore/eidc-gemini.raw"), GeminiDocument.class);
 
-            String predicateURI="https://vocabs.ceh.ac.uk/eidc#";
-            given(jena.relationships(geminiDocument.getUri(), predicateURI + "memberOf")).willReturn(List.of(
+            given(jena.relationships(geminiDocument.getUri(), "http://purl.org/dc/terms/isPartOf")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000012345").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000054321").build()
             ));
-            given(jena.relationships(geminiDocument.getUri(), predicateURI + "supersedes")).willReturn(List.of(
+            given(jena.relationships(geminiDocument.getUri(), "http://purl.org/dc/terms/replaces")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/111112345").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/111154321").build()
             ));
-            given(jena.relationships(geminiDocument.getUri(), predicateURI + "relatedTo")).willReturn(List.of(
+            given(jena.relationships(geminiDocument.getUri(), "http://purl.org/dc/terms/relation")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/222212345").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/222254321").build()
             ));
@@ -141,6 +126,29 @@ public class RdfTemplateTest {
 
             //then
             compare(expected, actual, false);
+        }
+
+        @Test
+        @SneakyThrows
+        @DisplayName("no trailing comma when last fileset has no observed properties")
+        void datasetWithEmptyTrailingFileset() {
+            val doc = objectMapper.readValue(
+                expected("rdf/datastore/eidc-gemini-multi-fileset.raw"), GeminiDocument.class);
+
+            given(jena.relationships(doc.getUri(), "http://purl.org/dc/terms/isPartOf")).willReturn(List.of());
+            given(jena.relationships(doc.getUri(), "http://purl.org/dc/terms/replaces")).willReturn(List.of());
+            given(jena.relationships(doc.getUri(), "http://purl.org/dc/terms/relation")).willReturn(List.of());
+
+            val actual = template("rdf/ttl.ftl", doc);
+
+            // If trailing comma is present, Jena throws RiotException on invalid Turtle
+            Model model = ModelFactory.createDefaultModel();
+            RDFDataMgr.read(model, new StringReader(actual), doc.getUri() + "/", Lang.TTL);
+
+            Resource subject = model.createResource(doc.getUri());
+            Property varMeasured = model.createProperty("https://schema.org/variableMeasured");
+            assertTrue(model.contains(subject, varMeasured, model.createResource("https://prop-a.example.com")));
+            assertTrue(model.contains(subject, varMeasured, model.createResource("https://prop-b.example.com")));
         }
 
         @Test
@@ -178,18 +186,17 @@ public class RdfTemplateTest {
 
             val facilityDocument = objectMapper.readValue(expected("rdf/datastore/monitoring-facility.raw"), MonitoringFacility.class);
 
-            String predicateURI="http://onto.ceh.ac.uk/EF#";
-            given(jena.relationships(facilityDocument.getUri(), predicateURI + "associatedWith")).willReturn(List.of(
+            given(jena.relationships(facilityDocument.getUri(), "http://purl.org/dc/terms/relation")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000001").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000002").build()
             ));
-            given(jena.relationships(facilityDocument.getUri(), predicateURI + "narrower")).willReturn(List.of(
+            given(jena.relationships(facilityDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000003").build()
             ));
-            given(jena.relationships(facilityDocument.getUri(), predicateURI + "supersedes")).willReturn(List.of(
+            given(jena.relationships(facilityDocument.getUri(), "http://purl.org/dc/terms/replaces")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000004").build()
             ));
-            given(jena.relationships(facilityDocument.getUri(), predicateURI + "belongsTo")).willReturn(List.of(
+            given(jena.relationships(facilityDocument.getUri(), "http://purl.org/dc/terms/isPartOf")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000005").build()
             ));
 
@@ -209,15 +216,14 @@ public class RdfTemplateTest {
 
             val networkDocument = objectMapper.readValue(expected("rdf/datastore/monitoring-network.raw"), MonitoringNetwork.class);
 
-            String predicateURI="http://onto.ceh.ac.uk/EF#";
-            given(jena.relationships(networkDocument.getUri(), predicateURI + "associatedWith")).willReturn(List.of(
+            given(jena.relationships(networkDocument.getUri(), "http://purl.org/dc/terms/relation")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000001").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000002").build()
             ));
-            given(jena.relationships(networkDocument.getUri(), predicateURI + "narrower")).willReturn(List.of(
+            given(jena.relationships(networkDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000003").build()
             ));
-            given(jena.relationships(networkDocument.getUri(), predicateURI + "supersedes")).willReturn(List.of(
+            given(jena.relationships(networkDocument.getUri(), "http://purl.org/dc/terms/replaces")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000004").build()
             ));
 
@@ -237,21 +243,20 @@ public class RdfTemplateTest {
 
             val programmeDocument = objectMapper.readValue(expected("rdf/datastore/monitoring-programme.raw"), MonitoringProgramme.class);
 
-            String predicateURI="http://onto.ceh.ac.uk/EF#";
-            given(jena.relationships(programmeDocument.getUri(), predicateURI + "associatedWith")).willReturn(List.of(
+            given(jena.relationships(programmeDocument.getUri(), "http://purl.org/dc/terms/relation")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000001").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000002").build()
             ));
-            given(jena.relationships(programmeDocument.getUri(), predicateURI + "supersedes")).willReturn(List.of(
+            given(jena.relationships(programmeDocument.getUri(), "http://purl.org/dc/terms/replaces")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000003").build()
             ));
-            given(jena.relationships(programmeDocument.getUri(), predicateURI + "utilises")).willReturn(List.of(
+            given(jena.relationships(programmeDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/utilises")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000004").build()
             ));
-            given(jena.relationships(programmeDocument.getUri(), predicateURI + "hasChild")).willReturn(List.of(
+            given(jena.relationships(programmeDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000005").build()
             ));
-            given(jena.relationships(programmeDocument.getUri(), predicateURI + "triggers")).willReturn(List.of(
+            given(jena.relationships(programmeDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/triggers")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000006").build()
             ));
 
@@ -271,8 +276,7 @@ public class RdfTemplateTest {
 
             val activityDocument = objectMapper.readValue(expected("rdf/datastore/monitoring-activity.raw"), MonitoringActivity.class);
 
-            String predicateURI="http://onto.ceh.ac.uk/EF#";
-            given(jena.relationships(activityDocument.getUri(), predicateURI + "uses")).willReturn(List.of(
+            given(jena.relationships(activityDocument.getUri(),  "https://digital.ceh.ac.uk/ontology/doo/uses")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000001").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000002").build()
             ));

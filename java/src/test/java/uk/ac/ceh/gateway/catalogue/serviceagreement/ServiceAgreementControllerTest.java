@@ -10,13 +10,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.Link;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
@@ -29,6 +28,7 @@ import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.publication.State;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
+import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -44,18 +44,16 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC
 
 @Slf4j
 @WithMockCatalogueUser
-@ActiveProfiles({"service-agreement", "test"})
+@ActiveProfiles({"service-agreement", "test", "server-eidc", "search-basic"})
 @DisplayName("ServiceAgreementController")
 @Import({
     SecurityConfig.class,
     SecurityConfigCrowd.class,
     DevelopmentUserStoreConfig.class
 })
-@WebMvcTest(
-    controllers = ServiceAgreementController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
-)
-class ServiceAgreementControllerTest {
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+class ServiceAgreementControllerTest extends AbstractMvcTest {
     @MockitoBean private ServiceAgreementSearch search;
     @MockitoBean private ServiceAgreementService serviceAgreementService;
     @MockitoBean private ServiceAgreementModelAssembler assembler;
@@ -68,8 +66,6 @@ class ServiceAgreementControllerTest {
     private static final String ID = "test";
     private static final String VERSION = "version";
     private static final String catalogueKey = "eidc";
-
-    @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
 
     @BeforeAll

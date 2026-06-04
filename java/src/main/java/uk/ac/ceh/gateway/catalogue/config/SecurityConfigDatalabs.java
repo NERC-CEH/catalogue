@@ -13,7 +13,7 @@ import org.springframework.security.web.authentication.rememberme.RememberMeAuth
 
 @Slf4j
 @Configuration
-@Profile("auth:datalabs")
+@Profile("auth-datalabs")
 public class SecurityConfigDatalabs {
 
     @Bean

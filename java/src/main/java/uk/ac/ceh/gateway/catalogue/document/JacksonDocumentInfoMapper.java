@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.document;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 

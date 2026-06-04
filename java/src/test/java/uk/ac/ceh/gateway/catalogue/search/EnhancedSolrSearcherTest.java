@@ -4,7 +4,7 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrRequest;
-import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.client.solrj.request.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.params.SolrParams;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +43,7 @@ class EnhancedSolrSearcherTest {
     private final SpatialOperation spatialOperation = SpatialOperation.ISWITHIN;
     private final int page = 1;
     private final int rows = 20;
-    private final List<FacetFilter> facetFilters = List.of(new FacetFilter("filter|test"));
+    private final List<FacetFilter> facetFilters = List.of(new FacetFilter("facet1|test"));
     private final String catalogueKey = "green";
     private final String sortField = "publishedDate";
     private final ORDER sortOrder = ORDER.desc;

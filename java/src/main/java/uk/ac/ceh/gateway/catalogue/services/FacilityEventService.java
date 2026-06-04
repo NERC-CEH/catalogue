@@ -104,7 +104,7 @@ public class FacilityEventService {
      */
     protected List<String> getBelongToIds(MonitoringFacility facility) {
             return facility.getRelationships().stream()
-                .filter(r -> r.getRelation().equals(Ontology.BELONGS_TO.getURI()))
+                .filter(r -> r.getRelation().equals(Ontology.DCTERMS_ISPARTOF.getURI()))
                 .map(r -> r.getTarget())
                 .toList();
         }

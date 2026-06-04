@@ -29,9 +29,9 @@ public class ResourceIdentifierTest {
         //Given
         ResourceIdentifier identifier = ResourceIdentifier.builder()
                                         .code("10.5285/05e5d538-6be7-476d-9141-76d9328738a4")
-                                        .codeSpace("doi:")
+                                        .codeSpace("doi")
                                         .build();
-        String expected = "doi:10.5285/05e5d538-6be7-476d-9141-76d9328738a4";
+        String expected = "doi/10.5285/05e5d538-6be7-476d-9141-76d9328738a4";
 
         //When
         String actual = identifier.getCoupledResource();

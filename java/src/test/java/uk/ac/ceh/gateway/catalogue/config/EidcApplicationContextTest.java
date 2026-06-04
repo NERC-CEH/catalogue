@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ac.ceh.gateway.catalogue.CatalogueWebTest;
@@ -26,13 +25,11 @@ import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
-@ActiveProfiles({"auth:crowd", "upload:hubbub", "server:eidc", "search:basic", "service-agreement"})
+@ActiveProfiles({"auth-crowd", "upload-hubbub", "server-eidc", "search-basic", "service-agreement"})
 @CatalogueWebTest
 @DisplayName("EIDC production context")
 class EidcApplicationContextTest {
@@ -50,7 +47,6 @@ class EidcApplicationContextTest {
         assertNotNull(applicationContext.getBean("permission"));
         val objectMapper = applicationContext.getBean(ObjectMapper.class);
         assertNotNull(objectMapper);
-        objectMapper.getRegisteredModuleIds().forEach(module -> log.debug(module.toString()));
     }
 
     @Test
@@ -75,7 +71,7 @@ class EidcApplicationContextTest {
     @Test
     @DisplayName("Freemarker shared variables present")
     void freemarkerConfiguredCorrectly() {
-        val freemarkerConfiguration = (Configuration) applicationContext.getBean(freemarker.template.Configuration.class);
+        val freemarkerConfiguration = applicationContext.getBean(Configuration.class);
         assertNotNull(freemarkerConfiguration);
         assertNotNull(freemarkerConfiguration.getSharedVariable("catalogues"));
         assertNotNull(freemarkerConfiguration.getSharedVariable("codes"));
@@ -99,7 +95,7 @@ class EidcApplicationContextTest {
         gemini.setType("dataset");
         val outputStream = new ByteArrayOutputStream();
 
-        val expected = "{\"type\":\"dataset\",\"title\":\"Test\",\"resourceType\":{\"value\":\"dataset\"},\"notGEMINI\":false,\"resourceStatus\":\"Unknown\",\"incomingCitationCount\":0}";
+        val expected = "{\"type\":\"dataset\",\"title\":\"Test\",\"resourceType\":{\"value\":\"dataset\"},\"notGEMINI\":false,\"availability\":\"Unknown\",\"incomingCitationCount\":0}";
         //when
         val documentWritingService = applicationContext.getBean(DocumentWritingService.class);
         assertNotNull(documentWritingService);

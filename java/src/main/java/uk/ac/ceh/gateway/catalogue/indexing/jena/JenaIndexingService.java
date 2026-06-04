@@ -89,7 +89,7 @@ public class JenaIndexingService extends AbstractIndexingService<MetadataDocumen
                     try {
                         return canIndex(readDocument(document));
                     } catch (Exception e) {
-                        log.info("Error: " + e);
+                        log.info("Error indexing {}: {}", document, e);
                         //A warning will appear here but due to earlier @SneakyThrows in readDocument the
                         // GitFileNotFoundException is hidden, but this exception CAN occur.
                         //This case occurs when a file has been deleted and needs to be removed from the SparQL.

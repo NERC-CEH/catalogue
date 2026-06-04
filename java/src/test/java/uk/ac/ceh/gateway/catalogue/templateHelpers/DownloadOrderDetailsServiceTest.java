@@ -26,6 +26,7 @@ public class DownloadOrderDetailsServiceTest {
         when(downloadUrlProperties.getRegexOrder()).thenReturn("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*");
         when(downloadUrlProperties.getRegexPackage()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/.*");
         when(downloadUrlProperties.getRegexDatastore()).thenReturn("https://catalogue\\.ceh\\.ac\\.uk/datastore/eidchub/.*");
+        when(downloadUrlProperties.getRegexCeda()).thenReturn("https://data\\.ceda\\.ac\\.uk/eidc/.*");
         when(downloadUrlProperties.getRegexSupportingDocs()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/sd/.*");
         when(downloadUrlProperties.getRegexOrderManDownload()).thenReturn("http(s?)://catalogue\\.ceh\\.ac\\.uk/download\\?fileIdentifier=.*");
         service = new DownloadOrderDetailsService(downloadUrlProperties);
@@ -44,8 +45,8 @@ public class DownloadOrderDetailsServiceTest {
         DownloadOrder order = service.from(onlineResources);
 
         //Then
-        assertThat(order.isOrderable(), is(true));
-        assertThat(order.getOrderResources().contains(onlineResource), is(true));
+        assertThat(order.isDataAccessible(), is(true));
+        assertThat(order.getDataAccessResources().contains(onlineResource), is(true));
     }
 
     @Test
@@ -61,8 +62,8 @@ public class DownloadOrderDetailsServiceTest {
         DownloadOrder order = service.from(onlineResources);
 
         //Then
-        assertThat(order.isOrderable(), is(true));
-        assertThat(order.getOrderResources().contains(onlineResource), is(true));
+        assertThat(order.isDataAccessible(), is(true));
+        assertThat(order.getDataAccessResources().contains(onlineResource), is(true));
     }
 
     @Test
@@ -78,8 +79,8 @@ public class DownloadOrderDetailsServiceTest {
         DownloadOrder order = service.from(onlineResources);
 
         //Then
-        assertThat(order.isOrderable(), is(true));
-        assertThat(order.getOrderResources().contains(onlineResource), is(true));
+        assertThat(order.isDataAccessible(), is(true));
+        assertThat(order.getDataAccessResources().contains(onlineResource), is(true));
     }
 
     @Test
@@ -95,8 +96,8 @@ public class DownloadOrderDetailsServiceTest {
         DownloadOrder order = service.from(onlineResources);
 
         //Then
-        assertThat(order.isOrderable(), is(true));
-        assertThat(order.getOrderResources().contains(onlineResource), is(true));
+        assertThat(order.isDataAccessible(), is(true));
+        assertThat(order.getDataAccessResources().contains(onlineResource), is(true));
     }
 
     @Test
@@ -114,8 +115,8 @@ public class DownloadOrderDetailsServiceTest {
         DownloadOrder order = service.from(onlineResources);
 
         //Then
-        assertThat(order.isOrderable(), is(true));
-        assertThat(order.getOrderResources().contains(orderable), is(true));
+        assertThat(order.isDataAccessible(), is(true));
+        assertThat(order.getDataAccessResources().contains(orderable), is(true));
     }
 
     @Test
@@ -131,8 +132,8 @@ public class DownloadOrderDetailsServiceTest {
         DownloadOrder order = service.from(onlineResources);
 
         //Then
-        assertThat(order.isOrderable(), is(false));
-        assertThat(order.getOrderResources().contains(onlineResource), is(true));
+        assertThat(order.isDataAccessible(), is(false));
+        assertThat(order.getDataAccessResources().contains(onlineResource), is(true));
     }
 
     @Test

@@ -18,6 +18,8 @@ import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /**
  * The following class is responsible for taking a metadata document and creating
@@ -76,6 +78,12 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setUkcehService(grab(getKeywordsByVocabulary(document, VocabularyFacet.UKCEH_SERVICE.getFacetName()), Keyword::getValue))
             .setView(getViews(document))
             .setResourceIdentifier(buildResourceIdentifiers(document.getResourceIdentifiers()))
+            .setMetadataDate(
+                Optional.ofNullable(document.getMetadataDate())
+                    .map(date -> date.atZone(ZoneId.of("UTC")))
+                    .map(zonedDateTime -> Date.from(zonedDateTime.toInstant()))
+                    .orElse(Date.from(java.time.Instant.EPOCH))
+            )
             ;
     }
 
