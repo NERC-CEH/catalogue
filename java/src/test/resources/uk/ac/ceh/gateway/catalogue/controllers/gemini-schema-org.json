@@ -13,5 +13,5 @@
     "alternatename": "EIDC",
     "url": "https://catalogue.ceh.ac.uk/eidc/documents"
   },
-  "@context": "http://schema.org/"
+  "@context": "https://schema.org/"
 }
