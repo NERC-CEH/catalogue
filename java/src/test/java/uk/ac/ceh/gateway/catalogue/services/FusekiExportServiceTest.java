@@ -9,6 +9,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import uk.ac.ceh.gateway.catalogue.exports.DocumentsToTurtleService;
+import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
+import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
@@ -17,8 +19,10 @@ import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
@@ -28,6 +32,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 public class FusekiExportServiceTest {
     private FusekiExportService service;
     @Mock private DocumentsToTurtleService documentsToTurtleService;
+    @Mock private MetadataListingService metadataListingService;
+    private VoidStatsService voidStatsService;
     private MockRestServiceServer mockServer;
 
     private static final String BASE_URI = "http://catalogue.invalid/";
@@ -44,6 +50,7 @@ public class FusekiExportServiceTest {
         RestTemplate restTemplate = new RestTemplate();
         mockServer = MockRestServiceServer.createServer(restTemplate);
         configuration.setDirectoryForTemplateLoading(new File("../templates"));
+        voidStatsService = new VoidStatsService();
 
         service = new FusekiExportService(
             documentsToTurtleService,
@@ -52,7 +59,9 @@ public class FusekiExportServiceTest {
             FUSEKI_CATALOGUE_IDS,
             FUSEKI_URL,
             FUSEKI_USERNAME,
-            FUSEKI_PASSWORD
+            FUSEKI_PASSWORD,
+            voidStatsService,
+            metadataListingService
         );
     }
 
@@ -94,5 +103,33 @@ public class FusekiExportServiceTest {
         mockServer.verify();
         verify(documentsToTurtleService).getBigTtl(FUSEKI_CATALOGUE_IDS.get(0));
         verify(documentsToTurtleService).getBigTtl(FUSEKI_CATALOGUE_IDS.get(1));
+    }
+
+    @Test
+    @SneakyThrows
+    void exportUpdatesVoidStats() {
+        // given
+        given(documentsToTurtleService.getBigTtl(any()))
+            .willReturn(Optional.of("ttl"));
+        given(metadataListingService.getPublicDocumentsOfCatalogue("eidc"))
+            .willReturn(List.of("a", "b", "c"));
+        given(metadataListingService.getPublicDocumentsOfCatalogue("ukeof"))
+            .willReturn(List.of("x", "y"));
+
+        mockServer
+            .expect(requestTo(equalTo(FUSEKI_URL + "?graph=" + BASE_URI)))
+            .andExpect(method(HttpMethod.PUT))
+            .andRespond(withSuccess());
+
+        // when
+        service.runExport();
+
+        // then
+        assertThat(voidStatsService.get("eidc"))
+            .isPresent()
+            .hasValueSatisfying(s -> assertThat(s.entities()).isEqualTo(3L));
+        assertThat(voidStatsService.get("ukeof"))
+            .isPresent()
+            .hasValueSatisfying(s -> assertThat(s.entities()).isEqualTo(2L));
     }
 }

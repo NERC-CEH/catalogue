@@ -13,6 +13,8 @@ import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
+import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
+import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
@@ -29,6 +31,7 @@ class WellKnownControllerTest extends AbstractMvcTest {
     @MockitoBean private CatalogueService catalogueService;
     @MockitoBean private ProfileService profileService;
     @Autowired private Configuration configuration;
+    @Autowired private VoidStatsService voidStatsService;
 
     @SneakyThrows
     private void givenFreemarkerConfiguration() {
@@ -60,6 +63,30 @@ class WellKnownControllerTest extends AbstractMvcTest {
                 content().string(containsString("void:Dataset")),
                 content().string(containsString("eidc")),
                 content().string(containsString("void:sparqlEndpoint"))
+            );
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("GET /.well-known/void includes void:entities when stats are available")
+    void getVoidDescriptionWithStats() {
+        //given
+        givenFreemarkerConfiguration();
+        given(catalogueService.retrieve("eidc"))
+            .willReturn(Catalogue.builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc.ac.uk")
+                .contactUrl("")
+                .logo("eidc.png")
+                .build());
+        voidStatsService.update("eidc", new VoidStats(1234L));
+
+        //when, then
+        mvc.perform(get("/.well-known/void"))
+            .andExpectAll(
+                status().isOk(),
+                content().string(containsString("void:entities 1234"))
             );
     }
 }

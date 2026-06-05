@@ -17,6 +17,8 @@ import uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.exports.CatalogueExportService;
 import uk.ac.ceh.gateway.catalogue.exports.DocumentsToTurtleService;
+import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
+import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +38,8 @@ public class FusekiExportService implements CatalogueExportService {
     private final String fusekiPassword;
     private final List<String> catalogueIds;
     private final DocumentsToTurtleService documentsToTurtleService;
+    private final VoidStatsService voidStatsService;
+    private final MetadataListingService metadataListingService;
 
     public FusekiExportService(
         DocumentsToTurtleService documentsToTurtleService,
@@ -44,7 +48,9 @@ public class FusekiExportService implements CatalogueExportService {
         @Value("#{'${fuseki.catalogueIds}'.split(',')}") List<String> catalogueIds,
         @Value("${fuseki.url}/ds") String fusekiUrl,
         @Value("${fuseki.username}") String fusekiUsername,
-        @Value("${fuseki.password}") String fusekiPassword
+        @Value("${fuseki.password}") String fusekiPassword,
+        VoidStatsService voidStatsService,
+        MetadataListingService metadataListingService
     ) {
         log.info("Creating");
 
@@ -55,6 +61,8 @@ public class FusekiExportService implements CatalogueExportService {
         this.fusekiPassword = fusekiPassword;
         this.catalogueIds = catalogueIds;
         this.documentsToTurtleService = documentsToTurtleService;
+        this.voidStatsService = voidStatsService;
+        this.metadataListingService = metadataListingService;
     }
 
     @Scheduled(initialDelay = TimeConstants.ONE_MINUTE, fixedDelay = TimeConstants.ONE_DAY)
@@ -72,6 +80,11 @@ public class FusekiExportService implements CatalogueExportService {
         }
         post(multiCatalogueTtl);
         log.info("Posted public metadata documents as ttl to {}", fusekiUrl);
+        catalogueIds.forEach(id ->
+            voidStatsService.update(id, new VoidStats(
+                metadataListingService.getPublicDocumentsOfCatalogue(id).size()
+            ))
+        );
     }
 
     private void post(String data) {
