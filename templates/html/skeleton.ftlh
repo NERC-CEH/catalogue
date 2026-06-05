@@ -52,6 +52,7 @@
       <#if schemaorg?has_content>
         <link rel="alternate" type="application/vnd.schemaorg.ld+json" href="${schemaorg}"/>
       </#if>
+      <link rel="describedby" type="text/turtle" href="/.well-known/void"/>
     </head>
     <body data-edit-restricted="${can_edit_restricted?then('','disabled')}">
       <div id="header-sentinel" aria-hidden="true"></div>

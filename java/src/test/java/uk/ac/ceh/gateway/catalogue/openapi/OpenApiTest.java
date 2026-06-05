@@ -71,6 +71,24 @@ class OpenApiTest extends AbstractMvcTest {
 
     @Test
     @SneakyThrows
+    @DisplayName("GET /v3/api-docs describes SPARQL endpoint")
+    void apiDocsDescribesSparqlEndpoint() {
+        mvc.perform(get("/v3/api-docs"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.paths['/sparql']").exists());
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("GET /v3/api-docs describes VoID discovery endpoint")
+    void apiDocsDescribesVoidEndpoint() {
+        mvc.perform(get("/v3/api-docs"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.paths['/.well-known/void']").exists());
+    }
+
+    @Test
+    @SneakyThrows
     @DisplayName("Swagger UI is accessible")
     void swaggerUiIsAccessible() {
         mvc.perform(get("/swagger-ui.html"))
