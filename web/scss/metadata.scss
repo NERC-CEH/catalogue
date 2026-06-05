@@ -425,10 +425,25 @@ body {
         }
     }
 
+    h1 {
+        color: var(--colour-hero);
+        font-weight: 400;
+    }
+
     h2 {
-        margin-block-start: 2.5em;
-        border-block-end: 1px solid $gray-light;
+        color: #111;
+        font-weight: 600;
+        font-size: 1.4rem;
+        margin-block-start: 4em;
+        border-block-end: 1px solid lightgray;
         padding-block-end: 6px;
+    }
+
+    h3,
+    h4 {
+        color: #999;
+        font-weight: 400;
+
     }
 
     .ukcehcards {
@@ -930,12 +945,6 @@ body {
             color: #666;
         }
     }
-
-    h2 {
-        clear: both;
-        padding-block-start: 2em;
-    }
-
 
     a {
         &.availability-inactive {

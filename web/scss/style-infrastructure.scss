@@ -1,9 +1,27 @@
 @use "theme";
 
-.infrastructure-metadata {
+.metadata {
     #pageTitle {
         margin: 2em 0;
     }
+
+    .key {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-block-start: 3.5rem;
+    }
+
+     img.browseGraphic {
+                @extend .mb-3;
+                @extend .float-md-end;
+                @extend .col-md-6;
+                @extend .ms-md-5;
+                mix-blend-mode: multiply;
+                width: auto;
+                height: auto;
+                max-width: min(100%, 550px);
+                max-height: 350px;
+            }
 
     .fa-spin-2x {
         -webkit-animation: fa-spin 1s infinite linear;
@@ -14,89 +32,4 @@
         @extend .visually-hidden !optional;
     }
 
-    .footer-ri {
-        background-color: transparent;
-
-        .footer-content {
-            background-color: #333;
-            color: white;
-
-            .footergrid {
-                display: grid;
-                grid-template-areas:
-                    "logo logo"
-                    "socials socials"
-                    "menu menu";
-                gap: 1em;
-                padding: 1em;
-                justify-items: center;
-                align-items: center;
-
-                .logo {
-                    grid-area: logo;
-                    background-color: #333;
-
-                    img {
-                        max-width: 180px;
-                        margin: 0.4em 2em;
-                    }
-                }
-
-                .menu {
-                    a {
-                        color: white;
-                        margin-inline-end: 1em;
-                    }
-                }
-
-                .socials {
-                    grid-area: socials;
-                    display: flex;
-                    gap: 1em;
-
-                    a.social {
-                        --size: 52px;
-                        color: black;
-                        text-decoration: none;
-                        background-color: white;
-                        border-radius: 100%;
-                        height: var(--size);
-                        width: var(--size);
-                        display: grid;
-                        justify-content: center;
-                        align-items: center;
-
-                        &:hover,
-                        &:focus-visible {
-                            background-color: transparent;
-                            color: #fff;
-                            outline: 3px solid white;
-                        }
-                    }
-                }
-
-                .menu {
-                    grid-area: menu;
-                }
-            }
-        }
-    }
-
-    @media (width >=992px)  {
-        .footer-ri {
-            .footer-content {
-                .footergrid {
-                    grid-template-areas:
-                        "logo logo"
-                        "menu socials";
-
-                    .logo {
-                        img {
-                            max-width: 220px;
-                        }
-                    }
-                }
-            }
-        }
-    }
 }

@@ -133,17 +133,6 @@ public class CatalogueServiceConfig {
                 .build(),
 
             Catalogue.builder()
-                .id("inlicensed")
-                .title("UKCEH In-licensed Datasets")
-                .url("http://intranet.ceh.ac.uk/procedures/commercialisation/data-licensing-ipr/in-licensed-data-list")
-                .contactUrl("https://www.ceh.ac.uk/contact-us")
-                .logo("ukceh.png")
-                .facetKey("resourceType")
-                .documentType(GEMINI_TYPE)
-                .fileUpload(false)
-                .build(),
-
-            Catalogue.builder()
                 .id("m")
                 .title("Model Management")
                 .url("http://intranet.ceh.ac.uk/procedures/science-information-management/science-information-management-full-procedures/model-management-procedures")

@@ -235,7 +235,6 @@ h6 {
     font-family: var(--font-family-headers);
 
     a {
-
         &:hover,
         &:focus-visible {
             text-decoration: none;
@@ -243,17 +242,7 @@ h6 {
     }
 }
 
-h1 {
-    color: var(--colour-hero);
-    font-weight: 400;
-}
 
-h2,
-h3,
-h4 {
-    color: #999;
-    font-weight: 400;
-}
 
 .btn-ukceh {
     border-radius: 0;
