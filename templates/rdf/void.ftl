@@ -13,7 +13,7 @@
 <${baseUri}/${cat.id}>
     a void:Dataset ;
     dcterms:title "${cat.title}"@en ;
-    foaf:homepage <${cat.url}> ;
+    foaf:homepage <${baseUri}/${cat.id}/documents> ;
     void:sparqlEndpoint <${sparqlUrl}/ds/sparql> ;
     void:dataDump <${baseUri}/${cat.id}/catalogue.ttl> ;
     .
