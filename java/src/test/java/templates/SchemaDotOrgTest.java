@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 
@@ -28,17 +29,17 @@ public class SchemaDotOrgTest {
     }
 
     @SneakyThrows
-    private String template(String templateFilename) {
+    private String template() {
         return FreeMarkerTemplateUtils.processTemplateIntoString(
-            configuration.getTemplate(templateFilename),
+            configuration.getTemplate("schema.org/schema.org.ftl"),
             gemini
         );
     }
 
-    private GeminiDocument createGeminiDocument(String fileId) {
+    private GeminiDocument createGeminiDocument() {
         val gemini = new GeminiDocument();
-        gemini.setUri("https://example.org/id/" + fileId);
-        gemini.setId(fileId);
+        gemini.setUri("https://example.org/id/" + "123456789");
+        gemini.setId("123456789");
         gemini.setTitle("Title");
         gemini.setType("dataset");
         return gemini;
@@ -56,11 +57,41 @@ public class SchemaDotOrgTest {
     void schemaDotOrgMinimal() {
         //given
         val expected = expected("schemaDotOrg/minimal.json");
-        val fileId = "123456789";
-        gemini = createGeminiDocument(fileId);
+        gemini = createGeminiDocument();
 
         //when
-        val actual = template("schema.org/schema.org.ftl");
+        val actual = template();
+
+        //then
+        JSONAssert.assertEquals(expected, actual, true);
+    }
+
+    @SneakyThrows
+    @Test
+    void schemaDotOrgWithFunding() {
+        //given
+        val expected = expected("schemaDotOrg/with-funding.json");
+        gemini = createGeminiDocument();
+        gemini.setFunding(List.of(
+            Funding.builder()
+                .funderName("Natural Environment Research Council")
+                .funderIdentifier("https://ror.org/00h27bh59")
+                .awardNumber("NE/S010351/1")
+                .awardURI("https://gtr.ukri.org/projects?term=NE/S010351/1")
+                .build(),
+            Funding.builder()
+                .funderName("European Union")
+                .awardTitle("Horizon 2020 research and innovation programme")
+                .awardNumber("776480")
+                .build(),
+            Funding.builder()
+                .funderName("Scottish Government")
+                .awardTitle("Hydro Nation Scholars Programme")
+                .build()
+        ));
+
+        //when
+        val actual = template();
 
         //then
         JSONAssert.assertEquals(expected, actual, true);
@@ -71,14 +102,13 @@ public class SchemaDotOrgTest {
     void schemaDotOrgOglLicence() {
         //given
         val expected = expected("schemaDotOrg/ogl-licence.json");
-        val fileId = "123456789";
-        gemini = createGeminiDocument(fileId);
+        gemini = createGeminiDocument();
         gemini.setUseConstraints(List.of(
             ResourceConstraint.builder().code("license").uri("https://eidc.ac.uk/licences/ogl/plain").build()
         ));
 
         //when
-        val actual = template("schema.org/schema.org.ftl");
+        val actual = template();
 
         //then
         JSONAssert.assertEquals(expected, actual, true);

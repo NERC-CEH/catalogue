@@ -86,7 +86,7 @@
                     "@id": "#bbox1"
                 }
             ],
-            "funder": [
+            "funding": [
                 {
                     "@id": "#fund0"
                 },
@@ -185,11 +185,21 @@
         },
         {
             "@id": "#fund0",
+            "@type": "MonetaryGrant",
+            "funder": {"@id": "#funderOrg0"}
+        },
+        {
+            "@id": "#funderOrg0",
             "@type": "Organization",
             "name": "UKRI"
         },
         {
             "@id": "#fund1",
+            "@type": "MonetaryGrant",
+            "funder": {"@id": "#funderOrg1"}
+        },
+        {
+            "@id": "#funderOrg1",
             "@type": "Organization",
             "name": "University of Oxford"
         },
