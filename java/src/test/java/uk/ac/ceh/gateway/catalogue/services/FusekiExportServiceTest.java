@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,6 +72,8 @@ public class FusekiExportServiceTest {
         // given
         given(documentsToTurtleService.getBigTtl(any()))
             .willReturn(Optional.of("ttl"));
+        given(metadataListingService.getPublicDocumentsOfCatalogue(anyString()))
+            .willReturn(List.of());
 
         mockServer
             .expect(requestTo(equalTo(FUSEKI_URL + "?graph=" + BASE_URI)))
@@ -105,12 +108,20 @@ public class FusekiExportServiceTest {
         verify(documentsToTurtleService).getBigTtl(FUSEKI_CATALOGUE_IDS.get(1));
     }
 
+    private static final String EIDC_TTL =
+        "<http://example.org/d1> a <http://www.w3.org/ns/dcat#Dataset> .\n" +
+        "<http://example.org/d2> a <http://www.w3.org/ns/dcat#Dataset> .\n" +
+        "<http://example.org/p1> a <http://xmlns.com/foaf/0.1/Person> .\n";
+
+    private static final String UKEOF_TTL =
+        "<http://example.org/f1> a <https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringFacility> .\n";
+
     @Test
     @SneakyThrows
     void exportUpdatesVoidStats() {
         // given
-        given(documentsToTurtleService.getBigTtl(any()))
-            .willReturn(Optional.of("ttl"));
+        given(documentsToTurtleService.getBigTtl("eidc")).willReturn(Optional.of(EIDC_TTL));
+        given(documentsToTurtleService.getBigTtl("ukeof")).willReturn(Optional.of(UKEOF_TTL));
         given(metadataListingService.getPublicDocumentsOfCatalogue("eidc"))
             .willReturn(List.of("a", "b", "c"));
         given(metadataListingService.getPublicDocumentsOfCatalogue("ukeof"))
@@ -127,9 +138,23 @@ public class FusekiExportServiceTest {
         // then
         assertThat(voidStatsService.get("eidc"))
             .isPresent()
-            .hasValueSatisfying(s -> assertThat(s.entities()).isEqualTo(3L));
+            .hasValueSatisfying(s -> {
+                assertThat(s.entities()).isEqualTo(3L);
+                assertThat(s.triples()).isEqualTo(3L);
+                assertThat(s.classEntityCounts()).containsEntry(
+                    "http://www.w3.org/ns/dcat#Dataset", 2L
+                );
+                assertThat(s.classEntityCounts()).containsEntry(
+                    "http://xmlns.com/foaf/0.1/Person", 1L
+                );
+            });
         assertThat(voidStatsService.get("ukeof"))
             .isPresent()
-            .hasValueSatisfying(s -> assertThat(s.entities()).isEqualTo(2L));
+            .hasValueSatisfying(s -> {
+                assertThat(s.entities()).isEqualTo(2L);
+                assertThat(s.classEntityCounts()).containsEntry(
+                    "https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringFacility", 1L
+                );
+            });
     }
 }

@@ -16,6 +16,8 @@ import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 
+import java.util.Map;
+
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -80,13 +82,20 @@ class WellKnownControllerTest extends AbstractMvcTest {
                 .contactUrl("")
                 .logo("eidc.png")
                 .build());
-        voidStatsService.update("eidc", new VoidStats(1234L));
+        voidStatsService.update("eidc", new VoidStats(
+            1234L,
+            50000L,
+            Map.of("http://www.w3.org/ns/dcat#Dataset", 1234L)
+        ));
 
         //when, then
         mvc.perform(get("/.well-known/void"))
             .andExpectAll(
                 status().isOk(),
-                content().string(containsString("void:entities 1234"))
+                content().string(containsString("void:entities 1234")),
+                content().string(containsString("void:triples 50000")),
+                content().string(containsString("void:classPartition")),
+                content().string(containsString("void:propertyPartition"))
             );
     }
 }

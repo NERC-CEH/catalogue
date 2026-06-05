@@ -1,3 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.wellknown;
 
-public record VoidStats(long entities) {}
+import java.util.Map;
+
+public record VoidStats(long entities, long triples, Map<String, Long> classEntityCounts) {}

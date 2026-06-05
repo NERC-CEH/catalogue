@@ -1,8 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.vocabulary.RDF;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -20,9 +25,13 @@ import uk.ac.ceh.gateway.catalogue.exports.DocumentsToTurtleService;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
@@ -65,26 +74,48 @@ public class FusekiExportService implements CatalogueExportService {
         this.metadataListingService = metadataListingService;
     }
 
+    private record TurtleStats(long triples, Map<String, Long> classEntityCounts) {}
+
     @Scheduled(initialDelay = TimeConstants.ONE_MINUTE, fixedDelay = TimeConstants.ONE_DAY)
-    @SneakyThrows
     public void runExport() {
         log.info("Running Fuseki export");
-        String multiCatalogueTtl = catalogueIds
-            .stream()
-            .map(documentsToTurtleService::getBigTtl)
-            .map(ttl -> ttl.orElse(""))
-            .collect(Collectors.joining("\n"));
-        if (multiCatalogueTtl.equals("\n")) {
+        Map<String, String> catalogueTtls = new LinkedHashMap<>();
+        catalogueIds.forEach(id ->
+            documentsToTurtleService.getBigTtl(id).ifPresent(ttl -> catalogueTtls.put(id, ttl))
+        );
+        if (catalogueTtls.isEmpty()) {
             log.info("No documents to export");
             return;
         }
-        post(multiCatalogueTtl);
+        post(String.join("\n", catalogueTtls.values()));
         log.info("Posted public metadata documents as ttl to {}", fusekiUrl);
-        catalogueIds.forEach(id ->
+        catalogueTtls.forEach((id, ttl) -> {
+            TurtleStats ts = parseTurtleStats(ttl);
             voidStatsService.update(id, new VoidStats(
-                metadataListingService.getPublicDocumentsOfCatalogue(id).size()
-            ))
-        );
+                metadataListingService.getPublicDocumentsOfCatalogue(id).size(),
+                ts.triples(),
+                ts.classEntityCounts()
+            ));
+        });
+    }
+
+    private TurtleStats parseTurtleStats(String ttl) {
+        Model model = ModelFactory.createDefaultModel();
+        try (InputStream is = new ByteArrayInputStream(ttl.getBytes(StandardCharsets.UTF_8))) {
+            RDFDataMgr.read(model, is, Lang.TURTLE);
+        } catch (Exception e) {
+            log.warn("Failed to parse Turtle for stats: {}", e.getMessage());
+            return new TurtleStats(0L, Map.of());
+        }
+        Map<String, Long> classEntityCounts = model.listStatements(null, RDF.type, (RDFNode) null)
+            .toList()
+            .stream()
+            .filter(stmt -> stmt.getObject().isURIResource())
+            .collect(Collectors.groupingBy(
+                stmt -> stmt.getObject().asResource().getURI(),
+                Collectors.counting()
+            ));
+        return new TurtleStats(model.size(), classEntityCounts);
     }
 
     private void post(String data) {

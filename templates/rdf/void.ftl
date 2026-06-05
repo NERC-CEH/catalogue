@@ -1,6 +1,10 @@
 @prefix void:    <http://rdfs.org/ns/void#> .
 @prefix foaf:    <http://xmlns.com/foaf/0.1/> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix dcat:    <http://www.w3.org/ns/dcat#> .
+@prefix dcmitype: <http://purl.org/dc/dcmitype/> .
+@prefix doo:     <https://digital.ceh.ac.uk/ontology/doo/> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
 
 <${baseUri}/.well-known/void>
     a void:DatasetDescription ;
@@ -24,8 +28,26 @@
     void:vocabulary <http://www.w3.org/ns/prov#> ;
     void:vocabulary <http://xmlns.com/foaf/0.1/> ;
     void:vocabulary <http://www.w3.org/2006/vcard/ns#> ;
-<#if stats[cat.id]??>
+<#if (stats[cat.id])??>
     void:entities ${stats[cat.id].entities()?c} ;
+    void:triples ${stats[cat.id].triples()?c} ;
+<#assign classCounts = stats[cat.id].classEntityCounts()>
+<#list classCounts?keys as classUri>
+    void:classPartition [ void:class <${classUri}> ; void:entities ${classCounts[classUri]?c} ] ;
+</#list>
 </#if>
+    void:propertyPartition [ void:property dcterms:title ] ;
+    void:propertyPartition [ void:property dcterms:description ] ;
+    void:propertyPartition [ void:property dcterms:identifier ] ;
+    void:propertyPartition [ void:property dcterms:subject ] ;
+    void:propertyPartition [ void:property dcterms:spatial ] ;
+    void:propertyPartition [ void:property dcterms:temporal ] ;
+    void:propertyPartition [ void:property dcat:contactPoint ] ;
+    void:propertyPartition [ void:property dcterms:publisher ] ;
+    void:propertyPartition [ void:property dcterms:creator ] ;
+    void:propertyPartition [ void:property dcterms:license ] ;
+    void:propertyPartition [ void:property dcterms:rights ] ;
+    void:propertyPartition [ void:property dcat:distribution ] ;
+    void:propertyPartition [ void:property prov:wasGeneratedBy ] ;
     .
 </#list>

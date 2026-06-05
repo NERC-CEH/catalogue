@@ -3,6 +3,8 @@ package uk.ac.ceh.gateway.catalogue.wellknown;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("VoidStatsService")
@@ -19,7 +21,7 @@ class VoidStatsServiceTest {
     @Test
     @DisplayName("get returns stats after update")
     void getReturnsStatsAfterUpdate() {
-        service.update("eidc", new VoidStats(42L));
+        service.update("eidc", new VoidStats(42L, 1000L, Map.of()));
 
         assertThat(service.get("eidc"))
             .isPresent()
@@ -29,7 +31,7 @@ class VoidStatsServiceTest {
     @Test
     @DisplayName("update for one catalogue does not affect another")
     void updateIsPerCatalogue() {
-        service.update("eidc", new VoidStats(10L));
+        service.update("eidc", new VoidStats(10L, 500L, Map.of()));
 
         assertThat(service.get("ukeof")).isEmpty();
     }
