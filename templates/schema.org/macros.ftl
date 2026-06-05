@@ -47,7 +47,7 @@
     <@citationList/>
     <@temporalExtentsList/>
     <#if boundingBoxes?has_content>"spatialCoverage": [<@itemList boundingBoxes "bbox"/>],</#if>
-    <#if funding?has_content>"funder": [<@itemList funding "fund"/>],</#if>
+    <#if funding?has_content>"funding": [<@fundingRefList/>],</#if>
     <#if docType == "Dataset" || docType == "SoftwareSourceCode">
       <@licencesLink/>
       <#if distributions?has_content>"distribution": [<@itemList distributions "distribution" />],</#if>
@@ -418,13 +418,38 @@
   </#list>
 </#macro>
 
+<#macro fundingRefList>
+  <#list funding as fund>
+    <#if fund.awardURI?has_content>
+      <#if fund.awardURI?contains("gtr.ukri.org")>{"@id": "${fund.awardURI?replace("term=", "ref=")?trim}"}
+      <#else>{"@id": "${fund.awardURI?trim}"}
+      </#if>
+    <#else>{"@id": "#fund${fund?index?c}"}
+    </#if>
+    <#sep>,
+  </#list>
+</#macro>
+
 <#macro fundDetails>
   <#list funding as fund>
+    <#assign hasRor = fund.funderIdentifier?has_content && fund.isRor()>
+    <#assign grantId><#if fund.awardURI?has_content><#if fund.awardURI?contains("gtr.ukri.org")>${fund.awardURI?replace("term=", "ref=")?trim}<#else>${fund.awardURI?trim}</#if><#else>#fund${fund?index?c}</#if></#assign>
+    <#assign orgId><#if hasRor>${fund.funderIdentifier?trim}<#else>#funderOrg${fund?index?c}</#if></#assign>
     {
-    "@id": "#fund${fund?index}",
-    "@type":"Organization"
-    <#if fund.funderName?? && fund.funderName?has_content>,<#t>"name":"${fund.funderName}"</#if>
-    }<#sep>,
+    "@id": "${grantId?trim}",
+    "@type": "MonetaryGrant"
+    <#if fund.awardTitle?has_content>,"name": "${fund.awardTitle}"</#if>
+    <#if fund.awardNumber?has_content>,"identifier": "${fund.awardNumber}"</#if>
+    <#if fund.funderName?has_content || hasRor>,"funder": {"@id": "${orgId?trim}"}</#if>
+    }
+    <#if fund.funderName?has_content || fund.funderIdentifier?has_content>
+      ,{
+      "@id": "${orgId?trim}",
+      "@type": "Organization"
+      <#if fund.funderName?has_content>,"name": "${fund.funderName}"</#if>
+      }
+    </#if>
+    <#sep>,
   </#list>
 </#macro>
 
