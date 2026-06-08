@@ -1,18 +1,10 @@
 <#--noinspection HtmlUnknownTarget-->
-<#setting url_escaping_charset='ISO-8859-1'>
-<#setting date_format = 'yyyy-MM-dd'>
-
 <#assign defaultScripts>
   <script src="/static/scripts/main.js"></script>
 </#assign>
 
-<#assign catalogueid="">
-
-<#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts footer=false>
-  <#assign catalogueid="">
-  <#if catalogue?has_content>
-    <#assign catalogueid=catalogue.id>
-  </#if>
+<#macro master title catalogue="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts footer=false headContent="">
+  <#assign catalogueid=catalogue?has_content?then(catalogue.id, "")>
 
   <#compress>
   <!DOCTYPE html>
@@ -46,13 +38,8 @@
       <#if canonical?has_content>
         <link rel="canonical" href="${canonical}"/>
       </#if>
-      <#if rdf?has_content>
-        <link rel="alternate" type="text/turtle" href="${rdf}"/>
-      </#if>
-      <#if schemaorg?has_content>
-        <link rel="alternate" type="application/vnd.schemaorg.ld+json" href="${schemaorg}"/>
-      </#if>
       <link rel="describedby" type="text/turtle" href="/.well-known/void"/>
+      ${headContent}
     </head>
     <body data-edit-restricted="${can_edit_restricted?then('','disabled')}">
       <div id="header-sentinel" aria-hidden="true"></div>
