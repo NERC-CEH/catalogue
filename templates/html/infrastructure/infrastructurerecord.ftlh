@@ -46,7 +46,6 @@
         <#if locationText??><@displaykey "Location"><@b.linebreaksAndLinks locationText/></@displaykey></#if>
         <#if userCosts??><@displaykey "User costs"><@b.linebreaksAndLinks userCosts/></@displaykey></#if>
         <#if fundingSources??><@displaykey "Funding sources"><@b.linebreaksAndLinks fundingSources/></@displaykey></#if>
-        <#if userCosts??><@displaykey "User costs"><@b.linebreaksAndLinks userCosts/></@displaykey></#if>
 
         <#if users?? >
             <@displaykey "Users">
@@ -85,7 +84,7 @@
           </#if>
 
           <#if geometry?? >
-            <@displaykey "Location">
+            <@displaykey "Map">
               <div id="studyarea-map" class="studyarea-map">
                 <span content="${geometry.geometryString}" dataType="geoJson"/>
               </div>

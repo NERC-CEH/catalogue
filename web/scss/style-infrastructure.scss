@@ -7,21 +7,8 @@
 
     .key {
         font-size: 1rem;
-        font-weight: 600;
         margin-block-start: 3.5rem;
     }
-
-     img.browseGraphic {
-                @extend .mb-3;
-                @extend .float-md-end;
-                @extend .col-md-6;
-                @extend .ms-md-5;
-                mix-blend-mode: multiply;
-                width: auto;
-                height: auto;
-                max-width: min(100%, 550px);
-                max-height: 350px;
-            }
 
     .fa-spin-2x {
         -webkit-animation: fa-spin 1s infinite linear;
