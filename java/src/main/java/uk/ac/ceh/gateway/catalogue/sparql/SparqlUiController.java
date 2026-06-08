@@ -18,8 +18,8 @@ public class SparqlUiController {
 
     private final String sparqlEndpoint;
 
-    public SparqlUiController(@Value("${fuseki.url}") String hostname) {
-        this.sparqlEndpoint = hostname + "/ds/sparql";
+    public SparqlUiController(@Value("${fuseki.sparqlEndpoint}") String sparqlEndpoint) {
+        this.sparqlEndpoint = sparqlEndpoint;
         log.info("Creating");
     }
 

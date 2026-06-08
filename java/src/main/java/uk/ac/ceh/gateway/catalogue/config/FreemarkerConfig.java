@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
@@ -35,6 +37,7 @@ public class FreemarkerConfig {
     @Nullable private final ServiceAgreementQualityService serviceAgreementQualityService;
     @Nullable private final MetricsService metricsService;
     @Value("${access-button.collection.link}") private String collectionAccessButtonLink;
+    @Value("#{'${fuseki.catalogueIds:}'.split(',')}") private List<String> fusekiCatalogueIds;
 
     @SneakyThrows
     @PostConstruct
@@ -53,6 +56,8 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("downloadUrlRegexes", downloadUrlProperties);
         freemarkerConfiguration.setSharedVariable("fileListService", fileListService);
         freemarkerConfiguration.setSharedVariable("collectionAccessButtonLink", collectionAccessButtonLink);
+        freemarkerConfiguration.setSharedVariable("voidCatalogueIds",
+            fusekiCatalogueIds.stream().filter(s -> !s.isBlank()).collect(Collectors.toList()));
 
         if (serviceAgreementQualityService != null) {
             freemarkerConfiguration.setSharedVariable("serviceAgreementQuality", serviceAgreementQualityService);

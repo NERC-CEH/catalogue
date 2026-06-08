@@ -55,7 +55,7 @@ public class FusekiExportService implements CatalogueExportService {
         @Qualifier("normal") RestTemplate restTemplate,
         @Value("${documents.baseUri}") String baseUri,
         @Value("#{'${fuseki.catalogueIds}'.split(',')}") List<String> catalogueIds,
-        @Value("${fuseki.url}/ds") String fusekiUrl,
+        @Value("${fuseki.datasetUrl}") String fusekiUrl,
         @Value("${fuseki.username}") String fusekiUsername,
         @Value("${fuseki.password}") String fusekiPassword,
         VoidStatsService voidStatsService,
@@ -89,6 +89,9 @@ public class FusekiExportService implements CatalogueExportService {
         }
         post(String.join("\n", catalogueTtls.values()));
         log.info("Posted public metadata documents as ttl to {}", fusekiUrl);
+        catalogueIds.stream()
+            .filter(id -> !catalogueTtls.containsKey(id))
+            .forEach(voidStatsService::remove);
         catalogueTtls.forEach((id, ttl) -> {
             TurtleStats ts = parseTurtleStats(ttl);
             voidStatsService.update(id, new VoidStats(
@@ -115,7 +118,7 @@ public class FusekiExportService implements CatalogueExportService {
                 stmt -> stmt.getObject().asResource().getURI(),
                 Collectors.counting()
             ));
-        return new TurtleStats(model.size(), classEntityCounts);
+        return new TurtleStats(model.size(), Map.copyOf(classEntityCounts));
     }
 
     private void post(String data) {

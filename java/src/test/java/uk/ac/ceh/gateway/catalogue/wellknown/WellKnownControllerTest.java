@@ -13,6 +13,7 @@ import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
+import uk.ac.ceh.gateway.catalogue.services.FusekiExportService;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 
@@ -25,13 +26,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockCatalogueUser
-@ActiveProfiles({"test", "server-eidc", "search-basic"})
+@ActiveProfiles({"test", "server-eidc", "search-basic", "exports"})
 @DisplayName("WellKnownController")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties = "fuseki.catalogueIds=eidc")
 class WellKnownControllerTest extends AbstractMvcTest {
 
     @MockitoBean private CatalogueService catalogueService;
     @MockitoBean private ProfileService profileService;
+    @MockitoBean private FusekiExportService fusekiExportService;
     @Autowired private Configuration configuration;
     @Autowired private VoidStatsService voidStatsService;
 

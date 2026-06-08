@@ -35,4 +35,21 @@ class VoidStatsServiceTest {
 
         assertThat(service.get("ukeof")).isEmpty();
     }
+
+    @Test
+    @DisplayName("remove clears stats for a catalogue")
+    void removeClears() {
+        service.update("eidc", new VoidStats(42L, 1000L, Map.of()));
+        service.remove("eidc");
+
+        assertThat(service.get("eidc")).isEmpty();
+    }
+
+    @Test
+    @DisplayName("remove of unknown catalogue is a no-op")
+    void removeUnknownIsNoOp() {
+        service.remove("unknown");
+
+        assertThat(service.get("unknown")).isEmpty();
+    }
 }

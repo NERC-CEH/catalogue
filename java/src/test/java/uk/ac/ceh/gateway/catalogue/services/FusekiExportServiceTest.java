@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -39,7 +40,7 @@ public class FusekiExportServiceTest {
 
     private static final String BASE_URI = "http://catalogue.invalid/";
     private static final List<String> FUSEKI_CATALOGUE_IDS = List.of("eidc", "ukeof");
-    private static final String FUSEKI_URL = "http://fuseki.invalid/";
+    private static final String FUSEKI_DATASET_URL = "http://fuseki.invalid/";
     private static final String FUSEKI_USERNAME = "username";
     private static final String FUSEKI_PASSWORD = "password";
 
@@ -58,7 +59,7 @@ public class FusekiExportServiceTest {
             restTemplate,
             BASE_URI,
             FUSEKI_CATALOGUE_IDS,
-            FUSEKI_URL,
+            FUSEKI_DATASET_URL,
             FUSEKI_USERNAME,
             FUSEKI_PASSWORD,
             voidStatsService,
@@ -76,7 +77,7 @@ public class FusekiExportServiceTest {
             .willReturn(List.of());
 
         mockServer
-            .expect(requestTo(equalTo(FUSEKI_URL + "?graph=" + BASE_URI)))
+            .expect(requestTo(equalTo(FUSEKI_DATASET_URL + "?graph=" + BASE_URI)))
             .andExpect(method(HttpMethod.PUT))
             .andExpect(header(HttpHeaders.CONTENT_TYPE, "text/turtle;charset=UTF-8"))
             .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
@@ -109,9 +110,11 @@ public class FusekiExportServiceTest {
     }
 
     private static final String EIDC_TTL =
-        "<http://example.org/d1> a <http://www.w3.org/ns/dcat#Dataset> .\n" +
-        "<http://example.org/d2> a <http://www.w3.org/ns/dcat#Dataset> .\n" +
-        "<http://example.org/p1> a <http://xmlns.com/foaf/0.1/Person> .\n";
+        """
+            <http://example.org/d1> a <http://www.w3.org/ns/dcat#Dataset> .
+            <http://example.org/d2> a <http://www.w3.org/ns/dcat#Dataset> .
+            <http://example.org/p1> a <http://xmlns.com/foaf/0.1/Person> .
+            """;
 
     private static final String UKEOF_TTL =
         "<http://example.org/f1> a <https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringFacility> .\n";
@@ -128,7 +131,7 @@ public class FusekiExportServiceTest {
             .willReturn(List.of("x", "y"));
 
         mockServer
-            .expect(requestTo(equalTo(FUSEKI_URL + "?graph=" + BASE_URI)))
+            .expect(requestTo(equalTo(FUSEKI_DATASET_URL + "?graph=" + BASE_URI)))
             .andExpect(method(HttpMethod.PUT))
             .andRespond(withSuccess());
 
@@ -156,5 +159,29 @@ public class FusekiExportServiceTest {
                     "https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringFacility", 1L
                 );
             });
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("export clears stale VoID stats when catalogue has no TTL")
+    void exportClearsStaleVoidStats() {
+        // given — ukeof previously had stats but now has no documents
+        voidStatsService.update("ukeof", new VoidStats(5L, 10L, Map.of()));
+        given(documentsToTurtleService.getBigTtl("eidc")).willReturn(Optional.of(EIDC_TTL));
+        given(documentsToTurtleService.getBigTtl("ukeof")).willReturn(Optional.empty());
+        given(metadataListingService.getPublicDocumentsOfCatalogue("eidc"))
+            .willReturn(List.of("a", "b", "c"));
+
+        mockServer
+            .expect(requestTo(equalTo(FUSEKI_DATASET_URL + "?graph=" + BASE_URI)))
+            .andExpect(method(HttpMethod.PUT))
+            .andRespond(withSuccess());
+
+        // when
+        service.runExport();
+
+        // then — eidc stats updated, ukeof stats cleared
+        assertThat(voidStatsService.get("eidc")).isPresent();
+        assertThat(voidStatsService.get("ukeof")).isEmpty();
     }
 }

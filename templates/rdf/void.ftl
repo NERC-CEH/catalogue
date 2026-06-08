@@ -17,10 +17,10 @@
 
 <${baseUri}/${cat.id}/documents>
     a void:Dataset ;
-    dcterms:title "${cat.title}"@en ;
+    dcterms:title "${cat.title?replace('\\', '\\\\')?replace('"', '\\"')}"@en ;
     dcterms:subject <http://dbpedia.org/resource/Environmental_science> ;
     foaf:homepage <${baseUri}/${cat.id}/documents> ;
-    void:sparqlEndpoint <${sparqlUrl}/ds/sparql> ;
+    void:sparqlEndpoint <${sparqlUrl}> ;
     void:dataDump <${baseUri}/${cat.id}/catalogue.ttl> ;
     void:vocabulary <http://www.w3.org/ns/dcat#> ;
     void:vocabulary <http://purl.org/dc/terms/> ;
