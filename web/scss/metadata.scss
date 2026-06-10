@@ -78,8 +78,8 @@ body {
                 mix-blend-mode: multiply;
                 width: auto;
                 height: auto;
-                max-width: min(100%, 350px);
-                max-height: 250px;
+                max-width: min(100%, 550px);
+                max-height: 350px;
             }
         }
 
@@ -426,8 +426,11 @@ body {
     }
 
     h2 {
-        margin-block-start: 2.5em;
-        border-block-end: 1px solid $gray-light;
+        color: #111;
+        font-weight: 600;
+        font-size: 1.4rem;
+        margin-block-start: 4em;
+        border-block-end: 1px solid #AAA;
         padding-block-end: 6px;
     }
 
@@ -930,12 +933,6 @@ body {
             color: #666;
         }
     }
-
-    h2 {
-        clear: both;
-        padding-block-start: 2em;
-    }
-
 
     a {
         &.availability-inactive {
