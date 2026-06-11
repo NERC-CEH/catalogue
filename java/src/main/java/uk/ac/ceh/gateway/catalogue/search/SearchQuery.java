@@ -39,6 +39,19 @@ public class SearchQuery {
         "resourceStatus", "availability"
     );
 
+    // eidc uses recordType with its own display labels; map the ISO resourceType display values
+    // to their recordType equivalents so old external URLs keep working.
+    private static final Map<String, String> EIDC_RESOURCE_TYPE_TO_RECORD_TYPE_VALUES = Map.ofEntries(
+        Map.entry("Aggregation",            "Data collection"),
+        Map.entry("Non-geographic dataset", "Dataset"),
+        Map.entry("Case Study",             "Case study"),
+        Map.entry("DataResource",           "Data resource"),
+        Map.entry("Model code",             "Model"),
+        Map.entry("Series",                 "Data series"),
+        Map.entry("Service",                "Map (web service)"),
+        Map.entry("Sample Archive",         "Sample archive")
+    );
+
     String endpoint;
     CatalogueUser user;
     @NotNull String term;
@@ -75,7 +88,7 @@ public class SearchQuery {
         this.spatialOperation = spatialOperation;
         this.page = page;
         this.rows = rows;
-        this.facetFilters = new ArrayList<>(normalizeFacetFilters(facetFilters));
+        this.facetFilters = new ArrayList<>(normalizeFacetFilters(facetFilters, catalogue.getId()));
         this.groupStore = groupStore;
         this.facets = facets;
         this.catalogue = catalogue;
@@ -453,12 +466,16 @@ public class SearchQuery {
         return calendar.get(Calendar.DAY_OF_YEAR);
     }
 
-    private static List<FacetFilter> normalizeFacetFilters(List<FacetFilter> initialFilters) {
+    private static List<FacetFilter> normalizeFacetFilters(List<FacetFilter> initialFilters, String catalogueId) {
         Map<String, Set<String>> valuesByField = new LinkedHashMap<>();
         for (FacetFilter f : initialFilters) {
             if (f == null || f.getField() == null || f.getValue() == null) continue;
 
             String field = LEGACY_FIELD_NAMES.getOrDefault(f.getField(), f.getField());
+            boolean translateEidcResourceType = "eidc".equals(catalogueId) && "resourceType".equals(f.getField());
+            if (translateEidcResourceType) {
+                field = "recordType";
+            }
             valuesByField.computeIfAbsent(field, k -> new LinkedHashSet<>());
 
             String v = f.getValue().trim();
@@ -466,10 +483,16 @@ public class SearchQuery {
                 String inner = v.substring(1, v.length() - 1);
                 for (String part : inner.split("\\s+OR\\s+")) {
                     String p = part.trim();
-                    if (!p.isEmpty()) valuesByField.get(field).add(p);
+                    if (!p.isEmpty()) {
+                        valuesByField.get(field).add(translateEidcResourceType
+                            ? EIDC_RESOURCE_TYPE_TO_RECORD_TYPE_VALUES.getOrDefault(p, p)
+                            : p);
+                    }
                 }
             } else {
-                valuesByField.get(field).add(v);
+                valuesByField.get(field).add(translateEidcResourceType
+                    ? EIDC_RESOURCE_TYPE_TO_RECORD_TYPE_VALUES.getOrDefault(v, v)
+                    : v);
             }
         }
 
