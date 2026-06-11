@@ -4,15 +4,11 @@ include:
 variables:
   DOCKER_DAEMON_ARGS: -g /cache/docker
   DOCKER_DRIVER: overlay2
-  DEPLOYMENT_SCRIPT: https://gitlab.ceh.ac.uk/scripts/deployment/raw/master/puppet-deploy.sh
-  NODE_KEY: catalogue_version
-  NODE_VALUE: $CI_COMMIT_REF_NAME
 
 stages:
   - test
   - scan
   - build
-  - deploy
 
 default:
   before_script:
@@ -103,17 +99,3 @@ build_solr:
   script:
     - docker build -t $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME solr
     - docker push $CI_REGISTRY_IMAGE/solr --all-tags
-
-deploy_production:
-  image: ruby:2
-  stage: deploy
-  variables:
-    SERVER: cig-prod.nerc-lancaster.ac.uk
-  environment:
-    name: production
-    url:  https://catalogue.ceh.ac.uk/eidc/documents
-  script:
-    - curl $DEPLOYMENT_SCRIPT | bash
-  only:
-    - tags
-  when: manual
