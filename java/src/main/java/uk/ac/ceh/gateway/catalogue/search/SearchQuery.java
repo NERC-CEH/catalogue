@@ -34,6 +34,11 @@ public class SearchQuery {
         "infrastructureCapabilities"
     );
 
+    // Legacy field names that were renamed; translate silently so old bookmarked URLs keep working.
+    private static final Map<String, String> LEGACY_FIELD_NAMES = Map.of(
+        "resourceStatus", "availability"
+    );
+
     String endpoint;
     CatalogueUser user;
     @NotNull String term;
@@ -453,17 +458,18 @@ public class SearchQuery {
         for (FacetFilter f : initialFilters) {
             if (f == null || f.getField() == null || f.getValue() == null) continue;
 
-            valuesByField.computeIfAbsent(f.getField(), k -> new LinkedHashSet<>());
+            String field = LEGACY_FIELD_NAMES.getOrDefault(f.getField(), f.getField());
+            valuesByField.computeIfAbsent(field, k -> new LinkedHashSet<>());
 
             String v = f.getValue().trim();
             if (v.startsWith("(") && v.endsWith(")")) {
                 String inner = v.substring(1, v.length() - 1);
                 for (String part : inner.split("\\s+OR\\s+")) {
                     String p = part.trim();
-                    if (!p.isEmpty()) valuesByField.get(f.getField()).add(p);
+                    if (!p.isEmpty()) valuesByField.get(field).add(p);
                 }
             } else {
-                valuesByField.get(f.getField()).add(v);
+                valuesByField.get(field).add(v);
             }
         }
 

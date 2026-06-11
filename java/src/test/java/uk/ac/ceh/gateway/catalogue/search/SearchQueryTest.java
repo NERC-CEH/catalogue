@@ -903,7 +903,31 @@ public class SearchQueryTest {
 
     @Test
     public void unknownFacetFilterFieldThrowsInvalidFacetException() {
-        // Given - resourceStatus was a real field that was renamed to availability
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            List.of(new FacetFilter("unknownLegacyField", "foo")),
+            groupStore,
+            buildCatalogue("eidc"),
+            DEFAULT_FACETS,
+            null,
+            null
+        );
+
+        // When / Then
+        InvalidFacetException ex = assertThrows(InvalidFacetException.class, query::build);
+        assertThat(ex.getMessage(), containsString("unknownLegacyField"));
+    }
+
+    @Test
+    public void legacyResourceStatusFieldIsMappedToAvailability() {
+        // resourceStatus was renamed to availability; old bookmarked URLs should still work
+        List<Facet> facetsWithStatus = FACET_FACTORY.newInstances(List.of("status", "topic"));
         SearchQuery query = new SearchQuery(
             ENDPOINT,
             CatalogueUser.PUBLIC_USER,
@@ -914,21 +938,20 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             List.of(new FacetFilter("resourceStatus", "Available")),
             groupStore,
-            Catalogue.builder()
-                .id("eidc")
-                .title("Environmental Information Data Centre")
-                .url("https://eidc-catalogue.ceh.ac.uk")
-                .contactUrl("")
-                .logo("")
-                .build(),
-            DEFAULT_FACETS,
+            buildCatalogue("eidc"),
+            facetsWithStatus,
             null,
             null
         );
 
-        // When / Then
-        InvalidFacetException ex = assertThrows(InvalidFacetException.class, query::build);
-        assertThat(ex.getMessage(), containsString("resourceStatus"));
+        // When - should not throw, resourceStatus is silently translated to availability
+        SolrQuery solrQuery = query.build();
+
+        // Then
+        assertThat(
+            Arrays.asList(solrQuery.getFilterQueries()),
+            hasItem(containsString("availability:\"Available\""))
+        );
     }
 
     @Test
