@@ -38,6 +38,9 @@
       <#if canonical?has_content>
         <link rel="canonical" href="${canonical}"/>
       </#if>
+      <#if voidCatalogueIds?? && voidCatalogueIds?seq_contains(catalogueid)>
+      <link rel="describedby" type="text/turtle" href="/.well-known/void"/>
+      </#if>
       ${headContent}
     </head>
     <body data-edit-restricted="${can_edit_restricted?then('','disabled')}">
