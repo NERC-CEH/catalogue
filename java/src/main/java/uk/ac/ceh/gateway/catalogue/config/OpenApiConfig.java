@@ -29,4 +29,15 @@ public class OpenApiConfig {
     public OpenApiCustomizer serverCustomizer() {
         return openApi -> openApi.servers(List.of(new Server().url(baseUri)));
     }
+
+    @Bean
+    public OpenApiCustomizer remove403Responses() {
+        return openApi -> openApi.getPaths().values().forEach(pathItem ->
+            pathItem.readOperations().forEach(op -> {
+                if (op.getResponses() != null) {
+                    op.getResponses().remove("403");
+                }
+            })
+        );
+    }
 }
