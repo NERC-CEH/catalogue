@@ -79,7 +79,6 @@ services:
       - datastore:/var/ceh-catalogue/datastore
       - gradle-cache:/home/gradle/.gradle
     environment:
-      DATA_REPOSITORY_LOCATION: /var/ceh-catalogue/datastore
       DOCUMENTS_BASEURI: http://localhost:8080
       DOI_API: https://api.test.datacite.org/dois
       GEMET_LOCAL: /app/fixtures/vocabs/gemet.json
@@ -90,7 +89,6 @@ services:
       JIRA_SERVICEAGREEMENT_PREFIX: "CT-"
       JIRA_DEPOSITREQUEST_PROJECT: CT
       LOGGING_LEVEL_ROOT: info
-      MANAGEMENT_SERVER_PORT: "8091"
       MAPS_LOCATION: /app/mapfiles
       METRICS_DATABASE_URL: jdbc:sqlite:/app/metrics-db/metrics.db
       SERVER_PORT: "8090"
