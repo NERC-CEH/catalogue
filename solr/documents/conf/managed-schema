@@ -101,6 +101,7 @@
     <field name="authorRor" type="rors"/>
     <field name="availability" type="keywords" multiValued="false"/>
     <field name="catalogue" type="keywords" multiValued="false"/>
+    <field name="catalogue_view" type="keywords" multiValued="true"/>
     <field name="dataFormat" type="keywords"/>
     <field name="dataLevel" type="keywords" multiValued="false"/>
     <field name="description" type="text_general" multiValued="false"/>

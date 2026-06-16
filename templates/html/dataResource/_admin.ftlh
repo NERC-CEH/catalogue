@@ -97,6 +97,9 @@
         <span class="catalogue-control">
           <@menuLink "/documents/${id}/catalogue" "fa-solid fa-right-from-bracket">Move to a different catalogue</@menuLink>
         </span>
+        <span class="catalogue-view-control">
+          <@menuLink "/documents/${id}/catalogue-view" "fa-solid fa-eye">Manage secondary catalogues</@menuLink>
+        </span>
       </ul>
     </#if>
   </div>

@@ -218,6 +218,63 @@ public class MetadataInfoTest {
         assertThat("Should not be public unless the state is published", isPublic, is(false));
     }
 
+        @Test
+    public void catalogueViewDefaultsToEmptyList() {
+        //Given / When
+        MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
+
+        //Then
+        assertThat("catalogueView should default to empty list", info.getCatalogueView(), equalTo(Collections.EMPTY_LIST));
+    }
+
+    @Test
+    public void withCatalogueViewRetainsOtherFields() {
+        //Given
+        MetadataInfo original = MetadataInfo.builder()
+            .catalogue("eidc")
+            .state("published")
+            .build();
+
+        //When
+        MetadataInfo updated = original.withCatalogueView(List.of("ukceh", "assist"));
+
+        //Then
+        assertThat("catalogue preserved", updated.getCatalogue(), equalTo("eidc"));
+        assertThat("state preserved", updated.getState(), equalTo("published"));
+        assertThat("catalogueView set", updated.getCatalogueView(), equalTo(List.of("ukceh", "assist")));
+    }
+
+    @Test
+    public void withCataloguePreservesCatalogueView() {
+        //Given
+        MetadataInfo original = MetadataInfo.builder()
+            .catalogue("eidc")
+            .catalogueView(List.of("ukceh"))
+            .build();
+
+        //When
+        MetadataInfo updated = original.withCatalogue("assist");
+
+        //Then
+        assertThat("catalogueView preserved through withCatalogue", updated.getCatalogueView(), equalTo(List.of("ukceh")));
+    }
+
+    @Test
+    public void withPermissionsPreservesCatalogueView() {
+        //Given
+        MetadataInfo original = MetadataInfo.builder()
+            .catalogue("eidc")
+            .catalogueView(List.of("ukceh"))
+            .build();
+        original.addPermission(Permission.VIEW, "public");
+
+        //When
+        MetadataInfo updated = original.withPermissions(original.getPermissions());
+
+        //Then
+        assertThat("catalogueView preserved through withPermissions", updated.getCatalogueView(), equalTo(List.of("ukceh")));
+    }
+
     private List<Group> createGroups(String... groupNames) {
         List<Group> toReturn = new ArrayList<>();
         for (String groupName : groupNames) {

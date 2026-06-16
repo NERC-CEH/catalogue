@@ -441,8 +441,9 @@ public class SearchQuery {
 
     private void setCatalogueFilter(SolrQuery query) {
         if (!CatalogueService.ALL_CATALOGUES_ID.equals(catalogue.getId())) {
+            String id = catalogue.getId();
             query.addFilterQuery(
-                String.format("{!term f=catalogue}%s", catalogue.getId())
+                String.format("(catalogue:%s OR catalogue_view:%s)", id, id)
             );
         }
     }
