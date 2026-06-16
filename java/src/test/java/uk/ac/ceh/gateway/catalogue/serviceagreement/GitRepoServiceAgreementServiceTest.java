@@ -10,10 +10,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientResponseException;
 import uk.ac.ceh.components.datastore.*;
+import uk.ac.ceh.gateway.catalogue.config.ServiceAgreementPublicationConfig;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
@@ -135,6 +137,36 @@ public class GitRepoServiceAgreementServiceTest {
         verify(service, times(2)).get(user,ID);
         verify(service, times(2)).updateMetadata(eq(user),eq(ID), any());
         verify(serviceAgreement).getDepositReference();
+    }
+
+    @Test
+    @SneakyThrows
+    public void returnToDraftStoresDepositorIdentityInLowerCase() {
+        // Given a depositor whose contact email contains upper-case characters. The access check
+        // (MetadataInfo.canAccess) always looks the identity up in lower case, so if it is stored
+        // mixed-case the depositor is locked out of editing once returned to draft - which is the
+        // bug this reproduces.
+        service = spy(service);
+        serviceAgreement.setDepositorContactDetails("A.Test@email.com");
+        val metadata = MetadataInfo.builder()
+            .state("submitted")
+            .rawType(APPLICATION_JSON_VALUE)
+            .build();
+        serviceAgreement.setMetadata(metadata);
+
+        doReturn(serviceAgreement).when(service).get(user, ID);
+        doNothing().when(service).updateMetadata(any(), anyString(), any());
+
+        //When the service agreement is sent back to draft (submitted -> draft)
+        service.doTransitionAction(user, ID, ServiceAgreementPublicationConfig.submittedToDraftId);
+
+        //Then the depositor is granted EDIT/VIEW under the lower-cased identity, not the mixed-case email
+        val captor = ArgumentCaptor.forClass(MetadataInfo.class);
+        verify(service).updateMetadata(eq(user), eq(ID), captor.capture());
+        val stored = captor.getValue().getPermissions();
+        assertThat(stored.containsEntry(Permission.EDIT, "a.test@email.com"), is(true));
+        assertThat(stored.containsEntry(Permission.VIEW, "a.test@email.com"), is(true));
+        assertThat(stored.containsEntry(Permission.EDIT, "A.Test@email.com"), is(false));
     }
 
     @Test
@@ -359,6 +391,9 @@ public class GitRepoServiceAgreementServiceTest {
 
         givenPendingPublicationServiceAgreement();
 
+        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
+        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
+
         //When
         service.publishServiceAgreement(user, ID);
 
@@ -393,6 +428,9 @@ public class GitRepoServiceAgreementServiceTest {
 
         RestClientResponseException restClientResponseException = mock(RestClientResponseException.class);
         doThrow(restClientResponseException).when(jiraService).comment(any(), any());
+
+        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
+        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
 
         //when
         assertThrows(ServiceAgreementException.class, () ->
