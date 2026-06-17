@@ -25,6 +25,7 @@ RUN java -Djarmode=tools -jar app.jar extract --layers --launcher
 # Create production image
 FROM eclipse-temurin:25.0.3_9-jdk-alpine-3.23 AS prod
 LABEL maintainer="oss@ceh.ac.uk"
+ARG BUILD_DATE=unknown
 RUN apk --no-cache upgrade
 RUN addgroup -g 1001 -S spring && adduser -u 1001 -S spring -G spring
 RUN mkdir -p  \
