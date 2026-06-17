@@ -1,9 +1,9 @@
 const { execFileSync } = require('child_process')
-const chromePath = require('puppeteer').executablePath()
-// puppeteer 22 returns a string; puppeteer 25+ returns a Promise
-process.env.CHROME_BIN = typeof chromePath === 'string'
-  ? chromePath
-  : execFileSync(process.execPath, ['-e', "require('puppeteer').executablePath().then(p => process.stdout.write(p))"], { cwd: __dirname }).toString().trim()
+process.env.CHROME_BIN = execFileSync(
+  process.execPath,
+  ['-e', "require('puppeteer').executablePath().then(p => process.stdout.write(p))"],
+  { cwd: __dirname }
+).toString().trim()
 
 module.exports = function (config) {
   config.set({
