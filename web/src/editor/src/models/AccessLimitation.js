@@ -49,7 +49,7 @@ export default Backbone.Model.extend({
   descriptions: {
     noLimitations: 'Access to the resource is not subject to any access limitations and is available to all users without restriction.',
     registrationRequired: 'Access to the resource is limited to users who have created a user account or registered with the service providing access to the resource.',
-    controlled: 'Access to the resource is limited to users who have been authorised by the data custodian or data owner in accordance with applicable policies, agreements, or licensing conditions' ,
+    controlled: 'Access to the resource is limited to users who have been authorised by the data custodian or data owner in accordance with applicable policies, agreements, or licensing conditions',
     embargoed: 'Access to the resource is restricted until a specified date or the occurrence of a defined condition, after which access may be granted in accordance with applicable policies or licensing conditions',
     deleted: 'The resource has been permanently removed and is no longer available. The metadata record is retained as a tombstone or historical record.',
     superseded: 'Access to the resource is limited to users who have been authorised by the data custodian or data owner in accordance with applicable policies, agreements, or licensing conditions',
