@@ -95,10 +95,9 @@
                         </gmd:MD_RestrictionCode>
                     </gmd:accessConstraints>
                     <gmd:otherConstraints>
-                        <gmx:Anchor
-                                xlink:href="https://vocab.nerc.ac.uk/collection/N07/current/UNRS/">
+                        <gmx:Anchor xlink:href="https://vocab.nerc.ac.uk/collection/N07/current/UNRS/">
                             no limitations
-                        </gmx:Anchor>https://vocab.nerc.ac.uk/collection/N07/current/UNRS/
+                        </gmx:Anchor>
                     </gmd:otherConstraints>
                 </gmd:MD_LegalConstraints>
             </gmd:resourceConstraints>
