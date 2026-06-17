@@ -16,7 +16,7 @@ default:
 
 test_java:
   stage: test
-  image: gradle:9.4.1-jdk25-alpine
+  image: gradle:9.5.1-jdk25-alpine
   except:
     - tags
   script: gradle test --no-daemon
@@ -43,14 +43,14 @@ test_web:
 
 test_application:
   stage: test
-  image: docker:20.10.5
+  image: docker:27
   except:
     - tags
   before_script:
     - set -euo pipefail
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   services:
-    - name: docker:20.10.5-dind
+    - name: docker:27-dind
       alias: docker
   script:
     - docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
@@ -81,9 +81,9 @@ container_scanning:
 
 build_application:
   stage: build
-  image: docker:20.10.5
+  image: docker:27
   services:
-    - name: docker:20.10.5-dind
+    - name: docker:27-dind
       alias: docker
   before_script:
     - set -euo pipefail

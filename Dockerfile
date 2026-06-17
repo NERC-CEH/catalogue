@@ -1,6 +1,7 @@
 # Build webpack (javascript & css)
 FROM node:22-alpine AS build-web
 WORKDIR /web
+RUN apk --no-cache upgrade
 COPY web/package.json web/package-lock.json web/webpack.js web/gulpfile.js ./
 RUN --mount=type=cache,target=/web/.npm npm ci --cache /web/.npm --no-audit
 COPY web/img ./img
@@ -10,8 +11,9 @@ RUN npm run build-css
 RUN npm run build-prod
 
 # Build Java
-FROM gradle:9.4.1-jdk25-alpine AS build-java
+FROM gradle:9.5.1-jdk25-alpine AS build-java
 WORKDIR /app
+RUN apk --no-cache upgrade
 COPY --chown=gradle:gradle java/lombok.config .
 COPY --chown=gradle:gradle java/build.gradle .
 COPY --chown=gradle:gradle gradle/libs.versions.toml gradle/
@@ -21,8 +23,9 @@ WORKDIR build/libs
 RUN java -Djarmode=tools -jar app.jar extract --layers --launcher
 
 # Create production image
-FROM eclipse-temurin:25-alpine AS prod
+FROM eclipse-temurin:25.0.3_9-jdk-alpine-3.23 AS prod
 LABEL maintainer="oss@ceh.ac.uk"
+RUN apk --no-cache upgrade
 RUN addgroup -g 1001 -S spring && adduser -u 1001 -S spring -G spring
 RUN mkdir -p  \
     /var/ceh-catalogue/datastore \
@@ -71,8 +74,9 @@ COPY --chown=spring:spring --from=datastore /datastore /var/ceh-catalogue/datast
 RUN apk --no-cache add git vim
 
 # Development run image — mounts full project tree as a volume at /app
-FROM gradle:9.4.1-jdk25-alpine AS dev-run
+FROM gradle:9.5.1-jdk25-alpine AS dev-run
 USER root
+RUN apk --no-cache upgrade
 COPY --from=datastore /datastore /var/ceh-catalogue/datastore
 RUN chown -R gradle:gradle /var/ceh-catalogue/datastore
 COPY docker/entrypoint-dev.sh /usr/local/bin/entrypoint-dev.sh
