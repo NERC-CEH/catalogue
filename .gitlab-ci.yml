@@ -27,15 +27,14 @@ test_java:
 
 test_web:
   stage: test
-  image: node:24
+  image: node:24-alpine
   except:
     - tags
+  variables:
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
   script:
-    - apt-get update && apt-get install -y --no-install-recommends
-        libnss3 libgbm1 libdbus-1-3 libatk1.0-0 libxss1 libxrandr2
-        libasound2 libnspr4 libx11-xcb1 libxi6 libxcomposite1 libxcursor1
-        libxdamage1 libxfixes3 libatk-bridge2.0-0 libgtk-3-0 libcups2
-        fonts-liberation xdg-utils lsb-release
+    - apk add --no-cache chromium
+    - export PUPPETEER_EXECUTABLE_PATH=$(which chromium-browser 2>/dev/null || which chromium)
     - cd web/
     - npm ci --no-audit
     - npm run standard
