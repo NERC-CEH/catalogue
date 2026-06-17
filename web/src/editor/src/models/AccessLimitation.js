@@ -8,12 +8,14 @@ export default Backbone.Model.extend({
   },
 
   uris: {
-    'Registration is required to access this data': 'http://purl.org/coar/access_right/c_16ec',
-    'no limitations to public access': 'http://purl.org/coar/access_right/c_abf2',
-    embargoed: 'http://purl.org/coar/access_right/c_f1cf',
-    superseded: 'http://purl.org/coar/access_right/c_14cb',
-    withdrawn: 'http://purl.org/coar/access_right/c_14cb',
-    deleted: 'http://purl.org/coar/access_right/c_14cb',
+    noLimitations: 'https://vocab.nerc.ac.uk/collection/N07/current/UNRS/',
+    registrationRequired: 'https://vocab.nerc.ac.uk/collection/N07/current/RACC/',
+    controlled: 'hhttps://vocab.nerc.ac.uk/collection/N07/current/RAUT/',
+    embargoed: 'https://vocab.nerc.ac.uk/collection/N07/current/EMBG/',
+    superseded: 'https://vocab.nerc.ac.uk/collection/N07/current/RAUT/',
+    withdrawn: 'https://vocab.nerc.ac.uk/collection/N07/current/RAUT/',
+    deleted: 'https://vocab.nerc.ac.uk/collection/N07/current/PUNA/',
+    'To access this data, a licence needs to be negotiated with the provider and there may be a cost': 'https://vocab.nerc.ac.uk/collection/N07/current/RAUT/',
     'public access limited according to Article 13(1)(a) of the INSPIRE Directive': 'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1a',
     'public access limited according to Article 13(1)(b) of the INSPIRE Directive': 'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1b',
     'public access limited according to Article 13(1)(c) of the INSPIRE Directive': 'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1c',
@@ -24,9 +26,10 @@ export default Backbone.Model.extend({
     'public access limited according to Article 13(1)(h) of the INSPIRE Directive': 'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1h'
   },
 
-  codes: {
-    'Registration is required to access this data': 'Available',
-    'no limitations to public access': 'Available',
+  availability: {
+    noLimitations: 'Available',
+    registrationRequired: 'Available',
+    controlled: 'Controlled',
     embargoed: 'Embargoed',
     superseded: 'Superseded',
     unknown: 'Unknown',
@@ -44,6 +47,14 @@ export default Backbone.Model.extend({
   },
 
   descriptions: {
+    noLimitations: 'Access to the resource is not subject to any access limitations and is available to all users without restriction.',
+    registrationRequired: 'Access to the resource is limited to users who have created a user account or registered with the service providing access to the resource.',
+    controlled: 'Access to the resource is limited to users who have been authorised by the data custodian or data owner in accordance with applicable policies, agreements, or licensing conditions' ,
+    embargoed: 'Access to the resource is restricted until a specified date or the occurrence of a defined condition, after which access may be granted in accordance with applicable policies or licensing conditions',
+    deleted: 'The resource has been permanently removed and is no longer available. The metadata record is retained as a tombstone or historical record.',
+    superseded: 'Access to the resource is limited to users who have been authorised by the data custodian or data owner in accordance with applicable policies, agreements, or licensing conditions',
+    withdrawn: 'Access to the resource is limited to users who have been authorised by the data custodian or data owner in accordance with applicable policies, agreements, or licensing conditions',
+    'To access this data, a licence needs to be negotiated with the provider and there may be a cost': 'Access to the resource is limited to users who have been authorised by the data custodian or data owner in accordance with applicable policies, agreements, or licensing conditions',
     'public access limited according to Article 13(1)(a) of the INSPIRE Directive': 'Access would adversely affect the confidentiality of the proceedings of public authorities, where such confidentiality is provided for by law.',
     'public access limited according to Article 13(1)(b) of the INSPIRE Directive': 'Access would adversely affect international relations, public security or national defence.',
     'public access limited according to Article 13(1)(c) of the INSPIRE Directive': 'Access would adversely affect the course of justice, the ability of any person to receive a fair trial or the ability of a public authority to conduct an enquiry of a criminal or disciplinary nature.',
@@ -60,7 +71,7 @@ export default Backbone.Model.extend({
 
   updateLimitation (model, value) {
     this.set('uri', this.uris[value] ? this.uris[value] : null)
-    this.set('code', this.codes[value] ? this.codes[value] : null)
+    this.set('availability', this.availability[value] ? this.availability[value] : null)
     this.set('description', this.descriptions[value] ? this.descriptions[value] : null)
   }
 })

@@ -181,7 +181,7 @@
                 }
             }
 
-            select {
+            select:not(#input-accessLimitation) {
                 @extend .form-select !optional;
                 @extend .form-select-sm !optional;
             }
@@ -242,8 +242,9 @@
 
             .dataentry:has(.ror) {
                 div:has(>.orgAutocomplete) {
-                     margin-block-end:-25px;
-                     &:after {
+                    margin-block-end: -25px;
+
+                    &:after {
                         font-family: var(--font-stack-icons);
                         font-weight: 900;
                         content: var(--hasrorcontent, "\f06a");
@@ -511,6 +512,40 @@
                         input {
                             margin-inline-end: 0.5em;
                         }
+                    }
+                }
+            }
+
+            #input-accessLimitation,
+            #input-accessLimitation::picker(select) {
+                appearance: base-select;
+                font-size: 0.8rem;
+                width: 100%;
+            }
+
+            #input-accessLimitation {
+                &::picker-icon {
+                    color: #999999;
+                    transition: 0.4s rotate;
+                }
+
+                border-color: #AAA;
+
+                span {
+                    display: block;
+                    color: #888;
+                    font-size: 0.7rem;
+                }
+
+                option {
+                    padding-left: 1.35em;
+
+                    &:checked {
+                        background-color: var(--ukceh-colour-data);
+                    }
+
+                    &::checkmark {
+                        margin-left: -0.7em;
                     }
                 }
             }
