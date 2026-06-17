@@ -185,7 +185,7 @@ public class RoCrateTest {
 
             // availability not Deleted
             gemini.setAccessLimitation(AccessLimitation.builder()
-                    .code("Available")
+                .availability("Available")
                 .build());
             gemini.setDescription("Description");
             gemini.setAlternateTitles(List.of("Alternate Title 1", "Alternate Title 2"));
