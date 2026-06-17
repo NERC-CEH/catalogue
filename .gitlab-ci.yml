@@ -27,7 +27,7 @@ test_java:
 
 test_web:
   stage: test
-  image: node:22
+  image: node:24
   except:
     - tags
   script:

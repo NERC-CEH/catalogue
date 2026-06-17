@@ -1,5 +1,5 @@
 # Build webpack (javascript & css)
-FROM node:22-alpine AS build-web
+FROM node:24-alpine AS build-web
 WORKDIR /web
 RUN apk --no-cache upgrade
 COPY web/package.json web/package-lock.json web/webpack.js web/gulpfile.js ./
