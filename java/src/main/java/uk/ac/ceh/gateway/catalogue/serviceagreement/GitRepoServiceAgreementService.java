@@ -179,14 +179,9 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             "Service Agreement {}: granting EDIT/VIEW to depositor identity '{}' (from contact details '{}')",
             id, identity, rawEmail
         );
-        val permissions = getMetadataPermissions(metadataInfo);
-        permissions.put(EDIT, identity);
-        permissions.put(VIEW, identity);
-        updateMetadata(user, id, metadataInfo.withPermissions(permissions));
-    }
-
-    private Multimap<Permission, String> getMetadataPermissions(MetadataInfo metadataInfo) {
-        return ArrayListMultimap.create(metadataInfo.getPermissions());
+        metadataInfo.addPermission(EDIT, identity);
+        metadataInfo.addPermission(VIEW, identity);
+        updateMetadata(user, id, metadataInfo);
     }
 
     private String normaliseIdentity(String rawEmail) {
@@ -198,16 +193,15 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
 
     private void removeEditPermissions(CatalogueUser user, String id, ServiceAgreement serviceAgreement) {
         val metadataInfo = serviceAgreement.getMetadata();
-        val permissions = getMetadataPermissions(metadataInfo);
         Optional.ofNullable(serviceAgreement.getDepositorContactDetails()).ifPresent(rawEmail -> {
             val identity = normaliseIdentity(rawEmail);
             log.info("Service Agreement {}: removing EDIT/UPLOAD from depositor identity '{}'", id, identity);
-            permissions.remove(EDIT, identity);
-            permissions.remove(UPLOAD, identity);
+            metadataInfo.removePermission(EDIT, identity);
+            metadataInfo.removePermission(UPLOAD, identity);
         });
-        permissions.remove(EDIT, user.getUsername().toLowerCase());
-        permissions.remove(UPLOAD, user.getUsername().toLowerCase());
-        updateMetadata(user, id, metadataInfo.withPermissions(permissions));
+        metadataInfo.removePermission(EDIT, user.getUsername().toLowerCase());
+        metadataInfo.removePermission(UPLOAD, user.getUsername().toLowerCase());
+        updateMetadata(user, id, metadataInfo);
     }
 
     private MetadataInfo createMetadataInfoWithDefaultPermissions(CatalogueUser user, String catalogue) {

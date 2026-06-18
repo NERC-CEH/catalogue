@@ -127,9 +127,6 @@ public class GitRepoServiceAgreementServiceTest {
         doReturn(metadata).when(serviceAgreement).getMetadata();
         doNothing().when(service).updateMetadata(any(), anyString(), any());
 
-        Multimap<Permission, String> mockPerms = ArrayListMultimap.create();
-        doReturn(mockPerms).when(metadata).getPermissions();
-
         //when
         service.doTransitionAction(user, ID, "r18oq");
         service.doTransitionAction(user, ID, "r05ty");
