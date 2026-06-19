@@ -92,16 +92,6 @@ public class MetadataInfo {
             .build();
     }
 
-    public MetadataInfo withPermissions(@NonNull Multimap<Permission, String> permissions) {
-        return MetadataInfo.builder()
-            .rawType(this.rawType)
-            .state(state)
-            .documentType(this.documentType)
-            .catalogue(this.catalogue)
-            .permissions(permissions)
-            .build();
-    }
-
     @JsonIgnore
     public MediaType getRawMediaType() {
         return MediaType.parseMediaType(rawType);
