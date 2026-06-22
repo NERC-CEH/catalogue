@@ -292,16 +292,16 @@ public class GitDocumentRepository implements DocumentRepository {
 
             String combined = codeSpace + ":" + code;
 
-            Optional<String> existing =
-                resourceIdentifierLookupService.findDocumentByRi(combined);
-
-            if (existing.isPresent() && !existing.get().equals(currentId)) {
-                throw new ResourceIdentifierExistsException(
-                    "A document with Resource Identifier \"" + combined +
-                        "\" already exists (id = " + existing.get() + "). " +
-                        "Resource identifiers must be unique."
-                );
-            }
+            resourceIdentifierLookupService.findDocumentIdsByRi(combined).stream()
+                .filter(ownerId -> !ownerId.equals(currentId))
+                .findFirst()
+                .ifPresent(ownerId -> {
+                    throw new ResourceIdentifierExistsException(
+                        "A document with Resource Identifier \"" + combined +
+                            "\" already exists (id = " + ownerId + "). " +
+                            "Resource identifiers must be unique."
+                    );
+                });
         }
     }
 
