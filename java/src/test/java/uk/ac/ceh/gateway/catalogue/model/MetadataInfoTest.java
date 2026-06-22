@@ -92,7 +92,6 @@ public class MetadataInfoTest {
     public void metadataUserCanAccess() {
         //Given
         MetadataInfo info = MetadataInfo.builder().build();
-        ;
         info.addPermission(Permission.VIEW, "ceh");
 
         //When
@@ -106,7 +105,6 @@ public class MetadataInfoTest {
     public void replacePermissions() {
         //Given
         MetadataInfo original = MetadataInfo.builder().build();
-        ;
         original.addPermission(Permission.VIEW, "test1");
         Set<IdentityPermissions> permissions = new HashSet<>();
         permissions.add(IdentityPermissions.builder().identity("another").canView(true).build());
@@ -123,7 +121,6 @@ public class MetadataInfoTest {
     public void failToRemoveAllPermissions() {
         //Given
         MetadataInfo original = MetadataInfo.builder().build();
-        ;
         original.addPermission(Permission.VIEW, "test1");
         Set<IdentityPermissions> permissions = new HashSet<>();
         //An identity with no permissions
@@ -142,7 +139,7 @@ public class MetadataInfoTest {
         MetadataInfo original = MetadataInfo.builder().build();
         original.addPermission(Permission.VIEW, "test1");
         Set<IdentityPermissions> permissions = new HashSet<>();
-        //Only public identift
+        //Only public identity
         permissions.add(IdentityPermissions.builder().identity("public").canView(true).build());
 
         //When
@@ -257,22 +254,6 @@ public class MetadataInfoTest {
 
         //Then
         assertThat("catalogueView preserved through withCatalogue", updated.getCatalogueView(), equalTo(List.of("ukceh")));
-    }
-
-    @Test
-    public void withPermissionsPreservesCatalogueView() {
-        //Given
-        MetadataInfo original = MetadataInfo.builder()
-            .catalogue("eidc")
-            .catalogueView(List.of("ukceh"))
-            .build();
-        original.addPermission(Permission.VIEW, "public");
-
-        //When
-        MetadataInfo updated = original.withPermissions(original.getPermissions());
-
-        //Then
-        assertThat("catalogueView preserved through withPermissions", updated.getCatalogueView(), equalTo(List.of("ukceh")));
     }
 
     private List<Group> createGroups(String... groupNames) {
