@@ -70,7 +70,7 @@ METADATA
 "wms_include_items" "all"
 END
 CONNECTIONTYPE OGR
-CONNECTION "/mapserver/data//datasource/path1"
+CONNECTION "/data//datasource/path1"
 DATA "Layer1"
 CLASSITEM "AttrID1"
 CLASS
@@ -106,7 +106,7 @@ METADATA
 "wms_include_items" "all"
 END
 CONNECTIONTYPE OGR
-CONNECTION "/mapserver/data//datasource/path2"
+CONNECTION "/data//datasource/path2"
 DATA "Layer2"
 PROCESSING "BANDS=AttrID1"
 PROCESSING "RESAMPLE=NEAREST"

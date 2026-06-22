@@ -102,28 +102,6 @@ public class MetadataInfo {
             .build();
     }
 
-    public MetadataInfo withPermissions(@NonNull Multimap<Permission, String> permissions) {
-        return MetadataInfo.builder()
-            .rawType(this.rawType)
-            .state(state)
-            .documentType(this.documentType)
-            .catalogue(this.catalogue)
-            .catalogueView(this.catalogueView)
-            .permissions(permissions)
-            .build();
-    }
-
-    public MetadataInfo withCatalogueView(List<String> catalogueView) {
-        return MetadataInfo.builder()
-            .rawType(this.rawType)
-            .state(this.state)
-            .documentType(this.documentType)
-            .catalogue(this.catalogue)
-            .catalogueView(catalogueView)
-            .permissions(this.permissions)
-            .build();
-    }
-
     @JsonIgnore
     public MediaType getRawMediaType() {
         return MediaType.parseMediaType(rawType);

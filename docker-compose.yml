@@ -124,7 +124,7 @@ services:
         - action: rebuild
           path: ./docker/entrypoint-dev.sh
   web:
-    image: node:22-alpine
+    image: node:24-alpine
     working_dir: /app/web
     volumes:
       - ./web:/app/web
