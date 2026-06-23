@@ -240,12 +240,11 @@ public class GeminiDocumentTest {
         ));
 
         // three authors
-        String role = "author";
-        document.setResponsibleParties(
+        document.setAuthors(
             Arrays.asList(
-                ResponsibleParty.builder().role(role).build(),
-                ResponsibleParty.builder().role(role).build(),
-                ResponsibleParty.builder().role(role).build()
+                ResponsibleParty.builder().build(),
+                ResponsibleParty.builder().build(),
+                ResponsibleParty.builder().build()
             )
         );
 
@@ -255,7 +254,7 @@ public class GeminiDocumentTest {
         List<ResponsibleParty> actualAuthors = document.getAuthors();
         actualCoupledResources.add("foo");
         actualTopics.add("foo");
-        actualAuthors.add(ResponsibleParty.builder().role(role).build());
+        actualAuthors.add(ResponsibleParty.builder().build());
 
         // then
         assertThat(actualCoupledResources.size(), equalTo(2));
@@ -273,13 +272,11 @@ public class GeminiDocumentTest {
         List<ResponsibleParty> actualAuthors = document.getAuthors();
         List<Keyword> actualKeywords = document.getAllKeywords();
         List<OnlineResource> actualOnlineResources = document.getOnlineResources();
-        List<ResponsibleParty> actualResponsibleParties = document.getResponsibleParties();
         actualCoupledResources.add("foo");
         actualTopics.add("foo");
-        actualAuthors.add(ResponsibleParty.builder().role("author").build());
+        actualAuthors.add(ResponsibleParty.builder().build());
         actualKeywords.add(Keyword.builder().value("foo").URI("https://foo.com").build());
         actualOnlineResources.add(OnlineResource.builder().url("foo").build());
-        actualResponsibleParties.add(ResponsibleParty.builder().build());
 
 
         // then
@@ -288,6 +285,5 @@ public class GeminiDocumentTest {
         assertThat(actualAuthors.size(), equalTo(1));
         assertThat(actualKeywords.size(), equalTo(1));
         assertThat(actualOnlineResources.size(), equalTo(1));
-        assertThat(actualResponsibleParties.size(), equalTo(1));
     }
 }

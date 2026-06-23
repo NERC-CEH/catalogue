@@ -107,12 +107,11 @@ public class DataciteServiceTest {
     @Test
     public void checkThatIsNotDatacitableIfPublicationDateIsInFuture() {
         //Given
-        ResponsibleParty author = ResponsibleParty.builder().role("author").build();
-        ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setResponsibleParties(Arrays.asList(author, publisher));
+        document.setAuthors(ResponsibleParty.builder().build())
+        document.setPublishers(ResponsibleParty.builder().organisationName("Test publisher").build())
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2110, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -128,12 +127,11 @@ public class DataciteServiceTest {
     @Test
     public void checkThatIsDatacitableIfPublicationDateIsToday() {
         //Given
-        ResponsibleParty author = ResponsibleParty.builder().role("author").build();
-        ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setResponsibleParties(Arrays.asList(author, publisher));
+        document.setAuthors(ResponsibleParty.builder().build())
+        document.setPublishers(ResponsibleParty.builder().organisationName("Test publisher").build())
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -149,12 +147,11 @@ public class DataciteServiceTest {
     @Test
     public void checkThatIsDatacitableIfPublisherIsLegacy() {
         //Given
-        ResponsibleParty author = ResponsibleParty.builder().role("author").build();
-        ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test legacy publisher").build();
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setResponsibleParties(Arrays.asList(author, publisher));
+        document.setAuthors(ResponsibleParty.builder().build())
+        document.setPublishers(ResponsibleParty.builder().organisationName("Test legacy publisher").build())
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -170,12 +167,11 @@ public class DataciteServiceTest {
     @Test
     public void checkThatIsDatacitableIfPublisherIsNormal() {
         //Given
-        ResponsibleParty author = ResponsibleParty.builder().role("author").build();
-        ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setResponsibleParties(Arrays.asList(author, publisher));
+        document.setAuthors(ResponsibleParty.builder().build())
+        document.setPublishers(ResponsibleParty.builder().organisationName("Test publisher").build())
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -191,12 +187,11 @@ public class DataciteServiceTest {
     @Test
     public void checkThatIsNotDatacitableIfPublisherIsLegacy() {
         //Given
-        ResponsibleParty author = ResponsibleParty.builder().role("author").build();
-        ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test legacy publisher").build();
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setResponsibleParties(Arrays.asList(author, publisher));
+        document.setAuthors(ResponsibleParty.builder().build())
+        document.setPublishers(ResponsibleParty.builder().organisationName("Test legacy publisher").build())
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);

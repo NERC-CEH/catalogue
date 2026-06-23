@@ -152,12 +152,12 @@ export default EditorView.extend({
           multiline: true,
           roleDefault: 'author',
           predefined: {
-            'UKCEH': {
+            UKCEH: {
               organisationName: 'UK Centre for Ecology & Hydrology',
               email: 'enquiries@ceh.ac.uk',
               organisationIdentifier: 'https://ror.org/00pggkr55'
             },
-            'Unaffiliated': {
+            Unaffiliated: {
               organisationName: 'Unaffiliated'
             }
           },
@@ -181,12 +181,12 @@ export default EditorView.extend({
           multiline: true,
           roleDefault: 'contributor',
           predefined: {
-            'UKCEH': {
+            UKCEH: {
               organisationName: 'UK Centre for Ecology & Hydrology',
               email: 'enquiries@ceh.ac.uk',
               organisationIdentifier: 'https://ror.org/00pggkr55'
             },
-            'Unaffiliated': {
+            Unaffiliated: {
               organisationName: 'Unaffiliated'
             }
           },
@@ -275,7 +275,7 @@ export default EditorView.extend({
           multiline: true,
           roleDefault: 'custodian',
           predefined: {
-            'EIDC': {
+            EIDC: {
               organisationName: 'NERC EDS Environmental Information Data Centre',
               email: 'info@eidc.ac.uk',
               organisationIdentifier: 'https://ror.org/04xw4m193'
@@ -283,7 +283,7 @@ export default EditorView.extend({
           }
         }),
 
-         new PredefinedParentLargeView({
+        new PredefinedParentLargeView({
           model: this.model,
           ModelType: Contact,
           modelAttribute: 'publishers',
@@ -292,7 +292,7 @@ export default EditorView.extend({
           multiline: true,
           roleDefault: 'publisher',
           predefined: {
-            'EIDC': {
+            EIDC: {
               organisationName: 'NERC EDS Environmental Information Data Centre',
               email: 'info@eidc.ac.uk',
               organisationIdentifier: 'https://ror.org/04xw4m193'
@@ -309,7 +309,7 @@ export default EditorView.extend({
           multiline: true,
           roleDefault: 'rightsHolder',
           predefined: {
-            'UKCEH': {
+            UKCEH: {
               organisationName: 'UK Centre for Ecology & Hydrology',
               email: 'enquiries@ceh.ac.uk',
               organisationIdentifier: 'https://ror.org/00pggkr55'

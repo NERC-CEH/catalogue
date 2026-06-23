@@ -156,19 +156,17 @@ public class CitationServiceTest {
     }
 
     private ResponsibleParty author() {
-        return ResponsibleParty
+        return Author
                 .builder()
                 .givenName("A.")
                 .familyName("Author")
-                .role("author")
                 .build();
     }
 
     private ResponsibleParty publisher() {
-        return ResponsibleParty
+        return Publisher
                 .builder()
                 .organisationName("Octan Corporation")
-                .role("publisher")
                 .build();
     }
 }
