@@ -86,12 +86,13 @@ public class DataciteServiceTest {
     @Test
     public void checkThatIsDataciteUpdatableIfEverythingIsPresent() {
         //Given
-        ResponsibleParty author = ResponsibleParty.builder().role("author").build();
-        ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
+        ResponsibleParty author = ResponsibleParty.builder().build();
+        ResponsibleParty publisher = ResponsibleParty.builder().organisationName("Test publisher").build();
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setResponsibleParties(Arrays.asList(author, publisher));
+        document.setAuthors(Arrays.asList(author));
+        document.setPublishers(Arrays.asList(publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -107,11 +108,13 @@ public class DataciteServiceTest {
     @Test
     public void checkThatIsNotDatacitableIfPublicationDateIsInFuture() {
         //Given
+        ResponsibleParty author = ResponsibleParty.builder().build();
+        ResponsibleParty publisher = ResponsibleParty.builder().organisationName("Test publisher").build();
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setAuthors(ResponsibleParty.builder().build());
-        document.setPublishers(ResponsibleParty.builder().organisationName("Test publisher").build());
+        document.setAuthors(Arrays.asList(author));
+        document.setPublishers(Arrays.asList(publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2110, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -127,11 +130,13 @@ public class DataciteServiceTest {
     @Test
     public void checkThatIsDatacitableIfPublicationDateIsToday() {
         //Given
+        ResponsibleParty author = ResponsibleParty.builder().build();
+        ResponsibleParty publisher = ResponsibleParty.builder().organisationName("Test publisher").build();
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setAuthors(ResponsibleParty.builder().build());
-        document.setPublishers(ResponsibleParty.builder().organisationName("Test publisher").build());
+        document.setAuthors(Arrays.asList(author));
+        document.setPublishers(Arrays.asList(publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -147,11 +152,13 @@ public class DataciteServiceTest {
     @Test
     public void checkThatIsDatacitableIfPublisherIsLegacy() {
         //Given
+        ResponsibleParty author = ResponsibleParty.builder().build();
+        ResponsibleParty publisher = ResponsibleParty.builder().organisationName("Test legacy publisher").build();
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setAuthors(ResponsibleParty.builder().build());
-        document.setPublishers(ResponsibleParty.builder().organisationName("Test legacy publisher").build());
+        document.setAuthors(Arrays.asList(author));
+        document.setPublishers(Arrays.asList(publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -167,11 +174,13 @@ public class DataciteServiceTest {
     @Test
     public void checkThatIsDatacitableIfPublisherIsNormal() {
         //Given
+        ResponsibleParty author = ResponsibleParty.builder().build();
+        ResponsibleParty publisher = ResponsibleParty.builder().organisationName("Test publisher").build();
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setAuthors(ResponsibleParty.builder().build());
-        document.setPublishers(ResponsibleParty.builder().organisationName("Test publisher").build());
+        document.setAuthors(Arrays.asList(author));
+        document.setPublishers(Arrays.asList(publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -187,11 +196,13 @@ public class DataciteServiceTest {
     @Test
     public void checkThatIsNotDatacitableIfPublisherIsLegacy() {
         //Given
+        ResponsibleParty author = ResponsibleParty.builder().build();
+        ResponsibleParty publisher = ResponsibleParty.builder().organisationName("Test legacy publisher").build();
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setAuthors(ResponsibleParty.builder().build());
-        document.setPublishers(ResponsibleParty.builder().organisationName("Test legacy publisher").build());
+        document.setAuthors(Arrays.asList(author));
+        document.setPublishers(Arrays.asList(publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -292,13 +303,14 @@ public class DataciteServiceTest {
     }
 
     private GeminiDocument getGeminiDocument(){
-        val author = ResponsibleParty.builder().role("author").givenName("Arthur").familyName("Arbor").build();
-        val publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
+        val author = ResponsibleParty.builder().givenName("Arthur").familyName("Arbor").build();
+        val publisher = ResponsibleParty.builder().organisationName("Test publisher").build();
         val metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         val document = new GeminiDocument();
         document.setDescription("This is the description");
-        document.setResponsibleParties(Arrays.asList(author, publisher));
+        document.setAuthors(Arrays.asList(author));
+        document.setPublishers(Arrays.asList(publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -308,13 +320,14 @@ public class DataciteServiceTest {
     }
 
     private GeminiDocument getGeminiDocumentWithLegacyPublisher(){
-        val author = ResponsibleParty.builder().role("author").givenName("Bob").familyName("Foo").build();
-        val publisher = ResponsibleParty.builder().role("publisher").organisationName("Test legacy publisher").build();
+        val author = ResponsibleParty.builder().givenName("Bob").familyName("Foo").build();
+        val publisher = ResponsibleParty.builder().organisationName("Test legacy publisher").build();
         val metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         val document = new GeminiDocument();
         document.setDescription("This is the description");
-        document.setResponsibleParties(Arrays.asList(author, publisher));
+        document.setAuthors(Arrays.asList(author));
+        document.setPublishers(Arrays.asList(publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);

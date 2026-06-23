@@ -43,7 +43,8 @@ public class CitationServiceTest {
         GeminiDocument document = new GeminiDocument();
         document
             .setDatasetReferenceDate(validDate())
-            .setResponsibleParties(List.of(author(), publisher()))
+            .setAuthors(List.of(author()))
+            .setPublishers(List.of(publisher()))
             .setTitle("document title")
             .setUri("http://document")
             .setResourceIdentifiers(List.of(nercdoi()));
@@ -71,7 +72,7 @@ public class CitationServiceTest {
             nercdoi()
         ));
         when(document.getDatasetReferenceDate()).thenReturn(validDate());
-        when(document.getResponsibleParties()).thenReturn(Collections.singletonList(
+        when(document.getAuthors()).thenReturn(Collections.singletonList(
             author()
         ));
         CitationService service = new CitationService("10.5285/");
@@ -91,8 +92,11 @@ public class CitationServiceTest {
         when(document.getResourceIdentifiers()).thenReturn(Collections.singletonList(
             nercdoi()
         ));
-        when(document.getResponsibleParties()).thenReturn(Arrays.asList(
-            author(), publisher()
+        when(document.getAuthors()).thenReturn(Arrays.asList(
+            author()
+        ));
+        when(document.getPublishers()).thenReturn(Arrays.asList(
+            publisher()
         ));
         CitationService service = new CitationService("10.5285/");
 
@@ -115,8 +119,11 @@ public class CitationServiceTest {
                 .codeSpace("doi")
                 .build()
         ));
-        when(document.getResponsibleParties()).thenReturn(Arrays.asList(
-            author(), publisher()
+        when(document.getAuthors()).thenReturn(Arrays.asList(
+            author()
+        ));
+        when(document.getPublishers()).thenReturn(Arrays.asList(
+            publisher()
         ));
         CitationService service = new CitationService("10.5285/");
 
@@ -156,7 +163,7 @@ public class CitationServiceTest {
     }
 
     private ResponsibleParty author() {
-        return Author
+        return ResponsibleParty
                 .builder()
                 .givenName("A.")
                 .familyName("Author")
@@ -164,7 +171,7 @@ public class CitationServiceTest {
     }
 
     private ResponsibleParty publisher() {
-        return Publisher
+        return ResponsibleParty
                 .builder()
                 .organisationName("Octan Corporation")
                 .build();

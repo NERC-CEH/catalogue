@@ -59,11 +59,11 @@ class DataciteControllerTest extends AbstractMvcTest {
             .build()
         );
         gemini.setResourceIdentifiers(new ArrayList<>());
-        gemini.setPublishersList.of(
+        gemini.setPublishers(List.of(
             ResponsibleParty.builder()
                 .organisationName("NERC EDS Environmental Information Data Centre")
                 .build()
-        );
+        ));
         given(documentRepository.read(file))
             .willReturn(gemini);
     }
