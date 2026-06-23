@@ -128,11 +128,11 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
         return grab(Collections.singletonList(item), mapper);
     }
 
-    private List<Keyword> getKeywordsFilteredByUrlFragment(MetadataDocument document, String... urlFragments) {
+    private List<Keyword> getInmsScaleKeywords(MetadataDocument document) {
         return Optional.ofNullable(document.getAllKeywords())
                 .orElse(Collections.emptyList())
                 .stream()
-                .filter(k -> Arrays.stream(urlFragments).anyMatch(urlFragment -> k.getUri().startsWith(urlFragment)))
+                .filter(k -> k.getUri().startsWith(INMS_SCALE_URL))
                 .toList();
     }
 
@@ -146,7 +146,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
 
     private List<String> inmsScale(MetadataDocument document) {
         List<String> scales = new ArrayList<>(
-            grab(getKeywordsFilteredByUrlFragment(document, INMS_SCALE_URL), Keyword::getValue));
+            grab(getInmsScaleKeywords(document), Keyword::getValue));
 
         if (document instanceof CehModelApplication application) {
             Optional.ofNullable(application.getModelInfos())

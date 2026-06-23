@@ -21,7 +21,7 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
      * The Natural Capital vocabulary no longer exists on the new vocab server.
      * This class needs modifying to work with multiple graphs so that it
      * can be used in the SolrIndexMetadataDocumentGenerator in place of
-     * getKeywordsFilteredByUrlFragment
+     * getInmsScaleKeywords
      */
     private final RestTemplate template;
     private final String sparqlEndpoint;
