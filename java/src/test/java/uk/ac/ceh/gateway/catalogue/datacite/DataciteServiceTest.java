@@ -91,8 +91,8 @@ public class DataciteServiceTest {
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setAuthors(Arrays.asList(author));
-        document.setPublishers(Arrays.asList(publisher));
+        document.setAuthors(List.of(author));
+        document.setPublishers(List.of(publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -113,8 +113,8 @@ public class DataciteServiceTest {
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setAuthors(Arrays.asList(author));
-        document.setPublishers(Arrays.asList(publisher));
+        document.setAuthors(List.of(author));
+        document.setPublishers(List.of(publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2110, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -135,8 +135,8 @@ public class DataciteServiceTest {
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setAuthors(Arrays.asList(author));
-        document.setPublishers(Arrays.asList(publisher));
+        document.setAuthors(List.of(author));
+        document.setPublishers(List.of(publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -157,8 +157,8 @@ public class DataciteServiceTest {
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setAuthors(Arrays.asList(author));
-        document.setPublishers(Arrays.asList(publisher));
+        document.setAuthors(List.of(author));
+        document.setPublishers(List.of(publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -179,8 +179,8 @@ public class DataciteServiceTest {
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setAuthors(Arrays.asList(author));
-        document.setPublishers(Arrays.asList(publisher));
+        document.setAuthors(List.of(author));
+        document.setPublishers(List.of(publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -201,8 +201,8 @@ public class DataciteServiceTest {
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setAuthors(Arrays.asList(author));
-        document.setPublishers(Arrays.asList(publisher));
+        document.setAuthors(List.of(author));
+        document.setPublishers(List.of(publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -309,8 +309,8 @@ public class DataciteServiceTest {
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         val document = new GeminiDocument();
         document.setDescription("This is the description");
-        document.setAuthors(Arrays.asList(author));
-        document.setPublishers(Arrays.asList(publisher));
+        document.setAuthors(List.of(author));
+        document.setPublishers(List.of(publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -326,8 +326,8 @@ public class DataciteServiceTest {
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         val document = new GeminiDocument();
         document.setDescription("This is the description");
-        document.setAuthors(Arrays.asList(author));
-        document.setPublishers(Arrays.asList(publisher));
+        document.setAuthors(List.of(author));
+        document.setPublishers(List.of(publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
