@@ -115,8 +115,8 @@ public class SolrIndex {
         if(nextSpace != -1){
             toReturn = toBreak.substring(0,nextSpace);
         }else{
-            toReturn = toBreak.substring(0,MAX_DESCRIPTION_CHARACTER_LENGTH);
+            toReturn = toBreak.substring(0, MAX_DESCRIPTION_CHARACTER_LENGTH);
         }
-        return toReturn + "...";
+        return toReturn + "…";
     }
 }
