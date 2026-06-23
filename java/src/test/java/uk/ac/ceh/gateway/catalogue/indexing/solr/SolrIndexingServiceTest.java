@@ -99,7 +99,7 @@ class SolrIndexingServiceTest {
         List<String> documents = List.of("deleted");
         val deleted = new GeminiDocument();
         deleted.setId("5678");
-        deleted.setAccessLimitation(AccessLimitation.builder().code("Deleted").build());
+        deleted.setAccessLimitation(AccessLimitation.builder().availability("Deleted").build());
         given(reader.readBundle("deleted")).willReturn(deleted);
 
         //when

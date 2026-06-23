@@ -131,8 +131,8 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     public String getAvailability() {
         return Optional.ofNullable(accessLimitation)
-                .map(AccessLimitation::getCode)
-                .filter(code -> !code.isEmpty())
+                .map(AccessLimitation::getAvailability)
+                .filter(availability -> !availability.isEmpty())
                 .orElse("Unknown");
     }
 

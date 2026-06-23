@@ -95,8 +95,7 @@
                         </gmd:MD_RestrictionCode>
                     </gmd:accessConstraints>
                     <gmd:otherConstraints>
-                        <gmx:Anchor
-                                xlink:href="http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations">
+                        <gmx:Anchor xlink:href="http://vocab.nerc.ac.uk/collection/N07/current/UNRS/">
                             no limitations
                         </gmx:Anchor>
                     </gmd:otherConstraints>
