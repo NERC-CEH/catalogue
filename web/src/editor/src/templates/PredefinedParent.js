@@ -7,6 +7,7 @@ export default _.template(`
         <span class="caret"></span>
     </button>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown<%= data.modelAttribute %>Menu">
+        <li><hr class="dropdown-divider"></li>
         <li><a class="dropdown-item" href="#">Other</a></li>
     </ul>
 </div>

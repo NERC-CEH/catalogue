@@ -32,6 +32,11 @@ export default ObjectInputView.extend({
     } else {
       this.$('.role').addClass('d-none')
     }
+
+    if (this.roleDefault !== 'contributor') {
+      this.$('.contributorRole').addClass('d-none')
+    }
+
     this.$('select.role-select').val(this.model.get('role'))
     this.$('select.honorificPrefix').val(this.model.get('honorificPrefix'))
 

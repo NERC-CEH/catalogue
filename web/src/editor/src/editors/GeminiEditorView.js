@@ -14,7 +14,9 @@ import {
   OnlineResourceView,
   ParentStringView,
   ParentView,
-  PredefinedParentView, PredefinedParentLargeView,
+  ParentLargeView,
+  PredefinedParentView,
+  PredefinedParentLargeView,
   ReadOnlyView,
   RelationshipView,
   ResourceConstraintView,
@@ -138,43 +140,78 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'Authors & contacts',
-      title: 'Authors and other contacts',
+      label: 'Authors',
+      title: 'Authors',
       views: [
         new PredefinedParentLargeView({
           model: this.model,
           ModelType: Contact,
-          modelAttribute: 'responsibleParties',
-          label: 'Contacts',
+          modelAttribute: 'authors',
+          label: 'Authors',
           ObjectInputView: ContactView,
           multiline: true,
-          roleoptions: [
-            { value: 'author', label: 'Author' },
-            { value: 'custodian', label: 'Custodian' },
-            { value: 'pointOfContact', label: 'Point of contact' },
-            { value: 'publisher', label: 'Publisher' },
-            { value: 'rightsHolder', label: 'Rights holder' },
-            { value: 'originator', label: 'Originator' },
-            { value: 'resourceProvider', label: 'Resource provider' }
-          ],
+          roleDefault: 'author',
           predefined: {
-            'Author - UKCEH': {
+            'UKCEH': {
               organisationName: 'UK Centre for Ecology & Hydrology',
-              role: 'author',
               email: 'enquiries@ceh.ac.uk',
               organisationIdentifier: 'https://ror.org/00pggkr55'
             },
-            'Author - unaffiliated': {
-              organisationName: 'Unaffiliated',
-              role: 'author'
+            'Unaffiliated': {
+              organisationName: 'Unaffiliated'
+            }
+          },
+          helpText: `\
+<p>Role and organisation name are mandatory. If email address is blank it is assumed to be 'enquiries@ceh.ac.uk'.</p>
+<p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>\
+`
+        })
+      ]
+    },
+    {
+      label: 'Contributors',
+      title: 'Contributors',
+      views: [
+        new PredefinedParentLargeView({
+          model: this.model,
+          ModelType: Contact,
+          modelAttribute: 'contributors',
+          label: 'Contributors',
+          ObjectInputView: ContactView,
+          multiline: true,
+          roleDefault: 'contributor',
+          predefined: {
+            'UKCEH': {
+              organisationName: 'UK Centre for Ecology & Hydrology',
+              email: 'enquiries@ceh.ac.uk',
+              organisationIdentifier: 'https://ror.org/00pggkr55'
             },
-            'Custodian - EIDC': {
-              organisationName: 'NERC EDS Environmental Information Data Centre',
-              role: 'custodian',
-              email: 'info@eidc.ac.uk',
-              organisationIdentifier: 'https://ror.org/04xw4m193'
-            },
-            'Point of contact - UKCEH Bangor': {
+            'Unaffiliated': {
+              organisationName: 'Unaffiliated'
+            }
+          },
+          helpText: `\
+<p>Role and organisation name are mandatory. If email address is blank it is assumed to be 'enquiries@ceh.ac.uk'.</p>
+<p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>\
+`
+        })
+      ]
+    },
+    {
+      label: 'Other contacts',
+      title: 'Other contacts',
+      views: [
+
+        new PredefinedParentLargeView({
+          model: this.model,
+          ModelType: Contact,
+          modelAttribute: 'pointsOfContact',
+          label: 'Contact point',
+          ObjectInputView: ContactView,
+          multiline: true,
+          roleDefault: 'pointOfContact',
+          predefined: {
+            'UKCEH Bangor': {
               organisationName: 'UK Centre for Ecology & Hydrology',
               role: 'pointOfContact',
               email: 'enquiries@ceh.ac.uk',
@@ -187,7 +224,7 @@ export default EditorView.extend({
                 country: 'United Kingdom'
               }
             },
-            'Point of contact - UKCEH Edinburgh': {
+            'UKCEH Edinburgh': {
               organisationName: 'UK Centre for Ecology & Hydrology',
               role: 'pointOfContact',
               email: 'enquiries@ceh.ac.uk',
@@ -200,7 +237,7 @@ export default EditorView.extend({
                 country: 'United Kingdom'
               }
             },
-            'Point of contact - UKCEH Lancaster': {
+            'UKCEH Lancaster': {
               organisationName: 'UK Centre for Ecology & Hydrology',
               role: 'pointOfContact',
               email: 'enquiries@ceh.ac.uk',
@@ -213,7 +250,7 @@ export default EditorView.extend({
                 country: 'United Kingdom'
               }
             },
-            'Point of contact - UKCEH Wallingford': {
+            'UKCEH Wallingford': {
               organisationName: 'UK Centre for Ecology & Hydrology',
               role: 'pointOfContact',
               email: 'enquiries@ceh.ac.uk',
@@ -225,25 +262,75 @@ export default EditorView.extend({
                 administrativeArea: 'Oxfordshire',
                 country: 'United Kingdom'
               }
-            },
-            'Publisher - EIDC': {
+            }
+          }
+        }),
+
+        new PredefinedParentLargeView({
+          model: this.model,
+          ModelType: Contact,
+          modelAttribute: 'custodians',
+          label: 'Custodian',
+          ObjectInputView: ContactView,
+          multiline: true,
+          roleDefault: 'custodian',
+          predefined: {
+            'EIDC': {
               organisationName: 'NERC EDS Environmental Information Data Centre',
-              role: 'publisher',
               email: 'info@eidc.ac.uk',
               organisationIdentifier: 'https://ror.org/04xw4m193'
-            },
-            'Rights holder - UKCEH': {
+            }
+          }
+        }),
+
+         new PredefinedParentLargeView({
+          model: this.model,
+          ModelType: Contact,
+          modelAttribute: 'publishers',
+          label: 'Publisher',
+          ObjectInputView: ContactView,
+          multiline: true,
+          roleDefault: 'publisher',
+          predefined: {
+            'EIDC': {
+              organisationName: 'NERC EDS Environmental Information Data Centre',
+              email: 'info@eidc.ac.uk',
+              organisationIdentifier: 'https://ror.org/04xw4m193'
+            }
+          }
+        }),
+
+        new PredefinedParentLargeView({
+          model: this.model,
+          ModelType: Contact,
+          modelAttribute: 'rightsHolders',
+          label: 'Rights holders',
+          ObjectInputView: ContactView,
+          multiline: true,
+          roleDefault: 'rightsHolder',
+          predefined: {
+            'UKCEH': {
               organisationName: 'UK Centre for Ecology & Hydrology',
-              role: 'rightsHolder',
               email: 'enquiries@ceh.ac.uk',
               organisationIdentifier: 'https://ror.org/00pggkr55'
             }
-          },
-          helpText: `\
-<p>The names of authors should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
-<p>Role and organisation name are mandatory. If email address is blank it is assumed to be 'enquiries@ceh.ac.uk'.</p>
-<p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>\
-`
+          }
+        }),
+
+        new ParentLargeView({
+          model: this.model,
+          ModelType: Contact,
+          modelAttribute: 'responsibleParties',
+          label: 'Other contacts',
+          ObjectInputView: ContactView,
+          multiline: true,
+          roleoptions: [
+            { value: 'mediator', label: 'Mediator' },
+            { value: 'originator', label: 'Originator' },
+            { value: 'resourceProvider', label: 'Resource provider' },
+            { value: 'stakeholder', label: 'Stakeholder' },
+            { value: 'user', label: 'User' }
+          ]
         })
       ]
     },

@@ -524,12 +524,18 @@
             }
 
             #input-accessLimitation {
+                border-color: #AAA;
+
                 &::picker-icon {
                     color: #999999;
                     transition: 0.4s rotate;
                 }
 
-                border-color: #AAA;
+                selectedcontent {
+                    span {
+                        display: none;
+                    }
+                }
 
                 span {
                     display: block;

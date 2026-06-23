@@ -1,4 +1,4 @@
-<#if pointsOfContact?size gt 0 >
+<#if pointsOfContact?has_content>
   <div id="segment-pointOfContact">
   <h2 id="pointOfContact">Correspondence/contact details</h2>
       <#list pointsOfContact>
@@ -11,7 +11,7 @@
   </div>
 </#if>
 
-<#if authors?size gt 0 >
+<#if authors?has_content >
   <div id="segment-authors">
   <h2 id="authors">Author<#if authors?size gt 1>s</#if></h2>
 
@@ -39,6 +39,15 @@
       </#if>
 
   </div>
+</#if>
+
+
+<#assign otherContacts = [] >
+<#if publishers?has_content>
+  <#assign otherContacts = otherContacts + publishers >
+</#if>
+<#if rightsHolders?has_content>
+  <#assign otherContacts = otherContacts + rightsHolders >
 </#if>
 
 <#if otherContacts?has_content >

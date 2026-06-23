@@ -3,7 +3,6 @@
 <#import "../functions.ftlh" as func>
 
 <#assign
-    otherContacts = publishers + rightsHolders
     catalogue = catalogues.retrieve(metadata.catalogue)
 
     rel_all=jena.allRelatedRecords(uri)

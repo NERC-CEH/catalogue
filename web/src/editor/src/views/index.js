@@ -38,6 +38,7 @@ export { default as SpatialRepresentationTypeView } from './SpatialRepresentatio
 export { default as SpatialResolutionView } from './SpatialResolutionView'
 export { default as ObservedPropertyView } from './ObservedPropertyView'
 export { default as FilesetView } from './FilesetView'
+export { default as ParentLargeView } from './ParentLargeView'
 export { default as PredefinedParentLargeView } from './PredefinedParentLargeView'
 export { default as ProcessingStepView } from './ProcessingStepView'
 export { default as KeywordVocabularyView } from './KeywordVocabularyView'

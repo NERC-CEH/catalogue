@@ -62,7 +62,14 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<SpatialResolution> spatialResolutions;
     private List<Funding> funding;
     private List<BoundingBox> boundingBoxes;
-    private List<ResponsibleParty> distributorContacts, responsibleParties;
+    private List<ResponsibleParty> distributorContacts = new ArrayList<>();
+    private List<ResponsibleParty> responsibleParties = new ArrayList<>();
+    private List<ResponsibleParty> contributors = new ArrayList<>();
+    private List<ResponsibleParty> authors = new ArrayList<>();
+    private List<ResponsibleParty> pointsOfContact = new ArrayList<>();
+    private List<ResponsibleParty> publishers = new ArrayList<>();
+    private List<ResponsibleParty> rightsHolders = new ArrayList<>();
+    private List<ResponsibleParty> custodians = new ArrayList<>();
     private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
@@ -96,15 +103,13 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         this.lineage = serviceAgreement.getLineage();
         this.boundingBoxes = serviceAgreement.getBoundingBoxes();
         this.funding = serviceAgreement.getFunding();
-        this.responsibleParties = new ArrayList<>();
-        this.responsibleParties.add(ResponsibleParty.builder()
+        this.pointsOfContact.add(ResponsibleParty.builder()
             .displayName(serviceAgreement.getDepositorName())
             .email(convertEmail(serviceAgreement.getDepositorContactDetails()))
-            .role("pointOfContact")
             .build()
         );
-        this.responsibleParties.addAll(convertEmails(serviceAgreement.getAuthors()));
-        this.responsibleParties.addAll(convertEmails(serviceAgreement.getOwnersOfIpr()));
+        this.authors.addAll(convertEmails(serviceAgreement.getAuthors()));
+        this.rightsHolders.addAll(convertEmails(serviceAgreement.getOwnersOfIpr()));
         Optional.ofNullable(serviceAgreement.getAvailability())
             .ifPresent(availability -> this.datasetReferenceDate = DatasetReferenceDate.builder()
                 .releasedDate(LocalDate.parse(availability))
@@ -132,7 +137,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     public String getAvailability() {
         return Optional.ofNullable(accessLimitation)
                 .map(AccessLimitation::getAvailability)
-                .filter(availability -> !availability.isEmpty())
+                .filter(code -> !code.isEmpty())
                 .orElse("Unknown");
     }
 
@@ -279,22 +284,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public List<ResponsibleParty> getAuthors() { return responsiblePartyByRole("author"); }
-
-    public List<ResponsibleParty> getCustodians() { return responsiblePartyByRole("custodian"); }
-
-    public List<ResponsibleParty> getPointsOfContact() {
-        return responsiblePartyByRole("pointOfContact");
-    }
-
-    public List<ResponsibleParty> getRightsHolders() {
-        return responsiblePartyByRole("rightsHolder");
-    }
-
-    public List<ResponsibleParty> getPublishers() {
-        return responsiblePartyByRole("publisher");
-    }
-
     @JsonIgnore
     public List<ResponsibleParty> getDepositors() {
         return responsiblePartyByRole("depositor");
@@ -378,7 +367,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    @JsonIgnore
+/*     @JsonIgnore
     public List<ResponsibleParty> getAuthorPointOfContactWithRORs() {
         val seenRORs = new HashSet<String>();
         return getResponsibleParties()
@@ -395,7 +384,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .toList();
     }
 
-    private static @NonNull String convertEmail(@NonNull String email) {
+ */    private static @NonNull String convertEmail(@NonNull String email) {
         return email.endsWith("@ceh.ac.uk") ? "enquiries@ceh.ac.uk" : email;
     }
 
