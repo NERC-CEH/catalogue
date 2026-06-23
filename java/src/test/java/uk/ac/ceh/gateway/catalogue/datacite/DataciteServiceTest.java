@@ -110,8 +110,8 @@ public class DataciteServiceTest {
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setAuthors(ResponsibleParty.builder().build())
-        document.setPublishers(ResponsibleParty.builder().organisationName("Test publisher").build())
+        document.setAuthors(ResponsibleParty.builder().build());
+        document.setPublishers(ResponsibleParty.builder().organisationName("Test publisher").build());
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2110, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -130,8 +130,8 @@ public class DataciteServiceTest {
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setAuthors(ResponsibleParty.builder().build())
-        document.setPublishers(ResponsibleParty.builder().organisationName("Test publisher").build())
+        document.setAuthors(ResponsibleParty.builder().build());
+        document.setPublishers(ResponsibleParty.builder().organisationName("Test publisher").build());
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -150,8 +150,8 @@ public class DataciteServiceTest {
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setAuthors(ResponsibleParty.builder().build())
-        document.setPublishers(ResponsibleParty.builder().organisationName("Test legacy publisher").build())
+        document.setAuthors(ResponsibleParty.builder().build());
+        document.setPublishers(ResponsibleParty.builder().organisationName("Test legacy publisher").build());
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -170,8 +170,8 @@ public class DataciteServiceTest {
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setAuthors(ResponsibleParty.builder().build())
-        document.setPublishers(ResponsibleParty.builder().organisationName("Test publisher").build())
+        document.setAuthors(ResponsibleParty.builder().build());
+        document.setPublishers(ResponsibleParty.builder().organisationName("Test publisher").build());
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
@@ -190,8 +190,8 @@ public class DataciteServiceTest {
         MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
-        document.setAuthors(ResponsibleParty.builder().build())
-        document.setPublishers(ResponsibleParty.builder().organisationName("Test legacy publisher").build())
+        document.setAuthors(ResponsibleParty.builder().build());
+        document.setPublishers(ResponsibleParty.builder().organisationName("Test legacy publisher").build());
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);

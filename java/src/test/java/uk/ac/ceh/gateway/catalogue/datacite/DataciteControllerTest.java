@@ -63,7 +63,7 @@ class DataciteControllerTest extends AbstractMvcTest {
             ResponsibleParty.builder()
                 .organisationName("NERC EDS Environmental Information Data Centre")
                 .build()
-        ));
+        );
         given(documentRepository.read(file))
             .willReturn(gemini);
     }

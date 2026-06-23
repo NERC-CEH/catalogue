@@ -217,7 +217,7 @@ public class RoCrateTest {
 
             // authors
             gemini.setAuthors(List.of(
-                ResponsibleParty.builder().givenName("Donald").familyName("Duck").email("donald@example.com").nameIdentifier("https://orcid.org/0000-1234-5678-9101").build(),
+                ResponsibleParty.builder().givenName("Donald").familyName("Duck").email("donald@example.com").nameIdentifier("https://orcid.org/0000-1234-5678-9101").build()
             ));
 
             //  points of contact
