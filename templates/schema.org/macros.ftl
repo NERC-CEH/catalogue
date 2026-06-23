@@ -129,7 +129,7 @@
 <#macro doi>
   <#if datacitable && citation?has_content>
     "identifier": {"@id": "${citation.url}"},
-    "creditText":"${citation.authors?join(', ')} (${citation.year?string["0000"]}). ${citation.title}. ${citation.publisher}. (${codes.lookup('datacite.resourceTypeGeneral',citation.resourceTypeGeneral)}). ${citation.url}",
+    "citation":"${citation.authors?join(', ')} (${citation.year?string["0000"]}). ${citation.title}. ${citation.publisher}. (${codes.lookup('datacite.resourceTypeGeneral',citation.resourceTypeGeneral)}). ${citation.url}",
   <#else>
     "url":"${uri?trim}",
   </#if>
@@ -397,7 +397,7 @@
     {
     "@id": "${citationid}",
     "@type": "CreativeWork"
-    <#if citation.description?has_content>,"creditText": <@displayLiteral citation.description/></#if>
+    <#if citation.description?has_content>,"citation": <@displayLiteral citation.description/></#if>
     <#if citation.url?has_content>,"url": "${citation.url?trim}"</#if>
     }<#sep>,
   </#list>
