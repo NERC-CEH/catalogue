@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing.solr;
 
 import com.google.common.base.Strings;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
@@ -17,9 +18,9 @@ import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.util.stream.Stream;
+import java.time.Instant;
+import java.time.ZoneOffset;
 
 /**
  * The following class is responsible for taking a metadata document and creating
@@ -28,31 +29,18 @@ import java.time.ZoneId;
 @SuppressWarnings("HttpUrlsUsage")
 @Slf4j
 @ToString
+@RequiredArgsConstructor
 public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, SolrIndex> {
 
-    public static final String INMS_SCALE_URL = "http://vocabs.ceh.ac.uk/inms/scale/";
-
-    @SuppressWarnings("unused")
-    public static final String SA_TAXON_URL = "http://vocabs.ceh.ac.uk/esb/taxon";
+    private static final String INMS_SCALE_URL = "http://vocabs.ceh.ac.uk/inms/scale/";
 
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
     private final VocabularyService vocabularyService;
 
-    public SolrIndexMetadataDocumentGenerator(
-            CodeLookupService codeLookupService,
-            DocumentIdentifierService identifierService,
-            VocabularyService vocabularyService
-    ) {
-        this.codeLookupService = codeLookupService;
-        this.identifierService = identifierService;
-        this.vocabularyService = vocabularyService;
-        log.info("Creating");
-    }
-
     @Override
     public SolrIndex generateIndex(MetadataDocument document) {
-        log.info("{} is a {}, {}", document.getId(), codeLookupService.lookup("metadata.resourceType", document.getType()), codeLookupService.lookup("metadata.recordType", document.getType()));
+        log.debug("{} is a {}, {}", document.getId(), codeLookupService.lookup("metadata.resourceType", document.getType()), codeLookupService.lookup("metadata.recordType", document.getType()));
         return new SolrIndex()
             .setAssistResearchThemes(grab(getKeywordsByVocabulary(document, VocabularyFacet.ASSIST_RESEARCH_THEMES.getFacetName()), Keyword::getValue))
             .setAssistTopics(grab(getKeywordsByVocabulary(document, VocabularyFacet.ASSIST_TOPICS.getFacetName()), Keyword::getValue))
@@ -80,16 +68,16 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setResourceIdentifier(buildResourceIdentifiers(document.getResourceIdentifiers()))
             .setMetadataDate(
                 Optional.ofNullable(document.getMetadataDate())
-                    .map(date -> date.atZone(ZoneId.of("UTC")))
+                    .map(date -> date.atZone(ZoneOffset.UTC))
                     .map(zonedDateTime -> Date.from(zonedDateTime.toInstant()))
-                    .orElse(Date.from(java.time.Instant.EPOCH))
+                    .orElse(Date.from(Instant.EPOCH))
             )
             ;
     }
 
     private String getRecordType(MetadataDocument document) {
         log.debug("Catalogue: {}", document.getCatalogue());
-        if (document.getCatalogue().equals("eidc")) {
+        if ("eidc".equals(document.getCatalogue())) {
             return codeLookupService.lookup("metadata.recordType", document.getType());
         } else {
             return codeLookupService.lookup("metadata.resourceType", document.getType());
@@ -97,11 +85,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     }
 
     private List<String> getLocations(MetadataDocument document) {
-        if (document instanceof WellKnownText) {
-            return ((WellKnownText) document).getWKTs();
-        } else {
-            return Collections.emptyList();
-        }
+        return (document instanceof WellKnownText wkt) ? wkt.getWKTs() : Collections.emptyList();
     }
 
     private String getState(MetadataDocument document) {
@@ -137,7 +121,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                         .map(Strings::emptyToNull)
                         .filter(Objects::nonNull)
                         .distinct()
-                        .collect(Collectors.toList());
+                        .toList();
     }
 
     public static <T> List<String> grab(T item, Function<? super T, String> mapper ) {
@@ -149,45 +133,42 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                 .orElse(Collections.emptyList())
                 .stream()
                 .filter(k -> Arrays.stream(urlFragments).anyMatch(urlFragment -> k.getUri().startsWith(urlFragment)))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private List<Keyword> getKeywordsByVocabulary(MetadataDocument document, String vocabularyFacet) {
         return Optional.ofNullable(document.getAllKeywords())
             .orElse(Collections.emptyList())
             .stream()
-            .filter(k -> this.vocabularyService.isMember(vocabularyFacet, k.getUri()))
-            .collect(Collectors.toList());
+            .filter(k -> vocabularyService.isMember(vocabularyFacet, k.getUri()))
+            .toList();
     }
 
     private List<String> inmsScale(MetadataDocument document) {
-        List<String> toReturn = grab(
-            getKeywordsFilteredByUrlFragment(document, INMS_SCALE_URL),
-            Keyword::getValue
-        );
+        List<String> scales = new ArrayList<>(
+            grab(getKeywordsFilteredByUrlFragment(document, INMS_SCALE_URL), Keyword::getValue));
 
         if (document instanceof CehModelApplication application) {
             Optional.ofNullable(application.getModelInfos())
                 .orElse(Collections.emptyList())
                 .stream()
-                .filter(mi -> mi.getSpatialExtentOfApplication() != null && !mi.getSpatialExtentOfApplication().isEmpty())
-                .forEach(mi -> toReturn.add(mi.getSpatialExtentOfApplication()));
+                .map(CehModelApplication.ModelInfo::getSpatialExtentOfApplication)
+                .filter(s -> s != null && !s.isEmpty())
+                .forEach(scales::add);
         }
-        return toReturn;
+        return scales;
     }
 
     private List<String> buildResourceIdentifiers(Collection<ResourceIdentifier> identifiers) {
         if (identifiers == null) return Collections.emptyList();
 
-        List<String> result = new ArrayList<>();
-        for (ResourceIdentifier ri : identifiers) {
-            if (!Strings.isNullOrEmpty(ri.getCode())) result.add(ri.getCode());
-
-            if (!Strings.isNullOrEmpty(ri.getCodeSpace()) && !Strings.isNullOrEmpty(ri.getCode())) {
-                result.add(ri.getCodeSpace() + ":" + ri.getCode());
-            }
-        }
-        return result.stream().distinct().collect(Collectors.toList());
+        return identifiers.stream()
+            .filter(ri -> !Strings.isNullOrEmpty(ri.getCode()))
+            .flatMap(ri -> Strings.isNullOrEmpty(ri.getCodeSpace())
+                ? Stream.of(ri.getCode())
+                : Stream.of(ri.getCode(), ri.getCodeSpace() + ":" + ri.getCode()))
+            .distinct()
+            .toList();
     }
 
 }
