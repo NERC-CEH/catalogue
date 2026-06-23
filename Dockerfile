@@ -77,11 +77,12 @@ RUN apk --no-cache add git vim
 # Development run image — mounts full project tree as a volume at /app
 FROM gradle:9.5.1-jdk25-alpine AS dev-run
 USER root
-RUN apk --no-cache upgrade
+RUN apk --no-cache upgrade && apk --no-cache add su-exec
 COPY --from=datastore /datastore /var/ceh-catalogue/datastore
 RUN chown -R gradle:gradle /var/ceh-catalogue/datastore
 COPY docker/entrypoint-dev.sh /usr/local/bin/entrypoint-dev.sh
 RUN chmod +x /usr/local/bin/entrypoint-dev.sh
 WORKDIR /app
-USER gradle
+# No `USER gradle`: the entrypoint starts as root, repairs datastore ownership
+# on a persisted named volume, then drops to gradle via su-exec.
 ENTRYPOINT ["/usr/local/bin/entrypoint-dev.sh"]
