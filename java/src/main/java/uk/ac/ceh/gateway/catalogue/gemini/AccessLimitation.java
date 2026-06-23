@@ -14,12 +14,10 @@ public class AccessLimitation {
     @JsonCreator
     public AccessLimitation(
         @JsonProperty("value") String value,
-        //@JsonProperty("code") String code,
         @JsonProperty("availability") String availability,
         @JsonProperty("description") String description,
         @JsonProperty("uri") String uri){
         this.value = nullToEmpty(value);
-        //this.code = nullToEmpty(code);
         this.availability = nullToEmpty(availability);
         this.description = nullToEmpty(description);
         this.uri = nullToEmpty(uri);
