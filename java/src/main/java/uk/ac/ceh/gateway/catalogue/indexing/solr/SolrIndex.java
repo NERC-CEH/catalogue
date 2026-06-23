@@ -97,14 +97,14 @@ public class SolrIndex {
     private @Field List<String> infrastructureClass;
 
     public String getShortenedDescription(){
-        return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);
+        return shortenLongString(description);
     }
 
-    private String shortenLongString(String toShorten, int desiredLength){
+    private String shortenLongString(String toShorten){
         toShorten = Strings.nullToEmpty(toShorten);
-        if(toShorten.length() > desiredLength){
+        if (toShorten.length() > MAX_DESCRIPTION_CHARACTER_LENGTH) {
             return breakAtNextSpace(toShorten);
-        }else{
+        } else {
             return toShorten;
         }
     }
