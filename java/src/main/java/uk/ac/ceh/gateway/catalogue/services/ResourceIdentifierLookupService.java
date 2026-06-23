@@ -36,15 +36,15 @@ public class ResourceIdentifierLookupService {
      * save-time uniqueness check, which must see all owners (not just the top-ranked hit) so it can
      * exclude the record being saved before deciding a duplicate exists.
      *
-     * <p>The query targets {@code resourceIdentifierExact}, an un-analyzed (KeywordTokenizer +
-     * lowercase) field, so matching is exact and case-insensitive — unlike the analyzed
-     * {@code resourceIdentifier} field used for free-text search, which tokenizes and stems and
-     * cannot be relied on for identity comparison.
+     * <p>The {@code resourceIdentifier} Solr field is un-analyzed (KeywordTokenizer + lowercase), so
+     * a phrase query matches exactly and case-insensitively — the whole identifier is a single
+     * token, never split, stemmed or synonym-expanded, so it can be relied on for identity
+     * comparison.
      */
     public List<String> findDocumentIdsByRi(String identifier) {
         try {
             SolrQuery query = new SolrQuery();
-            query.setQuery("resourceIdentifierExact:\"" + escape(identifier) + "\"");
+            query.setQuery("resourceIdentifier:\"" + escape(identifier) + "\"");
             query.setFields("identifier");
             query.setRows(MAX_OWNERS);
 

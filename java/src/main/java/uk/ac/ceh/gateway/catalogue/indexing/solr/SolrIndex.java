@@ -60,7 +60,6 @@ public class SolrIndex {
     private @Field List<String> organisation;
     private @Field String recordType;
     private @Field List<String> resourceIdentifier;
-    private @Field List<String> resourceIdentifierExact;
     private @Field String availability;
     private @Field String resourceType;
     private @Field List<String> environmentalDomains;

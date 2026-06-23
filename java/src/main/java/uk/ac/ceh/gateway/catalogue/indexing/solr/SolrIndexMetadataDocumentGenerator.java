@@ -78,7 +78,6 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setUkcehService(grab(getKeywordsByVocabulary(document, VocabularyFacet.UKCEH_SERVICE.getFacetName()), Keyword::getValue))
             .setView(getViews(document))
             .setResourceIdentifier(buildResourceIdentifiers(document.getResourceIdentifiers()))
-            .setResourceIdentifierExact(buildResourceIdentifiers(document.getResourceIdentifiers()))
             .setMetadataDate(
                 Optional.ofNullable(document.getMetadataDate())
                     .map(date -> date.atZone(ZoneId.of("UTC")))
