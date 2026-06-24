@@ -1,40 +1,11 @@
 {
-  "responsibleParties": [
+  "authors": [
     {
       "displayName": "Author, 0.",
       "givenName": "Author",
       "familyName": "0.",
       "organisationName": "Organisation 0",
-      "role": "author",
       "fullName": "Author, 0."
-    },
-    {
-      "displayName": "",
-      "givenName": "",
-      "familyName": "",
-      "organisationName": "Organisation 0",
-      "role": "author",
-      "fullName": ""
-    },
-    {
-      "displayName": "",
-      "givenName": "Author",
-      "familyName": "",
-      "organisationName": "Organisation 0",
-      "role": "author",
-      "fullName": ""
-    },
-    {
-      "displayName": "",
-      "givenName": "",
-      "familyName": "Author",
-      "organisationName": "Organisation 0",
-      "role": "author",
-      "fullName": ""
-    },
-    {
-      "organisationName": "Organisation 0",
-      "role": "author"
     },
     {
       "displayName": "Distributor, 0.",

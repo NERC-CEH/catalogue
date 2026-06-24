@@ -92,8 +92,8 @@
 			</gmd:CI_Citation>
 		</gmd:citation>
 		<#include "__abstract.ftlx">
-		<#if responsibleParties?has_content>
-		<#list responsibleParties as contact>
+		<#if contacts?has_content>
+		<#list contacts as contact>
       <gmd:pointOfContact>
         <gmd:CI_ResponsibleParty>
 

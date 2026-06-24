@@ -1,12 +1,8 @@
 {
-  "responsibleParties": [
+  "publishers": [
     {
       "organisationName": "NERC EDS Environmental Information Data Centre",
-      "email": "info@eidc.ac.uk",
-      "role": "publisher"
-    },
-    {
-      "role": "distributor"
+      "email": "info@eidc.ac.uk"
     }
   ]
 }

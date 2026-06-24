@@ -32,7 +32,7 @@ import {
   TextareaView, TopicCategoryView,
   KeywordThemeView, KeywordVocabularyView,
   InspireThemeView, CheckboxView,
-  CffHarvestView, AdditionalInfoView
+  CffHarvestView, AdditionalInfoView, TextOnlyView
 } from '../views'
 import {
   AccessLimitation,
@@ -143,11 +143,21 @@ export default EditorView.extend({
       label: 'Authors',
       title: 'Authors',
       views: [
+        new TextOnlyView({
+          model: this.model,
+          label: 'Authors',
+          text: `\
+<div class="small">
+<p>Role and organisation name are mandatory. If email address is blank it is assumed to be "enquiries@ceh.ac.uk".</p>
+<p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID
+(e.g. <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p></div>\
+`
+        }),
+
         new PredefinedParentLargeView({
           model: this.model,
           ModelType: Contact,
           modelAttribute: 'authors',
-          label: 'Authors',
           ObjectInputView: ContactView,
           multiline: true,
           roleDefault: 'author',
@@ -160,17 +170,13 @@ export default EditorView.extend({
             Unaffiliated: {
               organisationName: 'Unaffiliated'
             }
-          },
-          helpText: `\
-<p>Role and organisation name are mandatory. If email address is blank it is assumed to be 'enquiries@ceh.ac.uk'.</p>
-<p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>\
-`
+          }
         })
       ]
     },
-   /*
-   ## Disable contributors section temporarily
-   ## When training of staff is completed this can be enabled
+    /*
+    ## Disable contributors section temporarily
+    ## When training of staff is completed this can be enabled
      {
       label: 'Contributors',
       title: 'Contributors',
