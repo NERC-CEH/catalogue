@@ -1,9 +1,11 @@
-<#import "skeleton.ftlh" as skeleton>
+<#import "html/skeleton.ftlh" as skeleton>
 <#--
   Branded, status-aware replacement for Spring Boot's Whitelabel error page.
-  Rendered via CustomErrorViewResolver. Uses only the always-present error
-  model attributes (status, path, timestamp); message/trace are deliberately
-  omitted so internal details are never leaked to users.
+  Resolved as the fallback error view (name "error") once the Whitelabel
+  StaticView is disabled via spring.web.error.whitelabel.enabled=false.
+  Uses only the always-present error model attributes (status, path,
+  timestamp); message/trace are deliberately omitted so internal details
+  are never leaked to users.
 -->
 <@skeleton.master title="Error" catalogue=catalogues.defaultCatalogue()>
   <div id="metadata" class="metadata container text-center mt-5">

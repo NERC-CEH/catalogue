@@ -76,7 +76,7 @@ class CustomErrorViewTest extends AbstractMvcTest {
             )
             .andExpect(status().isNotFound())
             .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-            .andExpect(view().name("html/error-page"))
+            .andExpect(view().name("error"))
             .andExpect(content().string(org.hamcrest.Matchers.containsString("Page not found")))
             .andExpect(content().string(org.hamcrest.Matchers.not(
                 org.hamcrest.Matchers.containsString("no explicit mapping for /error"))));
@@ -99,7 +99,7 @@ class CustomErrorViewTest extends AbstractMvcTest {
             )
             .andExpect(status().isInternalServerError())
             .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-            .andExpect(view().name("html/error-page"))
+            .andExpect(view().name("error"))
             .andExpect(content().string(org.hamcrest.Matchers.containsString("Something went wrong")));
     }
 }
