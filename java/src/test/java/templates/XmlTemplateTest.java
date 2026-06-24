@@ -77,7 +77,7 @@ public class XmlTemplateTest {
             .role("pointOfContact")
             .organisationIdentifier("https://ror.org/00000")
             .build();
-        gemini.setResponsibleParties(List.of(contact));
+        gemini.setResponsibleParties(List.of(contacts));
 
         model = new HashMap<>();
     }
@@ -90,7 +90,7 @@ public class XmlTemplateTest {
         model.put("metadataDateTime", "2024-08-05");
         model.put("resourceType", gemini.getResourceType());
         model.put("type", gemini.getType());
-        model.put("responsibleParties", gemini.getResponsibleParties());
+        model.put("responsibleParties", gemini.getContacts());
     }
 
     @SneakyThrows
