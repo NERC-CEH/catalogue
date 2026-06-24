@@ -102,7 +102,7 @@ class ResourceIdentifierLookupServiceTest {
     }
 
     @Test
-    void queriesTheExactField() throws Exception {
+    void queriesTheResourceIdentifierField() throws Exception {
         QueryResponse response = mock(QueryResponse.class);
         when(response.getResults()).thenReturn(new SolrDocumentList());
         when(solrClient.query(eq("documents"), any())).thenReturn(response);
@@ -112,8 +112,8 @@ class ResourceIdentifierLookupServiceTest {
         ArgumentCaptor<SolrParams> captor = ArgumentCaptor.forClass(SolrParams.class);
         verify(solrClient).query(eq("documents"), captor.capture());
         assertTrue(
-            captor.getValue().get("q").startsWith("resourceIdentifierExact:"),
-            "Uniqueness lookup must target the un-analyzed exact field, not the search field"
+            captor.getValue().get("q").startsWith("resourceIdentifier:"),
+            "Uniqueness lookup must target the un-analyzed resourceIdentifier field"
         );
     }
 
