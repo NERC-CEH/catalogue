@@ -24,4 +24,16 @@ public class Headers {
         headers.add(HttpHeaders.AUTHORIZATION, "Basic " + base64Creds);
         return headers;
     }
+
+    public static HttpHeaders withBearerToken(String token) {
+        try {
+            Objects.requireNonNull(token, "Token cannot be null");
+            if (token.isBlank()) throw new IllegalArgumentException("Token cannot be empty");
+        } catch (NullPointerException ex) {
+            throw new IllegalArgumentException(ex);
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+        return headers;
+    }
 }
