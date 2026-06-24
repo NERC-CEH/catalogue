@@ -70,9 +70,8 @@ class CffHarvestServiceTest {
 
         GeminiDocument doc = service.createGeminiFromCff("https://github.com/user/repo/blob/main/CITATION.cff");
 
-        assertNotNull(doc.getResponsibleParties());
-        assertEquals(1, doc.getResponsibleParties().size());
-        assertEquals("Alice Smith", doc.getResponsibleParties().get(0).getDisplayName());
-        assertEquals("author", doc.getResponsibleParties().get(0).getRole());
+        assertNotNull(doc.getAllContacts());
+        assertEquals(1, doc.getAllContacts().size());
+        assertEquals("Alice Smith", doc.getAuthors().get(0).getDisplayName());
     }
 }

@@ -207,22 +207,19 @@ public class DataciteService {
                 .map(m -> m.isPubliclyViewable(Permission.VIEW))
                 .orElse(false);
         boolean hasNonEmptyTitle = !Strings.isNullOrEmpty(document.getTitle());
-        boolean hasAuthor = Optional.ofNullable(document.getResponsibleParties())
+        boolean hasAuthor = !Optional.ofNullable(document.getAuthors())
                 .orElse(Collections.emptyList())
-                .stream()
-                .anyMatch((p) -> "author".equals(p.getRole()));
+                .isEmpty();
         boolean hasCorrectPublisher;
         if(canBeLegacy){
-            hasCorrectPublisher = Optional.ofNullable(document.getResponsibleParties())
+            hasCorrectPublisher = Optional.ofNullable(document.getPublishers())
                 .orElse(Collections.emptyList())
                 .stream()
-                .filter((p) -> "publisher".equals(p.getRole()))
                 .anyMatch((p) -> publisher.equals(p.getOrganisationName()) || legacyPublisher.equals(p.getOrganisationName()));
         }else{
-            hasCorrectPublisher = Optional.ofNullable(document.getResponsibleParties())
+            hasCorrectPublisher = Optional.ofNullable(document.getPublishers())
                     .orElse(Collections.emptyList())
                     .stream()
-                    .filter((p) -> "publisher".equals(p.getRole()))
                     .anyMatch((p) -> publisher.equals(p.getOrganisationName()));
         }
 
