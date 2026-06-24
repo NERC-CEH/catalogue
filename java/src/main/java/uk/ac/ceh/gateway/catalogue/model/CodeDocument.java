@@ -23,7 +23,7 @@ import java.util.List;
 public class CodeDocument extends AbstractMetadataDocument {
     private String assetType, version, masterUrl, primaryLanguage, secondaryLanguage;
     private List<String> packages, inputs, outputs;
-    private List<ResponsibleParty> responsibleParties;
+    private List<ResponsibleParty> contacts;
     private List<ResourceConstraint> useConstraints;
     private DatasetReferenceDate referenceDate;
     private List<InspireTheme> inspireThemes;
@@ -44,11 +44,11 @@ public class CodeDocument extends AbstractMetadataDocument {
 
     @JsonIgnore
     public List<ResponsibleParty> getOwners() {
-        return filterResponsibleParty(responsibleParties, "owner");
+        return filterResponsibleParty(contacts, "owner");
     }
 
     @JsonIgnore
     public List<ResponsibleParty> getContacts() {
-        return filterResponsibleParty(responsibleParties, "pointOfContact");
+        return filterResponsibleParty(contacts, "pointOfContact");
     }
 }

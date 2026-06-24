@@ -74,7 +74,7 @@ public class CehModel extends AbstractMetadataDocument implements WellKnownText 
         periodicReview;
 
     private List<VersionHistory> versionHistories;
-    private List<ResponsibleParty> responsibleParties;
+    private List<ResponsibleParty> contacts;
     private List<ProjectUsage> projectUsages;
 
     @Data
@@ -122,12 +122,12 @@ public class CehModel extends AbstractMetadataDocument implements WellKnownText 
 
     @JsonIgnore
     public List<ResponsibleParty> getSRO() {
-        return  filterResponsibleParty(responsibleParties, "owner");
+        return  filterResponsibleParty(contacts, "owner");
     }
 
     @JsonIgnore
     public List<ResponsibleParty> getOtherContacts() {
-        return excludeResponsibleParty(responsibleParties, "owner");
+        return excludeResponsibleParty(contacts, "owner");
     }
 
     @JsonIgnore

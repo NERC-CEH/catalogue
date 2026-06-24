@@ -425,7 +425,7 @@ public class RdfTurtleTest {
             document.setId("conttest");
             document.setUri(uri);
             document.setTitle("Contact test");
-            document.setPointsOfContact(List.of(
+            document.setContactPoints(List.of(
                 ResponsibleParty.builder()
                     .familyName("Smith")
                     .givenName("John")

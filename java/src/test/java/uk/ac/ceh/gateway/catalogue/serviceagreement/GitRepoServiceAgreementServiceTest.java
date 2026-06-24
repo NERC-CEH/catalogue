@@ -384,7 +384,7 @@ public class GitRepoServiceAgreementServiceTest {
         expected.setTitle("this is a test");
         expected.setMetadata(MetadataInfo.builder().state("draft").build());
         expected.setUseConstraints(List.of(serviceAgreement.getEndUserLicence()));
-        expected.setPointsOfContact(List.of(ResponsibleParty.builder().email("test").build()));
+        expected.setContactPoints(List.of(ResponsibleParty.builder().email("test").build()));
 
         givenPendingPublicationServiceAgreement();
 

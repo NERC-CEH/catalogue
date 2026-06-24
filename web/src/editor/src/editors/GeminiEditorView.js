@@ -205,7 +205,7 @@ export default EditorView.extend({
         new PredefinedParentLargeView({
           model: this.model,
           ModelType: Contact,
-          modelAttribute: 'pointsOfContact',
+          modelAttribute: 'contactPoints',
           label: 'Contact point',
           ObjectInputView: ContactView,
           multiline: true,
@@ -320,17 +320,10 @@ export default EditorView.extend({
         new ParentLargeView({
           model: this.model,
           ModelType: Contact,
-          modelAttribute: 'responsibleParties',
+          modelAttribute: 'otherContacts',
           label: 'Other contacts',
           ObjectInputView: ContactView,
-          multiline: true,
-          roleoptions: [
-            { value: 'mediator', label: 'Mediator' },
-            { value: 'originator', label: 'Originator' },
-            { value: 'resourceProvider', label: 'Resource provider' },
-            { value: 'stakeholder', label: 'Stakeholder' },
-            { value: 'user', label: 'User' }
-          ]
+          multiline: true
         })
       ]
     },

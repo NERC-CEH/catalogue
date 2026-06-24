@@ -9,10 +9,24 @@ export default ObjectInputView.extend({
 
   initialize (options) {
     this.template = template
+    this.hasRoleDefault = options.roleDefault !== undefined
     this.roleDefault = options.roleDefault || 'pointOfContact'
     this.optionTemplate = _.template('<option value="<%= value %>"><%= label %></option>')
-    this.options = Array.isArray(options.roleoptions) ? options.roleoptions : []
-
+    this.options = Array.isArray(options.roleoptions)
+      ? options.roleoptions
+      : [
+          { value: 'author', label: 'Author' },
+          { value: 'custodian', label: 'Custodian' },
+          { value: 'distributor', label: 'Distributor' },
+          { value: 'originator', label: 'Originator' },
+          { value: 'owner', label: 'Owner' },
+          { value: 'pointOfContact', label: 'Point of contact' },
+          { value: 'principalInvestigator', label: 'Principal investigator' },
+          { value: 'processor', label: 'Processor' },
+          { value: 'publisher', label: 'Publisher' },
+          { value: 'resourceProvider', label: 'Resource provider' },
+          { value: 'user', label: 'User' }
+        ]
     ObjectInputView.prototype.initialize.apply(this)
     createOrgAutocomplete('.orgAutocomplete', this)
 
@@ -29,7 +43,9 @@ export default ObjectInputView.extend({
         this.$('.role-select').append(this.optionTemplate(option))
       })
       this.$('.role-select').val(this.roleDefault)
-    } else {
+    }
+
+    if (this.hasRoleDefault) {
       this.$('.role').addClass('d-none')
     }
 

@@ -394,7 +394,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
 
     List<MetadataCheck> checkPublisher(DocumentContext parsed) {
         val publishers = parsed.read(
-                "$.responsibleParties[*][?(@.role == 'publisher')].['organisationName','email']",
+                "$.publishers[*].['organisationName','email']",
                 typeRefStringString
         );
         val toReturn = new ArrayList<>(checkAddress(publishers, "Publisher"));
@@ -419,7 +419,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
 
     List<MetadataCheck> checkCustodian(DocumentContext parsed) {
         val custodians = parsed.read(
-                "$.responsibleParties[*][?(@.role == 'custodian')].['organisationName','email']",
+                "$.custodians[*].['organisationName','email']",
                 typeRefStringString
                 );
         val toReturn = new ArrayList<>(checkAddress(custodians, "Custodian"));
@@ -445,7 +445,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     List<MetadataCheck> checkPointOfContact(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val pocs = parsed.read(
-                "$.responsibleParties[*][?(@.role == 'pointOfContact')].['organisationName','givenName','familyName','displayName','email']",
+                "$.contactPoints[*].['organisationName','givenName','familyName','displayName','email']",
                 typeRefStringString
         );
         if (pocs.isEmpty()) {
@@ -584,7 +584,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     List<MetadataCheck> checkAuthors(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val authors = parsed.read(
-                "$.responsibleParties[*][?(@.role == 'author')].['familyName','givenName','displayName','organisationName','email']",
+                "$.authors[*].['familyName','givenName','displayName','organisationName','email']",
                 typeRefStringString
         );
         if (authors.isEmpty()) {

@@ -27,7 +27,7 @@ public class NercModelUse extends AbstractMetadataDocument {
     private String
         completionDate;
 
-    private List<ResponsibleParty> responsibleParties;
+    private List<ResponsibleParty> contacts;
 
     private List<Funding> funding;
 

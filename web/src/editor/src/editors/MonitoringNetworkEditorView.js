@@ -98,7 +98,7 @@ export default EditorView.extend({
         new PredefinedParentView({
           model: this.model,
           ModelType: Contact,
-          modelAttribute: 'pointsOfContact',
+          modelAttribute: 'contacts',
           label: 'Point of contact',
           ObjectInputView: ContactView,
           roleDefault: 'pointOfContact',

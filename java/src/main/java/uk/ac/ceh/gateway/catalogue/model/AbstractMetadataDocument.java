@@ -108,18 +108,18 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
         );
     }
 
-    public List<ResponsibleParty> filterResponsibleParty(List<ResponsibleParty> responsibleParties, String filterVal) {
+    public List<ResponsibleParty> filterResponsibleParty(List<ResponsibleParty> contacts, String filterVal) {
         return CollectionFilter.filterByProperty(
-            responsibleParties,
+            contacts,
             ResponsibleParty::getRole,
             filterVal,
             false
         );
     }
 
-    public List<ResponsibleParty> excludeResponsibleParty(List<ResponsibleParty> responsibleParties, String filterVal) {
+    public List<ResponsibleParty> excludeResponsibleParty(List<ResponsibleParty> contacts, String filterVal) {
         return CollectionFilter.filterByProperty(
-            responsibleParties,
+            contacts,
             ResponsibleParty::getRole,
             filterVal,
             true

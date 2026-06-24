@@ -63,13 +63,13 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<Funding> funding;
     private List<BoundingBox> boundingBoxes;
     private List<ResponsibleParty> distributorContacts = new ArrayList<>();
-    private List<ResponsibleParty> responsibleParties = new ArrayList<>();
     private List<ResponsibleParty> contributors = new ArrayList<>();
     private List<ResponsibleParty> authors = new ArrayList<>();
-    private List<ResponsibleParty> pointsOfContact = new ArrayList<>();
+    private List<ResponsibleParty> contactPoints = new ArrayList<>();
     private List<ResponsibleParty> publishers = new ArrayList<>();
     private List<ResponsibleParty> rightsHolders = new ArrayList<>();
     private List<ResponsibleParty> custodians = new ArrayList<>();
+    private List<ResponsibleParty> otherContacts = new ArrayList<>();
     private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
@@ -103,7 +103,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         this.lineage = serviceAgreement.getLineage();
         this.boundingBoxes = serviceAgreement.getBoundingBoxes();
         this.funding = serviceAgreement.getFunding();
-        this.pointsOfContact.add(ResponsibleParty.builder()
+        this.contactPoints.add(ResponsibleParty.builder()
             .displayName(serviceAgreement.getDepositorName())
             .email(convertEmail(serviceAgreement.getDepositorContactDetails()))
             .build()
@@ -183,15 +183,35 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @JsonIgnore
-    public List<ResponsibleParty> getAllContacts() {
+    public List<ResponsibleParty> getContacts() {
         return Stream.of(
-            Optional.ofNullable(responsibleParties).orElseGet(Collections::emptyList),
+            Optional.ofNullable(otherContacts).orElseGet(Collections::emptyList),
             Optional.ofNullable(contributors).orElseGet(Collections::emptyList),
-            Optional.ofNullable(authors).orElseGet(Collections::emptyList),
-            Optional.ofNullable(pointsOfContact).orElseGet(Collections::emptyList),
-            Optional.ofNullable(publishers).orElseGet(Collections::emptyList),
-            Optional.ofNullable(rightsHolders).orElseGet(Collections::emptyList),
-            Optional.ofNullable(custodians).orElseGet(Collections::emptyList)
+            Optional.ofNullable(authors)
+                        .orElseGet(Collections::emptyList)
+                        .stream()
+                        .map(contact -> contact.withRole("author"))
+                        .toList(),
+            Optional.ofNullable(publishers)
+                        .orElseGet(Collections::emptyList)
+                        .stream()
+                        .map(contact -> contact.withRole("publisher"))
+                        .toList(),
+            Optional.ofNullable(contactPoints)
+                        .orElseGet(Collections::emptyList)
+                        .stream()
+                        .map(contact -> contact.withRole("pointOfContact"))
+                        .toList(),
+            Optional.ofNullable(rightsHolders)
+                        .orElseGet(Collections::emptyList)
+                        .stream()
+                        .map(contact -> contact.withRole("rightsHolder"))
+                        .toList(),
+            Optional.ofNullable(custodians)
+                        .orElseGet(Collections::emptyList)
+                        .stream()
+                        .map(contact -> contact.withRole("custodian"))
+                        .toList()
         )
             .flatMap(Collection::stream)
             .collect(Collectors.toCollection(ArrayList::new));
@@ -262,8 +282,8 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public List<ResponsibleParty> getResponsibleParties() {
-        return Optional.ofNullable(responsibleParties)
+    public List<ResponsibleParty> getOtherContacts() {
+        return Optional.ofNullable(otherContacts)
             .orElseGet(ArrayList::new);
     }
 
@@ -283,10 +303,10 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return !getCroissantConformity().isEmpty();
     }
 
-    private List<ResponsibleParty> responsiblePartyByRole(String role) {
-        return getResponsibleParties()
+    private List<ResponsibleParty> otherContactsByRole(String role) {
+        return getOtherContacts()
             .stream()
-            .filter(responsibleParty -> responsibleParty.getRole().equalsIgnoreCase(role))
+            .filter(otherContacts -> otherContacts.getRole().equalsIgnoreCase(role))
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
@@ -300,22 +320,22 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     @JsonIgnore
     public List<ResponsibleParty> getDepositors() {
-        return responsiblePartyByRole("depositor");
+        return otherContactsByRole("depositor");
     }
 
     @JsonIgnore
     public List<ResponsibleParty> getOriginators() {
-        return responsiblePartyByRole("originator");
+        return otherContactsByRole("originator");
     }
 
     @JsonIgnore
     public List<ResponsibleParty> getOwners() {
-        return responsiblePartyByRole("owner");
+        return otherContactsByRole("owner");
     }
 
     @JsonIgnore
     public List<ResponsibleParty> getResourceProviders() {
-        return responsiblePartyByRole("resourceProvider");
+        return otherContactsByRole("resourceProvider");
     }
 
     @JsonIgnore

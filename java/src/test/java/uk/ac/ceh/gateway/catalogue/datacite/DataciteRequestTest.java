@@ -210,7 +210,7 @@ public class DataciteRequestTest {
             .displayName("Patrick Stewart")
             .honorificPrefix(null)
             .familyName(null).build();
-        when(docMock.getPointsOfContact()).thenReturn(List.of(contact));
+        when(docMock.getContactPoints()).thenReturn(List.of(contact));
         when(docMock.getRightsHolders()).thenReturn(List.of(contact));
         when(docMock.getCustodians()).thenReturn(List.of(contact));
         List<DataciteContact> contributors = attributes.dataciteContact(docMock, "contributor");

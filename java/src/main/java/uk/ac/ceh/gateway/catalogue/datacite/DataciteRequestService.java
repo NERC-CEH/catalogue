@@ -273,11 +273,11 @@ public class DataciteRequestService {
                 contacts.add(dataciteContactHelper(author, "creator", null));
             }
         } else if (contactType.equals("contributor")) {
-            if (!document.getPointsOfContact().isEmpty()
+            if (!document.getContactPoints().isEmpty()
                 || !document.getRightsHolders().isEmpty()
                 || !document.getCustodians().isEmpty()) {
 
-                for (ResponsibleParty poc : document.getPointsOfContact()) {
+                for (ResponsibleParty poc : document.getContactPoints()) {
                     contacts.add(dataciteContactHelper(poc, "contributor", "ContactPerson"));
                 }
                 for (ResponsibleParty rh : document.getRightsHolders()) {

@@ -221,7 +221,7 @@ public class RoCrateTest {
             ));
 
             //  points of contact
-            gemini.setPointsOfContact(List.of(
+            gemini.setContactPoints(List.of(
                 ResponsibleParty.builder().organisationName("TMSP").email("pocs@example.com").organisationIdentifier("https://example.com/TMSP").build()
             ));
 

@@ -39,7 +39,8 @@ public class CffHarvestService {
 
         setResourceType(doc);
         setDates(doc, (String) cff.get("date-published"), (String) cff.get("date-released"));
-        setResponsibleParties(doc, cff);
+        setAuthors(doc, cff);
+        setContactPoints(doc, cff);
         setIdentifiers(doc, (String) cff.get("doi"));
         setLicense(doc, (String) cff.get("license"));
         setKeywords(doc, cff.get("keywords"));
@@ -80,15 +81,14 @@ public class CffHarvestService {
         }
     }
 
-    private void setResponsibleParties(GeminiDocument doc, Map<String, Object> cff) {
-        List<ResponsibleParty> parties = new ArrayList<>();
+    private void setAuthors(GeminiDocument doc, Map<String, Object> cff) {
+        List<ResponsibleParty> authors = new ArrayList<>();
 
         Object authorsObj = cff.get("authors");
-        if (authorsObj instanceof List<?> authors) {
-            for (Object a : authors) {
+        if (authorsObj instanceof List<?> authorList) {
+            for (Object a : authorList) {
                 if (a instanceof Map<?, ?> author) {
-                    parties.add(ResponsibleParty.builder()
-                        .role("author")
+                    authors.add(ResponsibleParty.builder()
                         .familyName((String) author.get("family-names"))
                         .givenName((String) author.get("given-names"))
                         .organisationName((String) author.get("affiliation"))
@@ -102,12 +102,19 @@ public class CffHarvestService {
             }
         }
 
+        if (!authors.isEmpty()) {
+            doc.setAuthors(authors);
+        }
+    }
+
+    private void setContactPoints(GeminiDocument doc, Map<String, Object> cff) {
+        List<ResponsibleParty> poc = new ArrayList<>();
+
         Object contactsObj = cff.get("contact");
-        if (contactsObj instanceof Iterable<?> contacts) {
-            for (Object c : contacts) {
+        if (contactsObj instanceof Iterable<?> contactList) {
+            for (Object c : contactList) {
                 if (c instanceof Map<?, ?> contact) {
-                    parties.add(ResponsibleParty.builder()
-                        .role("pointOfContact")
+                    poc.add(ResponsibleParty.builder()
                         .givenName((String) contact.get("given-names"))
                         .familyName((String) contact.get("family-names"))
                         .organisationName((String) contact.get("affiliation"))
@@ -118,10 +125,11 @@ public class CffHarvestService {
             }
         }
 
-        if (!parties.isEmpty()) {
-            doc.setResponsibleParties(parties);
+        if (!poc.isEmpty()) {
+            doc.setContactPoints(poc);
         }
     }
+
 
     private void setIdentifiers(GeminiDocument doc, String doi) {
         if (doi != null && !doi.isBlank()) {

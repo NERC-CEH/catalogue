@@ -55,7 +55,7 @@ public class NercModel extends AbstractMetadataDocument implements WellKnownText
 
     private List<OnlineResource> onlineResources;
     private List<Supplemental> references;
-    private List<ResponsibleParty> responsibleParties;
+    private List<ResponsibleParty> contacts;
     private List<QA> qa;
     private List<AdditionalInfo> additionalInfo, additionalTechnicalInfo;
     private List<ModelResolution> resolution;
