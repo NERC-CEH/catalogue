@@ -186,21 +186,25 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     public List<ResponsibleParty> getContacts() {
         return Stream.of(
             Optional.ofNullable(otherContacts).orElseGet(Collections::emptyList),
-            Optional.ofNullable(contributors).orElseGet(Collections::emptyList),
             Optional.ofNullable(authors)
                         .orElseGet(Collections::emptyList)
                         .stream()
                         .map(contact -> contact.withRole("author"))
                         .toList(),
-            Optional.ofNullable(publishers)
+            Optional.ofNullable(contributors)
                         .orElseGet(Collections::emptyList)
                         .stream()
-                        .map(contact -> contact.withRole("publisher"))
+                        .map(contact -> contact.withRole("contributor"))
                         .toList(),
             Optional.ofNullable(contactPoints)
                         .orElseGet(Collections::emptyList)
                         .stream()
                         .map(contact -> contact.withRole("pointOfContact"))
+                        .toList(),
+            Optional.ofNullable(publishers)
+                        .orElseGet(Collections::emptyList)
+                        .stream()
+                        .map(contact -> contact.withRole("publisher"))
                         .toList(),
             Optional.ofNullable(rightsHolders)
                         .orElseGet(Collections::emptyList)

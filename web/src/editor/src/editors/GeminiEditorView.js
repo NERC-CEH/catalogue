@@ -168,7 +168,10 @@ export default EditorView.extend({
         })
       ]
     },
-    {
+   /*
+   ## Disable contributors section temporarily
+   ## When training of staff is completed this can be enabled
+     {
       label: 'Contributors',
       title: 'Contributors',
       views: [
@@ -197,6 +200,7 @@ export default EditorView.extend({
         })
       ]
     },
+    */
     {
       label: 'Other contacts',
       title: 'Other contacts',
@@ -323,7 +327,14 @@ export default EditorView.extend({
           modelAttribute: 'otherContacts',
           label: 'Other contacts',
           ObjectInputView: ContactView,
-          multiline: true
+          multiline: true,
+          roleoptions: [
+            { value: 'mediator', label: 'Mediator' },
+            { value: 'originator', label: 'Originator' },
+            { value: 'resourceProvider', label: 'Resource provider' },
+            { value: 'stakeholder', label: 'Stakeholder' },
+            { value: 'user', label: 'User' }
+          ]
         })
       ]
     },
