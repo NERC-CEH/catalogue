@@ -122,12 +122,11 @@ public class XmlTemplateTest {
             .familyName("Doe")
             .organisationName("Example Research Institute")
             .email("contact@example.org")
-            .role("distributor")
             .build();
         gemini.setDistributorContacts(List.of(distributor));
 
         model.put("distributionFormats", gemini.getDistributionFormats());
-        model.put("distributorContacts", gemini.getDistributorContacts());
+        model.put("distributorContacts", gemini.getDistributors());
 
         // When
         String actual = template("xml/gemini.ftlx");
