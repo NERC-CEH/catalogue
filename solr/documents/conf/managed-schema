@@ -151,8 +151,7 @@
     <field name="pointOfContact" type="keywords"/>
     <field name="publicationDate" type="pdate"/>
     <field name="recordType" type="keywords" multiValued="false"/>
-    <field name="resourceIdentifier" type="keywords_lowercase"/>
-    <field name="resourceIdentifierExact" type="text_sort_ignore_case" multiValued="true"/>
+    <field name="resourceIdentifier" type="text_sort_ignore_case" multiValued="true"/>
     <field name="resourceType" type="keywords" multiValued="false"/>
     <field name="contacts" type="keywords_lowercase"/>
     <field name="rightsHolder" type="keywords"/>
