@@ -54,6 +54,14 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         log.info("Creating");
     }
 
+    public static final Set<String> ALLOWED_UKCEH_EMAILS = Set.of(
+        "enquiries@ceh.ac.uk",
+        "poms@ceh.ac.uk",
+        "ecn@ceh.ac.uk",
+        "fdri@ceh.ac.uk",
+        "pbms@ceh.ac.uk"
+    );
+
     @SneakyThrows
     public Results check(String id) {
         log.debug("Checking {}", id);
@@ -467,8 +475,10 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         pocs.stream()
             .map(poc -> poc.get("email"))
             .flatMap(Stream::ofNullable)
-            .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk"))
-            .forEach(email -> toReturn.add(new MetadataCheck(format("Point of contact's email address is %s", email), ERROR)));
+            .filter(email -> email.endsWith("@ceh.ac.uk") && !ALLOWED_UKCEH_EMAILS.contains(email))
+            .forEach(email -> toReturn.add(
+                new MetadataCheck(
+                    format("Point of contact's  email address is %s", email), ERROR)));
 
         return toReturn;
     }
@@ -596,6 +606,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {
             toReturn.add(new MetadataCheck("Author's affiliation (organisation name) is missing", ERROR));
         }
+
         authors.stream()
             .map(author -> author.get("email"))
             .flatMap(Stream::ofNullable)
@@ -603,7 +614,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             .forEach(email -> toReturn.add(new MetadataCheck(format("Author's email address is %s", email), ERROR)));
 
         return toReturn;
-    }
+        }
 
     private boolean fieldIsMissing(Map<String, String> map, String key) {
         return map == null

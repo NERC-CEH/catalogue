@@ -5,15 +5,14 @@
       "givenName": "Author",
       "familyName": "0.",
       "organisationName": "Organisation 0",
-      "fullName": "Author, 0."
+      "fullName": "Author, 0.",
+      "email": "author0@ceh.ac.uk"
     },
     {
-      "displayName": "Distributor, 0.",
-      "givenName": "Distributor",
-      "familyName": "0.",
+      "givenName": "Author",
       "organisationName": "Organisation 0",
-      "role": "distributor",
-      "fullName": "Distributor, 0."
+      "email": "enquiries@ceh.ac.uk"
     }
+
   ]
 }

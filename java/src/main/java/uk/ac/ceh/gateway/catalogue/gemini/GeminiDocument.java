@@ -322,6 +322,27 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
+
+    public List<ResponsibleParty> getAuthors() {
+        return new ArrayList<>(authors);
+    }
+
+    public List<ResponsibleParty> getPublishers() {
+        return new ArrayList<>(publishers);
+    }
+
+    public List<ResponsibleParty> getRightsHolders() {
+        return new ArrayList<>(rightsHolders);
+    }
+
+    public List<ResponsibleParty> getCustodians() {
+        return new ArrayList<>(custodians);
+    }
+
+    public List<ResponsibleParty> getContributors() {
+        return new ArrayList<>(contributors);
+    }
+
     @JsonIgnore
     public List<ResponsibleParty> getDepositors() {
         return otherContactsByRole("depositor");
