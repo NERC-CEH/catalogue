@@ -314,15 +314,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    private List<ResponsibleParty> distributorContactsByRole(String role) {
-        return Optional.ofNullable(distributorContacts)
-            .orElseGet(ArrayList::new)
-            .stream()
-            .filter(responsibleParty -> responsibleParty.getRole().equalsIgnoreCase(role))
-            .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-
     public List<ResponsibleParty> getAuthors() {
         return new ArrayList<>(authors);
     }
@@ -341,6 +332,11 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     public List<ResponsibleParty> getContributors() {
         return new ArrayList<>(contributors);
+    }
+
+    @JsonIgnore
+    public List<ResponsibleParty> getDistributors() {
+        return new ArrayList<>(distributorContacts);
     }
 
     @JsonIgnore
@@ -363,10 +359,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return otherContactsByRole("resourceProvider");
     }
 
-    @JsonIgnore
-    public List<ResponsibleParty> getDistributor() {
-        return distributorContactsByRole("distributor");
-    }
 
     public List<DistributionInfo> getDistributionFormats() {
         return Optional.ofNullable(distributionFormats)

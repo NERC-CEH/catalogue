@@ -270,13 +270,16 @@
   "notGEMINI": true,
   "hasOnlineServiceAgreement": true,
   "publicationDate": "2025-02-05T00:00:00.000+00:00",
+  "availability": "Available",
+  "topics": [
+    "http://onto.nerc.ac.uk/CEHMD/topic/1"
+  ],
   "authors": [
     {
       "givenName": "Author",
       "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
       "organisationIdentifier": "https://ror.org/00pggkr55",
-      "role": "author",
       "email": "enquiries@ceh.ac.uk",
       "nameIdentifier": "https://orcid.org/0000-0001-2345-6789",
       "address": {
@@ -289,17 +292,12 @@
       "fullName": "Contact, A."
     }
   ],
-  "availability": "Available",
-  "topics": [
-    "http://onto.nerc.ac.uk/CEHMD/topic/1"
-  ],
   "custodians": [
     {
       "givenName": "Custodian",
       "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",
       "organisationIdentifier": "https://ror.org/04xw4m193",
-      "role": "custodian",
       "email": "info@eidc.ac.uk",
       "nameIdentifier": "https://orcid.org/0000-3333-2345-6789",
       "address": {
@@ -312,13 +310,12 @@
       "fullName": "Test, C."
     }
   ],
-  "pointsOfContact": [
+  "contactPoints": [
     {
       "givenName": "pointOfContact",
       "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
       "organisationIdentifier": "https://ror.org/00pggkr55",
-      "role": "pointOfContact",
       "email": "enquiries@ceh.ac.uk",
       "nameIdentifier": "https://orcid.org/0000-2222-2345-6789",
       "address": {
@@ -337,7 +334,6 @@
       "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",
       "organisationIdentifier": "https://ror.org/04xw4m193",
-      "role": "publisher",
       "email": "info@eidc.ac.uk",
       "nameIdentifier": "https://orcid.org/0000-4444-2345-6789",
       "address": {
