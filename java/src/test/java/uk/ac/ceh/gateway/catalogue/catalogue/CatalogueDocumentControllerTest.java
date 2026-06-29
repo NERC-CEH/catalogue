@@ -19,7 +19,10 @@ import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
+import java.util.List;
+
 import static org.mockito.BDDMockito.given;
+import org.junit.jupiter.api.BeforeEach;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -39,8 +42,16 @@ public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class CatalogueDocumentControllerTest extends AbstractMvcTest {
     private @MockitoBean DocumentRepository documentRepository;
     private @MockitoBean(name="permission") PermissionService permissionService;
+    private @MockitoBean CatalogueService catalogueService;
 
     private final String file = "955b5a6e-dd3f-4b20-a3b5-a9d1d04ba052";
+
+    @BeforeEach
+    void givenDefaultCatalogue() {
+        given(catalogueService.defaultCatalogue()).willReturn(
+            Catalogue.builder().id("eidc").title("EIDC").url("https://eidc.ceh.ac.uk").contactUrl("").logo("").build()
+        );
+    }
 
     @SneakyThrows
     private void givenMetadataDocument() {
@@ -49,6 +60,27 @@ class CatalogueDocumentControllerTest extends AbstractMvcTest {
         document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
         given(documentRepository.read(file))
             .willReturn(document);
+    }
+
+    @SneakyThrows
+    private void givenMetadataDocumentWithCatalogueView() {
+        val document = new GeminiDocument();
+        document.setId(file);
+        document.setMetadata(
+            MetadataInfo.builder()
+                .catalogue("eidc")
+                .catalogueView(List.of("ukceh", "assist"))
+                .build()
+        );
+        given(documentRepository.read(file)).willReturn(document);
+    }
+
+    private void givenKnownCatalogues() {
+        given(catalogueService.retrieveAll()).willReturn(List.of(
+            Catalogue.builder().id("eidc").title("EIDC").url("").contactUrl("").logo("").build(),
+            Catalogue.builder().id("ukceh").title("UKCEH").url("").contactUrl("").logo("").build(),
+            Catalogue.builder().id("assist").title("ASSIST").url("").contactUrl("").logo("").build()
+        ));
     }
 
     private void givenUserCanView() {
@@ -137,6 +169,65 @@ class CatalogueDocumentControllerTest extends AbstractMvcTest {
             .andExpect(content().contentType(APPLICATION_JSON));
 
         //Then
+    }
+
+    @Test
+    public void getCurrentCatalogueView() throws Exception {
+        //Given
+        givenUserCanView();
+        givenMetadataDocumentWithCatalogueView();
+        val expectedResponse = """
+            {
+                "id": "955b5a6e-dd3f-4b20-a3b5-a9d1d04ba052",
+                "value": ["ukceh", "assist"]
+            }
+            """;
+
+        //When
+        mvc.perform(get("/documents/{file}/catalogue-view", file))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(content().json(expectedResponse));
+    }
+
+    @Test
+    public void getCatalogueViewForbiddenWhenNoViewPermission() throws Exception {
+        //Given
+        givenUserCanNotView();
+
+        //When
+        mvc.perform(get("/documents/{file}/catalogue-view", file))
+            .andExpect(status().isForbidden());
+    }
+
+    @SneakyThrows
+    @Test
+    public void updateCatalogueViewFiltersOutPrimaryAndUnknownCatalogues() throws Exception {
+        //Given
+        givenUserCanEdit();
+        givenKnownCatalogues();
+        val user = new CatalogueUser("test", "test@example.com");
+        val document = new GeminiDocument()
+            .setId(file)
+            .setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(documentRepository.read(file)).willReturn(document);
+        given(documentRepository.save(
+            user,
+            document,
+            file,
+            "Secondary catalogues of 955b5a6e-dd3f-4b20-a3b5-a9d1d04ba052 changed."
+        )).willReturn(document);
+
+        //When — sending "eidc" (primary, filtered out) and "unknown" (not in catalogue service)
+        mvc.perform(
+            put("/documents/{file}/catalogue-view", file)
+                .contentType(APPLICATION_JSON)
+                .content("""
+                    {"id": "955b5a6e-dd3f-4b20-a3b5-a9d1d04ba052", "value": ["ukceh", "eidc", "unknown"]}
+                    """)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON));
     }
 
 }

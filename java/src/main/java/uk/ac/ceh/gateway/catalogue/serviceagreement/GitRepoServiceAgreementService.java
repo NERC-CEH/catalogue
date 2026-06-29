@@ -1,7 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +18,6 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
@@ -102,16 +99,12 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @SneakyThrows
     public void doTransitionAction(CatalogueUser user, String id, String transitionId) {
         switch (transitionId) {
-            case ServiceAgreementPublicationConfig.draftToSubmittedId -> {
-                submitServiceAgreement(user, id);
-            }
+            case ServiceAgreementPublicationConfig.draftToSubmittedId -> submitServiceAgreement(user, id);
             case ServiceAgreementPublicationConfig.submittedToDraftId, ServiceAgreementPublicationConfig.underReviewToDraftId -> {
                 ServiceAgreement serviceAgreement = get(user, id);
                 addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
             }
-            case ServiceAgreementPublicationConfig.readyForAgreementToAgreedId -> {
-                publishServiceAgreement(user, id);
-            }
+            case ServiceAgreementPublicationConfig.readyForAgreementToAgreedId -> publishServiceAgreement(user, id);
             case ServiceAgreementPublicationConfig.readyForAgreementToDraftId, ServiceAgreementPublicationConfig.agreedToDraftId -> {
                 ServiceAgreement serviceAgreement = get(user, id);
                 addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
@@ -339,10 +332,5 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         log.debug("Service Agreement: {}", serviceAgreement);
 
         return serviceAgreement;
-    }
-
-    private void updateState(CatalogueUser user, String id, ServiceAgreement serviceAgreement, String state) {
-        val metadataInfo = serviceAgreement.getMetadata();
-        updateMetadata(user, id, metadataInfo.withState(state));
     }
 }

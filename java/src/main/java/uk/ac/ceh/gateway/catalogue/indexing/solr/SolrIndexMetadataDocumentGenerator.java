@@ -45,6 +45,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setAssistResearchThemes(grab(getKeywordsByVocabulary(document, VocabularyFacet.ASSIST_RESEARCH_THEMES.getFacetName()), Keyword::getValue))
             .setAssistTopics(grab(getKeywordsByVocabulary(document, VocabularyFacet.ASSIST_TOPICS.getFacetName()), Keyword::getValue))
             .setCatalogue(document.getCatalogue())
+            .setCatalogueView(getCatalogueView(document))
             .setDescription(document.getDescription())
             .setDocumentType(getDocumentType(document))
             .setIdentifier(identifierService.generateFileId(document.getId()))
@@ -106,6 +107,13 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
         return Optional.ofNullable(document)
             .map(MetadataDocument::getMetadata)
             .map(m -> m.getIdentities(Permission.VIEW))
+            .orElse(Collections.emptyList());
+    }
+
+    private List<String> getCatalogueView(MetadataDocument document) {
+        return Optional.ofNullable(document)
+            .map(MetadataDocument::getMetadata)
+            .map(MetadataInfo::getCatalogueView)
             .orElse(Collections.emptyList());
     }
 

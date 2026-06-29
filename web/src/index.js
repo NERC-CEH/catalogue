@@ -21,7 +21,7 @@ import {
   SampleArchiveEditorView, ServiceAgreementEditorView, UkemsDocumentEditorView
 } from './editor/src/editors'
 import { EditorMetadata, LinkEditorMetadata, GeminiEditorMetadata } from './editor/src'
-import { Catalogue, CatalogueView } from './catalogue/src/CatalogueApp'
+import { Catalogue, CatalogueView, CatalogueViewModel, CatalogueViewView } from './catalogue/src/CatalogueApp'
 import { StudyAreaView } from './study-area/src/View'
 import { PermissionApp, PermissionAppView, PermissionRouter } from './permission/src/PermissionApp'
 import SearchApp from './search/src/SearchApp'
@@ -36,6 +36,7 @@ import DepositRequestApp from './deposit-request/src/model/DepositRequestApp'
 import DepositRequestFormView from './deposit-request/src/view/DepositRequestFormView'
 
 const $catalogue = $('.catalogue-control')
+const $catalogueView = $('.catalogue-view-control')
 const $documentUpload = $('#document-upload')
 const $edit = $('.edit-control')
 const $serviceAgreement = $('.service-agreement')
@@ -44,6 +45,10 @@ const $clone = $('.clone-control')
 
 if ($catalogue.length) {
   initCatalogue()
+}
+
+if ($catalogueView.length) {
+  initCatalogueView()
 }
 
 if ($edit.length) {
@@ -110,6 +115,22 @@ function initCatalogue () {
       $.getJSON('/catalogues', function (data) {
         model.options = data.map(val => ({ value: val.id, label: val.title }))
         new CatalogueView({
+          el: '#metadata',
+          model
+        })
+      })
+    })
+  })
+}
+
+function initCatalogueView () {
+  $catalogueView.on('click', function (event) {
+    event.preventDefault()
+    $.getJSON($(event.target).attr('href'), function (data) {
+      const model = new CatalogueViewModel(data)
+      $.getJSON(`/catalogues?identifier=${data.id}`, function (catalogues) {
+        model.catalogues = catalogues
+        new CatalogueViewView({
           el: '#metadata',
           model
         })
