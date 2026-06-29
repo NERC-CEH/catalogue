@@ -45,7 +45,7 @@ public class CachedDataRepository {
      * The current HEAD revision id. Single-entry cache; evicted on every save/delete so the next
      * read picks up the new commit.
      */
-    @Cacheable(REVISION_ID_CACHE)
+    @Cacheable(value = REVISION_ID_CACHE, key = "'HEAD'")
     @SneakyThrows
     public String getLatestRevisionId() {
         return repo.getLatestRevision().getRevisionID();
