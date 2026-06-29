@@ -44,7 +44,7 @@ public class ResourceIdentifierLookupService {
     public List<String> findDocumentIdsByRi(String identifier) {
         try {
             SolrQuery query = new SolrQuery();
-            query.setQuery("resourceIdentifier:\"" + escape(identifier) + "\"");
+            query.setQuery( "resourceIdentifier:\"" + escape(identifier) + "\" AND -documentType:LINK_DOCUMENT");
             query.setFields("identifier");
             query.setRows(MAX_OWNERS);
 
