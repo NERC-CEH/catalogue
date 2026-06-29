@@ -102,7 +102,11 @@
 
 <#macro noDataTransfer>
     <div class="no-issue alert alert-danger">
-        <b>ERROR</b><br>There is no Jira issue for this deposit
+        <#if jiraUnavailable!false>
+            <b>ERROR</b><br>Unable to contact JIRA right now. The deposit may still have a data-transfer issue; please try again shortly.
+        <#else>
+            <b>ERROR</b><br>There is no Jira issue for this deposit
+        </#if>
     </div>
 </#macro>
 

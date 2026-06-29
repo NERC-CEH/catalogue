@@ -10,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.client.HttpClientErrorException;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -127,6 +129,11 @@ class UploadControllerTest extends AbstractMvcTest {
         dataTransfer.setKey(jiraKey);
         given(jiraService.retrieveDataTransferIssue(datasetId))
             .willReturn(Optional.of(dataTransfer));
+    }
+
+    private void givenJiraUnavailable() {
+        given(jiraService.retrieveDataTransferIssue(datasetId))
+            .willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN));
     }
 
     private void givenClosedDataTransferIssue() {
@@ -293,6 +300,31 @@ class UploadControllerTest extends AbstractMvcTest {
             .andExpect(model().attribute("isScheduled", false))
             .andExpect(model().attribute("isInProgress", false))
             .andExpect(model().attributeExists("datastore", "dropbox", "metadata", "maxFileSize"));
+
+    }
+
+    @Test
+    @SneakyThrows
+    void getPageWhenJiraUnavailable() {
+        //given
+        givenUserCanUpload();
+        givenUserIsNonAdmin();
+        givenGeminiDocument();
+        givenJiraUnavailable();
+        givenFreemarkerConfiguration();
+        givenDefaultCatalogue();
+
+        //when JIRA cannot be contacted the page must still render (not 500)
+        mvc.perform(
+                get("/upload/{datasetId}", datasetId)
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+            .andExpect(view().name("html/upload/hubbub/upload"))
+            .andExpect(model().attribute("id", datasetId))
+            .andExpect(model().attribute("title", "Foo"))
+            .andExpect(model().attribute("hasDataTransfer", false))
+            .andExpect(model().attribute("jiraUnavailable", true));
 
     }
 

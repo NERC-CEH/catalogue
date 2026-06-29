@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
+import static uk.ac.ceh.gateway.catalogue.util.Headers.withBearerToken;
 
 @Slf4j
 @Service
@@ -28,22 +28,19 @@ public class DepositRequestService {
 
     private final RestTemplate restTemplate;
     private final String jiraEndpoint;
-    private final String username;
-    private final String password;
+    private final String token;
     private final String projectKey;
     private final JsonMapper mapper = JsonMapper.builder().build();
 
     public DepositRequestService(
         @Qualifier("normal") RestTemplate restTemplate,
-        @Value("${jira.username}") String username,
-        @Value("${jira.password}") String password,
+        @Value("${jira.token}") String jiraToken,
         @Value("${jira.address}") String jiraAddress,
         @Value("${jira.depositRequest.project}") String projectKey
     ) {
         this.restTemplate = restTemplate;
         this.jiraEndpoint = jiraAddress;
-        this.username = username;
-        this.password = password;
+        this.token = jiraToken;
         this.projectKey = projectKey;
         log.info("Creating DepositRequestService");
     }
@@ -60,7 +57,7 @@ public class DepositRequestService {
         try {
             String jsonPayload = buildJiraPayload(form);
 
-            val headers = withBasicAuth(username, password);
+            val headers = withBearerToken(token);
             headers.setContentType(APPLICATION_JSON);
             val request = new HttpEntity<>(jsonPayload, headers);
 
