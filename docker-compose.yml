@@ -102,7 +102,7 @@ services:
       LEGILO_PASSWORD: password
       FUSEKI_SPARQL_ENDPOINT: http://fuseki:3030/ds/sparql
       FUSEKI_DATASET_URL: http://fuseki:3030/ds
-      SPRING_PROFILES_ACTIVE: development,server-eidc,search-basic,cache,service-agreement,upload-simple
+      SPRING_PROFILES_ACTIVE: development,server-eidc,search-basic,service-agreement,upload-simple
     env_file:
       - path: secrets.env
         required: false
