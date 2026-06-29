@@ -117,6 +117,23 @@ class ResourceIdentifierLookupServiceTest {
         );
     }
 
+    @Test
+    void excludesLinkDocumentsFromOwnership() throws Exception {
+        QueryResponse response = mock(QueryResponse.class);
+        when(response.getResults()).thenReturn(new SolrDocumentList());
+        when(solrClient.query(eq("documents"), any())).thenReturn(response);
+
+        service.findDocumentIdsByRi("doi:10.5285/abc");
+
+        ArgumentCaptor<SolrParams> captor = ArgumentCaptor.forClass(SolrParams.class);
+        verify(solrClient).query(eq("documents"), captor.capture());
+        assertTrue(
+            captor.getValue().get("q").contains("-documentType:LINK_DOCUMENT"),
+            "Link documents mirror an original's resourceIdentifier, so they must be "
+                + "excluded from ownership to avoid false duplicate-id conflicts"
+        );
+    }
+
     private SolrDocument docWithIdentifier(String id) {
         SolrDocument doc = new SolrDocument();
         doc.setField("identifier", id);
