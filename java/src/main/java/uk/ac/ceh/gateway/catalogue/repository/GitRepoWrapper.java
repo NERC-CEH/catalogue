@@ -3,6 +3,8 @@ package uk.ac.ceh.gateway.catalogue.repository;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -36,6 +38,11 @@ public class GitRepoWrapper {
     }
 
     @SneakyThrows
+    @Caching(evict = {
+        @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.meta'"),
+        @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.raw'"),
+        @CacheEvict(value = CachedDataRepository.REVISION_ID_CACHE, allEntries = true)
+    })
     public void save(CatalogueUser user, String id, String message, MetadataInfo metadataInfo, DataWriter dataWriter) {
         Optional<MonitoringFacility> preUpdateFacility = facilityEventService.getMonitoringFacility(id);
         repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataInfo, o))
@@ -45,6 +52,11 @@ public class GitRepoWrapper {
         facilityEventService.postRemovedEvent(preUpdateFacility, postUpdateFacility);
     }
 
+    @Caching(evict = {
+        @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.meta'"),
+        @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.raw'"),
+        @CacheEvict(value = CachedDataRepository.REVISION_ID_CACHE, allEntries = true)
+    })
     public DataRevision<CatalogueUser> delete(CatalogueUser user, String id) throws DataRepositoryException {
         Optional<FacilityBelongToRemovedEvent> facilityDeletedEvent = facilityEventService.getFacilityDeletedEvent(id);
         DataRevision<CatalogueUser> revision = repo.deleteData(id + ".meta")
