@@ -43,10 +43,12 @@ public class GitRepoWrapper {
     })
     public void save(CatalogueUser user, String id, String message, MetadataInfo metadataInfo, DataWriter dataWriter) throws DataRepositoryException {
         Optional<MonitoringFacility> preUpdateFacility = facilityEventService.getMonitoringFacility(id);
-        repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataInfo, o))
+        DataRevision<CatalogueUser> revision = repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataInfo, o))
             .submitData(String.format("%s.raw", id), dataWriter)
             .commit(user, message);
-        Optional<MonitoringFacility> postUpdateFacility = facilityEventService.getMonitoringFacility(id);
+        // Read the post-update facility at the commit's own revision: this method's @CacheEvict has not yet run,
+        // so the cached "latest" still points at the pre-commit revision and would return stale (or missing) content.
+        Optional<MonitoringFacility> postUpdateFacility = facilityEventService.getMonitoringFacility(id, revision.getRevisionID());
         facilityEventService.postRemovedEvent(preUpdateFacility, postUpdateFacility);
     }
 

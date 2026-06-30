@@ -58,16 +58,21 @@ public class NetworkIndexingService {
     /**
      * When a document is created or updated, if it is a monitoring facility, then the bounding box of any monitoring
      * network documents it belongs to may need their bounding box updated.
+     * <p>The reads must use the revision of the commit that triggered this indexing, not the cached "latest". The
+     * triggering save fires its {@code DataSubmittedEvent} synchronously inside {@code commit()}, before the
+     * write-path {@code @CacheEvict} runs, so the cached HEAD still points at the pre-commit revision. Reading a
+     * brand-new document at that stale revision throws {@code GitFileNotFoundException}.
      * @param toIndex List of ids of documents that have been created or updated
+     * @param revision the revision of the commit that triggered indexing
      * @throws DocumentIndexingException
      */
     @SneakyThrows
-    public void indexDocuments(List<String> toIndex) throws DocumentIndexingException {
+    public void indexDocuments(List<String> toIndex, String revision) throws DocumentIndexingException {
         toIndex.stream().forEach(id -> {
             try {
-                MetadataDocument document = bundledReader.readBundle(id);
+                MetadataDocument document = bundledReader.readBundle(id, revision);
                 if(document instanceof MonitoringFacility facility) {
-                    updateRelatedNetworks(facility);
+                    updateRelatedNetworks(facility, revision);
                 }
             } catch (IOException | PostProcessingException e) {
                 throw new RuntimeException(e);
@@ -87,7 +92,10 @@ public class NetworkIndexingService {
             try {
                 MetadataDocument doc = bundledReader.readBundle(id);
                 if(doc instanceof MonitoringNetwork networkDoc){
-                    updateBoundingBox(networkDoc, Optional.empty(), Optional.of(facilityId), facilityId);
+                    // Delete path: the facility has gone, so there is no triggering commit revision to read at and
+                    // nothing to include (mustIncludeFacility is empty), meaning addFacility never reads. The
+                    // remaining reads operate on the surviving networks at latest, so revision is unused here.
+                    updateBoundingBox(networkDoc, Optional.empty(), Optional.of(facilityId), facilityId, null);
                 }
             } catch (IOException | PostProcessingException e) {
                 throw new RuntimeException(e);
@@ -98,15 +106,16 @@ public class NetworkIndexingService {
     /**
      * Pull out the parent networks of the facility and update their bounding box if required
      * @param facility The facility that has been created or edited
+     * @param revision the revision of the commit that triggered indexing
      */
-    private void updateRelatedNetworks(MonitoringFacility facility){
+    private void updateRelatedNetworks(MonitoringFacility facility, String revision){
         facility.getRelationships().stream()
             .filter(this::isBelongsTo)
             .forEach(r -> {
                 try {
-                    MetadataDocument doc = bundledReader.readBundle(r.getTarget());
+                    MetadataDocument doc = bundledReader.readBundle(r.getTarget(), revision);
                     if(doc instanceof MonitoringNetwork networkDoc) {
-                        this.updateBoundingBox(networkDoc, Optional.of(facility.getId()), Optional.empty(), facility.getId());
+                        this.updateBoundingBox(networkDoc, Optional.of(facility.getId()), Optional.empty(), facility.getId(), revision);
                     }
                 } catch (IOException | PostProcessingException e) {
                     throw new RuntimeException(e);
@@ -126,10 +135,10 @@ public class NetworkIndexingService {
      *                            must not be present in the list
      */
     @SneakyThrows
-    private void updateBoundingBox(MonitoringNetwork networkDoc, Optional<String> mustIncludeFacility, Optional<String> mustExcludeFacility, String intiatingFacility){
+    private void updateBoundingBox(MonitoringNetwork networkDoc, Optional<String> mustIncludeFacility, Optional<String> mustExcludeFacility, String intiatingFacility, String revision){
         List<Link> linkedFacilities = lookupService.inverseRelationships(networkDoc.getUri(), Ontology.DCTERMS_ISPARTOF.getURI());
         List<BoundingBox> extantFacilityBBoxes = getBboxesWithoutExcluded(linkedFacilities, mustExcludeFacility);
-        addFacility(linkedFacilities, extantFacilityBBoxes, mustIncludeFacility);
+        addFacility(linkedFacilities, extantFacilityBBoxes, mustIncludeFacility, revision);
         Optional<BoundingBox> combinedBbox = getEnvelope(extantFacilityBBoxes);
         // Update the network
         networkDoc.setBoundingBox(combinedBbox.orElse(null));
@@ -161,11 +170,11 @@ public class NetworkIndexingService {
 
 
     @SneakyThrows
-    private void addFacility(List<Link> linkedFacilities, List<BoundingBox> extantFacilityBBoxes, Optional<String> mustIncludeFacility) {
+    private void addFacility(List<Link> linkedFacilities, List<BoundingBox> extantFacilityBBoxes, Optional<String> mustIncludeFacility, String revision) {
         if(mustIncludeFacility.isPresent()) {
             if (linkedFacilities.stream().noneMatch(l -> l.getHref().contains(mustIncludeFacility.get()))) {
                 extantFacilityBBoxes.add(
-                    ((MonitoringFacility) bundledReader.readBundle(mustIncludeFacility.get())).getGeometry().getBoundingBox().get()
+                    ((MonitoringFacility) bundledReader.readBundle(mustIncludeFacility.get(), revision)).getGeometry().getBoundingBox().get()
                 );
             }
         }

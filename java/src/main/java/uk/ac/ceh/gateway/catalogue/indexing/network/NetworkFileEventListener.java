@@ -26,7 +26,9 @@ public class NetworkFileEventListener {
     @Subscribe
     public void indexDocument(DataSubmittedEvent<?> event) throws DocumentIndexingException, DataRepositoryException {
         List<String> filenames = listingService.filterFilenamesEitherExtension(event.getFilenames());
-        service.indexDocuments(filenames);
+        String revisionID = event.getDataRepository().getLatestRevision().getRevisionID();
+        log.debug("About to index network documents: {} for revision: {}", filenames, revisionID);
+        service.indexDocuments(filenames, revisionID);
     }
 
     @Subscribe

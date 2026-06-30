@@ -46,9 +46,22 @@ public class FacilityEventService {
     }
 
     public Optional<MonitoringFacility> getMonitoringFacility(String id) {
+        return toMonitoringFacility(() -> bundledReader.readBundle(id));
+    }
+
+    /**
+     * Read a facility at an explicit revision. Used for the post-commit read in {@code GitRepoWrapper.save}: the
+     * triggering commit's {@code @CacheEvict} has not yet run, so the cached "latest" still resolves to the
+     * pre-commit revision and would return stale (or, for a new document, missing) content.
+     */
+    public Optional<MonitoringFacility> getMonitoringFacility(String id, String revision) {
+        return toMonitoringFacility(() -> bundledReader.readBundle(id, revision));
+    }
+
+    private Optional<MonitoringFacility> toMonitoringFacility(BundleReader reader) {
         MetadataDocument document = null;
         try {
-            document = bundledReader.readBundle(id);
+            document = reader.read();
         } catch (IOException e) {
             // It is correct that the document may not yet exist,
             // if the exception is for any other reason then throw it
@@ -62,6 +75,11 @@ public class FacilityEventService {
             return Optional.of(facility);
         }
         return Optional.empty();
+    }
+
+    @FunctionalInterface
+    private interface BundleReader {
+        MetadataDocument read() throws IOException, PostProcessingException;
     }
 
     /**

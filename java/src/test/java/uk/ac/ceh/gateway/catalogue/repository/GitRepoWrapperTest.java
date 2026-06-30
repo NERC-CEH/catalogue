@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.components.datastore.DataOngoingCommit;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
+import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.datastore.DataWriter;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -46,15 +47,20 @@ public class GitRepoWrapperTest {
             throw new UnsupportedOperationException("Not supported yet.");
         };
         DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
+        DataRevision<CatalogueUser> revision = mock(DataRevision.class);
 
         given(repo.submitData(eq("test.meta"), any())).willReturn(dataOngoingCommit);
         given(dataOngoingCommit.submitData("test.raw", dataWriter)).willReturn(dataOngoingCommit);
+        given(dataOngoingCommit.commit(user, "template: test")).willReturn(revision);
+        given(revision.getRevisionID()).willReturn("rev123");
 
         //When
         repoWrapper.save(user, id, message, metadataInfo, dataWriter);
 
         //Then
         verify(dataOngoingCommit).commit(user, "template: test");
+        // The post-commit facility read must happen at the commit's revision, not the cache-stale latest
+        verify(facilityEventService).getMonitoringFacility(id, "rev123");
     }
 
     @Test
