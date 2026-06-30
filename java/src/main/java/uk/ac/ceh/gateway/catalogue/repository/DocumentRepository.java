@@ -1,10 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.repository;
 
-import java.io.InputStream;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+
+import java.io.InputStream;
 
 public interface DocumentRepository {
 
