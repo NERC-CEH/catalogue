@@ -22,7 +22,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @ToString(onlyExplicitlyIncluded = true)
@@ -36,14 +38,14 @@ public class GitDocumentRepository implements DocumentRepository {
     private final GitRepoWrapper repo;
 
     public GitDocumentRepository(
-            DocumentTypeLookupService documentTypeLookupService,
-            DocumentReadingService documentReader,
-            DocumentIdentifierService documentIdentifierService,
-            DocumentWritingService documentWriter,
-            BundledReaderService<MetadataDocument> documentBundleReader,
-            ResourceIdentifierLookupService resourceIdentifierLookupService,
-            GitRepoWrapper repo
-            ) {
+        DocumentTypeLookupService documentTypeLookupService,
+        DocumentReadingService documentReader,
+        DocumentIdentifierService documentIdentifierService,
+        DocumentWritingService documentWriter,
+        BundledReaderService<MetadataDocument> documentBundleReader,
+        ResourceIdentifierLookupService resourceIdentifierLookupService,
+        GitRepoWrapper repo
+    ) {
         this.documentTypeLookupService = documentTypeLookupService;
         this.documentReader = documentReader;
         this.documentIdentifierService = documentIdentifierService;
@@ -52,68 +54,66 @@ public class GitDocumentRepository implements DocumentRepository {
         this.resourceIdentifierLookupService = resourceIdentifierLookupService;
         this.repo = repo;
         log.info("Creating");
-            }
+    }
 
     @Override
     public MetadataDocument read(
-            String file
-            ) throws DocumentRepositoryException {
+        String file
+    ) throws DocumentRepositoryException {
         try {
             MetadataDocument document = documentBundleReader.readBundle(file);
-            if (document instanceof LinkDocument) {
-                LinkDocument d = (LinkDocument) document;
+            if (document instanceof LinkDocument d) {
                 d.setOriginal(
-                        documentBundleReader.readBundle(
-                            d.getLinkedDocumentId()
-                            )
-                        );
+                    documentBundleReader.readBundle(
+                        d.getLinkedDocumentId()
+                    )
+                );
             }
             if (document != null) document.validate();
             return document;
         } catch (IOException | UnknownContentTypeException | PostProcessingException ex) {
             throw new DocumentRepositoryException(
-                    String.format("Cannot read file: %s", file),
-                    ex
-                    );
+                String.format("Cannot read file: %s", file),
+                ex
+            );
         }
-            }
+    }
 
     @Override
     public MetadataDocument read(
-            String file,
-            String revision
-            ) throws DocumentRepositoryException {
+        String file,
+        String revision
+    ) throws DocumentRepositoryException {
         try {
             MetadataDocument document = documentBundleReader.readBundle(file, revision);
 
-            if (document instanceof LinkDocument) {
-                LinkDocument d = (LinkDocument) document;
+            if (document instanceof LinkDocument d) {
                 d.setOriginal(
-                        documentBundleReader.readBundle(
-                            d.getLinkedDocumentId(),
-                            revision
-                            )
-                        );
+                    documentBundleReader.readBundle(
+                        d.getLinkedDocumentId(),
+                        revision
+                    )
+                );
             }
             if (document != null) document.validate();
             return document;
         } catch (IOException | PostProcessingException | UnknownContentTypeException ex) {
             throw new DocumentRepositoryException(
-                    String.format("Cannot read file: %s at revision: %s", file, revision),
-                    ex
-                    );
+                String.format("Cannot read file: %s at revision: %s", file, revision),
+                ex
+            );
         }
-            }
+    }
 
     @Override
     public MetadataDocument save(
-            CatalogueUser user,
-            InputStream inputStream,
-            MediaType mediaType,
-            String documentType,
-            String catalogue,
-            String message
-            ) throws DocumentRepositoryException {
+        CatalogueUser user,
+        InputStream inputStream,
+        MediaType mediaType,
+        String documentType,
+        String catalogue,
+        String message
+    ) throws DocumentRepositoryException {
         try {
             Path tmpFile = Files.createTempFile("upload", null); //Create a temp file to upload the input stream to
             String id;
@@ -123,7 +123,7 @@ public class GitDocumentRepository implements DocumentRepository {
             try {
                 Files.copy(inputStream, tmpFile, StandardCopyOption.REPLACE_EXISTING); //copy the file so that we can pass over multiple times
 
-                //the documentReader will close the underlying inputstream
+                //the documentReader will close the underlying input stream
                 data = documentReader.read(Files.newInputStream(tmpFile), mediaType, metadataType);
                 MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(data, user, mediaType, catalogue); //get the metadata info
                 data.setMetadata(metadataInfo);
@@ -132,8 +132,7 @@ public class GitDocumentRepository implements DocumentRepository {
                     .orElse(documentIdentifierService.generateFileId());
 
                 repo.save(user, id, message, metadataInfo, (o) -> Files.copy(tmpFile, o));
-            }
-            finally {
+            } finally {
                 Files.delete(tmpFile); //file no longer needed
             }
 
@@ -141,111 +140,108 @@ public class GitDocumentRepository implements DocumentRepository {
 
         } catch (IOException | UnknownContentTypeException ex) {
             throw new DocumentRepositoryException(
-                    String.format("File upload save failed for user: %s", user.getUsername()),
-                    ex
-                    );
+                String.format("File upload save failed for user: %s", user.getUsername()),
+                ex
+            );
         }
-            }
+    }
 
     @Override
     public MetadataDocument saveNew(
-            CatalogueUser user,
-            MetadataDocument document,
-            String catalogue,
-            String message
-            ) throws DocumentRepositoryException {
+        CatalogueUser user,
+        MetadataDocument document,
+        String catalogue,
+        String message
+    ) throws DocumentRepositoryException {
         try {
-            return save(user,
-                    document,
-                    createMetadataInfoWithDefaultPermissions(document, user, MediaType.APPLICATION_JSON, catalogue),
-                    documentIdentifierService.generateFileId(),
-                    message
-                    );
+            return save(
+                user,
+                document,
+                createMetadataInfoWithDefaultPermissions(document, user, MediaType.APPLICATION_JSON, catalogue),
+                documentIdentifierService.generateFileId(),
+                message
+            );
         } catch (DataRepositoryException ex) {
             throw new DocumentRepositoryException(
-                    String.format(
-                        "Saving new file: %s failed for user: %s",
-                        document.getId(),
-                        user.getUsername()
-                        ),
-                    ex
-                    );
+                String.format("Saving new file: %s failed for user: %s", document.getId(), user.getUsername()),
+                ex
+            );
         }
-            }
+    }
 
     @Override
     public MetadataDocument save(
-            CatalogueUser user,
-            MetadataDocument document,
-            String id,
-            String message
-            ) throws DocumentRepositoryException {
+        CatalogueUser user,
+        MetadataDocument document,
+        String id,
+        String message
+    ) throws DocumentRepositoryException {
         try {
             return save(user,
-                    document,
-                    retrieveMetadataInfoUpdatingRawType(document),
+                document,
+                retrieveMetadataInfoUpdatingRawType(document),
+                id,
+                message
+            );
+        } catch (DocumentRepositoryException | IOException | PostProcessingException | UnknownContentTypeException ex) {
+            throw new DocumentRepositoryException(
+                String.format(
+                    "Saving file: %s failed for user: %s",
                     id,
-                    message
-                    );
-        } catch (DocumentRepositoryException | IOException | PostProcessingException | UnknownContentTypeException ex) {
-            throw new DocumentRepositoryException(
-                    String.format(
-                        "Saving file: %s failed for user: %s",
-                        id,
-                        user.getUsername()
-                        ),
-                    ex
-                    );
+                    user.getUsername()
+                ),
+                ex
+            );
         }
-            }
+    }
 
     @Override
     public MetadataDocument save(
-            CatalogueUser user,
-            MetadataDocument document,
-            String message
-            ) throws DocumentRepositoryException {
+        CatalogueUser user,
+        MetadataDocument document,
+        String message
+    ) throws DocumentRepositoryException {
         try {
             return save(user,
-                    document,
-                    retrieveMetadataInfoUpdatingRawType(document),
-                    document.getId(),
-                    message
-                    );
+                document,
+                retrieveMetadataInfoUpdatingRawType(document),
+                document.getId(),
+                message
+            );
         } catch (DocumentRepositoryException | IOException | PostProcessingException | UnknownContentTypeException ex) {
             throw new DocumentRepositoryException(
-                    String.format(
-                        "Saving file: %s failed for user: %s",
-                        document.getId(),
-                        user.getUsername()
-                        ),
-                    ex
-                    );
+                String.format(
+                    "Saving file: %s failed for user: %s",
+                    document.getId(),
+                    user.getUsername()
+                ),
+                ex
+            );
         }
-            }
+    }
 
     private MetadataDocument save(
-            CatalogueUser user,
-            MetadataDocument document,
-            MetadataInfo metadataInfo,
-            String id,
-            String message
-            ) throws DataRepositoryException, DocumentRepositoryException {
+        CatalogueUser user,
+        MetadataDocument document,
+        MetadataInfo metadataInfo,
+        String id,
+        String message
+    ) throws DataRepositoryException, DocumentRepositoryException {
         updateIdAndMetadataDate(document, id);
         String uri = documentIdentifierService.generateUri(id);
         addRecordUriAsResourceIdentifier(document, uri);
         document.setUri(uri);
         validateUniqueResourceIdentifiers(document, id);
         repo.save(
-                user,
-                id,
-                message,
-                metadataInfo,
-                (o) -> documentWriter.write(document, MediaType.APPLICATION_JSON, o)
-                );
+            user,
+            id,
+            message,
+            metadataInfo,
+            (o) -> documentWriter.write(document, MediaType.APPLICATION_JSON, o)
+        );
 
         return document;
-            }
+    }
 
     @Override
     public DataRevision<CatalogueUser> delete(CatalogueUser user, String id) throws DocumentRepositoryException {
@@ -253,13 +249,13 @@ public class GitDocumentRepository implements DocumentRepository {
             return repo.delete(user, id);
         } catch (DataRepositoryException ex) {
             throw new DocumentRepositoryException(
-                    String.format(
-                        "Cannot delete file: %s for user: %s",
-                        id,
-                        user.getUsername()
-                        ),
-                    ex
-                    );
+                String.format(
+                    "Cannot delete file: %s for user: %s",
+                    id,
+                    user.getUsername()
+                ),
+                ex
+            );
         }
     }
 
@@ -325,7 +321,7 @@ public class GitDocumentRepository implements DocumentRepository {
     }
 
     private MetadataInfo retrieveMetadataInfoUpdatingRawType(MetadataDocument document)
-            throws IOException, UnknownContentTypeException, PostProcessingException {
-            return document.getMetadata().withRawType(MediaType.APPLICATION_JSON_VALUE);
+        throws IOException, UnknownContentTypeException, PostProcessingException {
+        return document.getMetadata().withRawType(MediaType.APPLICATION_JSON_VALUE);
     }
 }
