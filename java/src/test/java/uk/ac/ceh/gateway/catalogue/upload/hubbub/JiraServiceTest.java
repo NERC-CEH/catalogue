@@ -31,7 +31,8 @@ public class JiraServiceTest {
         mockServer = MockRestServiceServer.bindTo(restTemplate).build();
         jiraService = new JiraService(
             restTemplate,
-            "test-token",
+            "jira",
+            "password",
             "https://example.com/api/",
             "issue={id}"
         );
@@ -46,7 +47,7 @@ public class JiraServiceTest {
             .expect(requestTo(startsWith("https://example.com/api/search")))
             .andExpect(method(HttpMethod.GET))
             .andExpect(queryParam("jql", "issue=" + id))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic amlyYTpwYXNzd29yZA=="))
             .andRespond(withSuccess(success, APPLICATION_JSON));
 
         //when
@@ -66,7 +67,7 @@ public class JiraServiceTest {
             .expect(requestTo(startsWith("https://example.com/api/search")))
             .andExpect(method(HttpMethod.GET))
             .andExpect(queryParam("jql", "issue=" + id))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic amlyYTpwYXNzd29yZA=="))
             .andRespond(withSuccess(multiple, APPLICATION_JSON));
 
         //when
@@ -87,7 +88,7 @@ public class JiraServiceTest {
             .andExpect(method(HttpMethod.PUT))
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(content().json(expectedRequestBody))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic amlyYTpwYXNzd29yZA=="))
             .andRespond(withSuccess());
 
         // When
@@ -106,7 +107,7 @@ public class JiraServiceTest {
             .andExpect(method(HttpMethod.POST))
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(content().json(expectedRequestBody))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic amlyYTpwYXNzd29yZA=="))
             .andRespond(withSuccess());
 
         // When

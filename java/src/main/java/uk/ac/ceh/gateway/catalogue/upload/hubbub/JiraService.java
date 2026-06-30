@@ -20,28 +20,31 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static uk.ac.ceh.gateway.catalogue.util.Headers.withBearerToken;
+import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
 @Service
 @Profile({"upload-hubbub", "service-agreement"})
 @Slf4j
-@ToString(exclude = {"restTemplate", "token"})
+@ToString(exclude = {"restTemplate", "password"})
 public class JiraService {
     private final RestTemplate restTemplate;
     private final String jiraEndpoint;
     private final String jqlTemplate;
-    private final String token;
+    private final String username;
+    private final String password;
 
     public JiraService(
         @Qualifier("normal") RestTemplate restTemplate,
-        @Value("${jira.token}") String jiraToken,
+        @Value("${jira.username}") String jiraUsername,
+        @Value("${jira.password}") String jiraPassword,
         @Value("${jira.address}") String jiraAddress,
         @Value("${jira.jqlTemplate}") String jqlTemplate
     ) {
         this.jiraEndpoint = jiraAddress;
         this.jqlTemplate = jqlTemplate;
         this.restTemplate = restTemplate;
-        this.token = jiraToken;
+        this.username = jiraUsername;
+        this.password = jiraPassword;
         log.info("Creating");
     }
 
@@ -53,7 +56,7 @@ public class JiraService {
                 .buildAndExpand(key)
                 .toUri();
         val requestBody = String.format("{\"update\":{\"comment\":[{\"add\":{\"body\":\"%s\"}}]}}", comment);
-        val headers = withBearerToken(token);
+        val headers = withBasicAuth(username, password);
         headers.setContentType(APPLICATION_JSON);
         try {
             restTemplate.exchange(
@@ -84,7 +87,7 @@ public class JiraService {
         val transitionRequest = String.format("{\"transition\":{\"id\":\"%s\"}}", id);
         log.debug("Transition url: {}", url);
         log.debug("Transition request body: {}", transitionRequest);
-        val headers = withBearerToken(token);
+        val headers = withBasicAuth(username, password);
         headers.setContentType(APPLICATION_JSON);
         restTemplate.exchange(
             url,
@@ -106,7 +109,7 @@ public class JiraService {
         val response = restTemplate.exchange(
             url,
             HttpMethod.GET,
-            new HttpEntity<>(withBearerToken(token)),
+            new HttpEntity<>(withBasicAuth(username, password)),
             JiraSearchResults.class
         ).getBody();
         val issues = Optional.ofNullable(response.getIssues())

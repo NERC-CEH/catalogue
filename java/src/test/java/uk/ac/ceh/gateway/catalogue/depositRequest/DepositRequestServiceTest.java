@@ -22,7 +22,8 @@ class DepositRequestServiceTest {
         restTemplate = mock(RestTemplate.class);
         service = new DepositRequestService(
             restTemplate,
-            "test-token",
+            "jira",
+            "password",
             "https://mock-jira.local/rest/api/2",
             "EIDCHELP"
         );
