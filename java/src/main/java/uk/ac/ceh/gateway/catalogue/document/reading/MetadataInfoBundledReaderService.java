@@ -13,6 +13,7 @@ import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 @Slf4j
 @ToString
@@ -82,7 +83,7 @@ public class MetadataInfoBundledReaderService implements BundledReaderService<Me
      * Reads blob bytes through the cache: the latest read is keyed by name (and evicted on write),
      * the historical read is keyed by revision+name (immutable, never evicted).
      */
-    private byte[] readBlob(String revision, String name, boolean history) {
+    private byte[] readBlob(String revision, String name, boolean history) throws IOException {
         return history
             ? cachedRepo.readAtRevision(revision, name)
             : cachedRepo.readLatest(revision, name);

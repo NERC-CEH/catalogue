@@ -13,13 +13,17 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataWriter;
+import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.services.FacilityEventService;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -150,5 +154,31 @@ public class DatastoreReadCacheTest {
         cachedRepo.readLatest("rev", "abc.raw");
 
         verify(repo, times(2)).getData("rev", "abc.raw");
+    }
+
+    /**
+     * Regression: a missing blob must surface as the original (checked) {@link GitFileNotFoundException},
+     * never wrapped in a {@code java.lang.reflect.UndeclaredThrowableException}.
+     *
+     * <p>The cache methods declare {@code throws IOException} rather than relying on Lombok
+     * {@code @SneakyThrows}. Were the {@code throws} clause dropped, the CGLIB cache proxy would have no
+     * checked exception to declare and would wrap the escaping checked exception in an
+     * {@code UndeclaredThrowableException} (a {@code RuntimeException}). That defeats the
+     * {@code catch (IOException) … instanceof GitFileNotFoundException} guards in {@code FacilityEventService}
+     * and {@code JenaIndexingService} — which is what caused new-document creates (a read of the
+     * not-yet-committed id) to fail with a 404.
+     */
+    @Test
+    public void missingBlobPropagatesGitFileNotFoundUnwrapped() throws Exception {
+        given(repo.getData("rev", "missing.meta"))
+            .willThrow(new GitFileNotFoundException("no such file"));
+
+        Throwable thrown = assertThrows(Throwable.class,
+            () -> cachedRepo.readLatest("rev", "missing.meta"));
+
+        assertInstanceOf(GitFileNotFoundException.class, thrown,
+            "cache proxy must propagate the bare GitFileNotFoundException, not wrap it");
+        assertInstanceOf(IOException.class, thrown,
+            "callers catch IOException, so the propagated exception must be an IOException");
     }
 }
