@@ -126,7 +126,7 @@ public class XmlTemplateTest {
         gemini.setDistributorContacts(List.of(distributor));
 
         model.put("distributionFormats", gemini.getDistributionFormats());
-        model.put("distributorContacts", gemini.getDistributoContacts());
+        model.put("distributorContacts", gemini.getDistributorContacts());
 
         // When
         String actual = template("xml/gemini.ftlx");
