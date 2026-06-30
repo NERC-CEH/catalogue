@@ -8,6 +8,7 @@ import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -46,8 +47,7 @@ public class CachedDataRepository {
      * read picks up the new commit.
      */
     @Cacheable(value = REVISION_ID_CACHE, key = "'HEAD'")
-    @SneakyThrows
-    public String getLatestRevisionId() {
+    public String getLatestRevisionId() throws IOException {
         return repo.getLatestRevision().getRevisionID();
     }
 
@@ -57,8 +57,7 @@ public class CachedDataRepository {
      * when that document is saved or deleted.
      */
     @Cacheable(value = LATEST_CACHE, key = "#name")
-    @SneakyThrows
-    public byte[] readLatest(String revision, String name) {
+    public byte[] readLatest(String revision, String name) throws IOException {
         return toBytes(repo.getData(revision, name));
     }
 
@@ -67,8 +66,7 @@ public class CachedDataRepository {
      * this is keyed by {@code revision:name} and never needs eviction (bounded only by size/TTL).
      */
     @Cacheable(value = HISTORICAL_CACHE, key = "#revision + ':' + #name")
-    @SneakyThrows
-    public byte[] readAtRevision(String revision, String name) {
+    public byte[] readAtRevision(String revision, String name) throws IOException {
         return toBytes(repo.getData(revision, name));
     }
 

@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.repository;
 
-import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -37,13 +36,12 @@ public class GitRepoWrapper {
         log.info("Creating");
     }
 
-    @SneakyThrows
     @Caching(evict = {
         @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.meta'"),
         @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.raw'"),
         @CacheEvict(value = CachedDataRepository.REVISION_ID_CACHE, allEntries = true)
     })
-    public void save(CatalogueUser user, String id, String message, MetadataInfo metadataInfo, DataWriter dataWriter) {
+    public void save(CatalogueUser user, String id, String message, MetadataInfo metadataInfo, DataWriter dataWriter) throws DataRepositoryException {
         Optional<MonitoringFacility> preUpdateFacility = facilityEventService.getMonitoringFacility(id);
         repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataInfo, o))
             .submitData(String.format("%s.raw", id), dataWriter)
