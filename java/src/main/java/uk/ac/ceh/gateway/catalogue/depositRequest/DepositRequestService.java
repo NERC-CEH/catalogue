@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.depositRequest;
 
+import lombok.ToString;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ObjectNode;
@@ -20,27 +21,31 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static uk.ac.ceh.gateway.catalogue.util.Headers.withBearerToken;
+import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
 @Slf4j
 @Service
+@ToString(exclude = {"restTemplate", "password"})
 public class DepositRequestService {
 
     private final RestTemplate restTemplate;
     private final String jiraEndpoint;
-    private final String token;
+    private final String username;
+    private final String password;
     private final String projectKey;
     private final JsonMapper mapper = JsonMapper.builder().build();
 
     public DepositRequestService(
         @Qualifier("normal") RestTemplate restTemplate,
-        @Value("${jira.token}") String jiraToken,
+        @Value("${jira.username}") String username,
+        @Value("${jira.password}") String password,
         @Value("${jira.address}") String jiraAddress,
         @Value("${jira.depositRequest.project}") String projectKey
     ) {
         this.restTemplate = restTemplate;
         this.jiraEndpoint = jiraAddress;
-        this.token = jiraToken;
+        this.username = username;
+        this.password = password;
         this.projectKey = projectKey;
         log.info("Creating DepositRequestService");
     }
@@ -57,7 +62,7 @@ public class DepositRequestService {
         try {
             String jsonPayload = buildJiraPayload(form);
 
-            val headers = withBearerToken(token);
+            val headers = withBasicAuth(username, password);
             headers.setContentType(APPLICATION_JSON);
             val request = new HttpEntity<>(jsonPayload, headers);
 
