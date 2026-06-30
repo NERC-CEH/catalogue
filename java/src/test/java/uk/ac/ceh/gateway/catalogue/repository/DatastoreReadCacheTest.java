@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataWriter;
 import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
@@ -85,10 +86,11 @@ public class DatastoreReadCacheTest {
     @Autowired CacheManager cacheManager;
 
     @BeforeEach
-    public void reset() {
-        // The Spring context (and its singleton mock + caches) is reused across test methods,
-        // so clear both to isolate each test's invocation counts and cache state.
-        clearInvocations(repo);
+    public void resetState() {
+        // The Spring context (and its singleton mock + caches) is reused across test methods, so
+        // fully reset the mock (clears both invocation counts AND stubbing — e.g. a willThrow set by
+        // one test must not leak into the next) and clear the caches to isolate each test.
+        reset(repo);
         for (String name : cacheManager.getCacheNames()) {
             Cache cache = cacheManager.getCache(name);
             if (cache != null) cache.clear();
@@ -180,5 +182,32 @@ public class DatastoreReadCacheTest {
             "cache proxy must propagate the bare GitFileNotFoundException, not wrap it");
         assertInstanceOf(IOException.class, thrown,
             "callers catch IOException, so the propagated exception must be an IOException");
+    }
+
+    /**
+     * Regression: a commit failure in {@link GitRepoWrapper#save} must surface as the original (checked)
+     * {@link DataRepositoryException}, never wrapped in {@code UndeclaredThrowableException}.
+     *
+     * <p>{@code save} is {@code @CacheEvict}-advised, so it runs behind a CGLIB proxy here (real
+     * {@code @EnableCaching} context, not the "test" profile which disables caching). If {@code save}
+     * relied on {@code @SneakyThrows} instead of declaring {@code throws DataRepositoryException}, the
+     * proxy would have no checked exception to declare and would wrap the escaping
+     * {@code DataRepositoryException} thrown by {@code commit(...)} — defeating the
+     * {@code catch (DataRepositoryException)} / {@code catch (IOException)} guards in
+     * {@code GitDocumentRepository} that translate it into a user-facing {@code DocumentRepositoryException}.
+     */
+    @Test
+    public void saveCommitFailurePropagatesDataRepositoryExceptionUnwrapped() throws Exception {
+        given(repo.submitData(anyString(), any()).submitData(anyString(), any()).commit(any(), anyString()))
+            .willThrow(new DataRepositoryException("commit failed"));
+
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
+        DataWriter writer = out -> { };
+
+        Throwable thrown = assertThrows(Throwable.class,
+            () -> gitRepoWrapper.save(user, "abc", "msg", MetadataInfo.builder().build(), writer));
+
+        assertInstanceOf(DataRepositoryException.class, thrown,
+            "cache proxy must propagate the bare DataRepositoryException, not wrap it");
     }
 }
