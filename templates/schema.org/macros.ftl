@@ -330,7 +330,7 @@
     </#if>
     {
       "@id": "${contactid}",
-      "name": "${contact.givenName + contact.familyName}"
+      "name": "${contact.givenName + ", " + contact.familyName}"
     }<#sep>,</#sep>
   </#list>
 </#macro>
