@@ -4,6 +4,22 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.213.0] - 2026-07-01
+
+JIRA integration has been restored to using personal access tokens for authentication, following a brief rollback to the older password-based method while a line-ending issue in the token was tracked down and fixed.
+
+## [3.212.0] - 2026-06-30
+
+JIRA integration was temporarily reverted to basic username/password authentication after the personal access token approach introduced in the previous release caused problems; this was a short-lived stopgap ahead of the fix in the next release.
+
+## [3.211.0] - 2026-06-30
+
+Records can now appear in more than one catalogue at once, giving publishers more flexibility in how datasets are organised and shared (EMC-112). When JIRA is unavailable, the upload page no longer fails with a server error — a branded, status-aware error page is now shown instead, and JIRA authentication has moved to a personal access token (EMC-881). Metadata records now load noticeably faster: individual record reads are cached to cut down on file-system round trips, and several related indexing bugs have been fixed, including stale search results after saving and a data type mismatch in the caching layer. The local development environment has also been improved, running containers as the host user and self-healing file permission issues automatically.
+
+## [3.210.0] - 2026-06-24
+
+Schema.org credit information is now published as a proper citation rather than plain text (DRI-ONE-98). Access limitations on records have been updated to reference the latest NERC vocabulary term (EMC-872), and a false-positive error that could block saving a record with an existing resource identifier has been fixed. Depositor permissions in service agreements are now handled consistently regardless of letter case (EMC-862). A change log has also been introduced to track releases going forward.
+
 ## [3.209.0] - 2026-06-17
 
 This release makes catalogues discoverable by external data tools and search engines: each catalogue now publishes a machine-readable description of its contents, SPARQL endpoint, and vocabulary following the W3C VoID standard, and exposes this via OpenAPI documentation and HTML link headers (DRI-ONE-91). A fix corrects the MapServer connection path so geospatial map layers work correctly with the updated routing configuration.
