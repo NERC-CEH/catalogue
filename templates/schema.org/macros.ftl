@@ -328,7 +328,10 @@
         <#assign contactid = contact.organisationIdentifier >
       </#if>
     </#if>
-    {"@id": "${contactid}"}<#sep>,</#sep>
+    {
+      "@id": "${contactid}",
+      "name": "${contact.givenName + contact.familyName}"
+    }<#sep>,</#sep>
   </#list>
 </#macro>
 
@@ -351,7 +354,7 @@
       "@type": "Person",
       "name": "${contact.fullName}"
       <#if contact.familyName?has_content>, "familyName": "${contact.familyName}"</#if>
-      <#if contact.givenName?has_content>, "givenName": "${contact. givenName}"</#if>
+      <#if contact.givenName?has_content>, "givenName": "${contact.givenName}"</#if>
       <#if contact.email?has_content>,"email": "${contact.email}"</#if>
       <#if contact.organisationName?has_content>
         ,"affiliation":{
