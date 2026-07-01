@@ -4,6 +4,10 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.214.0] - 2026-07-01
+
+This release delivers a noticeable speed-up to how individual record and dataset pages are generated. The system now prepares its internal data queries once and reuses them, instead of rebuilding them from scratch on every page view, and it keeps recently viewed records in fast memory for longer. Together these changes roughly halve the time taken to display a record page and reduce the load placed on the underlying storage system.
+
 ## [3.213.0] - 2026-07-01
 
 JIRA integration has been restored to using personal access tokens for authentication, following a brief rollback to the older password-based method while a line-ending issue in the token was tracked down and fixed.
