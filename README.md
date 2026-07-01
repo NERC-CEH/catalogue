@@ -55,10 +55,10 @@ Local environment overrides can be placed in `override.env`.
 
 ## Usernames and Passwords
 
-You will need to create a `secrets.env` file with the following. Ask one of the dev team for access to Keypass to retrieve the jira password.
+You will need to create a `secrets.env` file with the following. Ask one of the dev team for access to Keypass to retrieve the values. `JIRA_TOKEN` is a JIRA Personal Access Token generated for the `eidc_ingest` account (Profile → Personal Access Tokens in JIRA).
 
 ```
-JIRA_PASSWORD=
+JIRA_TOKEN=
 CROWD_PASSWORD=
 DOI_PASSWORD=
 HUBBUB_PASSWORD=

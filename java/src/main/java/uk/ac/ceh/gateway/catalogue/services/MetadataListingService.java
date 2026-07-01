@@ -96,7 +96,7 @@ public class MetadataListingService {
                 MetadataDocument doc = documentBundleReader.readBundle(file, currentRevision);
                 if(
                         doc.getMetadata().isPubliclyViewable(Permission.VIEW) &&
-                        doc.getCatalogue().equalsIgnoreCase(catalogue)
+                        isInCatalogue(doc, catalogue)
                     ) {
                     toReturn.add(doc.getId());
                 }
@@ -117,7 +117,7 @@ public class MetadataListingService {
             try {
                 MetadataDocument doc = documentBundleReader.readBundle(file);
                 if (doc.getMetadata().isPubliclyViewable(Permission.VIEW) &&
-                    doc.getCatalogue().equalsIgnoreCase(catalogue)) {
+                    isInCatalogue(doc, catalogue)) {
                     toReturn.add(doc);
                 }
             }
@@ -126,6 +126,12 @@ public class MetadataListingService {
             }
         }
         return toReturn;
+    }
+
+    private boolean isInCatalogue(MetadataDocument doc, String catalogue) {
+        if (doc.getCatalogue().equalsIgnoreCase(catalogue)) return true;
+        return doc.getMetadata().getCatalogueView().stream()
+            .anyMatch(c -> c.equalsIgnoreCase(catalogue));
     }
 
     private boolean caseInsensitiveContains(List<String> referenceList, String testValue){

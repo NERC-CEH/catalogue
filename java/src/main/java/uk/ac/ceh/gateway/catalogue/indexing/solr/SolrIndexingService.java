@@ -117,9 +117,20 @@ public class SolrIndexingService extends AbstractIndexingService<MetadataDocumen
         solrClient.addBean(DOCUMENTS, toIndex);
     }
 
+    /**
+     * Read the content at the explicit event revision (immutable cache, never stale) rather than
+     * "latest" (mutable cache, which during a save is read by the synchronous reindex BEFORE the
+     * write path's @CacheEvict has run, yielding the pre-save document). The Solr identity field is
+     * derived from the document id, not the URI, so we reset the canonical non-revision URI to keep
+     * the indexed uri clean.
+     */
     @Override
     protected MetadataDocument readDocument(String document, String revision) {
-        return readDocument(document);
+        MetadataDocument doc = super.readDocument(document, revision); // base reads at the revision
+        if (doc != null) {
+            doc.setUri(identifierService.generateUri(document));
+        }
+        return doc;
     }
 
     private void commit() throws DocumentIndexingException {

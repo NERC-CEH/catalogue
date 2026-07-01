@@ -92,7 +92,6 @@ public class MetadataInfoTest {
     public void metadataUserCanAccess() {
         //Given
         MetadataInfo info = MetadataInfo.builder().build();
-        ;
         info.addPermission(Permission.VIEW, "ceh");
 
         //When
@@ -106,7 +105,6 @@ public class MetadataInfoTest {
     public void replacePermissions() {
         //Given
         MetadataInfo original = MetadataInfo.builder().build();
-        ;
         original.addPermission(Permission.VIEW, "test1");
         Set<IdentityPermissions> permissions = new HashSet<>();
         permissions.add(IdentityPermissions.builder().identity("another").canView(true).build());
@@ -123,7 +121,6 @@ public class MetadataInfoTest {
     public void failToRemoveAllPermissions() {
         //Given
         MetadataInfo original = MetadataInfo.builder().build();
-        ;
         original.addPermission(Permission.VIEW, "test1");
         Set<IdentityPermissions> permissions = new HashSet<>();
         //An identity with no permissions
@@ -142,7 +139,7 @@ public class MetadataInfoTest {
         MetadataInfo original = MetadataInfo.builder().build();
         original.addPermission(Permission.VIEW, "test1");
         Set<IdentityPermissions> permissions = new HashSet<>();
-        //Only public identift
+        //Only public identity
         permissions.add(IdentityPermissions.builder().identity("public").canView(true).build());
 
         //When
@@ -216,6 +213,47 @@ public class MetadataInfoTest {
 
         //Then
         assertThat("Should not be public unless the state is published", isPublic, is(false));
+    }
+
+        @Test
+    public void catalogueViewDefaultsToEmptyList() {
+        //Given / When
+        MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
+
+        //Then
+        assertThat("catalogueView should default to empty list", info.getCatalogueView(), equalTo(Collections.EMPTY_LIST));
+    }
+
+    @Test
+    public void withCatalogueViewRetainsOtherFields() {
+        //Given
+        MetadataInfo original = MetadataInfo.builder()
+            .catalogue("eidc")
+            .state("published")
+            .build();
+
+        //When
+        MetadataInfo updated = original.withCatalogueView(List.of("ukceh", "assist"));
+
+        //Then
+        assertThat("catalogue preserved", updated.getCatalogue(), equalTo("eidc"));
+        assertThat("state preserved", updated.getState(), equalTo("published"));
+        assertThat("catalogueView set", updated.getCatalogueView(), equalTo(List.of("ukceh", "assist")));
+    }
+
+    @Test
+    public void withCataloguePreservesCatalogueView() {
+        //Given
+        MetadataInfo original = MetadataInfo.builder()
+            .catalogue("eidc")
+            .catalogueView(List.of("ukceh"))
+            .build();
+
+        //When
+        MetadataInfo updated = original.withCatalogue("assist");
+
+        //Then
+        assertThat("catalogueView preserved through withCatalogue", updated.getCatalogueView(), equalTo(List.of("ukceh")));
     }
 
     private List<Group> createGroups(String... groupNames) {

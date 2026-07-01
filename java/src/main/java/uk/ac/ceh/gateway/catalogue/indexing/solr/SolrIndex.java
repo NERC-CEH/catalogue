@@ -24,6 +24,7 @@ public class SolrIndex {
     private @Field List<String> authorOrcid;
     private @Field List<String> authorRor;
     private @Field String catalogue;
+    private @Field("catalogue_view") List<String> catalogueView;
     private @Field String description;
     private @Field String documentType;
     private @Field List<String> funder;

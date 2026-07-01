@@ -14,13 +14,15 @@ public class JiraIssue {
 
     @SuppressWarnings("unchecked")
     public String getStatus() {
-        if (fields.containsKey("status")) {
-            val status = (Map<String, Object>) fields.get("status");
-            val name = (String) status.get("name");
-            return name.toLowerCase();
-        } else {
+        if (fields == null || !fields.containsKey("status")) {
             return "";
         }
+        val status = (Map<String, Object>) fields.get("status");
+        if (status == null) {
+            return "";
+        }
+        val name = (String) status.get("name");
+        return name == null ? "" : name.toLowerCase();
     }
 
     public boolean isOpen() {

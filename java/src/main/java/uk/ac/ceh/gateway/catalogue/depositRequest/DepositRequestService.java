@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.depositRequest;
 
+import lombok.ToString;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ObjectNode;
@@ -24,6 +25,7 @@ import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
 @Slf4j
 @Service
+@ToString(exclude = {"restTemplate", "password"})
 public class DepositRequestService {
 
     private final RestTemplate restTemplate;

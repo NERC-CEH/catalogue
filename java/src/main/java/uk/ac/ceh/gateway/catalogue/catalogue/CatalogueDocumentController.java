@@ -9,16 +9,23 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Slf4j
 @RestController
 @RequestMapping("documents")
 public class CatalogueDocumentController {
     private final DocumentRepository documentRepository;
+    private final CatalogueService catalogueService;
 
     public CatalogueDocumentController(
-        DocumentRepository documentRepository
+        DocumentRepository documentRepository,
+        CatalogueService catalogueService
     ) {
         this.documentRepository = documentRepository;
+        this.catalogueService = catalogueService;
         log.info("Creating");
     }
 
@@ -51,5 +58,40 @@ public class CatalogueDocumentController {
         );
         log.debug(newDocument.toString());
         return new CatalogueResource(newDocument);
+    }
+
+    @PreAuthorize("@permission.userCanView(#file)")
+    @GetMapping("{file}/catalogue-view")
+    public CatalogueViewResource currentCatalogueView(
+        @PathVariable String file
+    ) throws DocumentRepositoryException {
+        return new CatalogueViewResource(documentRepository.read(file));
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @PutMapping("{file}/catalogue-view")
+    public CatalogueViewResource updateCatalogueView(
+        @ActiveUser CatalogueUser user,
+        @PathVariable String file,
+        @RequestBody CatalogueViewResource resource
+    ) throws DocumentRepositoryException {
+        val document = documentRepository.read(file);
+        val primaryCatalogue = document.getCatalogue();
+        Set<String> knownIds = catalogueService.retrieveAll().stream()
+            .map(Catalogue::getId)
+            .collect(Collectors.toSet());
+        List<String> filtered = resource.getValue().stream()
+            .filter(knownIds::contains)
+            .filter(id -> !id.equals(primaryCatalogue))
+            .distinct()
+            .collect(Collectors.toList());
+        document.setMetadata(document.getMetadata().withCatalogueView(filtered));
+        val newDocument = documentRepository.save(
+            user,
+            document,
+            file,
+            String.format("Secondary catalogues of %s changed.", file)
+        );
+        return new CatalogueViewResource(newDocument);
     }
 }

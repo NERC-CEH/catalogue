@@ -136,7 +136,7 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
 
         //Then
-        assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("{!term f=catalogue}eidc"), is(true));
+        assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("(catalogue:eidc OR catalogue_view:eidc)"), is(true));
 
     }
 
@@ -1100,7 +1100,7 @@ public class SearchQueryTest {
             allOf(
                 hasItem(containsString("{!tag=resourceType}resourceType:\"Dataset\"")),
                 hasItem(containsString("{!tag=licence}licence:\"OGL\"")),
-                hasItem(containsString("{!term f=catalogue}ukeof"))
+                hasItem(containsString("(catalogue:ukeof OR catalogue_view:ukeof)"))
             )
         );
     }

@@ -1,7 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -534,8 +532,8 @@ public class GitRepoServiceAgreementServiceTest {
         val result = service.getHistory(ID);
 
         //Then
-        assertThat(result.getRevisions().get(0).getVersion(), equalTo("1"));
-        assertThat(result.getRevisions().get(0).getHref(), equalTo(
+        assertThat(result.getRevisions().getFirst().getVersion(), equalTo("1"));
+        assertThat(result.getRevisions().getFirst().getHref(), equalTo(
                         "https://catalogue.ceh.ac.uk/service-agreement/" +
                                 "7c60707c-80ee-4d67-bac2-3c9a93e61557/version/revision1"));
     }
@@ -705,33 +703,6 @@ public class GitRepoServiceAgreementServiceTest {
         serviceAgreement.setEndUserLicence(new ResourceConstraint("test", "test", "test"));
         serviceAgreement.setDepositReference("test");
         serviceAgreement.setDepositorContactDetails("test");
-    }
-
-    @SneakyThrows
-    private void givenDraftServiceAgreement() {
-        val metadataInfoDocument = mock(DataDocument.class);
-        given(repo.getData(FOLDER + ID + ".meta"))
-            .willReturn(metadataInfoDocument);
-        given(metadataInfoDocument.getInputStream())
-            .willReturn(new ByteArrayInputStream("meta".getBytes()));
-
-        val metadata = MetadataInfo.builder()
-            .state("draft")
-            .rawType(APPLICATION_JSON_VALUE)
-            .build();
-        given(metadataInfoMapper.readInfo(any()))
-            .willReturn(metadata);
-
-        val rawDocument = mock(DataDocument.class);
-        given(repo.getData(FOLDER + ID + ".raw"))
-            .willReturn(rawDocument);
-        given(rawDocument.getInputStream())
-            .willReturn(new ByteArrayInputStream("file".getBytes()));
-        given(serviceAgreementMapper.readInfo(any()))
-            .willReturn(serviceAgreement);
-        serviceAgreement.setMetadata(metadata);
-        serviceAgreement.setId(ID);
-        serviceAgreement.setDepositReference("test");
     }
 
     @SneakyThrows

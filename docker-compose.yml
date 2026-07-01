@@ -102,7 +102,7 @@ services:
       LEGILO_PASSWORD: password
       FUSEKI_SPARQL_ENDPOINT: http://fuseki:3030/ds/sparql
       FUSEKI_DATASET_URL: http://fuseki:3030/ds
-      SPRING_PROFILES_ACTIVE: development,server-eidc,search-basic,cache,service-agreement,upload-simple
+      SPRING_PROFILES_ACTIVE: development,server-eidc,search-basic,service-agreement,upload-simple
     env_file:
       - path: secrets.env
         required: false
@@ -125,7 +125,13 @@ services:
           path: ./docker/entrypoint-dev.sh
   web:
     image: node:24-alpine
+    # Run as the image's node user (UID 1000) so files written into the bind-mounted
+    # ./web (node_modules, css, dist) are owned by the host user, not root.
+    user: node
     working_dir: /app/web
+    environment:
+      # node user's HOME may be unset under an explicit user:, so point npm at a writable cache.
+      npm_config_cache: /tmp/.npm
     volumes:
       - ./web:/app/web
     command: sh -c "npm install && (npm run watch & npm run watch-css)"
