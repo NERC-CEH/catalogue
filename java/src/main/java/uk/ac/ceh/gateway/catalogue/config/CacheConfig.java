@@ -52,10 +52,25 @@ public class CacheConfig implements CachingConfigurer {
         // Datastore read caches. Unlike the caches above these hold record bytes (.raw can be large)
         // so they MUST be size-bounded to avoid OOM. Latest/historical blob content is keyed so a
         // bounded heap entry count is the right limit; eviction-on-write keeps "latest" fresh.
+        //
+        // TTLs here are backstops, NOT the invalidation mechanism: GitRepoWrapper.save/delete evict
+        // the affected LATEST entries and all REVISION_ID entries on every write, so cached content
+        // can only go stale if a write bypasses that path. In production this app is the sole writer
+        // of a single-replica deployment, so that cannot happen; the TTLs are therefore generous
+        // (guarding only against an unforeseen missed eviction) rather than short. Short TTLs were a
+        // heavy tax against the SMB-mounted SAN: the 10s revision-id TTL re-resolved Git HEAD (a
+        // multi-round-trip commit+tree walk) on the next read every 10s during read-only periods, and
+        // the 60min LATEST TTL re-fetched each hot record's blobs hourly. If this ever becomes a
+        // multi-replica deployment, or an external process writes the datastore, these TTLs bound
+        // cross-writer staleness and must be shortened again.
         createIfAbsent(cacheManager, CachedDataRepository.REVISION_ID_CACHE,
-            bytesBoundedCache(String.class, 16, 10, TimeUnit.SECONDS));
+            bytesBoundedCache(String.class, 16, 1, TimeUnit.HOURS));
+        // 6000 entries comfortably covers the whole published corpus (< 5000 records) plus growth
+        // headroom, so the read working set stays fully warm and the long tail never re-hits the SAN.
         createIfAbsent(cacheManager, CachedDataRepository.LATEST_CACHE,
-            bytesBoundedCache(byte[].class, 5000, 60, TimeUnit.MINUTES));
+            bytesBoundedCache(byte[].class, 6000, 6, TimeUnit.HOURS));
+        // Historical (revision:name) content is immutable, so this TTL is purely a memory bound and
+        // never a correctness concern; kept modest as historical reads are off the hot render path.
         createIfAbsent(cacheManager, CachedDataRepository.HISTORICAL_CACHE,
             bytesBoundedCache(byte[].class, 1000, 30, TimeUnit.MINUTES));
 

@@ -33,7 +33,11 @@ public class Headers {
             throw new IllegalArgumentException(ex);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
+        // Strip surrounding whitespace before building the header. Secrets sourced from
+        // files or Kubernetes Secrets often carry a trailing newline, and the JDK HTTP
+        // client rejects any CR/LF in a header value (header-injection guard), which would
+        // otherwise surface as an IllegalArgumentException / 500 at request time.
+        headers.setBearerAuth(token.strip());
         return headers;
     }
 }

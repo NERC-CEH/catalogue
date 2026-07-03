@@ -31,8 +31,7 @@ public class JiraServiceTest {
         mockServer = MockRestServiceServer.bindTo(restTemplate).build();
         jiraService = new JiraService(
             restTemplate,
-            "jira",
-            "password",
+            "test-token",
             "https://example.com/api/",
             "issue={id}"
         );
@@ -47,7 +46,7 @@ public class JiraServiceTest {
             .expect(requestTo(startsWith("https://example.com/api/search")))
             .andExpect(method(HttpMethod.GET))
             .andExpect(queryParam("jql", "issue=" + id))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic amlyYTpwYXNzd29yZA=="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
             .andRespond(withSuccess(success, APPLICATION_JSON));
 
         //when
@@ -60,6 +59,34 @@ public class JiraServiceTest {
 
     @Test
     @SneakyThrows
+    void tokenWithTrailingNewlineProducesValidBearerHeader() {
+        // given a token sourced from a secret that carries a trailing newline
+        // (the production failure mode: CR/LF in a header value is rejected by the
+        // JDK HTTP client and surfaces as an IllegalArgumentException / 500)
+        val restTemplate = new RestTemplate();
+        val newlineMockServer = MockRestServiceServer.bindTo(restTemplate).build();
+        val serviceWithUntrimmedToken = new JiraService(
+            restTemplate,
+            "test-token\n",
+            "https://example.com/api/",
+            "issue={id}"
+        );
+        val success = IOUtils.toByteArray(getClass().getResource("issues.json"));
+        newlineMockServer
+            .expect(requestTo(startsWith("https://example.com/api/search")))
+            .andExpect(method(HttpMethod.GET))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
+            .andRespond(withSuccess(success, APPLICATION_JSON));
+
+        //when
+        serviceWithUntrimmedToken.retrieveDataTransferIssue(id);
+
+        //then the request was sent with a stripped, single-line bearer header
+        newlineMockServer.verify();
+    }
+
+    @Test
+    @SneakyThrows
     void getDataTransferIssueFindsMultipleIssues() {
         //given
         val multiple = IOUtils.toByteArray(getClass().getResource("multiple.json"));
@@ -67,7 +94,7 @@ public class JiraServiceTest {
             .expect(requestTo(startsWith("https://example.com/api/search")))
             .andExpect(method(HttpMethod.GET))
             .andExpect(queryParam("jql", "issue=" + id))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic amlyYTpwYXNzd29yZA=="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
             .andRespond(withSuccess(multiple, APPLICATION_JSON));
 
         //when
@@ -88,7 +115,7 @@ public class JiraServiceTest {
             .andExpect(method(HttpMethod.PUT))
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(content().json(expectedRequestBody))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic amlyYTpwYXNzd29yZA=="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
             .andRespond(withSuccess());
 
         // When
@@ -107,7 +134,7 @@ public class JiraServiceTest {
             .andExpect(method(HttpMethod.POST))
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(content().json(expectedRequestBody))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic amlyYTpwYXNzd29yZA=="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
             .andRespond(withSuccess());
 
         // When
