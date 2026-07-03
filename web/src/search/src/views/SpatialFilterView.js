@@ -17,6 +17,12 @@ export default Backbone.View.extend({
     this.listenTo(this.model, 'change:op', function (model, value) { this.updateOp(value) })
     this.listenTo(this.model, 'change:bbox', function (model, value) { this.updateBbox(value) })
     this.listenTo(this.model, 'change:mapsearch', function (model, value) { this.refreshMap(model, value) })
+
+    // On a direct URL load, bbox/op are set on the model (via SearchAppView.setState)
+    // before this view exists, so the change events fire too early for the listeners
+    // above to catch. Apply the current model state on init so the box is drawn.
+    this.updateBbox(this.model.get('bbox'))
+    this.updateOp(this.model.get('op'))
   },
 
   createMap () {
@@ -142,7 +148,8 @@ export default Backbone.View.extend({
    * So the Bbox property of the model for doing the search, needs to be the String: minX,maxX,maxY,minY
    */
   setBbox (bounds) {
-    this.model.setBbox([bounds._bounds._southWest.lng, bounds._bounds._northEast.lng, bounds._bounds._northEast.lat, bounds._bounds._southWest.lat].toString())
+    const b = bounds.getBounds()
+    this.model.setBbox([b.getWest(), b.getEast(), b.getNorth(), b.getSouth()].map(coord => coord.toFixed(3)).toString())
   },
 
   viewMap () {
