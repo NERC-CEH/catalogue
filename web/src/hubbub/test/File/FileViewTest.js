@@ -322,7 +322,9 @@ describe('FileView', function () {
     describe('delete', function () {
       it('trigger', function () {
         // given
-        model.set({ action: 'move-both' })
+        // The delete button renders whenever the file is in the dropbox
+        // datastore (see template.js), independent of the action.
+        model.set({ action: 'move-both', datastore: 'dropbox' })
         view.render()
         const $deleteBtn = view.$('.delete')
         spyOn(view, 'delete')

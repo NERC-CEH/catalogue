@@ -11,11 +11,11 @@ module.exports = function (config) {
     frameworks: ['jasmine-ajax', 'jasmine', 'webpack'],
 
     files: [
-      'src/*/test/*.js'
+      'src/**/test/**/*.js'
     ],
 
     preprocessors: {
-      'src/*/test/*.js': ['webpack']
+      'src/**/test/**/*.js': ['webpack']
     },
 
     webpack: require('./webpack.js'),
