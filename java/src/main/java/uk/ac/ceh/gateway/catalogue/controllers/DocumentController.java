@@ -30,6 +30,7 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.io.IOException;
 import java.net.URI;
@@ -48,15 +49,18 @@ public class DocumentController extends AbstractDocumentController {
     public static final String MAINTENANCE_ROLE = "ROLE_CIG_SYSTEM_ADMIN";
     private final MetricsService metricsService;
     private final List<String> metricsExcludedUsers;
+    private final JenaLookupService jenaService;
 
     public DocumentController(
         @Nullable MetricsService metricsService,
         @Value("#{'${metrics.users.excluded}'.split(',')}") List<String> metricExcludedUsers,
-        DocumentRepository documentRepository
+        DocumentRepository documentRepository,
+        JenaLookupService jenaService
     ) {
         super(documentRepository);
         this.metricsService = metricsService;
         this.metricsExcludedUsers = metricExcludedUsers;
+        this.jenaService = jenaService;
         log.info("Creating");
     }
 
@@ -388,6 +392,13 @@ public class DocumentController extends AbstractDocumentController {
                 );
             }
 
+    private MetadataDocument addJenaRelationships(MetadataDocument document) {
+        if (document instanceof GeminiDocument doc) {
+            doc.populateFromJenaService(jenaService);
+        }
+        return document;
+    }
+
     @CrossOrigin
     @ResponseBody
     @SneakyThrows
@@ -402,8 +413,8 @@ public class DocumentController extends AbstractDocumentController {
         if(metricsService != null && !metricsExcludedUsers.contains(user.getUsername()) && !document.getState().equals(GitRepoServiceAgreementService.DRAFT)) {
             metricsService.recordView(file, request.getRemoteAddr());
         }
-        return postProcessLinkDocument(document);
-            }
+        return postProcessLinkDocument(addJenaRelationships(document));
+    }
 
     @CrossOrigin
     @SneakyThrows
@@ -414,7 +425,7 @@ public class DocumentController extends AbstractDocumentController {
             @PathVariable String file
             ) {
         return "forward:/documents/" + file + "?format=" + GEMINI_XML_SHORT;
-            }
+    }
 
     @ResponseBody
     @SneakyThrows
@@ -424,8 +435,9 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable String file
             ) {
-        return documentRepository.read(file);
-            }
+        var document = documentRepository.read(file);
+        return addJenaRelationships(document);
+    }
 
 
     @ResponseBody
@@ -437,8 +449,9 @@ public class DocumentController extends AbstractDocumentController {
             @PathVariable String file,
             @PathVariable String revision
             ) {
-        return postProcessLinkDocument(documentRepository.read(file, revision));
-            }
+        var document = documentRepository.read(file, revision);
+        return postProcessLinkDocument(addJenaRelationships(document));
+    }
 
     private MetadataDocument postProcessLinkDocument(MetadataDocument document) {
         log.debug("processing {}", document.getId());

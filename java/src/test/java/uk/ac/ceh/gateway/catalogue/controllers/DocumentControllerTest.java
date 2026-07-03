@@ -102,6 +102,7 @@ class DocumentControllerTest extends AbstractMvcTest {
     @MockitoBean private MetricsService metricsService;
     @MockitoBean private FileDetailsService fileDetailsService;
     @MockitoBean private MultiDocumentTypeMetadataQualityService metadataQualityService;
+    @MockitoBean private JenaLookupService jenaService;
 
     @NotNull DownloadUrlProperties downloadUrlProperties;
 
@@ -122,7 +123,7 @@ class DocumentControllerTest extends AbstractMvcTest {
 
     @BeforeEach
     void setup() {
-        controller = new DocumentController(metricsService, metricsExcludedUsers, documentRepository);
+        controller = new DocumentController(metricsService, metricsExcludedUsers, documentRepository, jenaService);
         DownloadUrlProperties downloadUrlProperties = mock(DownloadUrlProperties.class);
         when(downloadUrlProperties.getRegexOrder()).thenReturn("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*");
         when(downloadUrlProperties.getRegexPackage()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/.*");
