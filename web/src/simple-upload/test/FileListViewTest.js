@@ -33,21 +33,18 @@ describe('Test FileListView', function () {
     expect($('#files-tools button').length).toEqual(2)
   })
 
-  xit('file added to collection triggers subview render', function () {
-    // given
-    spyOn(view, 'addOne')
-    // view.initialize()
-    // view.delegateEvents()
-
+  it('file added to collection triggers subview render', function () {
+    // Note: the 'add' listener was bound to the original addOne in initialize,
+    // so spying on view.addOne here would not intercept it. Assert the rendered
+    // DOM instead, which exercises the real add -> addOne render path.
     // when
     files.add({ name: 'test.csv', urlEncodedName: 'test.csv' })
 
     // then
     expect($('#files-list li').length).toEqual(1)
-    expect(view.addOne).toHaveBeenCalled()
   })
 
-  xit('resetting collection triggers subview render', function () {
+  it('resetting collection triggers subview render', function () {
     // when
     files.reset([
       { name: 'test0.csv', urlEncodedName: 'test0.csv' },
@@ -57,6 +54,5 @@ describe('Test FileListView', function () {
 
     // then
     expect($('#files-list li').length).toEqual(3)
-    expect(view.addAll).toHaveBeenCalled()
   })
 })
