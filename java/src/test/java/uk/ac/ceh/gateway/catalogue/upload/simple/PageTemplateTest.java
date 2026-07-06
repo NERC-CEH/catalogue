@@ -11,6 +11,7 @@ import org.springframework.util.StreamUtils;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
+import uk.ac.ceh.gateway.catalogue.userdetails.UserInfo;
 
 import java.io.File;
 import java.io.StringWriter;
@@ -51,6 +52,9 @@ public class PageTemplateTest {
         config.setDirectoryForTemplateLoading(new File("../templates"));
         config.setSharedVariable("catalogues", catalogueService);
         config.setSharedVariable("profile", profileService);
+        // Mirror production's FreemarkerConfig, which always registers userInfo.
+        // Anonymous here, so the navbar renders the SSO Login link.
+        config.setSharedVariable("userInfo", (UserInfo) () -> false);
         return config;
     }
 
