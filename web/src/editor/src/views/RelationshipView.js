@@ -9,7 +9,7 @@ $.ui.autocomplete.prototype._resizeMenu = function () {
   ul.outerWidth(this.element.outerWidth())
 }
 
-async function generateInformationString(target) {
+async function generateInformationString (target) {
   // Records can be kept either as a full URI or simply a UID
   const urlRegEx = /^https?:\/\/(?!catalogue\.ceh\.ac\.uk\/documents)(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%-/]))?$/
   const isValidUrl = url => urlRegEx.test(url)
@@ -29,8 +29,7 @@ export default ObjectInputView.extend({
     '<option value="<%= value %>" <%=selected%>><%= label %></option>'
   ),
 
-  async initialize(options) {
-
+  async initialize (options) {
     this.template = template
     this.options = options.options
     this.resourceType = options.resourceType
@@ -140,7 +139,7 @@ export default ObjectInputView.extend({
     }
   },
 
-  async render() {
+  async render () {
     ObjectInputView.prototype.render.apply(this)
 
     if (this.existingRecord) {
