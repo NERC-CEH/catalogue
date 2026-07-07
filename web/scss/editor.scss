@@ -670,6 +670,26 @@
     }
 }
 
+.relationship-autocomplete {
+    border-color: transparent;
+
+    div.ui-menu-item-wrapper {
+        border-block-end: 1px solid lightgray;
+
+        &:hover,
+        &:focus-visible {
+            background-color: var(--ukceh-colour-data);
+            color: black;
+        }
+
+        span {
+            display: block;
+            color: gray;
+            font-size: .9rem;
+        }
+    }
+}
+
 @media only screen and (min-width: 600px) {
 
     .metadata,

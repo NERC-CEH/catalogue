@@ -924,11 +924,11 @@ body {
 /********** Monitoring Records *************/
 .metadata-monitoring {
 
-    .altNames {
+    .alternativeTitles {
         @extend .fs-5 !optional;
         @extend .text-body-tertiary !optional;
 
-        .altName {
+        .alternativeTitle {
             margin-inline: 0.75rem;
             color: #666;
         }
