@@ -33,8 +33,8 @@
     </#if>
 
     <#--Points of contact-->
-    <#if pointsOfContact?has_content>
-      dcat:contactPoint <@contactList pointsOfContact "c" />  ;
+    <#if contactPoints?has_content>
+      dcat:contactPoint <@contactList contactPoints "c" />  ;
     </#if>
 
     <#--Publisher-->
@@ -83,8 +83,8 @@
 
     dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en> . <#-- leave here to close all the statements about the dataset -->
 
-    <#if pointsOfContact?has_content>
-      <@contactDetail pointsOfContact "c" />
+    <#if contactPoints?has_content>
+      <@contactDetail contactPoints "c" />
     </#if>
 
     <#if publishers?has_content>
@@ -119,18 +119,18 @@
 
   <#macro canonicalIdentifier resourceIdentifiers>
 
-    <#local domain="https://catalogue.ceh.ac.uk/id/">
+    <#local domain = uri?replace(id, "")>
     <#local canonicalId = resourceIdentifiers?filter(id -> id.code?starts_with(domain))?first!>
 
     <#if canonicalId?has_content>
-      dcterms:identifier ${canonicalId.code} ;
+      dcterms:identifier <${canonicalId.code}> ;
     </#if>
 
   </#macro>
 
   <#macro otherIdentifiers resourceIdentifiers>
 
-    <#local domain="https://catalogue.ceh.ac.uk/id/">
+    <#local domain = uri?replace(id, "")>
     <#local dois = resourceIdentifiers?filter(id -> id.codeSpace?matches("doi"))!>
     <#local otherIds = resourceIdentifiers?filter(id -> !id.code?starts_with(domain) && !(id.codeSpace?? && id.codeSpace?matches("doi")) )>
 
@@ -163,7 +163,7 @@
 
   <#macro idSameAs resourceIdentifiers>
 
-    <#local domain="https://catalogue.ceh.ac.uk/id/">
+    <#local domain = uri?replace(id, "")>
     <#local otherIds = resourceIdentifiers?filter(id -> !id.code?starts_with(domain) && !(id.codeSpace?? && id.codeSpace?matches("doi")) )>
 
     <#if otherIds?has_content>

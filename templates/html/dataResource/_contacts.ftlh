@@ -1,7 +1,7 @@
-<#if pointsOfContact?has_content>
+<#if contactPoints?has_content>
   <div id="segment-pointOfContact">
   <h2 id="pointOfContact">Correspondence/contact details</h2>
-      <#list pointsOfContact>
+      <#list contactPoints>
         <#items as poc>
           <div class="responsibleParty">
              <@func.displayContact poc true true false />

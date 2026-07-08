@@ -89,7 +89,7 @@ public class XmlTemplateTest {
         model.put("metadataDateTime", "2024-08-05");
         model.put("resourceType", gemini.getResourceType());
         model.put("type", gemini.getType());
-        model.put("contactPoints", gemini.getContactPoints());
+        model.put("contacts", gemini.getContacts());
     }
 
     @SneakyThrows
@@ -126,7 +126,7 @@ public class XmlTemplateTest {
         gemini.setDistributorContacts(List.of(distributor));
 
         model.put("distributionFormats", gemini.getDistributionFormats());
-        model.put("distributorContacts", gemini.getDistributorContacts());
+        model.put("distributors", gemini.getDistributors());
 
         // When
         String actual = template("xml/gemini.ftlx");

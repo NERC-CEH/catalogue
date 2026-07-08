@@ -221,6 +221,19 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
+    @JsonIgnore
+    public List<ResponsibleParty> getAuthorPointOfContactWithRORs() {
+        Set<String> seenRORs = new HashSet<>();
+        return Stream.of(
+                Optional.ofNullable(contactPoints).orElseGet(Collections::emptyList),
+                Optional.ofNullable(authors).orElseGet(Collections::emptyList)
+            )
+            .flatMap(List::stream)
+            .filter(ResponsibleParty::isRor)
+            .filter(party -> seenRORs.add(party.getOrganisationIdentifier()))
+            .toList();
+    }
+
     @JsonProperty("citation")
     public Citation getCitation() {
         return citation;

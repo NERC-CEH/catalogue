@@ -41,3 +41,5 @@ DevStartupController.java
 /oidc-roles.json
 /fixtures/solr/ror/config.properties
 /override.env
+/web/coverage/
+/.playwright-mcp/
