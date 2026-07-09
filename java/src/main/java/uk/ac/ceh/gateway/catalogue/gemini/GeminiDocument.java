@@ -14,6 +14,7 @@ import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.time.ZoneId;
 import java.time.LocalDate;
@@ -113,6 +114,21 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         this.keywordsDiscipline = serviceAgreement.getKeywordsDiscipline();
         this.keywordsTheme = serviceAgreement.getKeywordsTheme();
         this.keywordsOther = serviceAgreement.getKeywordsOther();
+    }
+
+    public void populateFromJenaService(JenaLookupService jenaService) {
+        final String uri = this.getUri();
+        var relationList = jenaService.relationships(uri, "http://purl.org/dc/terms/relation");
+        relationList.addAll(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/relation"));
+        this.setRelRelation(relationList);
+
+        this.setRelAll(jenaService.allRelatedRecords(uri));
+        this.setRelRequires(jenaService.relationships(uri, "http://purl.org/dc/terms/requires"));
+        this.setRelPartOf(jenaService.relationships(uri, "http://purl.org/dc/terms/isPartOf"));
+        this.setRelIsRequiredBy(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/requires"));
+        this.setRelHasPart(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/isPartOf"));
+        this.setRelReplaces(jenaService.replaces(uri));
+        this.setRelSource(jenaService.relationships(uri, "http://purl.org/dc/terms/source"));
     }
 
     @Data
