@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
@@ -237,11 +238,19 @@ public class ServicesConfig {
     }
 
     @Bean(destroyMethod = "close")
+    @Profile("!test")
     public org.apache.jena.query.Dataset tdbModel(
         @Value("${jena.location}") String location
     ) {
         log.info("Creating Dataset at: {}", location);
         return TDB2Factory.connectDataset(location);
+    }
+
+    @Bean(destroyMethod = "close")
+    @Profile("test")
+    public org.apache.jena.query.Dataset tdbModelInMemory() {
+        log.info("Creating in-memory Dataset for tests");
+        return TDB2Factory.createDataset();
     }
 
     @Bean

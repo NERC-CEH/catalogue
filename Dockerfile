@@ -85,6 +85,7 @@ USER root
 RUN apk --no-cache upgrade && apk --no-cache add su-exec
 COPY --from=datastore /datastore /var/ceh-catalogue/datastore
 RUN chown -R gradle:gradle /var/ceh-catalogue/datastore
+RUN mkdir -p /var/ceh-catalogue/jena && chown -R gradle:gradle /var/ceh-catalogue/jena
 COPY docker/entrypoint-dev.sh /usr/local/bin/entrypoint-dev.sh
 RUN chmod +x /usr/local/bin/entrypoint-dev.sh
 WORKDIR /app

@@ -9,6 +9,9 @@ if [ "$(id -u)" = 0 ]; then
   if [ "$(stat -c '%u' /var/ceh-catalogue/datastore)" != "1000" ]; then
     chown -R gradle:gradle /var/ceh-catalogue/datastore
   fi
+  if [ "$(stat -c '%u' /var/ceh-catalogue/jena)" != "1000" ]; then
+    chown -R gradle:gradle /var/ceh-catalogue/jena
+  fi
   # Repair any root-owned Gradle build output left in the bind-mounted project by an
   # earlier root-context invocation (e.g. `docker compose run --entrypoint`), so that
   # host-side Gradle can overwrite it. `find` only touches mis-owned entries, so this is
