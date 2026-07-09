@@ -20,6 +20,7 @@ describe('FileView', function () {
     },
     serverState: {
       status: 200,
+      contentType: 'application/json',
       responseText: JSON.stringify(response)
     }
   }
@@ -87,12 +88,23 @@ describe('FileView', function () {
   })
 
   describe('getServerState', function () {
-    xit('request', function () {
+    // getServerState defers its $.ajax call via setTimeout, so advance the
+    // mocked clock to fire it before inspecting the request.
+    beforeEach(function () {
+      jasmine.clock().install()
+    })
+
+    afterEach(function () {
+      jasmine.clock().uninstall()
+    })
+
+    it('request', function () {
       // given
       const callback = jasmine.createSpy('callback')
 
       // when
       view.getServerState(view, 0, callback)
+      jasmine.clock().tick(0)
 
       // then
       const request = jasmine.Ajax.requests.mostRecent()
@@ -100,15 +112,17 @@ describe('FileView', function () {
       request.respondWith(testResponses.serverState)
       expect(request.url).toBe(`/upload/${id}/eidchub?path=data.csv`)
       expect(request.method).toBe('GET')
+      expect(callback).toHaveBeenCalled()
     })
 
-    xit('error', function () {
+    it('error', function () {
       // given
-      const callback = () => {}
+      const callback = jasmine.createSpy('callback')
       spyOn(view, 'showInError')
 
       // when
       view.getServerState(view, 0, callback)
+      jasmine.clock().tick(0)
 
       // then
       const request = jasmine.Ajax.requests.mostRecent()
@@ -118,6 +132,7 @@ describe('FileView', function () {
       expect(request.method).toBe('GET')
       expect(request.url).toBe(`/upload/${id}/eidchub?path=data.csv`)
       expect(view.showInError).toHaveBeenCalled()
+      expect(callback).not.toHaveBeenCalled()
     })
   })
 
@@ -322,7 +337,9 @@ describe('FileView', function () {
     describe('delete', function () {
       it('trigger', function () {
         // given
-        model.set({ action: 'move-both' })
+        // The delete button renders whenever the file is in the dropbox
+        // datastore (see template.js), independent of the action.
+        model.set({ action: 'move-both', datastore: 'dropbox' })
         view.render()
         const $deleteBtn = view.$('.delete')
         spyOn(view, 'delete')
@@ -410,17 +427,22 @@ describe('FileView', function () {
     })
   })
 
-  xdescribe('request', function () {
-    const event = new Event('click')
+  describe('request', function () {
     const url = `/upload/${id}/eidchub/accept?path=data.csv`
     const method = 'POST'
-    const success = jasmine.createSpy('success')
+    let event
+    let success
+
+    // request(self, event, url, method, success) takes the view as its first
+    // argument. success is recreated per-test so call counts don't leak.
+    beforeEach(function () {
+      event = new Event('click')
+      success = jasmine.createSpy('success')
+    })
 
     it('without response body', function () {
-      // given
-
       // when
-      view.request(event, url, method, success)
+      view.request(view, event, url, method, success)
 
       // then
       const request = jasmine.Ajax.requests.mostRecent()
@@ -433,10 +455,8 @@ describe('FileView', function () {
     })
 
     it('with response body', function () {
-      // given
-
       // when
-      view.request(event, url, method, success)
+      view.request(view, event, url, method, success)
 
       // then
       const request = jasmine.Ajax.requests.mostRecent()
@@ -454,7 +474,7 @@ describe('FileView', function () {
       spyOn(view, 'showInError')
 
       // when
-      view.request(event, url, method, success)
+      view.request(view, event, url, method, success)
 
       // then
       const request = jasmine.Ajax.requests.mostRecent()

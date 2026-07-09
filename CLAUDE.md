@@ -3,7 +3,10 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Testing
-- Always run the full test suite after making changes, especially after upgrades, refactors, or migrations
+- Run the test suite scoped to what changed, especially after upgrades, refactors, or migrations:
+  - Java changes → `./gradlew :java:test`
+  - Frontend-only changes (`web/`) → `cd web && npm run test` and `npm run standard`; the Java suite is not required
+  - Mixed changes → run both
 - When fixing one test failure, check for similar patterns elsewhere (e.g., if one method needs a transaction wrapper, audit all similar methods)
 - Verify null-safety fixes cover both missing keys AND keys with null values
 

@@ -11,6 +11,7 @@ export default _.template(`
         <button id="editorSave" accesskey="s" class="btn btn-sm btn-outline-secondary">Save <i class="fa-regular fa-save"></i></button>
         <button id="editorExit" accesskey="x" class="btn btn-sm btn-outline-secondary">Exit <i class="fa-solid fa-power-off"></i></button>
         <button id="editorDelete" class="btn btn-sm btn-danger">Delete <i class="fa-solid fa-times"></i></button>
+        <span id="editorAjax" role="status" aria-live="polite" aria-label="Working…"><i class="fa-solid fa-spinner fa-spin"></i></span>
       </div>
       </div>
     </div>
