@@ -232,6 +232,7 @@ describe('UploadView', function () {
         }
       }
       spyOn(view, 'showInProgress')
+      spyOn(collection, 'trigger').and.callThrough()
 
       // when
       view.loadMore(event, 'datastore', 'eidchub', collection)
@@ -243,7 +244,12 @@ describe('UploadView', function () {
 
       expect(request.method).toBe('GET')
       expect(request.url).toBe(`/upload/${id}/eidchub?page=7&size=3`)
-      expect(collection.length).toEqual(2)
+      // loadMore no longer mutates the collection directly; it fires an
+      // 'addBatch' event carrying the freshly-fetched File models, which the
+      // view's listener adds to the wired collection.
+      const addBatchCall = collection.trigger.calls.all().find(c => c.args[0] === 'addBatch')
+      expect(addBatchCall).toBeDefined()
+      expect(addBatchCall.args[1].length).toEqual(2)
       expect(view.showInProgress).toHaveBeenCalledWith(event)
       expect(view.model.get('datastorePage')).toEqual(7)
     })
@@ -357,9 +363,10 @@ describe('UploadView', function () {
     it('success', function () {
       // given
       spyOn(view, 'showInProgress')
-      spyOn(view, 'showNormal')
-      spyOn(view.dropbox, 'each')
-      spyOn(view.dropbox, 'reset')
+      // moveAllDatastore delegates the (deferred) refresh + dropbox cleanup to
+      // collectionSuccess, which reloads the datastore after a 7s timeout. Spy
+      // at that boundary rather than driving the timer + dataTable internals.
+      spyOn(view, 'collectionSuccess')
 
       // when
       view.$('.move-all').trigger('click')
@@ -372,9 +379,14 @@ describe('UploadView', function () {
       expect(request.method).toBe('POST')
       expect(request.url).toBe(`/upload/${id}/dropbox/move?to=eidchub`)
       expect(view.showInProgress).toHaveBeenCalled()
-      expect(view.showNormal).toHaveBeenCalled()
-      expect(view.dropbox.each).toHaveBeenCalled()
-      expect(view.dropbox.reset).toHaveBeenCalled()
+      expect(view.collectionSuccess).toHaveBeenCalledWith(
+        jasmine.anything(),
+        undefined, // currentClasses: showInProgress is stubbed, so returns undefined
+        'datastore',
+        'eidchub',
+        view.datastore,
+        jasmine.any(Function)
+      )
     })
   })
 
@@ -529,7 +541,9 @@ describe('UploadView', function () {
       // noinspection JSCheckFunctionSignatures
       request.respondWith(testResponses.serverState)
       expect(request.method).toBe('GET')
-      expect(request.url).toBe(`/upload/${id}/eidchub?page=1&size=20`)
+      // getServerState defaults the page size to 5000 ("load all") when the
+      // model has no explicit <name>Size set.
+      expect(request.url).toBe(`/upload/${id}/eidchub?page=1&size=5000`)
       expect(collection.reset).toHaveBeenCalledWith([{}, {}])
       expect(callback).toHaveBeenCalled()
     })
