@@ -2,14 +2,14 @@
 <@m.base>
 
   <#assign CombinedGeometriesOutput>
-    <@m.programmeCombinedGeometries "https://digital.ceh.ac.uk/ontology/doo/utilises" />
+    <@m.programmeCombinedGeometries combinedGeometry />
   </#assign>
 
   <#if CombinedGeometriesOutput?has_content>
     <div class="displayFeatures">
       <div class="featureMap">${CombinedGeometriesOutput}</div>
       <div class="featureList">
-        <@m.relationships "https://digital.ceh.ac.uk/ontology/doo/utilises" "Uses"  />
+        <@m.relationships uses "Uses"  />
       </div>
     </div>
   <#else>
@@ -22,16 +22,16 @@
 
 
   <div class="relationships">
-    <#if !CombinedGeometriesOutput?has_content><@m.relationships "https://digital.ceh.ac.uk/ontology/doo/utilises" "Uses" /></#if>
+    <#if !CombinedGeometriesOutput?has_content><@m.relationships uses "Uses" /></#if>
 
-    <@m.relationships  "http://purl.org/dc/terms/replaces" "Supersedes" />
-    <@m.inverseRelationships  "http://purl.org/dc/terms/replaces" "Superseded by"/>
+    <@m.relationships  supersedes "Supersedes" />
+    <@m.inverseRelationships  supersededBy "Superseded by"/>
 
-    <@m.relationships "https://digital.ceh.ac.uk/ontology/doo/triggers" "Activities set up for this programme" />
+    <@m.relationships activities "Activities set up for this programme" />
 
-    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme" "Parent programmes" />
-    <@m.relationships "https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme" "Child programmes" />
+    <@m.inverseRelationships parentProgramme "Parent programmes" />
+    <@m.relationships childProgramme "Child programmes" />
 
-    <@m.symmetricRelationships "http://purl.org/dc/terms/relation" "Related" />
+    <@m.symmetricRelationships related "Related" />
   </div>
 </@m.base>

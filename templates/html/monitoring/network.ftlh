@@ -2,7 +2,7 @@
 
 <@m.base>
   <#assign inverseRelationshipCombinedGeometriesOutput>
-    <@m.inverseRelationshipCombinedGeometries "http://purl.org/dc/terms/isPartOf" />
+    <@m.inverseRelationshipCombinedGeometries combinedGeometry />
   </#assign>
 
   <div class="displayFeatures">
@@ -10,22 +10,22 @@
      <div class="featureMap">${inverseRelationshipCombinedGeometriesOutput}</div>
     </#if>
     <div class="featureList">
-      <@m.inverseRelationships "http://purl.org/dc/terms/isPartOf" />
+      <@m.inverseRelationships featureList />
     </div>
   </div>
 
   <div class="relationships">
 
-    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/uses" "Used by"  />
-    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/utilises" "Used by"  />
+    <@m.inverseRelationships usedBy "Used by"  />
+    <@m.inverseRelationships utilisedBy "Used by"  />
 
-    <@m.relationships "http://purl.org/dc/terms/replaces" "Supersedes" />
-    <@m.inverseRelationships "http://purl.org/dc/terms/replaces" "Superseded by"  />
+    <@m.relationships supersedes "Supersedes" />
+    <@m.inverseRelationships supersededBy "Superseded by"  />
 
-    <@m.relationships "https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork" "Child networks" />
-    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork" "Parent networks"  />
+    <@m.relationships childNetwork "Child networks" />
+    <@m.inverseRelationships parentNetwork "Parent networks"  />
 
-    <@m.symmetricRelationships "http://purl.org/dc/terms/relation" "Related"/>
+    <@m.symmetricRelationships related "Related"/>
   </div>
 
 </@m.base>

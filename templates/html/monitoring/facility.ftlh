@@ -2,9 +2,8 @@
 
 <@m.base>
   <#assign relationshipCombinedGeometriesOutput>
-    <@m.relationshipCombinedGeometriesWithOwner "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility" locationConfidential />
+    <@m.relationshipCombinedGeometriesWithOwner combinedGeometry />
   </#assign>
-
 
   <#if locationConfidential>
     <div class="locationConfidential">The location of this facility is confidential, so the position shown on the map is just illustrative</div>
@@ -25,17 +24,17 @@
   </#if>
 
   <div class="relationships"><#compress>
-    <@m.relationships "http://purl.org/dc/terms/isPartOf" "Belongs to these networks"/>
+    <@m.relationships belongsToNetwork "Belongs to these networks"/>
 
-    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/uses" "Used by"  />
-    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/utilises" "Used by"  />
+    <@m.inverseRelationships usedBy "Used by"  />
+    <@m.inverseRelationships utilisedBy "Used by"  />
 
-    <@m.relationships "http://purl.org/dc/terms/replaces" "Supersedes" />
-    <@m.inverseRelationships "http://purl.org/dc/terms/replaces" "Superseded by"  />
+    <@m.relationships supersedes "Supersedes" />
+    <@m.inverseRelationships supersededBy "Superseded by"  />
 
-    <@m.relationships "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility" "Child facilities" />
-    <@m.inverseRelationships "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility" "Parent facilities"  />
+    <@m.relationships childFacility "Child facilities" />
+    <@m.inverseRelationships parentFacility "Parent facilities"  />
 
-    <@m.symmetricRelationships "http://purl.org/dc/terms/relation" "Related"/>
+    <@m.symmetricRelationships related "Related"/>
   </#compress></div>
 </@m.base>
