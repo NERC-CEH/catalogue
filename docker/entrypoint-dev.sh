@@ -32,4 +32,7 @@ mkdir -p /app/static /app/mapfiles /app/metrics-db /app/dropbox /app/web/css
 [ -L /app/static/css/images ] || ln -sf /app/web/node_modules/leaflet-draw/dist/images /app/static/css/images
 [ -L /app/static/webfonts ]   || ln -sf /app/web/node_modules/@fortawesome/fontawesome-free/webfonts /app/static/webfonts
 
-exec ./gradlew :java:bootRun "$@"
+# --project-cache-dir keeps the container's Gradle file-hash/config cache out of the
+# bind-mounted project tree, so it doesn't lock-contend with Gradle invoked on the host
+# against the same checkout while this process is running.
+exec ./gradlew --project-cache-dir /home/gradle/.gradle/project-cache :java:bootRun "$@"
