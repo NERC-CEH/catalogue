@@ -2,14 +2,14 @@
 <@m.base>
 
   <#assign CombinedGeometriesOutput>
-    <@m.programmeCombinedGeometries combinedGeometry />
+    <@m.programmeCombinedGeometries relCombinedGeometry />
   </#assign>
 
   <#if CombinedGeometriesOutput?has_content>
     <div class="displayFeatures">
       <div class="featureMap">${CombinedGeometriesOutput}</div>
       <div class="featureList">
-        <@m.relationships uses "Uses"  />
+        <@m.relationships relUses "Uses"  />
       </div>
     </div>
   <#else>
@@ -22,16 +22,16 @@
 
 
   <div class="relationships">
-    <#if !CombinedGeometriesOutput?has_content><@m.relationships uses "Uses" /></#if>
+    <#if !CombinedGeometriesOutput?has_content><@m.relationships relUses "Uses" /></#if>
 
-    <@m.relationships  supersedes "Supersedes" />
-    <@m.inverseRelationships  supersededBy "Superseded by"/>
+    <@m.relationships  relSupersedes "Supersedes" />
+    <@m.inverseRelationships  relSupersededBy "Superseded by"/>
 
-    <@m.relationships activities "Activities set up for this programme" />
+    <@m.relationships relActivities "Activities set up for this programme" />
 
-    <@m.inverseRelationships parentProgramme "Parent programmes" />
-    <@m.relationships childProgramme "Child programmes" />
+    <@m.inverseRelationships relParentProgramme "Parent programmes" />
+    <@m.relationships relChildProgramme "Child programmes" />
 
-    <@m.symmetricRelationships related "Related" />
+    <@m.symmetricRelationships relRelated "Related" />
   </div>
 </@m.base>

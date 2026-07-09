@@ -36,14 +36,14 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
     private List<TimePeriod> operatingPeriod;
     private List<Keyword> environmentalDomain, purposeOfCollection, keywordsParameters;
     private List<Supplemental> linksData, linksOther;
-    private String combinedGeometry;
-    private List<Link> uses;
-    private List<Link> supersedes;
-    private List<Link> supersededBy;
-    private List<Link> activities;
-    private List<Link> childProgramme;
-    private List<Link> parentProgramme;
-    private List<Link> related;
+    private String relCombinedGeometry;
+    private List<Link> relUses;
+    private List<Link> relSupersedes;
+    private List<Link> relSupersededBy;
+    private List<Link> relActivities;
+    private List<Link> relChildProgramme;
+    private List<Link> relParentProgramme;
+    private List<Link> relRelated;
 
     @Override
     public List<String> getWKTs() {
@@ -56,55 +56,55 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
 
     public void populateFromJenaService(JenaLookupService jenaService) {
         final String uri = this.getUri();
-        this.setCombinedGeometry(jenaService.programmeCombinedGeometries(uri));
-        this.setUses(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"));
-        this.setSupersedes(jenaService.relationships(uri, "http://purl.org/dc/terms/replaces"));
-        this.setSupersededBy(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/replaces"));
-        this.setActivities(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/triggers"));
-        this.setChildProgramme(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme"));
-        this.setParentProgramme(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme"));
+        this.setRelCombinedGeometry(jenaService.programmeCombinedGeometries(uri));
+        this.setRelUses(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"));
+        this.setRelSupersedes(jenaService.relationships(uri, "http://purl.org/dc/terms/replaces"));
+        this.setRelSupersededBy(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/replaces"));
+        this.setRelActivities(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/triggers"));
+        this.setRelChildProgramme(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme"));
+        this.setRelParentProgramme(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme"));
 
         var relationList = jenaService.relationships(uri, "http://purl.org/dc/terms/relation");
         relationList.addAll(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/relation"));
-        this.setRelated(relationList);
+        this.setRelRelated(relationList);
     }
 
-    public String getCombinedGeometry() {
-        return combinedGeometry == null ? "" : combinedGeometry;
+    public String getRelCombinedGeometry() {
+        return relCombinedGeometry == null ? "" : relCombinedGeometry;
     }
 
-    public List<Link> getUses() {
-        return Optional.ofNullable(uses)
+    public List<Link> getRelUses() {
+        return Optional.ofNullable(relUses)
             .orElseGet(Collections::emptyList);
     }
 
-    public List<Link> getSupersedes() {
-        return Optional.ofNullable(supersedes)
+    public List<Link> getRelSupersedes() {
+        return Optional.ofNullable(relSupersedes)
             .orElseGet(Collections::emptyList);
     }
 
-    public List<Link> getSupersededBy() {
-        return Optional.ofNullable(supersededBy)
+    public List<Link> getRelSupersededBy() {
+        return Optional.ofNullable(relSupersededBy)
             .orElseGet(Collections::emptyList);
     }
 
-    public List<Link> getActivities() {
-        return Optional.ofNullable(activities)
+    public List<Link> getRelActivities() {
+        return Optional.ofNullable(relActivities)
             .orElseGet(Collections::emptyList);
     }
 
-    public List<Link> getChildProgramme() {
-        return Optional.ofNullable(childProgramme)
+    public List<Link> getRelChildProgramme() {
+        return Optional.ofNullable(relChildProgramme)
             .orElseGet(Collections::emptyList);
     }
 
-    public List<Link> getParentProgramme() {
-        return Optional.ofNullable(parentProgramme)
+    public List<Link> getRelParentProgramme() {
+        return Optional.ofNullable(relParentProgramme)
             .orElseGet(Collections::emptyList);
     }
 
-    public List<Link> getRelated() {
-        return Optional.ofNullable(related)
+    public List<Link> getRelRelated() {
+        return Optional.ofNullable(relRelated)
             .orElseGet(Collections::emptyList);
     }
 }

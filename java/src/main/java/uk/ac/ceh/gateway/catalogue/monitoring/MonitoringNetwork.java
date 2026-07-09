@@ -36,15 +36,15 @@ public class MonitoringNetwork extends AbstractMetadataDocument implements WellK
     private List<Keyword> environmentalDomain, keywordsParameters;
     private List<Supplemental> linksData, linksOther;
     private BoundingBox boundingBox;
-    private String combinedGeometry;
-    private List<Link> featureList;
-    private List<Link> usedBy;
-    private List<Link> utilisedBy;
-    private List<Link> supersedes;
-    private List<Link> supersededBy;
-    private List<Link> childNetwork;
-    private List<Link> parentNetwork;
-    private List<Link> related;
+    private String relCombinedGeometry;
+    private List<Link> relFeatureList;
+    private List<Link> relUsedBy;
+    private List<Link> relUtilisedBy;
+    private List<Link> relSupersedes;
+    private List<Link> relSupersededBy;
+    private List<Link> relChildNetwork;
+    private List<Link> relParentNetwork;
+    private List<Link> relRelated;
 
     @Override
     public List<String> getWKTs() {
@@ -53,61 +53,61 @@ public class MonitoringNetwork extends AbstractMetadataDocument implements WellK
 
     public void populateFromJenaService(JenaLookupService jenaService) {
         final String uri = this.getUri();
-        this.setCombinedGeometry(jenaService.inverseRelationshipCombinedGeometries(uri, "http://purl.org/dc/terms/isPartOf"));
-        this.setFeatureList(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/isPartOf"));
-        this.setUsedBy(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/uses"));
-        this.setUtilisedBy(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"));
-        this.setSupersedes(jenaService.relationships(uri, "http://purl.org/dc/terms/replaces"));
-        this.setSupersededBy(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/replaces"));
-        this.setChildNetwork(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork"));
-        this.setParentNetwork(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork"));
+        this.setRelCombinedGeometry(jenaService.inverseRelationshipCombinedGeometries(uri, "http://purl.org/dc/terms/isPartOf"));
+        this.setRelFeatureList(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/isPartOf"));
+        this.setRelUsedBy(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/uses"));
+        this.setRelUtilisedBy(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"));
+        this.setRelSupersedes(jenaService.relationships(uri, "http://purl.org/dc/terms/replaces"));
+        this.setRelSupersededBy(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/replaces"));
+        this.setRelChildNetwork(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork"));
+        this.setRelParentNetwork(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork"));
 
         var relationList = jenaService.relationships(uri, "http://purl.org/dc/terms/relation");
         relationList.addAll(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/relation"));
-        this.setRelated(relationList);
+        this.setRelRelated(relationList);
     }
 
-    public String getCombinedGeometry() {
-        return combinedGeometry == null ? "" : combinedGeometry;
+    public String getRelCombinedGeometry() {
+        return relCombinedGeometry == null ? "" : relCombinedGeometry;
     }
 
-    public List<Link> getFeatureList() {
-        return Optional.ofNullable(featureList)
+    public List<Link> getRelFeatureList() {
+        return Optional.ofNullable(relFeatureList)
             .orElseGet(Collections::emptyList);
     }
 
-    public List<Link> getUsedBy() {
-        return Optional.ofNullable(usedBy)
+    public List<Link> getRelUsedBy() {
+        return Optional.ofNullable(relUsedBy)
             .orElseGet(Collections::emptyList);
     }
 
-    public List<Link> getUtilisedBy() {
-        return Optional.ofNullable(utilisedBy)
+    public List<Link> getRelUtilisedBy() {
+        return Optional.ofNullable(relUtilisedBy)
             .orElseGet(Collections::emptyList);
     }
 
-    public List<Link> getSupersedes() {
-        return Optional.ofNullable(supersedes)
+    public List<Link> getRelSupersedes() {
+        return Optional.ofNullable(relSupersedes)
             .orElseGet(Collections::emptyList);
     }
 
-    public List<Link> getSupersededBy() {
-        return Optional.ofNullable(supersededBy)
+    public List<Link> getRelSupersededBy() {
+        return Optional.ofNullable(relSupersededBy)
             .orElseGet(Collections::emptyList);
     }
 
-    public List<Link> getChildNetwork() {
-        return Optional.ofNullable(childNetwork)
+    public List<Link> getRelChildNetwork() {
+        return Optional.ofNullable(relChildNetwork)
             .orElseGet(Collections::emptyList);
     }
 
-    public List<Link> getParentNetwork() {
-        return Optional.ofNullable(parentNetwork)
+    public List<Link> getRelParentNetwork() {
+        return Optional.ofNullable(relParentNetwork)
             .orElseGet(Collections::emptyList);
     }
 
-    public List<Link> getRelated() {
-        return Optional.ofNullable(related)
+    public List<Link> getRelRelated() {
+        return Optional.ofNullable(relRelated)
             .orElseGet(Collections::emptyList);
     }
 }

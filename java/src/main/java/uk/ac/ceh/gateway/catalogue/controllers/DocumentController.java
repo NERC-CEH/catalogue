@@ -393,8 +393,13 @@ public class DocumentController extends AbstractDocumentController {
             }
 
     private MetadataDocument addJenaRelationships(MetadataDocument document) {
-        if (document instanceof GeminiDocument doc) {
-            doc.populateFromJenaService(jenaService);
+        switch (document) {
+            case GeminiDocument doc -> doc.populateFromJenaService(jenaService);
+            case MonitoringActivity doc -> doc.populateFromJenaService(jenaService);
+            case MonitoringFacility doc -> doc.populateFromJenaService(jenaService);
+            case MonitoringNetwork doc -> doc.populateFromJenaService(jenaService);
+            case MonitoringProgramme doc -> doc.populateFromJenaService(jenaService);
+            default -> {}
         }
         return document;
     }

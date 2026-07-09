@@ -2,7 +2,7 @@
 
 <@m.base>
   <#assign relationshipCombinedGeometriesOutput>
-    <@m.relationshipCombinedGeometriesWithOwner combinedGeometry />
+    <@m.relationshipCombinedGeometriesWithOwner relCombinedGeometry />
   </#assign>
 
   <#if locationConfidential>
@@ -24,17 +24,17 @@
   </#if>
 
   <div class="relationships"><#compress>
-    <@m.relationships belongsToNetwork "Belongs to these networks"/>
+    <@m.relationships relBelongsToNetwork "Belongs to these networks"/>
 
-    <@m.inverseRelationships usedBy "Used by"  />
-    <@m.inverseRelationships utilisedBy "Used by"  />
+    <@m.inverseRelationships relUsedBy "Used by"  />
+    <@m.inverseRelationships relUtilisedBy "Used by"  />
 
-    <@m.relationships supersedes "Supersedes" />
-    <@m.inverseRelationships supersededBy "Superseded by"  />
+    <@m.relationships relSupersedes "Supersedes" />
+    <@m.inverseRelationships relSupersededBy "Superseded by"  />
 
-    <@m.relationships childFacility "Child facilities" />
-    <@m.inverseRelationships parentFacility "Parent facilities"  />
+    <@m.relationships relChildFacility "Child facilities" />
+    <@m.inverseRelationships relParentFacility "Parent facilities"  />
 
-    <@m.symmetricRelationships related "Related"/>
+    <@m.symmetricRelationships relRelated "Related"/>
   </#compress></div>
 </@m.base>

@@ -11,8 +11,8 @@
 
   </#if>
 
-  <@m.relationships useNetworkOrFacility "Uses these facilities/networks"/>
-  <@m.inverseRelationships setupForProgramme "Set up for these programmes"/>
+  <@m.relationships relUseNetworkOrFacility "Uses these facilities/networks"/>
+  <@m.inverseRelationships relSetupForProgramme "Set up for these programmes"/>
 
 </@m.base>
 

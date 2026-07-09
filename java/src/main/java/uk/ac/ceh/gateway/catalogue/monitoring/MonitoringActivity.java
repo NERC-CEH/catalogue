@@ -36,8 +36,8 @@ public class MonitoringActivity extends AbstractMetadataDocument implements Well
     private List<TimePeriod> operatingPeriod;
     private List<Keyword> environmentalDomain, purposeOfCollection, keywordsParameters;
     private List<Supplemental> linksData, linksOther;
-    private List<Link> useNetworkOrFacility;
-    private List<Link> setupForProgramme;
+    private List<Link> relUseNetworkOrFacility;
+    private List<Link> relSetupForProgramme;
 
     @Override
     public List<String> getWKTs() {
@@ -50,18 +50,18 @@ public class MonitoringActivity extends AbstractMetadataDocument implements Well
 
     public void populateFromJenaService(JenaLookupService jenaService) {
         final String uri = this.getUri();
-        this.setUseNetworkOrFacility(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/uses"));
-        this.setSetupForProgramme(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/triggers"));
+        this.setRelUseNetworkOrFacility(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/uses"));
+        this.setRelSetupForProgramme(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/triggers"));
     }
 
 
-    public List<Link> getUseNetworkOrFacility() {
-        return Optional.ofNullable(useNetworkOrFacility)
+    public List<Link> getRelUseNetworkOrFacility() {
+        return Optional.ofNullable(relUseNetworkOrFacility)
             .orElseGet(Collections::emptyList);
     }
 
-    public List<Link> getSetupForProgramme() {
-        return Optional.ofNullable(setupForProgramme)
+    public List<Link> getRelSetupForProgramme() {
+        return Optional.ofNullable(relSetupForProgramme)
             .orElseGet(Collections::emptyList);
     }
 }
