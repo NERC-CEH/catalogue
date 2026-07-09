@@ -80,6 +80,31 @@ main {
                 }
 
                 box-shadow: var(--form-boxshadow);
+
+                // Bootstrap's focus ring lives on .form-control:focus, so only the
+                // input's three exposed sides get outlined — the attached button on
+                // the right stays un-ringed. Draw the ring around the whole group
+                // instead (and suppress the input's own ring to avoid doubling), so
+                // all four sides including the button get one uniform blue outline
+                // when the input is focused.
+                //
+                // Use Bootstrap's original focus-ring colour ($input-focus-box-shadow)
+                // as the only shadow while focused. We drop the resting grey drop
+                // shadow (var(--form-boxshadow)) here because its bottom-right offset
+                // painted over the ring and made it look faded on those two sides;
+                // with it gone the ring renders uniformly on all four sides.
+                &:focus-within {
+                    border-radius: 4px;
+                    box-shadow: $input-focus-box-shadow;
+
+                    .form-control:focus {
+                        box-shadow: none;
+                        // Hide the pale-cyan $input-focus-border-color line so the
+                        // ring sits directly against the white input; the input's
+                        // own white background shows through the 1px border.
+                        border-color: transparent;
+                    }
+                }
             }
 
         }
