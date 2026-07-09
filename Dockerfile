@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 # Build webpack (javascript & css)
 FROM node:24-alpine AS build-web
 WORKDIR /web
@@ -18,7 +19,11 @@ COPY --chown=gradle:gradle java/lombok.config .
 COPY --chown=gradle:gradle java/build.gradle .
 COPY --chown=gradle:gradle gradle/libs.versions.toml gradle/
 COPY --chown=gradle:gradle java/src src/
-RUN --mount=type=cache,target=/root/.gradle gradle bootJar --no-daemon
+# --secret keeps CI_JOB_TOKEN (unique per CI run) out of image layers and the cache key,
+# unlike --build-arg, which would bake it into `docker history` and bust the gradle cache mount
+RUN --mount=type=cache,target=/root/.gradle \
+    --mount=type=secret,id=gitlab_token \
+    CI_JOB_TOKEN="$(cat /run/secrets/gitlab_token 2>/dev/null || true)" gradle bootJar --no-daemon
 WORKDIR build/libs
 RUN java -Djarmode=tools -jar app.jar extract --layers --launcher
 

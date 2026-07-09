@@ -21,8 +21,6 @@ import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.git.GitDataRepository;
-import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
-import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.citation.CitationService;
 import uk.ac.ceh.gateway.catalogue.converters.Gml2WmsFeatureInfoMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
@@ -203,8 +201,7 @@ public class ServicesConfig {
     ) {
         return new GitDataRepository<>(
             new File(dataRepositoryLocation),
-            new InMemoryUserStore<>(),
-            new AnnotatedUserHelper<>(CatalogueUser.class),
+            CatalogueUser::new,
             eventBus
         );
     }
