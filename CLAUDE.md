@@ -18,14 +18,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - This project uses Java 25 with Gradle; prefer toolchain configuration over sourceCompatibility/targetCompatibility
 - Library versions live in `gradle/libs.versions.toml` (Gradle version catalog) — add/update versions there, not inline in `build.gradle`
 - Dockerfile multi-stage build: copy `gradle/libs.versions.toml` into the Gradle build stage alongside `build.gradle`, or `bootJar` will fail with missing catalog
-- Any Gradle invocation resolves the `java-commons` library (`uk.ac.ceh.components:*`) from a private GitLab Maven registry (`java/build.gradle`), authenticated one of three ways depending on context:
-  - **Host/IntelliJ** (`./gradlew :java:compileJava`, `:java:test`, project import, etc.): a `gitlabToken` project property, sent as a `Private-Token` header. Needs a GitLab personal access token with `read_api` scope, set in `~/.gradle/gradle.properties` (not project-local, so it never gets committed):
-    ```properties
-    gitlabToken=<personal access token with read_api scope>
-    ```
-  - **Docker Compose** (`docker compose up`/`--build`/`watch`, the `dev-run` target): the `catalogue` service's Gradle home is the `gradle-cache` named volume, not the host's `~/.gradle` — it does not inherit the host property above. Needs `ORG_GRADLE_PROJECT_gitlabToken=<same personal access token>` in `secrets.env` (gitignored, loaded via `env_file` in `docker-compose.yml`) — Gradle auto-maps `ORG_GRADLE_PROJECT_*` env vars to project properties, so no code changes are needed.
-  - **CI** (`.gitlab-ci.yml` `test_java` job, and the Dockerfile's `build-java` stage via a BuildKit secret): the auto-injected `CI_JOB_TOKEN`, sent as a `Job-Token` header — no CI/CD variable needed on this project's side. `commons/java-commons`' job-token scope allowlists the `eip` group (not `eip/catalogue` individually), which covers this project since it belongs directly to that group
-  - Without one of these, Gradle fails resolving `java-commons` dependencies with a `401 Unauthorized`
+- The `java-commons` library (`uk.ac.ceh.components:*`) resolves from a public GitLab Maven registry (`java/build.gradle`) — no authentication needed
 
 ## Commands
 

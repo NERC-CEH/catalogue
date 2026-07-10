@@ -63,10 +63,7 @@ CROWD_PASSWORD=
 DOI_PASSWORD=
 HUBBUB_PASSWORD=
 FUSEKI_PASSWORD=
-ORG_GRADLE_PROJECT_gitlabToken=
 ```
-
-`ORG_GRADLE_PROJECT_gitlabToken` is your own GitLab personal access token (`read_api` scope) — Gradle auto-maps `ORG_GRADLE_PROJECT_*` environment variables to project properties, so this is what lets Gradle running *inside* the `catalogue` container resolve the private `java-commons` library. It's needed because that container's Gradle home (`gradle-cache` in `docker-compose.yml`) is a separate Docker volume, not your host's `~/.gradle` — see [Intellij set-up](#intellij-set-up) below for the equivalent host-side setup. Without it, `docker compose up`/`--build` fails with a `401 Unauthorized` resolving `uk.ac.ceh.components:*` dependencies.
 
 ## Getting started
 
@@ -96,12 +93,6 @@ The EIDC catalogue is then available at http://localhost:8080/eidc/documents.
 
 Make sure that you have the Lombok plugin installed, if not you can download it from `settings -> Plugins -> marketplace` and search for Lombok.
 Check that annotation processing is enabled in `settings -> Build, Execution, Deployment -> compiler -> Annotation processors`.
-
-Gradle resolves the `java-commons` library from a private GitLab Maven registry, authenticated with a `gitlabToken` project property (see `java/build.gradle`). Any Gradle run on the host — IntelliJ's project import/sync, or `./gradlew` commands run outside Docker — needs this set. Create a GitLab personal access token with `read_api` scope, then add it to `~/.gradle/gradle.properties` (not the project directory, so it's never committed):
-
-```properties
-gitlabToken=<personal access token with read_api scope>
-```
 
 
 ### Developing JavaScript and CSS

@@ -9,18 +9,8 @@ plugins {
 repositories {
     mavenCentral()
     maven {
-        // https://gitlab.ceh.ac.uk/commons/java-commons
+        // https://gitlab.ceh.ac.uk/commons/java-commons (public)
         url = "https://gitlab.ceh.ac.uk/api/v4/projects/10/packages/maven"
-        credentials(HttpHeaderCredentials) {
-            // CI jobs authenticate with the auto-injected CI_JOB_TOKEN (requires commons/java-commons
-            // to allowlist this project's job token scope); host/IntelliJ builds use a personal
-            // access token (read_api scope) from a `gitlabToken` property in ~/.gradle/gradle.properties
-            name = System.getenv("CI_JOB_TOKEN") ? "Job-Token" : "Private-Token"
-            value = System.getenv("CI_JOB_TOKEN") ?: project.findProperty("gitlabToken")
-        }
-        authentication {
-            header(HttpHeaderAuthentication)
-        }
     }
 }
 

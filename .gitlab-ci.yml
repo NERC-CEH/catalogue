@@ -56,7 +56,7 @@ test_application:
     - name: docker:27-dind
       alias: docker
   script:
-    - docker build --secret id=gitlab_token,env=CI_JOB_TOKEN --build-arg BUILD_DATE=$(date +%Y-%m-%d) --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
+    - docker build --build-arg BUILD_DATE=$(date +%Y-%m-%d) --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
     - docker push $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA
 
 container_scanning:
@@ -92,7 +92,7 @@ build_application:
     - set -euo pipefail
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
-    - docker build --secret id=gitlab_token,env=CI_JOB_TOKEN --build-arg BUILD_DATE=$(date +%Y-%m-%d) --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME .
+    - docker build --build-arg BUILD_DATE=$(date +%Y-%m-%d) --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME .
     - docker push $CI_REGISTRY_IMAGE/app --all-tags
   only:
     - tags
