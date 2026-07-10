@@ -13,6 +13,11 @@ import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 
 import java.time.Duration;
 
+import static uk.ac.ceh.gateway.catalogue.services.MetadataListingService.METADATA_LISTINGS_CACHE;
+import static uk.ac.ceh.gateway.catalogue.userdetails.CrowdGroupStore.CROWD_GROUP_CACHE;
+import static uk.ac.ceh.gateway.catalogue.userdetails.CrowdUserStore.CROWD_USER_CACHE;
+import static uk.ac.ceh.gateway.catalogue.wms.GetCapabilitiesObtainerService.CAPABILITIES_CACHE;
+
 // Enabled in every real environment; disabled under the "test" profile (which all @SpringBootTest
 // classes activate) so that spring.cache.type=none (application-test.properties) can supply Boot's
 // NoOpCacheManager for ordinary tests, undisturbed by this class's own explicit @Bean CacheManager.
@@ -27,10 +32,10 @@ public class CacheConfig implements CachingConfigurer {
         log.info("Customizing caches");
         val cacheManager = new CaffeineCacheManager();
 
-        cacheManager.registerCustomCache("capabilities", expireAfterAccess(Duration.ofMinutes(30)).build());
-        cacheManager.registerCustomCache("crowd-user", expireAfterAccess(Duration.ofMinutes(30)).build());
-        cacheManager.registerCustomCache("crowd-user-groups", expireAfterAccess(Duration.ofMinutes(30)).build());
-        cacheManager.registerCustomCache("metadata-listings", expireAfterAccess(Duration.ofMinutes(3)).build());
+        cacheManager.registerCustomCache(CAPABILITIES_CACHE, expireAfterAccess(Duration.ofMinutes(30)).build());
+        cacheManager.registerCustomCache(CROWD_USER_CACHE, expireAfterAccess(Duration.ofMinutes(30)).build());
+        cacheManager.registerCustomCache(CROWD_GROUP_CACHE, expireAfterAccess(Duration.ofMinutes(30)).build());
+        cacheManager.registerCustomCache(METADATA_LISTINGS_CACHE, expireAfterAccess(Duration.ofMinutes(3)).build());
 
         // Datastore read caches. Unlike the caches above these hold record bytes (.raw can be large)
         // so they MUST be size-bounded to avoid OOM. Latest/historical blob content is keyed so a

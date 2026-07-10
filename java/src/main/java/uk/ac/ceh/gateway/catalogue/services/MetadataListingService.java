@@ -32,6 +32,7 @@ public class MetadataListingService {
     private final DocumentListingService listingService;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private static final String WAF_CATALOGUE = "eidc";
+    public static final String METADATA_LISTINGS_CACHE = "metadata-listings";
 
     public MetadataListingService(
         DataRepository<CatalogueUser> repo,
@@ -60,7 +61,7 @@ public class MetadataListingService {
      * @throws DataRepositoryException
      * @throws IOException
      */
-    @Cacheable("metadata-listings")
+    @Cacheable(METADATA_LISTINGS_CACHE)
     public List<String> getPublicDocuments(String revision, Class<? extends MetadataDocument> type, List<String> resourceTypes) throws DataRepositoryException, IOException, PostProcessingException {
         List<String> toReturn = new ArrayList<>();
         List<String> documents = listingService.filterFilenames(repo.getFiles(revision));
