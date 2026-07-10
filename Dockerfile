@@ -19,8 +19,7 @@ COPY --chown=gradle:gradle java/lombok.config .
 COPY --chown=gradle:gradle java/build.gradle .
 COPY --chown=gradle:gradle gradle/libs.versions.toml gradle/
 COPY --chown=gradle:gradle java/src src/
-RUN --mount=type=cache,target=/root/.gradle \
-    gradle bootJar --no-daemon
+RUN --mount=type=cache,target=/root/.gradle gradle bootJar --no-daemon
 WORKDIR build/libs
 RUN java -Djarmode=tools -jar app.jar extract --layers --launcher
 
