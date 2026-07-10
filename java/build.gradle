@@ -12,6 +12,11 @@ repositories {
         // https://gitlab.ceh.ac.uk/commons/java-commons (public)
         url = "https://gitlab.ceh.ac.uk/api/v4/projects/10/packages/maven"
     }
+    maven {
+        // Spring AI 2.0.0-M8 is a milestone release — not yet on Maven Central.
+        // Remove once Spring AI 2.0 GA is published (see docs/vector-search-mcp.md).
+        url = "https://repo.spring.io/milestone"
+    }
 }
 
 configurations {
@@ -52,6 +57,12 @@ dependencies {
     // Apache
     implementation(libs.bundles.jena)
     implementation "org.apache.solr:solr-solrj:10.0.0"
+
+    // Spring AI — Bedrock Titan embeddings, MCP server, Tika document extraction
+    implementation platform(libs.spring.ai.bom)
+    implementation libs.spring.ai.bedrock
+    implementation libs.spring.ai.mcp
+    implementation libs.spring.ai.tika    // PDF/Word/RTF supporting document extraction
 
     // CEH Components
     implementation(libs.bundles.ukceh)

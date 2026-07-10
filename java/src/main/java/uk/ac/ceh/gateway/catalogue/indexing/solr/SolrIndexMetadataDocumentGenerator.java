@@ -37,11 +37,22 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
     private final VocabularyService vocabularyService;
+    private final Optional<PendingEmbeddingService> pendingEmbeddingService;
+
+    // Convenience constructor for callers with no embedding pipeline (tests and
+    // non-vector-search contexts). @RequiredArgsConstructor generates the 4-arg form
+    // used when a PendingEmbeddingService bean is available (vector-search profile).
+    public SolrIndexMetadataDocumentGenerator(
+            CodeLookupService codeLookupService,
+            DocumentIdentifierService identifierService,
+            VocabularyService vocabularyService) {
+        this(codeLookupService, identifierService, vocabularyService, Optional.empty());
+    }
 
     @Override
     public SolrIndex generateIndex(MetadataDocument document) {
         log.debug("{} is a {}, {}", document.getId(), codeLookupService.lookup("metadata.resourceType", document.getType()), codeLookupService.lookup("metadata.recordType", document.getType()));
-        return new SolrIndex()
+        SolrIndex index = new SolrIndex()
             .setAssistResearchThemes(grab(getKeywordsByVocabulary(document, VocabularyFacet.ASSIST_RESEARCH_THEMES.getFacetName()), Keyword::getValue))
             .setAssistTopics(grab(getKeywordsByVocabulary(document, VocabularyFacet.ASSIST_TOPICS.getFacetName()), Keyword::getValue))
             .setCatalogue(document.getCatalogue())
@@ -74,6 +85,12 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                     .orElse(Date.from(Instant.EPOCH))
             )
             ;
+
+        // Enqueue for asynchronous embedding. Subtype generators (Gemini, etc.) chain
+        // further setters onto this same SolrIndex instance after we return, and flush()
+        // runs later, so the queued reference sees the fully-enriched document.
+        pendingEmbeddingService.ifPresent(service -> service.mark(document.getId(), index));
+        return index;
     }
 
     private String getRecordType(MetadataDocument document) {

@@ -52,7 +52,7 @@ class HybridSearcherTest {
 
     @Test
     @SneakyThrows
-    void rrfMainQueryFormatIsCorrect() {
+    void combinerParamsAreSetForRrf() {
         given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f, 0.2f, 0.3f});
         given(catalogueService.retrieve("eidc")).willReturn(eidc);
 
@@ -60,9 +60,13 @@ class HybridSearcherTest {
 
         ArgumentCaptor<SolrParams> captor = ArgumentCaptor.forClass(SolrParams.class);
         verify(solrClient).query(eq("documents"), captor.capture(), any());
+        SolrParams p = captor.getValue();
 
-        assertThat(captor.getValue().get("q"))
-                .startsWith("{!rrf queries=$bm25q,$knnq k=60}");
+        // Native Solr Reciprocal Rank Fusion combiner (CombinerParams), not a {!rrf} parser
+        assertThat(p.getBool("combiner")).isTrue();
+        assertThat(p.get("combiner.algorithm")).isEqualTo("rrf");
+        assertThat(p.get("combiner.rrf.k")).isEqualTo("60");
+        assertThat(p.getParams("combiner.query")).containsExactlyInAnyOrder("bm25q", "knnq");
     }
 
     @Test
@@ -76,7 +80,7 @@ class HybridSearcherTest {
         ArgumentCaptor<SolrParams> captor = ArgumentCaptor.forClass(SolrParams.class);
         verify(solrClient).query(eq("documents"), captor.capture(), any());
 
-        String bm25q = captor.getValue().get("bm25q");
+        String bm25q = captor.getValue().get("json.queries.bm25q");
         assertThat(bm25q).startsWith("{!edismax");
         assertThat(bm25q).contains("peat bog carbon");
         assertThat(bm25q).contains("title^5");
@@ -93,7 +97,7 @@ class HybridSearcherTest {
         ArgumentCaptor<SolrParams> captor = ArgumentCaptor.forClass(SolrParams.class);
         verify(solrClient).query(eq("documents"), captor.capture(), any());
 
-        String knnq = captor.getValue().get("knnq");
+        String knnq = captor.getValue().get("json.queries.knnq");
         assertThat(knnq).startsWith("{!knn f=vector topK=");
         assertThat(knnq).contains("0.1").contains("0.2").contains("0.3");
         assertThat(knnq).endsWith("]");
@@ -110,7 +114,7 @@ class HybridSearcherTest {
         ArgumentCaptor<SolrParams> captor = ArgumentCaptor.forClass(SolrParams.class);
         verify(solrClient).query(eq("documents"), captor.capture(), any());
 
-        assertThat(captor.getValue().get("knnq")).contains("topK=100");
+        assertThat(captor.getValue().get("json.queries.knnq")).contains("topK=100");
     }
 
     @Test
@@ -125,7 +129,7 @@ class HybridSearcherTest {
         ArgumentCaptor<SolrParams> captor = ArgumentCaptor.forClass(SolrParams.class);
         verify(solrClient).query(eq("documents"), captor.capture(), any());
 
-        assertThat(captor.getValue().get("knnq")).contains("topK=200");
+        assertThat(captor.getValue().get("json.queries.knnq")).contains("topK=200");
     }
 
     @Test

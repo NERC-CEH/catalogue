@@ -295,15 +295,25 @@ Permission filtering is applied automatically — all MCP searches run as the pu
 ### Hybrid search — Reciprocal Rank Fusion
 
 `hybridSearch` combines BM25 keyword ranking and KNN vector ranking in a **single Solr request**
-using Solr 10's native `{!rrf}` query parser:
+using Solr's native **combiner** feature (the "combining queries" support from SOLR-17319).
+There is no `{!rrf}` query parser — RRF is a request-param combiner over a JSON `queries` map:
 
 ```
-q={!rrf queries=$bm25q,$knnq k=60}
-bm25q={!edismax qf="title^5 description^2 ..."}search term
-knnq={!knn f=vector topK=100}[0.1,0.2,...]
+json.queries.bm25q={!edismax qf="title^5 description^2 ..."}search term
+json.queries.knnq={!knn f=vector topK=100}[0.1,0.2,...]
+combiner=true
+combiner.algorithm=rrf
+combiner.query=bm25q&combiner.query=knnq
+combiner.rrf.k=60
 ```
 
-RRF score: `Σ 1 / (k + rank_i)` across sub-queries, where `k=60` (RRF paper default).
+RRF score: `Σ 1 / (k + rank_i)` across sub-queries, where `k=60` (RRF paper default,
+`CombinerParams.DEFAULT_COMBINER_RRF_K`).
+
+> **Version requirement:** the combiner ships in **Solr 10.1 / 9.11** (`CombinerParams`);
+> it is **not** in the pinned `solr-solrj:10.0.0`, and no 10.1/9.11 GA is released yet.
+> The hybrid path therefore cannot execute until both the SolrJ client and the Solr server
+> are upgraded to ≥10.1 — gate it behind a version/feature check until then.
 
 **Why hybrid over pure semantic?**
 - BM25 is precise for exact dataset names, accession numbers, and rare technical terms
