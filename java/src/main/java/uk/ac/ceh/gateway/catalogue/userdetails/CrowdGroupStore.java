@@ -34,6 +34,7 @@ public class CrowdGroupStore implements GroupStore<CatalogueUser> {
     private final String crowdUsername;
     private final String crowdPassword;
     private final RestTemplate restTemplate;
+    public static final String CROWD_GROUP_CACHE = "crowd-group";
 
     public CrowdGroupStore(
         @Value("${crowd.address}") String address,
@@ -49,7 +50,7 @@ public class CrowdGroupStore implements GroupStore<CatalogueUser> {
 
     @Override
     @SneakyThrows
-    @Cacheable(value="crowd-user-groups", key="#user.username")
+    @Cacheable(value=CROWD_GROUP_CACHE, key="#user.username")
     public List<Group> getGroups(CatalogueUser user) {
         try {
             val uriTemplate = address + "/user/group/nested?username={username}";

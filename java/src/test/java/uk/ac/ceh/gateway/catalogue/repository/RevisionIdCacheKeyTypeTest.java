@@ -20,12 +20,15 @@ import static org.mockito.Mockito.*;
 /**
  * Regression test for the SimpleKey/String key-type mismatch that broke Solr indexing.
  *
- * <p>{@code datastore-revision-id} is declared String-keyed in {@link CacheConfig}, and EHCache
- * enforces that type. An argument-less {@code @Cacheable} method without an explicit key makes
- * Spring generate a {@code SimpleKey}, which EHCache rejects ("Invalid key type, expected:
- * java.lang.String but was: ...SimpleKey"). The behavioural {@link DatastoreReadCacheTest} could not
- * catch this because its {@code ConcurrentMapCacheManager} is untyped — so this test uses the real
- * production cache manager (typed EHCache) to faithfully reproduce the enforcement.</p>
+ * <p>An argument-less {@code @Cacheable} method without an explicit key makes Spring generate a
+ * {@code SimpleKey} instead of a stable literal key. The production cache manager (Caffeine, via
+ * {@link CacheConfig}) is untyped and won't throw on this — it will simply cache under a different,
+ * less specific key, silently degrading caching rather than failing loudly. So this test's job is
+ * to prove {@code getLatestRevisionId()}'s explicit {@code key = "'HEAD'"} SpEL still produces a
+ * stable, reusable key by asserting a genuine cache hit on the second call. The behavioural
+ * {@link DatastoreReadCacheTest} doesn't cover this because its {@code ConcurrentMapCacheManager} is
+ * a separate, ad-hoc fixture — this test uses the real production cache manager to be faithful to
+ * how {@code CacheConfig} actually wires the {@code datastore-revision-id} cache.</p>
  */
 @SpringJUnitConfig(RevisionIdCacheKeyTypeTest.Config.class)
 public class RevisionIdCacheKeyTypeTest {
@@ -35,8 +38,7 @@ public class RevisionIdCacheKeyTypeTest {
     static class Config {
         @Bean
         CacheManager cacheManager() {
-            // The real production wiring: JCacheCacheManager over String-typed EHCache.
-            // createIfAbsent inside makes this safe against the JVM-global JCache manager.
+            // The real production wiring: CaffeineCacheManager as configured by CacheConfig.
             return new CacheConfig().cacheManager();
         }
 
