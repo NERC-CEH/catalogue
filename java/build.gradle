@@ -8,6 +8,10 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven {
+        // https://gitlab.ceh.ac.uk/commons/java-commons (public)
+        url = "https://gitlab.ceh.ac.uk/api/v4/projects/10/packages/maven"
+    }
 }
 
 configurations {

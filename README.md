@@ -126,15 +126,16 @@ The Karma tests are configured in `karma.conf.js`.
 **Running tests:**
 
 ```bash
-# On the host (fastest for iteration):
 ./gradlew :java:test
 ./gradlew :java:test --tests uk.ac.ceh.gateway.catalogue.search.SearchControllerTest
-
-# Inside the Docker container (same classpath as the running app):
-docker compose exec catalogue ./gradlew :java:test
-docker compose exec catalogue ./gradlew :java:test \
-    --tests uk.ac.ceh.gateway.catalogue.search.SearchControllerTest
+./gradlew :java:test --tests uk.ac.ceh.gateway.catalogue.search.SearchControllerTest.myTest
 ```
+
+Run these on the host, including while `docker compose up` is running — the container keeps
+its own Gradle project cache and Jena/datastore storage isolated from the host, so the two
+don't lock-contend. Running Gradle via `docker compose exec catalogue ...` isn't supported:
+most `@SpringBootTest` classes share the app's own storage locks with whatever the running
+container is already doing, and will fail unpredictably.
 
 After editing a `.java` file, run `./gradlew :java:compileJava` on the host — Spring DevTools
 detects the new class files and restarts the application context in ~5–15s without a full

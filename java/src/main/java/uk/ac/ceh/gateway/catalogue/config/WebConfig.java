@@ -5,13 +5,12 @@ import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
@@ -132,7 +131,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void configureMessageConverters(HttpMessageConverters.ServerBuilder builder) {
-        builder.addCustomConverter(new TransparentProxyMessageConverter(httpClient()));
+        builder.addCustomConverter(new TransparentProxyMessageConverter(proxyRequestFactory()));
         beforeStandardMessageConverters.forEach(builder::addCustomConverter);
         builder.configureMessageConvertersList(converters -> converters.addAll(afterStandardMessageConverters));
     }
@@ -173,15 +172,9 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public CloseableHttpClient httpClient() {
-        log.info("Creating HttpClient");
-        val connPool = new PoolingHttpClientConnectionManager();
-        connPool.setMaxTotal(100);
-        connPool.setDefaultMaxPerRoute(20);
-
-        return HttpClients.custom()
-            .setConnectionManager(connPool)
-            .build();
+    public ClientHttpRequestFactory proxyRequestFactory() {
+        log.info("Creating proxy ClientHttpRequestFactory");
+        return new JdkClientHttpRequestFactory();
     }
 
     @Override
