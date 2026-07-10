@@ -1,11 +1,13 @@
 [versions]
 jena = "5.6.0"
 ukceh = "2.0.0"
+caffeine = "3.2.3"
 
 [libraries]
 jena-libs = { module = "org.apache.jena:apache-jena-libs", version.ref = "jena" }
 jena-geosparql = { module = "org.apache.jena:jena-geosparql", version.ref = "jena" }
 mockito = { module = "org.mockito:mockito-core" }
+caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
 ukceh-datastore = { module = "uk.ac.ceh.components:datastore-git", version.ref = "ukceh" }
 ukceh-springsecurity = { module = "uk.ac.ceh.components:springsecurity-userstore", version.ref = "ukceh" }
 ukceh-userstore-crowd = { module = "uk.ac.ceh.components:userstore-crowd", version.ref = "ukceh" }
