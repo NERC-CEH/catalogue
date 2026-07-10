@@ -46,7 +46,6 @@ public class SitemapController {
         List<String> catalogues = catalogueService.retrieveAll()
             .stream()
             .map(Catalogue::getId)
-            .filter(id -> !"inlicensed".equals(id))
             .filter(id -> !"ceh".equals(id))
             .collect(Collectors.toList());
         Map<String, Object> model = new HashMap<>();

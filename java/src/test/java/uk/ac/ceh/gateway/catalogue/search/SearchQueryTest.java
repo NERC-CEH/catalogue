@@ -136,7 +136,7 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
 
         //Then
-        assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("{!term f=catalogue}eidc"), is(true));
+        assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("(catalogue:eidc OR catalogue_view:eidc)"), is(true));
 
     }
 
@@ -386,14 +386,7 @@ public class SearchQueryTest {
                 List.of(
                     new FacetFilter("resourceType", "dataset")),
                 groupStore,
-                Catalogue
-                .builder()
-                .id("eidc")
-                .title("Environmental Information Data Centre")
-                .url("https://eidc-catalogue.ceh.ac.uk")
-                .contactUrl("")
-                .logo("")
-                .build(),
+                buildCatalogue("ukeof"),
                 DEFAULT_FACETS,
                 sortField,
                 sortOrder
@@ -875,14 +868,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             facetFilters,
             groupStore,
-            Catalogue
-            .builder()
-            .id("eidc")
-            .title("Environmental Information Data Centre")
-            .url("https://eidc-catalogue.ceh.ac.uk")
-            .contactUrl("")
-            .logo("")
-            .build(),
+            buildCatalogue("ukeof"),
             DEFAULT_FACETS,
             null,
             null
@@ -903,7 +889,31 @@ public class SearchQueryTest {
 
     @Test
     public void unknownFacetFilterFieldThrowsInvalidFacetException() {
-        // Given - resourceStatus was a real field that was renamed to availability
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            List.of(new FacetFilter("unknownLegacyField", "foo")),
+            groupStore,
+            buildCatalogue("eidc"),
+            DEFAULT_FACETS,
+            null,
+            null
+        );
+
+        // When / Then
+        InvalidFacetException ex = assertThrows(InvalidFacetException.class, query::build);
+        assertThat(ex.getMessage(), containsString("unknownLegacyField"));
+    }
+
+    @Test
+    public void legacyResourceStatusFieldIsMappedToAvailability() {
+        // resourceStatus was renamed to availability; old bookmarked URLs should still work
+        List<Facet> facetsWithStatus = FACET_FACTORY.newInstances(List.of("status", "topic"));
         SearchQuery query = new SearchQuery(
             ENDPOINT,
             CatalogueUser.PUBLIC_USER,
@@ -914,21 +924,104 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             List.of(new FacetFilter("resourceStatus", "Available")),
             groupStore,
-            Catalogue.builder()
-                .id("eidc")
-                .title("Environmental Information Data Centre")
-                .url("https://eidc-catalogue.ceh.ac.uk")
-                .contactUrl("")
-                .logo("")
-                .build(),
-            DEFAULT_FACETS,
+            buildCatalogue("eidc"),
+            facetsWithStatus,
             null,
             null
         );
 
-        // When / Then
-        InvalidFacetException ex = assertThrows(InvalidFacetException.class, query::build);
-        assertThat(ex.getMessage(), containsString("resourceStatus"));
+        // When - should not throw, resourceStatus is silently translated to availability
+        SolrQuery solrQuery = query.build();
+
+        // Then
+        assertThat(
+            Arrays.asList(solrQuery.getFilterQueries()),
+            hasItem(containsString("availability:\"Available\""))
+        );
+    }
+
+    @Test
+    public void eidcResourceTypeFacetIsMappedToRecordTypeWithValueTranslation() {
+        // "Aggregation" is the resourceType display label; recordType uses "Data collection" for the same code
+        List<Facet> facetsWithRecordType = FACET_FACTORY.newInstances(List.of("recordType", "topic"));
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            List.of(new FacetFilter("resourceType", "Aggregation")),
+            groupStore,
+            buildCatalogue("eidc"),
+            facetsWithRecordType,
+            null,
+            null
+        );
+
+        SolrQuery solrQuery = query.build();
+
+        assertThat(
+            Arrays.asList(solrQuery.getFilterQueries()),
+            hasItem(containsString("recordType:\"Data\\ collection\""))
+        );
+    }
+
+    @Test
+    public void eidcResourceTypeFacetIdentityValuePassesThroughUnchanged() {
+        // "Dataset" has the same display label in both resourceType and recordType
+        List<Facet> facetsWithRecordType = FACET_FACTORY.newInstances(List.of("recordType", "topic"));
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            List.of(new FacetFilter("resourceType", "Dataset")),
+            groupStore,
+            buildCatalogue("eidc"),
+            facetsWithRecordType,
+            null,
+            null
+        );
+
+        SolrQuery solrQuery = query.build();
+
+        assertThat(
+            Arrays.asList(solrQuery.getFilterQueries()),
+            hasItem(containsString("recordType:\"Dataset\""))
+        );
+    }
+
+    @Test
+    public void nonEidcResourceTypeFilterIsNotTranslated() {
+        // resourceType is a legitimate facet on other catalogues; translation must not apply
+        List<Facet> facetsWithResourceType = FACET_FACTORY.newInstances(List.of("resourceType"));
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            List.of(new FacetFilter("resourceType", "Aggregation")),
+            groupStore,
+            buildCatalogue("ukeof"),
+            facetsWithResourceType,
+            null,
+            null
+        );
+
+        SolrQuery solrQuery = query.build();
+
+        assertThat(
+            Arrays.asList(solrQuery.getFilterQueries()),
+            hasItem(containsString("resourceType:\"Aggregation\""))
+        );
     }
 
     @Test
@@ -982,14 +1075,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             facetFilters,
             groupStore,
-            Catalogue
-            .builder()
-            .id("eidc")
-            .title("Environmental Information Data Centre")
-            .url("https://eidc-catalogue.ceh.ac.uk")
-            .contactUrl("")
-            .logo("")
-            .build(),
+            buildCatalogue("ukeof"),
             DEFAULT_FACETS,
             null,
             null
@@ -1014,7 +1100,7 @@ public class SearchQueryTest {
             allOf(
                 hasItem(containsString("{!tag=resourceType}resourceType:\"Dataset\"")),
                 hasItem(containsString("{!tag=licence}licence:\"OGL\"")),
-                hasItem(containsString("{!term f=catalogue}eidc"))
+                hasItem(containsString("(catalogue:ukeof OR catalogue_view:ukeof)"))
             )
         );
     }

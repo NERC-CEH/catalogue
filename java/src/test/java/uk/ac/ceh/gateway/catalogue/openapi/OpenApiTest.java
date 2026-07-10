@@ -7,11 +7,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 import uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
+import uk.ac.ceh.gateway.catalogue.services.FusekiExportService;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
@@ -19,7 +21,7 @@ import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ActiveProfiles({"test", "server-eidc", "search-basic"})
+@ActiveProfiles({"test", "server-eidc", "search-basic", "exports"})
 @DisplayName("OpenAPI documentation endpoint")
 @Import({
     SecurityConfig.class,
@@ -29,6 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 })
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class OpenApiTest extends AbstractMvcTest {
+
+    @MockitoBean private FusekiExportService fusekiExportService;
 
     @Test
     @SneakyThrows
@@ -67,6 +71,24 @@ class OpenApiTest extends AbstractMvcTest {
         mvc.perform(get("/v3/api-docs"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.servers[0].url").value("https://catalogue.ceh.ac.uk"));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("GET /v3/api-docs describes SPARQL endpoint")
+    void apiDocsDescribesSparqlEndpoint() {
+        mvc.perform(get("/v3/api-docs"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.paths['/sparql']").exists());
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("GET /v3/api-docs describes VoID discovery endpoint")
+    void apiDocsDescribesVoidEndpoint() {
+        mvc.perform(get("/v3/api-docs"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.paths['/.well-known/void']").exists());
     }
 
     @Test

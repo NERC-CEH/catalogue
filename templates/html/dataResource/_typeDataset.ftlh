@@ -27,7 +27,7 @@
 
     <div class="${mainColClasses} py-3">
 
-      <#if rel_replaces?has_content && rel_replaces?size gt 0>
+      <#if relReplaces?has_content && relReplaces?size gt 0>
         <#include "_latestVersion.ftlh">
       </#if>
 

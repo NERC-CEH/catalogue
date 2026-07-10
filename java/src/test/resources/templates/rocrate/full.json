@@ -24,7 +24,7 @@
                 }
             ],
             "identifier": {"@id": "https://doi.org/10.5285/882739943"},
-            "creditText": "Able, Bracken, Charles (2020). Title. Publisher. (Resource Type). https://doi.org/10.5285/882739943",
+            "citation": "Able, Bracken, Charles (2020). Title. Publisher. (Resource Type). https://doi.org/10.5285/882739943",
             "description": "Description",
             "alternateName": [
                 "Alternate Title 1",
@@ -86,7 +86,7 @@
                     "@id": "#bbox1"
                 }
             ],
-            "funder": [
+            "funding": [
                 {
                     "@id": "#fund0"
                 },
@@ -95,7 +95,7 @@
                 }
             ],
             "license": {
-                "@id": "#oglLicence"
+                "@id": "https://spdx.org/licenses/OGL-UK-3.0"
             },
             "distribution": [
                 {
@@ -123,11 +123,11 @@
             "email": "info@eidc.ac.uk"
         },
         {
-            "@id": "#oglLicence",
+            "@id": "https://spdx.org/licenses/OGL-UK-3.0",
             "@type": "CreativeWork",
             "name": "Open Government Licence v3",
             "alternateName": "OGL-UK-3.0",
-            "license": "https://spdx.org/licenses/OGL-UK-3.0.html"
+            "sameAs": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
         },
         {
             "@id": "https://doi.org/10.5285/882739943",
@@ -171,7 +171,7 @@
         {
             "@id": "https://example.com/citations/0",
             "@type": "CreativeWork",
-            "creditText": "description",
+            "citation": "description",
             "url": "https://example.com/citations/0"
         },
         {
@@ -185,11 +185,21 @@
         },
         {
             "@id": "#fund0",
+            "@type": "MonetaryGrant",
+            "funder": {"@id": "#funderOrg0"}
+        },
+        {
+            "@id": "#funderOrg0",
             "@type": "Organization",
             "name": "UKRI"
         },
         {
             "@id": "#fund1",
+            "@type": "MonetaryGrant",
+            "funder": {"@id": "#funderOrg1"}
+        },
+        {
+            "@id": "#funderOrg1",
             "@type": "Organization",
             "name": "University of Oxford"
         },

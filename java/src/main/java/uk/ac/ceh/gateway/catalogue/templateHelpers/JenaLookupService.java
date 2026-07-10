@@ -16,15 +16,26 @@ import uk.ac.ceh.gateway.catalogue.model.Link;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Strings.nullToEmpty;
+import static org.apache.jena.rdf.model.ResourceFactory.createPlainLiteral;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 
 /**
  * A simple lookup service powered by the jena linking database. This just looks
  * up any literals associated to a given uri
+ *
+ * <p>The SPARQL query text used by each method is static: only the record URI (and, for the
+ * relationship queries, the relation predicate) varies between calls. Parsing SPARQL is expensive —
+ * profiling showed the ARQ parser dominating individual-record render CPU because
+ * {@code ParameterizedSparqlString.asQuery()} re-parsed the same query text on every call. We now
+ * parse each query string once ({@link #parse}) and inject the per-call values as an execution-time
+ * {@link QuerySolutionMap} substitution, which rewrites the query the same way the old
+ * {@code setIri}/{@code setLiteral} text-substitution did — but without re-parsing.</p>
  */
 @SuppressWarnings({"unused"})
 @Slf4j
@@ -39,6 +50,22 @@ public class JenaLookupService {
         "PREFIX pso: <http://purl.org/spar/pso/> " +
         "PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> " +
         "PREFIX sf: <http://www.opengis.net/ont/sf#> ";
+
+    /**
+     * Parsed-query cache keyed by the (static) query text. A parsed {@link Query} is immutable and
+     * safe to share across request threads; only the cheap per-call substitution + execution remains.
+     */
+    private static final Map<String, Query> QUERY_CACHE = new ConcurrentHashMap<>();
+
+    private static Query parse(String sparql) {
+        return QUERY_CACHE.computeIfAbsent(sparql, QueryFactory::create);
+    }
+
+    private static QuerySolutionMap me(String uri) {
+        val binding = new QuerySolutionMap();
+        binding.add("me", createResource(uri));
+        return binding;
+    }
 
     public JenaLookupService(@NonNull Dataset jenaTdb) {
         this.jenaTdb = jenaTdb;
@@ -121,10 +148,9 @@ public class JenaLookupService {
             "OPTIONAL {?node eidc:availability ?availability} " +
             "OPTIONAL {?node doo:operationalStatus ?availability}} " +
             "ORDER BY DESC(?publicationDate) ?title";
-        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
-        pss.setIri("me", uri);
-        pss.setIri("relation", relation);
-        return links(pss);
+        val binding = me(uri);
+        binding.add("relation", createResource(relation));
+        return links(sparql, binding);
     }
 
     public List<Link> inverseRelationships(String uri, String relation) {
@@ -136,10 +162,9 @@ public class JenaLookupService {
             "OPTIONAL {?node doo:operationalStatus ?availability}} " +
             "GROUP BY ?node ?title ?publicationStatus ?availability ?type ?rel ?publicationDate " +
             "ORDER BY DESC(?publicationDate) ?title";
-        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
-        pss.setIri("me", uri);
-        pss.setIri("relation", relation);
-        return links(pss);
+        val binding = me(uri);
+        binding.add("relation", createResource(relation));
+        return links(sparql, binding);
     }
 
     public List<Link> relationshipsWithOwner(String uri, String relation) {
@@ -149,10 +174,9 @@ public class JenaLookupService {
             "OPTIONAL {?node eidc:availability ?availability} " +
             "OPTIONAL {?node doo:operationalStatus ?availability}}" +
             "ORDER BY ?title";
-        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
-        pss.setIri("me", uri);
-        pss.setIri("relation", relation);
-        return links(pss);
+        val binding = me(uri);
+        binding.add("relation", createResource(relation));
+        return links(sparql, binding);
     }
 
     public List<Link> programmeFeatures(String uri) {
@@ -161,10 +185,7 @@ public class JenaLookupService {
             "UNION {?me doo:utilises ?network. ?node dcterms:isPartOf ?network; dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; sf:Geometry ?geom. BIND(doo:utilises as ?rel)}" +
             "OPTIONAL {?node eidc:availability ?availability} " +
             "OPTIONAL {?node doo:operationalStatus ?availability}}";
-
-        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
-        pss.setIri("me", uri);
-        return links(pss);
+        return links(sparql, me(uri));
     }
 
     /**
@@ -265,9 +286,7 @@ public class JenaLookupService {
 
     public List<Link> allRelatedRecords(String uri) {
         String sparql =  PREFIXES + " SELECT ?node ?rel ?title ?publicationStatus ?type WHERE {{?me ?rel ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type.} UNION {?node ?rel ?me. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type.} FILTER (?rel IN (dcterms:references, dcterms:replaces, dcterms:requires, dcterms:isPartOf, dcterms:relation))}";
-        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
-        pss.setIri("me", uri);
-        return links(pss);
+        return links(sparql, me(uri));
     }
 
     /**
@@ -277,9 +296,7 @@ public class JenaLookupService {
      */
     public List<Link> latestVersion(String uri) {
         String sparql =  PREFIXES + " SELECT DISTINCT ?node ?type ?title ?rel ?publicationStatus WHERE {?node dcterms:replaces+ ?me; dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type.  BIND( dcterms:replaces as ?rel)FILTER (!EXISTS {?x dcterms:replaces ?node})}";
-        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
-        pss.setIri("me", uri);
-        return links(pss);
+        return links(sparql, me(uri));
     }
 
     /**
@@ -289,29 +306,29 @@ public class JenaLookupService {
      */
     public List<Link> replaces(String uri) {
         String sparql =  PREFIXES + " SELECT ?node ?type ?title ?rel ?publicationStatus WHERE {?me (dcterms:replaces)+ ?mid. ?mid(dcterms:replaces)* ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type. BIND(dcterms:isReplacedBy as ?rel) FILTER (!EXISTS {?x dcterms:replaces ?me})} GROUP BY ?node ?type ?title ?rel ?publicationStatus HAVING (COUNT(?mid) > 0) ORDER BY COUNT(?mid)";
-        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
-        pss.setIri("me", uri);
-        return links(pss);
+        return links(sparql, me(uri));
     }
 
     public Link metadata(String id) {
         id = nullToEmpty(id);
         String sparql =  PREFIXES + " SELECT ?node ?title ?publicationStatus ?type ?rel WHERE {?node dcterms:identifier ?id; dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type. BIND(<https://vocabs.ceh.ac.uk/eidc#> as ?rel)}";
-        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
-        pss.setLiteral("id", id);
-        return links(pss).stream().findFirst().orElse(null);
+        val binding = new QuerySolutionMap();
+        binding.add("id", createPlainLiteral(id));
+        return links(sparql, binding).stream().findFirst().orElse(null);
     }
 
     private List<Link> links(@NonNull String uri, String sparql) {
-        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
-        pss.setIri("me", uri);
-        return links(pss);
+        return links(sparql, me(uri));
     }
 
-    private List<Link> links(ParameterizedSparqlString pss) {
+    private List<Link> links(String sparql, QuerySolutionMap binding) {
         List<Link> toReturn = new ArrayList<>();
         jenaTdb.begin(ReadWrite.READ);
-        try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
+        try (QueryExecution qexec = QueryExecution.create()
+                .query(parse(sparql))
+                .dataset(jenaTdb)
+                .substitution(binding)
+                .build()) {
             qexec.execSelect().forEachRemaining(s -> toReturn.add(
                 Link.builder()
                     .title(s.getLiteral("title").getString())
@@ -337,12 +354,10 @@ public class JenaLookupService {
      * @return a list of matching literals
      */
     public List<Literal> lookup(String uri, Property relationship) {
-        ParameterizedSparqlString pss = new ParameterizedSparqlString(
-            "SELECT ?attr WHERE { ?uri ?relationship ?attr }"
-        );
-        pss.setParam("uri", createResource(uri));
-        pss.setParam("relationship", relationship);
-        return getLiterals(pss);
+        val binding = new QuerySolutionMap();
+        binding.add("uri", createResource(uri));
+        binding.add("relationship", relationship);
+        return getLiterals("SELECT ?attr WHERE { ?uri ?relationship ?attr }", binding);
     }
 
     /**
@@ -357,19 +372,24 @@ public class JenaLookupService {
         Property relationshipToSubject,
         Property relationshipOnSubject
     ) {
-        ParameterizedSparqlString pss = new ParameterizedSparqlString(
-            "SELECT ?attr WHERE { _:s ?relationshipToSubject ?objectUri ; ?relationshipOnSubject ?attr . }"
+        val binding = new QuerySolutionMap();
+        binding.add("objectUri", createResource(objectUri));
+        binding.add("relationshipToSubject", relationshipToSubject);
+        binding.add("relationshipOnSubject", relationshipOnSubject);
+        return getLiterals(
+            "SELECT ?attr WHERE { _:s ?relationshipToSubject ?objectUri ; ?relationshipOnSubject ?attr . }",
+            binding
         );
-        pss.setParam("objectUri", createResource(objectUri));
-        pss.setParam("relationshipToSubject", relationshipToSubject);
-        pss.setParam("relationshipOnSubject", relationshipOnSubject);
-        return getLiterals(pss);
     }
 
-    private List<Literal> getLiterals(ParameterizedSparqlString pss) {
+    private List<Literal> getLiterals(String sparql, QuerySolutionMap binding) {
         List<Literal> toReturn = new ArrayList<>();
         jenaTdb.begin(ReadWrite.READ);
-        try (QueryExecution q = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
+        try (QueryExecution q = QueryExecution.create()
+                .query(parse(sparql))
+                .dataset(jenaTdb)
+                .substitution(binding)
+                .build()) {
             q.execSelect().forEachRemaining(s -> toReturn.add(s.getLiteral("attr")));
         } finally {
             jenaTdb.end();

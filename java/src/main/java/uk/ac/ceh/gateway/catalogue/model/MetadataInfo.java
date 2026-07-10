@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -26,6 +27,9 @@ import java.util.stream.Collectors;
 public class MetadataInfo {
     String rawType, state;
     String documentType, catalogue;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonProperty("catalogue-view")
+    List<String> catalogueView;
     @Getter(AccessLevel.PUBLIC)
     Multimap<Permission, String> permissions;
     public static final String PUBLIC_GROUP = "public";
@@ -39,12 +43,14 @@ public class MetadataInfo {
         @JsonProperty("state") String state,
         @JsonProperty("documentType") String documentType,
         @JsonProperty("catalogue") String catalogue,
+        @JsonProperty("catalogue-view") List<String> catalogueView,
         @JsonProperty("permissions") Multimap<Permission, String> permissions
     ) {
         this.rawType = rawType;
         this.state = Optional.ofNullable(state).orElse("draft");
         this.documentType = Optional.ofNullable(documentType).orElse("");
         this.catalogue = catalogue;
+        this.catalogueView = Optional.ofNullable(catalogueView).orElse(Collections.emptyList());
         if (permissions != null) {
             this.permissions = HashMultimap.create(permissions);
         } else {
@@ -58,6 +64,7 @@ public class MetadataInfo {
             info.state,
             info.documentType,
             info.catalogue,
+            info.catalogueView,
             info.permissions
         );
     }
@@ -68,6 +75,18 @@ public class MetadataInfo {
             .state(this.state)
             .documentType(this.documentType)
             .catalogue(catalogue)
+            .catalogueView(this.catalogueView)
+            .permissions(this.permissions)
+            .build();
+    }
+
+    public MetadataInfo withCatalogueView(List<String> catalogueView) {
+        return MetadataInfo.builder()
+            .rawType(this.rawType)
+            .state(this.state)
+            .documentType(this.documentType)
+            .catalogue(this.catalogue)
+            .catalogueView(catalogueView)
             .permissions(this.permissions)
             .build();
     }
@@ -78,6 +97,7 @@ public class MetadataInfo {
             .state(this.state)
             .documentType(this.documentType)
             .catalogue(this.catalogue)
+            .catalogueView(this.catalogueView)
             .permissions(this.permissions)
             .build();
     }
@@ -88,17 +108,8 @@ public class MetadataInfo {
             .state(state)
             .documentType(this.documentType)
             .catalogue(this.catalogue)
+            .catalogueView(this.catalogueView)
             .permissions(this.permissions)
-            .build();
-    }
-
-    public MetadataInfo withPermissions(@NonNull Multimap<Permission, String> permissions) {
-        return MetadataInfo.builder()
-            .rawType(this.rawType)
-            .state(state)
-            .documentType(this.documentType)
-            .catalogue(this.catalogue)
-            .permissions(permissions)
             .build();
     }
 

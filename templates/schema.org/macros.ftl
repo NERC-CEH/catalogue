@@ -20,7 +20,7 @@
 <#macro schemaDotOrg docType="", parts=[]>
   <#if docType?has_content>
     {
-    "@context":"http://schema.org/",
+    "@context":"https://schema.org/",
     "@graph": [
     <@schemaDocument docType parts/>
     ]
@@ -47,7 +47,7 @@
     <@citationList/>
     <@temporalExtentsList/>
     <#if boundingBoxes?has_content>"spatialCoverage": [<@itemList boundingBoxes "bbox"/>],</#if>
-    <#if funding?has_content>"funder": [<@itemList funding "fund"/>],</#if>
+    <#if funding?has_content>"funding": [<@fundingRefList/>],</#if>
     <#if docType == "Dataset" || docType == "SoftwareSourceCode">
       <@licencesLink/>
       <#if distributions?has_content>"distribution": [<@itemList distributions "distribution" />],</#if>
@@ -129,7 +129,7 @@
 <#macro doi>
   <#if datacitable && citation?has_content>
     "identifier": {"@id": "${citation.url}"},
-    "creditText":"${citation.authors?join(', ')} (${citation.year?string["0000"]}). ${citation.title}. ${citation.publisher}. (${codes.lookup('datacite.resourceTypeGeneral',citation.resourceTypeGeneral)}). ${citation.url}",
+    "citation":"${citation.authors?join(', ')} (${citation.year?string["0000"]}). ${citation.title}. ${citation.publisher}. (${codes.lookup('datacite.resourceTypeGeneral',citation.resourceTypeGeneral)}). ${citation.url}",
   <#else>
     "url":"${uri?trim}",
   </#if>
@@ -182,7 +182,7 @@
   <#if licences?? && licences?has_content>
     <#if licences?first.uri?? && licences?first.uri?has_content>
       <#if licences?first.uri?matches("^http[s]?://eidc.ac.uk/licences/ogl/plain")>
-        "license": {"@id": "#oglLicence"},
+        "license": {"@id": "https://spdx.org/licenses/OGL-UK-3.0"},
       <#else>
         "license": "${licences?first.uri?trim}",
       </#if>
@@ -195,11 +195,11 @@
     <#if licences?first.uri?? && licences?first.uri?has_content>
       <#if licences?first.uri?matches("^http[s]?://eidc.ac.uk/licences/ogl.+$")>
         ,{
-        "@id": "#oglLicence",
+        "@id": "https://spdx.org/licenses/OGL-UK-3.0",
         "@type": "CreativeWork",
         "name": "Open Government Licence v3",
         "alternateName":"OGL-UK-3.0",
-        "license": "https://spdx.org/licenses/OGL-UK-3.0.html"
+        "sameAs": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
         }
       </#if>
     </#if>
@@ -397,7 +397,7 @@
     {
     "@id": "${citationid}",
     "@type": "CreativeWork"
-    <#if citation.description?has_content>,"creditText": <@displayLiteral citation.description/></#if>
+    <#if citation.description?has_content>,"citation": <@displayLiteral citation.description/></#if>
     <#if citation.url?has_content>,"url": "${citation.url?trim}"</#if>
     }<#sep>,
   </#list>
@@ -418,13 +418,38 @@
   </#list>
 </#macro>
 
+<#macro fundingRefList>
+  <#list funding as fund>
+    <#if fund.awardURI?has_content>
+      <#if fund.awardURI?contains("gtr.ukri.org")>{"@id": "${fund.awardURI?replace("term=", "ref=")?trim}"}
+      <#else>{"@id": "${fund.awardURI?trim}"}
+      </#if>
+    <#else>{"@id": "#fund${fund?index?c}"}
+    </#if>
+    <#sep>,
+  </#list>
+</#macro>
+
 <#macro fundDetails>
   <#list funding as fund>
+    <#assign hasRor = fund.funderIdentifier?has_content && fund.isRor()>
+    <#assign grantId><#if fund.awardURI?has_content><#if fund.awardURI?contains("gtr.ukri.org")>${fund.awardURI?replace("term=", "ref=")?trim}<#else>${fund.awardURI?trim}</#if><#else>#fund${fund?index?c}</#if></#assign>
+    <#assign orgId><#if hasRor>${fund.funderIdentifier?trim}<#else>#funderOrg${fund?index?c}</#if></#assign>
     {
-    "@id": "#fund${fund?index}",
-    "@type":"Organization"
-    <#if fund.funderName?? && fund.funderName?has_content>,<#t>"name":"${fund.funderName}"</#if>
-    }<#sep>,
+    "@id": "${grantId?trim}",
+    "@type": "MonetaryGrant"
+    <#if fund.awardTitle?has_content>,"name": "${fund.awardTitle}"</#if>
+    <#if fund.awardNumber?has_content>,"identifier": "${fund.awardNumber}"</#if>
+    <#if fund.funderName?has_content || hasRor>,"funder": {"@id": "${orgId?trim}"}</#if>
+    }
+    <#if fund.funderName?has_content || fund.funderIdentifier?has_content>
+      ,{
+      "@id": "${orgId?trim}",
+      "@type": "Organization"
+      <#if fund.funderName?has_content>,"name": "${fund.funderName}"</#if>
+      }
+    </#if>
+    <#sep>,
   </#list>
 </#macro>
 

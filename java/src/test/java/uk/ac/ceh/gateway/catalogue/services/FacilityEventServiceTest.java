@@ -93,6 +93,24 @@ class FacilityEventServiceTest {
 
     @Test
     @SneakyThrows
+    void getMonitoringFacilityAtRevision() {
+        // given the post-commit read must use the commit's revision, not the cache-stale latest
+        MonitoringFacility f1 = new MonitoringFacility();
+        f1.setId("f1");
+
+        // when
+        when(bundledReader.readBundle(f1.getId(), "rev123")).thenReturn(f1);
+        Optional<MonitoringFacility> actual = facilityEventService.getMonitoringFacility(f1.getId(), "rev123");
+
+        // then
+        assertTrue(actual.isPresent());
+        assertEquals(actual.get().getId(), f1.getId());
+        verify(bundledReader).readBundle(f1.getId(), "rev123");
+        verify(bundledReader, never()).readBundle(anyString());
+    }
+
+    @Test
+    @SneakyThrows
     void getMonitoringFacilityWrongType() {
         // given
         MonitoringNetwork n1 = new MonitoringNetwork();

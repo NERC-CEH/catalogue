@@ -1,7 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +18,6 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
@@ -48,6 +45,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     public static final String DRAFT = "draft";
     private static final String SUBMITTED = "submitted";
     private static final String PENDING_PUBLICATION = "pending publication";
+    private static final String CEH_DOMAIN = "@ceh.ac.uk";
 
     public GitRepoServiceAgreementService(
             @Value("${documents.baseUri}") String baseUri,
@@ -101,16 +99,12 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @SneakyThrows
     public void doTransitionAction(CatalogueUser user, String id, String transitionId) {
         switch (transitionId) {
-            case ServiceAgreementPublicationConfig.draftToSubmittedId -> {
-                submitServiceAgreement(user, id);
-            }
+            case ServiceAgreementPublicationConfig.draftToSubmittedId -> submitServiceAgreement(user, id);
             case ServiceAgreementPublicationConfig.submittedToDraftId, ServiceAgreementPublicationConfig.underReviewToDraftId -> {
                 ServiceAgreement serviceAgreement = get(user, id);
                 addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
             }
-            case ServiceAgreementPublicationConfig.readyForAgreementToAgreedId -> {
-                publishServiceAgreement(user, id);
-            }
+            case ServiceAgreementPublicationConfig.readyForAgreementToAgreedId -> publishServiceAgreement(user, id);
             case ServiceAgreementPublicationConfig.readyForAgreementToDraftId, ServiceAgreementPublicationConfig.agreedToDraftId -> {
                 ServiceAgreement serviceAgreement = get(user, id);
                 addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
@@ -142,7 +136,6 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         serviceAgreement.setId(id);
         val fromDatastore = repo.getData(FOLDER + id + ".meta");
         val metadataInfo = metadataInfoMapper.readInfo(fromDatastore.getInputStream());
-        addPermissionsForDepositor(user, id, metadataInfo, serviceAgreement);
         repo
             .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
             .submitData(FOLDER + id + ".raw", o -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
@@ -174,29 +167,34 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             );
             return new ServiceAgreementException(message);
         });
-        val email = rawEmail.endsWith("@ceh.ac.uk") ?
-            rawEmail.replace("@ceh.ac.uk", "") :
-            rawEmail;
-        val permissions = getMetadataPermissions(metadataInfo);
-        permissions.put(EDIT, email);
-        permissions.put(VIEW, email);
-        updateMetadata(user, id, metadataInfo.withPermissions(permissions));
+        val identity = normaliseIdentity(rawEmail);
+        log.info(
+            "Service Agreement {}: granting EDIT/VIEW to depositor identity '{}' (from contact details '{}')",
+            id, identity, rawEmail
+        );
+        metadataInfo.addPermission(EDIT, identity);
+        metadataInfo.addPermission(VIEW, identity);
+        updateMetadata(user, id, metadataInfo);
     }
 
-    private Multimap<Permission, String> getMetadataPermissions(MetadataInfo metadataInfo) {
-        return ArrayListMultimap.create(metadataInfo.getPermissions());
+    private String normaliseIdentity(String rawEmail) {
+        val email = rawEmail.toLowerCase();
+        return email.endsWith(CEH_DOMAIN)
+            ? email.substring(0, email.length() - CEH_DOMAIN.length())
+            : email;
     }
 
     private void removeEditPermissions(CatalogueUser user, String id, ServiceAgreement serviceAgreement) {
         val metadataInfo = serviceAgreement.getMetadata();
-        val permissions = getMetadataPermissions(metadataInfo);
-        Optional.ofNullable(serviceAgreement.getDepositorContactDetails()).ifPresent(email -> {
-            permissions.remove(EDIT, email);
-            permissions.remove(UPLOAD, email);
+        Optional.ofNullable(serviceAgreement.getDepositorContactDetails()).ifPresent(rawEmail -> {
+            val identity = normaliseIdentity(rawEmail);
+            log.info("Service Agreement {}: removing EDIT/UPLOAD from depositor identity '{}'", id, identity);
+            metadataInfo.removePermission(EDIT, identity);
+            metadataInfo.removePermission(UPLOAD, identity);
         });
-        permissions.remove(EDIT, user.getUsername());
-        permissions.remove(UPLOAD, user.getUsername());
-        updateMetadata(user, id, metadataInfo.withPermissions(permissions));
+        metadataInfo.removePermission(EDIT, user.getUsername().toLowerCase());
+        metadataInfo.removePermission(UPLOAD, user.getUsername().toLowerCase());
+        updateMetadata(user, id, metadataInfo);
     }
 
     private MetadataInfo createMetadataInfoWithDefaultPermissions(CatalogueUser user, String catalogue) {
@@ -264,6 +262,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
                     "populated from service agreement"
             );
             log.info("Publishing Service Agreement: {}", id);
+            removeEditPermissions(user, id, serviceAgreement);
             sendJiraComment(serviceAgreement, user, "agreed upon and published");
         } else {
             val message = format(
@@ -333,10 +332,5 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         log.debug("Service Agreement: {}", serviceAgreement);
 
         return serviceAgreement;
-    }
-
-    private void updateState(CatalogueUser user, String id, ServiceAgreement serviceAgreement, String state) {
-        val metadataInfo = serviceAgreement.getMetadata();
-        updateMetadata(user, id, metadataInfo.withState(state));
     }
 }

@@ -20,11 +20,6 @@ package uk.ac.ceh.gateway.catalogue.ogc;
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;
 import lombok.val;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicHeader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +27,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
@@ -44,6 +44,7 @@ import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
@@ -67,7 +68,7 @@ public @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class MapViewerControllerTest extends AbstractMvcTest {
     @MockitoBean @Qualifier("wms") private RestTemplate rest;
     @MockitoBean private CatalogueService catalogueService;
-    @MockitoBean private CloseableHttpClient httpClient;
+    @MockitoBean private ClientHttpRequestFactory proxyRequestFactory;
     @MockitoBean private ProfileService profileService;
 
     @Autowired private Configuration configuration;
@@ -93,27 +94,28 @@ class MapViewerControllerTest extends AbstractMvcTest {
         configuration.setSharedVariable("profile", profileService);
     }
 
-    private void givenGetMapResponse() throws IOException {
-        val response = mock(CloseableHttpResponse.class);
-        val entity = mock(HttpEntity.class);
-        given(response.getEntity())
-            .willReturn(entity);
-        given(entity.getContentType())
-            .willReturn(new BasicHeader("content-type", MediaType.IMAGE_PNG_VALUE));
-        given(httpClient.execute(any(HttpGet.class)))
+    private void givenTransparentProxyResponse(String contentType) throws IOException {
+        val proxyRequest = mock(ClientHttpRequest.class);
+        val response = mock(ClientHttpResponse.class);
+        val responseHeaders = new HttpHeaders();
+        responseHeaders.set(HttpHeaders.CONTENT_TYPE, contentType);
+        given(response.getHeaders())
+            .willReturn(responseHeaders);
+        given(response.getBody())
+            .willReturn(mock(InputStream.class));
+        given(proxyRequest.execute())
             .willReturn(response);
+        given(proxyRequestFactory.createRequest(any(URI.class), eq(HttpMethod.GET)))
+            .willReturn(proxyRequest);
+    }
+
+    private void givenGetMapResponse() throws IOException {
+        givenTransparentProxyResponse(MediaType.IMAGE_PNG_VALUE);
     }
 
     @SneakyThrows
     private void givenRemoteWmsFeatureInfo() {
-        val response = mock(CloseableHttpResponse.class);
-        val entity = mock(HttpEntity.class);
-        given(response.getEntity())
-            .willReturn(entity);
-        given(entity.getContentType())
-            .willReturn(new BasicHeader("content-type", "application/vnd.ogc.xml"));
-        given(httpClient.execute(any(HttpGet.class)))
-            .willReturn(response);
+        givenTransparentProxyResponse("application/vnd.ogc.xml");
     }
 
     private void givenWmsFeatureInfo() {

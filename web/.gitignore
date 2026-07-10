@@ -13,4 +13,8 @@ node_modules
 _SpecRunner.html
 test-compiled
 junit
+coverage
 *.sublime-workspace
+
+# Ignore generated coverage reports
+coverage

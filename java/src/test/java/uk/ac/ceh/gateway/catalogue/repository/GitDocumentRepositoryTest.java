@@ -23,7 +23,6 @@ import uk.ac.ceh.gateway.catalogue.services.ResourceIdentifierLookupService;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -60,7 +59,7 @@ public class GitDocumentRepositoryTest {
                             documentBundleReader,
                             resourceIdentifierLookupService,
                             repo);
-        lenient().when(resourceIdentifierLookupService.findDocumentByRi(any())).thenReturn(Optional.empty());
+        lenient().when(resourceIdentifierLookupService.findDocumentIdsByRi(any())).thenReturn(List.of());
     }
 
     @Test
@@ -178,12 +177,39 @@ public class GitDocumentRepositoryTest {
         given(documentIdentifierService.generateUri(currentId))
             .willReturn("http://localhost:8080/id/" + currentId);
 
-        given(resourceIdentifierLookupService.findDocumentByRi("ukceh.eidc:fafa99"))
-            .willReturn(Optional.of("existing-doc"));
+        given(resourceIdentifierLookupService.findDocumentIdsByRi("ukceh.eidc:fafa99"))
+            .willReturn(List.of("existing-doc"));
 
         assertThrows(
             ResourceIdentifierExistsException.class,
             () -> documentRepository.save(user, document, currentId, "message")
         );
+    }
+
+    @Test
+    @SneakyThrows
+    public void resavingOwnResourceIdentifierDoesNotThrow() {
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        MetadataInfo metadataInfo = MetadataInfo.builder().build();
+
+        ResourceIdentifier ri = ResourceIdentifier.builder()
+            .codeSpace("ukceh.eidc")
+            .code("fafa99")
+            .build();
+
+        GeminiDocument document = (GeminiDocument) new GeminiDocument()
+            .setMetadata(metadataInfo)
+            .setResourceIdentifiers(List.of(ri));
+
+        String currentId = "tulips";
+        given(documentIdentifierService.generateUri(currentId))
+            .willReturn("http://localhost:8080/id/" + currentId);
+
+        // The only owner of the identifier is the record being saved.
+        given(resourceIdentifierLookupService.findDocumentIdsByRi("ukceh.eidc:fafa99"))
+            .willReturn(List.of(currentId));
+
+        // Should not throw: re-saving a record that owns its own identifier is allowed.
+        documentRepository.save(user, document, currentId, "message");
     }
 }

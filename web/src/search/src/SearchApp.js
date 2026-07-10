@@ -80,7 +80,10 @@ export default Backbone.Model.extend({
      * an object which can be used for querying the search api.
      */
   getState () {
-    return this.pick((val, key) => val && _.contains(this.searchFields, key))
+    const state = this.pick((val, key) => val && _.contains(this.searchFields, key))
+    if (!state.bbox) { delete state.op } // op (spatial operation) is only meaningful with a bbox
+    if (state.page === this.defaults.page) { delete state.page } // page 1 is the default; omit it
+    return state
   },
 
   /*
@@ -117,8 +120,10 @@ export default Backbone.Model.extend({
   },
 
   /*
-  Clear the search box, which triggers an update of the results
-  Also clear the 'op', since this is the spatial operation to perform, which is not needed if there is no bbox
+  Clear the search box, which triggers an update of the results.
+  'op' (the spatial operation) is intentionally left on the model so the
+  SpatialFilterView radio keeps its selection, but getState() no longer
+  serializes it once the bbox is gone, so it drops out of the URL and query.
    */
   clearBbox () {
     this.unset('bbox')

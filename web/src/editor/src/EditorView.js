@@ -113,13 +113,40 @@ export default Backbone.View.extend({
     if (boundingBox && !boundingBox.hasBoundingBox()) {
       this.model.unset('boundingBox')
     }
-    if (this.model.save()) {
-      Swal.fire({
-        title: 'Saved!',
-        icon: 'success'
-      })
-      this.saveRequired = false
+
+    this.setSaveButtonSaving()
+    const request = this.model.save(null, {
+      wait: true,
+      success: () => {
+        this.resetSaveButton()
+        Swal.fire({
+          title: 'Saved!',
+          icon: 'success'
+        })
+        this.saveRequired = false
+      },
+      error: () => {
+        this.resetSaveButton()
+      }
+    })
+
+    // save() returns false when client-side validation fails, so no request is
+    // sent and neither callback will fire — re-enable the button immediately.
+    if (!request) {
+      this.resetSaveButton()
     }
+  },
+
+  setSaveButtonSaving () {
+    this.$('#editorSave')
+      .prop('disabled', true)
+      .html('Saving… <i class="fa-solid fa-spinner fa-spin"></i>')
+  },
+
+  resetSaveButton () {
+    this.$('#editorSave')
+      .prop('disabled', false)
+      .html('Save <i class="fa-regular fa-save"></i>')
   },
 
   confirmExit () {

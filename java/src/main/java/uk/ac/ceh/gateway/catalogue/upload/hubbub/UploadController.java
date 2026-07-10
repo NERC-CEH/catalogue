@@ -88,7 +88,15 @@ public class UploadController {
         val isAdmin = permissionService.userIsAdmin();
         model.addAttribute("isAdmin", isAdmin);
 
-        val possibleDataTransfer = jiraService.retrieveDataTransferIssue(datasetId);
+        Optional<JiraIssue> possibleDataTransfer;
+        try {
+            possibleDataTransfer = jiraService.retrieveDataTransferIssue(datasetId);
+            model.addAttribute("jiraUnavailable", false);
+        } catch (RestClientException ex) {
+            log.warn("Unable to contact JIRA for {}; rendering page without data-transfer info", datasetId, ex);
+            possibleDataTransfer = Optional.empty();
+            model.addAttribute("jiraUnavailable", true);
+        }
         model.addAttribute("hasDataTransfer", possibleDataTransfer.isPresent());
         val dataTransfer = possibleDataTransfer.orElseGet(JiraIssue::new);
         model.addAttribute("isOpen", dataTransfer.isOpen());

@@ -9,6 +9,7 @@ export const vocabsList = new Map([
   ['inms', { id: 'inms', name: 'INMS' }],
   ['research-theme', { id: 'research-theme', name: 'Research themes' }],
   ['research-project', { id: 'research-project', name: 'Research projects' }],
+  ['research-activity', { id: 'research-activity', name: 'Research activities' }],
   ['science-challenge', { id: 'science-challenge', name: 'Science challenges' }],
   ['service', { id: 'service', name: 'Services' }]
 ])

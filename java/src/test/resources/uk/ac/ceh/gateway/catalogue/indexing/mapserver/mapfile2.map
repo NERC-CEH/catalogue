@@ -2,9 +2,7 @@ MAP
 EXTENT 20 40 30 50
 IMAGETYPE PNG
 SIZE 2048 2048
-SYMBOLSET "/mapserver/helpers/symbols.sym"
-FONTSET "/mapserver/helpers/fonts/fonts.list"
-SHAPEPATH "/mapserver/data/"
+SHAPEPATH "/data/"
 NAME "WMS"
 STATUS ON
 PROJECTION
@@ -15,7 +13,6 @@ KEYSPACING 5 7
 KEYSIZE 20 15
 LABEL
 TYPE TRUETYPE
-FONT opensans-semibold
 SIZE 10
 POSITION AUTO
 PARTIALS FALSE
@@ -73,7 +70,7 @@ METADATA
 "wms_include_items" "all"
 END
 CONNECTIONTYPE OGR
-CONNECTION "/mapserver/data//datasource/path1"
+CONNECTION "/data//datasource/path1"
 DATA "Layer1"
 CLASSITEM "AttrID1"
 CLASS
@@ -109,7 +106,7 @@ METADATA
 "wms_include_items" "all"
 END
 CONNECTIONTYPE OGR
-CONNECTION "/mapserver/data//datasource/path2"
+CONNECTION "/data//datasource/path2"
 DATA "Layer2"
 PROCESSING "BANDS=AttrID1"
 PROCESSING "RESAMPLE=NEAREST"

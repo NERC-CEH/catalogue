@@ -80,7 +80,7 @@ class SolrIndexingServiceTest {
         String revId = "Latest";
         List<String> documents = List.of("serviceAgreement1");
         val serviceAgreement = new ServiceAgreement();
-        given(reader.readBundle("serviceAgreement1"))
+        given(reader.readBundle("serviceAgreement1", revId))
             .willReturn(serviceAgreement);
 
         //when
@@ -99,8 +99,8 @@ class SolrIndexingServiceTest {
         List<String> documents = List.of("deleted");
         val deleted = new GeminiDocument();
         deleted.setId("5678");
-        deleted.setAccessLimitation(AccessLimitation.builder().code("Deleted").build());
-        given(reader.readBundle("deleted")).willReturn(deleted);
+        deleted.setAccessLimitation(AccessLimitation.builder().availability("Deleted").build());
+        given(reader.readBundle("deleted", revId)).willReturn(deleted);
 
         //when
         service.indexDocuments(documents, revId);
@@ -124,7 +124,7 @@ class SolrIndexingServiceTest {
         given(listingService.filterFilenames(any(List.class))).willReturn(documents);
 
         val doc = new GeminiDocument();
-        given(reader.readBundle(anyString())).willReturn(doc);
+        given(reader.readBundle(anyString(), anyString())).willReturn(doc);
 
         val solr = new SolrIndex();
         given(indexGenerator.generateIndex(doc)).willReturn(solr);
@@ -147,8 +147,8 @@ class SolrIndexingServiceTest {
 
         GeminiDocument document1 = new GeminiDocument();
         GeminiDocument document2 = new GeminiDocument();
-        when(reader.readBundle("doc1")).thenReturn(document1);
-        when(reader.readBundle("doc2")).thenReturn(document2);
+        when(reader.readBundle("doc1", revId)).thenReturn(document1);
+        when(reader.readBundle("doc2", revId)).thenReturn(document2);
 
         SolrIndex document1Index = new SolrIndex();
         SolrIndex document2Index = new SolrIndex();
@@ -171,9 +171,9 @@ class SolrIndexingServiceTest {
         val documents = Arrays.asList("doc1", "doc2");
         val document1 = new GeminiDocument();
         val document2 = new GeminiDocument();
-        given(reader.readBundle("doc1"))
+        given(reader.readBundle("doc1", revId))
             .willReturn(document1);
-        given(reader.readBundle("doc2"))
+        given(reader.readBundle("doc2", revId))
             .willReturn(document2);
 
         //When
@@ -194,9 +194,9 @@ class SolrIndexingServiceTest {
         val documents = List.of("doc1", "doc2");
         val document1 = new GeminiDocument();
         val document2 = new GeminiDocument();
-        given(reader.readBundle("doc1"))
+        given(reader.readBundle("doc1", revId))
             .willReturn(document1);
-        given(reader.readBundle("doc2"))
+        given(reader.readBundle("doc2", revId))
             .willReturn(document2);
         given(solrClient.addBean(eq(COLLECTION), any(SolrIndex.class)))
             .willThrow(new SolrServerException("Please carry on"))

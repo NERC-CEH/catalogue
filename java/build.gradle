@@ -8,7 +8,10 @@ plugins {
 
 repositories {
     mavenCentral()
-    maven { url = 'https://repo.spring.io/milestone' }
+    maven {
+        // https://gitlab.ceh.ac.uk/commons/java-commons (public)
+        url = "https://gitlab.ceh.ac.uk/api/v4/projects/10/packages/maven"
+    }
 }
 
 configurations {
@@ -31,15 +34,10 @@ compileJava {
 }
 
 dependencies {
-    // Spring AI
-    implementation platform(libs.spring.ai.bom)
-    implementation libs.spring.ai.bedrock
-    implementation libs.spring.ai.mcp
-    implementation libs.spring.ai.tika
-
     // Spring Boot starters
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation(libs.caffeine)
     implementation 'org.springframework.boot:spring-boot-starter-freemarker'
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -69,8 +67,6 @@ dependencies {
     implementation 'com.opencsv:opencsv:5.12.0'
     implementation 'com.vividsolutions:jts:1.13'
     implementation 'io.micrometer:micrometer-registry-prometheus'
-    implementation 'javax.cache:cache-api:1.1.1'
-    implementation 'org.ehcache:ehcache'
     implementation 'org.hibernate.validator:hibernate-validator'
     implementation 'org.xerial:sqlite-jdbc'
     implementation 'org.yaml:snakeyaml'

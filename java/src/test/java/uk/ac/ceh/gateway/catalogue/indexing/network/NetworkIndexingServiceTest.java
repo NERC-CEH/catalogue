@@ -51,6 +51,7 @@ class NetworkIndexingServiceTest {
     private NetworkIndexingService networkIndexingService;
     private final BigDecimal precision = BigDecimal.valueOf((PointGeometry.POINT_PRECISION + 0.0000001));
     private final String commitMessageTemplate = NetworkIndexingService.COMMIT_MESSAGE_TEMPLATE;
+    private static final String REVISION = "rev123";
 
     private MonitoringFacility getMonitoringFacility(String id, String coords, MonitoringNetwork network) {
         MonitoringFacility mf = new MonitoringFacility();
@@ -101,14 +102,14 @@ class NetworkIndexingServiceTest {
         String expectedCommitMessage = String.format(commitMessageTemplate, toIndex.get(toIndex.size() - 1));
 
         // when
-        when(bundledReader.readBundle(f1.getId())).thenReturn(f1);
-        when(bundledReader.readBundle(f2.getId())).thenReturn(f2);
-        when(bundledReader.readBundle(f3.getId())).thenReturn(f3);
-        when(bundledReader.readBundle(f4.getId())).thenReturn(f4);
-        when(bundledReader.readBundle(n1.getId())).thenReturn(n1);
+        when(bundledReader.readBundle(f1.getId(), REVISION)).thenReturn(f1);
+        when(bundledReader.readBundle(f2.getId(), REVISION)).thenReturn(f2);
+        when(bundledReader.readBundle(f3.getId(), REVISION)).thenReturn(f3);
+        when(bundledReader.readBundle(f4.getId(), REVISION)).thenReturn(f4);
+        when(bundledReader.readBundle(n1.getId(), REVISION)).thenReturn(n1);
         when(lookupService.inverseRelationships(n1.getUri(), Ontology.DCTERMS_ISPARTOF.getURI())).thenReturn(links);
 
-        networkIndexingService.indexDocuments(toIndex);
+        networkIndexingService.indexDocuments(toIndex, REVISION);
         verify(documentRepository, times(toIndex.size())).save(userCaptor.capture(), networkDocCaptor.capture(), commitMessageCaptor.capture());
         BoundingBox actualEnvelope = networkDocCaptor.getAllValues().get(toIndex.size() - 1).getBoundingBox();
         String actualCommitMessage = commitMessageCaptor.getAllValues().get(toIndex.size() - 1);
@@ -120,6 +121,28 @@ class NetworkIndexingServiceTest {
         assertThat(actualEnvelope.getWestBoundLongitude(), is(closeTo(expectedWest, precision)));
         assertThat(actualCommitMessage, equalTo(expectedCommitMessage));
     }
+    @Test
+    @DisplayName("Reads the triggering commit revision, never the cache-stale latest")
+    @SneakyThrows
+    void indexDocumentsReadsAtEventRevision() {
+        // given a freshly-committed facility: the no-revision readBundle would resolve the stale pre-commit
+        // HEAD (the write-path @CacheEvict has not run yet) and throw GitFileNotFoundException for the new file.
+        MonitoringNetwork n1 = getMonitoringNetwork("n1");
+        MonitoringFacility f1 = getMonitoringFacility("f1", "50,50", n1);
+        List<Link> links = List.of(Link.builder().geometry(f1.getGeometry().getGeometryString()).href(f1.getId()).build());
+
+        when(bundledReader.readBundle(f1.getId(), REVISION)).thenReturn(f1);
+        when(bundledReader.readBundle(n1.getId(), REVISION)).thenReturn(n1);
+        when(lookupService.inverseRelationships(n1.getUri(), Ontology.DCTERMS_ISPARTOF.getURI())).thenReturn(links);
+
+        // when
+        networkIndexingService.indexDocuments(List.of(f1.getId()), REVISION);
+
+        // then every read is pinned to the event revision; the stale latest overload is never touched
+        verify(bundledReader).readBundle(f1.getId(), REVISION);
+        verify(bundledReader, never()).readBundle(anyString());
+    }
+
     @Test
     @SneakyThrows
     void unindexDocuments() {

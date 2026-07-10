@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.sparql;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.query.*;
@@ -11,6 +12,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 
+@Hidden
 @Slf4j
 @ToString
 @RestController

@@ -6,15 +6,6 @@
     otherContacts = publishers + rightsHolders
     catalogue = catalogues.retrieve(metadata.catalogue)
 
-    rel_all=jena.allRelatedRecords(uri)
-    rel_relation=jena.relationships(uri, "http://purl.org/dc/terms/relation") + jena.inverseRelationships(uri, "http://purl.org/dc/terms/relation")
-    rel_requires = jena.relationships(uri, "http://purl.org/dc/terms/requires")
-    rel_partOf = jena.relationships(uri, "http://purl.org/dc/terms/isPartOf")
-    rel_isRequiredBy = jena.inverseRelationships(uri, "http://purl.org/dc/terms/requires")
-    rel_hasPart = jena.inverseRelationships(uri, "http://purl.org/dc/terms/isPartOf")
-    rel_replaces = jena.replaces(uri)
-    rel_source = jena.relationships(uri, "http://purl.org/dc/terms/source")
-
     MD_checks = metadataQuality.check(id)
     problems = MD_checks.getProblems()
     errors = MD_checks.getErrors()
@@ -39,7 +30,7 @@
 </#if>
 
 <#assign isLinkedDoc=false linkedClass="" >
-<#if rel_source?has_content && rel_source?size gt 0>
+<#if relSource?has_content && relSource?size gt 0>
   <#assign isLinkedDoc=true linkedClass="linked" >
 </#if>
 
@@ -52,7 +43,14 @@
   </#list>
 </#macro>
 
-<@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue) footer=true>
+<#assign headContent>
+<link rel="alternate" type="text/turtle" href="${uri}?format=ttl"/>
+<link rel="alternate" type="application/vnd.schemaorg.ld+json" href="${uri}?format=schema.org"/>
+<script type="application/ld+json">
+  <#include "../schema.org/schema.org.ftl">
+</script>
+</#assign>
+<@skeleton.master title=title catalogue=catalogue canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue) footer=true headContent=headContent>
   <div id="metadata" class="metadata ${metadata.state?lower_case} ${linkedClass}">
     <div class="container">
       <#if resourceType?has_content && resourceType.value !=''>
@@ -81,9 +79,6 @@
         </div>
       </#if>
 
-      <script type="application/ld+json">
-        <#include "../schema.org/schema.org.ftl">
-      </script>
     </div>
   </div>
 </@skeleton.master>

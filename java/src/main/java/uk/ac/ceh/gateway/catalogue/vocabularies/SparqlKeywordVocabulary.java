@@ -60,12 +60,12 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
         return URI.create(
             sparqlEndpoint + "?query=" +
             URLEncoder.encode("PREFIX skos:<http://www.w3.org/2004/02/skos/core#> ", UTF_8) +
-            URLEncoder.encode("SELECT ?uri ?label ", UTF_8) +
+            URLEncoder.encode("SELECT DISTINCT ?uri ?label ", UTF_8) +
             URLEncoder.encode("WHERE {GRAPH ", UTF_8) +
             URLEncoder.encode(graph, UTF_8) +
             URLEncoder.encode(" {", UTF_8) +
             URLEncoder.encode(where, UTF_8) +
-            URLEncoder.encode("}}", UTF_8)
+            URLEncoder.encode("}} ORDER BY ?label", UTF_8)
         );
     }
 

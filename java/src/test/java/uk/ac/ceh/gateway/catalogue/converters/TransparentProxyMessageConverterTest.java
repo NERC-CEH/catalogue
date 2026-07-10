@@ -1,39 +1,54 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxyException;
 import uk.ac.ceh.gateway.catalogue.model.UpstreamInvalidMediaTypeException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class TransparentProxyMessageConverterTest {
-    @Mock(answer=Answers.RETURNS_DEEP_STUBS) CloseableHttpClient httpClient;
+    @Mock ClientHttpRequestFactory requestFactory;
+    @Mock ClientHttpRequest request;
     TransparentProxyMessageConverter converter;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);
-        this.converter = spy(new TransparentProxyMessageConverter(httpClient));
+        when(requestFactory.createRequest(any(URI.class), eq(HttpMethod.GET))).thenReturn(request);
+        this.converter = spy(new TransparentProxyMessageConverter(requestFactory));
+    }
+
+    private ClientHttpResponse givenUpstreamResponse(String contentType) throws IOException {
+        ClientHttpResponse response = mock(ClientHttpResponse.class);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(HttpHeaders.CONTENT_TYPE, contentType);
+        InputStream body = mock(InputStream.class);
+        when(response.getHeaders()).thenReturn(responseHeaders);
+        when(response.getBody()).thenReturn(body);
+        when(request.execute()).thenReturn(response);
+        return response;
     }
 
     @Test
@@ -46,21 +61,15 @@ public class TransparentProxyMessageConverterTest {
         when(message.getBody()).thenReturn(outputStream);
         when(message.getHeaders()).thenReturn(headers);
 
-        CloseableHttpResponse response = mock(CloseableHttpResponse.class);
-
-        HttpEntity entity = mock(HttpEntity.class, RETURNS_DEEP_STUBS);
-        when(entity.getContentType().getValue()).thenReturn("content-type");
-
-        when(response.getEntity()).thenReturn(entity);
-        when(httpClient.execute(any(HttpGet.class))).thenReturn(response);
+        ClientHttpResponse response = givenUpstreamResponse("content-type");
 
         //When
         TransparentProxy proxy = new TransparentProxy("url");
         converter.write(proxy, null, message);
 
         //Then
-        verify(entity).writeTo(outputStream);
-        verify(headers).set("Content-Type", "content-type");
+        verify(response.getBody()).transferTo(outputStream);
+        verify(headers).set(HttpHeaders.CONTENT_TYPE, "content-type");
     }
 
     @Test
@@ -110,10 +119,10 @@ public class TransparentProxyMessageConverterTest {
             //Given
             String requiredMediaType = "image/*";
             TransparentProxy request = mock(TransparentProxy.class);
+            when(request.getUri()).thenReturn(URI.create("url"));
             when(request.getDesiredMediaType()).thenReturn(MediaType.parseMediaType(requiredMediaType));
 
-            when(httpClient.execute(any(HttpGet.class)).getEntity().getContentType().getValue())
-                    .thenReturn("incompatible/media");
+            givenUpstreamResponse("incompatible/media");
 
             //When
             converter.write(request, null, null);
@@ -129,10 +138,10 @@ public class TransparentProxyMessageConverterTest {
         //Given
         String requiredMediaType = "image/*";
         TransparentProxy request = mock(TransparentProxy.class);
+        when(request.getUri()).thenReturn(URI.create("url"));
         when(request.getDesiredMediaType()).thenReturn(MediaType.parseMediaType(requiredMediaType));
 
-        when(httpClient.execute(any(HttpGet.class)).getEntity().getContentType().getValue())
-                .thenReturn("image/png");
+        givenUpstreamResponse("image/png");
 
         HttpOutputMessage message = mock(HttpOutputMessage.class);
         HttpHeaders headers = mock(HttpHeaders.class);
@@ -145,7 +154,7 @@ public class TransparentProxyMessageConverterTest {
         converter.write(request, null, message);
 
         //Then
-        verify(converter).copyAndClose(any(HttpEntity.class), any(HttpOutputMessage.class));
+        verify(converter).copyAndClose(any(InputStream.class), any(HttpOutputMessage.class));
     }
 
     @Test
@@ -154,10 +163,10 @@ public class TransparentProxyMessageConverterTest {
             //Given
             String requiredMediaType = "image/*";
             TransparentProxy request = mock(TransparentProxy.class);
+            when(request.getUri()).thenReturn(URI.create("url"));
             when(request.getDesiredMediaType()).thenReturn(MediaType.parseMediaType(requiredMediaType));
 
-            when(httpClient.execute(any(HttpGet.class)).getEntity().getContentType().getValue())
-                    .thenReturn("WMS_TYPE");
+            givenUpstreamResponse("WMS_TYPE");
 
             //When
             converter.write(request, null, null);
@@ -172,7 +181,8 @@ public class TransparentProxyMessageConverterTest {
         Assertions.assertThrows(TransparentProxyException.class, () -> {
             //Given
             TransparentProxy request = mock(TransparentProxy.class);
-            when(httpClient.execute(any(HttpGet.class))).thenThrow(new IOException("Whoops, no internet"));
+            when(request.getUri()).thenReturn(URI.create("url"));
+            when(this.request.execute()).thenThrow(new IOException("Whoops, no internet"));
 
             //When
             converter.write(request, null, null);

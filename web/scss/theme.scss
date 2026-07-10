@@ -8,7 +8,7 @@
  * https://github.com/divshot/themestrap
  */
 
-@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
 @import "customProperties";
 @import "variables";
@@ -235,7 +235,6 @@ h6 {
     font-family: var(--font-family-headers);
 
     a {
-
         &:hover,
         &:focus-visible {
             text-decoration: none;
@@ -245,14 +244,14 @@ h6 {
 
 h1 {
     color: var(--colour-hero);
-    font-weight: 400;
+    font-weight: 200;
 }
 
 h2,
 h3,
 h4 {
     color: #999;
-    font-weight: 400;
+    font-weight: 200;
 }
 
 .btn-ukceh {
@@ -385,6 +384,38 @@ header {
 
                 }
 
+                // Plain auth links (Login / Logout) are bare <a> children here.
+                // .navbar-right centres its items, so without this they'd only be
+                // as tall as their text and their background (and hover background)
+                // would paint a short box instead of filling the header height like
+                // the left-nav links. Stretch them to match; align-items keeps the
+                // text vertically centred within the now full-height link.
+                > a {
+                    align-self: stretch;
+                    display: flex;
+                    align-items: center;
+                }
+
+                // Account menu ("Your details"): stretch the icon toggle to fill the
+                // header height and vertically centre it, so it receives the same
+                // full-height hover treatment as the plain nav links (white background
+                // + accent-coloured icon). The generic .navbar a:hover underline is
+                // suppressed since there is no text to underline.
+                .user-menu {
+                    align-self: stretch;
+                    display: flex;
+                    align-items: stretch;
+
+                    a.dropdown-toggle {
+                        display: flex;
+                        align-items: center;
+
+                        &:hover {
+                            text-decoration: none;
+                        }
+                    }
+                }
+
                 .dropdown-menu {
                     background-color: var(--dropdownmenu-background);
 
@@ -400,11 +431,19 @@ header {
                             border: none;
                         }
 
-                        a {
+                        a,
+                        button {
+                            inline-size: 100%;
+                            text-align: start;
+                            border: 0;
                             padding: .75em;
                             background-color: var(--dropdownmenu-background);
                             color: black;
                             font-weight: 400;
+
+                            i {
+                                margin-inline-end: .5em;
+                            }
 
                             &:hover {
                                 background-color: var(--dropdownmenu-background-hover);

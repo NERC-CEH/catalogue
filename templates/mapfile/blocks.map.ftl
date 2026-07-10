@@ -30,7 +30,7 @@
     --]
     [#if data.layer?has_content]
       CONNECTIONTYPE OGR
-      CONNECTION "/mapserver/data/${prefProj.path}"
+      CONNECTION "/data/${prefProj.path}"
       DATA "${data.layer}"
     [#else]
       DATA "${prefProj.path}"

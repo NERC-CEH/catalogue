@@ -3,7 +3,10 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Testing
-- Always run the full test suite after making changes, especially after upgrades, refactors, or migrations
+- Run the test suite scoped to what changed, especially after upgrades, refactors, or migrations:
+  - Java changes → `./gradlew :java:test`
+  - Frontend-only changes (`web/`) → `cd web && npm run test` and `npm run standard`; the Java suite is not required
+  - Mixed changes → run both
 - When fixing one test failure, check for similar patterns elsewhere (e.g., if one method needs a transaction wrapper, audit all similar methods)
 - Verify null-safety fixes cover both missing keys AND keys with null values
 
@@ -15,20 +18,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - This project uses Java 25 with Gradle; prefer toolchain configuration over sourceCompatibility/targetCompatibility
 - Library versions live in `gradle/libs.versions.toml` (Gradle version catalog) — add/update versions there, not inline in `build.gradle`
 - Dockerfile multi-stage build: copy `gradle/libs.versions.toml` into the Gradle build stage alongside `build.gradle`, or `bootJar` will fail with missing catalog
-- Spring AI is on a milestone release (`2.0.0-M8`); `java/build.gradle` includes `repo.spring.io/milestone` repository. Before any production release, check if a Spring AI 2.0 GA version is available and switch to it (removing the milestone repo once it's on Maven Central)
-
-## Vector Search & MCP Server
-- Vector search (semantic KNN) is activated by the `vector-search` profile; it requires AWS Bedrock credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`). Without credentials, `EmbeddingModel` bean is absent and indexing continues via BM25 only
-- The MCP server (exposes catalogue search to external LLMs) is activated by the `mcp-server` profile. Properties live in `application-mcp-server.properties`
-- **PendingEmbeddingService**: embedding is decoupled from the indexing hot path. `SolrIndexMetadataDocumentGenerator` marks document IDs; a `@Scheduled` flush (default 5 min) calls Bedrock and does a partial Solr atomic update. Multiple saves of the same document deduplicate to one Bedrock call per flush cycle. Optionally injects `Optional<SupportingDocumentExtractor>` to append supporting document text before embedding
-- Any change to `solr/documents/conf/managed-schema` (including `knn_vector_1024`, `temporal_extent_text`, `document_text`) requires a full Solr reindex via the admin `/index` endpoint
-- Semantic search endpoint: `GET /{catalogue}/documents?term=...&semantic=true`
-- Access to `?semantic=true` can be restricted to a Crowd group via `catalogue.semantic.group=GROUP_NAME`. Empty (default) = unrestricted. Public users are implicitly excluded when a group is set (they have no Crowd groups). Unauthorised requests silently fall back to BM25
-- **Semantic search UI toggle**: `SearchResults.semanticEnabled` (set by `SearchController` per user) controls whether `search.ftlh` renders the Bootstrap switch toggle. The toggle is absent from the DOM for unauthorised users — no JS permission logic needed
-- **Supporting document extraction** (`SupportingDocumentExtractor`): PDF/Word/RTF files from `/var/ceh-catalogue/supporting-documents/{id}/` are extracted via Tika and appended to the embedding text. Activated by `catalogue.supporting-documents.location` property being present. `extractText(id)` validates the resolved path stays within the base directory (path traversal guard)
-- **Temporal extent text**: `SolrIndexGeminiDocumentGenerator.formatTemporalExtents()` converts `GeminiDocument.temporalExtents` (List<TimePeriod>) to natural English ("Data collected from 2000 to 2015") stored in `temporal_extent_text` and included in embedding text
-- **BM25 document text**: extracted supporting document text is also written to `document_text` (type `text_general`, `document_text^1` in `qf`) for keyword search coverage
-- Service Agreements are excluded from vector indexing automatically via `SolrIndexingService.canIndex()` which returns `false` for them
+- The `java-commons` library (`uk.ac.ceh.components:*`) resolves from a public GitLab Maven registry (`java/build.gradle`) — no authentication needed
 
 ## Commands
 

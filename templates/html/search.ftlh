@@ -30,16 +30,12 @@
 
     <div>
 
-      <@func.temporaryBlock "2025-10-28">
-        <#if catalogue.id == "eidc">
-          <div class="m-3 alert alert-warning alert-dismissible fade show" role="alert">
-            <strong>Would you like to help shape the future development of our services?</strong><br>
-            We're holding an event on 28th Oct at 10.30am to get feedback from our users.
-            <a class="alert-link" href="https://events.teams.microsoft.com/event/605973b7-d60d-455b-8e84-46a7982f52c6@7f025136-39f3-4f2c-a3c6-cbb1ce21b36a" target="_blank" rel="nofollow" >Register now</a> to attend.
-
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        </#if>
+      <@func.temporaryBlock "2026-06-12">
+        <div class="m-3 alert alert-warning alert-dismissible fade show" role="alert">
+          <strong>Catalogue unavailable due to upgrade work on Thursday 11th June</strong><br>
+          The catalogue will be down for maintenance and upgrade work on Thursday 11th June between 9am and 1pm.
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
        </@func.temporaryBlock>
 
       <form class="search-form" action="/${docroot}" method="get">

@@ -1,0 +1,69 @@
+{
+    "@context": "https://schema.org/",
+    "@graph": [
+        {
+            "@type": "Dataset",
+            "name": "Title",
+            "@id": "https://example.org/id/123456789",
+            "url": "https://example.org/id/123456789",
+            "funding": [
+                {"@id": "https://gtr.ukri.org/projects?ref=NE/S010351/1"},
+                {"@id": "#fund1"},
+                {"@id": "#fund2"}
+            ],
+            "provider": {
+                "@id": "https://ror.org/04xw4m193"
+            },
+            "includedInDataCatalog": {
+                "@id": "#eidc-dataCatalogue"
+            }
+        },
+        {
+            "@id": "#eidc-dataCatalogue",
+            "@type": "DataCatalog",
+            "name": "Environmental Information Data Centre",
+            "alternateName": "EIDC",
+            "url": "https://catalogue.ceh.ac.uk/eidc/documents"
+        },
+        {
+            "@id": "https://ror.org/04xw4m193",
+            "@type": "Organization",
+            "name": "NERC EDS Environmental Information Data Centre",
+            "email": "info@eidc.ac.uk"
+        },
+        {
+            "@id": "https://gtr.ukri.org/projects?ref=NE/S010351/1",
+            "@type": "MonetaryGrant",
+            "identifier": "NE/S010351/1",
+            "funder": {"@id": "https://ror.org/00h27bh59"}
+        },
+        {
+            "@id": "https://ror.org/00h27bh59",
+            "@type": "Organization",
+            "name": "Natural Environment Research Council"
+        },
+        {
+            "@id": "#fund1",
+            "@type": "MonetaryGrant",
+            "name": "Horizon 2020 research and innovation programme",
+            "identifier": "776480",
+            "funder": {"@id": "#funderOrg1"}
+        },
+        {
+            "@id": "#funderOrg1",
+            "@type": "Organization",
+            "name": "European Union"
+        },
+        {
+            "@id": "#fund2",
+            "@type": "MonetaryGrant",
+            "name": "Hydro Nation Scholars Programme",
+            "funder": {"@id": "#funderOrg2"}
+        },
+        {
+            "@id": "#funderOrg2",
+            "@type": "Organization",
+            "name": "Scottish Government"
+        }
+    ]
+}

@@ -1,7 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -10,10 +8,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientResponseException;
 import uk.ac.ceh.components.datastore.*;
+import uk.ac.ceh.gateway.catalogue.config.ServiceAgreementPublicationConfig;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
@@ -125,9 +125,6 @@ public class GitRepoServiceAgreementServiceTest {
         doReturn(metadata).when(serviceAgreement).getMetadata();
         doNothing().when(service).updateMetadata(any(), anyString(), any());
 
-        Multimap<Permission, String> mockPerms = ArrayListMultimap.create();
-        doReturn(mockPerms).when(metadata).getPermissions();
-
         //when
         service.doTransitionAction(user, ID, "r18oq");
         service.doTransitionAction(user, ID, "r05ty");
@@ -135,6 +132,36 @@ public class GitRepoServiceAgreementServiceTest {
         verify(service, times(2)).get(user,ID);
         verify(service, times(2)).updateMetadata(eq(user),eq(ID), any());
         verify(serviceAgreement).getDepositReference();
+    }
+
+    @Test
+    @SneakyThrows
+    public void returnToDraftStoresDepositorIdentityInLowerCase() {
+        // Given a depositor whose contact email contains upper-case characters. The access check
+        // (MetadataInfo.canAccess) always looks the identity up in lower case, so if it is stored
+        // mixed-case the depositor is locked out of editing once returned to draft - which is the
+        // bug this reproduces.
+        service = spy(service);
+        serviceAgreement.setDepositorContactDetails("A.Test@email.com");
+        val metadata = MetadataInfo.builder()
+            .state("submitted")
+            .rawType(APPLICATION_JSON_VALUE)
+            .build();
+        serviceAgreement.setMetadata(metadata);
+
+        doReturn(serviceAgreement).when(service).get(user, ID);
+        doNothing().when(service).updateMetadata(any(), anyString(), any());
+
+        //When the service agreement is sent back to draft (submitted -> draft)
+        service.doTransitionAction(user, ID, ServiceAgreementPublicationConfig.submittedToDraftId);
+
+        //Then the depositor is granted EDIT/VIEW under the lower-cased identity, not the mixed-case email
+        val captor = ArgumentCaptor.forClass(MetadataInfo.class);
+        verify(service).updateMetadata(eq(user), eq(ID), captor.capture());
+        val stored = captor.getValue().getPermissions();
+        assertThat(stored.containsEntry(Permission.EDIT, "a.test@email.com"), is(true));
+        assertThat(stored.containsEntry(Permission.VIEW, "a.test@email.com"), is(true));
+        assertThat(stored.containsEntry(Permission.EDIT, "A.Test@email.com"), is(false));
     }
 
     @Test
@@ -359,6 +386,9 @@ public class GitRepoServiceAgreementServiceTest {
 
         givenPendingPublicationServiceAgreement();
 
+        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
+        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
+
         //When
         service.publishServiceAgreement(user, ID);
 
@@ -393,6 +423,9 @@ public class GitRepoServiceAgreementServiceTest {
 
         RestClientResponseException restClientResponseException = mock(RestClientResponseException.class);
         doThrow(restClientResponseException).when(jiraService).comment(any(), any());
+
+        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
+        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
 
         //when
         assertThrows(ServiceAgreementException.class, () ->
@@ -499,8 +532,8 @@ public class GitRepoServiceAgreementServiceTest {
         val result = service.getHistory(ID);
 
         //Then
-        assertThat(result.getRevisions().get(0).getVersion(), equalTo("1"));
-        assertThat(result.getRevisions().get(0).getHref(), equalTo(
+        assertThat(result.getRevisions().getFirst().getVersion(), equalTo("1"));
+        assertThat(result.getRevisions().getFirst().getHref(), equalTo(
                         "https://catalogue.ceh.ac.uk/service-agreement/" +
                                 "7c60707c-80ee-4d67-bac2-3c9a93e61557/version/revision1"));
     }
@@ -670,33 +703,6 @@ public class GitRepoServiceAgreementServiceTest {
         serviceAgreement.setEndUserLicence(new ResourceConstraint("test", "test", "test"));
         serviceAgreement.setDepositReference("test");
         serviceAgreement.setDepositorContactDetails("test");
-    }
-
-    @SneakyThrows
-    private void givenDraftServiceAgreement() {
-        val metadataInfoDocument = mock(DataDocument.class);
-        given(repo.getData(FOLDER + ID + ".meta"))
-            .willReturn(metadataInfoDocument);
-        given(metadataInfoDocument.getInputStream())
-            .willReturn(new ByteArrayInputStream("meta".getBytes()));
-
-        val metadata = MetadataInfo.builder()
-            .state("draft")
-            .rawType(APPLICATION_JSON_VALUE)
-            .build();
-        given(metadataInfoMapper.readInfo(any()))
-            .willReturn(metadata);
-
-        val rawDocument = mock(DataDocument.class);
-        given(repo.getData(FOLDER + ID + ".raw"))
-            .willReturn(rawDocument);
-        given(rawDocument.getInputStream())
-            .willReturn(new ByteArrayInputStream("file".getBytes()));
-        given(serviceAgreementMapper.readInfo(any()))
-            .willReturn(serviceAgreement);
-        serviceAgreement.setMetadata(metadata);
-        serviceAgreement.setId(ID);
-        serviceAgreement.setDepositReference("test");
     }
 
     @SneakyThrows

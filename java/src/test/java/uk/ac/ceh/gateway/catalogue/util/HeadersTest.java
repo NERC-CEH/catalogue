@@ -24,6 +24,20 @@ public class HeadersTest {
     }
 
     @Test
+    public void withBearerTokenStripsSurroundingWhitespace() {
+        //given a token with a trailing newline (e.g. read from a Kubernetes secret)
+
+        //when
+        val headers = Headers.withBearerToken("my-token\n");
+
+        //then the header value is single-line — no CR/LF the JDK client would reject
+        val authorization = headers.getFirst("Authorization");
+        assertThat(authorization, is("Bearer my-token"));
+        assertTrue(authorization.indexOf('\n') < 0, "header value must not contain a newline");
+        assertTrue(authorization.indexOf('\r') < 0, "header value must not contain a carriage return");
+    }
+
+    @Test
     public void testNull() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             //given

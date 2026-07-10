@@ -1,18 +1,10 @@
 <#--noinspection HtmlUnknownTarget-->
-<#setting url_escaping_charset='ISO-8859-1'>
-<#setting date_format = 'yyyy-MM-dd'>
-
 <#assign defaultScripts>
   <script src="/static/scripts/main.js"></script>
 </#assign>
 
-<#assign catalogueid="">
-
-<#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts footer=false>
-  <#assign catalogueid="">
-  <#if catalogue?has_content>
-    <#assign catalogueid=catalogue.id>
-  </#if>
+<#macro master title catalogue="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts footer=false headContent="">
+  <#assign catalogueid=catalogue?has_content?then(catalogue.id, "")>
 
   <#compress>
   <!DOCTYPE html>
@@ -46,12 +38,10 @@
       <#if canonical?has_content>
         <link rel="canonical" href="${canonical}"/>
       </#if>
-      <#if rdf?has_content>
-        <link rel="alternate" type="text/turtle" href="${rdf}"/>
+      <#if voidCatalogueIds?? && voidCatalogueIds?seq_contains(catalogueid)>
+      <link rel="describedby" type="text/turtle" href="/.well-known/void"/>
       </#if>
-      <#if schemaorg?has_content>
-        <link rel="alternate" type="application/vnd.schemaorg.ld+json" href="${schemaorg}"/>
-      </#if>
+      ${headContent}
     </head>
     <body data-edit-restricted="${can_edit_restricted?then('','disabled')}">
       <div id="header-sentinel" aria-hidden="true"></div>
@@ -85,17 +75,16 @@
 
                 <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>
                     <div id="editorCreate" class="dropdown">
-                      <button class="btn btn-light btn-outline-secondary btn-create dropdown-toggle" type="button" id="createMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                      <button class="btn btn-outline-secondary btn-create dropdown-toggle" type="button" id="createMenu" data-bs-toggle="dropdown" aria-expanded="false">
                         Create
-                        <span class="caret"></span>
                       </button>
                       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="createMenu">
                         <#list catalogue.documentTypes as docType>
                           <li><a class="dropdown-item edit-control" data-document-type="${docType.type}" href="#">${docType.title}</a></li>
                         </#list>
                         <#if catalogue.fileUpload>
-                          <li class="dropdown-divider"></li>
-                          <li><a href="/documents/upload">File Upload</a></li>
+                          <li><hr class="dropdown-divider"></li>
+                          <li><a class="dropdown-item" href="/documents/upload">File Upload</a></li>
                         </#if>
                       </ul>
                     </div>
@@ -113,7 +102,26 @@
                     <a href="/oauth2/authorization/cognito">Login with Cognito</a>
                   </#if>
                 <#else>
-                  <span id="sso-user"></span>
+                  <#-- SSO user menu, rendered natively (formerly injected by the proxy
+                       into #sso-user). Links target the proxy-served /sso/* endpoints. -->
+                  <#if userInfo.isLoggedIn()>
+                    <div class="dropdown user-menu">
+                      <a href="#" role="button" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Your details">
+                        <i class="fa-solid fa-user"></i>
+                      </a>
+                      <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/sso/password/change"><i class="fa-solid fa-key fa-fw"></i>Change password</a></li>
+                        <li><a class="dropdown-item" href="/sso/profile"><i class="fa-solid fa-user fa-fw"></i>Profile</a></li>
+                        <li>
+                          <form action="/sso/logout" method="post">
+                            <button type="submit" class="dropdown-item text-danger"><i class="fa-solid fa-right-from-bracket fa-fw"></i>Logout</button>
+                          </form>
+                        </li>
+                      </ul>
+                    </div>
+                  <#else>
+                    <a href="/sso/login">Login</a>
+                  </#if>
                 </#if>
               </nav>
             </div>

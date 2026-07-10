@@ -6,6 +6,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -32,13 +33,20 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.MAPSERVER_GML_VALU
 @RequestMapping(value="maps")
 public class MapViewerController {
     public static final String INFO_FORMAT = "INFO_FORMAT";
-    public static final String MAPSERVER = "http://mapserver/{id}";
     private final static Set<String> LOCAL_INFO_FORMATS = ImmutableSet.of("text/xml", "application/json");
 
     private final RestTemplate rest;
+    private final String mapserverUrl;
+    private final boolean camptocampMode;
 
-    public MapViewerController(@Qualifier("wms") RestTemplate rest) {
+    public MapViewerController(
+            @Qualifier("wms") RestTemplate rest,
+            @Value("${mapserver.url:http://mapserver/{id}}") String mapserverUrl,
+            @Value("${mapserver.camptocamp:false}") boolean camptocampMode
+    ) {
         this.rest = rest;
+        this.mapserverUrl = mapserverUrl;
+        this.camptocampMode = camptocampMode;
         log.info("Creating");
     }
 
@@ -83,10 +91,21 @@ public class MapViewerController {
     }
 
     private URI getLocalWMSRequest(String id, MultiValueMap<String, String> params) {
-        return UriComponentsBuilder
-            .fromUriString(MAPSERVER)
+        if (camptocampMode) {
+            if (params.keySet().stream().noneMatch(key -> key.equalsIgnoreCase("map"))) {
+                params.set("map", "/maps/" + id + "_default.map");
+            }
+            if (params.keySet().stream().noneMatch(key -> key.equalsIgnoreCase("STYLES"))) {
+                params.set("STYLES", "");
+            }
+        }
+        URI uri = UriComponentsBuilder
+            .fromUriString(mapserverUrl)
             .queryParams(params)
             .buildAndExpand(id)
             .toUri();
+
+        log.info("WMS request URL built: {}", uri);
+        return uri;
     }
 }

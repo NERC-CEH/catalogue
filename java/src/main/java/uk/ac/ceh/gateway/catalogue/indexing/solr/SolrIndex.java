@@ -24,6 +24,7 @@ public class SolrIndex {
     private @Field List<String> authorOrcid;
     private @Field List<String> authorRor;
     private @Field String catalogue;
+    private @Field("catalogue_view") List<String> catalogueView;
     private @Field String description;
     private @Field String documentType;
     private @Field List<String> funder;
@@ -88,12 +89,6 @@ public class SolrIndex {
     private @Field Number version;
     private @Field List<String> dataFormat;
     private @Field List<String> view;
-    // Vector search — populated asynchronously by PendingEmbeddingService
-    private @Field List<Float> vector;
-    private @Field("embedding_text") String embeddingText;
-    private @Field("temporal_extent_text") String temporalExtentText;
-    private @Field("document_text") String documentText;
-
     // infrastructure catalogue
     private @Field String scienceArea;
     private @Field String infrastructureCapabilities;
@@ -108,9 +103,9 @@ public class SolrIndex {
 
     private String shortenLongString(String toShorten){
         toShorten = Strings.nullToEmpty(toShorten);
-        if(toShorten.length() > MAX_DESCRIPTION_CHARACTER_LENGTH){
+        if (toShorten.length() > MAX_DESCRIPTION_CHARACTER_LENGTH) {
             return breakAtNextSpace(toShorten);
-        }else{
+        } else {
             return toShorten;
         }
     }
@@ -123,6 +118,6 @@ public class SolrIndex {
         }else{
             toReturn = toBreak.substring(0, MAX_DESCRIPTION_CHARACTER_LENGTH);
         }
-        return toReturn + "...";
+        return toReturn + "…";
     }
 }

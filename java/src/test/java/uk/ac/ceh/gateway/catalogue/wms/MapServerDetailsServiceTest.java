@@ -24,7 +24,10 @@ public class MapServerDetailsServiceTest {
 
     @BeforeEach
     public void init() {
-        service = new MapServerDetailsService("https://catalogue.ceh.ac.uk");
+        service = new MapServerDetailsService(
+            "https://catalogue.ceh.ac.uk",
+            "http://mapserver/mapserver/{id}"
+        );
     }
 
     @Test
@@ -49,7 +52,7 @@ public class MapServerDetailsServiceTest {
         String request = service.rewriteToLocalWmsRequest(localRequest);
 
         //Then
-        assertEquals(request, "http://mapserver/ID?REQUEST=WMS");
+        assertEquals("http://mapserver/mapserver/ID?REQUEST=WMS", request);
     }
 
     @Test
@@ -61,7 +64,7 @@ public class MapServerDetailsServiceTest {
         String request = service.rewriteToLocalWmsRequest(externalRequest);
 
         //Then
-        assertEquals(request, externalRequest);
+        assertEquals(externalRequest, request);
     }
 
     @Test
@@ -74,7 +77,7 @@ public class MapServerDetailsServiceTest {
         String request = service.getLocalWMSRequest(file, queryString);
 
         //Then
-        assertEquals(request, "http://mapserver/myfileid?query");
+        assertEquals("http://mapserver/mapserver/myfileid?query", request);
     }
 
     @Test
@@ -207,7 +210,7 @@ public class MapServerDetailsServiceTest {
         b1.setMin(new BigDecimal("2"));
         b1.setMax(new BigDecimal("5"));
 
-        List<Bucket> buckets = Arrays.asList(b1);
+        List<Bucket> buckets = List.of(b1);
 
         //When
         MapBucketDetails details = service.getScaledBuckets(buckets);
@@ -242,12 +245,18 @@ public class MapServerDetailsServiceTest {
     }
 
     @Test
+    public void checkThatReturnsNullForEmptyBuckets() {
+        MapBucketDetails details = service.getScaledBuckets(List.of());
+        assertNull(details);
+    }
+
+    @Test
     public void checkThatIsSkippedForOpenEndedBuckets() {
         //Given
         Bucket b1 = new Bucket();
         b1.setMax(new BigDecimal("5"));
 
-        List<Bucket> buckets = Arrays.asList(b1);
+        List<Bucket> buckets = List.of(b1);
 
         //When
         MapBucketDetails details = service.getScaledBuckets(buckets);

@@ -5,19 +5,21 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
-import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 @Slf4j
 @ToString
 @Service
 public class MetadataInfoBundledReaderService implements BundledReaderService<MetadataDocument> {
-    private final DataRepository<CatalogueUser> repo;
+    private final CachedDataRepository cachedRepo;
     private final DocumentReadingService documentReader;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final DocumentTypeLookupService representationService;
@@ -25,14 +27,14 @@ public class MetadataInfoBundledReaderService implements BundledReaderService<Me
     private final DocumentIdentifierService documentIdentifierService;
 
     public MetadataInfoBundledReaderService(
-        DataRepository<CatalogueUser> repo,
+        CachedDataRepository cachedRepo,
         DocumentReadingService documentReader,
         DocumentInfoMapper<MetadataInfo> documentInfoMapper,
         DocumentTypeLookupService representationService,
         PostProcessingService<MetadataDocument> postProcessingService,
         DocumentIdentifierService documentIdentifierService
     ) {
-        this.repo = repo;
+        this.cachedRepo = cachedRepo;
         this.documentReader = documentReader;
         this.documentInfoMapper = documentInfoMapper;
         this.representationService = representationService;
@@ -44,7 +46,7 @@ public class MetadataInfoBundledReaderService implements BundledReaderService<Me
     @Override
     @SneakyThrows
     public MetadataDocument readBundle(String file) {
-        return readBundle(file, repo.getLatestRevision().getRevisionID(), false);
+        return readBundle(file, cachedRepo.getLatestRevisionId(), false);
     }
 
     @Override
@@ -55,13 +57,13 @@ public class MetadataInfoBundledReaderService implements BundledReaderService<Me
 
     @SneakyThrows
     private MetadataDocument readBundle(String file, String revision, boolean history) {
-        val metadataDoc = repo.getData(revision, file + ".meta");
-        val metadataInfo = documentInfoMapper.readInfo(metadataDoc.getInputStream());
+        val metadataBytes = readBlob(revision, file + ".meta", history);
+        val metadataInfo = documentInfoMapper.readInfo(new ByteArrayInputStream(metadataBytes));
 
-        val dataDoc = repo.getData(revision, file + ".raw");
+        val rawBytes = readBlob(revision, file + ".raw", history);
         val type = representationService.getType(metadataInfo.getDocumentType());
         val document = documentReader.read(
-            dataDoc.getInputStream(),
+            new ByteArrayInputStream(rawBytes),
             metadataInfo.getRawMediaType(),
             type
         );
@@ -75,5 +77,15 @@ public class MetadataInfoBundledReaderService implements BundledReaderService<Me
 
         postProcessingService.postProcess(document);
         return document;
+    }
+
+    /**
+     * Reads blob bytes through the cache: the latest read is keyed by name (and evicted on write),
+     * the historical read is keyed by revision+name (immutable, never evicted).
+     */
+    private byte[] readBlob(String revision, String name, boolean history) throws IOException {
+        return history
+            ? cachedRepo.readAtRevision(revision, name)
+            : cachedRepo.readLatest(revision, name);
     }
 }

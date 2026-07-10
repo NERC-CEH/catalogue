@@ -4,15 +4,11 @@ include:
 variables:
   DOCKER_DAEMON_ARGS: -g /cache/docker
   DOCKER_DRIVER: overlay2
-  DEPLOYMENT_SCRIPT: https://gitlab.ceh.ac.uk/scripts/deployment/raw/master/puppet-deploy.sh
-  NODE_KEY: catalogue_version
-  NODE_VALUE: $CI_COMMIT_REF_NAME
 
 stages:
   - test
   - scan
   - build
-  - deploy
 
 default:
   before_script:
@@ -20,7 +16,7 @@ default:
 
 test_java:
   stage: test
-  image: gradle:9.4.1-jdk25-alpine
+  image: gradle:9.5.1-jdk25-alpine
   except:
     - tags
   script: gradle test --no-daemon
@@ -31,12 +27,15 @@ test_java:
 
 test_web:
   stage: test
-  image: registry.gitlab.ceh.ac.uk/eip/headless_chrome:0.1
+  image: node:24-alpine
   except:
     - tags
+  variables:
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
   script:
+    - apk add --no-cache chromium
+    - export PUPPETEER_EXECUTABLE_PATH=$(which chromium-browser 2>/dev/null || which chromium)
     - cd web/
-    - npm install -g npm@10.8.2
     - npm ci --no-audit
     - npm run standard
     - npm test
@@ -47,17 +46,17 @@ test_web:
 
 test_application:
   stage: test
-  image: docker:20.10.5
+  image: docker:27
   except:
     - tags
   before_script:
     - set -euo pipefail
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   services:
-    - name: docker:20.10.5-dind
+    - name: docker:27-dind
       alias: docker
   script:
-    - docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
+    - docker build --build-arg BUILD_DATE=$(date +%Y-%m-%d) --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
     - docker push $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA
 
 container_scanning:
@@ -85,15 +84,15 @@ container_scanning:
 
 build_application:
   stage: build
-  image: docker:20.10.5
+  image: docker:27
   services:
-    - name: docker:20.10.5-dind
+    - name: docker:27-dind
       alias: docker
   before_script:
     - set -euo pipefail
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
-    - docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME .
+    - docker build --build-arg BUILD_DATE=$(date +%Y-%m-%d) --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME .
     - docker push $CI_REGISTRY_IMAGE/app --all-tags
   only:
     - tags
@@ -103,17 +102,3 @@ build_solr:
   script:
     - docker build -t $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME solr
     - docker push $CI_REGISTRY_IMAGE/solr --all-tags
-
-deploy_production:
-  image: ruby:2
-  stage: deploy
-  variables:
-    SERVER: cig-prod.nerc-lancaster.ac.uk
-  environment:
-    name: production
-    url:  https://catalogue.ceh.ac.uk/eidc/documents
-  script:
-    - curl $DEPLOYMENT_SCRIPT | bash
-  only:
-    - tags
-  when: manual
