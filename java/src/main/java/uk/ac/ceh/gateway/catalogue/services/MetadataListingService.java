@@ -104,7 +104,7 @@ public class MetadataListingService {
                     toReturn.add(doc.getId());
                 }
             } catch (RuntimeException ex) {
-                log.error("Failed to read " + file + " @ " + revision);
+                log.error("Failed to read {} @ {}", file, revision, ex);
             }
         }
         return toReturn;
@@ -140,7 +140,7 @@ public class MetadataListingService {
                     toReturn.add(doc.getId());
                 }
             } catch (RuntimeException ex) {
-                log.error("Failed to read " + file + " @ " + currentRevision);
+                log.error("Failed to read {} @ {}", file, currentRevision, ex);
             }
         }
         return toReturn;
@@ -176,7 +176,7 @@ public class MetadataListingService {
                     toReturn.add(doc);
                 }
             } catch (RuntimeException ex) {
-                log.error("Failed to read " + file + " @ " + currentRevision);
+                log.error("Failed to read {} @ {}", file, currentRevision, ex);
             }
         }
         return toReturn;

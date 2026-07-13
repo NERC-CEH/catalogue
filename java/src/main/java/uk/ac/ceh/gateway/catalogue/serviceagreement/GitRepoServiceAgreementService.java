@@ -19,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
@@ -35,6 +36,7 @@ import static uk.ac.ceh.gateway.catalogue.model.Permission.*;
 public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final String baseUri;
     private final DataRepository<CatalogueUser> repo;
+    private final CachedDataRepository cachedDataRepository;
     private final DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
     private final DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
     private final DocumentRepository documentRepository;
@@ -50,6 +52,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     public GitRepoServiceAgreementService(
             @Value("${documents.baseUri}") String baseUri,
             DataRepository<CatalogueUser> repo,
+            CachedDataRepository cachedDataRepository,
             DocumentInfoMapper<MetadataInfo> metadataInfoMapper,
             DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper,
             DocumentRepository documentRepository,
@@ -57,6 +60,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             @Lazy ServiceAgreementPublicationService publicationService) {
         this.baseUri = baseUri;
         this.repo = repo;
+        this.cachedDataRepository = cachedDataRepository;
         this.metadataInfoMapper = metadataInfoMapper;
         this.serviceAgreementMapper = serviceAgreementMapper;
         this.documentRepository = documentRepository;
@@ -127,6 +131,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
             .submitData(FOLDER + id + ".raw", o -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
             .commit(user, "creating service agreement " + id);
+        cachedDataRepository.evictAfterDirectWrite(FOLDER + id);
         return get(user, id);
     }
 
@@ -140,6 +145,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
             .submitData(FOLDER + id + ".raw", o -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
             .commit(user, "updating service agreement " + id);
+        cachedDataRepository.evictAfterDirectWrite(FOLDER + id);
         return get(user, id);
     }
 
@@ -149,6 +155,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         repo
             .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
             .commit(user, "updating service agreement metadata " + id);
+        cachedDataRepository.evictAfterDirectWrite(FOLDER + id);
     }
 
     @SneakyThrows
@@ -157,6 +164,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             .deleteData(FOLDER + id + ".meta")
             .deleteData(FOLDER + id + ".raw")
             .commit(user, "delete document: " + id);
+        cachedDataRepository.evictAfterDirectWrite(FOLDER + id);
     }
 
     private void addPermissionsForDepositor(CatalogueUser user, String id, MetadataInfo metadataInfo, ServiceAgreement serviceAgreement) {
