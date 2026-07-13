@@ -2,7 +2,9 @@ package uk.ac.ceh.gateway.catalogue.repository;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -68,6 +70,28 @@ public class CachedDataRepository {
     @Cacheable(value = HISTORICAL_CACHE, key = "#revision + ':' + #name")
     public byte[] readAtRevision(String revision, String name) throws IOException {
         return toBytes(repo.getData(revision, name));
+    }
+
+    /**
+     * Evict the cached blob content and HEAD revision id for a document after a write that commits
+     * <em>directly</em> to the datastore, bypassing {@link GitRepoWrapper} (the service-agreement
+     * write path does this). Mirrors the eviction {@link GitRepoWrapper#save} performs: both blob
+     * names for the document, plus the shared HEAD id — which every commit advances, so it must be
+     * cleared regardless of which document changed, or all "latest" reads resolve at a stale
+     * revision.
+     *
+     * <p>Callers must invoke this on the {@code CachedDataRepository} bean (not via a self-call from
+     * within their own bean) so the cache proxy actually applies the eviction.</p>
+     *
+     * @param documentId the file id including any folder prefix, e.g. {@code service-agreement/<id>}
+     */
+    @Caching(evict = {
+        @CacheEvict(value = LATEST_CACHE, key = "#documentId + '.meta'"),
+        @CacheEvict(value = LATEST_CACHE, key = "#documentId + '.raw'"),
+        @CacheEvict(value = REVISION_ID_CACHE, allEntries = true)
+    })
+    public void evictAfterDirectWrite(String documentId) {
+        log.debug("Evicting caches after direct datastore write to {}", documentId);
     }
 
     @SneakyThrows
