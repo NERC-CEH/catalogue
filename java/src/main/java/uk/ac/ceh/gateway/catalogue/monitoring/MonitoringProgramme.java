@@ -64,8 +64,8 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
         this.setRelChildProgramme(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme"));
         this.setRelParentProgramme(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme"));
 
-        var relationList = jenaService.relationships(uri, "http://purl.org/dc/terms/relation");
-        relationList.addAll(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/relation"));
+        var relationList = new ArrayList<>(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/relation"));
+        relationList.addAll(jenaService.relationships(uri, "http://purl.org/dc/terms/relation"));
         this.setRelRelated(relationList);
     }
 

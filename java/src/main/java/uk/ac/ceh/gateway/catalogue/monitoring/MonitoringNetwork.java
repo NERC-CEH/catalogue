@@ -15,6 +15,7 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -62,8 +63,8 @@ public class MonitoringNetwork extends AbstractMetadataDocument implements WellK
         this.setRelChildNetwork(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork"));
         this.setRelParentNetwork(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork"));
 
-        var relationList = jenaService.relationships(uri, "http://purl.org/dc/terms/relation");
-        relationList.addAll(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/relation"));
+        var relationList = new ArrayList<>(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/relation"));
+        relationList.addAll(jenaService.relationships(uri, "http://purl.org/dc/terms/relation"));
         this.setRelRelated(relationList);
     }
 
