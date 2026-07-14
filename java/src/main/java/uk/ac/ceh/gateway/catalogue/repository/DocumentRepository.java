@@ -42,6 +42,14 @@ public interface DocumentRepository {
     MetadataDocument save(
         CatalogueUser user,
         MetadataDocument document,
+        String id,
+        String message,
+        String expectedRevision
+    ) throws DocumentRepositoryException;
+
+    MetadataDocument save(
+        CatalogueUser user,
+        MetadataDocument document,
         String message
     ) throws DocumentRepositoryException;
 
