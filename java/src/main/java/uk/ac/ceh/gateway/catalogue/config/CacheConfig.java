@@ -61,6 +61,8 @@ public class CacheConfig implements CachingConfigurer {
         // never a correctness concern; kept modest as historical reads are off the hot render path.
         cacheManager.registerCustomCache(CachedDataRepository.HISTORICAL_CACHE,
             expireAfterWrite(1000, Duration.ofMinutes(30)).build());
+        cacheManager.registerCustomCache(CachedDataRepository.DOC_REVISION_CACHE,
+            expireAfterWrite(6000, Duration.ofHours(6)).build());
 
         return cacheManager;
     }

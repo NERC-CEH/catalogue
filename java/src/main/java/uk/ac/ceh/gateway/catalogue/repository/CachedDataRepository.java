@@ -8,10 +8,12 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * Read-through cache in front of the Git {@link DataRepository}.
@@ -36,6 +38,7 @@ public class CachedDataRepository {
     public static final String REVISION_ID_CACHE = "datastore-revision-id";
     public static final String LATEST_CACHE = "datastore-latest";
     public static final String HISTORICAL_CACHE = "datastore-historical";
+    public static final String DOC_REVISION_CACHE = "datastore-doc-revision";
 
     private final DataRepository<CatalogueUser> repo;
 
@@ -70,6 +73,18 @@ public class CachedDataRepository {
     @Cacheable(value = HISTORICAL_CACHE, key = "#revision + ':' + #name")
     public byte[] readAtRevision(String revision, String name) throws IOException {
         return toBytes(repo.getData(revision, name));
+    }
+
+    /**
+     * The per-document revision token used for optimistic locking: the id of the newest commit that
+     * touched this file. Unlike {@link #getLatestRevisionId()} (repo-wide HEAD), this only changes when
+     * this specific document changes, so an unrelated save does not trip a conflict. Cached by name and
+     * evicted on save/delete, mirroring {@link #readLatest}. Returns null if the file has no history.
+     */
+    @Cacheable(value = DOC_REVISION_CACHE, key = "#name")
+    public String getDocumentRevisionId(String name) throws IOException {
+        List<DataRevision<CatalogueUser>> revisions = repo.getRevisions(name);
+        return revisions.isEmpty() ? null : revisions.get(0).getRevisionID();
     }
 
     /**
