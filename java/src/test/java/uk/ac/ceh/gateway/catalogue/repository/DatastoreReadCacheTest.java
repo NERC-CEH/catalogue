@@ -45,7 +45,8 @@ public class DatastoreReadCacheTest {
             return new ConcurrentMapCacheManager(
                 CachedDataRepository.REVISION_ID_CACHE,
                 CachedDataRepository.LATEST_CACHE,
-                CachedDataRepository.HISTORICAL_CACHE);
+                CachedDataRepository.HISTORICAL_CACHE,
+                CachedDataRepository.DOC_REVISION_CACHE);
         }
 
         @Bean
