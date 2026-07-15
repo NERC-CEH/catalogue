@@ -80,4 +80,51 @@ describe('Test PermissionView', () => {
     // then
     expect(view.addAll).toHaveBeenCalled()
   })
+
+  describe('save error handling', () => {
+    function createView () {
+      const model = new Permission({ id: 1, doctype: 'documents' })
+      const view = new PermissionView({ model })
+      view.template = template
+      view.initialize()
+      view.delegateEvents()
+      return { model, view }
+    }
+
+    it('triggers a conflict-specific message and not the generic one on a 409 save error', () => {
+      // given
+      const { model, view } = createView()
+      spyOn(model, 'save').and.callFake((attrs, options) => {
+        options.error(model, { status: 409, statusText: 'Conflict' })
+      })
+      spyOn(model, 'trigger').and.callThrough()
+
+      // when
+      view.save()
+
+      // then
+      const saveErrorCalls = model.trigger.calls.allArgs().filter(args => args[0] === 'save:error')
+      expect(saveErrorCalls.length).toBe(1)
+      expect(saveErrorCalls[0][1]).toMatch(/changed by another user/)
+      expect(saveErrorCalls[0][1]).not.toMatch(/^Error saving permission:/)
+    })
+
+    it('still triggers the generic message on a non-409 save error', () => {
+      // given
+      const { model, view } = createView()
+      spyOn(model, 'save').and.callFake((attrs, options) => {
+        options.error(model, { status: 500, statusText: 'Server Error' })
+      })
+      spyOn(model, 'trigger').and.callThrough()
+
+      // when
+      view.save()
+
+      // then
+      const saveErrorCalls = model.trigger.calls.allArgs().filter(args => args[0] === 'save:error')
+      expect(saveErrorCalls.length).toBe(1)
+      expect(saveErrorCalls[0][1]).toBe('Error saving permission: 500 (Server Error)')
+      expect(saveErrorCalls[0][1]).not.toMatch(/changed by another user/)
+    })
+  })
 })

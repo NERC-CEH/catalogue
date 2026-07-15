@@ -46,6 +46,10 @@ export default Backbone.View.extend({
         this.model.trigger('save:success', 'Save successful')
       },
       error: (model, response) => {
+        if (response.status === 409) {
+          this.model.trigger('save:error', 'These permissions were changed by another user since you opened this page. Your changes were not saved - reload before trying again.')
+          return
+        }
         this.model.trigger('save:error', `Error saving permission: ${response.status} (${response.statusText})`)
       }
     }
