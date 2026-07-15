@@ -155,6 +155,18 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, ex.getMessage(), CONFLICT);
     }
 
+    @ExceptionHandler(MetadataConflictException.class)
+    public ResponseEntity<MetadataDocument> handleMetadataConflict(MetadataConflictException ex) {
+        // 409 with the submitted-but-unsaved document so the editor can preserve the user's edits.
+        log.warn("Metadata save conflict: {}", ex.getMessage());
+        return ResponseEntity.status(CONFLICT).body(ex.getSubmittedDocument());
+    }
+
+    @ExceptionHandler(MetadataPreconditionRequiredException.class)
+    public ResponseEntity<Object> handleMetadataPreconditionRequired(MetadataPreconditionRequiredException ex) {
+        return handleExceptionInternal(ex, ex.getMessage(), HttpStatus.PRECONDITION_REQUIRED);
+    }
+
     @ExceptionHandler(ExternalResourceFailureException.class)
     public ResponseEntity<Object> handleExternalResourceFailureException(ExternalResourceFailureException ex) {
         return handleExceptionInternal(ex, ex.getMessage(), HttpStatus.BAD_GATEWAY);
