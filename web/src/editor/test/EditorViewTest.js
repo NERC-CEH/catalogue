@@ -159,4 +159,22 @@ describe('EditorView', () => {
     view.model.trigger('sync')
     expect(view.$('#editorAjax').hasClass('visible')).toBe(false)
   })
+
+  it('shows a conflict banner and preserves edits on 409', () => {
+    const swalSpy = spyOn(Swal, 'fire')
+    view.model.set('title', 'my in-progress title')
+
+    // Simulate Backbone's error event for a 409 conflict
+    view.model.trigger('error', view.model, { status: 409, statusText: 'Conflict', responseJSON: {} })
+
+    expect(swalSpy).toHaveBeenCalled()
+    const args = swalSpy.calls.mostRecent().args[0]
+    expect(args.title.toLowerCase()).toContain('conflict')
+    // this must be the conflict-specific banner, not the generic error dialog
+    // (whose title also happens to contain "Conflict" via statusText)
+    expect(args.title).not.toContain('Server response')
+    expect(args.icon).toBe('warning')
+    // edits are still on the model
+    expect(view.model.get('title')).toBe('my in-progress title')
+  })
 })

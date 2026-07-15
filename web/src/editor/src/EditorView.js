@@ -27,6 +27,18 @@ export default Backbone.View.extend({
     this.listenTo(this.model, 'error', function (model, response) {
       that.$('#editorAjax').toggleClass('visible')
 
+      if (response && response.status === 409) {
+        Swal.fire({
+          title: 'Edit conflict',
+          html: '<p>This record was changed by another user since you opened it. ' +
+                'Your changes are shown below and have not been saved. ' +
+                'Reload the record to see the latest version, then re-apply your changes.</p>',
+          icon: 'warning',
+          confirmButtonText: 'Close'
+        })
+        return
+      }
+
       const message = response?.responseJSON?.message || response?.responseText || response?.statusText || 'There was a problem communicating with the server!'
 
       Swal.fire({
