@@ -1,16 +1,20 @@
 package uk.ac.ceh.gateway.catalogue.permission;
 
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
+import uk.ac.ceh.gateway.catalogue.controllers.IfMatchRevision;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
@@ -24,15 +28,19 @@ import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
 public class PermissionController {
     private final PermissionService permissionService;
     private final DocumentRepository documentRepository;
+    private final CachedDataRepository cachedDataRepository;
 
     public PermissionController(PermissionService permissionService,
-                                DocumentRepository documentRepository)
+                                DocumentRepository documentRepository,
+                                CachedDataRepository cachedDataRepository)
     {
         this.permissionService = permissionService;
         this.documentRepository = documentRepository;
+        this.cachedDataRepository = cachedDataRepository;
         log.info("Creating");
     }
 
+    @SneakyThrows
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @RequestMapping(method = RequestMethod.GET, value = "documents/{file}/permission")
     @ResponseBody
@@ -40,11 +48,13 @@ public class PermissionController {
             @ActiveUser CatalogueUser user,
             @PathVariable String file
     ) throws DocumentRepositoryException {
-        return ResponseEntity.ok(
-            new PermissionResource(
-                documentRepository.read(file)
-            )
-        );
+        PermissionResource resource = new PermissionResource(documentRepository.read(file));
+        String revision = cachedDataRepository.getDocumentRevisionId(file + ".meta");
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+        if (revision != null) {
+            builder.eTag(revision); // Spring quotes this into a strong ETag: "revision"
+        }
+        return builder.body(resource);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "permissions")
@@ -94,11 +104,13 @@ public class PermissionController {
     public HttpEntity<PermissionResource> updatePermission (
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
-            @RequestBody PermissionResource permissionResource)
+            @RequestBody PermissionResource permissionResource,
+            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch)
         throws DocumentRepositoryException {
+        String expectedRevision = IfMatchRevision.require(ifMatch);
         MetadataDocument document = documentRepository.read(file);
         document.setMetadata(removeAddedPublicGroupIfNotPublisher(document.getMetadata(), permissionResource));
-        documentRepository.save(user, document, file, String.format("Permissions of %s changed.", file));
+        documentRepository.save(user, document, file, String.format("Permissions of %s changed.", file), expectedRevision);
         return ResponseEntity.ok(new PermissionResource(document));
     }
 

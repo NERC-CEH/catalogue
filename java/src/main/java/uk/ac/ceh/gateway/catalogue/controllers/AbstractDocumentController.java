@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataPreconditionRequiredException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.net.URI;
@@ -38,22 +37,9 @@ public abstract class AbstractDocumentController {
                     MetadataDocument document,
                     String ifMatch
     ) {
-        if (ifMatch == null || ifMatch.isBlank()) {
-            throw new MetadataPreconditionRequiredException(
-                "An If-Match header carrying the record's current revision is required to update it.");
-        }
-        String expectedRevision = unquoteETag(ifMatch);
+        String expectedRevision = IfMatchRevision.require(ifMatch);
         document.setMetadata(documentRepository.read(file).getMetadata());
         return ResponseEntity.ok(
             documentRepository.save(user, document, file, String.format("Edited document: %s", file), expectedRevision));
-    }
-
-    // ETag values are quoted per HTTP (e.g. "abc123"); the stored git revision is unquoted.
-    private static String unquoteETag(String etag) {
-        String trimmed = etag.trim();
-        if (trimmed.startsWith("\"") && trimmed.endsWith("\"") && trimmed.length() >= 2) {
-            return trimmed.substring(1, trimmed.length() - 1);
-        }
-        return trimmed;
     }
 }

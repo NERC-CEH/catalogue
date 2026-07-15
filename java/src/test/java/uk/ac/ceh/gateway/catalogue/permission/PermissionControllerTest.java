@@ -12,6 +12,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -24,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
@@ -31,9 +33,12 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -55,6 +60,7 @@ class PermissionControllerTest extends AbstractMvcTest {
     @MockitoBean private ProfileService profileService;
 
     private PermissionController permissionController;
+    private CachedDataRepository cachedDataRepository;
     @Autowired private Configuration configuration;
 
     private final String file = "12345";
@@ -99,7 +105,8 @@ class PermissionControllerTest extends AbstractMvcTest {
 
     @BeforeEach
     void setup() {
-        permissionController = new PermissionController(permissionService, documentRepository);
+        cachedDataRepository = mock(CachedDataRepository.class);
+        permissionController = new PermissionController(permissionService, documentRepository, cachedDataRepository);
     }
 
     @Test
@@ -194,10 +201,10 @@ class PermissionControllerTest extends AbstractMvcTest {
         given(permissionService.userCanMakePublic("eidc")).willReturn(Boolean.FALSE);
 
         //When
-        permissionController.updatePermission(notPublisher, file, new PermissionResource(updated));
+        permissionController.updatePermission(notPublisher, file, new PermissionResource(updated), "\"rev1\"");
 
         //Then
-        verify(documentRepository).save(notPublisher, original, file, "Permissions of 1234-567-890 changed.");
+        verify(documentRepository).save(notPublisher, original, file, "Permissions of 1234-567-890 changed.", "rev1");
         verify(permissionService).userCanMakePublic("eidc");
     }
 
@@ -226,11 +233,92 @@ class PermissionControllerTest extends AbstractMvcTest {
         given(permissionService.userCanMakePublic("eidc")).willReturn(Boolean.TRUE);
 
         //When
-        permissionController.updatePermission(publisher, file, new PermissionResource(updated));
+        permissionController.updatePermission(publisher, file, new PermissionResource(updated), "\"rev1\"");
 
         //Then
-        verify(documentRepository).save(publisher, updated, file, "Permissions of 1234-567-890 changed.");
+        verify(documentRepository).save(publisher, updated, file, "Permissions of 1234-567-890 changed.", "rev1");
         verify(permissionService).userCanMakePublic("eidc");
+    }
+
+    @Test
+    public void getEmitsETagOfCurrentRevision() throws Exception {
+        //Given a readable document and a known per-document revision
+        CatalogueUser publisher = new CatalogueUser("publisher", "publisher@example.com");
+        String file = "1234-567-890";
+        MetadataInfo info = MetadataInfo.builder().build();
+        MetadataDocument document = new GeminiDocument().setMetadata(info);
+
+        given(documentRepository.read(file)).willReturn(document);
+        given(cachedDataRepository.getDocumentRevisionId(file + ".meta")).willReturn("rev1");
+
+        //When reading the current permission
+        ResponseEntity<PermissionResource> actual = (ResponseEntity<PermissionResource>) permissionController.currentPermission(publisher, file);
+
+        //Then the ETag carries the current revision (quoted per HTTP)
+        assertThat(actual.getHeaders().getETag(), is("\"rev1\""));
+    }
+
+    @Test
+    public void getOmitsETagWhenNoRevisionIsKnown() throws Exception {
+        //Given a readable document with no known revision (e.g. a brand-new document)
+        CatalogueUser publisher = new CatalogueUser("publisher", "publisher@example.com");
+        String file = "1234-567-890";
+        MetadataInfo info = MetadataInfo.builder().build();
+        MetadataDocument document = new GeminiDocument().setMetadata(info);
+
+        given(documentRepository.read(file)).willReturn(document);
+        given(cachedDataRepository.getDocumentRevisionId(file + ".meta")).willReturn(null);
+
+        //When reading the current permission
+        ResponseEntity<PermissionResource> actual = (ResponseEntity<PermissionResource>) permissionController.currentPermission(publisher, file);
+
+        //Then no ETag header is set
+        assertThat(actual.getHeaders().getETag(), equalTo(null));
+    }
+
+    @Test
+    public void putWithoutIfMatchIsRejectedAsPreconditionRequired() {
+        //Given a permission update with no If-Match header
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
+        MetadataDocument document = new GeminiDocument().setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        PermissionResource resource = new PermissionResource(document);
+
+        //When/Then updating without the precondition header is refused
+        assertThrows(MetadataPreconditionRequiredException.class, () ->
+            permissionController.updatePermission(user, file, resource, null));
+    }
+
+    @Test
+    public void putWithIfMatchSavesWithThatRevision() throws Exception {
+        //Given a matching read and a stubbed save
+        CatalogueUser publisher = new CatalogueUser("publisher", "publisher@example.com");
+        MetadataInfo info = MetadataInfo.builder().catalogue("eidc").state("published").build();
+        MetadataDocument document = new GeminiDocument().setMetadata(info);
+        given(documentRepository.read(file)).willReturn(document);
+        given(permissionService.userCanMakePublic("eidc")).willReturn(Boolean.TRUE);
+
+        //When updating with an If-Match
+        permissionController.updatePermission(publisher, file, new PermissionResource(document), "\"rev1\"");
+
+        //Then the (unquoted) revision is passed to the repository
+        verify(documentRepository).save(eq(publisher), eq(document), eq(file), any(), eq("rev1"));
+    }
+
+    @Test
+    @SneakyThrows
+    public void putPropagatesConflictExceptionFromRepository() {
+        //Given a stale revision that the repository rejects as a conflict
+        CatalogueUser publisher = new CatalogueUser("publisher", "publisher@example.com");
+        MetadataInfo info = MetadataInfo.builder().catalogue("eidc").state("published").build();
+        MetadataDocument document = new GeminiDocument().setMetadata(info);
+        given(documentRepository.read(file)).willReturn(document);
+        given(permissionService.userCanMakePublic("eidc")).willReturn(Boolean.TRUE);
+        given(documentRepository.save(eq(publisher), eq(document), eq(file), any(), eq("stale-rev")))
+            .willThrow(new MetadataConflictException("stale", document));
+
+        //When/Then the conflict propagates to the caller (central handler maps it to 409)
+        assertThrows(MetadataConflictException.class, () ->
+            permissionController.updatePermission(publisher, file, new PermissionResource(document), "\"stale-rev\""));
     }
 
 }
