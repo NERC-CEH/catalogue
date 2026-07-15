@@ -47,6 +47,7 @@ import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.quality.MultiDocumentTypeMetadataQualityService;
 import uk.ac.ceh.gateway.catalogue.quality.Results;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementService;
@@ -68,6 +69,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -114,6 +116,7 @@ class DocumentControllerTest extends AbstractMvcTest {
     private DownloadOrderDetailsService downloadOrderDetailsService;
     @Autowired private Configuration configuration;
 
+    private CachedDataRepository cachedDataRepository;
     private DocumentController controller;
     private final String linkedDocumentId = "0a6c7c4c-0515-40a8-b84e-7ffe622b2579";
     private final String id = "fe26bd48-0f81-4a37-8a28-58427b7e20bd";
@@ -124,7 +127,8 @@ class DocumentControllerTest extends AbstractMvcTest {
 
     @BeforeEach
     void setup() {
-        controller = new DocumentController(metricsService, metricsExcludedUsers, documentRepository, jenaService);
+        cachedDataRepository = mock(CachedDataRepository.class);
+        controller = new DocumentController(metricsService, metricsExcludedUsers, documentRepository, jenaService, cachedDataRepository);
         DownloadUrlProperties downloadUrlProperties = mock(DownloadUrlProperties.class);
         when(downloadUrlProperties.getRegexOrder()).thenReturn("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*");
         when(downloadUrlProperties.getRegexPackage()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/.*");
@@ -481,7 +485,8 @@ class DocumentControllerTest extends AbstractMvcTest {
         given(documentRepository.read("test")).willReturn(linkDocument);
 
         //when
-        MetadataDocument actual = controller.readMetadata(CatalogueUser.PUBLIC_USER, "test", request);
+        ResponseEntity<MetadataDocument> response = controller.readMetadata(CatalogueUser.PUBLIC_USER, "test", request);
+        MetadataDocument actual = response.getBody();
 
         //then
         assertThat(
@@ -674,5 +679,22 @@ class DocumentControllerTest extends AbstractMvcTest {
 
         //Then the (unquoted) revision is passed to the repository
         verify(documentRepository).save(eq(user), eq(doc), eq("doc1"), any(), eq("rev1"));
+    }
+
+    @Test
+    public void getEmitsETagOfCurrentRevision() throws Exception {
+        //Given a readable document and a known per-document revision
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
+        GeminiDocument doc = new GeminiDocument();
+        doc.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(documentRepository.read("doc1")).willReturn(doc);
+        given(cachedDataRepository.getDocumentRevisionId("doc1.meta")).willReturn("rev1");
+
+        //When reading the document
+        ResponseEntity<MetadataDocument> response = controller.readMetadata(user, "doc1", request);
+
+        //Then the ETag carries the current revision (quoted per HTTP)
+        assertThat(response.getHeaders().getETag(), is("\"rev1\""));
     }
 }

@@ -27,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
@@ -51,17 +52,20 @@ public class DocumentController extends AbstractDocumentController {
     private final MetricsService metricsService;
     private final List<String> metricsExcludedUsers;
     private final JenaLookupService jenaService;
+    private final CachedDataRepository cachedDataRepository;
 
     public DocumentController(
         @Nullable MetricsService metricsService,
         @Value("#{'${metrics.users.excluded}'.split(',')}") List<String> metricExcludedUsers,
         DocumentRepository documentRepository,
-        JenaLookupService jenaService
+        JenaLookupService jenaService,
+        CachedDataRepository cachedDataRepository
     ) {
         super(documentRepository);
         this.metricsService = metricsService;
         this.metricsExcludedUsers = metricExcludedUsers;
         this.jenaService = jenaService;
+        this.cachedDataRepository = cachedDataRepository;
         log.info("Creating");
     }
 
@@ -423,7 +427,7 @@ public class DocumentController extends AbstractDocumentController {
     @SneakyThrows
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @GetMapping("documents/{file}")
-    public MetadataDocument readMetadata(
+    public ResponseEntity<MetadataDocument> readMetadata(
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
             HttpServletRequest request
@@ -432,7 +436,13 @@ public class DocumentController extends AbstractDocumentController {
         if(metricsService != null && !metricsExcludedUsers.contains(user.getUsername()) && !document.getState().equals(GitRepoServiceAgreementService.DRAFT)) {
             metricsService.recordView(file, request.getRemoteAddr());
         }
-        return postProcessLinkDocument(addJenaRelationships(document));
+        MetadataDocument body = postProcessLinkDocument(addJenaRelationships(document));
+        String revision = cachedDataRepository.getDocumentRevisionId(file + ".meta");
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+        if (revision != null) {
+            builder.eTag(revision); // Spring quotes this into a strong ETag: "revision"
+        }
+        return builder.body(body);
     }
 
     @CrossOrigin
