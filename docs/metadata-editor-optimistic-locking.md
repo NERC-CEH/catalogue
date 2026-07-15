@@ -174,3 +174,17 @@ purposes and should not be conflated.
   real-repo test proving the token changes when, and only when, the
   specific document changes; service-level conflict tests; controller
   conflict-path tests.
+
+## Rollout checklist (mandatory 428)
+
+Because a PUT without `If-Match` is now rejected with `428 Precondition
+Required`, any non-editor caller of the metadata PUT endpoints must be
+updated to send `If-Match` first:
+
+- [ ] Identify non-browser callers of `PUT documents/{file}` (scripts,
+      harvesters, API integrations) — search access logs / integration code.
+- [ ] Update each to `GET` the record, read the `ETag`, and send it as
+      `If-Match` on `PUT`.
+- [ ] Announce the behaviour change to API consumers before deploy.
+- [ ] Confirm the browser editor path works end to end in staging (save,
+      concurrent-save conflict, reload-and-retry).
