@@ -67,13 +67,13 @@ class UkemsDocumentControllerTest {
         String message = "Edited document: test";
 
         given(documentRepository.read(fileId)).willReturn(new UkemsDocument().setMetadata(MetadataInfo.builder().build()));
-        given(documentRepository.save(user, document, fileId, message)).willReturn(document);
+        given(documentRepository.save(user, document, fileId, message, "rev1")).willReturn(document);
 
         //When
-        ResponseEntity<MetadataDocument> actual = controller.saveUkemsDocument(user, fileId, document);
+        ResponseEntity<MetadataDocument> actual = controller.saveUkemsDocument(user, fileId, document, "rev1");
 
         //Then
-        verify(documentRepository).save(user, document, fileId, "Edited document: test");
+        verify(documentRepository).save(user, document, fileId, "Edited document: test", "rev1");
         verify(documentRepository).read(fileId);
         assertThat("Should have 200 OK status", actual.getStatusCode(), equalTo(HttpStatus.OK));
     }

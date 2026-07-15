@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -37,8 +38,9 @@ public class CodeDocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> saveCodeDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
-            @RequestBody CodeDocument document
+            @RequestBody CodeDocument document,
+            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
     ) {
-        return saveMetadataDocument(user, file, document);
+        return saveMetadataDocument(user, file, document, ifMatch);
     }
 }

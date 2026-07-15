@@ -6,6 +6,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -119,12 +120,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateGeminiDocument(
         @ActiveUser CatalogueUser user,
         @PathVariable String file,
-        @RequestBody GeminiDocument document
+        @RequestBody GeminiDocument document,
+        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
     ) {
         return saveMetadataDocument(
                 user,
                 file,
-                document
+                document,
+                ifMatch
                 );
             }
 
@@ -153,12 +156,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateMonitoringActivity(
         @ActiveUser CatalogueUser user,
         @PathVariable String file,
-        @RequestBody MonitoringActivity document
+        @RequestBody MonitoringActivity document,
+        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
     ) {
         return saveMetadataDocument(
             user,
             file,
-            document
+            document,
+            ifMatch
         );
     }
 
@@ -186,12 +191,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateMonitoringFacility(
         @ActiveUser CatalogueUser user,
         @PathVariable String file,
-        @RequestBody MonitoringFacility document
+        @RequestBody MonitoringFacility document,
+        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
     ) {
         return saveMetadataDocument(
             user,
             file,
-            document
+            document,
+            ifMatch
         );
     }
 
@@ -219,12 +226,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateMonitoringNetwork(
         @ActiveUser CatalogueUser user,
         @PathVariable String file,
-        @RequestBody MonitoringNetwork document
+        @RequestBody MonitoringNetwork document,
+        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
     ) {
         return saveMetadataDocument(
             user,
             file,
-            document
+            document,
+            ifMatch
         );
     }
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
@@ -251,12 +260,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateMonitoringProgramme(
         @ActiveUser CatalogueUser user,
         @PathVariable String file,
-        @RequestBody MonitoringProgramme document
+        @RequestBody MonitoringProgramme document,
+        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
     ) {
         return saveMetadataDocument(
             user,
             file,
-            document
+            document,
+            ifMatch
         );
     }
 
@@ -284,12 +295,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateCehModelDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
-            @RequestBody CehModel document
+            @RequestBody CehModel document,
+            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
             ) {
         return saveMetadataDocument(
                 user,
                 file,
-                document
+                document,
+                ifMatch
                 );
             }
 
@@ -317,12 +330,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateDataType(
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
-            @RequestBody DataType document
+            @RequestBody DataType document,
+            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
             ) {
         return saveMetadataDocument(
                 user,
                 file,
-                document
+                document,
+                ifMatch
                 );
             }
 
@@ -350,12 +365,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateCehModelApplicationDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
-            @RequestBody CehModelApplication document
+            @RequestBody CehModelApplication document,
+            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
             ) {
         return saveMetadataDocument(
                 user,
                 file,
-                document
+                document,
+                ifMatch
                 );
             }
 
@@ -383,12 +400,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateLinkDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
-            @RequestBody LinkDocument document
+            @RequestBody LinkDocument document,
+            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
             ) {
         return saveMetadataDocument(
                 user,
                 file,
-                document
+                document,
+                ifMatch
                 );
             }
 

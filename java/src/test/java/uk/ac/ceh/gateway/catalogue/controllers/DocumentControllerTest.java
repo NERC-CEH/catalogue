@@ -68,6 +68,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -645,5 +646,33 @@ class DocumentControllerTest extends AbstractMvcTest {
         assertThat("Resource identifiers should be cleared", cloned.getResourceIdentifiers(), equalTo(java.util.Collections.emptyList()));
         assertThat("Incoming citations should be cleared", cloned.getIncomingCitations(), equalTo(java.util.Collections.emptyList()));
         assertThat("Dataset reference date should be cleared", cloned.getDatasetReferenceDate(), equalTo(null));
+    }
+
+    @Test
+    public void putWithoutIfMatchIsRejectedAsPreconditionRequired() {
+        //Given an editor update with no If-Match header
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
+        GeminiDocument doc = new GeminiDocument();
+
+        //When/Then updating without the precondition header is refused
+        assertThrows(MetadataPreconditionRequiredException.class, () ->
+            controller.updateGeminiDocument(user, "doc1", doc, null));
+    }
+
+    @Test
+    public void putWithIfMatchSavesWithThatRevision() throws Exception {
+        //Given a matching read for the metadata graft and a stubbed save
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
+        GeminiDocument doc = new GeminiDocument();
+        GeminiDocument existing = new GeminiDocument();
+        existing.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(documentRepository.read("doc1")).willReturn(existing);
+        given(documentRepository.save(eq(user), eq(doc), eq("doc1"), any(), eq("rev1"))).willReturn(doc);
+
+        //When updating with an If-Match
+        controller.updateGeminiDocument(user, "doc1", doc, "\"rev1\"");
+
+        //Then the (unquoted) revision is passed to the repository
+        verify(documentRepository).save(eq(user), eq(doc), eq("doc1"), any(), eq("rev1"));
     }
 }

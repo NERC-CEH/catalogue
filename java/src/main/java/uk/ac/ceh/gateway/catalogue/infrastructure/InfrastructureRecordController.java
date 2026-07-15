@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.infrastructure;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -38,8 +39,9 @@ public class InfrastructureRecordController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateInfrastructureRecord(
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
-            @RequestBody InfrastructureRecord document
+            @RequestBody InfrastructureRecord document,
+            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
     ) {
-        return saveMetadataDocument(user, file, document);
+        return saveMetadataDocument(user, file, document, ifMatch);
     }
 }

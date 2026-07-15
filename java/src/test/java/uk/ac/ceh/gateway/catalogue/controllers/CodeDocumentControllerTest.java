@@ -130,11 +130,13 @@ class CodeDocumentControllerTest extends AbstractMvcTest {
             any(CatalogueUser.class),
             any(CodeDocument.class),
             eq(id),
-            eq(message)
+            eq(message),
+            eq("rev1")
         )).willReturn(document);
 
         //When
         mvc.perform(put("/documents/{id}", id)
+            .header("If-Match", "\"rev1\"")
             .content(requestBody)
             .contentType(CODE_JSON_VALUE)
         ).andExpect(status().isOk());

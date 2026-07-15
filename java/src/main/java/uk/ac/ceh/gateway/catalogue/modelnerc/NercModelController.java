@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.modelnerc;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -40,9 +41,10 @@ public class NercModelController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateNercModel(
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
-            @RequestBody NercModel document
+            @RequestBody NercModel document,
+            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
     ) {
-        return saveMetadataDocument(user, file, document);
+        return saveMetadataDocument(user, file, document, ifMatch);
     }
 
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
@@ -60,9 +62,10 @@ public class NercModelController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateNercModelUse(
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
-            @RequestBody NercModelUse document
+            @RequestBody NercModelUse document,
+            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
     ) {
-        return saveMetadataDocument(user, file, document);
+        return saveMetadataDocument(user, file, document, ifMatch);
     }
 
 

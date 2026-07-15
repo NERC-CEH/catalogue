@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.ukems;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -31,7 +32,8 @@ public class UkemsDocumentController extends AbstractDocumentController {
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = UKEMS_DOCUMENT_JSON_VALUE)
     public ResponseEntity<MetadataDocument> saveUkemsDocument(@ActiveUser CatalogueUser user, @PathVariable String file,
-            @RequestBody UkemsDocument document) {
-        return saveMetadataDocument(user, file, document);
+            @RequestBody UkemsDocument document,
+            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch) {
+        return saveMetadataDocument(user, file, document, ifMatch);
     }
 }
