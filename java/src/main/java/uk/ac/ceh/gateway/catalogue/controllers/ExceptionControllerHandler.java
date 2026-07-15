@@ -56,6 +56,8 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
             logger.warn("Permission denied: " + ex.getMessage());
         } else if (NOT_FOUND.equals(statusCode)) {
             logger.warn(message);
+        } else if (PRECONDITION_REQUIRED.equals(statusCode)) {
+            logger.warn(message);
         } else {
             if (showStackTrace) {
                 logger.error(message, ex);

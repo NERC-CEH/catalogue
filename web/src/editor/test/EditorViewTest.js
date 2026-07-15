@@ -169,7 +169,7 @@ describe('EditorView', () => {
 
     expect(swalSpy).toHaveBeenCalled()
     const args = swalSpy.calls.mostRecent().args[0]
-    expect(args.title.toLowerCase()).toContain('conflict')
+    expect(args.title).toBe('Edit conflict')
     // this must be the conflict-specific banner, not the generic error dialog
     // (whose title also happens to contain "Conflict" via statusText)
     expect(args.title).not.toContain('Server response')

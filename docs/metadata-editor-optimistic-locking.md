@@ -188,3 +188,18 @@ updated to send `If-Match` first:
 - [ ] Announce the behaviour change to API consumers before deploy.
 - [ ] Confirm the browser editor path works end to end in staging (save,
       concurrent-save conflict, reload-and-retry).
+
+### Known gap: other write paths are not yet protected
+
+This work only guards the main editor save path — the PUT handled by
+`AbstractDocumentController.saveMetadataDocument`. Several other server-side
+write paths mutate the same document model via the unchecked
+`DocumentRepository.save` overload (no expected-revision check) and can
+therefore still lose an update if they race with a concurrent editor save or
+with each other. This is a known follow-up, not addressed here:
+
+- `CatalogueDocumentController` PUT `/{file}/catalogue` and
+  `/{file}/catalogue-view`
+- `PermissionController.updatePermission`
+- `DocumentPublicationService.transition` (publish/withdraw)
+- `GitRepoServiceAgreementService.publishServiceAgreement`
