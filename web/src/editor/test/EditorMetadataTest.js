@@ -1,4 +1,5 @@
 import { EditorMetadata } from '../src'
+import Backbone from 'backbone'
 
 describe('EditorMetadata', () => {
   describe('validation', () => {
@@ -14,6 +15,33 @@ describe('EditorMetadata', () => {
       const editor = new EditorMetadata()
       const errors = editor.validate(editor.attributes)
       expect(errors).toHaveSize(1)
+    })
+  })
+
+  describe('optimistic locking', () => {
+    let syncArgs
+
+    beforeEach(() => {
+      spyOn(Backbone, 'sync').and.callFake((method, model, options) => {
+        syncArgs = { method, options }
+        return { done: () => {} }
+      })
+    })
+
+    it('sends If-Match header on update when a revision is set', () => {
+      const model = new EditorMetadata({ id: 'doc1', title: 'this is a title' })
+      model.setRevision('rev1')
+      model.set('id', 'doc1')
+      model.save()
+      expect(syncArgs.method).toBe('update')
+      expect(syncArgs.options.headers['If-Match']).toBe('rev1')
+    })
+
+    it('does not send If-Match when no revision is set (create)', () => {
+      const model = new EditorMetadata({ title: 'this is a title' })
+      model.save()
+      const headers = syncArgs.options.headers || {}
+      expect(headers['If-Match']).toBeUndefined()
     })
   })
 })

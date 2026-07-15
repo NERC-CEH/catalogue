@@ -17,14 +17,38 @@ export default Backbone.Model.extend({
   initialize (data, { mediaType = 'application/json' } = {}, title) {
     this.mediaType = mediaType
     this.title = title
+    this._revision = null
+  },
+
+  setRevision (revision) {
+    this._revision = revision
+  },
+
+  getRevision () {
+    return this._revision
   },
 
   sync (method, model, options) {
-    return Backbone.sync.call(this, method, model, {
+    const headers = { ...(options.headers || {}) }
+    if (method === 'update' && this._revision) {
+      headers['If-Match'] = this._revision
+    }
+    const xhr = Backbone.sync.call(this, method, model, {
       ...options,
+      headers,
       accepts: { json: this.mediaType },
       contentType: this.mediaType
     })
+    // Refresh the stored revision from the response ETag so a multi-save session never self-conflicts.
+    if (xhr && xhr.done) {
+      xhr.done((data, status, jqXHR) => {
+        const etag = jqXHR && jqXHR.getResponseHeader && jqXHR.getResponseHeader('ETag')
+        if (etag) {
+          this._revision = etag.replace(/^"|"$/g, '')
+        }
+      })
+    }
+    return xhr
   },
 
   validate (attrs) {
