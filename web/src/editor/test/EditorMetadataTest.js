@@ -44,4 +44,29 @@ describe('EditorMetadata', () => {
       expect(headers['If-Match']).toBeUndefined()
     })
   })
+
+  describe('revision refresh from ETag', () => {
+    let doneCallback
+
+    beforeEach(() => {
+      spyOn(Backbone, 'sync').and.callFake(() => {
+        return {
+          done: (cb) => { doneCallback = cb }
+        }
+      })
+    })
+
+    it('stores the de-quoted response ETag as the new revision after save', () => {
+      const model = new EditorMetadata({ id: 'doc1', title: 'this is a title' })
+      model.setRevision('rev1')
+      model.save()
+
+      const jqXHR = {
+        getResponseHeader: (name) => (name === 'ETag' ? '"rev2"' : null)
+      }
+      doneCallback({}, 'success', jqXHR)
+
+      expect(model.getRevision()).toBe('rev2')
+    })
+  })
 })
