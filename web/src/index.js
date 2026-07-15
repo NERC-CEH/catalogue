@@ -249,10 +249,15 @@ function initEditor () {
         accepts: {
           json: documentType.mediaType
         },
-        success (data) {
+        success (data, textStatus, jqXHR) {
           $('#metadata').removeClass('alert alert-danger missingResourceType')
+          const model = new documentType.Model(data, documentType, title)
+          const etag = jqXHR.getResponseHeader('ETag')
+          if (etag) {
+            model.setRevision(etag.replace(/^"|"$/g, ''))
+          }
           new documentType.View({
-            model: new documentType.Model(data, documentType, title),
+            model,
             el: '#metadata'
           })
         }
