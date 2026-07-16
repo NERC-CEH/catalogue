@@ -52,9 +52,10 @@ public class CatalogueDocumentController {
         return builder.body(resource);
     }
 
+    @SneakyThrows
     @PreAuthorize("@permission.userCanEdit(#file)")
     @PutMapping("{file}/catalogue")
-    public CatalogueResource updateCatalogue (
+    public ResponseEntity<CatalogueResource> updateCatalogue (
         @ActiveUser CatalogueUser user,
         @PathVariable String file,
         @RequestBody CatalogueResource catalogueResource,
@@ -75,7 +76,12 @@ public class CatalogueDocumentController {
             expectedRevision
         );
         log.debug(newDocument.toString());
-        return new CatalogueResource(newDocument);
+        String newRevision = cachedDataRepository.getDocumentRevisionId(file + ".meta");
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+        if (newRevision != null) {
+            builder.eTag(newRevision); // Spring quotes this into a strong ETag: "revision"
+        }
+        return builder.body(new CatalogueResource(newDocument));
     }
 
     @SneakyThrows
@@ -93,9 +99,10 @@ public class CatalogueDocumentController {
         return builder.body(resource);
     }
 
+    @SneakyThrows
     @PreAuthorize("@permission.userCanEdit(#file)")
     @PutMapping("{file}/catalogue-view")
-    public CatalogueViewResource updateCatalogueView(
+    public ResponseEntity<CatalogueViewResource> updateCatalogueView(
         @ActiveUser CatalogueUser user,
         @PathVariable String file,
         @RequestBody CatalogueViewResource resource,
@@ -120,6 +127,11 @@ public class CatalogueDocumentController {
             String.format("Secondary catalogues of %s changed.", file),
             expectedRevision
         );
-        return new CatalogueViewResource(newDocument);
+        String newRevision = cachedDataRepository.getDocumentRevisionId(file + ".meta");
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+        if (newRevision != null) {
+            builder.eTag(newRevision); // Spring quotes this into a strong ETag: "revision"
+        }
+        return builder.body(new CatalogueViewResource(newDocument));
     }
 }

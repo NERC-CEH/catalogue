@@ -306,6 +306,25 @@ class PermissionControllerTest extends AbstractMvcTest {
 
     @Test
     @SneakyThrows
+    public void putEmitsETagOfNewRevisionAfterSave() throws Exception {
+        //Given a matching read, a stubbed save, and the post-save revision
+        CatalogueUser publisher = new CatalogueUser("publisher", "publisher@example.com");
+        MetadataInfo info = MetadataInfo.builder().catalogue("eidc").state("published").build();
+        MetadataDocument document = new GeminiDocument().setMetadata(info);
+        given(documentRepository.read(file)).willReturn(document);
+        given(permissionService.userCanMakePublic("eidc")).willReturn(Boolean.TRUE);
+        given(cachedDataRepository.getDocumentRevisionId(file + ".meta")).willReturn("rev2");
+
+        //When updating with an If-Match
+        HttpEntity<PermissionResource> actual =
+            permissionController.updatePermission(publisher, file, new PermissionResource(document), "\"rev1\"");
+
+        //Then the response carries the NEW per-document revision as its ETag (quoted per HTTP)
+        assertThat(((ResponseEntity<PermissionResource>) actual).getHeaders().getETag(), is("\"rev2\""));
+    }
+
+    @Test
+    @SneakyThrows
     public void putPropagatesConflictExceptionFromRepository() {
         //Given a stale revision that the repository rejects as a conflict
         CatalogueUser publisher = new CatalogueUser("publisher", "publisher@example.com");

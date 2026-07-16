@@ -98,6 +98,7 @@ public class PermissionController {
         return ResponseEntity.ok(builder.build());
     }
 
+    @SneakyThrows
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(method =  RequestMethod.PUT, value = "documents/{file}/permission")
     @ResponseBody
@@ -111,7 +112,12 @@ public class PermissionController {
         MetadataDocument document = documentRepository.read(file);
         document.setMetadata(removeAddedPublicGroupIfNotPublisher(document.getMetadata(), permissionResource));
         documentRepository.save(user, document, file, String.format("Permissions of %s changed.", file), expectedRevision);
-        return ResponseEntity.ok(new PermissionResource(document));
+        String newRevision = cachedDataRepository.getDocumentRevisionId(file + ".meta");
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+        if (newRevision != null) {
+            builder.eTag(newRevision); // Spring quotes this into a strong ETag: "revision"
+        }
+        return builder.body(new PermissionResource(document));
     }
 
 

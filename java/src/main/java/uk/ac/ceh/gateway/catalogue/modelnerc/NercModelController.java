@@ -11,6 +11,7 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.controllers.AbstractDocumentController;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
@@ -21,8 +22,8 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
 @RequestMapping("documents")
 public class NercModelController extends AbstractDocumentController {
 
-    public NercModelController(DocumentRepository documentRepository) {
-        super(documentRepository);
+    public NercModelController(DocumentRepository documentRepository, CachedDataRepository cachedDataRepository) {
+        super(documentRepository, cachedDataRepository);
         log.info("Creating");
     }
 

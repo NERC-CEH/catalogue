@@ -11,6 +11,7 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.controllers.AbstractDocumentController;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.SAMPLE_ARCHIVE_JSON_VALUE;
@@ -20,8 +21,8 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.SAMPLE_ARCHIVE_JSO
 @Controller
 public class SampleArchiveController extends AbstractDocumentController {
 
-    public SampleArchiveController(DocumentRepository documentRepository) {
-        super(documentRepository);
+    public SampleArchiveController(DocumentRepository documentRepository, CachedDataRepository cachedDataRepository) {
+        super(documentRepository, cachedDataRepository);
         log.info("Creating");
     }
 

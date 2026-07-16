@@ -52,7 +52,6 @@ public class DocumentController extends AbstractDocumentController {
     private final MetricsService metricsService;
     private final List<String> metricsExcludedUsers;
     private final JenaLookupService jenaService;
-    private final CachedDataRepository cachedDataRepository;
 
     public DocumentController(
         @Nullable MetricsService metricsService,
@@ -61,11 +60,10 @@ public class DocumentController extends AbstractDocumentController {
         JenaLookupService jenaService,
         CachedDataRepository cachedDataRepository
     ) {
-        super(documentRepository);
+        super(documentRepository, cachedDataRepository);
         this.metricsService = metricsService;
         this.metricsExcludedUsers = metricExcludedUsers;
         this.jenaService = jenaService;
-        this.cachedDataRepository = cachedDataRepository;
         log.info("Creating");
     }
 

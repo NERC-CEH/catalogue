@@ -682,6 +682,69 @@ class DocumentControllerTest extends AbstractMvcTest {
     }
 
     @Test
+    public void putEmitsETagOfNewRevisionAfterSave() throws Exception {
+        //Given a matching read for the metadata graft, a stubbed save, and the post-save revision
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
+        GeminiDocument doc = new GeminiDocument();
+        GeminiDocument existing = new GeminiDocument();
+        existing.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        GeminiDocument saved = new GeminiDocument();
+        given(documentRepository.read("doc1")).willReturn(existing);
+        given(documentRepository.save(eq(user), eq(doc), eq("doc1"), any(), eq("rev1"))).willReturn(saved);
+        given(cachedDataRepository.getDocumentRevisionId("doc1.meta")).willReturn("rev2");
+
+        //When updating with an If-Match
+        ResponseEntity<MetadataDocument> response = controller.updateGeminiDocument(user, "doc1", doc, "\"rev1\"");
+
+        //Then the response carries the NEW per-document revision as its ETag (quoted per HTTP)
+        assertThat(response.getHeaders().getETag(), is("\"rev2\""));
+    }
+
+    @Test
+    @SneakyThrows
+    public void roundTripGetThenTwoConsecutivePutsSucceedsWithoutSpuriousConflict() {
+        //Given a document readable at revision "rev1"
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
+        GeminiDocument existing = new GeminiDocument();
+        existing.setMetadata(MetadataInfo.builder().catalogue("eidc").state("public").build());
+        given(documentRepository.read("doc1")).willReturn(existing);
+        given(cachedDataRepository.getDocumentRevisionId("doc1.meta")).willReturn("rev1", "rev2", "rev3");
+
+        //When: a GET reads the document and its current ETag
+        ResponseEntity<MetadataDocument> getResponse = controller.readMetadata(user, "doc1", request);
+        String etagFromGet = getResponse.getHeaders().getETag();
+        assertThat(etagFromGet, is("\"rev1\""));
+
+        //And: a first PUT is made using that ETag as If-Match, saving successfully at "rev1"
+        GeminiDocument firstEdit = new GeminiDocument();
+        GeminiDocument savedAfterFirstPut = new GeminiDocument();
+        given(documentRepository.save(eq(user), eq(firstEdit), eq("doc1"), any(), eq("rev1")))
+            .willReturn(savedAfterFirstPut);
+
+        ResponseEntity<MetadataDocument> firstPutResponse =
+            controller.updateGeminiDocument(user, "doc1", firstEdit, etagFromGet);
+        String etagFromFirstPut = firstPutResponse.getHeaders().getETag();
+
+        //Then: the first PUT's response carries the NEW revision as its ETag
+        assertThat("the PUT response must carry the new ETag for the next save to reuse",
+            etagFromFirstPut, is("\"rev2\""));
+
+        //And: a second, consecutive PUT reusing that ETag as If-Match succeeds (does NOT conflict)
+        GeminiDocument secondEdit = new GeminiDocument();
+        GeminiDocument savedAfterSecondPut = new GeminiDocument();
+        given(documentRepository.save(eq(user), eq(secondEdit), eq("doc1"), any(), eq("rev2")))
+            .willReturn(savedAfterSecondPut);
+
+        ResponseEntity<MetadataDocument> secondPutResponse =
+            controller.updateGeminiDocument(user, "doc1", secondEdit, etagFromFirstPut);
+
+        //Then the second PUT succeeds, having sent the revision the first PUT actually returned
+        assertThat(secondPutResponse.getStatusCode(), equalTo(HttpStatus.OK));
+        verify(documentRepository).save(eq(user), eq(secondEdit), eq("doc1"), any(), eq("rev2"));
+    }
+
+    @Test
     public void getEmitsETagOfCurrentRevision() throws Exception {
         //Given a readable document and a known per-document revision
         HttpServletRequest request = mock(HttpServletRequest.class);

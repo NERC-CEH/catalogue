@@ -10,6 +10,7 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.CODE_JSON_VALUE;
@@ -19,8 +20,8 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.CODE_JSON_VALUE;
 public class CodeDocumentController extends AbstractDocumentController {
 
     @Autowired
-    public CodeDocumentController(DocumentRepository documentRepository) {
-        super(documentRepository);
+    public CodeDocumentController(DocumentRepository documentRepository, CachedDataRepository cachedDataRepository) {
+        super(documentRepository, cachedDataRepository);
     }
 
     @PreAuthorize("@permission.userCanCreate(#catalogue)")

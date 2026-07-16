@@ -249,6 +249,25 @@ class CatalogueDocumentControllerTest extends AbstractMvcTest {
         verify(documentRepository).save(eq(user), eq(document), eq(file), any(), eq("rev1"));
     }
 
+    @Test
+    public void updateCatalogueEmitsETagOfNewRevisionAfterSave() throws Exception {
+        //Given a matching read, a stubbed save, and the post-save revision
+        val user = new CatalogueUser("test", "test@example.com");
+        val document = new GeminiDocument()
+            .setId(file)
+            .setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(documentRepository.read(file)).willReturn(document);
+        given(documentRepository.save(eq(user), eq(document), eq(file), any(), eq("rev1"))).willReturn(document);
+        given(cachedDataRepository.getDocumentRevisionId(file + ".meta")).willReturn("rev2");
+
+        //When updating with an If-Match
+        ResponseEntity<CatalogueResource> actual =
+            controller.updateCatalogue(user, file, new CatalogueResource(file, "eidc"), "\"rev1\"");
+
+        //Then the response carries the NEW per-document revision as its ETag (quoted per HTTP)
+        assertThat(actual.getHeaders().getETag(), is("\"rev2\""));
+    }
+
     @SneakyThrows
     @Test
     public void updateCataloguePropagatesConflictExceptionFromRepository() {
@@ -380,6 +399,26 @@ class CatalogueDocumentControllerTest extends AbstractMvcTest {
 
         //Then the (unquoted) revision is passed to the repository
         verify(documentRepository).save(eq(user), eq(document), eq(file), any(), eq("rev1"));
+    }
+
+    @Test
+    public void updateCatalogueViewEmitsETagOfNewRevisionAfterSave() throws Exception {
+        //Given a matching read, a stubbed save, and the post-save revision
+        givenKnownCatalogues();
+        val user = new CatalogueUser("test", "test@example.com");
+        val document = new GeminiDocument()
+            .setId(file)
+            .setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(documentRepository.read(file)).willReturn(document);
+        given(documentRepository.save(eq(user), eq(document), eq(file), any(), eq("rev1"))).willReturn(document);
+        given(cachedDataRepository.getDocumentRevisionId(file + ".meta")).willReturn("rev2");
+
+        //When updating with an If-Match
+        ResponseEntity<CatalogueViewResource> actual =
+            controller.updateCatalogueView(user, file, new CatalogueViewResource(file, List.of("ukceh")), "\"rev1\"");
+
+        //Then the response carries the NEW per-document revision as its ETag (quoted per HTTP)
+        assertThat(actual.getHeaders().getETag(), is("\"rev2\""));
     }
 
     @SneakyThrows

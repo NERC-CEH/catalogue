@@ -10,6 +10,7 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.controllers.AbstractDocumentController;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.INFRASTRUCTURERECORD_JSON_VALUE;
@@ -19,8 +20,8 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.INFRASTRUCTURERECO
 @RequestMapping("documents")
 public class InfrastructureRecordController extends AbstractDocumentController {
 
-    public InfrastructureRecordController(DocumentRepository documentRepository) {
-        super(documentRepository);
+    public InfrastructureRecordController(DocumentRepository documentRepository, CachedDataRepository cachedDataRepository) {
+        super(documentRepository, cachedDataRepository);
         log.info("Creating");
     }
 
