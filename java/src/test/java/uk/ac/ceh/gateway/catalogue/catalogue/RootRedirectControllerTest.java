@@ -13,7 +13,7 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 
 @ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("RootRedirectController")
@@ -31,7 +31,7 @@ class RootRedirectControllerTest extends AbstractMvcTest {
     @SneakyThrows
     void redirectToEidc() {
         //when
-        mvc.perform(get("/"))
-            .andExpect(redirectedUrl("/eidc/documents"));
+        mvc.perform(get("/").secure(true))
+            .andExpect(redirectedUrlPattern("https://*/eidc/documents"));
     }
 }
