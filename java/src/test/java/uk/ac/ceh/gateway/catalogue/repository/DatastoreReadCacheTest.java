@@ -13,6 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
+import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.datastore.DataWriter;
 import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
@@ -22,6 +23,7 @@ import uk.ac.ceh.gateway.catalogue.services.FacilityEventService;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -143,6 +145,37 @@ public class DatastoreReadCacheTest {
         cachedRepo.readLatest("rev", "abc.meta"); // evicted -> getData #2
 
         verify(repo, times(2)).getData("rev", "abc.meta");
+    }
+
+    /**
+     * The per-document revision token (the ETag source for optimistic locking) is cached by
+     * {@link CachedDataRepository#getDocumentRevisionId} and must be evicted on write, exactly like the
+     * blob-content cache above. Without this eviction the same stale ETag is served to every browser for
+     * the whole {@code DOC_REVISION_CACHE} TTL (6h in production), so a second save would spuriously 409.
+     * This drives the token read -> save -> token read cycle through the real {@code @EnableCaching}
+     * proxy to prove the eviction actually fires.
+     */
+    @Test
+    public void saveEvictsDocRevisionSoNextTokenReadRefetches() throws Exception {
+        given(repo.getRevisions("abc.meta")).willAnswer(i -> List.of(revision("rev1")));
+
+        cachedRepo.getDocumentRevisionId("abc.meta"); // miss -> getRevisions #1
+        cachedRepo.getDocumentRevisionId("abc.meta"); // hit
+
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
+        DataWriter writer = out -> { };
+        gitRepoWrapper.save(user, "abc", "msg", MetadataInfo.builder().build(), writer);
+
+        cachedRepo.getDocumentRevisionId("abc.meta"); // evicted -> getRevisions #2
+
+        verify(repo, times(2)).getRevisions("abc.meta");
+    }
+
+    @SuppressWarnings("unchecked")
+    private static DataRevision<CatalogueUser> revision(String id) {
+        DataRevision<CatalogueUser> rev = mock(DataRevision.class);
+        given(rev.getRevisionID()).willReturn(id);
+        return rev;
     }
 
     @Test
