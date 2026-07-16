@@ -206,6 +206,12 @@ mechanism (`DocumentRepository.save(..., expectedRevision)` →
 `GitRepoWrapper`'s synchronised fresh-read check); the shared
 `IfMatchRevision.require` helper parses the header uniformly.
 
+This section describes the **interactive editor endpoints** that were
+brought under this mechanism. It is illustrative, not an exhaustive audit of
+every `DocumentRepository.save` caller in the codebase — the repository has
+many server-side/programmatic writers beyond the browser-facing editors, and
+not all of them are protected.
+
 **Protected (If-Match required, 409 on stale):**
 
 - `AbstractDocumentController.saveMetadataDocument` — the main metadata
@@ -219,7 +225,8 @@ mechanism (`DocumentRepository.save(..., expectedRevision)` →
   the same request and the client only holds the catalogue value, not
   document content), protected for consistency.
 
-**Deliberately NOT locked** (documented decision, not an oversight):
+**Other writers using the unchecked `DocumentRepository.save(...)`
+(known examples, not a complete list):**
 
 - `DocumentPublicationService.transition` (publish/withdraw) and
   `GitRepoServiceAgreementService.publishServiceAgreement`. These are
@@ -234,3 +241,15 @@ mechanism (`DocumentRepository.save(..., expectedRevision)` →
   uniquely rewrites full document *content* from the service agreement, so
   if a collision ever proves real in practice, it is the more likely of the
   two to warrant revisiting.)
+- `UploadController.removeUploadPermission` — a housekeeping write
+  triggered as part of the upload/hubbub flow, not a user-facing editing
+  session.
+- `NetworkIndexingService.updateBoundingBox` — mutates a `MonitoringNetwork`
+  document, which **is** editor-visible, so this one can genuinely race a
+  concurrent main-editor session on the same network document. Of the
+  writers listed here, it is the more plausible future candidate for
+  locking if a real collision ever surfaces.
+
+Treat this list as a starting point: before relying on "protected" vs "not
+locked" for a specific document type or endpoint, grep for
+`DocumentRepository.save` callers on that path and check for yourself.
