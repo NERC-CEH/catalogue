@@ -155,10 +155,11 @@ purposes and should not be conflated.
   annoying) or, worse, falsely *match* a revision that's actually moved on
   (defeats the whole point). This note's mechanism and that RFC's mirror
   scoping should be implemented consistently, not independently.
-- **Mandatory vs. best-effort `If-Match`:** deciding whether to reject saves
-  that omit it (breaking any non-editor callers of the PUT endpoint, e.g.
-  scripts) or treat its absence as "skip the check" (weaker guarantee, safer
-  rollout) is an implementation-time call.
+- **Mandatory vs. best-effort `If-Match`:** DECIDED — **mandatory**. A PUT to
+  a protected endpoint without `If-Match` is rejected with `428 Precondition
+  Required`. This gives the strongest guarantee (no client can blind-write)
+  at the cost of a migration for any non-editor caller (see Rollout
+  checklist).
 
 ## Acceptance criteria
 
@@ -178,28 +179,58 @@ purposes and should not be conflated.
 ## Rollout checklist (mandatory 428)
 
 Because a PUT without `If-Match` is now rejected with `428 Precondition
-Required`, any non-editor caller of the metadata PUT endpoints must be
-updated to send `If-Match` first:
+Required`, any non-editor caller of the protected PUT endpoints must be
+updated to send `If-Match` first. The protected endpoints are:
 
-- [ ] Identify non-browser callers of `PUT documents/{file}` (scripts,
+- `PUT documents/{file}` (all metadata-editor document types)
+- `PUT documents/{file}/permission`
+- `PUT documents/{file}/catalogue` and `PUT documents/{file}/catalogue-view`
+
+Checklist:
+
+- [ ] Identify non-browser callers of those PUT endpoints (scripts,
       harvesters, API integrations) — search access logs / integration code.
 - [ ] Update each to `GET` the record, read the `ETag`, and send it as
       `If-Match` on `PUT`.
 - [ ] Announce the behaviour change to API consumers before deploy.
-- [ ] Confirm the browser editor path works end to end in staging (save,
-      concurrent-save conflict, reload-and-retry).
+- [ ] Confirm the browser editor paths work end to end in staging — for the
+      document editor, the permission editor, and the catalogue /
+      catalogue-view panels: save, concurrent-save conflict, reload-and-retry.
 
-### Known gap: other write paths are not yet protected
+## Coverage: which write paths are protected
 
-This work only guards the main editor save path — the PUT handled by
-`AbstractDocumentController.saveMetadataDocument`. Several other server-side
-write paths mutate the same document model via the unchecked
-`DocumentRepository.save` overload (no expected-revision check) and can
-therefore still lose an update if they race with a concurrent editor save or
-with each other. This is a known follow-up, not addressed here:
+Optimistic locking guards the write paths that have a genuine
+load-edit-save **editing session** — where a client holds a revision across
+time and can race another writer. Each funnels through the one shared
+mechanism (`DocumentRepository.save(..., expectedRevision)` →
+`GitRepoWrapper`'s synchronised fresh-read check); the shared
+`IfMatchRevision.require` helper parses the header uniformly.
 
-- `CatalogueDocumentController` PUT `/{file}/catalogue` and
-  `/{file}/catalogue-view`
-- `PermissionController.updatePermission`
-- `DocumentPublicationService.transition` (publish/withdraw)
-- `GitRepoServiceAgreementService.publishServiceAgreement`
+**Protected (If-Match required, 409 on stale):**
+
+- `AbstractDocumentController.saveMetadataDocument` — the main metadata
+  editor (all document types).
+- `PermissionController.updatePermission` — the permission editor. The
+  highest-value case: a long-lived session that does a *wholesale* replace
+  of the permission set, with a concrete concurrent actor (service-agreement
+  depositor permission grants touch the same document's permissions).
+- `CatalogueDocumentController` — `PUT {file}/catalogue` and
+  `{file}/catalogue-view`. Narrower window (the server re-reads fresh within
+  the same request and the client only holds the catalogue value, not
+  document content), protected for consistency.
+
+**Deliberately NOT locked** (documented decision, not an oversight):
+
+- `DocumentPublicationService.transition` (publish/withdraw) and
+  `GitRepoServiceAgreementService.publishServiceAgreement`. These are
+  **one-shot server-rendered workflow transitions** — a full-page HTML
+  `<form method="post">` button, with no editing session and no channel to
+  carry an `If-Match` header without inventing hidden-field plumbing. Each
+  reads the document fresh and writes within a single service-method call,
+  so the lost-update window is effectively just the request duration, not a
+  human editing session. Adding optimistic locking here would be awkward
+  plumbing for negligible real-world benefit; if these ever gain an
+  interactive editing surface, revisit. (`GitRepoServiceAgreementService`
+  uniquely rewrites full document *content* from the service agreement, so
+  if a collision ever proves real in practice, it is the more likely of the
+  two to warrant revisiting.)
