@@ -89,11 +89,11 @@ one.
 
 ```bash
 BASE=https://catalogue.ceh.ac.uk
-AUTH='-u myuser'                     # HTTP basic auth
+TOKEN=glpat-xxxxxxxxxxxxxxxxxxxx     # your personal access token
 ID=9c3c...your-record-id
 
 # 1. GET the record and capture its current ETag from the response headers
-etag=$(curl -sS $AUTH -D - -o record.json \
+etag=$(curl -sS -H "Authorization: Bearer $TOKEN" -D - -o record.json \
              -H 'Accept: application/json' \
              "$BASE/documents/$ID" \
         | awk -F': ' 'tolower($1)=="etag"{print $2}' | tr -d '\r')
@@ -103,7 +103,7 @@ echo "current revision: $etag"       # e.g. "3f1a9c..."
 
 # 2. PUT the change back, echoing the ETag verbatim as If-Match.
 #    -i so we can read the NEW ETag from the response headers.
-curl -sS -i $AUTH -X PUT \
+curl -sS -i -H "Authorization: Bearer $TOKEN" -X PUT \
      -H 'Content-Type: application/gemini+json' \
      -H "If-Match: $etag" \
      --data @record.json \
@@ -112,6 +112,9 @@ curl -sS -i $AUTH -X PUT \
 # 428     -> you omitted If-Match
 # 409     -> the record moved on; GET again, re-apply, retry
 ```
+
+Authentication uses a **personal access token** sent as a `Bearer` token
+(`Authorization: Bearer glpat-…`), not HTTP basic auth.
 
 Note the `If-Match` value is the ETag **with its surrounding quotes** exactly
 as the server sent it.
@@ -127,16 +130,20 @@ initial `GET`.
 import requests
 
 BASE = "https://catalogue.ceh.ac.uk"
-AUTH = ("myuser", "mypassword")
+TOKEN = "glpat-xxxxxxxxxxxxxxxxxxxx"   # your personal access token
 MEDIA_TYPE = "application/gemini+json"
+
+# Authenticate with a personal access token as a Bearer token (not basic auth).
+# A Session applies the Authorization header to every request.
+session = requests.Session()
+session.headers["Authorization"] = f"Bearer {TOKEN}"
 
 
 def get_record(record_id):
     """Return (document_dict, etag) for a record."""
-    resp = requests.get(
+    resp = session.get(
         f"{BASE}/documents/{record_id}",
         headers={"Accept": "application/json"},
-        auth=AUTH,
     )
     resp.raise_for_status()
     return resp.json(), resp.headers["ETag"]
@@ -147,7 +154,7 @@ def save_record(record_id, document, etag):
 
     Raises Conflict if the record changed since `etag` was obtained.
     """
-    resp = requests.put(
+    resp = session.put(
         f"{BASE}/documents/{record_id}",
         json=document,
         headers={
@@ -155,7 +162,6 @@ def save_record(record_id, document, etag):
             "Accept": "application/json",
             "If-Match": etag,          # send the ETag back verbatim
         },
-        auth=AUTH,
     )
     if resp.status_code == 409:
         raise Conflict(resp.json())    # body is your unsaved submission
