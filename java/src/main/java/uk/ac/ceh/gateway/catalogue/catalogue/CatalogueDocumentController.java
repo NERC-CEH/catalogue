@@ -1,11 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.catalogue;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
+import uk.ac.ceh.gateway.catalogue.controllers.IfMatchRevision;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
@@ -19,22 +24,32 @@ import java.util.stream.Collectors;
 public class CatalogueDocumentController {
     private final DocumentRepository documentRepository;
     private final CatalogueService catalogueService;
+    private final CachedDataRepository cachedDataRepository;
 
     public CatalogueDocumentController(
         DocumentRepository documentRepository,
-        CatalogueService catalogueService
+        CatalogueService catalogueService,
+        CachedDataRepository cachedDataRepository
     ) {
         this.documentRepository = documentRepository;
         this.catalogueService = catalogueService;
+        this.cachedDataRepository = cachedDataRepository;
         log.info("Creating");
     }
 
+    @SneakyThrows
     @PreAuthorize("@permission.userCanView(#file)")
     @GetMapping("{file}/catalogue")
-    public CatalogueResource currentCatalogue (
+    public ResponseEntity<CatalogueResource> currentCatalogue (
         @PathVariable String file
     ) throws DocumentRepositoryException {
-        return new CatalogueResource(documentRepository.read(file));
+        CatalogueResource resource = new CatalogueResource(documentRepository.read(file));
+        String revision = cachedDataRepository.getDocumentRevisionId(file + ".meta");
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+        if (revision != null) {
+            builder.eTag(revision); // Spring quotes this into a strong ETag: "revision"
+        }
+        return builder.body(resource);
     }
 
     @PreAuthorize("@permission.userCanEdit(#file)")
@@ -42,8 +57,10 @@ public class CatalogueDocumentController {
     public CatalogueResource updateCatalogue (
         @ActiveUser CatalogueUser user,
         @PathVariable String file,
-        @RequestBody CatalogueResource catalogueResource
+        @RequestBody CatalogueResource catalogueResource,
+        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
     ) throws DocumentRepositoryException {
+        String expectedRevision = IfMatchRevision.require(ifMatch);
         val document = documentRepository.read(file);
         val metadata = document.getMetadata();
         document.setMetadata(
@@ -54,18 +71,26 @@ public class CatalogueDocumentController {
             user,
             document,
             file,
-            String.format("Catalogues of %s changed.", file)
+            String.format("Catalogues of %s changed.", file),
+            expectedRevision
         );
         log.debug(newDocument.toString());
         return new CatalogueResource(newDocument);
     }
 
+    @SneakyThrows
     @PreAuthorize("@permission.userCanView(#file)")
     @GetMapping("{file}/catalogue-view")
-    public CatalogueViewResource currentCatalogueView(
+    public ResponseEntity<CatalogueViewResource> currentCatalogueView(
         @PathVariable String file
     ) throws DocumentRepositoryException {
-        return new CatalogueViewResource(documentRepository.read(file));
+        CatalogueViewResource resource = new CatalogueViewResource(documentRepository.read(file));
+        String revision = cachedDataRepository.getDocumentRevisionId(file + ".meta");
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+        if (revision != null) {
+            builder.eTag(revision); // Spring quotes this into a strong ETag: "revision"
+        }
+        return builder.body(resource);
     }
 
     @PreAuthorize("@permission.userCanEdit(#file)")
@@ -73,8 +98,10 @@ public class CatalogueDocumentController {
     public CatalogueViewResource updateCatalogueView(
         @ActiveUser CatalogueUser user,
         @PathVariable String file,
-        @RequestBody CatalogueViewResource resource
+        @RequestBody CatalogueViewResource resource,
+        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
     ) throws DocumentRepositoryException {
+        String expectedRevision = IfMatchRevision.require(ifMatch);
         val document = documentRepository.read(file);
         val primaryCatalogue = document.getCatalogue();
         Set<String> knownIds = catalogueService.retrieveAll().stream()
@@ -90,7 +117,8 @@ public class CatalogueDocumentController {
             user,
             document,
             file,
-            String.format("Secondary catalogues of %s changed.", file)
+            String.format("Secondary catalogues of %s changed.", file),
+            expectedRevision
         );
         return new CatalogueViewResource(newDocument);
     }
