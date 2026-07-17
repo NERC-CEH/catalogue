@@ -6,14 +6,16 @@ import lombok.val;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import static java.lang.String.format;
+import java.util.Set;
 
 @Slf4j
 @Controller
 public class RootRedirectController {
-    CatalogueService catalogueService;
+    private static final Set<String> LOCAL_HOSTS = Set.of("localhost", "127.0.0.1", "::1");
+
+    private final CatalogueService catalogueService;
 
     public RootRedirectController(CatalogueService catalogueService) {
         this.catalogueService = catalogueService;
@@ -22,19 +24,18 @@ public class RootRedirectController {
     @GetMapping
     public ModelAndView redirectRootToDefaultCatalogue(HttpServletRequest request) {
         val catalogueId = catalogueService.defaultCatalogue().getId();
-        val serverName = request.getServerName();
-        val serverPort = request.getServerPort();
 
-        String url;
-        if (serverPort == 443) {
-            url = format("https://%s/%s/documents", serverName, catalogueId);
-        } else if (serverPort == 80) {
-            url = format("https://%s/%s/documents", serverName, catalogueId);
-        } else {
-            url = format("https://%s:%d/%s/documents", serverName, serverPort, catalogueId);
+        val builder = ServletUriComponentsBuilder.fromRequest(request)
+            .replacePath("/" + catalogueId + "/documents")
+            .replaceQuery(null);
+
+        // dri-one #71: the reverse proxy terminates TLS and forwards plain HTTP, so the
+        // request scheme can be "http" even though the browser used HTTPS. Force HTTPS for
+        // real deployments so the redirect chain never downgrades; leave local HTTP dev alone.
+        if (!LOCAL_HOSTS.contains(request.getServerName())) {
+            builder.scheme("https").port(-1);
         }
 
-        RedirectView redirectView = new RedirectView(url, true, true, false);
-        return new ModelAndView(redirectView);
+        return new ModelAndView("redirect:" + builder.toUriString());
     }
 }
