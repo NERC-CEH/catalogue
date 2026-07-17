@@ -174,6 +174,8 @@ describe('EditorView', () => {
     // (whose title also happens to contain "Conflict" via statusText)
     expect(args.title).not.toContain('Server response')
     expect(args.icon).toBe('warning')
+    // the dialog must actually render the submitted edits, not just promise them
+    expect(args.html).toContain('my in-progress title')
     // edits are still on the model
     expect(view.model.get('title')).toBe('my in-progress title')
   })
