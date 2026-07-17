@@ -4,9 +4,11 @@ import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.Relationship;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +18,7 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
+import static org.mockito.Mockito.when;
 
 @Slf4j
 public class GeminiDocumentTest {
@@ -289,5 +292,46 @@ public class GeminiDocumentTest {
         assertThat(actualKeywords.size(), equalTo(1));
         assertThat(actualOnlineResources.size(), equalTo(1));
         assertThat(actualResponsibleParties.size(), equalTo(1));
+    }
+
+    @Test
+    void populateFromJenaService() {
+        //given
+        val document = new GeminiDocument();
+        String uri = "https://example.com/doc/test";
+        document.setUri(uri);
+        val jenaService = org.mockito.Mockito.mock(JenaLookupService.class);
+
+        when(jenaService.relationships(uri, "http://purl.org/dc/terms/relation"))
+            .thenReturn(List.of(Link.builder().href("https://example.com/rel/1").build()));
+        when(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/relation"))
+            .thenReturn(List.of(Link.builder().href("https://example.com/rel/2").build()));
+        when(jenaService.allRelatedRecords(uri))
+            .thenReturn(List.of(Link.builder().href("https://example.com/all/1").build()));
+        when(jenaService.relationships(uri, "http://purl.org/dc/terms/requires"))
+            .thenReturn(List.of(Link.builder().href("https://example.com/requires/1").build()));
+        when(jenaService.relationships(uri, "http://purl.org/dc/terms/isPartOf"))
+            .thenReturn(List.of(Link.builder().href("https://example.com/partof/1").build()));
+        when(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/requires"))
+            .thenReturn(List.of(Link.builder().href("https://example.com/requiredby/1").build()));
+        when(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/isPartOf"))
+            .thenReturn(List.of(Link.builder().href("https://example.com/haspart/1").build()));
+        when(jenaService.replaces(uri))
+            .thenReturn(List.of(Link.builder().href("https://example.com/replaces/1").build()));
+        when(jenaService.relationships(uri, "http://purl.org/dc/terms/source"))
+            .thenReturn(List.of(Link.builder().href("https://example.com/source/1").build()));
+
+        //when
+        document.populateFromJenaService(jenaService);
+
+        //then
+        assertThat(document.getRelRelation().size(), equalTo(2));
+        assertThat(document.getRelAll().size(), equalTo(1));
+        assertThat(document.getRelRequires().size(), equalTo(1));
+        assertThat(document.getRelPartOf().size(), equalTo(1));
+        assertThat(document.getRelIsRequiredBy().size(), equalTo(1));
+        assertThat(document.getRelHasPart().size(), equalTo(1));
+        assertThat(document.getRelReplaces().size(), equalTo(1));
+        assertThat(document.getRelSource().size(), equalTo(1));
     }
 }
