@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.monitoring;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.http.MediaType;
@@ -32,7 +33,9 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RDF_TTL_VALUE;
 public class MonitoringNetwork extends AbstractMetadataDocument implements WellKnownText {
     private List<String> alternateTitles;
     private String objectives, operationalStatus;
-    private List<ResponsibleParty> contacts, partners;
+    @JsonAlias("pointsOfContact")
+    private List<ResponsibleParty> contacts;
+    private List<ResponsibleParty> partners;
     private TimePeriod operatingPeriod;
     private List<Keyword> environmentalDomain, keywordsParameters;
     private List<Supplemental> linksData, linksOther;

@@ -95,6 +95,24 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private Boolean hasOnlineServiceAgreement;
 
 
+    // Pre-EMC-700 documents store every contact in one role-tagged list; bucket it into the typed fields above.
+    @JsonProperty("responsibleParties")
+    private void setLegacyResponsibleParties(List<ResponsibleParty> legacyResponsibleParties) {
+        Optional.ofNullable(legacyResponsibleParties)
+            .orElseGet(Collections::emptyList)
+            .forEach(party -> {
+                switch (party.getRole()) {
+                    case "author" -> authors.add(party);
+                    case "custodian" -> custodians.add(party);
+                    case "pointOfContact" -> contactPoints.add(party);
+                    case "rightsHolder" -> rightsHolders.add(party);
+                    case "publisher" -> publishers.add(party);
+                    case "contributor" -> contributors.add(party);
+                    default -> otherContacts.add(party);
+                }
+            });
+    }
+
     public void populateFromServiceAgreement(ServiceAgreement serviceAgreement) {
         this.setTitle(serviceAgreement.getTitle());
         this.setDescription(serviceAgreement.getDescription());

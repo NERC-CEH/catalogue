@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,6 +24,7 @@ import java.util.List;
 public class CodeDocument extends AbstractMetadataDocument {
     private String assetType, version, masterUrl, primaryLanguage, secondaryLanguage;
     private List<String> packages, inputs, outputs;
+    @JsonAlias("responsibleParties")
     private List<ResponsibleParty> contacts;
     private List<ResourceConstraint> useConstraints;
     private DatasetReferenceDate referenceDate;

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.http.MediaType;
 
@@ -74,6 +75,7 @@ public class CehModel extends AbstractMetadataDocument implements WellKnownText 
         periodicReview;
 
     private List<VersionHistory> versionHistories;
+    @JsonAlias("responsibleParties")
     private List<ResponsibleParty> contacts;
     private List<ProjectUsage> projectUsages;
 

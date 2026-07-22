@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -27,6 +28,34 @@ public class GeminiDocumentTest {
     private final String doc1 = "https://example.com/doc/1";
     private final String doc2 = "https://example.com/doc/2";
     private final String doc3 = "https://example.com/doc/3";
+
+    @Test
+    void deserializesLegacyResponsiblePartiesIntoTypedFields() throws Exception {
+        //given
+        val json = """
+            {
+              "responsibleParties": [
+                {"role": "author", "displayName": "Author, 0."},
+                {"role": "publisher", "organisationName": "Publisher Org"},
+                {"role": "custodian", "organisationName": "Custodian Org"},
+                {"role": "pointOfContact", "displayName": "POC, 0."},
+                {"role": "rightsHolder", "organisationName": "Rights Org"},
+                {"role": "depositor", "displayName": "Depositor, 0."}
+              ]
+            }
+            """;
+
+        //when
+        val gemini = new ObjectMapper().readValue(json, GeminiDocument.class);
+
+        //then
+        assertThat(gemini.getAuthors().size(), equalTo(1));
+        assertThat(gemini.getPublishers().size(), equalTo(1));
+        assertThat(gemini.getCustodians().size(), equalTo(1));
+        assertThat(gemini.getContactPoints().size(), equalTo(1));
+        assertThat(gemini.getRightsHolders().size(), equalTo(1));
+        assertThat(gemini.getDepositors().size(), equalTo(1));
+    }
 
     @Test
     void getDistributions() {

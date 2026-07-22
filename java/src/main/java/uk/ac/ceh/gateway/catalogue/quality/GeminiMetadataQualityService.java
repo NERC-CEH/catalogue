@@ -400,11 +400,21 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         return toReturn;
     }
 
+    private static final String CONTACT_PROPERTIES = "['organisationName','givenName','familyName','displayName','email']";
+
+    // Documents saved before EMC-700 still store every contact under 'responsibleParties', keyed by role.
+    private List<Map<String, String>> readContacts(DocumentContext parsed, String field, String legacyRole) {
+        if (parsed.read("$." + field, List.class) == null) {
+            return parsed.read(
+                    format("$.responsibleParties[*][?(@.role == '%s')].%s", legacyRole, CONTACT_PROPERTIES),
+                    typeRefStringString
+            );
+        }
+        return parsed.read(format("$.%s[*].%s", field, CONTACT_PROPERTIES), typeRefStringString);
+    }
+
     List<MetadataCheck> checkPublisher(DocumentContext parsed) {
-        val publishers = parsed.read(
-                "$.publishers[*].['organisationName','email']",
-                typeRefStringString
-        );
+        val publishers = readContacts(parsed, "publishers", "publisher");
         val toReturn = new ArrayList<>(checkAddress(publishers, "Publisher"));
         if (publishers.size() > 1) {
             toReturn.add(new MetadataCheck("There should be only ONE publisher", ERROR));
@@ -426,10 +436,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     }
 
     List<MetadataCheck> checkCustodian(DocumentContext parsed) {
-        val custodians = parsed.read(
-                "$.custodians[*].['organisationName','email']",
-                typeRefStringString
-                );
+        val custodians = readContacts(parsed, "custodians", "custodian");
         val toReturn = new ArrayList<>(checkAddress(custodians, "Custodian"));
         if (custodians.size() > 1) {
             toReturn.add(new MetadataCheck("There should be only ONE custodian", ERROR));
@@ -452,10 +459,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
 
     List<MetadataCheck> checkPointOfContact(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
-        val pocs = parsed.read(
-                "$.contactPoints[*].['organisationName','givenName','familyName','displayName','email']",
-                typeRefStringString
-        );
+        val pocs = readContacts(parsed, "contactPoints", "pointOfContact");
         if (pocs.isEmpty()) {
             toReturn.add(new MetadataCheck("Point of contact is missing", ERROR));
         }
@@ -593,10 +597,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
 
     List<MetadataCheck> checkAuthors(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
-        val authors = parsed.read(
-                "$.authors[*].['familyName','givenName','displayName','organisationName','email']",
-                typeRefStringString
-        );
+        val authors = readContacts(parsed, "authors", "author");
         if (authors.isEmpty()) {
             toReturn.add(new MetadataCheck("There are no authors", INFO));
         }

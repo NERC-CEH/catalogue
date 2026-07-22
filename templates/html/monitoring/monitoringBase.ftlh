@@ -84,12 +84,12 @@
             </@keyValue>
           </#if>
 
-          <#if pointsOfContact?has_content || partners?has_content>
+          <#if contacts?has_content || partners?has_content>
             <div class="contacts">
               <h2>Contacts</h2>
-              <#if pointsOfContact?has_content>
+              <#if contacts?has_content>
                 <div class="contacts-main">
-                  <#list pointsOfContact>
+                  <#list contacts>
                     <#items as contact>
                       <@contactDetails contact/>
                     </#items>
