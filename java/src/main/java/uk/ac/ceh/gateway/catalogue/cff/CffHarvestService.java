@@ -89,6 +89,7 @@ public class CffHarvestService {
             for (Object a : authorList) {
                 if (a instanceof Map<?, ?> author) {
                     authors.add(ResponsibleParty.builder()
+                        .role("author")
                         .familyName((String) author.get("family-names"))
                         .givenName((String) author.get("given-names"))
                         .organisationName((String) author.get("affiliation"))
@@ -115,6 +116,7 @@ public class CffHarvestService {
             for (Object c : contactList) {
                 if (c instanceof Map<?, ?> contact) {
                     poc.add(ResponsibleParty.builder()
+                        .role("pointOfContact")
                         .givenName((String) contact.get("given-names"))
                         .familyName((String) contact.get("family-names"))
                         .organisationName((String) contact.get("affiliation"))

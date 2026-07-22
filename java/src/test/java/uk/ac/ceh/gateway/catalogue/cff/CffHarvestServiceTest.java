@@ -73,5 +73,26 @@ class CffHarvestServiceTest {
         assertNotNull(doc.getContacts());
         assertEquals(1, doc.getContacts().size());
         assertEquals("Alice Smith", doc.getAuthors().get(0).getDisplayName());
+        assertEquals("author", doc.getAuthors().get(0).getRole());
+    }
+
+    @Test
+    void shouldHandleContactPoints() {
+        String yaml = """
+            title: "Test Project"
+            contact:
+              - given-names: "Bob"
+                family-names: "Jones"
+                email: "bob@example.com"
+                affiliation: "UKCEH"
+            """;
+
+        when(restTemplate.getForObject(Mockito.anyString(), Mockito.eq(String.class)))
+            .thenReturn(yaml);
+
+        GeminiDocument doc = service.createGeminiFromCff("https://github.com/user/repo/blob/main/CITATION.cff");
+
+        assertEquals(1, doc.getContactPoints().size());
+        assertEquals("pointOfContact", doc.getContactPoints().get(0).getRole());
     }
 }
