@@ -23,6 +23,7 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.publication.State;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
@@ -55,6 +56,7 @@ public class GitRepoServiceAgreementServiceTest {
     private static final String catalogueKey = "eidc";
 
     @Mock private DataRepository<CatalogueUser> repo;
+    @Mock private CachedDataRepository cachedDataRepository;
     @Mock private DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
     @Mock private DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
     @Mock private DocumentRepository documentRepository;
@@ -76,6 +78,7 @@ public class GitRepoServiceAgreementServiceTest {
         service = new GitRepoServiceAgreementService(
             BASE_URI,
             repo,
+            cachedDataRepository,
             metadataInfoMapper,
             serviceAgreementMapper,
             documentRepository,
@@ -221,6 +224,7 @@ public class GitRepoServiceAgreementServiceTest {
 
         //Then
         verify(dataOngoingCommit).commit(user, "delete document: " + ID);
+        verify(cachedDataRepository).evictAfterDirectWrite(FOLDER + ID);
     }
 
     @Test
@@ -274,6 +278,7 @@ public class GitRepoServiceAgreementServiceTest {
         //Then
         verify(metadataInfoMapper, times(2)).readInfo(any(InputStream.class));
         verify(dataOngoingCommit).commit(user, "updating service agreement " + ID);
+        verify(cachedDataRepository).evictAfterDirectWrite(FOLDER + ID);
     }
 
     @Test
@@ -294,6 +299,7 @@ public class GitRepoServiceAgreementServiceTest {
 
         //Then
         verify(dataOngoingCommit).commit(user, "creating service agreement " + ID);
+        verify(cachedDataRepository, atLeastOnce()).evictAfterDirectWrite(FOLDER + ID);
     }
 
     @Test

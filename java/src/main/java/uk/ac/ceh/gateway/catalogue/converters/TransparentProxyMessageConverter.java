@@ -2,14 +2,15 @@ package uk.ac.ceh.gateway.catalogue.converters;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -18,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.model.TransparentProxyException;
 import uk.ac.ceh.gateway.catalogue.model.UpstreamInvalidMediaTypeException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -25,10 +27,10 @@ import java.util.List;
 @Slf4j
 @ToString
 public class TransparentProxyMessageConverter implements HttpMessageConverter<TransparentProxy> {
-    private final CloseableHttpClient httpClient;
+    private final ClientHttpRequestFactory requestFactory;
 
-    public TransparentProxyMessageConverter(CloseableHttpClient httpClient) {
-        this.httpClient = httpClient;
+    public TransparentProxyMessageConverter(ClientHttpRequestFactory requestFactory) {
+        this.requestFactory = requestFactory;
         log.info("Creating");
     }
 
@@ -68,16 +70,14 @@ public class TransparentProxyMessageConverter implements HttpMessageConverter<Tr
      */
     @Override
     public void write(TransparentProxy request, MediaType contentType, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
-        HttpGet httpget = new HttpGet(request.getUri());
-        try (CloseableHttpResponse response = httpClient.execute(httpget)) {
-            HttpEntity entity = response.getEntity();
-
-            String proxyMediaType = entity.getContentType().getValue();
+        ClientHttpRequest req = requestFactory.createRequest(request.getUri(), HttpMethod.GET);
+        try (ClientHttpResponse response = req.execute()) {
+            String proxyMediaType = response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
             MediaType desired = request.getDesiredMediaType();
 
             if(desired == null || desired.isCompatibleWith(MediaType.parseMediaType(proxyMediaType))) {
-                outputMessage.getHeaders().set("Content-Type", proxyMediaType);
-                copyAndClose(entity, outputMessage);
+                outputMessage.getHeaders().set(HttpHeaders.CONTENT_TYPE, proxyMediaType);
+                copyAndClose(response.getBody(), outputMessage);
             }
             else {
                 throw new UpstreamInvalidMediaTypeException("The proxied server did not return data in the correct media type", null, null, request);
@@ -91,9 +91,9 @@ public class TransparentProxyMessageConverter implements HttpMessageConverter<Tr
         }
     }
 
-    protected void copyAndClose(HttpEntity in, HttpOutputMessage response) throws IOException {
+    protected void copyAndClose(InputStream in, HttpOutputMessage response) throws IOException {
         try (OutputStream out = response.getBody()) {
-            in.writeTo(out);
+            in.transferTo(out);
         }
     }
 }

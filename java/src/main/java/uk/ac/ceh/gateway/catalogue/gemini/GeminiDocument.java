@@ -123,7 +123,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     public void populateFromJenaService(JenaLookupService jenaService) {
         final String uri = this.getUri();
-        var relationList = jenaService.relationships(uri, "http://purl.org/dc/terms/relation");
+        var relationList = new ArrayList<>(jenaService.relationships(uri, "http://purl.org/dc/terms/relation"));
         relationList.addAll(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/relation"));
         this.setRelRelation(relationList);
 

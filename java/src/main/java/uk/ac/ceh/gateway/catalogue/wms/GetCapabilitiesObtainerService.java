@@ -20,6 +20,7 @@ import static java.lang.String.format;
 public class GetCapabilitiesObtainerService {
     private final RestTemplate rest;
     private final MapServerDetailsService mapServerDetailsService;
+    public static final String CAPABILITIES_CACHE = "capabilities";
 
     public GetCapabilitiesObtainerService(RestTemplate rest, MapServerDetailsService mapServerDetailsService) {
         this.rest = rest;
@@ -27,7 +28,7 @@ public class GetCapabilitiesObtainerService {
         log.info("Creating");
     }
 
-    @Cacheable(cacheNames = "capabilities", key = "#resource.url")
+    @Cacheable(cacheNames = CAPABILITIES_CACHE, key = "#resource.url")
     public WmsCapabilities getWmsCapabilities(OnlineResource resource) {
         if(resource.getType().equals(OnlineResource.Type.WMS_GET_CAPABILITIES)) {
             try {

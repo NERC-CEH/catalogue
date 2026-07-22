@@ -12,6 +12,7 @@ import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 import org.springframework.stereotype.Service;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 
 import java.util.ArrayList;
@@ -141,12 +142,14 @@ public class JenaLookupService {
     }
 
     public List<Link> relationships(String uri, String relation) {
-        String sparql =  PREFIXES + " SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom (IF(BOUND(?geom), true, false) AS ?hasGeom)" +
+        String sparql =  PREFIXES + " SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom (IF(BOUND(?geom), true, false) AS ?hasGeom) (GROUP_CONCAT(?code; separator='|') AS ?codes) " +
             "WHERE {?me ?rel ?node; ?relation ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type. " +
             "OPTIONAL {?node <http://www.opengis.net/ont/sf#Geometry> ?geom} " +
             "OPTIONAL {?node dcterms:available ?publicationDate} " +
             "OPTIONAL {?node eidc:availability ?availability} " +
-            "OPTIONAL {?node doo:operationalStatus ?availability}} " +
+            "OPTIONAL {?node doo:operationalStatus ?availability} " +
+            "OPTIONAL {?node dcterms:identifier ?code}} " +
+            "GROUP BY ?node ?title ?publicationStatus ?availability ?type ?rel ?geom ?hasGeom ?publicationDate " +
             "ORDER BY DESC(?publicationDate) ?title";
         val binding = me(uri);
         binding.add("relation", createResource(relation));
@@ -154,13 +157,14 @@ public class JenaLookupService {
     }
 
     public List<Link> inverseRelationships(String uri, String relation) {
-        String sparql = PREFIXES + " SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?publicationDate (GROUP_CONCAT(?geo; separator=', ') AS ?geom)" +
+        String sparql = PREFIXES + " SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?publicationDate (GROUP_CONCAT(?geo; separator=', ') AS ?geom) (GROUP_CONCAT(?code; separator='|') AS ?codes) " +
             "WHERE {?node ?rel ?me; ?relation ?me. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type. " +
             "OPTIONAL {?node <http://www.opengis.net/ont/sf#Geometry> ?geo} " +
             "OPTIONAL {?node dcterms:available ?publicationDate} " +
             "OPTIONAL {?node eidc:availability ?availability} " +
-            "OPTIONAL {?node doo:operationalStatus ?availability}} " +
-            "GROUP BY ?node ?title ?publicationStatus ?availability ?type ?rel ?publicationDate " +
+            "OPTIONAL {?node doo:operationalStatus ?availability} " +
+            "OPTIONAL {?node dcterms:identifier ?code}} " +
+            "GROUP BY ?node ?title ?publicationStatus ?availability ?type ?rel ?publicationDate ?geom " +
             "ORDER BY DESC(?publicationDate) ?title";
         val binding = me(uri);
         binding.add("relation", createResource(relation));
@@ -168,11 +172,13 @@ public class JenaLookupService {
     }
 
     public List<Link> relationshipsWithOwner(String uri, String relation) {
-        String sparql = PREFIXES + " SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom " +
+        String sparql = PREFIXES + " SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom (GROUP_CONCAT(?code; separator='|') AS ?codes) " +
             "WHERE {{?me dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; sf:Geometry ?geom. BIND(?me as ?node)} " +
             "UNION {?me ?relation ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; sf:Geometry ?geom. BIND(?relation as ?rel)} " +
             "OPTIONAL {?node eidc:availability ?availability} " +
-            "OPTIONAL {?node doo:operationalStatus ?availability}}" +
+            "OPTIONAL {?node doo:operationalStatus ?availability} " +
+            "OPTIONAL {?node dcterms:identifier ?code}} " +
+            "GROUP BY ?node ?title ?publicationStatus ?availability ?type ?rel ?geom " +
             "ORDER BY ?title";
         val binding = me(uri);
         binding.add("relation", createResource(relation));
@@ -180,11 +186,13 @@ public class JenaLookupService {
     }
 
     public List<Link> programmeFeatures(String uri) {
-        String sparql = PREFIXES + " SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom " +
+        String sparql = PREFIXES + " SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom (GROUP_CONCAT(?code; separator='|') AS ?codes) " +
             "WHERE {{?me doo:utilises ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type;sf:Geometry ?geom} " +
             "UNION {?me doo:utilises ?network. ?node dcterms:isPartOf ?network; dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; sf:Geometry ?geom. BIND(doo:utilises as ?rel)}" +
             "OPTIONAL {?node eidc:availability ?availability} " +
-            "OPTIONAL {?node doo:operationalStatus ?availability}}";
+            "OPTIONAL {?node doo:operationalStatus ?availability} " +
+            "OPTIONAL {?node dcterms:identifier ?code}} " +
+            "GROUP BY ?node ?title ?publicationStatus ?availability ?type ?rel ?geom";
         return links(sparql, me(uri));
     }
 
@@ -329,17 +337,36 @@ public class JenaLookupService {
                 .dataset(jenaTdb)
                 .substitution(binding)
                 .build()) {
-            qexec.execSelect().forEachRemaining(s -> toReturn.add(
-                Link.builder()
-                    .title(s.getLiteral("title").getString())
-                    .publicationStatus(s.getLiteral("publicationStatus").getString())
-                    .availability(s.getLiteral("availability") != null ? s.getLiteral("availability").getString() : "")
-                    .href(s.getResource("node").getURI())
-                    .associationType(s.getLiteral("type").getString())
-                    .rel(s.getResource("rel") != null ? s.getResource("rel").getURI() : "")
-                    .geometry(s.getLiteral("geom") != null ? s.getLiteral("geom").getString() : "")
-                    .build()
-            ));
+            qexec.execSelect().forEachRemaining(s -> {
+                List<ResourceIdentifier> resourceIdentifiers = new ArrayList<>();
+                if (s.getLiteral("codes") != null) {
+                    String[] coupledResources = s.getLiteral("codes").getString().split("\\|");
+
+                    for (String coupledResource : coupledResources) {
+                        if (!coupledResource.isEmpty()) {
+                            if (coupledResource.contains("#")) {
+                                String[] parts = coupledResource.split("#", 2);
+                                resourceIdentifiers.add(ResourceIdentifier.builder()
+                                    .code(parts[1])
+                                    .codeSpace(parts[0])
+                                    .build());
+                            }
+                        }
+                    }
+                }
+                toReturn.add(
+                    Link.builder()
+                        .title(s.getLiteral("title").getString())
+                        .publicationStatus(s.getLiteral("publicationStatus").getString())
+                        .availability(s.getLiteral("availability") != null ? s.getLiteral("availability").getString() : "")
+                        .href(s.getResource("node").getURI())
+                        .associationType(s.getLiteral("type").getString())
+                        .rel(s.getResource("rel") != null ? s.getResource("rel").getURI() : "")
+                        .geometry(s.getLiteral("geom") != null ? s.getLiteral("geom").getString() : "")
+                        .resourceIdentifiers(resourceIdentifiers)
+                        .build()
+                );
+            });
         } finally {
             jenaTdb.end();
         }

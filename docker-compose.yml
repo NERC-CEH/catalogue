@@ -77,6 +77,7 @@ services:
     volumes:
       - ./:/app
       - datastore:/var/ceh-catalogue/datastore
+      - jena-data:/var/ceh-catalogue/jena
       - gradle-cache:/home/gradle/.gradle
     environment:
       DOCUMENTS_BASEURI: http://localhost:8080
@@ -85,7 +86,7 @@ services:
       ROR_LOCAL: /app/fixtures/solr/ror
       HUBBUB_LOCATION: /app/dropbox
       HUBBUB_URL: http://localhost:8082/v7
-      JENA_LOCATION: /app/fixtures/jena
+      JENA_LOCATION: /var/ceh-catalogue/jena
       JIRA_SERVICEAGREEMENT_PREFIX: "CT-"
       JIRA_DEPOSITREQUEST_PROJECT: CT
       LOGGING_LEVEL_ROOT: info
@@ -139,4 +140,5 @@ volumes:
   dropbox:
   mapfiles:
   datastore:
+  jena-data:
   gradle-cache:

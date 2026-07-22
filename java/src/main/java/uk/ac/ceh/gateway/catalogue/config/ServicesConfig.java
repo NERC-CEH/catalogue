@@ -16,13 +16,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.git.GitDataRepository;
-import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
-import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.citation.CitationService;
 import uk.ac.ceh.gateway.catalogue.converters.Gml2WmsFeatureInfoMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
@@ -203,8 +202,7 @@ public class ServicesConfig {
     ) {
         return new GitDataRepository<>(
             new File(dataRepositoryLocation),
-            new InMemoryUserStore<>(),
-            new AnnotatedUserHelper<>(CatalogueUser.class),
+            CatalogueUser::new,
             eventBus
         );
     }
@@ -240,11 +238,19 @@ public class ServicesConfig {
     }
 
     @Bean(destroyMethod = "close")
+    @Profile("!test")
     public org.apache.jena.query.Dataset tdbModel(
         @Value("${jena.location}") String location
     ) {
         log.info("Creating Dataset at: {}", location);
         return TDB2Factory.connectDataset(location);
+    }
+
+    @Bean(destroyMethod = "close")
+    @Profile("test")
+    public org.apache.jena.query.Dataset tdbModelInMemory() {
+        log.info("Creating in-memory Dataset for tests");
+        return TDB2Factory.createDataset();
     }
 
     @Bean

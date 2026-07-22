@@ -53,8 +53,8 @@ import static org.mockito.Mockito.*;
  * document. The fix reads at the explicit, fresh revision the event already carries, via the
  * immutable {@code datastore-historical} cache.</p>
  *
- * <p>This reproduces it against the <strong>real</strong> production {@link CacheConfig} (typed
- * EHCache) and the real {@link CachedDataRepository}/{@link MetadataInfoBundledReaderService} stack —
+ * <p>This reproduces it against the <strong>real</strong> production {@link CacheConfig} (Caffeine)
+ * and the real {@link CachedDataRepository}/{@link MetadataInfoBundledReaderService} stack —
  * mirroring {@code RevisionIdCacheKeyTypeTest}. The caches are deliberately primed with the OLD
  * record and OLD HEAD (as the controller's pre-save read does) and left un-evicted, then we index at
  * the new revision and assert the indexed document carries the NEW {@code catalogue_view}. Before the
@@ -73,7 +73,7 @@ public class CatalogueViewReindexCacheTest {
     static class Config {
         @Bean
         CacheManager cacheManager() {
-            // Real production wiring: JCacheCacheManager over String-typed EHCache.
+            // Real production wiring: CaffeineCacheManager as configured by CacheConfig.
             return new CacheConfig().cacheManager();
         }
 

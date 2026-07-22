@@ -18,6 +18,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - This project uses Java 25 with Gradle; prefer toolchain configuration over sourceCompatibility/targetCompatibility
 - Library versions live in `gradle/libs.versions.toml` (Gradle version catalog) — add/update versions there, not inline in `build.gradle`
 - Dockerfile multi-stage build: copy `gradle/libs.versions.toml` into the Gradle build stage alongside `build.gradle`, or `bootJar` will fail with missing catalog
+- The `java-commons` library (`uk.ac.ceh.components:*`) resolves from a public GitLab Maven registry (`java/build.gradle`) — no authentication needed
 
 ## Commands
 

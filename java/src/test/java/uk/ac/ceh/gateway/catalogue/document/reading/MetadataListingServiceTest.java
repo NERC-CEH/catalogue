@@ -1,11 +1,17 @@
 package uk.ac.ceh.gateway.catalogue.document.reading;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -41,6 +47,7 @@ public class MetadataListingServiceTest {
     @Mock private BundledReaderService<MetadataDocument> documentBundleReader;
     private MetadataListingService service;
     private final List<String> defaultResourceTypes = Arrays.asList("Dataset","Series","Service");
+    private ListAppender<ILoggingEvent> logAppender;
 
     @BeforeEach
     @SneakyThrows
@@ -48,6 +55,15 @@ public class MetadataListingServiceTest {
         service = new MetadataListingService(repo,
                                             listingService,
                                             documentBundleReader);
+
+        logAppender = new ListAppender<>();
+        logAppender.start();
+        ((Logger) LoggerFactory.getLogger(MetadataListingService.class)).addAppender(logAppender);
+    }
+
+    @AfterEach
+    public void teardown() {
+        ((Logger) LoggerFactory.getLogger(MetadataListingService.class)).detachAppender(logAppender);
     }
 
     @Test
@@ -132,6 +148,28 @@ public class MetadataListingServiceTest {
 
         //Then
         assertTrue(ids.isEmpty());
+    }
+
+    @Test
+    public void logsTheCauseWhenADocumentCannotBeRead() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException {
+        //Given
+        String revision = "revision";
+        String id = "broken doc id";
+        RuntimeException cause = new IllegalStateException("Resource busy");
+        when(listingService.filterFilenames(any(List.class))).thenReturn(Arrays.asList(id));
+        when(documentBundleReader.readBundle(id, revision)).thenThrow(cause);
+
+        //When
+        service.getPublicDocuments(revision, GeminiDocument.class, defaultResourceTypes);
+
+        //Then — the swallowed exception must be attached to the log event, not dropped,
+        // otherwise production logs cannot explain why a document failed to read.
+        List<ILoggingEvent> errors = logAppender.list.stream()
+            .filter(e -> e.getLevel() == Level.ERROR)
+            .toList();
+        assertThat(errors.size(), is(1));
+        assertThat(errors.get(0).getFormattedMessage(), is("Failed to read " + id + " @ " + revision));
+        assertThat(errors.get(0).getThrowableProxy().getMessage(), is("Resource busy"));
     }
 
     @Test

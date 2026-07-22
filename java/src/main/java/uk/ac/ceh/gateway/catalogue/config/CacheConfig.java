@@ -1,32 +1,27 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.ehcache.config.builders.CacheConfigurationBuilder;
-import org.ehcache.config.builders.ExpiryPolicyBuilder;
-import org.ehcache.config.builders.ResourcePoolsBuilder;
-import org.ehcache.jsr107.Eh107Configuration;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurer;
-import org.springframework.cache.jcache.JCacheCacheManager;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 
-import javax.cache.Caching;
-import javax.cache.configuration.MutableConfiguration;
-import javax.cache.expiry.AccessedExpiryPolicy;
-import javax.cache.expiry.Duration;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
-// Enabled in every real environment; only disabled under the "test" profile (which all
-// @SpringBootTest classes activate) so the JVM-global JCache manager is not re-created across the
-// many test contexts in a single suite run — the original reason this config was profile-gated.
+import static uk.ac.ceh.gateway.catalogue.services.MetadataListingService.METADATA_LISTINGS_CACHE;
+import static uk.ac.ceh.gateway.catalogue.userdetails.CrowdGroupStore.CROWD_GROUP_CACHE;
+import static uk.ac.ceh.gateway.catalogue.userdetails.CrowdUserStore.CROWD_USER_CACHE;
+import static uk.ac.ceh.gateway.catalogue.wms.GetCapabilitiesObtainerService.CAPABILITIES_CACHE;
+
+// Enabled in every real environment; disabled under the "test" profile (which all @SpringBootTest
+// classes activate) so that spring.cache.type=none (application-test.properties) can supply Boot's
+// NoOpCacheManager for ordinary tests, undisturbed by this class's own explicit @Bean CacheManager.
 @Profile("!test")
-@SuppressWarnings("DuplicatedCode")
 @Slf4j
 @Configuration
 public class CacheConfig implements CachingConfigurer {
@@ -35,23 +30,16 @@ public class CacheConfig implements CachingConfigurer {
     @Override
     public CacheManager cacheManager() {
         log.info("Customizing caches");
-        val provider = Caching.getCachingProvider();
-        val cacheManager = provider.getCacheManager();
+        val cacheManager = new CaffeineCacheManager();
 
-        createIfAbsent(cacheManager, "capabilities", new MutableConfiguration<String, WmsCapabilities>()
-            .setTypes(String.class, WmsCapabilities.class)
-            .setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(new Duration(TimeUnit.MINUTES, 30))));
-        createIfAbsent(cacheManager, "crowd-user", new MutableConfiguration<String, CatalogueUser>()
-            .setTypes(String.class, CatalogueUser.class)
-            .setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(new Duration(TimeUnit.MINUTES, 30))));
-        createIfAbsent(cacheManager, "crowd-user-groups", new MutableConfiguration<>()
-            .setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(new Duration(TimeUnit.MINUTES, 30))));
-        createIfAbsent(cacheManager, "metadata-listings", new MutableConfiguration<>()
-            .setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(new Duration(TimeUnit.MINUTES, 3))));
+        cacheManager.registerCustomCache(CAPABILITIES_CACHE, expireAfterAccess(Duration.ofMinutes(30)).build());
+        cacheManager.registerCustomCache(CROWD_USER_CACHE, expireAfterAccess(Duration.ofMinutes(30)).build());
+        cacheManager.registerCustomCache(CROWD_GROUP_CACHE, expireAfterAccess(Duration.ofMinutes(30)).build());
+        cacheManager.registerCustomCache(METADATA_LISTINGS_CACHE, expireAfterAccess(Duration.ofMinutes(3)).build());
 
         // Datastore read caches. Unlike the caches above these hold record bytes (.raw can be large)
         // so they MUST be size-bounded to avoid OOM. Latest/historical blob content is keyed so a
-        // bounded heap entry count is the right limit; eviction-on-write keeps "latest" fresh.
+        // bounded entry count is the right limit; eviction-on-write keeps "latest" fresh.
         //
         // TTLs here are backstops, NOT the invalidation mechanism: GitRepoWrapper.save/delete evict
         // the affected LATEST entries and all REVISION_ID entries on every write, so cached content
@@ -63,46 +51,25 @@ public class CacheConfig implements CachingConfigurer {
         // the 60min LATEST TTL re-fetched each hot record's blobs hourly. If this ever becomes a
         // multi-replica deployment, or an external process writes the datastore, these TTLs bound
         // cross-writer staleness and must be shortened again.
-        createIfAbsent(cacheManager, CachedDataRepository.REVISION_ID_CACHE,
-            bytesBoundedCache(String.class, 16, 1, TimeUnit.HOURS));
+        cacheManager.registerCustomCache(CachedDataRepository.REVISION_ID_CACHE,
+            expireAfterWrite(16, Duration.ofHours(1)).build());
         // 6000 entries comfortably covers the whole published corpus (< 5000 records) plus growth
         // headroom, so the read working set stays fully warm and the long tail never re-hits the SAN.
-        createIfAbsent(cacheManager, CachedDataRepository.LATEST_CACHE,
-            bytesBoundedCache(byte[].class, 6000, 6, TimeUnit.HOURS));
+        cacheManager.registerCustomCache(CachedDataRepository.LATEST_CACHE,
+            expireAfterWrite(6000, Duration.ofHours(6)).build());
         // Historical (revision:name) content is immutable, so this TTL is purely a memory bound and
         // never a correctness concern; kept modest as historical reads are off the hot render path.
-        createIfAbsent(cacheManager, CachedDataRepository.HISTORICAL_CACHE,
-            bytesBoundedCache(byte[].class, 1000, 30, TimeUnit.MINUTES));
+        cacheManager.registerCustomCache(CachedDataRepository.HISTORICAL_CACHE,
+            expireAfterWrite(1000, Duration.ofMinutes(30)).build());
 
-        return new JCacheCacheManager(cacheManager);
+        return cacheManager;
     }
 
-    /**
-     * The JCache {@link javax.cache.CacheManager} is a JVM-global singleton, so when several
-     * (non-{@code test}) application contexts are built in one JVM — as the integration tests that
-     * verify the production wiring do — a second {@code createCache} for the same name throws
-     * "cache already exists". Creating only when absent makes this config safe to load in multiple
-     * contexts; in a real single-context runtime it behaves exactly as a plain create.
-     */
-    private <K, V> void createIfAbsent(
-        javax.cache.CacheManager cacheManager,
-        String name,
-        javax.cache.configuration.Configuration<K, V> configuration
-    ) {
-        if (cacheManager.getCache(name) == null) {
-            cacheManager.createCache(name, configuration);
-        }
+    private Caffeine<Object, Object> expireAfterAccess(Duration ttl) {
+        return Caffeine.newBuilder().expireAfterAccess(ttl);
     }
 
-    private <V> javax.cache.configuration.Configuration<String, V> bytesBoundedCache(
-        Class<V> valueType, long maxEntries, long ttl, TimeUnit unit
-    ) {
-        return Eh107Configuration.fromEhcacheCacheConfiguration(
-            CacheConfigurationBuilder.newCacheConfigurationBuilder(
-                    String.class, valueType, ResourcePoolsBuilder.heap(maxEntries))
-                .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(
-                    java.time.Duration.ofMillis(unit.toMillis(ttl))))
-                .build()
-        );
+    private Caffeine<Object, Object> expireAfterWrite(long maxEntries, Duration ttl) {
+        return Caffeine.newBuilder().expireAfterWrite(ttl).maximumSize(maxEntries);
     }
 }

@@ -31,7 +31,25 @@ class RootRedirectControllerTest extends AbstractMvcTest {
     @SneakyThrows
     void redirectToEidc() {
         //when
-        mvc.perform(get("/"))
-            .andExpect(redirectedUrl("/eidc/documents"));
+        mvc.perform(get("https://catalogue.ceh.ac.uk/").secure(true))
+            .andExpect(redirectedUrl("https://catalogue.ceh.ac.uk/eidc/documents"));
+    }
+
+    @Test
+    @DisplayName("upgrades a plain-HTTP request on a real host to HTTPS (dri-one #71)")
+    @SneakyThrows
+    void redirectUpgradesRealHostToHttps() {
+        //when a proxy has terminated TLS and forwarded plain HTTP
+        mvc.perform(get("http://catalogue.ceh.ac.uk/"))
+           .andExpect(redirectedUrl("https://catalogue.ceh.ac.uk/eidc/documents"));
+    }
+
+    @Test
+    @DisplayName("preserves HTTP for local development so localhost is not forced to HTTPS")
+    @SneakyThrows
+    void redirectPreservesHttpForLocalhost() {
+        //when
+        mvc.perform(get("http://localhost:8080/"))
+           .andExpect(redirectedUrl("http://localhost:8080/eidc/documents"));
     }
 }
