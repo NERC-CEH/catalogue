@@ -95,6 +95,24 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private Boolean hasOnlineServiceAgreement;
 
 
+    // Pre-EMC-700 documents store every contact in one role-tagged list; bucket it into the typed fields above.
+    @JsonProperty("responsibleParties")
+    private void setLegacyResponsibleParties(List<ResponsibleParty> legacyResponsibleParties) {
+        Optional.ofNullable(legacyResponsibleParties)
+            .orElseGet(Collections::emptyList)
+            .forEach(party -> {
+                switch (party.getRole()) {
+                    case "author" -> authors.add(party);
+                    case "custodian" -> custodians.add(party);
+                    case "pointOfContact" -> contactPoints.add(party);
+                    case "rightsHolder" -> rightsHolders.add(party);
+                    case "publisher" -> publishers.add(party);
+                    case "contributor" -> contributors.add(party);
+                    default -> otherContacts.add(party);
+                }
+            });
+    }
+
     public void populateFromServiceAgreement(ServiceAgreement serviceAgreement) {
         this.setTitle(serviceAgreement.getTitle());
         this.setDescription(serviceAgreement.getDescription());
@@ -336,13 +354,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return !getCroissantConformity().isEmpty();
     }
 
-    private List<ResponsibleParty> otherContactsByRole(String role) {
-        return getOtherContacts()
-            .stream()
-            .filter(otherContacts -> otherContacts.getRole().equalsIgnoreCase(role))
-            .collect(Collectors.toCollection(ArrayList::new));
-    }
-
     public List<ResponsibleParty> getAuthors() {
         return new ArrayList<>(authors);
     }
@@ -370,22 +381,22 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     @JsonIgnore
     public List<ResponsibleParty> getDepositors() {
-        return otherContactsByRole("depositor");
+        return filterResponsibleParty(getOtherContacts(), "depositor");
     }
 
     @JsonIgnore
     public List<ResponsibleParty> getOriginators() {
-        return otherContactsByRole("originator");
+        return filterResponsibleParty(getOtherContacts(), "originator");
     }
 
     @JsonIgnore
     public List<ResponsibleParty> getOwners() {
-        return otherContactsByRole("owner");
+        return filterResponsibleParty(getOtherContacts(), "owner");
     }
 
     @JsonIgnore
     public List<ResponsibleParty> getResourceProviders() {
-        return otherContactsByRole("resourceProvider");
+        return filterResponsibleParty(getOtherContacts(), "resourceProvider");
     }
 
 
