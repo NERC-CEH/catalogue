@@ -208,8 +208,8 @@ export default EditorView.extend({
     },
     */
     {
-      label: 'Other contacts',
-      title: 'Other contacts',
+      label: 'Additional contacts',
+      title: 'Additional contacts',
       views: [
 
         new PredefinedParentLargeView({
@@ -338,6 +338,7 @@ export default EditorView.extend({
             { value: 'mediator', label: 'Mediator' },
             { value: 'originator', label: 'Originator' },
             { value: 'resourceProvider', label: 'Resource provider' },
+            { value: 'principalInvestigator', label: 'Principal investigator' },
             { value: 'stakeholder', label: 'Stakeholder' },
             { value: 'user', label: 'User' }
           ]
