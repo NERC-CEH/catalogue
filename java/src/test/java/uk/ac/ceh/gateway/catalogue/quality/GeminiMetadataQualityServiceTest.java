@@ -320,6 +320,54 @@ public class GeminiMetadataQualityServiceTest {
     }
 
     @Test
+    public void checkAuthorCorrectFromLegacyResponsibleParties() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("legacyResponsiblePartiesRight.json"), this.config);
+
+        //when
+        val actual = this.service.checkAuthors(parsed);
+
+        //then
+        assertThat(actual, empty());
+    }
+
+    @Test
+    public void checkPublisherCorrectFromLegacyResponsibleParties() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("legacyResponsiblePartiesRight.json"), this.config);
+
+        //when
+        val actual = this.service.checkPublisher(parsed);
+
+        //then
+        assertThat(actual, empty());
+    }
+
+    @Test
+    public void checkCustodianCorrectFromLegacyResponsibleParties() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("legacyResponsiblePartiesRight.json"), this.config);
+
+        //when
+        val actual = this.service.checkCustodian(parsed);
+
+        //then
+        assertThat(actual, empty());
+    }
+
+    @Test
+    public void checkPointOfContactCorrectFromLegacyResponsibleParties() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("legacyResponsiblePartiesRight.json"), this.config);
+
+        //when
+        val actual = this.service.checkPointOfContact(parsed);
+
+        //then
+        assertThat(actual, empty());
+    }
+
+    @Test
     public void checkDistributorCorrect() {
         //given
         val parsed = JsonPath.parse(getClass().getResourceAsStream("distributorsRight.json"), this.config);

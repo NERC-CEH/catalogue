@@ -42,28 +42,29 @@
 </#if>
 
 
-<#assign otherContacts = [] >
+<#assign otherContactsDisplay = otherContacts >
 <#if publishers?has_content>
-  <#assign otherContacts = otherContacts + publishers >
+  <#assign otherContactsDisplay = otherContactsDisplay + publishers >
 </#if>
 <#if rightsHolders?has_content>
-  <#assign otherContacts = otherContacts + rightsHolders >
+  <#assign otherContactsDisplay = otherContactsDisplay + rightsHolders >
+</#if>
+<#if custodians?has_content>
+  <#assign otherContactsDisplay = otherContactsDisplay + custodians >
 </#if>
 
-<#if otherContacts?has_content >
+<#if otherContactsDisplay?has_content >
   <div id="segment-otherContacts">
     <h2><a id="otherContacts"></a>Other contacts</h2>
     <div class="row key-value">
-      <#if otherContacts?has_content>
-        <#list otherContacts as otherContact>
-          <div class="col-sm-3 key">${otherContact.roleDisplayName?cap_first}</div>
-          <div class="col-sm-9 value">
-            <div class="contact">
-              <@func.displayContact otherContact false true false />
-            </div>
+      <#list otherContactsDisplay as otherContact>
+        <div class="col-sm-3 key">${otherContact.roleDisplayName?cap_first}</div>
+        <div class="col-sm-9 value">
+          <div class="contact">
+            <@func.displayContact otherContact false true false />
+          </div>
         </div>
-        </#list>
-      </#if>
+      </#list>
     </div>
   </div>
 </#if>

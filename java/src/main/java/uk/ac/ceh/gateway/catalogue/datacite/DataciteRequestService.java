@@ -275,7 +275,8 @@ public class DataciteRequestService {
         } else if (contactType.equals("contributor")) {
             if (!document.getContactPoints().isEmpty()
                 || !document.getRightsHolders().isEmpty()
-                || !document.getCustodians().isEmpty()) {
+                || !document.getCustodians().isEmpty()
+                || !document.getContributors().isEmpty()) {
 
                 for (ResponsibleParty poc : document.getContactPoints()) {
                     contacts.add(dataciteContactHelper(poc, "contributor", "ContactPerson"));
@@ -285,6 +286,9 @@ public class DataciteRequestService {
                 }
                 for (ResponsibleParty custodian : document.getCustodians()) {
                     contacts.add(dataciteContactHelper(custodian, "contributor", "HostingInstitution"));
+                }
+                for (ResponsibleParty contributor : document.getContributors()) {
+                    contacts.add(dataciteContactHelper(contributor, "contributor", contributor.getContributorRole()));
                 }
             }
         }

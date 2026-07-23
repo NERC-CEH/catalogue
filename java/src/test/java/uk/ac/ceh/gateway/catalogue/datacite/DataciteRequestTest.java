@@ -218,6 +218,21 @@ public class DataciteRequestTest {
     }
 
     @Test
+    void testDataciteContactContributorsField() {
+        ResponsibleParty contributor = ResponsibleParty.builder()
+            .displayName("Jean-Luc Picard")
+            .honorificPrefix(null)
+            .familyName(null)
+            .contributorRole("dataCurator")
+            .build();
+        when(docMock.getContributors()).thenReturn(List.of(contributor));
+
+        List<DataciteContact> contributors = attributes.dataciteContact(docMock, "contributor");
+        assertEquals(1, contributors.size());
+        assertEquals("dataCurator", contributors.getFirst().contributorType());
+    }
+
+    @Test
     void testDataciteContactHelperNonOrcROR() {
         ResponsibleParty party = ResponsibleParty.builder()
             .displayName("Patrick Stewart")
