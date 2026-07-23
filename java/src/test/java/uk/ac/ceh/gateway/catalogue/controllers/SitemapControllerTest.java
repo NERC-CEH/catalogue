@@ -96,11 +96,11 @@ class SitemapControllerTest extends AbstractMvcTest {
 
         //when
         mvc.perform(
-            get("/{catalogue}/sitemap.txt", catalogueKey)
+            get("/{catalogue}/sitemap.xml", catalogueKey)
         )
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.TEXT_PLAIN_VALUE))
-            .andExpect(view().name("sitemap/sitemap.txt"))
+            .andExpect(view().name("sitemap/sitemap.xml"))
             .andExpect(model().attributeExists("urls"));
     }
 }
