@@ -69,6 +69,24 @@ public class KeywordVocabulariesConfig {
                 );
             }
 
+    @Profile("server-eidc")
+    @Bean
+    public KeywordVocabulary envThesVocabulary(
+            @Qualifier("sparql") RestTemplate restTemplate,
+            SolrClient solrClient,
+            @Value("${elter.sparql.endpoint}") String sparqlEndpoint
+            ) {
+        return new SparqlKeywordVocabulary(
+                restTemplate,
+                solrClient,
+                sparqlEndpoint,
+                "<http://vocabs.lter-europe.net/EnvThes/>",
+                "?uri skos:prefLabel ?label . FILTER NOT EXISTS { ?uri <http://www.w3.org/2002/07/owl#deprecated> true}",
+                "envThes",
+                "EnvThes"
+                );
+            }
+
     @Profile("server-datalabs")
     @Bean
     public KeywordVocabulary dukemsPollutant(
