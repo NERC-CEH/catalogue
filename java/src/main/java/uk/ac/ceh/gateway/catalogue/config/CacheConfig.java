@@ -66,10 +66,10 @@ public class CacheConfig implements CachingConfigurer {
     }
 
     private Caffeine<Object, Object> expireAfterAccess(Duration ttl) {
-        return Caffeine.newBuilder().expireAfterAccess(ttl);
+        return Caffeine.newBuilder().expireAfterAccess(ttl).recordStats();
     }
 
     private Caffeine<Object, Object> expireAfterWrite(long maxEntries, Duration ttl) {
-        return Caffeine.newBuilder().expireAfterWrite(ttl).maximumSize(maxEntries);
+        return Caffeine.newBuilder().expireAfterWrite(ttl).maximumSize(maxEntries).recordStats();
     }
 }
