@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.modelnerc;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,7 +28,8 @@ public class NercModelUse extends AbstractMetadataDocument {
     private String
         completionDate;
 
-    private List<ResponsibleParty> responsibleParties;
+    @JsonAlias("responsibleParties")
+    private List<ResponsibleParty> contacts;
 
     private List<Funding> funding;
 

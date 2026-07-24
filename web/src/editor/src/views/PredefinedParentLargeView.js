@@ -18,6 +18,8 @@ export default ParentLargeView.extend({
     this.$('button').prop(this.data.disabled, this.data.disabled)
     _.chain(this.data.predefined)
       .keys()
+      .sortBy(item => item.toLowerCase())
+      .reverse()
       .each(item => this.$('ul.dropdown-menu').prepend(this.dropdownTemplate({ predefined: item })))
     return this
   },

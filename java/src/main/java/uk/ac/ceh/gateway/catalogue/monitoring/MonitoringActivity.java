@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.monitoring;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.http.MediaType;
@@ -32,7 +33,8 @@ public class MonitoringActivity extends AbstractMetadataDocument implements Well
     private List<String> alternateTitles;
     private String objectives, operationalStatus;
     private BoundingBox boundingBox;
-    private List<ResponsibleParty> pointsOfContact;
+    @JsonAlias("pointsOfContact")
+    private List<ResponsibleParty> contacts;
     private List<TimePeriod> operatingPeriod;
     private List<Keyword> environmentalDomain, purposeOfCollection, keywordsParameters;
     private List<Supplemental> linksData, linksOther;

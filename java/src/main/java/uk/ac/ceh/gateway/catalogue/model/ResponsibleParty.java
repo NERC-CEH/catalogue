@@ -12,9 +12,9 @@ import static com.google.common.base.Strings.nullToEmpty;
 
 @Value
 @With
-@JsonIgnoreProperties({"roleDisplayName"})
+@JsonIgnoreProperties({"roleDisplayName", "contributorRoleDisplayName"})
 public class ResponsibleParty {
-    String honorificPrefix, familyName, givenName, displayName, organisationName, organisationIdentifier, role, email, phone, nameIdentifier;
+    String honorificPrefix, familyName, givenName, displayName, organisationName, organisationIdentifier, contributorRole, role, email, phone, nameIdentifier;
     Address address;
 
     @Builder
@@ -26,6 +26,7 @@ public class ResponsibleParty {
         @JsonProperty("displayName") String displayName,
         @JsonProperty("organisationName") String organisationName,
         @JsonProperty("organisationIdentifier") String organisationIdentifier,
+        @JsonProperty("contributorRole") String contributorRole,
         @JsonProperty("role") String role,
         @JsonProperty("email") String email,
         @JsonProperty("phone") String phone,
@@ -38,6 +39,7 @@ public class ResponsibleParty {
         this.organisationName = nullToEmpty(organisationName);
         this.organisationIdentifier = nullToEmpty(organisationIdentifier);
         this.role = nullToEmpty(role);
+        this.contributorRole = nullToEmpty(contributorRole);
         this.email = nullToEmpty(email);
         this.phone = nullToEmpty(phone);
         this.nameIdentifier = nullToEmpty(nameIdentifier);
@@ -81,6 +83,10 @@ public class ResponsibleParty {
 
     public String getRoleDisplayName() {
         return toTitlecase(role);
+    }
+
+    public String getContributorRoleDisplayName() {
+        return toTitlecase(contributorRole);
     }
 
     public String getPointOfContact() {

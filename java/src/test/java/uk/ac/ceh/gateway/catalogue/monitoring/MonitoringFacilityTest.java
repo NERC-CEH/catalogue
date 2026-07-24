@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.monitoring;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,21 @@ import static org.mockito.Mockito.when;
 
 @DisplayName("MonitoringFacility")
 class MonitoringFacilityTest {
+
+    @Test
+    @DisplayName("deserializes legacy pointsOfContact into contacts")
+    void deserializesLegacyPointsOfContact() throws Exception {
+        //given
+        val json = """
+            {"pointsOfContact": [{"displayName": "POC, 0."}]}
+            """;
+
+        //when
+        val facility = new ObjectMapper().readValue(json, MonitoringFacility.class);
+
+        //then
+        assertThat(facility.getContacts().size(), equalTo(1));
+    }
 
     @Test
     @DisplayName("has no geometry and boundingBox")

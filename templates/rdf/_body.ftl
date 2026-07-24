@@ -1,7 +1,8 @@
 :${id}
   dcterms:title <@displayLiteral title /> ;
 
-  <@identifiers resourceIdentifiers />
+  <@canonicalIdentifier resourceIdentifiers />
+  <@otherIdentifiers resourceIdentifiers />
 
   <#if datacitable?string=='true' && citation?has_content>
       <#assign citationString =  citation.authors?join(', ') + " (" + citation.year?string("0") +"). " + citation.title + ". " + citation.publisher + ". " + citation.url?trim>
@@ -32,8 +33,8 @@
     </#if>
 
     <#--Points of contact-->
-    <#if pointsOfContact?has_content>
-      dcat:contactPoint <@contactList pointsOfContact "c" />  ;
+    <#if contactPoints?has_content>
+      dcat:contactPoint <@contactList contactPoints "c" />  ;
     </#if>
 
     <#--Publisher-->
@@ -48,6 +49,7 @@
     <#list jena.relationships(uri, "http://purl.org/dc/terms/replaces")>
       dcterms:replaces <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
+
     <#list jena.relationships(uri, "http://purl.org/dc/terms/relation")>
       dcterms:relation <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
@@ -81,8 +83,8 @@
 
     dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en> . <#-- leave here to close all the statements about the dataset -->
 
-    <#if pointsOfContact?has_content>
-      <@contactDetail pointsOfContact "c" />
+    <#if contactPoints?has_content>
+      <@contactDetail contactPoints "c" />
     </#if>
 
     <#if publishers?has_content>
@@ -115,16 +117,65 @@
     .
   </#if>
 
-  <#macro identifiers resourceIdentifiers>
-    <#list resourceIdentifiers >
-    dcterms:identifier <#t>
-      <#items as id>
-        "<#t>
-        <#if id.codeSpace?starts_with("doi")>
-          https://doi.org/<#t>
-        </#if>
-          ${id.code}"<#t>
-      <#sep>,</#sep><#t>
-      </#items> ;<#t>
-    </#list>
+  <#macro canonicalIdentifier resourceIdentifiers>
+
+    <#local domain = uri?replace(id, "")>
+    <#local canonicalId = resourceIdentifiers?filter(id -> id.code?starts_with(domain))?first!>
+
+    <#if canonicalId?has_content>
+      dcterms:identifier <${canonicalId.code}> ;
+    </#if>
+
+  </#macro>
+
+  <#macro otherIdentifiers resourceIdentifiers>
+
+    <#local domain = uri?replace(id, "")>
+    <#local dois = resourceIdentifiers?filter(id -> id.codeSpace?matches("doi"))!>
+    <#local otherIds = resourceIdentifiers?filter(id -> !id.code?starts_with(domain) && !(id.codeSpace?? && id.codeSpace?matches("doi")) )>
+
+    <#if dois?has_content>
+
+      <#list dois>
+        adms:identifier <#t>
+          <#items as id>
+            <https://doi.org/${id.code}><#t>
+          <#sep>,</#sep><#t>
+          </#items> ;<#t>
+      </#list>
+
+    </#if>
+
+    <#if otherIds?has_content>
+
+      <#list otherIds>
+        adms:identifier <#t>
+          <#items as id>
+            "<#if id.codeSpace?? && id.codeSpace?has_content && !id.codeSpace?starts_with("http")>${id.codeSpace}/</#if>${id.code}"<#t>
+          <#sep>,</#sep><#t>
+          </#items> ;<#t>
+      </#list>
+
+    </#if>
+
+  </#macro>
+
+
+  <#macro idSameAs resourceIdentifiers>
+
+    <#local domain = uri?replace(id, "")>
+    <#local otherIds = resourceIdentifiers?filter(id -> !id.code?starts_with(domain) && !(id.codeSpace?? && id.codeSpace?matches("doi")) )>
+
+    <#if otherIds?has_content>
+
+      <#list otherIds>
+        adms:identifier <#t>
+          <#items as id>
+            "<#if id.codeSpace?? && id.codeSpace?has_content && !id.codeSpace?starts_with("http")>${id.codeSpace}/</#if>${id.code}"<#t>
+          <#sep>,</#sep><#t>
+          </#items> ;<#t>
+      </#list>
+
+    </#if>
+
   </#macro>

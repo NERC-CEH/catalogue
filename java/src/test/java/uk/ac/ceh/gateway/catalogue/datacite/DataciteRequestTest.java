@@ -210,11 +210,26 @@ public class DataciteRequestTest {
             .displayName("Patrick Stewart")
             .honorificPrefix(null)
             .familyName(null).build();
-        when(docMock.getPointsOfContact()).thenReturn(List.of(contact));
+        when(docMock.getContactPoints()).thenReturn(List.of(contact));
         when(docMock.getRightsHolders()).thenReturn(List.of(contact));
         when(docMock.getCustodians()).thenReturn(List.of(contact));
         List<DataciteContact> contributors = attributes.dataciteContact(docMock, "contributor");
         assertEquals(3, contributors.size());
+    }
+
+    @Test
+    void testDataciteContactContributorsField() {
+        ResponsibleParty contributor = ResponsibleParty.builder()
+            .displayName("Jean-Luc Picard")
+            .honorificPrefix(null)
+            .familyName(null)
+            .contributorRole("dataCurator")
+            .build();
+        when(docMock.getContributors()).thenReturn(List.of(contributor));
+
+        List<DataciteContact> contributors = attributes.dataciteContact(docMock, "contributor");
+        assertEquals(1, contributors.size());
+        assertEquals("dataCurator", contributors.getFirst().contributorType());
     }
 
     @Test

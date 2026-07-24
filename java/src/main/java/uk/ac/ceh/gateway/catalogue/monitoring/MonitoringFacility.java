@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.monitoring;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -35,7 +36,9 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
     private Keyword facilityType;
     private Geometry geometry;
     private boolean geometryRepresentative, locationConfidential, mobile;
-    private List<ResponsibleParty> pointsOfContact, partners;
+    @JsonAlias("pointsOfContact")
+    private List<ResponsibleParty> contacts;
+    private List<ResponsibleParty> partners;
     private List<TimePeriod> operatingPeriod;
     private List<Keyword> environmentalDomain, keywordsParameters;
     private List<AdditionalInfo> additionalInfo;

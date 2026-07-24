@@ -1,9 +1,9 @@
-<#if pointsOfContact?size gt 0 >
+<#if contactPoints?has_content>
   <div id="segment-pointOfContact">
   <h2 id="pointOfContact">Correspondence/contact details</h2>
-      <#list pointsOfContact>
+      <#list contactPoints>
         <#items as poc>
-          <div class="responsibleParty">
+          <div class="contact">
              <@func.displayContact poc true true false />
           </div>
         </#items>
@@ -11,7 +11,7 @@
   </div>
 </#if>
 
-<#if authors?size gt 0 >
+<#if authors?has_content >
   <div id="segment-authors">
   <h2 id="authors">Author<#if authors?size gt 1>s</#if></h2>
 
@@ -20,9 +20,9 @@
       <#assign moreAuthors = authors?size-authorMaxSize >
 
         <#items as author>
-          <#assign rpClass="responsibleParty">
+          <#assign rpClass="contact">
           <#if author?counter gt authorMaxSize>
-            <#assign rpClass="responsibleParty responsiblePartyCollapse collapse">
+            <#assign rpClass="contact contactCollapse collapse">
           </#if>
 
           <div class="${rpClass}">
@@ -33,7 +33,7 @@
       </#list>
 
       <#if authors?size gt authorMaxSize >
-        <a href=".responsiblePartyCollapse" class="moreAuthors" data-extra-authors="${moreAuthors}" data-bs-toggle="collapse" aria-controls="responsiblePartyCollapse" area-expanded="false" role="button">
+        <a href=".contactCollapse" class="moreAuthors" data-extra-authors="${moreAuthors}" data-bs-toggle="collapse" aria-controls="contactCollapse" area-expanded="false" role="button">
           authors
         </a>
       </#if>
@@ -41,20 +41,30 @@
   </div>
 </#if>
 
-<#if otherContacts?has_content >
+
+<#assign otherContactsDisplay = otherContacts >
+<#if publishers?has_content>
+  <#assign otherContactsDisplay = otherContactsDisplay + publishers >
+</#if>
+<#if rightsHolders?has_content>
+  <#assign otherContactsDisplay = otherContactsDisplay + rightsHolders >
+</#if>
+<#if custodians?has_content>
+  <#assign otherContactsDisplay = otherContactsDisplay + custodians >
+</#if>
+
+<#if otherContactsDisplay?has_content >
   <div id="segment-otherContacts">
     <h2><a id="otherContacts"></a>Other contacts</h2>
     <div class="row key-value">
-      <#if otherContacts?has_content>
-        <#list otherContacts as otherContact>
-          <div class="col-sm-3 key">${otherContact.roleDisplayName?cap_first}</div>
-          <div class="col-sm-9 value">
-            <div class="responsibleParty">
-              <@func.displayContact otherContact false true false />
-            </div>
+      <#list otherContactsDisplay as otherContact>
+        <div class="col-sm-3 key">${otherContact.roleDisplayName?cap_first}</div>
+        <div class="col-sm-9 value">
+          <div class="contact">
+            <@func.displayContact otherContact false true false />
+          </div>
         </div>
-        </#list>
-      </#if>
+      </#list>
     </div>
   </div>
 </#if>

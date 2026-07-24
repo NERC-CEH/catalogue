@@ -9,6 +9,22 @@ export default _.template(`
         <select data-name='role' class="role-select" id="contacts<%= data.index %>Role"></select>
     </div>
 </div>
+<div class="contributorRole row">
+    <div class="col-lg-2">
+        <label for="contacts<%= data.index %>ContributorRole">Contributor role</label>
+    </div>
+    <div class="col-lg-10">
+        <select data-name='contributorRole' class="form-select" id="contacts<%= data.index %>ContributorRole">
+          <option value="">Select a role</option>
+          <option value="dataCreator">Data creator</option>
+          <option value="dataCurator">Data curator</option>
+          <option value="collaborator">Collaborator</option>
+          <option value="researcher">Researcher</option>
+          <option value="technician">Technician</option>
+          <option value="projectLeader">Project leader</option>
+        </select>
+    </div>
+</div>
 <div class="row organisation">
     <div class="col-lg-2">
         <label for="contacts<%= data.index %>Organisation">Organisation</label>

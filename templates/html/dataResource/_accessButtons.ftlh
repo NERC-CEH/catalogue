@@ -3,7 +3,6 @@
   <#assign dataAccess=downloadOrderDetails.from(onlineResources) >
 </#if>
 
-
 <div class="accessButtons"><#t/>
   <@exploreButton />
   <@accessButton />
@@ -22,9 +21,9 @@
           Download
           <i class="fa-solid fa-arrow-down fa-fw"></i>
         </a>
-      <#elseif externalLinks?? && externalLinks?has_content>
+      <#elseif distributionsExternal?? && distributionsExternal?has_content>
         <a class="btn btn-ukceh" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
-          Access <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          Access? <i class="fa-solid fa-arrow-up-right-from-square"></i>
         </a>
       </#if>
     </#if>
@@ -126,9 +125,9 @@
 
           <@fileAccessInstructions />
 
-        <#elseif externalLinks?? && externalLinks?has_content>
+        <#elseif distributionsExternal?? && distributionsExternal?has_content>
 
-          <#list externalLinks as item>
+          <#list distributionsExternal as item>
             <p>
               <a href="${item.url}" class="link-offset-2" target="_blank" rel="noopener noreferrer">
                 <b>Access</b>

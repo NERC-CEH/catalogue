@@ -1,12 +1,8 @@
 {
-  "responsibleParties": [
+  "custodians": [
     {
       "organisationName": "NERC EDS Environmental Information Data Centre",
-      "email": "info@eidc.ac.uk",
-      "role": "custodian"
-    },
-    {
-      "role": "distributor"
+      "email": "info@eidc.ac.uk"
     }
   ]
 }

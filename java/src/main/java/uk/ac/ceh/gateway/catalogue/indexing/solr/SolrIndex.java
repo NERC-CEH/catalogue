@@ -70,7 +70,7 @@ public class SolrIndex {
     private @Field String objectives;
     private @Field List<String> pointOfContact;
     private @Field String operationalStatus;
-    private @Field List<String> responsibleParties;
+    private @Field List<String> contacts;
     private @Field List<String> rightsHolder;
     private @Field List<String> ror;
     private @Field List<String> saPhysicalState;
