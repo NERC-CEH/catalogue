@@ -504,6 +504,11 @@ export default EditorView.extend({
               type: 'application/netcdf',
               version: '4'
             },
+            Parquet: {
+              name: 'Parquet',
+              type: 'application/vnd.apache.parquet',
+              version: 'unknown'
+            },
             Shapefile: {
               name: 'Shapefile',
               type: '',
