@@ -515,6 +515,16 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @JsonIgnore
+    public List<OnlineResource> getDistributionsInternal() {
+        return filterOnlineResourcesUrl(getDistributions(), ".+\\.ceh\\.ac\\.uk.+");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getDistributionsExternal() {
+        return excludeOnlineResourcesUrl(getDistributions(), ".+\\.ceh\\.ac\\.uk.+");
+    }
+
+    @JsonIgnore
     public List<OnlineResource> getExternalLinks() {
         return excludeOnlineResourcesUrl(onlineResources, ".+\\.ceh\\.ac\\.uk.+");
     }
