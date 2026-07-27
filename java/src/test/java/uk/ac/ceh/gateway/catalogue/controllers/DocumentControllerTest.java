@@ -116,7 +116,7 @@ class DocumentControllerTest extends AbstractMvcTest {
     private DownloadOrderDetailsService downloadOrderDetailsService;
     @Autowired private Configuration configuration;
 
-    private CachedDataRepository cachedDataRepository;
+    @MockitoBean private CachedDataRepository cachedDataRepository;
     private DocumentController controller;
     private final String linkedDocumentId = "0a6c7c4c-0515-40a8-b84e-7ffe622b2579";
     private final String id = "fe26bd48-0f81-4a37-8a28-58427b7e20bd";
@@ -127,7 +127,6 @@ class DocumentControllerTest extends AbstractMvcTest {
 
     @BeforeEach
     void setup() {
-        cachedDataRepository = mock(CachedDataRepository.class);
         controller = new DocumentController(metricsService, metricsExcludedUsers, documentRepository, jenaService, cachedDataRepository);
         DownloadUrlProperties downloadUrlProperties = mock(DownloadUrlProperties.class);
         when(downloadUrlProperties.getRegexOrder()).thenReturn("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*");

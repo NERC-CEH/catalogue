@@ -19,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
@@ -45,6 +46,7 @@ class CodeDocumentControllerTest extends AbstractMvcTest {
     @MockitoBean(name="permission") private PermissionService permissionService;
     @Autowired private Configuration configuration;
     @MockitoBean private CatalogueService catalogueService;
+    @MockitoBean private CachedDataRepository cachedDataRepository;
 
     private final String catalogue = "datalabs";
     private final String id = "123-test";

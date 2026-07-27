@@ -33,7 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import org.junit.jupiter.api.BeforeEach;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -57,7 +56,7 @@ class CatalogueDocumentControllerTest extends AbstractMvcTest {
     private @MockitoBean(name="permission") PermissionService permissionService;
     private @MockitoBean CatalogueService catalogueService;
 
-    private CachedDataRepository cachedDataRepository;
+    @MockitoBean private CachedDataRepository cachedDataRepository;
     private CatalogueDocumentController controller;
 
     private final String file = "955b5a6e-dd3f-4b20-a3b5-a9d1d04ba052";
@@ -71,7 +70,6 @@ class CatalogueDocumentControllerTest extends AbstractMvcTest {
 
     @BeforeEach
     void setup() {
-        cachedDataRepository = mock(CachedDataRepository.class);
         controller = new CatalogueDocumentController(documentRepository, catalogueService, cachedDataRepository);
     }
 

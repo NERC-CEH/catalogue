@@ -38,7 +38,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -60,7 +59,7 @@ class PermissionControllerTest extends AbstractMvcTest {
     @MockitoBean private ProfileService profileService;
 
     private PermissionController permissionController;
-    private CachedDataRepository cachedDataRepository;
+    @MockitoBean private CachedDataRepository cachedDataRepository;
     @Autowired private Configuration configuration;
 
     private final String file = "12345";
@@ -105,7 +104,6 @@ class PermissionControllerTest extends AbstractMvcTest {
 
     @BeforeEach
     void setup() {
-        cachedDataRepository = mock(CachedDataRepository.class);
         permissionController = new PermissionController(permissionService, documentRepository, cachedDataRepository);
     }
 
