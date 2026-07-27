@@ -99,7 +99,7 @@ class SitemapControllerTest extends AbstractMvcTest {
             get("/{catalogue}/sitemap.xml", catalogueKey)
         )
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.TEXT_PLAIN_VALUE))
+            .andExpect(content().contentType(MediaType.APPLICATION_XML_VALUE))
             .andExpect(view().name("sitemap/sitemap.xml"))
             .andExpect(model().attributeExists("urls"));
     }

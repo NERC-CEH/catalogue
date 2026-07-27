@@ -58,7 +58,7 @@ public class SitemapController {
         @PathVariable String catalogue,
         HttpServletResponse response
     ) {
-        response.setContentType(MediaType.TEXT_PLAIN_VALUE);
+        response.setContentType(MediaType.APPLICATION_XML_VALUE);
         if (catalogueService.retrieve(catalogue) == null) {
             throw new ResourceNotFoundException(catalogue + " is not a catalogue");
         }
