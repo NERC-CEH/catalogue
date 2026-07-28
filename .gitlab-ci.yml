@@ -93,7 +93,11 @@ build_application:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
     - docker build --build-arg BUILD_DATE=$(date +%Y-%m-%d) --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME .
-    - docker push $CI_REGISTRY_IMAGE/app --all-tags
+    # Push only the tag just built. --all-tags pushed every app tag present in the
+    # builder's local image store, which is the shared host daemon (the dind service
+    # never starts here), so it re-uploaded every $CI_COMMIT_SHA image left behind by
+    # test_application: job 89517 pushed 244 tags instead of 1.
+    - docker push $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME
   only:
     - tags
 
@@ -101,4 +105,5 @@ build_solr:
   extends: build_application
   script:
     - docker build -t $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME solr
-    - docker push $CI_REGISTRY_IMAGE/solr --all-tags
+    # Same fix as build_application above.
+    - docker push $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME
