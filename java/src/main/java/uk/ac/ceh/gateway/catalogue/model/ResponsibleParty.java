@@ -62,6 +62,15 @@ public class ResponsibleParty {
         return organisationIdentifier.matches("^https://ror\\.org/\\w{8,10}$");
     }
 
+    @JsonIgnore
+    public String getOrcid() {
+        if (!isOrcid()) {
+            return "";
+        }
+
+        return nameIdentifier.replaceFirst("^https?://orcid\\.org/", "");
+    }
+
     public String getFullName() {
         if (!displayName.isEmpty()) {
             return displayName;

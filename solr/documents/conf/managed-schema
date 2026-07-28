@@ -32,11 +32,6 @@
         <filter class="solr.StopFilterFactory" words="stopwords.txt"/>
       </analyzer>
     </fieldType>
-    <fieldType name="orcids" class="solr.TextField" sortMissingLast="true" omitNorms="true" multiValued="true">
-      <analyzer>
-        <tokenizer class="solr.PatternTokenizerFactory" pattern="(https?:\/\/orcid.org\/)(\d{4}-\d{4}-\d{4}-\d{3}[\d|X])" group="2"/>
-      </analyzer>
-    </fieldType>
     <fieldType name="booleans" class="solr.BoolField" sortMissingLast="true" multiValued="true"/>
     <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
     <fieldType name="pdateranges" class="solr.DateRangeField" multiValued="true"/>
@@ -97,7 +92,7 @@
     <field name="authorFamilyName" type="names" multiValued="true"/>
     <field name="authorFullName" type="names" multiValued="true"/>
     <field name="authorGivenName" type="keywords" multiValued="true"/>
-    <field name="authorOrcid" type="orcids"/>
+    <field name="authorOrcid" type="keywords" multiValued="true"/>
     <field name="authorRor" type="rors"/>
     <field name="availability" type="keywords" multiValued="false"/>
     <field name="catalogue" type="keywords" multiValued="false"/>
@@ -147,7 +142,7 @@
     <field name="observedPropertyValue" type="keywords_lowercase"/>
     <field name="operatingPeriod" type="pdateranges"/>
     <field name="operationalStatus" type="string" multiValued="false"/>
-    <field name="orcid" type="orcids"/>
+    <field name="orcid" type="keywords" multiValued="true"/>
     <field name="organisation" type="keywords"/>
     <field name="pointOfContact" type="keywords"/>
     <field name="publicationDate" type="pdate"/>
