@@ -1,10 +1,6 @@
 include:
 - template: Jobs/Container-Scanning.gitlab-ci.yml
 
-variables:
-  DOCKER_DAEMON_ARGS: -g /cache/docker
-  DOCKER_DRIVER: overlay2
-
 stages:
   - test
   - scan
@@ -46,15 +42,12 @@ test_web:
 
 test_application:
   stage: test
-  image: docker:27
+  image: docker:29.6.2
   except:
     - tags
   before_script:
     - set -euo pipefail
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  services:
-    - name: docker:27-dind
-      alias: docker
   script:
     - docker build --build-arg BUILD_DATE=$(date +%Y-%m-%d) --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
     - docker push $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA
@@ -84,10 +77,7 @@ container_scanning:
 
 build_application:
   stage: build
-  image: docker:27
-  services:
-    - name: docker:27-dind
-      alias: docker
+  image: docker:29.6.2
   before_script:
     - set -euo pipefail
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
