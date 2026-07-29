@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.catalogue;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +13,7 @@ import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,14 +37,13 @@ public class CatalogueDocumentController {
         log.info("Creating");
     }
 
-    @SneakyThrows
     @PreAuthorize("@permission.userCanView(#file)")
     @GetMapping("{file}/catalogue")
     public ResponseEntity<CatalogueResource> currentCatalogue (
         @PathVariable String file
-    ) throws DocumentRepositoryException {
+    ) throws DocumentRepositoryException, IOException {
         CatalogueResource resource = new CatalogueResource(documentRepository.read(file));
-        String revision = cachedDataRepository.getDocumentRevisionId(file + ".meta");
+        String revision = cachedDataRepository.getDocumentRevisionToken(file);
         ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
         if (revision != null) {
             builder.eTag(revision); // Spring quotes this into a strong ETag: "revision"
@@ -52,7 +51,6 @@ public class CatalogueDocumentController {
         return builder.body(resource);
     }
 
-    @SneakyThrows
     @PreAuthorize("@permission.userCanEdit(#file)")
     @PutMapping("{file}/catalogue")
     public ResponseEntity<CatalogueResource> updateCatalogue (
@@ -60,7 +58,7 @@ public class CatalogueDocumentController {
         @PathVariable String file,
         @RequestBody CatalogueResource catalogueResource,
         @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
-    ) throws DocumentRepositoryException {
+    ) throws DocumentRepositoryException, IOException {
         String expectedRevision = IfMatchRevision.require(ifMatch);
         val document = documentRepository.read(file);
         val metadata = document.getMetadata();
@@ -76,7 +74,7 @@ public class CatalogueDocumentController {
             expectedRevision
         );
         log.debug(newDocument.toString());
-        String newRevision = cachedDataRepository.getDocumentRevisionId(file + ".meta");
+        String newRevision = cachedDataRepository.getDocumentRevisionToken(file);
         ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
         if (newRevision != null) {
             builder.eTag(newRevision); // Spring quotes this into a strong ETag: "revision"
@@ -84,14 +82,13 @@ public class CatalogueDocumentController {
         return builder.body(new CatalogueResource(newDocument));
     }
 
-    @SneakyThrows
     @PreAuthorize("@permission.userCanView(#file)")
     @GetMapping("{file}/catalogue-view")
     public ResponseEntity<CatalogueViewResource> currentCatalogueView(
         @PathVariable String file
-    ) throws DocumentRepositoryException {
+    ) throws DocumentRepositoryException, IOException {
         CatalogueViewResource resource = new CatalogueViewResource(documentRepository.read(file));
-        String revision = cachedDataRepository.getDocumentRevisionId(file + ".meta");
+        String revision = cachedDataRepository.getDocumentRevisionToken(file);
         ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
         if (revision != null) {
             builder.eTag(revision); // Spring quotes this into a strong ETag: "revision"
@@ -99,7 +96,6 @@ public class CatalogueDocumentController {
         return builder.body(resource);
     }
 
-    @SneakyThrows
     @PreAuthorize("@permission.userCanEdit(#file)")
     @PutMapping("{file}/catalogue-view")
     public ResponseEntity<CatalogueViewResource> updateCatalogueView(
@@ -107,7 +103,7 @@ public class CatalogueDocumentController {
         @PathVariable String file,
         @RequestBody CatalogueViewResource resource,
         @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
-    ) throws DocumentRepositoryException {
+    ) throws DocumentRepositoryException, IOException {
         String expectedRevision = IfMatchRevision.require(ifMatch);
         val document = documentRepository.read(file);
         val primaryCatalogue = document.getCatalogue();
@@ -127,7 +123,7 @@ public class CatalogueDocumentController {
             String.format("Secondary catalogues of %s changed.", file),
             expectedRevision
         );
-        String newRevision = cachedDataRepository.getDocumentRevisionId(file + ".meta");
+        String newRevision = cachedDataRepository.getDocumentRevisionToken(file);
         ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
         if (newRevision != null) {
             builder.eTag(newRevision); // Spring quotes this into a strong ETag: "revision"

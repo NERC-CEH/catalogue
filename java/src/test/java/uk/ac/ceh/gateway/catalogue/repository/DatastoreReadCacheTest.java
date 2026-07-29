@@ -149,7 +149,7 @@ public class DatastoreReadCacheTest {
 
     /**
      * The per-document revision token (the ETag source for optimistic locking) is cached by
-     * {@link CachedDataRepository#getDocumentRevisionId} and must be evicted on write, exactly like the
+     * {@link CachedDataRepository#getDocumentRevisionToken} and must be evicted on write, exactly like the
      * blob-content cache above. Without this eviction the same stale ETag is served to every browser for
      * the whole {@code DOC_REVISION_CACHE} TTL (6h in production), so a second save would spuriously 409.
      * This drives the token read -> save -> token read cycle through the real {@code @EnableCaching}
@@ -158,17 +158,20 @@ public class DatastoreReadCacheTest {
     @Test
     public void saveEvictsDocRevisionSoNextTokenReadRefetches() throws Exception {
         given(repo.getRevisions("abc.meta")).willAnswer(i -> List.of(revision("rev1")));
+        given(repo.getRevisions("abc.raw")).willAnswer(i -> List.of(revision("rev1")));
 
-        cachedRepo.getDocumentRevisionId("abc.meta"); // miss -> getRevisions #1
-        cachedRepo.getDocumentRevisionId("abc.meta"); // hit
+        cachedRepo.getDocumentRevisionToken("abc"); // miss -> getRevisions #1
+        cachedRepo.getDocumentRevisionToken("abc"); // hit
 
         CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
         DataWriter writer = out -> { };
         gitRepoWrapper.save(user, "abc", "msg", MetadataInfo.builder().build(), writer);
 
-        cachedRepo.getDocumentRevisionId("abc.meta"); // evicted -> getRevisions #2
+        cachedRepo.getDocumentRevisionToken("abc"); // evicted -> getRevisions #2
 
+        // Both halves of the token are re-read: the token is (.meta revision, .raw revision)
         verify(repo, times(2)).getRevisions("abc.meta");
+        verify(repo, times(2)).getRevisions("abc.raw");
     }
 
     @SuppressWarnings("unchecked")

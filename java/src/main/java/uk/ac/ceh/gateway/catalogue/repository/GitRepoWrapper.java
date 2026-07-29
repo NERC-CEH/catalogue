@@ -17,7 +17,6 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.services.FacilityEventService;
 
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -46,7 +45,7 @@ public class GitRepoWrapper {
     @Caching(evict = {
         @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.meta'"),
         @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.raw'"),
-        @CacheEvict(value = CachedDataRepository.DOC_REVISION_CACHE, key = "#id + '.meta'"),
+        @CacheEvict(value = CachedDataRepository.DOC_REVISION_CACHE, key = "#id"),
         @CacheEvict(value = CachedDataRepository.REVISION_ID_CACHE, allEntries = true)
     })
     public void save(CatalogueUser user, String id, String message, MetadataInfo metadataInfo, DataWriter dataWriter) throws DataRepositoryException {
@@ -56,7 +55,7 @@ public class GitRepoWrapper {
     @Caching(evict = {
         @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.meta'"),
         @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.raw'"),
-        @CacheEvict(value = CachedDataRepository.DOC_REVISION_CACHE, key = "#id + '.meta'"),
+        @CacheEvict(value = CachedDataRepository.DOC_REVISION_CACHE, key = "#id"),
         @CacheEvict(value = CachedDataRepository.REVISION_ID_CACHE, allEntries = true)
     })
     public void save(CatalogueUser user, String id, String message, MetadataInfo metadataInfo,
@@ -82,15 +81,19 @@ public class GitRepoWrapper {
         }
     }
 
+    /**
+     * The authoritative current token for {@code id}, read fresh from the datastore. Deliberately not
+     * routed through {@link CachedDataRepository#getDocumentRevisionToken} — a compare-then-commit check
+     * against a cached value would be no check at all.
+     */
     private String currentDocumentRevision(String id) throws DataRepositoryException {
-        List<DataRevision<CatalogueUser>> revisions = repo.getRevisions(id + ".meta");
-        return revisions.isEmpty() ? null : revisions.get(0).getRevisionID();
+        return CachedDataRepository.revisionToken(repo, id);
     }
 
     @Caching(evict = {
         @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.meta'"),
         @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.raw'"),
-        @CacheEvict(value = CachedDataRepository.DOC_REVISION_CACHE, key = "#id + '.meta'"),
+        @CacheEvict(value = CachedDataRepository.DOC_REVISION_CACHE, key = "#id"),
         @CacheEvict(value = CachedDataRepository.REVISION_ID_CACHE, allEntries = true)
     })
     public DataRevision<CatalogueUser> delete(CatalogueUser user, String id) throws DataRepositoryException {

@@ -34,30 +34,87 @@ public class CachedDataRepositoryRevisionTest {
         commit(repo, "docB", "v1");
         CachedDataRepository cached = new CachedDataRepository(repo);
 
-        String aBefore = cached.getDocumentRevisionId("docA.meta");
+        String aBefore = cached.getDocumentRevisionToken("docA");
         assertThat(aBefore, is(notNullValue()));
 
         // When an UNRELATED document (docB) is committed
         commit(repo, "docB", "v2");
 
         // Then docA's token is unchanged (per-document, not repo-wide)
-        assertThat(cached.getDocumentRevisionId("docA.meta"), is(aBefore));
+        assertThat(cached.getDocumentRevisionToken("docA"), is(aBefore));
 
         // And when docA itself changes, its token moves
         commit(repo, "docA", "v2");
-        assertThat(cached.getDocumentRevisionId("docA.meta"), is(not(aBefore)));
+        assertThat(cached.getDocumentRevisionToken("docA"), is(not(aBefore)));
     }
 
     @Test
-    public void metaTokenReflectsRawOnlyChangeSinceBothCommitTogether(@TempDir Path tmp) throws Exception {
+    public void tokenMovesWhenBothFilesChangeInOneCommit(@TempDir Path tmp) throws Exception {
         DataRepository<CatalogueUser> repo = gitRepo(tmp.toFile());
         commit(repo, "docA", "v1");
         CachedDataRepository cached = new CachedDataRepository(repo);
-        String before = cached.getDocumentRevisionId("docA.meta");
+        String before = cached.getDocumentRevisionToken("docA");
 
         // commit() writes both .meta and .raw in one commit, as GitRepoWrapper.save does
         commit(repo, "docA", "v2");
 
-        assertThat(cached.getDocumentRevisionId("docA.meta"), is(not(before)));
+        assertThat(cached.getDocumentRevisionToken("docA"), is(not(before)));
+    }
+
+    /**
+     * The realistic editor save: the document body ({@code .raw}) changes but the {@code MetadataInfo}
+     * ({@code .meta}) is rewritten byte-identical, because editing a title does not touch permissions,
+     * catalogue or state. Git is content-addressed and {@code getRevisions} is {@code git log -- <path>},
+     * which applies ANY_DIFF history simplification — so an unchanged {@code .meta} blob means the commit
+     * never appears in that path's log. A token read from {@code .meta} alone therefore does NOT move,
+     * and the optimistic lock fails open on exactly the case issue #134 describes.
+     */
+    @Test
+    public void tokenMovesWhenOnlyTheDocumentBodyChanges(@TempDir Path tmp) throws Exception {
+        DataRepository<CatalogueUser> repo = gitRepo(tmp.toFile());
+        commitRawOnlyChange(repo, "docA", "v1");
+        CachedDataRepository cached = new CachedDataRepository(repo);
+        String before = cached.getDocumentRevisionToken("docA");
+
+        // A content-only edit: .raw changes, .meta is rewritten with identical bytes
+        commitRawOnlyChange(repo, "docA", "v2");
+
+        assertThat(cached.getDocumentRevisionToken("docA"), is(not(before)));
+    }
+
+    @Test
+    public void tokenMovesWhenOnlyThePermissionsChange(@TempDir Path tmp) throws Exception {
+        DataRepository<CatalogueUser> repo = gitRepo(tmp.toFile());
+        commitRawOnlyChange(repo, "docA", "v1");
+        CachedDataRepository cached = new CachedDataRepository(repo);
+        String before = cached.getDocumentRevisionToken("docA");
+
+        // A permissions-only edit: .meta changes, .raw is untouched
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
+        repo.submitData("docA.meta", o -> o.write("meta-v2".getBytes()))
+            .commit(user, "permissions of docA changed");
+
+        assertThat(cached.getDocumentRevisionToken("docA"), is(not(before)));
+    }
+
+    @Test
+    public void tokenIsUnaffectedByChangesToOtherDocuments(@TempDir Path tmp) throws Exception {
+        DataRepository<CatalogueUser> repo = gitRepo(tmp.toFile());
+        commitRawOnlyChange(repo, "docA", "v1");
+        commitRawOnlyChange(repo, "docB", "v1");
+        CachedDataRepository cached = new CachedDataRepository(repo);
+        String before = cached.getDocumentRevisionToken("docA");
+
+        commitRawOnlyChange(repo, "docB", "v2");
+
+        assertThat(cached.getDocumentRevisionToken("docA"), is(before));
+    }
+
+    /** Writes a changing {@code .raw} alongside a constant {@code .meta}, as a real content edit does. */
+    private void commitRawOnlyChange(DataRepository<CatalogueUser> repo, String id, String body) throws Exception {
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
+        repo.submitData(id + ".meta", o -> o.write("meta-constant".getBytes()))
+            .submitData(id + ".raw", o -> o.write(("raw-" + body).getBytes()))
+            .commit(user, "commit " + id + " " + body);
     }
 }

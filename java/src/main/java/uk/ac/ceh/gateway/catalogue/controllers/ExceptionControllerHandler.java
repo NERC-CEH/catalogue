@@ -159,9 +159,18 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(MetadataConflictException.class)
     public ResponseEntity<MetadataDocument> handleMetadataConflict(MetadataConflictException ex) {
-        // 409 with the submitted-but-unsaved document so the editor can preserve the user's edits.
+        // 409 with the submitted-but-unsaved document so the caller can preserve the user's edits.
+        //
+        // The content type is pinned rather than negotiated. When an @ExceptionHandler returns a body no
+        // converter can write for the request's Accept, Spring abandons the handler and rethrows the
+        // ORIGINAL exception - the caller gets a 500 and loses the echoed submission, which is the one
+        // thing this response exists to protect. Accept: */* (curl's default, and what docs/api.md's
+        // script sends) hits exactly that case. Setting a concrete type makes Spring write with that
+        // converter directly and skip negotiation, so the 409 contract holds for every client.
         log.warn("Metadata save conflict: {}", ex.getMessage());
-        return ResponseEntity.status(CONFLICT).body(ex.getSubmittedDocument());
+        return ResponseEntity.status(CONFLICT)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(ex.getSubmittedDocument());
     }
 
     @ExceptionHandler(MetadataPreconditionRequiredException.class)

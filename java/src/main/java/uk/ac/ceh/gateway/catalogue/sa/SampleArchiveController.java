@@ -13,6 +13,9 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
+
+import java.io.IOException;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.SAMPLE_ARCHIVE_JSON_VALUE;
 
@@ -29,7 +32,7 @@ public class SampleArchiveController extends AbstractDocumentController {
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = SAMPLE_ARCHIVE_JSON_VALUE)
     public ResponseEntity<MetadataDocument> newSampleArchive(@ActiveUser CatalogueUser user, @RequestBody SampleArchive document,
-            @RequestParam("catalogue") String catalogue) {
+            @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException {
         return saveNewMetadataDocument(user, document, catalogue, "new Sample Archive");
     }
 
@@ -37,7 +40,7 @@ public class SampleArchiveController extends AbstractDocumentController {
     @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = SAMPLE_ARCHIVE_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateSampleArchive(@ActiveUser CatalogueUser user, @PathVariable String file,
             @RequestBody SampleArchive document,
-            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch) {
+            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch) throws DocumentRepositoryException, IOException {
         return saveMetadataDocument(user, file, document, ifMatch);
     }
 }

@@ -12,8 +12,11 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.INFRASTRUCTURERECORD_JSON_VALUE;
+
+import java.io.IOException;
 
 @Slf4j
 @Controller
@@ -31,7 +34,7 @@ public class InfrastructureRecordController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody InfrastructureRecord document,
             @RequestParam("catalogue") String catalogue
-    ) {
+    ) throws DocumentRepositoryException {
         return saveNewMetadataDocument(user, document, catalogue, "new infrastructure record");
     }
 
@@ -42,7 +45,7 @@ public class InfrastructureRecordController extends AbstractDocumentController {
             @PathVariable String file,
             @RequestBody InfrastructureRecord document,
             @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
-    ) {
+    ) throws DocumentRepositoryException, IOException {
         return saveMetadataDocument(user, file, document, ifMatch);
     }
 }

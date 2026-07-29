@@ -135,16 +135,37 @@ This means the token exposed as `ETag` should be **per-document**
 elsewhere in this codebase for cache-keying. The two serve different
 purposes and should not be conflated.
 
+**Resolved, with a correction (see Constraints below).** A per-document token
+is right, but it cannot be read from *one* of the document's two files. The
+token is the pair — `"<.meta revision>:<.raw revision>"` — computed by
+`CachedDataRepository.getDocumentRevisionToken(documentId)`.
+
 ## Constraints and risks
 
 - **Lock scope:** the `synchronized` block must wrap the full
   read-check-write as a unit, exactly as the proxy does — narrowing it to
   just the comparison reopens the TOCTOU race between two concurrent saves.
 - **Multi-file documents:** each document is two files (`.raw` + `.meta`).
-  The per-document token should reflect a change to *either* — simplest is
-  to key it off whichever of the two has the more recent commit touching it
-  (or treat the pair as one logical unit if the write path already commits
-  them together, which `GitDataRepository.submit()` does).
+  The per-document token must reflect a change to *either*.
+
+  The tempting shortcut — "the write path commits them together, so watching
+  one file is enough" — is **wrong**, and quietly so. `getRevisions(name)` is
+  `git log -- <path>`, which applies ANY_DIFF history simplification: a commit
+  is only in a path's log if that path's *content* changed. Committing two
+  files together does not put both in both logs. A content edit rewrites
+  `.raw` but re-serialises `.meta` byte-identical, so git sees no diff for
+  `.meta` and the `.meta` log does not advance; a permissions edit is the
+  mirror image. Watching one file therefore misses every edit to the other —
+  and a lock token that fails to move fails *open*, silently permitting the
+  lost update it exists to prevent.
+
+  The token is consequently the pair, `"<.meta revision>:<.raw revision>"`,
+  compared by string equality. Cost is two path-scoped log walks instead of
+  one; cached per document id and evicted on write, so it is paid on cache
+  miss and once per save. `CachedDataRepositoryRevisionTest` pins all three
+  cases (body-only, permissions-only, unrelated document) against a real git
+  repository — mocking `getRevisions` cannot catch this class of bug, because
+  the bug *is* the real library's path-filter semantics.
 - **Service-agreement's versioned read path** (`readAtRevision`, explicit
   historical revisions) is unaffected — this note only concerns the
   "latest" editor save path.
@@ -224,12 +245,22 @@ not all of them are protected.
   `{file}/catalogue-view`. Narrower window (the server re-reads fresh within
   the same request and the client only holds the catalogue value, not
   document content), protected for consistency.
+- `ServiceAgreementController` — `PUT {id}` (the service-agreement editor)
+  and `PUT {id}/permission`. A depositor fills the service agreement in over
+  a long session and saves repeatedly, so it is an editing session in exactly
+  the sense above. It does not go through `DocumentRepository`: the service
+  commits directly to the datastore, so the compare-then-commit lives in
+  `GitRepoServiceAgreementService` instead, guarding the same read-check-write
+  under its own `synchronized` block. The client side needed no change — the
+  editor model extends `EditorMetadata` and the permission page uses the
+  shared `Permission` model, so both already send `If-Match` and handle 409.
 
 **Other writers using the unchecked `DocumentRepository.save(...)`
 (known examples, not a complete list):**
 
 - `DocumentPublicationService.transition` (publish/withdraw) and
-  `GitRepoServiceAgreementService.publishServiceAgreement`. These are
+  `GitRepoServiceAgreementService.publishServiceAgreement` (as distinct from
+  the service-agreement *editor*, which is protected — see above). These are
   **one-shot server-rendered workflow transitions** — a full-page HTML
   `<form method="post">` button, with no editing session and no channel to
   carry an `If-Match` header without inventing hidden-field plumbing. Each

@@ -89,6 +89,27 @@ The token is **per record** — a save to one record never causes a conflict on
 another. Retrieving history versions (`GET /history/{revision}/{identifier}`)
 is unaffected.
 
+Treat the `ETag` as opaque: it is a compound value and its internal structure
+may change. Send it back exactly as received. Both the strong (`"…"`) and weak
+(`W/"…"`) forms are accepted on `If-Match`.
+
+`If-Match: *` is also accepted, with its standard HTTP meaning — "apply this
+to whatever the current version is". It satisfies the precondition without
+pinning a revision, so it **disables the lost-update protection** for that
+request. Use it only for writes that are genuinely safe to apply blind.
+
+The same mechanism covers the **service agreement** endpoints, which are
+edited over long sessions and are protected identically:
+
+    PUT /service-agreement/{identifier}
+    PUT /service-agreement/{identifier}/permission
+
+and the permission and catalogue panels of a record:
+
+    PUT /documents/{identifier}/permission
+    PUT /documents/{identifier}/catalogue
+    PUT /documents/{identifier}/catalogue-view
+
 ### curl
 
 Capture the `ETag` from the `GET`, then send it back on the `PUT`. `-D -`

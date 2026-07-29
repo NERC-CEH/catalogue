@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.repository;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -8,6 +7,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
@@ -76,15 +76,41 @@ public class CachedDataRepository {
     }
 
     /**
-     * The per-document revision token used for optimistic locking: the id of the newest commit that
-     * touched this file. Unlike {@link #getLatestRevisionId()} (repo-wide HEAD), this only changes when
-     * this specific document changes, so an unrelated save does not trip a conflict. Cached by name and
-     * evicted on save/delete, mirroring {@link #readLatest}. Returns null if the file has no history.
+     * The per-document revision token used for optimistic locking. Unlike {@link #getLatestRevisionId()}
+     * (repo-wide HEAD) this only moves when <em>this</em> document changes, so an unrelated save does not
+     * trip a conflict.
+     *
+     * <p>A document is two blobs, and an edit may touch either one independently: a content edit rewrites
+     * {@code .raw} while leaving {@code .meta} byte-identical, and a permissions edit does the reverse.
+     * The underlying {@code getRevisions(name)} is {@code git log -- <path>}, which applies ANY_DIFF
+     * history simplification — a commit that rewrites a path with identical bytes produces no diff for it
+     * and never appears in that path's log. A token read from one file alone therefore silently fails to
+     * move for edits to the other, and an optimistic lock whose token does not move fails <em>open</em>.
+     * The token is the pair, so a change to either half changes the whole.</p>
+     *
+     * <p>Cached by document id and evicted on save/delete, mirroring {@link #readLatest}. Callers on the
+     * write path must not use this cached value for their compare-then-commit check — they need an
+     * authoritative fresh read; see {@code GitRepoWrapper.currentDocumentRevision}.</p>
+     *
+     * @param documentId the file id without extension, including any folder prefix
+     *                   (e.g. {@code abc-123} or {@code service-agreement/abc-123})
      */
-    @Cacheable(value = DOC_REVISION_CACHE, key = "#name")
-    public String getDocumentRevisionId(String name) throws IOException {
+    @Cacheable(value = DOC_REVISION_CACHE, key = "#documentId")
+    public String getDocumentRevisionToken(String documentId) throws IOException {
+        return revisionToken(repo, documentId);
+    }
+
+    /**
+     * Computes the token of {@link #getDocumentRevisionToken} directly against the datastore, bypassing
+     * the cache. Shared with the write path, which must compare against an authoritative current value.
+     */
+    public static String revisionToken(DataRepository<CatalogueUser> repo, String documentId) throws DataRepositoryException {
+        return newestRevision(repo, documentId + ".meta") + ":" + newestRevision(repo, documentId + ".raw");
+    }
+
+    private static String newestRevision(DataRepository<CatalogueUser> repo, String name) throws DataRepositoryException {
         List<DataRevision<CatalogueUser>> revisions = repo.getRevisions(name);
-        return revisions.isEmpty() ? null : revisions.get(0).getRevisionID();
+        return revisions.isEmpty() ? "-" : revisions.getFirst().getRevisionID();
     }
 
     /**
@@ -103,14 +129,14 @@ public class CachedDataRepository {
     @Caching(evict = {
         @CacheEvict(value = LATEST_CACHE, key = "#documentId + '.meta'"),
         @CacheEvict(value = LATEST_CACHE, key = "#documentId + '.raw'"),
+        @CacheEvict(value = DOC_REVISION_CACHE, key = "#documentId"),
         @CacheEvict(value = REVISION_ID_CACHE, allEntries = true)
     })
     public void evictAfterDirectWrite(String documentId) {
         log.debug("Evicting caches after direct datastore write to {}", documentId);
     }
 
-    @SneakyThrows
-    private byte[] toBytes(DataDocument document) {
+    private byte[] toBytes(DataDocument document) throws IOException {
         try (InputStream stream = document.getInputStream()) {
             return stream.readAllBytes();
         }

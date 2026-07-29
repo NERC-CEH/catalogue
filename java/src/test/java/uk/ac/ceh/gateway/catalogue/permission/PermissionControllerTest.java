@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -38,8 +39,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC_PUBLISHER_USERNAME;
@@ -247,7 +251,7 @@ class PermissionControllerTest extends AbstractMvcTest {
         MetadataDocument document = new GeminiDocument().setMetadata(info);
 
         given(documentRepository.read(file)).willReturn(document);
-        given(cachedDataRepository.getDocumentRevisionId(file + ".meta")).willReturn("rev1");
+        given(cachedDataRepository.getDocumentRevisionToken(file)).willReturn("rev1");
 
         //When reading the current permission
         ResponseEntity<PermissionResource> actual = (ResponseEntity<PermissionResource>) permissionController.currentPermission(publisher, file);
@@ -265,7 +269,7 @@ class PermissionControllerTest extends AbstractMvcTest {
         MetadataDocument document = new GeminiDocument().setMetadata(info);
 
         given(documentRepository.read(file)).willReturn(document);
-        given(cachedDataRepository.getDocumentRevisionId(file + ".meta")).willReturn(null);
+        given(cachedDataRepository.getDocumentRevisionToken(file)).willReturn(null);
 
         //When reading the current permission
         ResponseEntity<PermissionResource> actual = (ResponseEntity<PermissionResource>) permissionController.currentPermission(publisher, file);
@@ -311,7 +315,7 @@ class PermissionControllerTest extends AbstractMvcTest {
         MetadataDocument document = new GeminiDocument().setMetadata(info);
         given(documentRepository.read(file)).willReturn(document);
         given(permissionService.userCanMakePublic("eidc")).willReturn(Boolean.TRUE);
-        given(cachedDataRepository.getDocumentRevisionId(file + ".meta")).willReturn("rev2");
+        given(cachedDataRepository.getDocumentRevisionToken(file)).willReturn("rev2");
 
         //When updating with an If-Match
         HttpEntity<PermissionResource> actual =
@@ -336,6 +340,45 @@ class PermissionControllerTest extends AbstractMvcTest {
         //When/Then the conflict propagates to the caller (central handler maps it to 409)
         assertThrows(MetadataConflictException.class, () ->
             permissionController.updatePermission(publisher, file, new PermissionResource(document), "\"stale-rev\""));
+    }
+
+    /*
+     * The tests above call the controller directly. These drive real requests through the MVC stack so
+     * the mandatory precondition is verified as an HTTP contract, not just as controller logic.
+     */
+
+    @Test
+    @SneakyThrows
+    @DisplayName("a permission PUT with no If-Match is rejected with 428 and never reaches the repository")
+    void permissionPutWithoutPreconditionIsRejectedOverHttp() {
+        givenUserCanEdit();
+
+        mvc.perform(put("/documents/{file}/permission", file)
+                .header("remote-user", EIDC_PUBLISHER_USERNAME)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"id\":\"12345\",\"permissions\":[]}")
+            )
+            .andExpect(status().isPreconditionRequired());
+
+        verify(documentRepository, never()).save(any(), any(), anyString(), anyString(), any());
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("a stale permission PUT is rejected with 409")
+    void stalePermissionPutConflictsOverHttp() {
+        givenUserCanEdit();
+        givenMetadataDocument();
+        given(documentRepository.save(any(), any(), eq(file), anyString(), eq("stale-rev")))
+            .willThrow(new MetadataConflictException("stale", new GeminiDocument()));
+
+        mvc.perform(put("/documents/{file}/permission", file)
+                .header("remote-user", EIDC_PUBLISHER_USERNAME)
+                .header(HttpHeaders.IF_MATCH, "\"stale-rev\"")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"id\":\"12345\",\"permissions\":[]}")
+            )
+            .andExpect(status().isConflict());
     }
 
 }

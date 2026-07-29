@@ -13,8 +13,11 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
+
+import java.io.IOException;
 
 @Slf4j
 @ToString(callSuper = true)
@@ -33,7 +36,7 @@ public class NercModelController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody NercModel document,
             @RequestParam("catalogue") String catalogue
-    ) {
+    ) throws DocumentRepositoryException {
         return saveNewMetadataDocument(user, document, catalogue, "new Model");
     }
 
@@ -44,7 +47,7 @@ public class NercModelController extends AbstractDocumentController {
             @PathVariable String file,
             @RequestBody NercModel document,
             @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
-    ) {
+    ) throws DocumentRepositoryException, IOException {
         return saveMetadataDocument(user, file, document, ifMatch);
     }
 
@@ -54,7 +57,7 @@ public class NercModelController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody NercModelUse document,
             @RequestParam("catalogue") String catalogue
-    ) {
+    ) throws DocumentRepositoryException {
         return saveNewMetadataDocument(user, document, catalogue, "new Model implementation (NERC)");
     }
 
@@ -65,7 +68,7 @@ public class NercModelController extends AbstractDocumentController {
             @PathVariable String file,
             @RequestBody NercModelUse document,
             @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
-    ) {
+    ) throws DocumentRepositoryException, IOException {
         return saveMetadataDocument(user, file, document, ifMatch);
     }
 

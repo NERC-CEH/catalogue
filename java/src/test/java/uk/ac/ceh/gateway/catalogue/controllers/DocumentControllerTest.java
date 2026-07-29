@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -690,7 +691,7 @@ class DocumentControllerTest extends AbstractMvcTest {
         GeminiDocument saved = new GeminiDocument();
         given(documentRepository.read("doc1")).willReturn(existing);
         given(documentRepository.save(eq(user), eq(doc), eq("doc1"), any(), eq("rev1"))).willReturn(saved);
-        given(cachedDataRepository.getDocumentRevisionId("doc1.meta")).willReturn("rev2");
+        given(cachedDataRepository.getDocumentRevisionToken("doc1")).willReturn("rev2");
 
         //When updating with an If-Match
         ResponseEntity<MetadataDocument> response = controller.updateGeminiDocument(user, "doc1", doc, "\"rev1\"");
@@ -708,7 +709,7 @@ class DocumentControllerTest extends AbstractMvcTest {
         GeminiDocument existing = new GeminiDocument();
         existing.setMetadata(MetadataInfo.builder().catalogue("eidc").state("public").build());
         given(documentRepository.read("doc1")).willReturn(existing);
-        given(cachedDataRepository.getDocumentRevisionId("doc1.meta")).willReturn("rev1", "rev2", "rev3");
+        given(cachedDataRepository.getDocumentRevisionToken("doc1")).willReturn("rev1", "rev2", "rev3");
 
         //When: a GET reads the document and its current ETag
         ResponseEntity<MetadataDocument> getResponse = controller.readMetadata(user, "doc1", request);
@@ -751,12 +752,149 @@ class DocumentControllerTest extends AbstractMvcTest {
         GeminiDocument doc = new GeminiDocument();
         doc.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
         given(documentRepository.read("doc1")).willReturn(doc);
-        given(cachedDataRepository.getDocumentRevisionId("doc1.meta")).willReturn("rev1");
+        given(cachedDataRepository.getDocumentRevisionToken("doc1")).willReturn("rev1");
 
         //When reading the document
         ResponseEntity<MetadataDocument> response = controller.readMetadata(user, "doc1", request);
 
         //Then the ETag carries the current revision (quoted per HTTP)
         assertThat(response.getHeaders().getETag(), is("\"rev1\""));
+    }
+
+    /*
+     * The tests above call the controller directly, which proves the logic but not the wiring. These drive
+     * real requests through the full MVC stack — header binding, @ExceptionHandler dispatch, status
+     * mapping and message conversion of the echoed body — because that wiring is where a mandatory
+     * precondition can silently degrade to an optional one.
+     */
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    @DisplayName("a PUT with no If-Match is rejected with 428 and never reaches the repository")
+    void putWithoutPreconditionIsRejectedOverHttp() {
+        given(permissionService.userCanEdit(id)).willReturn(true);
+
+        mvc.perform(put("/documents/{id}", id)
+                .contentType(GEMINI_JSON_VALUE)
+                .content("{\"title\":\"Edited title\"}")
+            )
+            .andExpect(status().isPreconditionRequired());
+
+        verify(documentRepository, never()).save(any(), any(), anyString(), anyString(), any());
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    @DisplayName("a stale PUT is rejected with 409 whose body is the submission, so the edit is not lost")
+    void stalePutConflictsOverHttp() {
+        given(permissionService.userCanEdit(id)).willReturn(true);
+        GeminiDocument existing = new GeminiDocument();
+        existing.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(documentRepository.read(id)).willReturn(existing);
+
+        GeminiDocument submitted = new GeminiDocument();
+        submitted.setTitle("The edit the user would otherwise lose");
+        given(documentRepository.save(any(), any(), eq(id), anyString(), eq("metaRev1:rawRev1")))
+            .willThrow(new MetadataConflictException("stale", submitted));
+
+        mvc.perform(put("/documents/{id}", id)
+                .contentType(GEMINI_JSON_VALUE)
+                .header(HttpHeaders.IF_MATCH, "\"metaRev1:rawRev1\"")
+                .accept(GEMINI_JSON_VALUE)
+                .content("{\"title\":\"The edit the user would otherwise lose\"}")
+            )
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.title").value("The edit the user would otherwise lose"));
+    }
+
+    /*
+     * The same conflict, from a script rather than the editor. curl sends a wildcard Accept by default,
+     * as does the worked example in docs/api.md. If the 409 body cannot be written for that Accept,
+     * Spring rethrows the original exception and the caller gets a 500 with no echoed submission - the
+     * documented contract broken precisely when the user's unsaved edit is on the line.
+     */
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    @DisplayName("a stale PUT from a client sending no Accept header still gets the 409 and its body")
+    void stalePutConflictsForClientsWithoutAnAcceptHeader() {
+        given(permissionService.userCanEdit(id)).willReturn(true);
+        GeminiDocument existing = new GeminiDocument();
+        existing.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(documentRepository.read(id)).willReturn(existing);
+
+        GeminiDocument submitted = new GeminiDocument();
+        submitted.setTitle("The edit the user would otherwise lose");
+        given(documentRepository.save(any(), any(), eq(id), anyString(), eq("metaRev1:rawRev1")))
+            .willThrow(new MetadataConflictException("stale", submitted));
+
+        mvc.perform(put("/documents/{id}", id)
+                .contentType(GEMINI_JSON_VALUE)
+                .header(HttpHeaders.IF_MATCH, "\"metaRev1:rawRev1\"")
+                .content("{\"title\":\"The edit the user would otherwise lose\"}")
+            )
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.title").value("The edit the user would otherwise lose"));
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    @DisplayName("a PUT with a current If-Match succeeds and returns the next revision as its ETag")
+    void currentPutSucceedsOverHttp() {
+        given(permissionService.userCanEdit(id)).willReturn(true);
+        GeminiDocument existing = new GeminiDocument();
+        givenMetadataDocument(existing);
+        givenCatalogue();
+        givenDefaultCatalogue();
+        givenFreemarkerConfiguration();
+        givenProfileNotActive();
+        givenCodeLookup();
+        givenMetadataQuality();
+        existing.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(documentRepository.read(id)).willReturn(existing);
+        given(documentRepository.save(any(), any(), eq(id), anyString(), eq("metaRev1:rawRev1")))
+            .willReturn(existing);
+        given(cachedDataRepository.getDocumentRevisionToken(id)).willReturn("metaRev1:rawRev2");
+
+        mvc.perform(put("/documents/{id}", id)
+                .contentType(GEMINI_JSON_VALUE)
+                .header(HttpHeaders.IF_MATCH, "\"metaRev1:rawRev1\"")
+                .content("{\"title\":\"Edited title\"}")
+            )
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.ETAG, "\"metaRev1:rawRev2\""));
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    @DisplayName("If-Match: * satisfies the precondition without pinning a revision")
+    void wildcardPreconditionIsAcceptedOverHttp() {
+        given(permissionService.userCanEdit(id)).willReturn(true);
+        GeminiDocument existing = new GeminiDocument();
+        givenMetadataDocument(existing);
+        givenCatalogue();
+        givenDefaultCatalogue();
+        givenFreemarkerConfiguration();
+        givenProfileNotActive();
+        givenCodeLookup();
+        givenMetadataQuality();
+        existing.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(documentRepository.read(id)).willReturn(existing);
+        given(documentRepository.save(any(), any(), eq(id), anyString(), eq(null)))
+            .willReturn(existing);
+
+        mvc.perform(put("/documents/{id}", id)
+                .contentType(GEMINI_JSON_VALUE)
+                .header(HttpHeaders.IF_MATCH, "*")
+                .content("{\"title\":\"Edited title\"}")
+            )
+            .andExpect(status().isOk());
+
+        // null expected-revision is what tells the repository to skip the compare-then-commit check
+        verify(documentRepository).save(any(), any(), eq(id), anyString(), eq(null));
     }
 }

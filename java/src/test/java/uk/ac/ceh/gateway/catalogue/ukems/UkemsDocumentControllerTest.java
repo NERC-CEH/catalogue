@@ -94,7 +94,7 @@ class UkemsDocumentControllerTest {
 
         given(documentRepository.read(fileId)).willReturn(new UkemsDocument().setMetadata(MetadataInfo.builder().build()));
         given(documentRepository.save(user, document, fileId, message, "rev1")).willReturn(document);
-        given(cachedDataRepository.getDocumentRevisionId(fileId + ".meta")).willReturn("rev2");
+        given(cachedDataRepository.getDocumentRevisionToken(fileId)).willReturn("rev2");
 
         //When
         ResponseEntity<MetadataDocument> actual = controller.saveUkemsDocument(user, fileId, document, "rev1");

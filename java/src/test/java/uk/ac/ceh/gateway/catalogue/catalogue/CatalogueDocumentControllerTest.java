@@ -160,7 +160,7 @@ class CatalogueDocumentControllerTest extends AbstractMvcTest {
     public void getCatalogueEmitsETagOfCurrentRevision() throws Exception {
         //Given a readable document and a known per-document revision
         givenMetadataDocument();
-        given(cachedDataRepository.getDocumentRevisionId(file + ".meta")).willReturn("rev1");
+        given(cachedDataRepository.getDocumentRevisionToken(file)).willReturn("rev1");
 
         //When reading the current catalogue
         ResponseEntity<CatalogueResource> actual = controller.currentCatalogue(file);
@@ -173,7 +173,7 @@ class CatalogueDocumentControllerTest extends AbstractMvcTest {
     public void getCatalogueOmitsETagWhenNoRevisionIsKnown() throws Exception {
         //Given a readable document with no known revision (e.g. a brand-new document)
         givenMetadataDocument();
-        given(cachedDataRepository.getDocumentRevisionId(file + ".meta")).willReturn(null);
+        given(cachedDataRepository.getDocumentRevisionToken(file)).willReturn(null);
 
         //When reading the current catalogue
         ResponseEntity<CatalogueResource> actual = controller.currentCatalogue(file);
@@ -256,7 +256,7 @@ class CatalogueDocumentControllerTest extends AbstractMvcTest {
             .setMetadata(MetadataInfo.builder().catalogue("eidc").build());
         given(documentRepository.read(file)).willReturn(document);
         given(documentRepository.save(eq(user), eq(document), eq(file), any(), eq("rev1"))).willReturn(document);
-        given(cachedDataRepository.getDocumentRevisionId(file + ".meta")).willReturn("rev2");
+        given(cachedDataRepository.getDocumentRevisionToken(file)).willReturn("rev2");
 
         //When updating with an If-Match
         ResponseEntity<CatalogueResource> actual =
@@ -316,7 +316,7 @@ class CatalogueDocumentControllerTest extends AbstractMvcTest {
     public void getCatalogueViewEmitsETagOfCurrentRevision() throws Exception {
         //Given a readable document and a known per-document revision
         givenMetadataDocumentWithCatalogueView();
-        given(cachedDataRepository.getDocumentRevisionId(file + ".meta")).willReturn("rev1");
+        given(cachedDataRepository.getDocumentRevisionToken(file)).willReturn("rev1");
 
         //When reading the current catalogue view
         ResponseEntity<CatalogueViewResource> actual = controller.currentCatalogueView(file);
@@ -329,7 +329,7 @@ class CatalogueDocumentControllerTest extends AbstractMvcTest {
     public void getCatalogueViewOmitsETagWhenNoRevisionIsKnown() throws Exception {
         //Given a readable document with no known revision (e.g. a brand-new document)
         givenMetadataDocumentWithCatalogueView();
-        given(cachedDataRepository.getDocumentRevisionId(file + ".meta")).willReturn(null);
+        given(cachedDataRepository.getDocumentRevisionToken(file)).willReturn(null);
 
         //When reading the current catalogue view
         ResponseEntity<CatalogueViewResource> actual = controller.currentCatalogueView(file);
@@ -409,7 +409,7 @@ class CatalogueDocumentControllerTest extends AbstractMvcTest {
             .setMetadata(MetadataInfo.builder().catalogue("eidc").build());
         given(documentRepository.read(file)).willReturn(document);
         given(documentRepository.save(eq(user), eq(document), eq(file), any(), eq("rev1"))).willReturn(document);
-        given(cachedDataRepository.getDocumentRevisionId(file + ".meta")).willReturn("rev2");
+        given(cachedDataRepository.getDocumentRevisionToken(file)).willReturn("rev2");
 
         //When updating with an If-Match
         ResponseEntity<CatalogueViewResource> actual =

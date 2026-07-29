@@ -32,4 +32,22 @@ class IfMatchRevisionTest {
     public void unquotedHeaderIsReturnedAsIs() {
         assertThat(IfMatchRevision.require("rev1"), equalTo("rev1"));
     }
+
+    @Test
+    @DisplayName("a composite token keeps its separator when unquoted")
+    public void compositeTokenSurvivesUnquoting() {
+        assertThat(IfMatchRevision.require("\"metaRev1:rawRev1\""), equalTo("metaRev1:rawRev1"));
+    }
+
+    @Test
+    @DisplayName("If-Match: * satisfies the precondition without pinning a revision (RFC 9110)")
+    public void wildcardSkipsTheRevisionCheck() {
+        assertThat(IfMatchRevision.require("*"), equalTo(null));
+        assertThat(IfMatchRevision.require("  *  "), equalTo(null));
+    }
+
+    @Test
+    public void weakEtagPrefixIsStripped() {
+        assertThat(IfMatchRevision.require("W/\"rev1\""), equalTo("rev1"));
+    }
 }
