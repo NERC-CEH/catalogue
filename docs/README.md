@@ -18,8 +18,3 @@ Catalogue.
 - [New Document Type](./newDocumentType.md)
 - [Server Profiles](./profiles.md)
 
-## Design & Architecture
-
-- [Datastore read performance and the local-Git alternative](./datastore-performance-design.md)
-- [Optimistic locking for the metadata editor](./metadata-editor-optimistic-locking.md)
-

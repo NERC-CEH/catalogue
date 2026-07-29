@@ -45,3 +45,4 @@ DevStartupController.java
 /.worktreeinclude
 /.playwright-mcp/
 /docs/superpowers/
+/docs/metadata-editor-optimistic-locking.md
