@@ -56,7 +56,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
 
     public static final Set<String> ALLOWED_UKCEH_EMAILS = Set.of(
         "enquiries@ceh.ac.uk",
-        "cosmosUK@ceh.ac.uk",
+        "cosmosuk@ceh.ac.uk",
         "ecn@ceh.ac.uk",
         "fdri@ceh.ac.uk",
         "nrfa@ceh.ac.uk",
