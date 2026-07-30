@@ -18,8 +18,7 @@ public class OnlineResource {
     private static final Pattern GET_CAPABILITIES_URL_PATTERN = Pattern.compile("[?&]request=getcapabilities", CASE_INSENSITIVE);
     private static final Pattern WMS_SERVICE_URL_PATTERN = Pattern.compile("[?&]service=wms", CASE_INSENSITIVE);
     private static final List<String> EIDC_DISTRIBUTION_PREFIXES = List.of(
-        "https://order-eidc.ceh.ac.uk/resources",
-        "https://data-package.ceh.ac.uk/sd/",
+        "https://order-eidc.ceh.ac.uk/resources/",
         "https://data-package.ceh.ac.uk/data/",
         "https://catalogue.ceh.ac.uk/datastore/eidchub/"
         );
