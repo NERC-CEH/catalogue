@@ -54,12 +54,16 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         log.info("Creating");
     }
 
+    // Entries MUST be lowercase - checkPointOfContact lowercases before matching.
     public static final Set<String> ALLOWED_UKCEH_EMAILS = Set.of(
         "enquiries@ceh.ac.uk",
-        "poms@ceh.ac.uk",
+        "cosmosuk@ceh.ac.uk",
         "ecn@ceh.ac.uk",
         "fdri@ceh.ac.uk",
-        "pbms@ceh.ac.uk"
+        "nrfa@ceh.ac.uk",
+        "pbms@ceh.ac.uk",
+        "poms@ceh.ac.uk",
+        "ukbms@ceh.ac.uk"
     );
 
     @SneakyThrows
@@ -476,10 +480,16 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             toReturn.add(new MetadataCheck("Point of contact organisation name is missing", ERROR));
         }
 
+        // Depositors type addresses in any casing, so normalise before comparing:
+        // otherwise 'Sam@CEH.ac.uk' escapes the domain guard entirely and
+        // 'CosmosUK@ceh.ac.uk' fails to match the allow list.
         pocs.stream()
             .map(poc -> poc.get("email"))
             .flatMap(Stream::ofNullable)
-            .filter(email -> email.endsWith("@ceh.ac.uk") && !ALLOWED_UKCEH_EMAILS.contains(email))
+            .filter(email -> {
+                val normalised = email.toLowerCase();
+                return normalised.endsWith("@ceh.ac.uk") && !ALLOWED_UKCEH_EMAILS.contains(normalised);
+            })
             .forEach(email -> toReturn.add(
                 new MetadataCheck(
                     format("Point of contact's  email address is %s", email), ERROR)));

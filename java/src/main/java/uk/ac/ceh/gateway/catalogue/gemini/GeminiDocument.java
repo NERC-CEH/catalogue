@@ -288,7 +288,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     @JsonIgnore
     public List<OnlineResource> getDataAccess() {
-        Set<String> downloadRoles = Set.of("download", "order", "fileAccess");
+        Set<String> downloadRoles = Set.of("download", "order", "fileAccess", "offlineAccess");
         return getOnlineResources()
             .stream()
             .filter(onlineResource -> downloadRoles.contains(onlineResource.getFunction()))
@@ -505,13 +505,18 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @JsonIgnore
+    public List<OnlineResource> getOfflineAccess() {
+        return filterOnlineResources(getDataAccess(), "offlineAccess");
+    }
+
+    @JsonIgnore
     public List<OnlineResource> getDownloads() {
         return filterOnlineResources(getDataAccess(), "download");
     }
 
     @JsonIgnore
     public List<OnlineResource> getDistributions() {
-        return Stream.of(getOrders(), getFileAccess(), getDownloads())
+        return Stream.of(getOrders(), getFileAccess(), getOfflineAccess(), getDownloads())
                     .flatMap(List::stream)
                     .collect(Collectors.toList());
     }
