@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 public class DownloadOrderDetailsService {
     private final Pattern supportingDocUrlPattern;
     private final List<Pattern> orderManagerUrlPatterns;
+    boolean containsEidcDistribution;
 
     public DownloadOrderDetailsService(
         @NotNull DownloadUrlProperties downloadUrlProperties
@@ -57,28 +58,33 @@ public class DownloadOrderDetailsService {
         // Decide if we should show an unavailable message on the UI. This value
         // will be false if the dataset is embargoed or unavailable
         boolean isDataAccessible, isDataAddressable;
+        boolean isEidcDistribution;
 
         public DownloadOrder(List<OnlineResource> onlineResources) {
 
             var fileAccessUrls = extractFileAccessUrl(onlineResources);
+            var downloadUrls = extractDownloadUrl(onlineResources);
+            var orderUrls = extractOrderUrl(onlineResources);
+            var offlineAccessUrls = extractOfflineAccessUrl(onlineResources);
 
             supportingDocumentsUrl = extractSupportingDocumentUrl(onlineResources);
             dataAccessResources = Lists.newArrayList(Iterables.concat(
-                extractDownloadUrl(onlineResources),
-                extractOrderUrl(onlineResources),
-                fileAccessUrls
+                fileAccessUrls,
+                downloadUrls,
+                orderUrls,
+                offlineAccessUrls
             ));
-            isDataAccessible = !dataAccessResources.isEmpty();
+
+            isDataAccessible =
+                !downloadUrls.isEmpty() ||
+                !orderUrls.isEmpty() ||
+                !fileAccessUrls.isEmpty();
+
             isDataAddressable = !fileAccessUrls.isEmpty();
 
-            if (!isDataAccessible) {
-                // No downloads or order manager ORDERs were found. Does a
-                // message exist as a dummy order?
-                onlineResources
-                    .stream()
-                    .filter(r -> r.getFunction().equals("offlineAccess"))
-                    .forEach(dataAccessResources::add);
-            }
+            // Compute whether any resource is an EIDC distribution
+            isEidcDistribution = onlineResources.stream()
+                .anyMatch(OnlineResource::isEidcDistribution);
         }
 
         private String extractSupportingDocumentUrl(List<OnlineResource> onlineResources) {
@@ -101,6 +107,13 @@ public class DownloadOrderDetailsService {
             return onlineResources
                 .stream()
                 .filter(r -> r.getFunction().equals("fileAccess"))
+                .collect(Collectors.toList());
+        }
+
+        private List<OnlineResource> extractOfflineAccessUrl(List<OnlineResource> onlineResources) {
+            return onlineResources
+                .stream()
+                .filter(r -> r.getFunction().equals("offlineAccess"))
                 .collect(Collectors.toList());
         }
 
