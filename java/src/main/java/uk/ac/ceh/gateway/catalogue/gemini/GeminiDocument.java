@@ -162,6 +162,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @Override
+    @JsonProperty("type")
     public String getType() {
         return Optional.ofNullable(resourceType)
                 .map(Keyword::getValue)
@@ -183,6 +184,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @Override
+    @JsonIgnore
     public GeminiDocument setType(String type) {
         super.setType(type);
         this.resourceType = Keyword.builder().value(type).build();

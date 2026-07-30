@@ -58,6 +58,43 @@ public class GeminiDocumentTest {
     }
 
     @Test
+    void resourceTypeSurvivesWhenTypeFieldArrivesAfterItInJson() throws Exception {
+        //given a payload where the stale "type" key (as sent by the editor, which never
+        //updates it) appears after the user's edited "resourceType"
+        val json = """
+            {
+              "type": "dataset",
+              "resourceType": {"value": "nonGeographicDataset"}
+            }
+            """;
+
+        //when
+        val gemini = new ObjectMapper().readValue(json, GeminiDocument.class);
+
+        //then the explicit resourceType edit must not be clobbered by the stale type
+        assertThat(gemini.getResourceType().getValue(), equalTo("nonGeographicDataset"));
+        assertThat(gemini.getType(), equalTo("nonGeographicDataset"));
+    }
+
+    @Test
+    void resourceTypeSurvivesWhenTypeFieldArrivesBeforeIt() throws Exception {
+        //given the opposite key order, which must agree with the other order too
+        val json = """
+            {
+              "resourceType": {"value": "nonGeographicDataset"},
+              "type": "dataset"
+            }
+            """;
+
+        //when
+        val gemini = new ObjectMapper().readValue(json, GeminiDocument.class);
+
+        //then
+        assertThat(gemini.getResourceType().getValue(), equalTo("nonGeographicDataset"));
+        assertThat(gemini.getType(), equalTo("nonGeographicDataset"));
+    }
+
+    @Test
     void getDistributions() {
         //given
         val gemini = new GeminiDocument();
