@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 public class DownloadOrderDetailsService {
     private final Pattern supportingDocUrlPattern;
     private final List<Pattern> orderManagerUrlPatterns;
-    boolean containsEidcDistribution;
 
     public DownloadOrderDetailsService(
         @NotNull DownloadUrlProperties downloadUrlProperties
@@ -58,7 +57,6 @@ public class DownloadOrderDetailsService {
         // Decide if we should show an unavailable message on the UI. This value
         // will be false if the dataset is embargoed or unavailable
         boolean isDataAccessible, isDataAddressable;
-        boolean isEidcDistribution;
 
         public DownloadOrder(List<OnlineResource> onlineResources) {
 
@@ -81,10 +79,6 @@ public class DownloadOrderDetailsService {
                 !fileAccessUrls.isEmpty();
 
             isDataAddressable = !fileAccessUrls.isEmpty();
-
-            // Compute whether any resource is an EIDC distribution
-            isEidcDistribution = onlineResources.stream()
-                .anyMatch(OnlineResource::isEidcDistribution);
         }
 
         private String extractSupportingDocumentUrl(List<OnlineResource> onlineResources) {
