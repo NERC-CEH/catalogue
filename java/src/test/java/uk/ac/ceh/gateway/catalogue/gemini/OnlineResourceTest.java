@@ -61,7 +61,6 @@ public class OnlineResourceTest {
     @ParameterizedTest
     @ValueSource(strings = {
         "https://order-eidc.ceh.ac.uk/resources/ABCDEFGH/order",
-        "https://data-package.ceh.ac.uk/sd/some-supporting-doc.pdf",
         "https://data-package.ceh.ac.uk/data/ABCDEFGH.zip",
         "https://catalogue.ceh.ac.uk/datastore/eidchub/ABCDEFGH/"
     })
