@@ -16,7 +16,7 @@
 
 <#macro accessButton>
   <#if resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'model' || resourceType.value == 'software' || resourceType.value == 'computationalNotebook' || resourceType.value == 'method'>
-    <#if availability == "Available" || availability == "Controlled" >
+    <#if (availability == "Available" || availability == "Controlled") && dataAccess.dataAccessResources?has_content >
         <a class="btn btn-ukceh" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
           Download/Access
           <i class="fa-solid fa-arrow-down fa-fw"></i>
