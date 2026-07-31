@@ -199,7 +199,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         val current = CachedDataRepository.revisionToken(repo, FOLDER + id);
         if (!expectedRevision.equals(current)) {
             throw new MetadataConflictException(
-                "This service agreement was changed by another user since you opened it.", submittedForEcho);
+                "This service agreement, %s, was changed by another user since you opened it.".formatted(id), submittedForEcho);
         }
     }
 

@@ -67,7 +67,7 @@ public class GitRepoWrapper {
                 String current = currentDocumentRevision(id);
                 if (!expectedRevision.equals(current)) {
                     throw new MetadataConflictException(
-                        "This record was changed by another user since you opened it.", submittedForEcho);
+                        "This record, %s, was changed by another user since you opened it.".formatted(id), submittedForEcho);
                 }
             }
             Optional<MonitoringFacility> preUpdateFacility = facilityEventService.getMonitoringFacility(id);
