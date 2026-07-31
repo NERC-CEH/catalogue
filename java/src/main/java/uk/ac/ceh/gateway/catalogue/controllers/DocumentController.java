@@ -1,11 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +26,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
@@ -55,9 +56,10 @@ public class DocumentController extends AbstractDocumentController {
         @Nullable MetricsService metricsService,
         @Value("#{'${metrics.users.excluded}'.split(',')}") List<String> metricExcludedUsers,
         DocumentRepository documentRepository,
-        JenaLookupService jenaService
+        JenaLookupService jenaService,
+        CachedDataRepository cachedDataRepository
     ) {
-        super(documentRepository);
+        super(documentRepository, cachedDataRepository);
         this.metricsService = metricsService;
         this.metricsExcludedUsers = metricExcludedUsers;
         this.jenaService = jenaService;
@@ -103,7 +105,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody GeminiDocument document,
             @RequestParam("catalogue") String catalogue
-            ) {
+            ) throws DocumentRepositoryException {
         return saveNewMetadataDocument(
                 user,
                 document,
@@ -119,12 +121,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateGeminiDocument(
         @ActiveUser CatalogueUser user,
         @PathVariable String file,
-        @RequestBody GeminiDocument document
-    ) {
+        @RequestBody GeminiDocument document,
+        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
+    ) throws DocumentRepositoryException, IOException {
         return saveMetadataDocument(
                 user,
                 file,
-                document
+                document,
+                ifMatch
                 );
             }
 
@@ -137,7 +141,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @RequestBody MonitoringActivity document,
         @RequestParam("catalogue") String catalogue
-    ) {
+    ) throws DocumentRepositoryException {
         return saveNewMetadataDocument(
             user,
             document,
@@ -153,12 +157,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateMonitoringActivity(
         @ActiveUser CatalogueUser user,
         @PathVariable String file,
-        @RequestBody MonitoringActivity document
-    ) {
+        @RequestBody MonitoringActivity document,
+        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
+    ) throws DocumentRepositoryException, IOException {
         return saveMetadataDocument(
             user,
             file,
-            document
+            document,
+            ifMatch
         );
     }
 
@@ -170,7 +176,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @RequestBody MonitoringFacility document,
         @RequestParam("catalogue") String catalogue
-    ) {
+    ) throws DocumentRepositoryException {
         return saveNewMetadataDocument(
             user,
             document,
@@ -186,12 +192,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateMonitoringFacility(
         @ActiveUser CatalogueUser user,
         @PathVariable String file,
-        @RequestBody MonitoringFacility document
-    ) {
+        @RequestBody MonitoringFacility document,
+        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
+    ) throws DocumentRepositoryException, IOException {
         return saveMetadataDocument(
             user,
             file,
-            document
+            document,
+            ifMatch
         );
     }
 
@@ -203,7 +211,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @RequestBody MonitoringNetwork document,
         @RequestParam("catalogue") String catalogue
-    ) {
+    ) throws DocumentRepositoryException {
         return saveNewMetadataDocument(
             user,
             document,
@@ -219,12 +227,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateMonitoringNetwork(
         @ActiveUser CatalogueUser user,
         @PathVariable String file,
-        @RequestBody MonitoringNetwork document
-    ) {
+        @RequestBody MonitoringNetwork document,
+        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
+    ) throws DocumentRepositoryException, IOException {
         return saveMetadataDocument(
             user,
             file,
-            document
+            document,
+            ifMatch
         );
     }
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
@@ -235,7 +245,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @RequestBody MonitoringProgramme document,
         @RequestParam("catalogue") String catalogue
-    ) {
+    ) throws DocumentRepositoryException {
         return saveNewMetadataDocument(
             user,
             document,
@@ -251,12 +261,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateMonitoringProgramme(
         @ActiveUser CatalogueUser user,
         @PathVariable String file,
-        @RequestBody MonitoringProgramme document
-    ) {
+        @RequestBody MonitoringProgramme document,
+        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
+    ) throws DocumentRepositoryException, IOException {
         return saveMetadataDocument(
             user,
             file,
-            document
+            document,
+            ifMatch
         );
     }
 
@@ -268,7 +280,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody CehModel document,
             @RequestParam("catalogue") String catalogue
-            ) {
+            ) throws DocumentRepositoryException {
         return saveNewMetadataDocument(
                 user,
                 document,
@@ -284,12 +296,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateCehModelDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
-            @RequestBody CehModel document
-            ) {
+            @RequestBody CehModel document,
+            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
+            ) throws DocumentRepositoryException, IOException {
         return saveMetadataDocument(
                 user,
                 file,
-                document
+                document,
+                ifMatch
                 );
             }
 
@@ -301,7 +315,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody DataType document,
             @RequestParam("catalogue") String catalogue
-            ) {
+            ) throws DocumentRepositoryException {
         return saveNewMetadataDocument(
                 user,
                 document,
@@ -317,12 +331,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateDataType(
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
-            @RequestBody DataType document
-            ) {
+            @RequestBody DataType document,
+            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
+            ) throws DocumentRepositoryException, IOException {
         return saveMetadataDocument(
                 user,
                 file,
-                document
+                document,
+                ifMatch
                 );
             }
 
@@ -334,7 +350,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody CehModelApplication document,
             @RequestParam("catalogue") String catalogue
-            ) {
+            ) throws DocumentRepositoryException {
         return saveNewMetadataDocument(
                 user,
                 document,
@@ -350,12 +366,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateCehModelApplicationDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
-            @RequestBody CehModelApplication document
-            ) {
+            @RequestBody CehModelApplication document,
+            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
+            ) throws DocumentRepositoryException, IOException {
         return saveMetadataDocument(
                 user,
                 file,
-                document
+                document,
+                ifMatch
                 );
             }
 
@@ -367,7 +385,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody LinkDocument document,
             @RequestParam("catalogue") String catalogue
-            ) {
+            ) throws DocumentRepositoryException {
         return saveNewMetadataDocument(
                 user,
                 document,
@@ -383,12 +401,14 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateLinkDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
-            @RequestBody LinkDocument document
-            ) {
+            @RequestBody LinkDocument document,
+            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
+            ) throws DocumentRepositoryException, IOException {
         return saveMetadataDocument(
                 user,
                 file,
-                document
+                document,
+                ifMatch
                 );
             }
 
@@ -405,24 +425,27 @@ public class DocumentController extends AbstractDocumentController {
     }
 
     @CrossOrigin
-    @ResponseBody
-    @SneakyThrows
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @GetMapping("documents/{file}")
-    public MetadataDocument readMetadata(
+    public ResponseEntity<MetadataDocument> readMetadata(
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
             HttpServletRequest request
-        ) {
+        ) throws DocumentRepositoryException, IOException {
         MetadataDocument document = documentRepository.read(file);
         if(metricsService != null && !metricsExcludedUsers.contains(user.getUsername()) && !document.getState().equals(GitRepoServiceAgreementService.DRAFT)) {
             metricsService.recordView(file, request.getRemoteAddr());
         }
-        return postProcessLinkDocument(addJenaRelationships(document));
+        MetadataDocument body = postProcessLinkDocument(addJenaRelationships(document));
+        String revision = cachedDataRepository.getDocumentRevisionToken(file);
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+        if (revision != null) {
+            builder.eTag(revision); // Spring quotes this into a strong ETag: "revision"
+        }
+        return builder.body(body);
     }
 
     @CrossOrigin
-    @SneakyThrows
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @GetMapping("documents/{file}.xml")
     public String readMetadataXml(
@@ -433,27 +456,25 @@ public class DocumentController extends AbstractDocumentController {
     }
 
     @ResponseBody
-    @SneakyThrows
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @GetMapping(value = "documents/{file}", produces = LINKED_JSON_VALUE)
     public MetadataDocument readLinkDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable String file
-            ) {
+            ) throws DocumentRepositoryException {
         var document = documentRepository.read(file);
         return addJenaRelationships(document);
     }
 
 
     @ResponseBody
-    @SneakyThrows
     @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'VIEW')")
     @GetMapping(value = "history/{revision}/{file}")
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
             @PathVariable String revision
-            ) {
+            ) throws DocumentRepositoryException {
         var document = documentRepository.read(file, revision);
         return postProcessLinkDocument(addJenaRelationships(document));
     }
@@ -484,11 +505,10 @@ public class DocumentController extends AbstractDocumentController {
     @RequestMapping(value = "documents/{file}",
     method = RequestMethod.DELETE)
     @ResponseBody
-    @SneakyThrows
     public DataRevision<CatalogueUser> deleteDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable String file
-            ) {
+            ) throws DocumentRepositoryException {
         return documentRepository.delete(user, file);
             }
 

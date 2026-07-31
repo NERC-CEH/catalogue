@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.modelnerc;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -10,9 +11,13 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.controllers.AbstractDocumentController;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
+
+import java.io.IOException;
 
 @Slf4j
 @ToString(callSuper = true)
@@ -20,8 +25,8 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
 @RequestMapping("documents")
 public class NercModelController extends AbstractDocumentController {
 
-    public NercModelController(DocumentRepository documentRepository) {
-        super(documentRepository);
+    public NercModelController(DocumentRepository documentRepository, CachedDataRepository cachedDataRepository) {
+        super(documentRepository, cachedDataRepository);
         log.info("Creating");
     }
 
@@ -31,7 +36,7 @@ public class NercModelController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody NercModel document,
             @RequestParam("catalogue") String catalogue
-    ) {
+    ) throws DocumentRepositoryException {
         return saveNewMetadataDocument(user, document, catalogue, "new Model");
     }
 
@@ -40,9 +45,10 @@ public class NercModelController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateNercModel(
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
-            @RequestBody NercModel document
-    ) {
-        return saveMetadataDocument(user, file, document);
+            @RequestBody NercModel document,
+            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
+    ) throws DocumentRepositoryException, IOException {
+        return saveMetadataDocument(user, file, document, ifMatch);
     }
 
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
@@ -51,7 +57,7 @@ public class NercModelController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody NercModelUse document,
             @RequestParam("catalogue") String catalogue
-    ) {
+    ) throws DocumentRepositoryException {
         return saveNewMetadataDocument(user, document, catalogue, "new Model implementation (NERC)");
     }
 
@@ -60,9 +66,10 @@ public class NercModelController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateNercModelUse(
             @ActiveUser CatalogueUser user,
             @PathVariable String file,
-            @RequestBody NercModelUse document
-    ) {
-        return saveMetadataDocument(user, file, document);
+            @RequestBody NercModelUse document,
+            @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
+    ) throws DocumentRepositoryException, IOException {
+        return saveMetadataDocument(user, file, document, ifMatch);
     }
 
 

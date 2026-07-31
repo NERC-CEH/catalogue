@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +48,7 @@ import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.quality.MultiDocumentTypeMetadataQualityService;
 import uk.ac.ceh.gateway.catalogue.quality.Results;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementService;
@@ -68,6 +70,8 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -113,6 +117,7 @@ class DocumentControllerTest extends AbstractMvcTest {
     private DownloadOrderDetailsService downloadOrderDetailsService;
     @Autowired private Configuration configuration;
 
+    @MockitoBean private CachedDataRepository cachedDataRepository;
     private DocumentController controller;
     private final String linkedDocumentId = "0a6c7c4c-0515-40a8-b84e-7ffe622b2579";
     private final String id = "fe26bd48-0f81-4a37-8a28-58427b7e20bd";
@@ -123,7 +128,7 @@ class DocumentControllerTest extends AbstractMvcTest {
 
     @BeforeEach
     void setup() {
-        controller = new DocumentController(metricsService, metricsExcludedUsers, documentRepository, jenaService);
+        controller = new DocumentController(metricsService, metricsExcludedUsers, documentRepository, jenaService, cachedDataRepository);
         DownloadUrlProperties downloadUrlProperties = mock(DownloadUrlProperties.class);
         when(downloadUrlProperties.getRegexOrder()).thenReturn("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*");
         when(downloadUrlProperties.getRegexPackage()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/.*");
@@ -480,7 +485,8 @@ class DocumentControllerTest extends AbstractMvcTest {
         given(documentRepository.read("test")).willReturn(linkDocument);
 
         //when
-        MetadataDocument actual = controller.readMetadata(CatalogueUser.PUBLIC_USER, "test", request);
+        ResponseEntity<MetadataDocument> response = controller.readMetadata(CatalogueUser.PUBLIC_USER, "test", request);
+        MetadataDocument actual = response.getBody();
 
         //then
         assertThat(
@@ -645,5 +651,250 @@ class DocumentControllerTest extends AbstractMvcTest {
         assertThat("Resource identifiers should be cleared", cloned.getResourceIdentifiers(), equalTo(java.util.Collections.emptyList()));
         assertThat("Incoming citations should be cleared", cloned.getIncomingCitations(), equalTo(java.util.Collections.emptyList()));
         assertThat("Dataset reference date should be cleared", cloned.getDatasetReferenceDate(), equalTo(null));
+    }
+
+    @Test
+    public void putWithoutIfMatchIsRejectedAsPreconditionRequired() {
+        //Given an editor update with no If-Match header
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
+        GeminiDocument doc = new GeminiDocument();
+
+        //When/Then updating without the precondition header is refused
+        assertThrows(MetadataPreconditionRequiredException.class, () ->
+            controller.updateGeminiDocument(user, "doc1", doc, null));
+    }
+
+    @Test
+    public void putWithIfMatchSavesWithThatRevision() throws Exception {
+        //Given a matching read for the metadata graft and a stubbed save
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
+        GeminiDocument doc = new GeminiDocument();
+        GeminiDocument existing = new GeminiDocument();
+        existing.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(documentRepository.read("doc1")).willReturn(existing);
+        given(documentRepository.save(eq(user), eq(doc), eq("doc1"), any(), eq("rev1"))).willReturn(doc);
+
+        //When updating with an If-Match
+        controller.updateGeminiDocument(user, "doc1", doc, "\"rev1\"");
+
+        //Then the (unquoted) revision is passed to the repository
+        verify(documentRepository).save(eq(user), eq(doc), eq("doc1"), any(), eq("rev1"));
+    }
+
+    @Test
+    public void putEmitsETagOfNewRevisionAfterSave() throws Exception {
+        //Given a matching read for the metadata graft, a stubbed save, and the post-save revision
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
+        GeminiDocument doc = new GeminiDocument();
+        GeminiDocument existing = new GeminiDocument();
+        existing.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        GeminiDocument saved = new GeminiDocument();
+        given(documentRepository.read("doc1")).willReturn(existing);
+        given(documentRepository.save(eq(user), eq(doc), eq("doc1"), any(), eq("rev1"))).willReturn(saved);
+        given(cachedDataRepository.getDocumentRevisionToken("doc1")).willReturn("rev2");
+
+        //When updating with an If-Match
+        ResponseEntity<MetadataDocument> response = controller.updateGeminiDocument(user, "doc1", doc, "\"rev1\"");
+
+        //Then the response carries the NEW per-document revision as its ETag (quoted per HTTP)
+        assertThat(response.getHeaders().getETag(), is("\"rev2\""));
+    }
+
+    @Test
+    @SneakyThrows
+    public void roundTripGetThenTwoConsecutivePutsSucceedsWithoutSpuriousConflict() {
+        //Given a document readable at revision "rev1"
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
+        GeminiDocument existing = new GeminiDocument();
+        existing.setMetadata(MetadataInfo.builder().catalogue("eidc").state("public").build());
+        given(documentRepository.read("doc1")).willReturn(existing);
+        given(cachedDataRepository.getDocumentRevisionToken("doc1")).willReturn("rev1", "rev2", "rev3");
+
+        //When: a GET reads the document and its current ETag
+        ResponseEntity<MetadataDocument> getResponse = controller.readMetadata(user, "doc1", request);
+        String etagFromGet = getResponse.getHeaders().getETag();
+        assertThat(etagFromGet, is("\"rev1\""));
+
+        //And: a first PUT is made using that ETag as If-Match, saving successfully at "rev1"
+        GeminiDocument firstEdit = new GeminiDocument();
+        GeminiDocument savedAfterFirstPut = new GeminiDocument();
+        given(documentRepository.save(eq(user), eq(firstEdit), eq("doc1"), any(), eq("rev1")))
+            .willReturn(savedAfterFirstPut);
+
+        ResponseEntity<MetadataDocument> firstPutResponse =
+            controller.updateGeminiDocument(user, "doc1", firstEdit, etagFromGet);
+        String etagFromFirstPut = firstPutResponse.getHeaders().getETag();
+
+        //Then: the first PUT's response carries the NEW revision as its ETag
+        assertThat("the PUT response must carry the new ETag for the next save to reuse",
+            etagFromFirstPut, is("\"rev2\""));
+
+        //And: a second, consecutive PUT reusing that ETag as If-Match succeeds (does NOT conflict)
+        GeminiDocument secondEdit = new GeminiDocument();
+        GeminiDocument savedAfterSecondPut = new GeminiDocument();
+        given(documentRepository.save(eq(user), eq(secondEdit), eq("doc1"), any(), eq("rev2")))
+            .willReturn(savedAfterSecondPut);
+
+        ResponseEntity<MetadataDocument> secondPutResponse =
+            controller.updateGeminiDocument(user, "doc1", secondEdit, etagFromFirstPut);
+
+        //Then the second PUT succeeds, having sent the revision the first PUT actually returned
+        assertThat(secondPutResponse.getStatusCode(), equalTo(HttpStatus.OK));
+        verify(documentRepository).save(eq(user), eq(secondEdit), eq("doc1"), any(), eq("rev2"));
+    }
+
+    @Test
+    public void getEmitsETagOfCurrentRevision() throws Exception {
+        //Given a readable document and a known per-document revision
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
+        GeminiDocument doc = new GeminiDocument();
+        doc.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(documentRepository.read("doc1")).willReturn(doc);
+        given(cachedDataRepository.getDocumentRevisionToken("doc1")).willReturn("rev1");
+
+        //When reading the document
+        ResponseEntity<MetadataDocument> response = controller.readMetadata(user, "doc1", request);
+
+        //Then the ETag carries the current revision (quoted per HTTP)
+        assertThat(response.getHeaders().getETag(), is("\"rev1\""));
+    }
+
+    /*
+     * The tests above call the controller directly, which proves the logic but not the wiring. These drive
+     * real requests through the full MVC stack — header binding, @ExceptionHandler dispatch, status
+     * mapping and message conversion of the echoed body — because that wiring is where a mandatory
+     * precondition can silently degrade to an optional one.
+     */
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    @DisplayName("a PUT with no If-Match is rejected with 428 and never reaches the repository")
+    void putWithoutPreconditionIsRejectedOverHttp() {
+        given(permissionService.userCanEdit(id)).willReturn(true);
+
+        mvc.perform(put("/documents/{id}", id)
+                .contentType(GEMINI_JSON_VALUE)
+                .content("{\"title\":\"Edited title\"}")
+            )
+            .andExpect(status().isPreconditionRequired());
+
+        verify(documentRepository, never()).save(any(), any(), anyString(), anyString(), any());
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    @DisplayName("a stale PUT is rejected with 409 whose body is the submission, so the edit is not lost")
+    void stalePutConflictsOverHttp() {
+        given(permissionService.userCanEdit(id)).willReturn(true);
+        GeminiDocument existing = new GeminiDocument();
+        existing.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(documentRepository.read(id)).willReturn(existing);
+
+        GeminiDocument submitted = new GeminiDocument();
+        submitted.setTitle("The edit the user would otherwise lose");
+        given(documentRepository.save(any(), any(), eq(id), anyString(), eq("metaRev1:rawRev1")))
+            .willThrow(new MetadataConflictException("stale", submitted));
+
+        mvc.perform(put("/documents/{id}", id)
+                .contentType(GEMINI_JSON_VALUE)
+                .header(HttpHeaders.IF_MATCH, "\"metaRev1:rawRev1\"")
+                .accept(GEMINI_JSON_VALUE)
+                .content("{\"title\":\"The edit the user would otherwise lose\"}")
+            )
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.title").value("The edit the user would otherwise lose"));
+    }
+
+    /*
+     * The same conflict, from a script rather than the editor. curl sends a wildcard Accept by default,
+     * as does the worked example in docs/api.md. If the 409 body cannot be written for that Accept,
+     * Spring rethrows the original exception and the caller gets a 500 with no echoed submission - the
+     * documented contract broken precisely when the user's unsaved edit is on the line.
+     */
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    @DisplayName("a stale PUT from a client sending no Accept header still gets the 409 and its body")
+    void stalePutConflictsForClientsWithoutAnAcceptHeader() {
+        given(permissionService.userCanEdit(id)).willReturn(true);
+        GeminiDocument existing = new GeminiDocument();
+        existing.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(documentRepository.read(id)).willReturn(existing);
+
+        GeminiDocument submitted = new GeminiDocument();
+        submitted.setTitle("The edit the user would otherwise lose");
+        given(documentRepository.save(any(), any(), eq(id), anyString(), eq("metaRev1:rawRev1")))
+            .willThrow(new MetadataConflictException("stale", submitted));
+
+        mvc.perform(put("/documents/{id}", id)
+                .contentType(GEMINI_JSON_VALUE)
+                .header(HttpHeaders.IF_MATCH, "\"metaRev1:rawRev1\"")
+                .content("{\"title\":\"The edit the user would otherwise lose\"}")
+            )
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.title").value("The edit the user would otherwise lose"));
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    @DisplayName("a PUT with a current If-Match succeeds and returns the next revision as its ETag")
+    void currentPutSucceedsOverHttp() {
+        given(permissionService.userCanEdit(id)).willReturn(true);
+        GeminiDocument existing = new GeminiDocument();
+        givenMetadataDocument(existing);
+        givenCatalogue();
+        givenDefaultCatalogue();
+        givenFreemarkerConfiguration();
+        givenProfileNotActive();
+        givenCodeLookup();
+        givenMetadataQuality();
+        existing.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(documentRepository.read(id)).willReturn(existing);
+        given(documentRepository.save(any(), any(), eq(id), anyString(), eq("metaRev1:rawRev1")))
+            .willReturn(existing);
+        given(cachedDataRepository.getDocumentRevisionToken(id)).willReturn("metaRev1:rawRev2");
+
+        mvc.perform(put("/documents/{id}", id)
+                .contentType(GEMINI_JSON_VALUE)
+                .header(HttpHeaders.IF_MATCH, "\"metaRev1:rawRev1\"")
+                .content("{\"title\":\"Edited title\"}")
+            )
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.ETAG, "\"metaRev1:rawRev2\""));
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    @DisplayName("If-Match: * satisfies the precondition without pinning a revision")
+    void wildcardPreconditionIsAcceptedOverHttp() {
+        given(permissionService.userCanEdit(id)).willReturn(true);
+        GeminiDocument existing = new GeminiDocument();
+        givenMetadataDocument(existing);
+        givenCatalogue();
+        givenDefaultCatalogue();
+        givenFreemarkerConfiguration();
+        givenProfileNotActive();
+        givenCodeLookup();
+        givenMetadataQuality();
+        existing.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(documentRepository.read(id)).willReturn(existing);
+        given(documentRepository.save(any(), any(), eq(id), anyString(), eq(null)))
+            .willReturn(existing);
+
+        mvc.perform(put("/documents/{id}", id)
+                .contentType(GEMINI_JSON_VALUE)
+                .header(HttpHeaders.IF_MATCH, "*")
+                .content("{\"title\":\"Edited title\"}")
+            )
+            .andExpect(status().isOk());
+
+        // null expected-revision is what tells the repository to skip the compare-then-commit check
+        verify(documentRepository).save(any(), any(), eq(id), anyString(), eq(null));
     }
 }

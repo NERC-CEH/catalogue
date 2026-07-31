@@ -110,8 +110,12 @@ stickyHeader()
 function initCatalogue () {
   $catalogue.on('click', function (event) {
     event.preventDefault()
-    $.getJSON($(event.target).attr('href'), function (data) {
+    $.getJSON($(event.target).attr('href'), function (data, textStatus, jqXHR) {
       const model = new Catalogue(data)
+      const etag = jqXHR.getResponseHeader('ETag')
+      if (etag) {
+        model.setRevision(etag.replace(/^"|"$/g, ''))
+      }
       $.getJSON('/catalogues', function (data) {
         model.options = data.map(val => ({ value: val.id, label: val.title }))
         new CatalogueView({
@@ -126,8 +130,12 @@ function initCatalogue () {
 function initCatalogueView () {
   $catalogueView.on('click', function (event) {
     event.preventDefault()
-    $.getJSON($(event.target).attr('href'), function (data) {
+    $.getJSON($(event.target).attr('href'), function (data, textStatus, jqXHR) {
       const model = new CatalogueViewModel(data)
+      const etag = jqXHR.getResponseHeader('ETag')
+      if (etag) {
+        model.setRevision(etag.replace(/^"|"$/g, ''))
+      }
       $.getJSON(`/catalogues?identifier=${data.id}`, function (catalogues) {
         model.catalogues = catalogues
         new CatalogueViewView({
@@ -249,10 +257,15 @@ function initEditor () {
         accepts: {
           json: documentType.mediaType
         },
-        success (data) {
+        success (data, textStatus, jqXHR) {
           $('#metadata').removeClass('alert alert-danger missingResourceType')
+          const model = new documentType.Model(data, documentType, title)
+          const etag = jqXHR.getResponseHeader('ETag')
+          if (etag) {
+            model.setRevision(etag.replace(/^"|"$/g, ''))
+          }
           new documentType.View({
-            model: new documentType.Model(data, documentType, title),
+            model,
             el: '#metadata'
           })
         }

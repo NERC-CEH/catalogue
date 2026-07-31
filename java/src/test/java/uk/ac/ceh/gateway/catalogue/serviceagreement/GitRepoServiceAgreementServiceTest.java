@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -18,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataConflictException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
@@ -36,6 +38,7 @@ import java.util.List;
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -279,6 +282,61 @@ public class GitRepoServiceAgreementServiceTest {
         verify(metadataInfoMapper, times(2)).readInfo(any(InputStream.class));
         verify(dataOngoingCommit).commit(user, "updating service agreement " + ID);
         verify(cachedDataRepository).evictAfterDirectWrite(FOLDER + ID);
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("a service-agreement save whose revision is still current is committed")
+    public void updateServiceAgreementWithCurrentRevision() {
+        //Given
+        val dataOngoingCommit = mock(DataOngoingCommit.class);
+        given(repo.submitData(any(String.class), any(DataWriter.class))).willReturn(dataOngoingCommit);
+        given(dataOngoingCommit.submitData(any(), any())).willReturn(dataOngoingCommit);
+        givenPublishedServiceAgreement();
+        givenCurrentRevisions("metaRev1", "rawRev1");
+
+        //When the editor's revision matches what is in the datastore
+        service.update(user, ID, serviceAgreement, "metaRev1:rawRev1");
+
+        //Then the commit goes ahead
+        verify(dataOngoingCommit).commit(user, "updating service agreement " + ID);
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("a stale service-agreement save is rejected before anything is written")
+    public void updateServiceAgreementWithStaleRevisionConflicts() {
+        //Given the service agreement's body has moved on since the editor loaded it
+        givenCurrentRevisions("metaRev1", "rawRev2");
+
+        //When/Then the save is refused and echoes back the unsaved submission
+        val ex = assertThrows(MetadataConflictException.class, () ->
+            service.update(user, ID, serviceAgreement, "metaRev1:rawRev1"));
+        assertThat(ex.getSubmittedDocument(), is(sameInstance(serviceAgreement)));
+        verify(repo, never()).submitData(any(), any());
+        verify(cachedDataRepository, never()).evictAfterDirectWrite(any());
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("a stale permissions save on a service agreement is rejected before anything is written")
+    public void updateMetadataWithStaleRevisionConflicts() {
+        givenCurrentRevisions("metaRev2", "rawRev1");
+
+        assertThrows(MetadataConflictException.class, () ->
+            service.updateMetadata(user, ID, MetadataInfo.builder().build(), "metaRev1:rawRev1"));
+        verify(repo, never()).submitData(any(), any());
+    }
+
+    @SuppressWarnings("unchecked")
+    private void givenCurrentRevisions(String metaRevision, String rawRevision) throws Exception {
+        val meta = mock(DataRevision.class);
+        given(meta.getRevisionID()).willReturn(metaRevision);
+        given(repo.getRevisions(FOLDER + ID + ".meta")).willReturn(List.of(meta));
+
+        val raw = mock(DataRevision.class);
+        given(raw.getRevisionID()).willReturn(rawRevision);
+        given(repo.getRevisions(FOLDER + ID + ".raw")).willReturn(List.of(raw));
     }
 
     @Test
