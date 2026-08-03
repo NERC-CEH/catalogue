@@ -132,7 +132,11 @@
 
 <#macro downloadOptions resources>
     <#list resources as item>
+        <#-- #assign is namespace scoped, so reset per item or a previous item's value leaks.
+             Defaults here must match the accessOption macro's own parameter defaults. -->
+        <#assign optionLabel = "Order/download">
         <#assign optionDescription = "">
+        <#assign optionIcon = "fa-download">
         <#if item.name?has_content>
           <#assign optionLabel = item.name>
         </#if>
@@ -177,7 +181,7 @@
   <#if mapViewable>
     <#if mapservices?? && mapservices?has_content>
       <#list mapservices as wms>
-        <@accessOption "${wms.url}" " Web map service" "Access a web map service (WMS) for use in a GIS application" "fa-globe" "Access"/>
+        <@accessOption "${wms.url}" " Web map service" "Access a web map service (WMS) for use in a GIS application" "fa-globe" true "Access"/>
       </#list>
     </#if>
   </#if>
