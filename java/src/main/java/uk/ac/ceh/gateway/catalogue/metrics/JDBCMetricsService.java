@@ -1,7 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.metrics;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -75,12 +77,12 @@ public class JDBCMetricsService implements MetricsService {
     }
 
     @Override
-    public int totalViews(@NonNull String uuid) {
+    public @Nullable Integer totalViews(@NonNull String uuid) {
         return totalAmount(VIEW_TABLE, uuid);
     }
 
     @Override
-    public int totalDownloads(@NonNull String uuid) {
+    public @Nullable Integer totalDownloads(@NonNull String uuid) {
         return totalAmount(DOWNLOAD_TABLE, uuid);
     }
 
@@ -109,8 +111,18 @@ public class JDBCMetricsService implements MetricsService {
         map.computeIfAbsent(uuid, k -> new HashSet<>()).add(addr);
     }
 
-    private int totalAmount(@NonNull String table, @NonNull String uuid) {
-        return jdbcTemplate.queryForObject(TOTAL_STATEMENT.formatted(table), Integer.class, uuid);
+    /**
+     * Returns {@code null} rather than propagating, so a metrics outage costs a counter instead of the
+     * whole record page. The database is SQLite on a network share, and a read that overlaps the hourly
+     * sync's writes can still exhaust its busy timeout and fail with {@code SQLITE_BUSY}.
+     */
+    private @Nullable Integer totalAmount(@NonNull String table, @NonNull String uuid) {
+        try {
+            return jdbcTemplate.queryForObject(TOTAL_STATEMENT.formatted(table), Integer.class, uuid);
+        } catch (DataAccessException ex) {
+            log.warn("Could not read {} total for {}: {}", table, uuid, ex.getMessage());
+            return null;
+        }
     }
 
     private void updateDBHelper(String table) {
