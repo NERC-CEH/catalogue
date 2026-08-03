@@ -142,6 +142,22 @@ class JDBCMetricsServiceTest {
         assertThat(amount, equalTo(2 * howMany));
     }
 
+    /**
+     * A view counter is decorative, but it is read while rendering a record page, so a failure here
+     * used to propagate out through FreeMarker and 500 the whole page. In production that happened
+     * whenever a read met the hourly sync's lock on the SQLite file (SQLITE_BUSY). The count must come
+     * back absent instead, leaving the page to render without it.
+     */
+    @Test
+    void totalsAreAbsentRatherThanThrowingWhenTheDatabaseIsUnavailable() {
+        //given the database cannot be reached
+        db.shutdown();
+
+        //when/then no exception escapes, and the counts report themselves as unavailable
+        assertThat(service.totalViews(TEST_DOCUMENT), is(nullValue()));
+        assertThat(service.totalDownloads(TEST_DOCUMENT), is(nullValue()));
+    }
+
     @SneakyThrows
     @Test
     void testUpdateView() {
