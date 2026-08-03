@@ -293,10 +293,10 @@ public class GitRepoServiceAgreementServiceTest {
         given(repo.submitData(any(String.class), any(DataWriter.class))).willReturn(dataOngoingCommit);
         given(dataOngoingCommit.submitData(any(), any())).willReturn(dataOngoingCommit);
         givenPublishedServiceAgreement();
-        givenCurrentRevisions("metaRev1", "rawRev1");
+        val held = CachedDataRepository.revisionToken(repo, FOLDER + ID);
 
         //When the editor's revision matches what is in the datastore
-        service.update(user, ID, serviceAgreement, "metaRev1:rawRev1");
+        service.update(user, ID, serviceAgreement, held);
 
         //Then the commit goes ahead
         verify(dataOngoingCommit).commit(user, "updating service agreement " + ID);
@@ -307,11 +307,13 @@ public class GitRepoServiceAgreementServiceTest {
     @DisplayName("a stale service-agreement save is rejected before anything is written")
     public void updateServiceAgreementWithStaleRevisionConflicts() {
         //Given the service agreement's body has moved on since the editor loaded it
-        givenCurrentRevisions("metaRev1", "rawRev2");
+        givenCurrentContent("meta-v1", "raw-v1");
+        val held = CachedDataRepository.revisionToken(repo, FOLDER + ID);
+        givenCurrentContent("meta-v1", "raw-v2");
 
         //When/Then the save is refused and echoes back the unsaved submission
         val ex = assertThrows(MetadataConflictException.class, () ->
-            service.update(user, ID, serviceAgreement, "metaRev1:rawRev1"));
+            service.update(user, ID, serviceAgreement, held));
         assertThat(ex.getSubmittedDocument(), is(sameInstance(serviceAgreement)));
         verify(repo, never()).submitData(any(), any());
         verify(cachedDataRepository, never()).evictAfterDirectWrite(any());
@@ -321,22 +323,35 @@ public class GitRepoServiceAgreementServiceTest {
     @SneakyThrows
     @DisplayName("a stale permissions save on a service agreement is rejected before anything is written")
     public void updateMetadataWithStaleRevisionConflicts() {
-        givenCurrentRevisions("metaRev2", "rawRev1");
+        // a permissions edit moves .meta while .raw stays put
+        givenCurrentContent("meta-v1", "raw-v1");
+        val held = CachedDataRepository.revisionToken(repo, FOLDER + ID);
+        givenCurrentContent("meta-v2", "raw-v1");
 
         assertThrows(MetadataConflictException.class, () ->
-            service.updateMetadata(user, ID, MetadataInfo.builder().build(), "metaRev1:rawRev1"));
+            service.updateMetadata(user, ID, MetadataInfo.builder().build(), held));
         verify(repo, never()).submitData(any(), any());
     }
 
-    @SuppressWarnings("unchecked")
-    private void givenCurrentRevisions(String metaRevision, String rawRevision) throws Exception {
-        val meta = mock(DataRevision.class);
-        given(meta.getRevisionID()).willReturn(metaRevision);
-        given(repo.getRevisions(FOLDER + ID + ".meta")).willReturn(List.of(meta));
+    /**
+     * Stubs the agreement's two blobs at HEAD. The lock token digests their content, so these bodies
+     * are what it is computed from; read it back with {@link CachedDataRepository#revisionToken}.
+     */
+    private void givenCurrentContent(String metaBody, String rawBody) throws Exception {
+        // Build both blobs before stubbing: freshBlob() stubs a mock of its own, which Mockito rejects
+        // if set up inside the argument to willReturn() while this stubbing is still open.
+        val meta = freshBlob(metaBody);
+        val raw = freshBlob(rawBody);
+        given(repo.getData(FOLDER + ID + ".meta")).willReturn(meta);
+        given(repo.getData(FOLDER + ID + ".raw")).willReturn(raw);
+    }
 
-        val raw = mock(DataRevision.class);
-        given(raw.getRevisionID()).willReturn(rawRevision);
-        given(repo.getRevisions(FOLDER + ID + ".raw")).willReturn(List.of(raw));
+    /** A blob handing out a fresh stream per call, so its content can be read more than once. */
+    private DataDocument freshBlob(String body) throws Exception {
+        val bytes = body.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        val document = mock(DataDocument.class);
+        given(document.getInputStream()).willAnswer(invocation -> new ByteArrayInputStream(bytes));
+        return document;
     }
 
     @Test
@@ -685,8 +700,9 @@ public class GitRepoServiceAgreementServiceTest {
         val metadataInfoDocument = mock(DataDocument.class);
         given(repo.getData(FOLDER + ID + ".meta"))
             .willReturn(metadataInfoDocument);
+        // a fresh stream per call: the lock token digests this content before the service reads it
         given(metadataInfoDocument.getInputStream())
-            .willReturn(new ByteArrayInputStream("meta".getBytes()));
+            .willAnswer(invocation -> new ByteArrayInputStream("meta".getBytes()));
 
         val metadata = MetadataInfo.builder()
             .state("published")
@@ -699,7 +715,7 @@ public class GitRepoServiceAgreementServiceTest {
         given(repo.getData(FOLDER + ID + ".raw"))
             .willReturn(rawDocument);
         given(rawDocument.getInputStream())
-            .willReturn(new ByteArrayInputStream("file".getBytes()));
+            .willAnswer(invocation -> new ByteArrayInputStream("file".getBytes()));
         given(serviceAgreementMapper.readInfo(any()))
             .willReturn(serviceAgreement);
         serviceAgreement.setMetadata(metadata);

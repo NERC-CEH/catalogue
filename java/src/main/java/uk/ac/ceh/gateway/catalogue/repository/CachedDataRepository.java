@@ -8,12 +8,14 @@ import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
-import uk.ac.ceh.components.datastore.DataRevision;
+import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 
 /**
  * Read-through cache in front of the Git {@link DataRepository}.
@@ -39,6 +41,9 @@ public class CachedDataRepository {
     public static final String LATEST_CACHE = "datastore-latest";
     public static final String HISTORICAL_CACHE = "datastore-historical";
     public static final String DOC_REVISION_CACHE = "datastore-doc-revision";
+
+    /** Stands in for a half of a document that does not exist at HEAD; see {@code contentDigest}. */
+    private static final String ABSENT = "-";
 
     private final DataRepository<CatalogueUser> repo;
 
@@ -76,17 +81,28 @@ public class CachedDataRepository {
     }
 
     /**
-     * The per-document revision token used for optimistic locking. Unlike {@link #getLatestRevisionId()}
+     * The per-document token used for optimistic locking. Unlike {@link #getLatestRevisionId()}
      * (repo-wide HEAD) this only moves when <em>this</em> document changes, so an unrelated save does not
      * trip a conflict.
      *
      * <p>A document is two blobs, and an edit may touch either one independently: a content edit rewrites
      * {@code .raw} while leaving {@code .meta} byte-identical, and a permissions edit does the reverse.
-     * The underlying {@code getRevisions(name)} is {@code git log -- <path>}, which applies ANY_DIFF
-     * history simplification — a commit that rewrites a path with identical bytes produces no diff for it
-     * and never appears in that path's log. A token read from one file alone therefore silently fails to
-     * move for edits to the other, and an optimistic lock whose token does not move fails <em>open</em>.
-     * The token is the pair, so a change to either half changes the whole.</p>
+     * The token is a digest of both, so a change to either half changes the whole.</p>
+     *
+     * <p><strong>Why content and not the commit id.</strong> The obvious token — the newest commit
+     * touching each path — costs {@code repo.getRevisions(name)}, which is {@code git log -- <path>}: it
+     * walks the entire commit graph from HEAD with path filtering and materialises every matching commit,
+     * only for the caller to keep the first. Against the SMB-mounted SAN that is thousands of round-trips
+     * per call, on both the read path (every document GET) and the write path (every save, twice, inside
+     * {@code GitRepoWrapper}'s {@code synchronized} block). Hashing the blobs instead costs a HEAD
+     * resolve, a tree lookup and a blob open per file — proportional to tree depth, not to history
+     * length.</p>
+     *
+     * <p>Content is also the <em>more correct</em> signal. {@code git log -- <path>} applies ANY_DIFF
+     * history simplification, so a commit that rewrites a path with identical bytes produces no diff for
+     * it and never appears in that path's log; a commit-id token therefore silently fails to move for
+     * some edits, and an optimistic lock whose token does not move fails <em>open</em>. A digest moves
+     * exactly when the bytes a user could have edited differ, which is the question the lock is asking.</p>
      *
      * <p>Cached by document id and evicted on save/delete, mirroring {@link #readLatest}. Callers on the
      * write path must not use this cached value for their compare-then-commit check — they need an
@@ -102,15 +118,41 @@ public class CachedDataRepository {
 
     /**
      * Computes the token of {@link #getDocumentRevisionToken} directly against the datastore, bypassing
-     * the cache. Shared with the write path, which must compare against an authoritative current value.
+     * the cache. Shared with the write path, which must compare against an authoritative current value —
+     * {@code repo.getData(name)} resolves HEAD on every call, so this always reflects the committed state.
      */
     public static String revisionToken(DataRepository<CatalogueUser> repo, String documentId) throws DataRepositoryException {
-        return newestRevision(repo, documentId + ".meta") + ":" + newestRevision(repo, documentId + ".raw");
+        return contentDigest(repo, documentId + ".meta") + ":" + contentDigest(repo, documentId + ".raw");
     }
 
-    private static String newestRevision(DataRepository<CatalogueUser> repo, String name) throws DataRepositoryException {
-        List<DataRevision<CatalogueUser>> revisions = repo.getRevisions(name);
-        return revisions.isEmpty() ? "-" : revisions.getFirst().getRevisionID();
+    /**
+     * A digest of {@code name}'s content at HEAD, or {@link #ABSENT} when the blob does not exist there —
+     * a document mid-creation has neither half, and only one half is written by a {@code .meta}-only
+     * permissions commit against a document whose {@code .raw} predates it. Absence is a legitimate state
+     * that must produce a stable token rather than an error, but <em>only</em> absence: any other datastore
+     * failure propagates, because silently returning a token here would let the lock compare equal and
+     * fail open.
+     */
+    private static String contentDigest(DataRepository<CatalogueUser> repo, String name) throws DataRepositoryException {
+        DataDocument document;
+        try {
+            document = repo.getData(name);
+        } catch (GitFileNotFoundException absent) {
+            return ABSENT;
+        }
+        try {
+            return HexFormat.of().formatHex(sha256().digest(toBytes(document)));
+        } catch (IOException ex) {
+            throw new DataRepositoryException(ex);
+        }
+    }
+
+    private static MessageDigest sha256() {
+        try {
+            return MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IllegalStateException("SHA-256 is required of every JVM", ex);
+        }
     }
 
     /**
@@ -136,7 +178,7 @@ public class CachedDataRepository {
         log.debug("Evicting caches after direct datastore write to {}", documentId);
     }
 
-    private byte[] toBytes(DataDocument document) throws IOException {
+    private static byte[] toBytes(DataDocument document) throws IOException {
         try (InputStream stream = document.getInputStream()) {
             return stream.readAllBytes();
         }

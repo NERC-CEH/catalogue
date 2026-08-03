@@ -13,7 +13,6 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
-import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.datastore.DataWriter;
 import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
@@ -23,7 +22,6 @@ import uk.ac.ceh.gateway.catalogue.services.FacilityEventService;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -157,28 +155,21 @@ public class DatastoreReadCacheTest {
      */
     @Test
     public void saveEvictsDocRevisionSoNextTokenReadRefetches() throws Exception {
-        given(repo.getRevisions("abc.meta")).willAnswer(i -> List.of(revision("rev1")));
-        given(repo.getRevisions("abc.raw")).willAnswer(i -> List.of(revision("rev1")));
+        given(repo.getData("abc.meta")).willAnswer(i -> blob("meta-v1"));
+        given(repo.getData("abc.raw")).willAnswer(i -> blob("raw-v1"));
 
-        cachedRepo.getDocumentRevisionToken("abc"); // miss -> getRevisions #1
+        cachedRepo.getDocumentRevisionToken("abc"); // miss -> reads both blobs #1
         cachedRepo.getDocumentRevisionToken("abc"); // hit
 
         CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
         DataWriter writer = out -> { };
         gitRepoWrapper.save(user, "abc", "msg", MetadataInfo.builder().build(), writer);
 
-        cachedRepo.getDocumentRevisionToken("abc"); // evicted -> getRevisions #2
+        cachedRepo.getDocumentRevisionToken("abc"); // evicted -> reads both blobs #2
 
-        // Both halves of the token are re-read: the token is (.meta revision, .raw revision)
-        verify(repo, times(2)).getRevisions("abc.meta");
-        verify(repo, times(2)).getRevisions("abc.raw");
-    }
-
-    @SuppressWarnings("unchecked")
-    private static DataRevision<CatalogueUser> revision(String id) {
-        DataRevision<CatalogueUser> rev = mock(DataRevision.class);
-        given(rev.getRevisionID()).willReturn(id);
-        return rev;
+        // Both halves of the token are re-read: the token digests (.meta content, .raw content)
+        verify(repo, times(2)).getData("abc.meta");
+        verify(repo, times(2)).getData("abc.raw");
     }
 
     @Test
