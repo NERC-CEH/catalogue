@@ -110,6 +110,38 @@ public class CachedDataRepositoryRevisionTest {
         assertThat(cached.getDocumentRevisionToken("docA"), is(before));
     }
 
+    /**
+     * A commit that rewrites both halves with identical bytes changes nothing a user could have edited,
+     * so the token must not move — otherwise an unrelated republish would spuriously 409 every open
+     * editor. The token is a digest of content, so this holds by construction.
+     */
+    @Test
+    public void tokenIsStableAcrossANoOpRewrite(@TempDir Path tmp) throws Exception {
+        DataRepository<CatalogueUser> repo = gitRepo(tmp.toFile());
+        commit(repo, "docA", "v1");
+        CachedDataRepository cached = new CachedDataRepository(repo);
+        String before = cached.getDocumentRevisionToken("docA");
+
+        // Same bytes, committed again alongside a change to an unrelated document so the commit is real
+        commit(repo, "docA", "v1");
+        commit(repo, "docB", "v1");
+
+        assertThat(cached.getDocumentRevisionToken("docA"), is(before));
+    }
+
+    /**
+     * A document being created has neither blob at HEAD. That is a legitimate state, not an error: the
+     * token must resolve rather than throw, or creating a new record fails.
+     */
+    @Test
+    public void tokenResolvesForADocumentThatDoesNotExistYet(@TempDir Path tmp) throws Exception {
+        DataRepository<CatalogueUser> repo = gitRepo(tmp.toFile());
+        commit(repo, "docA", "v1");
+        CachedDataRepository cached = new CachedDataRepository(repo);
+
+        assertThat(cached.getDocumentRevisionToken("brandNew"), is("-:-"));
+    }
+
     /** Writes a changing {@code .raw} alongside a constant {@code .meta}, as a real content edit does. */
     private void commitRawOnlyChange(DataRepository<CatalogueUser> repo, String id, String body) throws Exception {
         CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
