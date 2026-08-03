@@ -130,6 +130,53 @@ class AccessButtonsTemplateTest {
         return OnlineResource.builder().url(FILE_ACCESS_URL).name("Files").function("fileAccess").build();
     }
 
+    /** Supporting documentation: neither a data-access resource nor a map service. */
+    private OnlineResource information() {
+        return OnlineResource.builder()
+            .url("https://data-package.ceh.ac.uk/sd/" + RECORD_ID).name("Docs").function("information").build();
+    }
+
+    /**
+     * The button that opens the access panel. Unique to {@code accessButton} - the cite button and
+     * citation modal use {@code data-bs-toggle="modal"}.
+     */
+    private static final String ACCESS_BUTTON = "data-bs-toggle=\"offcanvas\"";
+
+    /**
+     * A map-viewable record with nothing to download has no {@code dataAccessResources}, but
+     * {@code offcanvasAccess} still renders the WMS option because its gate includes
+     * {@code mapViewable}. If {@code accessButton} does not match that gate the panel is built with no
+     * way to open it, and the web map service becomes unreachable.
+     */
+    @Test
+    void mapViewableDatasetWithNoDownloadsStillShowsTheAccessButton() {
+        //given
+        val gemini = availableDataset(wms());
+
+        //when
+        val actual = render(gemini);
+
+        //then
+        assertThat(actual).contains(ACCESS_BUTTON).contains("Web map service");
+    }
+
+    /**
+     * The converse, so the guard above cannot be satisfied by simply always showing the button: a
+     * record with neither downloads nor a map service must not offer an access button, because the
+     * panel behind it would be empty.
+     */
+    @Test
+    void datasetWithNothingToAccessHasNoAccessButton() {
+        //given
+        val gemini = availableDataset(information());
+
+        //when
+        val actual = render(gemini);
+
+        //then
+        assertThat(actual).doesNotContain(ACCESS_BUTTON);
+    }
+
     /**
      * A WMS GetCapabilities online resource makes the record map viewable, which
      * reaches {@code wmsButton} -> {@code accessOption}. Passing too few positional

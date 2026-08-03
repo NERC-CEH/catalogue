@@ -16,7 +16,10 @@
 
 <#macro accessButton>
   <#if resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'model' || resourceType.value == 'software' || resourceType.value == 'computationalNotebook' || resourceType.value == 'method'>
-    <#if (availability == "Available" || availability == "Controlled") && dataAccess.dataAccessResources?has_content >
+    <#-- Keep this in step with the offcanvasAccess gate below: the button must appear whenever the
+         panel has something in it, or the panel is rendered with no way to open it. A WMS-only
+         record has no dataAccessResources but is still map viewable. -->
+    <#if (availability == "Available" || availability == "Controlled") && (dataAccess.dataAccessResources?has_content || mapViewable) >
         <a class="btn btn-ukceh" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
           Download/Access
           <i class="fa-solid fa-arrow-down fa-fw"></i>
