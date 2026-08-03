@@ -169,9 +169,19 @@
         </#if>
 
         <#if item.eidcDistribution>
-            <@accessOption "/download/${id}?url=${item.url}" optionLabel optionDescription optionIcon/>
+            <@accessOption
+              link="/download/${id}?url=${item.url}"
+              title=optionLabel
+              description=optionDescription
+              icon=optionIcon/>
         <#else>
-            <@accessOption "${item.url}" optionLabel optionDescription optionIcon true "Access"/>
+            <@accessOption
+              link="${item.url}"
+              title=optionLabel
+              description=optionDescription
+              icon=optionIcon
+              newWindow=true
+              buttonLabel="Access"/>
         </#if>
 
     </#list>
@@ -181,12 +191,20 @@
   <#if mapViewable>
     <#if mapservices?? && mapservices?has_content>
       <#list mapservices as wms>
-        <@accessOption "${wms.url}" " Web map service" "Access a web map service (WMS) for use in a GIS application" "fa-globe" true "Access"/>
+        <@accessOption
+          link="${wms.url}"
+          title=" Web map service"
+          description="Access a web map service (WMS) for use in a GIS application"
+          icon="fa-globe"
+          newWindow=true
+          buttonLabel="Access"/>
       </#list>
     </#if>
   </#if>
 </#macro>
 
+<#-- Call this with named arguments only. Positionally, an omitted argument shifts every
+     later one into the wrong parameter, which FreeMarker reports only at render time. -->
 <#macro accessOption link="#" title="Order/download" description="" icon="fa-download" newWindow=false buttonLabel="Download">
     <a class="access" href="${link}" <#if newWindow>target="_blank"</#if>>
       <div><span class="fa-solid fa-xl ${icon}"/></div>
