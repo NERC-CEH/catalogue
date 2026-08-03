@@ -59,6 +59,40 @@ class FacilityEventServiceTest {
         assertThat(actual.get().getBelongToFilenames(), is(expected.get().getBelongToFilenames()));
     }
 
+    /**
+     * Regression: a document whose stored {@code documentType} has no registered class cannot be
+     * deserialised, and the type lookup throws {@link IllegalArgumentException}. This is asked by
+     * {@code GitRepoWrapper.delete} <em>before</em> it removes anything, so throwing here made such a
+     * document impossible to delete — which is how retired document types left undeletable records
+     * behind (NERC-CEH/dri-one#239). Not a facility is the correct answer: MonitoringFacility is a
+     * registered type, so a document whose type does not resolve cannot be one.
+     */
+    @Test
+    @SneakyThrows
+    void getFacilityDeletedEventWhenTheDocumentCannotBeDeserialised() {
+        // given a document whose documentType has no corresponding class
+        when(bundledReader.readBundle("orphaned"))
+            .thenThrow(new IllegalArgumentException("methodrecord: does not have a corresponding class"));
+
+        // when
+        Optional<FacilityBelongToRemovedEvent> actual =
+            facilityEventService.getFacilityDeletedEvent("orphaned");
+
+        // then no event is raised, and crucially nothing is thrown, so the caller can go on to delete
+        assertTrue(actual.isEmpty());
+    }
+
+    @Test
+    @SneakyThrows
+    void getMonitoringFacilityWhenTheDocumentCannotBeDeserialised() {
+        // given
+        when(bundledReader.readBundle("orphaned"))
+            .thenThrow(new IllegalArgumentException("methodrecord: does not have a corresponding class"));
+
+        // when/then the save path treats it as "not a facility" rather than failing
+        assertTrue(facilityEventService.getMonitoringFacility("orphaned").isEmpty());
+    }
+
     @Test
     @SneakyThrows
     void getFacilityDeletedEventNoRelationship() {

@@ -162,6 +162,35 @@ public class GitRepoWrapperTest {
         return document;
     }
 
+    /**
+     * End-to-end regression for NERC-CEH/dri-one#239. {@link GitRepoWrapper#delete} asks
+     * {@link FacilityEventService#getFacilityDeletedEvent} whether the document is a monitoring facility
+     * <em>before</em> it removes anything. For a document whose stored {@code documentType} has no
+     * registered class that read throws {@link IllegalArgumentException}, so the delete failed before
+     * deleting — leaving records of retired document types impossible to remove.
+     *
+     * <p>Uses a real {@code FacilityEventService} rather than the injected mock, because the fix lives
+     * there; mocking it would assert nothing about the behaviour that was broken.</p>
+     */
+    @Test
+    public void deleteCompletesWhenTheDocumentCannotBeDeserialised() throws Exception {
+        //Given a document whose documentType has no corresponding class, so it cannot be read
+        given(bundledReader.readBundle("orphaned"))
+            .willThrow(new IllegalArgumentException("methodrecord: does not have a corresponding class"));
+        GitRepoWrapper wrapper = new GitRepoWrapper(
+            repo, documentInfoMapper, new FacilityEventService(bundledReader, eventBus));
+
+        DataOngoingCommit commit = mock(DataOngoingCommit.class);
+        given(repo.deleteData("orphaned.meta")).willReturn(commit);
+        given(commit.deleteData("orphaned.raw")).willReturn(commit);
+
+        //When it is deleted
+        wrapper.delete(new CatalogueUser("test", "test@ceh.ac.uk"), "orphaned");
+
+        //Then the delete goes through rather than throwing
+        verify(commit).commit(any(), eq("delete document: orphaned"));
+    }
+
     @Test
     public void canDelete() throws DataRepositoryException {
         //Given
