@@ -276,6 +276,22 @@ public class GitDocumentRepository implements DocumentRepository {
         }
     }
 
+    @Override
+    public DataRevision<CatalogueUser> delete(CatalogueUser user, String id, String message) throws DocumentRepositoryException {
+        try {
+            return repo.delete(user, id, message);
+        } catch (DataRepositoryException ex) {
+            throw new DocumentRepositoryException(
+                String.format(
+                    "Cannot delete file: %s for user: %s",
+                    id,
+                    user.getUsername()
+                ),
+                ex
+            );
+        }
+    }
+
     private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user, MediaType mediaType, String catalogue) {
         MetadataInfo toReturn = MetadataInfo.builder()
             .rawType(mediaType.toString())

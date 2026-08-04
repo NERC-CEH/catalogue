@@ -48,6 +48,16 @@ import static uk.ac.ceh.gateway.catalogue.model.Permission.VIEW;
 @Controller
 public class DocumentController extends AbstractDocumentController {
     public static final String MAINTENANCE_ROLE = "ROLE_CIG_SYSTEM_ADMIN";
+
+    /**
+     * Grants deletion of <em>any</em> record, in any catalogue, ignoring that record's own
+     * {@code permissions}. Held deliberately narrow and separate from {@link #MAINTENANCE_ROLE}: it
+     * exists so orphaned records left by a retired document type or catalogue can be cleaned up through
+     * the application rather than by editing git on the SAN. The only route that honours it is the
+     * guarded admin delete form; the ordinary {@code DELETE /documents/{id}} still requires DELETE on
+     * the record itself.
+     */
+    public static final String ADMIN_DELETE_ROLE = "ROLE_CIG_ADMIN_DELETE";
     private final MetricsService metricsService;
     private final List<String> metricsExcludedUsers;
     private final JenaLookupService jenaService;

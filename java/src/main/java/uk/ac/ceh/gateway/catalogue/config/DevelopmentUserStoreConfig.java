@@ -12,6 +12,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import java.util.Arrays;
 
 import static uk.ac.ceh.gateway.catalogue.datacite.DataciteController.DATACITE_ROLE;
+import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.ADMIN_DELETE_ROLE;
 import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTENANCE_ROLE;
 import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.READONLY_GROUP;
 
@@ -26,6 +27,7 @@ import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.READONLY_GROUP;
 public class DevelopmentUserStoreConfig {
     // Usernames used in tests
     public static final String ADMIN = "admin";
+    public static final String MAINTENANCE_ONLY_USERNAME = "maintenance-only";
     public static final String EIDC_PUBLISHER_USERNAME = "eidc-publisher";
     public static final String UNPRIVILEGED_USERNAME = "unprivileged";
     public static final String UPLOADER_USERNAME = "uploader";
@@ -67,6 +69,19 @@ public class DevelopmentUserStoreConfig {
     @Bean
     public CatalogueUser admin() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser(ADMIN,"admin@ceh.ac.uk");
+        addUserToGroup(user, MAINTENANCE_ROLE, ADMIN_DELETE_ROLE);
+        userStore().addUser(user, "password");
+        return user;
+    }
+
+    /**
+     * Holds {@link uk.ac.ceh.gateway.catalogue.controllers.DocumentController#MAINTENANCE_ROLE} but
+     * <em>not</em> {@code ADMIN_DELETE_ROLE}, so the admin delete form and its link on the maintenance
+     * page can be checked to be absent for a user who can otherwise reach that page.
+     */
+    @Bean
+    public CatalogueUser maintenanceOnly() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser(MAINTENANCE_ONLY_USERNAME, "maintenance-only@ceh.ac.uk");
         addUserToGroup(user, MAINTENANCE_ROLE);
         userStore().addUser(user, "password");
         return user;
@@ -279,6 +294,7 @@ public class DevelopmentUserStoreConfig {
         groupStore.createGroup(NM_EDITOR, "");
         groupStore.createGroup(NM_PUBLISHER, "");
         groupStore.createGroup(MAINTENANCE_ROLE, "");
+        groupStore.createGroup(ADMIN_DELETE_ROLE, "");
         groupStore.createGroup(NC_EDITOR, "");
         groupStore.createGroup(NC_PUBLISHER, "");
         groupStore.createGroup(READONLY_GROUP, "");

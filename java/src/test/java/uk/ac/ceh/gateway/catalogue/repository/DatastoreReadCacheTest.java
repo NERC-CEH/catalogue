@@ -187,6 +187,30 @@ public class DatastoreReadCacheTest {
     }
 
     /**
+     * The admin delete route passes an explicit commit message, so it takes the three-arg overload. That
+     * overload carries its own {@code @CacheEvict} block because the two-arg method reaches it by
+     * self-invocation, which Spring's proxy does not intercept — this drives it through the real proxy to
+     * prove the eviction fires when called directly.
+     *
+     * <p>Uses a folder-prefixed id, as a service agreement has, since the eviction keys are composed as
+     * {@code #id + '.meta'} and must still line up with what {@code readLatest} caches.</p>
+     */
+    @Test
+    public void deleteWithAMessageEvictsLatestEntriesForAPrefixedId() throws Exception {
+        given(repo.getData("rev", "service-agreement/abc.raw")).willAnswer(i -> blob("raw"));
+
+        cachedRepo.readLatest("rev", "service-agreement/abc.raw");
+        cachedRepo.readLatest("rev", "service-agreement/abc.raw"); // cached, no second fetch
+
+        gitRepoWrapper.delete(
+            new CatalogueUser("test", "test@ceh.ac.uk"), "service-agreement/abc", "admin delete document: x");
+
+        cachedRepo.readLatest("rev", "service-agreement/abc.raw"); // evicted -> re-fetched
+
+        verify(repo, times(2)).getData("rev", "service-agreement/abc.raw");
+    }
+
+    /**
      * Regression: a missing blob must surface as the original (checked) {@link GitFileNotFoundException},
      * never wrapped in a {@code java.lang.reflect.UndeclaredThrowableException}.
      *

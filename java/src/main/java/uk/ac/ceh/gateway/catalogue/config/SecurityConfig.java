@@ -11,13 +11,14 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import uk.ac.ceh.components.userstore.springsecurity.AnonymousUserAuthenticationFilter;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import static org.springframework.security.config.Customizer.withDefaults;
+import static org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher.pathPattern;
 
 @Slf4j
 @Profile("!auth:oidc & !auth-cognito")
@@ -47,7 +48,20 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated()
                 .anyRequest().permitAll()
             )
-            .csrf(AbstractHttpConfigurer::disable)
+            // CSRF stays off everywhere except the admin delete route. That route can remove any record
+            // in any catalogue, so a forged POST from an authenticated administrator's browser would
+            // otherwise be enough to destroy a record whose id the attacker knows — and the retyped-id
+            // confirmation is no defence, since a forger supplies both fields.
+            //
+            // requireCsrfProtectionMatcher narrows enforcement to just this path, so every existing form
+            // and API is unaffected. A cookie repository is required rather than the default: session
+            // creation is STATELESS above, so HttpSessionCsrfTokenRepository would have nowhere to keep
+            // the token. httpOnly is left at its default (true) because the token is rendered
+            // server-side into a hidden field, so nothing needs to read it from JavaScript.
+            .csrf(csrf -> csrf
+                .csrfTokenRepository(new CookieCsrfTokenRepository())
+                .requireCsrfProtectionMatcher(
+                    pathPattern(HttpMethod.POST, "/maintenance/documents/delete/**")))
             .build();
     }
 }
