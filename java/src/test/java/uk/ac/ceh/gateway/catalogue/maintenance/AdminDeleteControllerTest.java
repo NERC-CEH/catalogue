@@ -44,7 +44,6 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.ADMIN;
 import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.ADMIN_DELETE_ROLE;
@@ -124,6 +123,15 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
             .willThrow(new GitFileNotFoundException("no such file"));
     }
 
+    /** Looks a record up as the form does, returning the rendered page. */
+    @SneakyThrows
+    private String preview(String id) {
+        return mvc.perform(post(URL + "/preview").with(csrf())
+                .param("location", "METADATA_RECORD").param("id", id))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+    }
+
     // ---------------------------------------------------------------- access
 
     @Test
@@ -155,66 +163,45 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
         givenRecord(ID, "GEMINI_DOCUMENT", "published", "eidc", true);
         givenRawPresent(ID, 801);
 
-        mvc.perform(post(URL + "/preview").with(csrf())
-                .param("location", "METADATA_RECORD").param("id", ID))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.found").value(true))
-            .andExpect(jsonPath("$.documentType").value("GEMINI_DOCUMENT"))
-            .andExpect(jsonPath("$.state").value("published"))
-            .andExpect(jsonPath("$.catalogue").value("eidc"))
-            .andExpect(jsonPath("$.rawPresent").value(true))
-            .andExpect(jsonPath("$.rawSize").value(801));
+        var content = preview(ID);
 
+        assertThat(content, containsString("Review before deleting"));
+        assertThat(content, containsString("GEMINI_DOCUMENT"));
+        assertThat(content, containsString("present (801 bytes)"));
+        assertThat(content, not(containsString("not registered")));
+        // matched inside the fact list, since the page mentions the catalogue and the state elsewhere too
+        assertThat(content, containsString(">published</dd>"));
+        assertThat(content, containsString(">eidc</dd>"));
         verify(documentRepository, never()).delete(any(), any(), any());
     }
 
-    @Test
-    @SneakyThrows
-    @DisplayName("preview flags a document type that is no longer registered")
-    void previewFlagsAnUnregisteredType() {
-        givenRecord(ID, "methodrecord", "pending", "ukceh", false);
-        givenRawMissing(ID);
-
-        mvc.perform(post(URL + "/preview").with(csrf())
-                .param("location", "METADATA_RECORD").param("id", ID))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.found").value(true))
-            .andExpect(jsonPath("$.documentTypeRegistered").value(false));
-    }
-
-    @Test
-    @SneakyThrows
-    @DisplayName("preview reports a missing body rather than failing")
-    void previewReportsMissingBody() {
-        givenRecord(ID, "methodrecord", "pending", "ukceh", false);
-        givenRawMissing(ID);
-
-        mvc.perform(post(URL + "/preview").with(csrf())
-                .param("location", "METADATA_RECORD").param("id", ID))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.found").value(true))
-            .andExpect(jsonPath("$.rawPresent").value(false));
-    }
-
     /**
-     * The same endpoints serve the form and a JSON API by content negotiation; the tests above assert the
-     * model, so this one proves the template itself renders and surfaces the warnings an operator relies
-     * on before confirming.
+     * The orphan case, and the one the feature exists for: the type no longer resolves and — as with 28 of
+     * the 29 records found on staging — there is no body either. Both must be reported, not thrown.
      */
     @Test
     @SneakyThrows
-    @DisplayName("the preview page renders the orphan and published warnings")
-    void previewPageRendersTheWarnings() {
-        givenRecord(ID, "methodrecord", "published", "ukceh", false);
+    @DisplayName("preview flags an unregistered type and a missing body")
+    void previewFlagsAnOrphan() {
+        givenRecord(ID, "methodrecord", "pending", "ukceh", false);
         givenRawMissing(ID);
 
-        var content = mvc.perform(post(URL + "/preview").with(csrf())
-                .accept(MediaType.TEXT_HTML)
-                .param("location", "METADATA_RECORD").param("id", ID))
-            .andExpect(status().isOk())
-            .andReturn().getResponse().getContentAsString();
+        var content = preview(ID);
 
+        assertThat(content, containsString("Review before deleting"));
         assertThat(content, containsString("not registered"));
+        assertThat(content, containsString("<em>missing</em>"));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("the preview warns before a published record can be confirmed")
+    void previewWarnsAboutAPublishedRecord() {
+        givenRecord(ID, "GEMINI_DOCUMENT", "published", "eidc", true);
+        givenRawPresent(ID, 10);
+
+        var content = preview(ID);
+
         assertThat(content, containsString("This record is published"));
         assertThat(content, containsString("Retype the record id"));
         // the published record's catalogue must be typed, so the field has to be on the page
@@ -225,14 +212,23 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
     @SneakyThrows
     @DisplayName("a non-UUID id is rejected before the datastore is touched")
     void rejectsANonUuidId() {
-        var content = mvc.perform(post(URL + "/preview").with(csrf())
-                .accept(MediaType.TEXT_HTML)
-                .param("location", "METADATA_RECORD").param("id", "../../etc/passwd"))
-            .andExpect(status().isOk())
-            .andReturn().getResponse().getContentAsString();
-
-        assertThat(content, containsString("not a valid record id"));
+        assertThat(preview("../../etc/passwd"), containsString("not a valid record id"));
         verify(cachedDataRepository, never()).readLatest(any(), any());
+    }
+
+    /**
+     * This is a form, not an API — the safeguards are the whole point, and a JSON caller would be a way
+     * around them. {@code produces} on the mapping is what keeps content negotiation from offering one.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("the route does not serve JSON")
+    void doesNotServeJson() {
+        mvc.perform(get(URL).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotAcceptable());
+        mvc.perform(post(URL + "/preview").with(csrf()).accept(MediaType.APPLICATION_JSON)
+                .param("location", "METADATA_RECORD").param("id", ID))
+            .andExpect(status().isNotAcceptable());
     }
 
     // ---------------------------------------------------------------- confirm guards
@@ -245,7 +241,6 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
         givenRawMissing(ID);
 
         var content = mvc.perform(post(URL + "/confirm").with(csrf())
-                .accept(MediaType.TEXT_HTML)
                 .param("location", "METADATA_RECORD").param("id", ID)
                 .param("confirmId", "35fca77f-0000-0000-0000-000000000000")
                 .param("reason", "orphaned"))
@@ -263,7 +258,6 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
         givenRawMissing(ID);
 
         var content = mvc.perform(post(URL + "/confirm").with(csrf())
-                .accept(MediaType.TEXT_HTML)
                 .param("location", "METADATA_RECORD").param("id", ID)
                 .param("confirmId", ID).param("reason", "   "))
             .andReturn().getResponse().getContentAsString();
@@ -280,7 +274,6 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
         givenRawPresent(ID, 10);
 
         var content = mvc.perform(post(URL + "/confirm").with(csrf())
-                .accept(MediaType.TEXT_HTML)
                 .param("location", "METADATA_RECORD").param("id", ID)
                 .param("confirmId", ID).param("reason", "superseded")
                 .param("confirmCatalogue", "wrong"))
@@ -385,4 +378,20 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
         mvc.perform(post("/maintenance/documents/reindex"))
             .andExpect(status().isOk());
     }
+
+    /*
+     * NOT COVERED HERE: that the token cookie survives from the form to the POST.
+     *
+     * This is worth knowing about, because it is where the feature first broke. Authentication is
+     * per-request in this application, so Spring's default CsrfAuthenticationStrategy deleted the stored
+     * token on every authenticated request while only *deferring* its replacement — loading the form
+     * destroyed its own token as soon as the page's stylesheet and logo were fetched, and the POST was
+     * then rejected with a 403. SecurityConfig replaces that strategy with a no-op.
+     *
+     * MockMvc cannot assert it: SecurityMockMvcRequestPostProcessors.csrf() calls
+     * WebTestUtils.setCsrfTokenRepository, which swaps the live CsrfFilter's repository for a
+     * session-backed test one, and the context is shared across this class. Any assertion about the real
+     * cookie here would be about the test repository instead. It needs a browser, or an end-to-end test
+     * over real HTTP.
+     */
 }

@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.maintenance;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
@@ -39,12 +40,15 @@ import java.util.stream.Collectors;
  * <p>Because the capability is broad, deletion takes three steps — form, preview, confirm — and the
  * confirm step requires the id retyped, a reason, and for a published record the catalogue id as well.
  * CSRF is enabled for this route alone; see {@code SecurityConfig}.</p>
+ *
+ * <p>HTML only. This is deliberately a form and not an API: the safeguards are the point, and a JSON
+ * caller would be a way to skip them.</p>
  */
 @Hidden
 @Slf4j
 @ToString(onlyExplicitlyIncluded = true)
 @Controller
-@RequestMapping("maintenance/documents/delete")
+@RequestMapping(value = "maintenance/documents/delete", produces = MediaType.TEXT_HTML_VALUE)
 @Secured(DocumentController.ADMIN_DELETE_ROLE)
 public class AdminDeleteController {
 
@@ -151,8 +155,8 @@ public class AdminDeleteController {
     private AdminDeleteResponse performDelete(
         AdminDeleteResponse response, CatalogueUser user, String path, String reason
     ) {
-        String message = "admin delete %s document: %s (reason: %s)".formatted(
-            response.isPublished() ? "PUBLISHED " : "", path, reason);
+        String subject = response.isPublished() ? "PUBLISHED document" : "document";
+        String message = "admin delete %s: %s (reason: %s)".formatted(subject, path, reason);
         // Warn rather than info: an administrative deletion bypassing a record's own permissions should
         // be visible in log aggregation, not only in the datastore's git history.
         log.warn("Admin delete by {}: {} (reason: {})", user.getUsername(), path, reason);
