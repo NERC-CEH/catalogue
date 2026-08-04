@@ -18,7 +18,7 @@ import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.READONLY_GROUP;
 
 /**
  * The following spring JavaConfig defines the beans required for the interacting
- * with a in memory user store. This is useful when developing the application
+ * with an in-memory user store. This is useful when developing the application
  * in an environment which can not contact Crowd
  * @see SecurityConfigCrowd
  */
@@ -227,7 +227,7 @@ public class DevelopmentUserStoreConfig {
     @Bean
     public CatalogueUser superadmin() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser("superadmin", "superadmin@ceh.ac.uk");
-        addUserToGroup(user, CEH_GROUP_NAME,
+        addUserToGroup(user, ADMIN_DELETE_ROLE, CEH_GROUP_NAME,
         ASSIST_EDITOR, ASSIST_PUBLISHER,
         EIDC_EDITOR, EIDC_PUBLISHER, UKCEH_EDITOR, UKCEH_PUBLISHER,
         INFRASTRUCTURE_EDITOR, INFRASTRUCTURE_PUBLISHER,

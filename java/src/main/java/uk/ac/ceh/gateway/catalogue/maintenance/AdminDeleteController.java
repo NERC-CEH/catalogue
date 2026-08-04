@@ -151,7 +151,7 @@ public class AdminDeleteController {
     private AdminDeleteResponse performDelete(
         AdminDeleteResponse response, CatalogueUser user, String path, String reason
     ) {
-        String message = "admin delete %sdocument: %s (reason: %s)".formatted(
+        String message = "admin delete %s document: %s (reason: %s)".formatted(
             response.isPublished() ? "PUBLISHED " : "", path, reason);
         // Warn rather than info: an administrative deletion bypassing a record's own permissions should
         // be visible in log aggregation, not only in the datastore's git history.
