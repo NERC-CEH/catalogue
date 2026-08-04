@@ -9,9 +9,11 @@ import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import uk.ac.ceh.gateway.catalogue.metrics.JDBCMetricsService;
 import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 
 import java.time.Duration;
+import java.util.List;
 
 import static uk.ac.ceh.gateway.catalogue.services.MetadataListingService.METADATA_LISTINGS_CACHE;
 import static uk.ac.ceh.gateway.catalogue.userdetails.CrowdGroupStore.CROWD_GROUP_CACHE;
@@ -63,6 +65,18 @@ public class CacheConfig implements CachingConfigurer {
             expireAfterWrite(1000, Duration.ofMinutes(30)).build());
         cacheManager.registerCustomCache(CachedDataRepository.DOC_REVISION_CACHE,
             expireAfterWrite(6000, Duration.ofHours(6)).build());
+
+        // View/download totals, read from _metrics.ftlh while a record page renders. Without this the
+        // render path issues two queries against a SQLite database on a CIFS mount, which measured at
+        // seconds apiece and pinned almost the whole Tomcat pool inside NativeDB.step.
+        //
+        // Unlike the datastore caches above, staleness here is harmless: JDBCMetricsService.syncDB only
+        // writes hourly, so a total cannot change faster than that, and a marginally old view count on a
+        // page has no correctness consequence. A 10 minute TTL therefore needs no eviction hook while
+        // still keeping the counts visibly current. Bounded well above the ~2900 record corpus so the
+        // whole working set stays warm.
+        List.of(JDBCMetricsService.VIEW_TOTALS_CACHE, JDBCMetricsService.DOWNLOAD_TOTALS_CACHE).forEach(cache ->
+            cacheManager.registerCustomCache(cache, expireAfterWrite(6000, Duration.ofMinutes(10)).build()));
 
         return cacheManager;
     }
