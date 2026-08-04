@@ -72,6 +72,38 @@ class JDBCMetricsServiceTest {
         assertThat(tables, hasItems(equalToIgnoringCase("views"), equalToIgnoringCase("downloads")));
     }
 
+    /**
+     * Both count queries filter on {@code document}. Without an index that is a full table scan, which
+     * in production means scanning a 1.1 GB SQLite file across a CIFS mount — measured at roughly 7
+     * seconds per scan, twice per record page render. Asserting the index exists rather than trusting
+     * the DDL, because it was absent from the live database for the table's entire lifetime.
+     *
+     * <p>{@code amount} is asserted too: it is what makes the index covering for
+     * {@code sum(amount) ... WHERE document = ?}, so dropping it would quietly reintroduce a table
+     * lookup per matching row while still leaving this test's {@code document} assertion satisfied.</p>
+     */
+    @SneakyThrows
+    @Test
+    void countTablesCarryACoveringIndexForTheTotalsQuery() {
+        //given/when the service has initialised its schema
+
+        //then each count table's index covers both the filter column and the summed column
+        assertThat(indexedColumnsOf("views"),
+            hasItems(equalToIgnoringCase("document"), equalToIgnoringCase("amount")));
+        assertThat(indexedColumnsOf("downloads"),
+            hasItems(equalToIgnoringCase("document"), equalToIgnoringCase("amount")));
+    }
+
+    private List<String> indexedColumnsOf(String table) throws SQLException {
+        val rs = db.getConnection().getMetaData()
+            .getIndexInfo(null, null, table.toUpperCase(Locale.ROOT), false, false);
+        val columns = new ArrayList<String>();
+        while (rs.next()) {
+            columns.add(rs.getString("COLUMN_NAME"));
+        }
+        return columns;
+    }
+
     @SneakyThrows
     @Test
     void testRecordView() {
