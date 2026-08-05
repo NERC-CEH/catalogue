@@ -162,6 +162,38 @@ public class GitDocumentRepositoryTest {
 
     @Test
     @SneakyThrows
+    public void checkCanDeleteAFileWithAnExplicitMessage() {
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+
+        //When
+        documentRepository.delete(user, "id", "admin delete document: id (reason: orphaned)");
+
+        //Then
+        verify(repo).delete(user, "id", "admin delete document: id (reason: orphaned)");
+    }
+
+    /**
+     * {@code GitDocumentRepository.delete(user, id, message)} must wrap a {@code DataRepositoryException}
+     * into the checked {@code DocumentRepositoryException} its interface declares, exactly as every other
+     * method here does. This is the one place that translation was never directly exercised: the admin
+     * delete route's own tests mock {@code DocumentRepository} at the interface level, so this concrete
+     * class's exception handling was previously dark.
+     */
+    @Test
+    public void deleteWithAMessageWrapsARepositoryFailure() throws Exception {
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        doThrow(new uk.ac.ceh.components.datastore.DataRepositoryException("disk full"))
+            .when(repo).delete(user, "id", "a message");
+
+        //When / Then
+        assertThrows(DocumentRepositoryException.class,
+            () -> documentRepository.delete(user, "id", "a message"));
+    }
+
+    @Test
+    @SneakyThrows
     public void duplicateResourceIdentifierThrowsConflict() {
         CatalogueUser user = new CatalogueUser("test", "test@example.com");
         MetadataInfo metadataInfo = MetadataInfo.builder().build();

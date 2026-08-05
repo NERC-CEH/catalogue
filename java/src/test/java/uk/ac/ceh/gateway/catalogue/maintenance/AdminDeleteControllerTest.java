@@ -1,12 +1,18 @@
 package uk.ac.ceh.gateway.catalogue.maintenance;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.google.common.collect.HashMultimap;
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,16 +33,21 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.jena.JenaIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.mapserver.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexingService;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -79,6 +90,8 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
 
     @Autowired private Configuration configuration;
 
+    private ListAppender<ILoggingEvent> logAppender;
+
     @SneakyThrows
     @BeforeEach
     void givenFreemarkerAndCatalogue() {
@@ -87,6 +100,18 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
         given(catalogueService.defaultCatalogue()).willReturn(
             Catalogue.builder().id("eidc").title("Env Data Centre").url("https://example.com")
                 .contactUrl("").logo("eidc.png").build());
+    }
+
+    @BeforeEach
+    void captureLogs() {
+        logAppender = new ListAppender<>();
+        logAppender.start();
+        ((Logger) LoggerFactory.getLogger(AdminDeleteController.class)).addAppender(logAppender);
+    }
+
+    @AfterEach
+    void stopCapturingLogs() {
+        ((Logger) LoggerFactory.getLogger(AdminDeleteController.class)).detachAppender(logAppender);
     }
 
     /** Stubs the datastore so {@code id} exists with the given .meta facts. */
@@ -130,6 +155,11 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
                 .param("location", "METADATA_RECORD").param("id", id))
             .andExpect(status().isOk())
             .andReturn().getResponse().getContentAsString();
+    }
+
+    /** Matches the {@code CatalogueUser} passed to a mock by username, for asserting who performed a delete. */
+    private static org.mockito.ArgumentMatcher<CatalogueUser> byUsername(String username) {
+        return user -> user != null && username.equals(user.getUsername());
     }
 
     // ---------------------------------------------------------------- access
@@ -217,6 +247,44 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
     }
 
     /**
+     * {@code response.setId(id)} is set from the raw request parameter before {@code isValidId} is
+     * checked, and step 1 of the form always re-renders {@code value="${id!''}"} with that value — on
+     * this invalid-id path as much as any other. This is the regression test for the FreeMarker
+     * {@code output_format="HTML"} fix in {@code delete.ftlh}: without it, this id breaks out of the
+     * attribute and injects a script tag.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("an id containing markup is escaped in the re-rendered form, not injected")
+    void escapesAnUnsafeIdInTheForm() {
+        var content = preview("\"><script>alert(1)</script>");
+
+        assertThat(content, containsString("not a valid record id"));
+        assertThat(content, not(containsString("<script>alert(1)</script>")));
+        assertThat(content, containsString("&lt;script&gt;alert(1)&lt;/script&gt;"));
+    }
+
+    /**
+     * A well-formed but nonexistent id is arguably the most realistic operator mistake — a mistyped id
+     * that still happens to look like a UUID — and is a materially different failure than a malformed one.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("preview reports no record found for a well-formed id that doesn't exist, and logs it")
+    void previewReportsNoRecordFoundForANonexistentId() {
+        given(cachedDataRepository.getLatestRevisionId()).willReturn("rev1");
+        given(cachedDataRepository.readLatest("rev1", ID + ".meta"))
+            .willThrow(new GitFileNotFoundException("no such file"));
+
+        var content = preview(ID);
+
+        assertThat(content, containsString("No record found at " + ID));
+        assertThat(logAppender.list, hasSize(1));
+        assertThat(logAppender.list.getFirst().getLevel(), is(Level.WARN));
+        assertThat(logAppender.list.getFirst().getFormattedMessage(), containsString(ID));
+    }
+
+    /**
      * This is a form, not an API — the safeguards are the whole point, and a JSON caller would be a way
      * around them. {@code produces} on the mapping is what keeps content negotiation from offering one.
      */
@@ -283,6 +351,42 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
         verify(documentRepository, never()).delete(any(), any(), any());
     }
 
+    /** Pins the confirmation as case-insensitive, positively — {@code publishedNeedsCatalogueConfirmation}
+     *  above only tests an outright-wrong value, and {@code marksPublishedInTheCommitMessage} below only
+     *  tests an exact-case match, so neither would notice a regression to case-sensitive equality. */
+    @Test
+    @SneakyThrows
+    @DisplayName("the catalogue id confirmation is case-insensitive")
+    void acceptsADifferentlyCasedCatalogueId() {
+        givenRecord(ID, "GEMINI_DOCUMENT", "published", "eidc", true);
+        givenRawPresent(ID, 10);
+
+        mvc.perform(post(URL + "/confirm").with(csrf())
+                .param("location", "METADATA_RECORD").param("id", ID)
+                .param("confirmId", ID).param("reason", "superseded")
+                .param("confirmCatalogue", "EIDC"))
+            .andExpect(status().isOk());
+
+        verify(documentRepository).delete(argThat(byUsername(ADMIN)), eq(ID), any());
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("confirm refuses a well-formed id that has no record, without reaching the delete guards")
+    void confirmRefusesANonexistentRecord() {
+        given(cachedDataRepository.getLatestRevisionId()).willReturn("rev1");
+        given(cachedDataRepository.readLatest("rev1", ID + ".meta"))
+            .willThrow(new GitFileNotFoundException("no such file"));
+
+        var content = mvc.perform(post(URL + "/confirm").with(csrf())
+                .param("location", "METADATA_RECORD").param("id", ID)
+                .param("confirmId", ID).param("reason", "orphaned"))
+            .andReturn().getResponse().getContentAsString();
+
+        assertThat(content, containsString("No record found at " + ID));
+        verify(documentRepository, never()).delete(any(), any(), any());
+    }
+
     // ---------------------------------------------------------------- confirm success
 
     @Test
@@ -298,7 +402,9 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
             .andExpect(status().isOk());
 
         var messageCaptor = ArgumentCaptor.forClass(String.class);
-        verify(documentRepository).delete(any(), eq(ID), messageCaptor.capture());
+        // The user matters as much as the path and reason: the controller's own Javadoc calls the git
+        // log "the audit trail for deletions", so this is who performed it, not just what happened.
+        verify(documentRepository).delete(argThat(byUsername(ADMIN)), eq(ID), messageCaptor.capture());
         assertThat(messageCaptor.getValue(), containsString(ID));
         assertThat(messageCaptor.getValue(), containsString("orphaned by removal of the type"));
         assertThat(messageCaptor.getValue(), not(containsString("PUBLISHED")));
@@ -318,7 +424,7 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
             .andExpect(status().isOk());
 
         var messageCaptor = ArgumentCaptor.forClass(String.class);
-        verify(documentRepository).delete(any(), eq(ID), messageCaptor.capture());
+        verify(documentRepository).delete(argThat(byUsername(ADMIN)), eq(ID), messageCaptor.capture());
         assertThat(messageCaptor.getValue(), containsString("PUBLISHED"));
     }
 
@@ -335,7 +441,7 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
                 .param("confirmId", ID).param("reason", "stranded"))
             .andExpect(status().isOk());
 
-        verify(documentRepository).delete(any(), eq(path), any());
+        verify(documentRepository).delete(argThat(byUsername(ADMIN)), eq(path), any());
     }
 
     @Test
@@ -351,7 +457,29 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
                 .param("confirmId", ID).param("reason", "stranded by the path change"))
             .andExpect(status().isOk());
 
-        verify(documentRepository).delete(any(), eq(path), any());
+        verify(documentRepository).delete(argThat(byUsername(ADMIN)), eq(path), any());
+    }
+
+    // ---------------------------------------------------------------- confirm failure
+
+    /** performDelete's own catch block: a repository failure must be reported, not crash the request. */
+    @Test
+    @SneakyThrows
+    @DisplayName("confirm reports an error, not a crash, when the delete itself fails")
+    void confirmReportsAnErrorWhenTheDeleteFails() {
+        givenRecord(ID, "methodrecord", "pending", "ukceh", false);
+        givenRawMissing(ID);
+        given(documentRepository.delete(any(), eq(ID), any()))
+            .willThrow(new DocumentRepositoryException("git write failed", null));
+
+        var content = mvc.perform(post(URL + "/confirm").with(csrf())
+                .param("location", "METADATA_RECORD").param("id", ID)
+                .param("confirmId", ID).param("reason", "orphaned"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        assertThat(content, containsString("Could not delete"));
+        assertThat(content, not(containsString("Deleted " + ID)));
     }
 
     // ---------------------------------------------------------------- CSRF

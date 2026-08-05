@@ -1,3 +1,13 @@
+<#ftl output_format="HTML">
+<#-- The <#ftl> directive above must be the very first thing in the file, even before a comment.
+
+     This app's FreeMarker Configuration sets no output_format/auto_escaping_policy anywhere, so ${...}
+     is unescaped by default (see FreemarkerConfig.java) — every other .ftlh in this app relies on that,
+     rendering only server-authored or already-validated data. This page is different: `id` is echoed
+     back into an HTML attribute before it has been validated (an invalid id still fills the form field so
+     the operator can correct it), so it's the one template in the app that needs escaping. Setting the
+     output format here, rather than adding a manual ?html to that one interpolation, means every
+     interpolation in this file is escaped, including any added later. -->
 <#import "../skeleton.ftlh" as skeleton>
 <@skeleton.master title="Delete a record" catalogue=catalogues.defaultCatalogue()>
   <div class="container">

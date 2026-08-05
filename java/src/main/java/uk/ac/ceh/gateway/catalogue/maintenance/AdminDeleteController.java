@@ -192,6 +192,12 @@ public class AdminDeleteController {
                 response.setRawPresent(false);
             }
         } catch (IOException | RuntimeException ex) {
+            // Logged, unlike the .raw catch below: that one is a known, benign state (most orphans have
+            // no body), but this one also catches a .meta that exists yet fails to parse — exactly the
+            // kind of damaged record this feature exists to clear up. Without a log line, that case was
+            // indistinguishable from a genuinely missing record, both to the operator and to anyone
+            // trying to diagnose it afterwards.
+            log.warn("Admin delete: no usable record at {}: {}", path, ex.toString());
             response.setError("No record found at %s.".formatted(path));
             return response;
         }
