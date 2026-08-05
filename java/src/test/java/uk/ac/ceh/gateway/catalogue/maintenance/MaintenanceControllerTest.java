@@ -26,6 +26,8 @@ import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -96,6 +98,43 @@ class MaintenanceControllerTest extends AbstractMvcTest {
         )
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.TEXT_HTML));
+    }
+
+    /**
+     * The admin delete capability is only advertised to holders of {@code ROLE_CIG_ADMIN_DELETE}.
+     *
+     * <p>Note this is decided by group-store membership, not by the granted authorities on the
+     * authentication: {@code permission.userCanAdminDelete()} resolves through
+     * {@code CrowdPermissionService.userInGroup}, which reads the group store. So the two cases have to be
+     * distinguished by <em>username</em> — {@code admin} is in the group, {@code maintenance-only} is
+     * not — rather than by varying {@code grantedAuthorities}.</p>
+     */
+    @Test
+    @SneakyThrows
+    void showsTheDeleteRecordLinkToAnAdminDeleteHolder() {
+        givenDefaultCatalogue();
+        givenFreemarkerConfiguration();
+
+        mvc.perform(get("/maintenance").header("remote-user", ADMIN).accept(MediaType.TEXT_HTML))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("/maintenance/documents/delete")));
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser(
+        username = DevelopmentUserStoreConfig.MAINTENANCE_ONLY_USERNAME,
+        grantedAuthorities = MAINTENANCE_ROLE
+    )
+    void hidesTheDeleteRecordLinkFromAMaintenanceOnlyUser() {
+        givenDefaultCatalogue();
+        givenFreemarkerConfiguration();
+
+        mvc.perform(get("/maintenance")
+                .header("remote-user", DevelopmentUserStoreConfig.MAINTENANCE_ONLY_USERNAME)
+                .accept(MediaType.TEXT_HTML))
+            .andExpect(status().isOk())
+            .andExpect(content().string(not(containsString("/maintenance/documents/delete"))));
     }
 
     @Test

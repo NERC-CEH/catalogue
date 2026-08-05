@@ -10,7 +10,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import uk.ac.ceh.components.userstore.springsecurity.AnonymousUserAuthenticationFilter;
@@ -52,7 +51,9 @@ public class SecurityConfigCognito {
                 .clearAuthentication(true)
                 .deleteCookies("JSESSIONID")
             )
-            .csrf(AbstractHttpConfigurer::disable)
+            // See AdminDeleteCsrfCustomizer: CSRF stays off everywhere except the admin delete route,
+            // shared with SecurityConfig/SecurityConfigOidc so the filter chains cannot drift apart.
+            .csrf(AdminDeleteCsrfCustomizer::configure)
             .build();
     }
 }

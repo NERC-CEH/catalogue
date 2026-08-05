@@ -55,5 +55,20 @@
       </div>
     </div>
 
+    <#-- Only advertised to holders of ROLE_CIG_ADMIN_DELETE. The page itself is @Secured, so this is
+         about not offering a capability the user does not have. -->
+    <#if permission.userCanAdminDelete()>
+      <div class="mt-5">
+        <h2>Records</h2>
+        <div class="my-5">
+          <p>
+            Delete a record in any catalogue, ignoring its own permissions. For records orphaned by a
+            retired document type or catalogue.
+          </p>
+          <a class="btn btn-outline-danger" href="/maintenance/documents/delete">Delete a record</a>
+        </div>
+      </div>
+    </#if>
+
   </div>
 </@skeleton.master>

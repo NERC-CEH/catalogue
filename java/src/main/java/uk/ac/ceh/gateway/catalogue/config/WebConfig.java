@@ -29,6 +29,7 @@ import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.document.writing.MessageConverterWritingService;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.maintenance.AdminDeleteResponse;
 import uk.ac.ceh.gateway.catalogue.maintenance.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
@@ -71,6 +72,7 @@ public class WebConfig implements WebMvcConfigurer {
         val infrastructureRecord = new Object2TemplatedMessageConverter<>(InfrastructureRecord.class, freemarkerConfiguration);
         val errorResponse = new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration);
         val gemini = new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration);
+        val adminDeleteResponse = new Object2TemplatedMessageConverter<>(AdminDeleteResponse.class, freemarkerConfiguration);
         val history = new Object2TemplatedMessageConverter<>(History.class, freemarkerConfiguration);
         val link = new Object2TemplatedMessageConverter<>(LinkDocument.class, freemarkerConfiguration);
         val maintenanceResponse = new Object2TemplatedMessageConverter<>(MaintenanceResponse.class, freemarkerConfiguration);
@@ -96,6 +98,7 @@ public class WebConfig implements WebMvcConfigurer {
             wmsFeatureInfo
         );
         this.afterStandardMessageConverters = Arrays.asList(
+            adminDeleteResponse,
             cehModel,
             cehModelApplication,
             citation,
