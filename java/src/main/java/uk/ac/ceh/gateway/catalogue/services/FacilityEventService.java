@@ -35,11 +35,35 @@ public class FacilityEventService {
     /**
      * Asked by {@link uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper#delete} <em>before</em> it removes
      * anything, so this must not fail for a document that cannot be read — otherwise such a document cannot be
-     * deleted at all. It goes through {@link #getMonitoringFacility} rather than reading directly for exactly
-     * that reason; see the unreadable-document note there.
+     * deleted at all, which is precisely the situation the administrative delete exists to clear up
+     * (NERC-CEH/dri-one#239).
+     *
+     * <p>Any failure to read therefore answers "not a facility" rather than propagating. Enumerating the
+     * failures it should tolerate has been tried twice and been wrong twice: first an unregistered
+     * {@code documentType} throwing {@link IllegalArgumentException}, then a record written before
+     * {@code SupportingDoc.content} became a {@code List<String>} throwing
+     * {@code HttpMessageNotReadableException}. There is no reason to expect that list to be complete, and
+     * the cost of it being incomplete is an undeletable record.</p>
+     *
+     * <p>Answering "not a facility" is safe here, not merely tolerant. The answer decides one thing only —
+     * whether a {@link FacilityBelongToRemovedEvent} fires — and a document that cannot be deserialised
+     * cannot be a {@link MonitoringFacility}, so it cannot have had relationships that were ever indexed.
+     * A genuinely broken datastore is not hidden either: the caller's {@code deleteData().commit()} runs
+     * immediately afterwards and fails loudly. Only the read is guarded, so a fault in building the event
+     * from a facility that <em>did</em> read still propagates.</p>
      */
     public Optional<FacilityBelongToRemovedEvent> getFacilityDeletedEvent(String facilityId) {
-        return getMonitoringFacility(facilityId)
+        Optional<MonitoringFacility> facility;
+        try {
+            facility = getMonitoringFacility(facilityId);
+        } catch (RuntimeException unreadable) {
+            log.warn(
+                "Could not read {} to determine whether it is a monitoring facility, so no facility event " +
+                    "will be raised for its deletion: {}",
+                facilityId, unreadable.toString());
+            return Optional.empty();
+        }
+        return facility
             .map(this::getBelongToIds)
             .filter(belongToIds -> !belongToIds.isEmpty())
             .map(belongToIds -> new FacilityBelongToRemovedEvent(facilityId, belongToIds));

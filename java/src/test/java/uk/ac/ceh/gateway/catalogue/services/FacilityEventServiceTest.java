@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.mock.http.MockHttpInputMessage;
 import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
@@ -80,6 +82,50 @@ class FacilityEventServiceTest {
 
         // then no event is raised, and crucially nothing is thrown, so the caller can go on to delete
         assertTrue(actual.isEmpty());
+    }
+
+    /**
+     * The same regression again, with a different exception. A legacy service agreement on staging could not
+     * be deleted because its {@code .raw} predates {@code SupportingDoc.content} becoming a
+     * {@code List<String>} and still stores a bare string, so Jackson throws
+     * {@link HttpMessageNotReadableException} — which the earlier fix, catching only
+     * {@link IllegalArgumentException}, did not cover.
+     *
+     * <p>Rather than add a third exception type, the pre-delete read now tolerates any read failure. This
+     * test uses an arbitrary unrelated {@link RuntimeException} deliberately: what matters is that no read
+     * failure can make a record undeletable, not that one more type has been enumerated.</p>
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("no read failure can leave a record undeletable")
+    void getFacilityDeletedEventWhenTheDocumentCannotBeRead() {
+        var jacksonFailure = new HttpMessageNotReadableException(
+            "JSON parse error: Cannot deserialize value of type `java.util.ArrayList<java.lang.String>` "
+                + "from String value (token `JsonToken.VALUE_STRING`)",
+            new MockHttpInputMessage(new byte[0]));
+        when(bundledReader.readBundle("legacy-service-agreement")).thenThrow(jacksonFailure);
+
+        assertTrue(facilityEventService.getFacilityDeletedEvent("legacy-service-agreement").isEmpty());
+
+        // and the same for a failure nobody anticipated
+        when(bundledReader.readBundle("surprising")).thenThrow(new IllegalStateException("something new"));
+        assertTrue(facilityEventService.getFacilityDeletedEvent("surprising").isEmpty());
+    }
+
+    /**
+     * The guard covers the read only. A facility that reads successfully but then fails while its event is
+     * built must still fail loudly, rather than silently losing the event.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("a failure after a successful read still propagates")
+    void getFacilityDeletedEventPropagatesAFailureAfterTheRead() {
+        var facility = mock(MonitoringFacility.class);
+        when(facility.getRelationships()).thenThrow(new IllegalStateException("relationships are broken"));
+        when(bundledReader.readBundle("f1")).thenReturn(facility);
+
+        assertThrows(IllegalStateException.class,
+            () -> facilityEventService.getFacilityDeletedEvent("f1"));
     }
 
     @Test
