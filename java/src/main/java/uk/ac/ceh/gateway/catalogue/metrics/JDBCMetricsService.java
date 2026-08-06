@@ -65,6 +65,8 @@ public class JDBCMetricsService implements MetricsService {
     private static final String TOTAL_STATEMENT = "SELECT coalesce(sum(amount), 0) FROM %s WHERE document = ?";
     private static final String UPDATE_STATEMENT = "UPDATE %s SET doc_title = ?, record_type = ? WHERE document = ?";
     private static final String DISTINCT_DOCS_QUERY = "SELECT DISTINCT document FROM %s";
+    private static final String COUNT_STATEMENT = "SELECT count(*) FROM %s WHERE document = ?";
+    private static final String DELETE_STATEMENT = "DELETE FROM %s WHERE document = ?";
     private static final String VIEW_TABLE = "views";
     private static final String DOWNLOAD_TABLE = "downloads";
 
@@ -132,6 +134,28 @@ public class JDBCMetricsService implements MetricsService {
     @Cacheable(cacheNames = DOWNLOAD_TOTALS_CACHE, unless = "#result == null")
     public @Nullable Integer totalDownloads(@NonNull String uuid) {
         return totalAmount(DOWNLOAD_TABLE, uuid);
+    }
+
+    @Override
+    public boolean hasMetricsFor(@NonNull String uuid) {
+        return count(VIEW_TABLE, uuid) > 0 || count(DOWNLOAD_TABLE, uuid) > 0;
+    }
+
+    /**
+     * Deletes by {@code document} from both tables independently: a record can have views without
+     * downloads or vice versa, and the caller only wants to know whether anything was removed, not from
+     * which table.
+     */
+    @Override
+    public boolean deleteMetricsFor(@NonNull String uuid) {
+        int viewsDeleted = jdbcTemplate.update(DELETE_STATEMENT.formatted(VIEW_TABLE), uuid);
+        int downloadsDeleted = jdbcTemplate.update(DELETE_STATEMENT.formatted(DOWNLOAD_TABLE), uuid);
+        return viewsDeleted > 0 || downloadsDeleted > 0;
+    }
+
+    private int count(String table, String uuid) {
+        Integer count = jdbcTemplate.queryForObject(COUNT_STATEMENT.formatted(table), Integer.class, uuid);
+        return count == null ? 0 : count;
     }
 
     @Scheduled(initialDelay=TimeConstants.ONE_HOUR, fixedDelay=TimeConstants.ONE_HOUR)

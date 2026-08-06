@@ -61,6 +61,17 @@
 
       <h2 class="mb-3">Review before deleting</h2>
 
+      <div class="alert alert-info">
+        <#if documentFound && metricsFound>
+          Deleting will remove the metadata record and its recorded metrics (views and downloads).
+        <#elseif documentFound>
+          Deleting will remove the metadata record. No recorded metrics exist for this id.
+        <#else>
+          No metadata record exists at <code>${path}</code> — only its recorded metrics (views and
+          downloads) remain, and deleting will remove those.
+        </#if>
+      </div>
+
       <#if published>
         <div class="alert alert-warning">
           <strong>This record is published.</strong> Deleting it removes it from the public catalogue.
@@ -75,21 +86,23 @@
         </div>
       </#if>
 
-      <dl class="row">
-        <dt class="col-sm-3">Path</dt><dd class="col-sm-9"><code>${path}</code></dd>
-        <dt class="col-sm-3">Document type</dt>
-        <dd class="col-sm-9">
-          ${documentType!'(none)'}
-          <#if !documentTypeRegistered><span class="badge text-bg-warning">not registered</span></#if>
-        </dd>
-        <dt class="col-sm-3">State</dt><dd class="col-sm-9">${state!'(none)'}</dd>
-        <dt class="col-sm-3">Catalogue</dt><dd class="col-sm-9">${catalogue!'(none)'}</dd>
-        <dt class="col-sm-3">Body (.raw)</dt>
-        <dd class="col-sm-9">
-          <#if rawPresent>present (${rawSize} bytes)<#else><em>missing</em></#if>
-        </dd>
-        <dt class="col-sm-3">Permissions</dt><dd class="col-sm-9">${permissions!''}</dd>
-      </dl>
+      <#if documentFound>
+        <dl class="row">
+          <dt class="col-sm-3">Path</dt><dd class="col-sm-9"><code>${path}</code></dd>
+          <dt class="col-sm-3">Document type</dt>
+          <dd class="col-sm-9">
+            ${documentType!'(none)'}
+            <#if !documentTypeRegistered><span class="badge text-bg-warning">not registered</span></#if>
+          </dd>
+          <dt class="col-sm-3">State</dt><dd class="col-sm-9">${state!'(none)'}</dd>
+          <dt class="col-sm-3">Catalogue</dt><dd class="col-sm-9">${catalogue!'(none)'}</dd>
+          <dt class="col-sm-3">Body (.raw)</dt>
+          <dd class="col-sm-9">
+            <#if rawPresent>present (${rawSize} bytes)<#else><em>missing</em></#if>
+          </dd>
+          <dt class="col-sm-3">Permissions</dt><dd class="col-sm-9">${permissions!''}</dd>
+        </dl>
+      </#if>
 
       <form method="POST" action="/maintenance/documents/delete/confirm" class="my-4">
         <input type="hidden" name="${csrfParameterName}" value="${csrfToken}">

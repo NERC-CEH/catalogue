@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.maintenance;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -16,6 +17,7 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
+import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
@@ -24,7 +26,9 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -63,16 +67,24 @@ public class AdminDeleteController {
     private final DocumentTypeLookupService documentTypeLookupService;
     private final DocumentRepository documentRepository;
 
+    /**
+     * {@code null} outside the {@code metrics} profile, matching {@code DownloadController}'s handling
+     * of the same profile-gated bean. Every use below is null-checked rather than assuming presence.
+     */
+    private final @Nullable MetricsService metricsService;
+
     public AdminDeleteController(
         CachedDataRepository cachedDataRepository,
         DocumentInfoMapper<MetadataInfo> metadataInfoMapper,
         DocumentTypeLookupService documentTypeLookupService,
-        DocumentRepository documentRepository
+        DocumentRepository documentRepository,
+        @Nullable MetricsService metricsService
     ) {
         this.cachedDataRepository = cachedDataRepository;
         this.metadataInfoMapper = metadataInfoMapper;
         this.documentTypeLookupService = documentTypeLookupService;
         this.documentRepository = documentRepository;
+        this.metricsService = metricsService;
         log.info("Creating");
     }
 
@@ -152,32 +164,80 @@ public class AdminDeleteController {
         return performDelete(response, user, location.pathFor(trimmedId), cleanReason);
     }
 
+    /**
+     * Deletes the git document and the metrics rows independently: neither's absence or failure blocks
+     * the other, so this also serves the metrics-only orphan (no document, dangling {@code views}/
+     * {@code downloads} rows — see #252) as well as the reverse. Overall success is "at least one of the
+     * two actually removed something", not "both succeeded".
+     */
     private AdminDeleteResponse performDelete(
         AdminDeleteResponse response, CatalogueUser user, String path, String reason
     ) {
-        String subject = response.isPublished() ? "PUBLISHED document" : "document";
-        String message = "admin delete %s: %s (reason: %s)".formatted(subject, path, reason);
-        // Warn rather than info: an administrative deletion bypassing a record's own permissions should
-        // be visible in log aggregation, not only in the datastore's git history.
-        log.warn("Admin delete by {}: {} (reason: {})", user.getUsername(), path, reason);
-        try {
-            documentRepository.delete(user, path, message);
+        List<String> failures = new ArrayList<>();
+        boolean anyDeleted = false;
+
+        if (response.isDocumentFound()) {
+            String subject = response.isPublished() ? "PUBLISHED document" : "document";
+            String message = "admin delete %s: %s (reason: %s)".formatted(subject, path, reason);
+            // Warn rather than info: an administrative deletion bypassing a record's own permissions
+            // should be visible in log aggregation, not only in the datastore's git history.
+            log.warn("Admin delete by {}: {} (reason: {})", user.getUsername(), path, reason);
+            try {
+                documentRepository.delete(user, path, message);
+                response.addMessage("Deleted %s.".formatted(path));
+                anyDeleted = true;
+            } catch (Exception ex) {
+                log.error("Admin delete of {} by {} failed", path, user.getUsername(), ex);
+                failures.add("Could not delete %s: %s".formatted(path, ex.getMessage()));
+            }
+        }
+
+        if (metricsService != null && response.isMetricsFound()) {
+            String id = response.getId();
+            try {
+                metricsService.deleteMetricsFor(id);
+                response.addMessage("Deleted metrics for %s.".formatted(id));
+                anyDeleted = true;
+            } catch (Exception ex) {
+                log.error("Admin delete of metrics for {} by {} failed", id, user.getUsername(), ex);
+                failures.add("Could not delete metrics for %s: %s".formatted(id, ex.getMessage()));
+            }
+        }
+
+        if (!failures.isEmpty()) {
+            response.setError(String.join(" ", failures));
+        }
+        if (anyDeleted) {
             response.setDeleted(true);
             response.setFound(false);
-            return response.addMessage("Deleted %s.".formatted(path));
-        } catch (Exception ex) {
-            log.error("Admin delete of {} by {} failed", path, user.getUsername(), ex);
-            response.setError("Could not delete %s: %s".formatted(path, ex.getMessage()));
-            return response;
+            response.setDocumentFound(false);
+            response.setMetricsFound(false);
+            // Clear the fields that identified the now-deleted record, so the re-rendered lookup form
+            // doesn't leave a stale id sitting in step 1 ready to be resubmitted by mistake.
+            response.setId(null);
+            response.setPath(null);
+            response.setDocumentType(null);
+            response.setState(null);
+            response.setCatalogue(null);
+            response.setPermissions(null);
         }
+        return response;
     }
 
-    /** Populates the {@code .meta} facts, leaving {@code found} false if the record is not there. */
+    /**
+     * Populates the {@code .meta} facts, leaving {@code found} false only if there is neither a git
+     * document nor any metrics recorded for {@code id}. An id with metrics but no document is still
+     * {@code found} — the metrics-only orphan case #252 exists for — just with {@code documentFound}
+     * false and none of the document-specific fields populated.
+     */
     private AdminDeleteResponse describe(
         AdminDeleteResponse response, AdminDeleteLocation location, String id
     ) {
         String path = location.pathFor(id);
         response.setPath(path);
+        boolean metricsPresent = metricsService != null && metricsService.hasMetricsFor(id);
+        response.setMetricsFound(metricsPresent);
+
         MetadataInfo info;
         try {
             String revision = cachedDataRepository.getLatestRevisionId();
@@ -192,6 +252,12 @@ public class AdminDeleteController {
                 response.setRawPresent(false);
             }
         } catch (IOException | RuntimeException ex) {
+            if (metricsPresent) {
+                // No document, but there is something else to clean up: let the form proceed to confirm
+                // deleting the metrics alone rather than reporting a false "not found".
+                response.setFound(true);
+                return response;
+            }
             // Logged, unlike the .raw catch below: that one is a known, benign state (most orphans have
             // no body), but this one also catches a .meta that exists yet fails to parse — exactly the
             // kind of damaged record this feature exists to clear up. Without a log line, that case was
@@ -203,6 +269,7 @@ public class AdminDeleteController {
         }
 
         response.setFound(true);
+        response.setDocumentFound(true);
         response.setDocumentType(info.getDocumentType());
         response.setDocumentTypeRegistered(isTypeRegistered(info.getDocumentType()));
         response.setState(info.getState());

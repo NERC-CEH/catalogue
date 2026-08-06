@@ -266,6 +266,72 @@ class JDBCMetricsServiceTest {
 
     }
 
+    @Test
+    void hasMetricsForIsFalseWhenNothingIsRecorded() {
+        //given/when no view or download has ever been recorded for this document
+
+        //then
+        assertThat(service.hasMetricsFor(TEST_DOCUMENT), is(false));
+    }
+
+    @SneakyThrows
+    @Test
+    void hasMetricsForIsTrueWhenOnlyAViewIsRecorded() {
+        //given
+        given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
+        service.recordView(TEST_DOCUMENT, TEST_IP1);
+        service.syncDB();
+
+        //when/then
+        assertThat(service.hasMetricsFor(TEST_DOCUMENT), is(true));
+    }
+
+    @SneakyThrows
+    @Test
+    void hasMetricsForIsTrueWhenOnlyADownloadIsRecorded() {
+        //given
+        given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
+        service.recordDownload(TEST_DOCUMENT, TEST_IP1);
+        service.syncDB();
+
+        //when/then
+        assertThat(service.hasMetricsFor(TEST_DOCUMENT), is(true));
+    }
+
+    /**
+     * Deletion is by {@code document} only, so a row belonging to a different document must survive —
+     * this is what stops an admin-delete of one orphaned record from wiping every other document's
+     * counts out of the same table.
+     */
+    @SneakyThrows
+    @Test
+    void deleteMetricsForRemovesOnlyTheGivenDocumentsRowsFromBothTables() {
+        //given
+        String otherDocument = "123e4567-e89b-12d3-a456-426614174999";
+        given(documentRepository.read(anyString())).willReturn(doc);
+        service.recordView(TEST_DOCUMENT, TEST_IP1);
+        service.recordDownload(TEST_DOCUMENT, TEST_IP1);
+        service.recordView(otherDocument, TEST_IP1);
+        service.syncDB();
+
+        //when
+        boolean result = service.deleteMetricsFor(TEST_DOCUMENT);
+
+        //then
+        assertThat(result, is(true));
+        assertThat(getDocumentsAndAmounts("views"), contains(contains(otherDocument, 1)));
+        assertThat(getDocumentsAndAmounts("downloads"), is(empty()));
+        assertThat(service.hasMetricsFor(TEST_DOCUMENT), is(false));
+    }
+
+    @Test
+    void deleteMetricsForReturnsFalseWhenThereWasNothingToDelete() {
+        //given/when no rows exist for this document
+
+        //then
+        assertThat(service.deleteMetricsFor(TEST_DOCUMENT), is(false));
+    }
+
     List<List<Object>> getDocumentsAndAmounts(String table) throws SQLException {
         val stmt = db.getConnection().createStatement();
         val rs = stmt.executeQuery("SELECT document, amount FROM " + table);

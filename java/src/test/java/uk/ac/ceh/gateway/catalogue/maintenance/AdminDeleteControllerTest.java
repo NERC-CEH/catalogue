@@ -33,6 +33,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.jena.JenaIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.mapserver.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexingService;
+import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
@@ -79,6 +80,7 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
     @MockitoBean DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
     @MockitoBean DocumentTypeLookupService documentTypeLookupService;
     @MockitoBean DocumentRepository documentRepository;
+    @MockitoBean MetricsService metricsService;
 
     // Needed by the wider context and by the maintenance page templates
     @MockitoBean DataRepositoryOptimizingService repoService;
@@ -221,6 +223,55 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
         assertThat(content, containsString("Review before deleting"));
         assertThat(content, containsString("not registered"));
         assertThat(content, containsString("<em>missing</em>"));
+    }
+
+    /**
+     * The other half of the orphan picture #239/#252 describe: a document already deleted from git, but
+     * still referenced by the metrics tables. Before this fix, {@code describe()} stopped at "No record
+     * found" here, and there was no way to reach {@code performDelete} to clean the metrics row up.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("preview reports a metrics-only orphan when the git record is gone but metrics remain")
+    void previewReportsAMetricsOnlyOrphan() {
+        given(cachedDataRepository.getLatestRevisionId()).willReturn("rev1");
+        given(cachedDataRepository.readLatest("rev1", ID + ".meta"))
+            .willThrow(new GitFileNotFoundException("no such file"));
+        given(metricsService.hasMetricsFor(ID)).willReturn(true);
+
+        var content = preview(ID);
+
+        assertThat(content, containsString("Review before deleting"));
+        assertThat(content, containsString("No metadata record exists"));
+        verify(documentRepository, never()).delete(any(), any(), any());
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("the review step tells the operator both the record and its metrics will be deleted")
+    void reviewStepMentionsBothRecordAndMetrics() {
+        givenRecord(ID, "GEMINI_DOCUMENT", "published", "eidc", true);
+        givenRawPresent(ID, 10);
+        given(metricsService.hasMetricsFor(ID)).willReturn(true);
+
+        var content = preview(ID);
+
+        assertThat(content, containsString("metadata record and its recorded metrics"));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("the review step says only metrics will be deleted when there is no metadata record")
+    void reviewStepMentionsMetricsOnly() {
+        given(cachedDataRepository.getLatestRevisionId()).willReturn("rev1");
+        given(cachedDataRepository.readLatest("rev1", ID + ".meta"))
+            .willThrow(new GitFileNotFoundException("no such file"));
+        given(metricsService.hasMetricsFor(ID)).willReturn(true);
+
+        var content = preview(ID);
+
+        assertThat(content, containsString("recorded metrics"));
+        assertThat(content, containsString("No metadata record exists"));
     }
 
     @Test
@@ -458,6 +509,112 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
             .andExpect(status().isOk());
 
         verify(documentRepository).delete(argThat(byUsername(ADMIN)), eq(path), any());
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("confirm deletes both the document and its metrics when both exist")
+    void confirmDeletesBothDocumentAndMetrics() {
+        givenRecord(ID, "methodrecord", "pending", "ukceh", false);
+        givenRawMissing(ID);
+        given(metricsService.hasMetricsFor(ID)).willReturn(true);
+        given(metricsService.deleteMetricsFor(ID)).willReturn(true);
+
+        var content = mvc.perform(post(URL + "/confirm").with(csrf())
+                .param("location", "METADATA_RECORD").param("id", ID)
+                .param("confirmId", ID).param("reason", "orphaned"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        verify(documentRepository).delete(argThat(byUsername(ADMIN)), eq(ID), any());
+        verify(metricsService).deleteMetricsFor(ID);
+        assertThat(content, containsString("Deleted " + ID));
+        assertThat(content, containsString("Deleted metrics for " + ID));
+    }
+
+    /** The metrics-only orphan case #252 exists for: no git document, but a dangling metrics row. */
+    @Test
+    @SneakyThrows
+    @DisplayName("confirm deletes the metrics even though there is no git document")
+    void confirmDeletesMetricsOnlyWhenNoDocumentExists() {
+        given(cachedDataRepository.getLatestRevisionId()).willReturn("rev1");
+        given(cachedDataRepository.readLatest("rev1", ID + ".meta"))
+            .willThrow(new GitFileNotFoundException("no such file"));
+        given(metricsService.hasMetricsFor(ID)).willReturn(true);
+        given(metricsService.deleteMetricsFor(ID)).willReturn(true);
+
+        var content = mvc.perform(post(URL + "/confirm").with(csrf())
+                .param("location", "METADATA_RECORD").param("id", ID)
+                .param("confirmId", ID).param("reason", "dangling metrics"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        assertThat(content, containsString("Deleted metrics for " + ID));
+        verify(documentRepository, never()).delete(any(), any(), any());
+        verify(metricsService).deleteMetricsFor(ID);
+    }
+
+    /** Neither deletion should be able to block the other — this is the independence #252 asked for. */
+    @Test
+    @SneakyThrows
+    @DisplayName("confirm still deletes the document even when the metrics deletion fails")
+    void confirmDeletesDocumentEvenWhenMetricsDeletionFails() {
+        givenRecord(ID, "methodrecord", "pending", "ukceh", false);
+        givenRawMissing(ID);
+        given(metricsService.hasMetricsFor(ID)).willReturn(true);
+        given(metricsService.deleteMetricsFor(ID)).willThrow(new RuntimeException("db unavailable"));
+
+        var content = mvc.perform(post(URL + "/confirm").with(csrf())
+                .param("location", "METADATA_RECORD").param("id", ID)
+                .param("confirmId", ID).param("reason", "orphaned"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        verify(documentRepository).delete(argThat(byUsername(ADMIN)), eq(ID), any());
+        assertThat(content, containsString("Deleted " + ID));
+        assertThat(content, containsString("Could not delete metrics"));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("confirm still deletes the metrics even when the document delete fails")
+    void confirmDeletesMetricsEvenWhenDocumentDeletionFails() {
+        givenRecord(ID, "methodrecord", "pending", "ukceh", false);
+        givenRawMissing(ID);
+        given(metricsService.hasMetricsFor(ID)).willReturn(true);
+        given(metricsService.deleteMetricsFor(ID)).willReturn(true);
+        given(documentRepository.delete(any(), eq(ID), any()))
+            .willThrow(new DocumentRepositoryException("git write failed", null));
+
+        var content = mvc.perform(post(URL + "/confirm").with(csrf())
+                .param("location", "METADATA_RECORD").param("id", ID)
+                .param("confirmId", ID).param("reason", "orphaned"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        verify(metricsService).deleteMetricsFor(ID);
+        assertThat(content, containsString("Deleted metrics for " + ID));
+        assertThat(content, containsString("Could not delete " + ID));
+    }
+
+    /**
+     * Regression guard for the id staying in the lookup form after a successful delete: it used to be
+     * left in place, so the next operator either had to clear it by hand or risked re-submitting it.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("a successful delete clears the id from the re-rendered lookup form")
+    void successfulDeleteClearsTheIdField() {
+        givenRecord(ID, "methodrecord", "pending", "ukceh", false);
+        givenRawMissing(ID);
+
+        var content = mvc.perform(post(URL + "/confirm").with(csrf())
+                .param("location", "METADATA_RECORD").param("id", ID)
+                .param("confirmId", ID).param("reason", "orphaned"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        assertThat(content, not(containsString("value=\"" + ID + "\"")));
     }
 
     // ---------------------------------------------------------------- confirm failure
