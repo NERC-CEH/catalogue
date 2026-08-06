@@ -194,6 +194,10 @@ public class AdminDeleteController {
 
         if (metricsService != null && response.isMetricsFound()) {
             String id = response.getId();
+            // Same audit-visibility reasoning as the document branch above — and more pressing here: a
+            // metrics-only delete has no git document, so there is no commit for it either. Without this,
+            // the action left no trace anywhere at all.
+            log.warn("Admin delete of metrics by {}: {} (reason: {})", user.getUsername(), id, reason);
             try {
                 metricsService.deleteMetricsFor(id);
                 response.addMessage("Deleted metrics for %s.".formatted(id));
