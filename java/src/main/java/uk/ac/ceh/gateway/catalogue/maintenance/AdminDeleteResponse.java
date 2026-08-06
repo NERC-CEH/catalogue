@@ -31,6 +31,16 @@ public class AdminDeleteResponse {
     private boolean found;
     private boolean deleted;
 
+    /**
+     * Whether the git document itself exists, as distinct from {@link #found}: an id can have no git
+     * document but still have metrics rows recorded against it (the case this exists to clean up), in
+     * which case {@code found} is true but this is false.
+     */
+    private boolean documentFound;
+
+    /** Whether any view/download metrics are recorded for this id. See {@link #documentFound}. */
+    private boolean metricsFound;
+
     // Facts read from .meta. Deliberately not the assembled document: .meta is plain JSON and parses
     // even when documentType has no registered class, which is the case for the records this exists for.
     private String path;
