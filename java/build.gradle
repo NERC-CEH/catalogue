@@ -87,5 +87,13 @@ tasks {
     test {
         useJUnitPlatform()
         jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
+        // FreeMarker resolves templates/ at runtime via a plain file: path (application-test.properties),
+        // not through a Gradle source set, so without this the task has no idea its behaviour depends on
+        // it: a template-only edit left this task UP-TO-DATE, reporting a false pass. Declaring it here
+        // folds the directory's contents into the task's input fingerprint, for both up-to-date checking
+        // and the local build cache key (see settings.gradle).
+        inputs.dir(rootProject.file('templates'))
+            .withPropertyName('templates')
+            .withPathSensitivity(PathSensitivity.RELATIVE)
     }
 }

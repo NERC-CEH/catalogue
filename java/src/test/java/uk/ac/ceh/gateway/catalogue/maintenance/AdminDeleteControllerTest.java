@@ -554,6 +554,33 @@ class AdminDeleteControllerTest extends AbstractMvcTest {
         verify(metricsService).deleteMetricsFor(ID);
     }
 
+    /**
+     * A metrics-only delete has no git document, so there is no commit for it either — log aggregation
+     * is the *only* place this action can ever be recorded. Before this, the metrics branch had no log
+     * line at all (unlike the document branch, which already warn-logs for exactly this audit reason),
+     * so it left no trace anywhere.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("a metrics-only delete is still logged, since there is no git commit to record it")
+    void metricsOnlyDeleteIsLogged() {
+        given(cachedDataRepository.getLatestRevisionId()).willReturn("rev1");
+        given(cachedDataRepository.readLatest("rev1", ID + ".meta"))
+            .willThrow(new GitFileNotFoundException("no such file"));
+        given(metricsService.hasMetricsFor(ID)).willReturn(true);
+        given(metricsService.deleteMetricsFor(ID)).willReturn(true);
+
+        mvc.perform(post(URL + "/confirm").with(csrf())
+                .param("location", "METADATA_RECORD").param("id", ID)
+                .param("confirmId", ID).param("reason", "dangling metrics"))
+            .andExpect(status().isOk());
+
+        assertThat(logAppender.list, hasSize(1));
+        assertThat(logAppender.list.getFirst().getLevel(), is(Level.WARN));
+        assertThat(logAppender.list.getFirst().getFormattedMessage(), containsString(ID));
+        assertThat(logAppender.list.getFirst().getFormattedMessage(), containsString("dangling metrics"));
+    }
+
     /** Neither deletion should be able to block the other — this is the independence #252 asked for. */
     @Test
     @SneakyThrows
