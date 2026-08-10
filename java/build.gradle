@@ -8,6 +8,10 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven {
+        // https://gitlab.ceh.ac.uk/commons/java-commons (public)
+        url = "https://gitlab.ceh.ac.uk/api/v4/projects/10/packages/maven"
+    }
 }
 
 configurations {
@@ -33,6 +37,7 @@ dependencies {
     // Spring Boot starters
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation(libs.caffeine)
     implementation 'org.springframework.boot:spring-boot-starter-freemarker'
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -62,8 +67,6 @@ dependencies {
     implementation 'com.opencsv:opencsv:5.12.0'
     implementation 'com.vividsolutions:jts:1.13'
     implementation 'io.micrometer:micrometer-registry-prometheus'
-    implementation 'javax.cache:cache-api:1.1.1'
-    implementation 'org.ehcache:ehcache'
     implementation 'org.hibernate.validator:hibernate-validator'
     implementation 'org.xerial:sqlite-jdbc'
     implementation 'org.yaml:snakeyaml'
@@ -84,5 +87,13 @@ tasks {
     test {
         useJUnitPlatform()
         jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
+        // FreeMarker resolves templates/ at runtime via a plain file: path (application-test.properties),
+        // not through a Gradle source set, so without this the task has no idea its behaviour depends on
+        // it: a template-only edit left this task UP-TO-DATE, reporting a false pass. Declaring it here
+        // folds the directory's contents into the task's input fingerprint, for both up-to-date checking
+        // and the local build cache key (see settings.gradle).
+        inputs.dir(rootProject.file('templates'))
+            .withPropertyName('templates')
+            .withPathSensitivity(PathSensitivity.RELATIVE)
     }
 }

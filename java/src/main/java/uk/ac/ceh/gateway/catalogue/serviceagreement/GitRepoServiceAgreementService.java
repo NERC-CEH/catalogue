@@ -17,8 +17,10 @@ import uk.ac.ceh.gateway.catalogue.config.ServiceAgreementPublicationConfig;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataConflictException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
@@ -35,6 +37,7 @@ import static uk.ac.ceh.gateway.catalogue.model.Permission.*;
 public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final String baseUri;
     private final DataRepository<CatalogueUser> repo;
+    private final CachedDataRepository cachedDataRepository;
     private final DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
     private final DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
     private final DocumentRepository documentRepository;
@@ -50,6 +53,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     public GitRepoServiceAgreementService(
             @Value("${documents.baseUri}") String baseUri,
             DataRepository<CatalogueUser> repo,
+            CachedDataRepository cachedDataRepository,
             DocumentInfoMapper<MetadataInfo> metadataInfoMapper,
             DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper,
             DocumentRepository documentRepository,
@@ -57,6 +61,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             @Lazy ServiceAgreementPublicationService publicationService) {
         this.baseUri = baseUri;
         this.repo = repo;
+        this.cachedDataRepository = cachedDataRepository;
         this.metadataInfoMapper = metadataInfoMapper;
         this.serviceAgreementMapper = serviceAgreementMapper;
         this.documentRepository = documentRepository;
@@ -127,28 +132,75 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
             .submitData(FOLDER + id + ".raw", o -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
             .commit(user, "creating service agreement " + id);
+        cachedDataRepository.evictAfterDirectWrite(FOLDER + id);
         return get(user, id);
     }
 
     @SneakyThrows
     @Override
     public ServiceAgreement update(CatalogueUser user, String id, ServiceAgreement serviceAgreement) {
+        return update(user, id, serviceAgreement, null);
+    }
+
+    @SneakyThrows
+    @Override
+    public ServiceAgreement update(CatalogueUser user, String id, ServiceAgreement serviceAgreement, String expectedRevision) {
         serviceAgreement.setId(id);
-        val fromDatastore = repo.getData(FOLDER + id + ".meta");
-        val metadataInfo = metadataInfoMapper.readInfo(fromDatastore.getInputStream());
-        repo
-            .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
-            .submitData(FOLDER + id + ".raw", o -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
-            .commit(user, "updating service agreement " + id);
+        // Guard read-check-write as one unit, as GitRepoWrapper.save does for metadata documents: two
+        // concurrent saves must not both pass the check before either commits.
+        synchronized (this) {
+            checkRevision(id, expectedRevision, serviceAgreement);
+            val fromDatastore = repo.getData(FOLDER + id + ".meta");
+            val metadataInfo = metadataInfoMapper.readInfo(fromDatastore.getInputStream());
+            repo
+                .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
+                .submitData(FOLDER + id + ".raw", o -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
+                .commit(user, "updating service agreement " + id);
+        }
+        cachedDataRepository.evictAfterDirectWrite(FOLDER + id);
         return get(user, id);
     }
 
     @SneakyThrows
     @Override
     public void updateMetadata(CatalogueUser user, String id, MetadataInfo metadataInfo) {
-        repo
-            .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
-            .commit(user, "updating service agreement metadata " + id);
+        updateMetadata(user, id, metadataInfo, null);
+    }
+
+    @SneakyThrows
+    @Override
+    public void updateMetadata(CatalogueUser user, String id, MetadataInfo metadataInfo, String expectedRevision) {
+        synchronized (this) {
+            checkRevision(id, expectedRevision, null);
+            repo
+                .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
+                .commit(user, "updating service agreement metadata " + id);
+        }
+        cachedDataRepository.evictAfterDirectWrite(FOLDER + id);
+    }
+
+    @SneakyThrows
+    @Override
+    public String getRevisionToken(String id) {
+        return cachedDataRepository.getDocumentRevisionToken(FOLDER + id);
+    }
+
+    /**
+     * Compare-then-commit half of the optimistic lock. Reads the token fresh from the datastore rather
+     * than via {@link CachedDataRepository#getDocumentRevisionToken} — checking against a cached value
+     * would be no check at all. Must be called inside the {@code synchronized} block that also performs
+     * the commit.
+     */
+    private void checkRevision(String id, String expectedRevision, ServiceAgreement submittedForEcho)
+        throws DataRepositoryException {
+        if (expectedRevision == null) {
+            return;
+        }
+        val current = CachedDataRepository.revisionToken(repo, FOLDER + id);
+        if (!expectedRevision.equals(current)) {
+            throw new MetadataConflictException(
+                "This service agreement, %s, was changed by another user since you opened it.".formatted(id), submittedForEcho);
+        }
     }
 
     @SneakyThrows
@@ -157,6 +209,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             .deleteData(FOLDER + id + ".meta")
             .deleteData(FOLDER + id + ".raw")
             .commit(user, "delete document: " + id);
+        cachedDataRepository.evictAfterDirectWrite(FOLDER + id);
     }
 
     private void addPermissionsForDepositor(CatalogueUser user, String id, MetadataInfo metadataInfo, ServiceAgreement serviceAgreement) {

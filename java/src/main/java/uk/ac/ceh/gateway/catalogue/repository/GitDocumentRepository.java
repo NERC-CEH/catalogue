@@ -159,7 +159,8 @@ public class GitDocumentRepository implements DocumentRepository {
                 document,
                 createMetadataInfoWithDefaultPermissions(document, user, MediaType.APPLICATION_JSON, catalogue),
                 documentIdentifierService.generateFileId(),
-                message
+                message,
+                null
             );
         } catch (DataRepositoryException ex) {
             throw new DocumentRepositoryException(
@@ -176,12 +177,24 @@ public class GitDocumentRepository implements DocumentRepository {
         String id,
         String message
     ) throws DocumentRepositoryException {
+        return save(user, document, id, message, null);
+    }
+
+    @Override
+    public MetadataDocument save(
+        CatalogueUser user,
+        MetadataDocument document,
+        String id,
+        String message,
+        String expectedRevision
+    ) throws DocumentRepositoryException {
         try {
             return save(user,
                 document,
                 retrieveMetadataInfoUpdatingRawType(document),
                 id,
-                message
+                message,
+                expectedRevision
             );
         } catch (DocumentRepositoryException | IOException | PostProcessingException | UnknownContentTypeException ex) {
             throw new DocumentRepositoryException(
@@ -206,7 +219,8 @@ public class GitDocumentRepository implements DocumentRepository {
                 document,
                 retrieveMetadataInfoUpdatingRawType(document),
                 document.getId(),
-                message
+                message,
+                null
             );
         } catch (DocumentRepositoryException | IOException | PostProcessingException | UnknownContentTypeException ex) {
             throw new DocumentRepositoryException(
@@ -225,7 +239,8 @@ public class GitDocumentRepository implements DocumentRepository {
         MetadataDocument document,
         MetadataInfo metadataInfo,
         String id,
-        String message
+        String message,
+        String expectedRevision
     ) throws DataRepositoryException, DocumentRepositoryException {
         updateIdAndMetadataDate(document, id);
         String uri = documentIdentifierService.generateUri(id);
@@ -237,7 +252,9 @@ public class GitDocumentRepository implements DocumentRepository {
             id,
             message,
             metadataInfo,
-            (o) -> documentWriter.write(document, MediaType.APPLICATION_JSON, o)
+            (o) -> documentWriter.write(document, MediaType.APPLICATION_JSON, o),
+            expectedRevision,
+            document
         );
 
         return document;
@@ -247,6 +264,22 @@ public class GitDocumentRepository implements DocumentRepository {
     public DataRevision<CatalogueUser> delete(CatalogueUser user, String id) throws DocumentRepositoryException {
         try {
             return repo.delete(user, id);
+        } catch (DataRepositoryException ex) {
+            throw new DocumentRepositoryException(
+                String.format(
+                    "Cannot delete file: %s for user: %s",
+                    id,
+                    user.getUsername()
+                ),
+                ex
+            );
+        }
+    }
+
+    @Override
+    public DataRevision<CatalogueUser> delete(CatalogueUser user, String id, String message) throws DocumentRepositoryException {
+        try {
+            return repo.delete(user, id, message);
         } catch (DataRepositoryException ex) {
             throw new DocumentRepositoryException(
                 String.format(

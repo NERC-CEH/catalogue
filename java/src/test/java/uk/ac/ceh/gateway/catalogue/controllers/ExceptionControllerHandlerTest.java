@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
@@ -20,14 +21,19 @@ import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
+import uk.ac.ceh.gateway.catalogue.model.MetadataConflictException;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataPreconditionRequiredException;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.search.InvalidFacetException;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -145,6 +151,32 @@ class ExceptionControllerHandlerTest {
         assertThat(response.getStatusCode(), equalTo(BAD_REQUEST));
         assert response.getBody() != null;
         assertThat(((ErrorResponse) response.getBody()).getMessage(), equalTo(mess));
+    }
+
+    @Test
+    public void conflictExceptionMapsTo409WithSubmittedDocumentBody() {
+        //Given
+        MetadataDocument submitted = new GeminiDocument();
+        MetadataConflictException ex = new MetadataConflictException("stale", submitted);
+
+        //When
+        ResponseEntity<MetadataDocument> response = controller.handleMetadataConflict(ex);
+
+        //Then
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.CONFLICT));
+        assertThat(response.getBody(), sameInstance(submitted));
+    }
+
+    @Test
+    public void preconditionRequiredMapsTo428() {
+        //Given
+        MetadataPreconditionRequiredException ex = new MetadataPreconditionRequiredException("need If-Match");
+
+        //When
+        ResponseEntity<Object> response = controller.handleMetadataPreconditionRequired(ex);
+
+        //Then
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.PRECONDITION_REQUIRED));
     }
 
     private void assertResponseImageExists(ResponseEntity<Object> response) {

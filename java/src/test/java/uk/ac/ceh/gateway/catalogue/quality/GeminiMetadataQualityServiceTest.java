@@ -320,6 +320,80 @@ public class GeminiMetadataQualityServiceTest {
     }
 
     @Test
+    public void checkAuthorCorrectFromLegacyResponsibleParties() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("legacyResponsiblePartiesRight.json"), this.config);
+
+        //when
+        val actual = this.service.checkAuthors(parsed);
+
+        //then
+        assertThat(actual, empty());
+    }
+
+    @Test
+    public void checkPublisherCorrectFromLegacyResponsibleParties() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("legacyResponsiblePartiesRight.json"), this.config);
+
+        //when
+        val actual = this.service.checkPublisher(parsed);
+
+        //then
+        assertThat(actual, empty());
+    }
+
+    @Test
+    public void checkCustodianCorrectFromLegacyResponsibleParties() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("legacyResponsiblePartiesRight.json"), this.config);
+
+        //when
+        val actual = this.service.checkCustodian(parsed);
+
+        //then
+        assertThat(actual, empty());
+    }
+
+    @Test
+    public void checkPointOfContactCorrectFromLegacyResponsibleParties() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("legacyResponsiblePartiesRight.json"), this.config);
+
+        //when
+        val actual = this.service.checkPointOfContact(parsed);
+
+        //then
+        assertThat(actual, empty());
+    }
+
+    @Test
+    public void checkPointOfContactAllowsMixedCaseUkcehEmail() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("pointOfContactMixedCaseAllowed.json"), this.config);
+
+        //when
+        val actual = this.service.checkPointOfContact(parsed);
+
+        //then
+        assertThat(actual, empty());
+    }
+
+    @Test
+    public void checkPointOfContactFlagsMixedCaseDomainNotOnAllowList() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("pointOfContactMixedCaseNotAllowed.json"), this.config);
+
+        //when
+        val actual = this.service.checkPointOfContact(parsed);
+
+        //then
+        assertThat(actual, contains(
+            new MetadataCheck("Point of contact's  email address is Sam.Jones@CEH.ac.uk", ERROR)
+        ));
+    }
+
+    @Test
     public void checkDistributorCorrect() {
         //given
         val parsed = JsonPath.parse(getClass().getResourceAsStream("distributorsRight.json"), this.config);

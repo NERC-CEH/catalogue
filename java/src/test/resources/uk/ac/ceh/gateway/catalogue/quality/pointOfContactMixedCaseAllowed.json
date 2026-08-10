@@ -1,0 +1,10 @@
+{
+  "contactPoints": [
+    {
+      "role": "pointOfContact",
+      "displayName": "COSMOS-UK",
+      "organisationName": "UK Centre for Ecology & Hydrology",
+      "email": "CosmosUK@ceh.ac.uk"
+    }
+  ]
+}

@@ -4,6 +4,44 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.221.0] - 2026-08-04
+
+Record pages load substantially faster. Their view and download totals were being recalculated on every page view by scanning the entire usage-statistics database, which had grown past a gigabyte and is held on network storage; those totals are now looked up through an index and cached, taking the work off the page-rendering path entirely. A leftover template belonging to a record type withdrawn some time ago has also been removed.
+
+## [3.220.0] - 2026-08-03
+
+The metadata editor now prevents two people's changes from overwriting one another. Previously, if two editors opened the same record and saved in turn, the second save silently discarded the first person's work with no warning to either of them. The editor now recognises that the record has changed since it was opened, says so, and keeps the unsaved edits on screen so they can be reapplied rather than retyped. The same protection covers the catalogue, catalogue view and permission editors, and service agreements, and the public API gained matching support with worked examples in the documentation.
+
+Records whose stored content the application can no longer read — left behind when a record type is withdrawn — can now be deleted instead of remaining stuck in place. Saving is also markedly quicker, because checking whether a record has changed no longer means working back through its entire revision history. This release additionally carries the two fixes previously issued as urgent patches (3.219.1 and 3.219.2), restores the access button on records that are only viewable as a map, corrects line styling on map layers, and includes the record identifier in conflict messages written to the logs so they can be traced to the record concerned.
+
+## [3.219.2] - 2026-08-03
+
+Urgent patch. Record pages were failing with an error whenever the usage-statistics database was locked by another process. Pages now render normally regardless of what else is using that database.
+
+## [3.219.1] - 2026-08-03
+
+Urgent patch. Records that are viewable as a map were returning a server error instead of displaying at all. Those records now open as expected.
+
+## [3.219.0] - 2026-07-30
+
+Datasets that are only available offline — supplied on request rather than downloaded directly — are now handled correctly when a user places an order for them (DRI-ONE-221). Checks against the list of permitted contact addresses are now case-insensitive, so records whose contact email was recorded with different capitalisation are no longer wrongly reported as invalid.
+
+## [3.218.0] - 2026-07-30
+
+A bug that caused manual changes to a record's resource type to silently revert after saving has been fixed (GH dri-one#214); a similar crash risk in citation-link rendering was also guarded against. The sitemap.xml file published for search engines has been corrected to meet XML formatting requirements and now includes a last-modified date for each entry (DRI-ONE-68). ORCID researcher identifiers are now indexed as exact values rather than being split into separate searchable words. Behind the scenes, cache performance statistics are now exposed via the monitoring endpoint, a misplaced configuration file was moved to its correct location, Docker image publishing was fixed to push only the tag just built rather than every tag in the local image store, and the underlying container tooling was upgraded.
+
+## [3.217.0] - 2026-07-27
+
+This release fixes a server error (HTTP 500) that occurred when viewing signpost records with no distributor contact specified, restoring normal page rendering for those records.
+
+## [3.216.0] - 2026-07-24
+
+Contact and distributor information on records has been substantially reworked: publisher, author, and distributor roles are now handled by a dedicated data structure rather than a single combined field, fixing several gaps including missing DataCite contributors, an omitted role in Citation File Format exports, and duplicate entries in role-based search filters (EMC-700). The record editor gained two small but useful additions — Parquet is now available as a predefined file format, and Principal Investigator has been added to the list of contact roles — and a bug causing the download button to appear on records with no actual download has been fixed. WMS map layers can now be styled with custom line thickness that increases as users zoom in, giving line-based geospatial layers a clearer appearance. The EnvThes vocabulary is now available for keyword selection, HTTPS redirects have been corrected to work with local developer setups, and dataset-monitoring relationship data has been moved into the core monitoring metadata model for consistency (EMC-892).
+
+## [3.215.0] - 2026-07-13
+
+This release improves the reliability of the underlying storage system: the scheduled clean-up of the Git-backed datastore can now be disabled or rescheduled to suit operational needs, permission checks have been sped up by routing them through the existing cache, and the whole caching layer has been migrated to a faster, more modern library. The record editor no longer shows a premature "Saved!" confirmation before the server has actually confirmed the save, and the user account menu in the navigation bar has been rebuilt to render natively, giving it a more consistent, modern look. Search results now correctly round map bounding-box coordinates and no longer carry redundant parameters in the page URL; dataset relationship information has also been relocated into the core metadata model for consistency (EMC-889). Behind the scenes, a major internal library upgrade (ukceh 2.0.0) was completed, noisy log output during search-index maintenance was fixed, and automated test coverage for the web interface was substantially expanded.
+
 ## [3.214.0] - 2026-07-01
 
 This release delivers a noticeable speed-up to how individual record and dataset pages are generated. The system now prepares its internal data queries once and reuses them, instead of rebuilding them from scratch on every page view, and it keeps recently viewed records in fast memory for longer. Together these changes roughly halve the time taken to display a record page and reduce the load placed on the underlying storage system.

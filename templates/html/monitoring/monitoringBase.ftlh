@@ -90,12 +90,12 @@
             </@keyValue>
           </#if>
 
-          <#if pointsOfContact?has_content || partners?has_content>
+          <#if contacts?has_content || partners?has_content>
             <div class="contacts">
               <h2>Contacts</h2>
-              <#if pointsOfContact?has_content>
+              <#if contacts?has_content>
                 <div class="contacts-main">
-                  <#list pointsOfContact>
+                  <#list contacts>
                     <#items as contact>
                       <@contactDetails contact/>
                     </#items>
@@ -313,7 +313,7 @@ Operating period
 Relationships
 -->
 <#macro relationships relation title="">
-  <#local links=jena.relationships(uri, relation) />
+  <#local links=relation />
   <#if links?has_content>
     <@keyValue title "">
       <#list links as link>
@@ -327,7 +327,7 @@ Relationships
 Inverse relationships
 -->
 <#macro inverseRelationships relation title="">
-  <#local links=jena.inverseRelationships(uri, relation) />
+  <#local links=relation />
   <#if links?has_content>
     <#if title?has_content>
       <@keyValue title "">
@@ -347,8 +347,7 @@ Inverse relationships
 Symmetrical relationships
 -->
 <#macro symmetricRelationships relation title="">
-  <#local links = jena.inverseRelationships(uri, relation) />
-  <#local links = links + jena.relationships(uri, relation) />
+  <#local links = relation />
 
   <#if links?has_content>
     <#if title?has_content>
@@ -394,21 +393,21 @@ Symmetrical relationships
 </#macro>
 
 <#macro inverseRelationshipCombinedGeometries relation>
-  <#local combinedGeometry=jena.inverseRelationshipCombinedGeometries(uri, relation) />
+  <#local combinedGeometry=relation />
   <#if combinedGeometry?has_content>
     <@map combinedGeometry />
   </#if>
 </#macro>
 
-<#macro relationshipCombinedGeometriesWithOwner relation locationConfidential>
-  <#local combinedGeometry=jena.relationshipCombinedGeometriesWithOwner(uri, relation, locationConfidential) />
+<#macro relationshipCombinedGeometriesWithOwner relation>
+  <#local combinedGeometry=relation />
   <#if combinedGeometry?has_content>
     <@map combinedGeometry />
   </#if>
 </#macro>
 
 <#macro programmeCombinedGeometries relation>
-  <#local combinedGeometry=jena.programmeCombinedGeometries(uri) />
+  <#local combinedGeometry=relation />
   <#if combinedGeometry?has_content>
     <@map combinedGeometry />
   </#if>

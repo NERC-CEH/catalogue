@@ -45,7 +45,8 @@ public class DatastoreReadCacheTest {
             return new ConcurrentMapCacheManager(
                 CachedDataRepository.REVISION_ID_CACHE,
                 CachedDataRepository.LATEST_CACHE,
-                CachedDataRepository.HISTORICAL_CACHE);
+                CachedDataRepository.HISTORICAL_CACHE,
+                CachedDataRepository.DOC_REVISION_CACHE);
         }
 
         @Bean
@@ -144,6 +145,33 @@ public class DatastoreReadCacheTest {
         verify(repo, times(2)).getData("rev", "abc.meta");
     }
 
+    /**
+     * The per-document revision token (the ETag source for optimistic locking) is cached by
+     * {@link CachedDataRepository#getDocumentRevisionToken} and must be evicted on write, exactly like the
+     * blob-content cache above. Without this eviction the same stale ETag is served to every browser for
+     * the whole {@code DOC_REVISION_CACHE} TTL (6h in production), so a second save would spuriously 409.
+     * This drives the token read -> save -> token read cycle through the real {@code @EnableCaching}
+     * proxy to prove the eviction actually fires.
+     */
+    @Test
+    public void saveEvictsDocRevisionSoNextTokenReadRefetches() throws Exception {
+        given(repo.getData("abc.meta")).willAnswer(i -> blob("meta-v1"));
+        given(repo.getData("abc.raw")).willAnswer(i -> blob("raw-v1"));
+
+        cachedRepo.getDocumentRevisionToken("abc"); // miss -> reads both blobs #1
+        cachedRepo.getDocumentRevisionToken("abc"); // hit
+
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
+        DataWriter writer = out -> { };
+        gitRepoWrapper.save(user, "abc", "msg", MetadataInfo.builder().build(), writer);
+
+        cachedRepo.getDocumentRevisionToken("abc"); // evicted -> reads both blobs #2
+
+        // Both halves of the token are re-read: the token digests (.meta content, .raw content)
+        verify(repo, times(2)).getData("abc.meta");
+        verify(repo, times(2)).getData("abc.raw");
+    }
+
     @Test
     public void deleteEvictsLatestEntries() throws Exception {
         given(repo.getData("rev", "abc.raw")).willAnswer(i -> blob("raw"));
@@ -156,6 +184,30 @@ public class DatastoreReadCacheTest {
         cachedRepo.readLatest("rev", "abc.raw");
 
         verify(repo, times(2)).getData("rev", "abc.raw");
+    }
+
+    /**
+     * The admin delete route passes an explicit commit message, so it takes the three-arg overload. That
+     * overload carries its own {@code @CacheEvict} block because the two-arg method reaches it by
+     * self-invocation, which Spring's proxy does not intercept — this drives it through the real proxy to
+     * prove the eviction fires when called directly.
+     *
+     * <p>Uses a folder-prefixed id, as a service agreement has, since the eviction keys are composed as
+     * {@code #id + '.meta'} and must still line up with what {@code readLatest} caches.</p>
+     */
+    @Test
+    public void deleteWithAMessageEvictsLatestEntriesForAPrefixedId() throws Exception {
+        given(repo.getData("rev", "service-agreement/abc.raw")).willAnswer(i -> blob("raw"));
+
+        cachedRepo.readLatest("rev", "service-agreement/abc.raw");
+        cachedRepo.readLatest("rev", "service-agreement/abc.raw"); // cached, no second fetch
+
+        gitRepoWrapper.delete(
+            new CatalogueUser("test", "test@ceh.ac.uk"), "service-agreement/abc", "admin delete document: x");
+
+        cachedRepo.readLatest("rev", "service-agreement/abc.raw"); // evicted -> re-fetched
+
+        verify(repo, times(2)).getData("rev", "service-agreement/abc.raw");
     }
 
     /**

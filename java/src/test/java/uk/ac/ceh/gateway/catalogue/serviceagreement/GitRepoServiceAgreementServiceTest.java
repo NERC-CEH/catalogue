@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -18,11 +19,13 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataConflictException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.publication.State;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
@@ -35,6 +38,7 @@ import java.util.List;
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -55,6 +59,7 @@ public class GitRepoServiceAgreementServiceTest {
     private static final String catalogueKey = "eidc";
 
     @Mock private DataRepository<CatalogueUser> repo;
+    @Mock private CachedDataRepository cachedDataRepository;
     @Mock private DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
     @Mock private DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
     @Mock private DocumentRepository documentRepository;
@@ -76,6 +81,7 @@ public class GitRepoServiceAgreementServiceTest {
         service = new GitRepoServiceAgreementService(
             BASE_URI,
             repo,
+            cachedDataRepository,
             metadataInfoMapper,
             serviceAgreementMapper,
             documentRepository,
@@ -221,6 +227,7 @@ public class GitRepoServiceAgreementServiceTest {
 
         //Then
         verify(dataOngoingCommit).commit(user, "delete document: " + ID);
+        verify(cachedDataRepository).evictAfterDirectWrite(FOLDER + ID);
     }
 
     @Test
@@ -274,6 +281,77 @@ public class GitRepoServiceAgreementServiceTest {
         //Then
         verify(metadataInfoMapper, times(2)).readInfo(any(InputStream.class));
         verify(dataOngoingCommit).commit(user, "updating service agreement " + ID);
+        verify(cachedDataRepository).evictAfterDirectWrite(FOLDER + ID);
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("a service-agreement save whose revision is still current is committed")
+    public void updateServiceAgreementWithCurrentRevision() {
+        //Given
+        val dataOngoingCommit = mock(DataOngoingCommit.class);
+        given(repo.submitData(any(String.class), any(DataWriter.class))).willReturn(dataOngoingCommit);
+        given(dataOngoingCommit.submitData(any(), any())).willReturn(dataOngoingCommit);
+        givenPublishedServiceAgreement();
+        val held = CachedDataRepository.revisionToken(repo, FOLDER + ID);
+
+        //When the editor's revision matches what is in the datastore
+        service.update(user, ID, serviceAgreement, held);
+
+        //Then the commit goes ahead
+        verify(dataOngoingCommit).commit(user, "updating service agreement " + ID);
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("a stale service-agreement save is rejected before anything is written")
+    public void updateServiceAgreementWithStaleRevisionConflicts() {
+        //Given the service agreement's body has moved on since the editor loaded it
+        givenCurrentContent("meta-v1", "raw-v1");
+        val held = CachedDataRepository.revisionToken(repo, FOLDER + ID);
+        givenCurrentContent("meta-v1", "raw-v2");
+
+        //When/Then the save is refused and echoes back the unsaved submission
+        val ex = assertThrows(MetadataConflictException.class, () ->
+            service.update(user, ID, serviceAgreement, held));
+        assertThat(ex.getSubmittedDocument(), is(sameInstance(serviceAgreement)));
+        verify(repo, never()).submitData(any(), any());
+        verify(cachedDataRepository, never()).evictAfterDirectWrite(any());
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("a stale permissions save on a service agreement is rejected before anything is written")
+    public void updateMetadataWithStaleRevisionConflicts() {
+        // a permissions edit moves .meta while .raw stays put
+        givenCurrentContent("meta-v1", "raw-v1");
+        val held = CachedDataRepository.revisionToken(repo, FOLDER + ID);
+        givenCurrentContent("meta-v2", "raw-v1");
+
+        assertThrows(MetadataConflictException.class, () ->
+            service.updateMetadata(user, ID, MetadataInfo.builder().build(), held));
+        verify(repo, never()).submitData(any(), any());
+    }
+
+    /**
+     * Stubs the agreement's two blobs at HEAD. The lock token digests their content, so these bodies
+     * are what it is computed from; read it back with {@link CachedDataRepository#revisionToken}.
+     */
+    private void givenCurrentContent(String metaBody, String rawBody) throws Exception {
+        // Build both blobs before stubbing: freshBlob() stubs a mock of its own, which Mockito rejects
+        // if set up inside the argument to willReturn() while this stubbing is still open.
+        val meta = freshBlob(metaBody);
+        val raw = freshBlob(rawBody);
+        given(repo.getData(FOLDER + ID + ".meta")).willReturn(meta);
+        given(repo.getData(FOLDER + ID + ".raw")).willReturn(raw);
+    }
+
+    /** A blob handing out a fresh stream per call, so its content can be read more than once. */
+    private DataDocument freshBlob(String body) throws Exception {
+        val bytes = body.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        val document = mock(DataDocument.class);
+        given(document.getInputStream()).willAnswer(invocation -> new ByteArrayInputStream(bytes));
+        return document;
     }
 
     @Test
@@ -294,6 +372,7 @@ public class GitRepoServiceAgreementServiceTest {
 
         //Then
         verify(dataOngoingCommit).commit(user, "creating service agreement " + ID);
+        verify(cachedDataRepository, atLeastOnce()).evictAfterDirectWrite(FOLDER + ID);
     }
 
     @Test
@@ -382,7 +461,7 @@ public class GitRepoServiceAgreementServiceTest {
         expected.setTitle("this is a test");
         expected.setMetadata(MetadataInfo.builder().state("draft").build());
         expected.setUseConstraints(List.of(serviceAgreement.getEndUserLicence()));
-        expected.setResponsibleParties(List.of(ResponsibleParty.builder().email("test").role("pointOfContact").build()));
+        expected.setContactPoints(List.of(ResponsibleParty.builder().email("test").build()));
 
         givenPendingPublicationServiceAgreement();
 
@@ -621,8 +700,9 @@ public class GitRepoServiceAgreementServiceTest {
         val metadataInfoDocument = mock(DataDocument.class);
         given(repo.getData(FOLDER + ID + ".meta"))
             .willReturn(metadataInfoDocument);
+        // a fresh stream per call: the lock token digests this content before the service reads it
         given(metadataInfoDocument.getInputStream())
-            .willReturn(new ByteArrayInputStream("meta".getBytes()));
+            .willAnswer(invocation -> new ByteArrayInputStream("meta".getBytes()));
 
         val metadata = MetadataInfo.builder()
             .state("published")
@@ -635,7 +715,7 @@ public class GitRepoServiceAgreementServiceTest {
         given(repo.getData(FOLDER + ID + ".raw"))
             .willReturn(rawDocument);
         given(rawDocument.getInputStream())
-            .willReturn(new ByteArrayInputStream("file".getBytes()));
+            .willAnswer(invocation -> new ByteArrayInputStream("file".getBytes()));
         given(serviceAgreementMapper.readInfo(any()))
             .willReturn(serviceAgreement);
         serviceAgreement.setMetadata(metadata);

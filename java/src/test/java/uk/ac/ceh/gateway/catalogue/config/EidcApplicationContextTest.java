@@ -9,8 +9,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -18,6 +20,8 @@ import uk.ac.ceh.gateway.catalogue.CatalogueWebTest;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.metrics.JDBCMetricsService;
+import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.*;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
@@ -29,7 +33,10 @@ import java.time.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
-@ActiveProfiles({"auth-crowd", "upload-hubbub", "server-eidc", "search-basic", "service-agreement"})
+// Mirrors the SPRING_PROFILES_ACTIVE the EIDC deployment actually runs, "metrics" included: that
+// profile builds JDBCMetricsService, which record page rendering reads through, so leaving it out of
+// the production-context test left its wiring unexercised.
+@ActiveProfiles({"auth-crowd", "upload-hubbub", "server-eidc", "search-basic", "service-agreement", "metrics"})
 @CatalogueWebTest
 @DisplayName("EIDC production context")
 class EidcApplicationContextTest {
@@ -83,6 +90,27 @@ class EidcApplicationContextTest {
         assertNotNull(freemarkerConfiguration.getSharedVariable("permission"));
         assertNotNull(freemarkerConfiguration.getSharedVariable("profile"));
         assertNotNull(freemarkerConfiguration.getSharedVariable("serviceAgreementQuality"));
+        assertNotNull(freemarkerConfiguration.getSharedVariable("metrics"));
+    }
+
+    /**
+     * {@code _metrics.ftlh} reads view and download counts while a record page renders, and those reads
+     * are {@code @Cacheable} because uncached they query a SQLite database on a CIFS mount — seconds per
+     * call, which pinned almost the whole Tomcat pool in production. The caching only applies if the
+     * instance handed to FreeMarker is the proxy rather than the raw bean, and FreeMarker receives it by
+     * injection, so proving the injected bean is proxied proves the render path is covered.
+     */
+    @Test
+    @DisplayName("Metrics counts are read through a caching proxy, not the raw bean")
+    void metricsCountsAreCached() {
+        val metricsService = applicationContext.getBean(MetricsService.class);
+        assertNotNull(metricsService);
+        Assertions.assertTrue(AopUtils.isAopProxy(metricsService),
+            "MetricsService must be proxied or @Cacheable on the count reads is inert");
+
+        val cacheManager = applicationContext.getBean(CacheManager.class);
+        assertNotNull(cacheManager.getCache(JDBCMetricsService.VIEW_TOTALS_CACHE));
+        assertNotNull(cacheManager.getCache(JDBCMetricsService.DOWNLOAD_TOTALS_CACHE));
     }
 
     @Test

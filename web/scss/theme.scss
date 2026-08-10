@@ -25,7 +25,6 @@
 @import "documents-upload";
 @import "upload-simple";
 
-// Add CSS Customizations to your theme here.
 body {
     display: flex;
     flex-direction: column;
@@ -384,6 +383,38 @@ header {
 
                 }
 
+                // Plain auth links (Login / Logout) are bare <a> children here.
+                // .navbar-right centres its items, so without this they'd only be
+                // as tall as their text and their background (and hover background)
+                // would paint a short box instead of filling the header height like
+                // the left-nav links. Stretch them to match; align-items keeps the
+                // text vertically centred within the now full-height link.
+                > a {
+                    align-self: stretch;
+                    display: flex;
+                    align-items: center;
+                }
+
+                // Account menu ("Your details"): stretch the icon toggle to fill the
+                // header height and vertically centre it, so it receives the same
+                // full-height hover treatment as the plain nav links (white background
+                // + accent-coloured icon). The generic .navbar a:hover underline is
+                // suppressed since there is no text to underline.
+                .user-menu {
+                    align-self: stretch;
+                    display: flex;
+                    align-items: stretch;
+
+                    a.dropdown-toggle {
+                        display: flex;
+                        align-items: center;
+
+                        &:hover {
+                            text-decoration: none;
+                        }
+                    }
+                }
+
                 .dropdown-menu {
                     background-color: var(--dropdownmenu-background);
 
@@ -399,11 +430,19 @@ header {
                             border: none;
                         }
 
-                        a {
+                        a,
+                        button {
+                            inline-size: 100%;
+                            text-align: start;
+                            border: 0;
                             padding: .75em;
                             background-color: var(--dropdownmenu-background);
                             color: black;
                             font-weight: 400;
+
+                            i {
+                                margin-inline-end: .5em;
+                            }
 
                             &:hover {
                                 background-color: var(--dropdownmenu-background-hover);

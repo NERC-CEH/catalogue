@@ -3,11 +3,6 @@ package uk.ac.ceh.gateway.catalogue.wms;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicHeader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,7 +10,12 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
@@ -29,9 +29,12 @@ import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -50,20 +53,24 @@ class OnlineResourceControllerTest extends AbstractMvcTest {
     @MockitoBean private GetCapabilitiesObtainerService getCapabilitiesObtainerService;
     @MockitoBean private TMSToWMSGetMapService tmsToWMSGetMapService;
     @MockitoBean private MapServerDetailsService mapServerDetailsService;
-    @MockitoBean private CloseableHttpClient httpClient;
+    @MockitoBean private ClientHttpRequestFactory proxyRequestFactory;
 
     private final String file = "file";
     private final String revision = "revision";
 
     private void givenTransparentProxyResponse() throws IOException {
-        val response = mock(CloseableHttpResponse.class);
-        val entity = mock(HttpEntity.class);
-        given(response.getEntity())
-            .willReturn(entity);
-        given(entity.getContentType())
-            .willReturn(new BasicHeader("content-type", MediaType.IMAGE_PNG_VALUE));
-        given(httpClient.execute(any(HttpGet.class)))
+        val proxyRequest = mock(ClientHttpRequest.class);
+        val response = mock(ClientHttpResponse.class);
+        val responseHeaders = new HttpHeaders();
+        responseHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_PNG_VALUE);
+        given(response.getHeaders())
+            .willReturn(responseHeaders);
+        given(response.getBody())
+            .willReturn(mock(InputStream.class));
+        given(proxyRequest.execute())
             .willReturn(response);
+        given(proxyRequestFactory.createRequest(any(URI.class), eq(HttpMethod.GET)))
+            .willReturn(proxyRequest);
     }
 
     private void givenLocalWmsRequest() {

@@ -390,7 +390,7 @@
         <div class="value">
             <#list ownersOfIpr>
                 <#items as owner>
-                    <div class="responsibleParty">
+                    <div class="contact">
                         <@func.displayContact owner false true true />
                     </div>
                 </#items>

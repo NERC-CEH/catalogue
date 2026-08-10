@@ -5,13 +5,12 @@ import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
@@ -30,6 +29,7 @@ import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.document.writing.MessageConverterWritingService;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.maintenance.AdminDeleteResponse;
 import uk.ac.ceh.gateway.catalogue.maintenance.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
@@ -72,6 +72,7 @@ public class WebConfig implements WebMvcConfigurer {
         val infrastructureRecord = new Object2TemplatedMessageConverter<>(InfrastructureRecord.class, freemarkerConfiguration);
         val errorResponse = new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration);
         val gemini = new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration);
+        val adminDeleteResponse = new Object2TemplatedMessageConverter<>(AdminDeleteResponse.class, freemarkerConfiguration);
         val history = new Object2TemplatedMessageConverter<>(History.class, freemarkerConfiguration);
         val link = new Object2TemplatedMessageConverter<>(LinkDocument.class, freemarkerConfiguration);
         val maintenanceResponse = new Object2TemplatedMessageConverter<>(MaintenanceResponse.class, freemarkerConfiguration);
@@ -97,6 +98,7 @@ public class WebConfig implements WebMvcConfigurer {
             wmsFeatureInfo
         );
         this.afterStandardMessageConverters = Arrays.asList(
+            adminDeleteResponse,
             cehModel,
             cehModelApplication,
             citation,
@@ -132,7 +134,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void configureMessageConverters(HttpMessageConverters.ServerBuilder builder) {
-        builder.addCustomConverter(new TransparentProxyMessageConverter(httpClient()));
+        builder.addCustomConverter(new TransparentProxyMessageConverter(proxyRequestFactory()));
         beforeStandardMessageConverters.forEach(builder::addCustomConverter);
         builder.configureMessageConvertersList(converters -> converters.addAll(afterStandardMessageConverters));
     }
@@ -173,15 +175,9 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public CloseableHttpClient httpClient() {
-        log.info("Creating HttpClient");
-        val connPool = new PoolingHttpClientConnectionManager();
-        connPool.setMaxTotal(100);
-        connPool.setDefaultMaxPerRoute(20);
-
-        return HttpClients.custom()
-            .setConnectionManager(connPool)
-            .build();
+    public ClientHttpRequestFactory proxyRequestFactory() {
+        log.info("Creating proxy ClientHttpRequestFactory");
+        return new JdkClientHttpRequestFactory();
     }
 
     @Override

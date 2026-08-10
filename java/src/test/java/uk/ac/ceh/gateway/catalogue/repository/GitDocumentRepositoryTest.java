@@ -15,6 +15,7 @@ import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataConflictException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.ResourceIdentifierExistsException;
@@ -26,7 +27,9 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -102,7 +105,7 @@ public class GitDocumentRepositoryTest {
 
         //Then
         verify(repo).save(eq(user), eq("test"), eq(message), any(MetadataInfo.class), any());
-        verify(repo).save(eq(user), eq("test"), eq("File upload for id: test"), any(MetadataInfo.class), any());
+        verify(repo).save(eq(user), eq("test"), eq("File upload for id: test"), any(MetadataInfo.class), any(), isNull(), any());
     }
 
     @Test
@@ -121,7 +124,7 @@ public class GitDocumentRepositoryTest {
         documentRepository.saveNew(user, document, catalogue, message);
 
         //Then
-        verify(repo).save(eq(user), eq("test"), eq("new Gemini document"), any(MetadataInfo.class), any());
+        verify(repo).save(eq(user), eq("test"), eq("new Gemini document"), any(MetadataInfo.class), any(), isNull(), any());
     }
 
     @Test
@@ -141,7 +144,7 @@ public class GitDocumentRepositoryTest {
         documentRepository.save(user, incomingDocument, "tulips", message);
 
         //Then
-        verify(repo).save(eq(user), eq(id), eq(message), any(MetadataInfo.class), any());
+        verify(repo).save(eq(user), eq(id), eq(message), any(MetadataInfo.class), any(), isNull(), any());
     }
 
     @Test
@@ -155,6 +158,38 @@ public class GitDocumentRepositoryTest {
 
         //Then
         verify(repo).delete(user, "id");
+    }
+
+    @Test
+    @SneakyThrows
+    public void checkCanDeleteAFileWithAnExplicitMessage() {
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+
+        //When
+        documentRepository.delete(user, "id", "admin delete document: id (reason: orphaned)");
+
+        //Then
+        verify(repo).delete(user, "id", "admin delete document: id (reason: orphaned)");
+    }
+
+    /**
+     * {@code GitDocumentRepository.delete(user, id, message)} must wrap a {@code DataRepositoryException}
+     * into the checked {@code DocumentRepositoryException} its interface declares, exactly as every other
+     * method here does. This is the one place that translation was never directly exercised: the admin
+     * delete route's own tests mock {@code DocumentRepository} at the interface level, so this concrete
+     * class's exception handling was previously dark.
+     */
+    @Test
+    public void deleteWithAMessageWrapsARepositoryFailure() throws Exception {
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        doThrow(new uk.ac.ceh.components.datastore.DataRepositoryException("disk full"))
+            .when(repo).delete(user, "id", "a message");
+
+        //When / Then
+        assertThrows(DocumentRepositoryException.class,
+            () -> documentRepository.delete(user, "id", "a message"));
     }
 
     @Test
@@ -211,5 +246,19 @@ public class GitDocumentRepositoryTest {
 
         // Should not throw: re-saving a record that owns its own identifier is allowed.
         documentRepository.save(user, document, currentId, "message");
+    }
+
+    @Test
+    public void saveWithExpectedRevisionPropagatesConflict() throws Exception {
+        //Given the wrapper rejects the save as a conflict
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
+        MetadataDocument document = new GeminiDocument();
+        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        doThrow(new MetadataConflictException("stale", document))
+            .when(repo).save(any(), eq("doc1"), any(), any(), any(), eq("rev1"), any());
+
+        //When/Then saving with that stale revision surfaces the conflict
+        assertThrows(MetadataConflictException.class, () ->
+            documentRepository.save(user, document, "doc1", "Edited document: doc1", "rev1"));
     }
 }

@@ -7,9 +7,6 @@ import lombok.val;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import uk.ac.ceh.components.datastore.DataRepository;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
-import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteController;
@@ -19,7 +16,9 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -31,17 +30,17 @@ import static java.lang.String.format;
 @ToString
 @Service("permission")
 public class CrowdPermissionService implements PermissionService {
-    private final DataRepository<CatalogueUser> repo;
+    private final CachedDataRepository cachedDataRepository;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final GroupStore<CatalogueUser> groupStore;
     public static final String SERVICE_AGREEMENT_FOLDER = "service-agreement/";
 
     public CrowdPermissionService(
-            @NonNull DataRepository<CatalogueUser> repo,
+            @NonNull CachedDataRepository cachedDataRepository,
             @NonNull DocumentInfoMapper<MetadataInfo> documentInfoMapper,
             @NonNull GroupStore<CatalogueUser> groupStore
     ) {
-        this.repo = repo;
+        this.cachedDataRepository = cachedDataRepository;
         this.documentInfoMapper = documentInfoMapper;
         this.groupStore = groupStore;
         log.info("Creating CrowdPermissionService");
@@ -54,10 +53,10 @@ public class CrowdPermissionService implements PermissionService {
             return toAccess(
                 user,
                 file,
-                repo.getLatestRevision().getRevisionID(),
+                cachedDataRepository.getLatestRevisionId(),
                 permission
             );
-        } catch (DataRepositoryException ex) {
+        } catch (IOException ex) {
             throw new PermissionDeniedException(
                 format(
                     "No document found for: %s",
@@ -101,8 +100,7 @@ public class CrowdPermissionService implements PermissionService {
     public boolean userCanEdit(@NonNull String file) {
         try {
             final CatalogueUser user = getCurrentUser();
-            final DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
-            final String revisionID = latestRevision.getRevisionID();
+            final String revisionID = cachedDataRepository.getLatestRevisionId();
             final MetadataInfo document = getMetadataInfo(file, revisionID);
             if (user.isPublic()) {
                 return false;
@@ -111,7 +109,7 @@ public class CrowdPermissionService implements PermissionService {
             } else {
                 return toAccess(user, document, "EDIT");
             }
-        } catch (DataRepositoryException ex) {
+        } catch (IOException ex) {
             throw new PermissionDeniedException(
                 format(
                     "No document found for: %s",
@@ -127,8 +125,8 @@ public class CrowdPermissionService implements PermissionService {
         if (userIsAdmin()) return true;
         try {
             val user = getCurrentUser();
-            val latestRevision = repo.getLatestRevision();
-            val document = getMetadataInfo(file, latestRevision.getRevisionID());
+            val revisionID = cachedDataRepository.getLatestRevisionId();
+            val document = getMetadataInfo(file, revisionID);
             log.debug(
                     "Current user is {}, users with upload permission for {} are {}",
                     user.getUsername(),
@@ -138,7 +136,7 @@ public class CrowdPermissionService implements PermissionService {
             val canUpload = !user.isPublic() && toAccess(user, document, "UPLOAD");
             log.debug("Can user upload? {}", canUpload);
             return canUpload;
-        } catch (DataRepositoryException ex) {
+        } catch (IOException ex) {
             String message = format("No document found for: %s", file);
             throw new PermissionDeniedException(message, ex);
         }
@@ -153,10 +151,10 @@ public class CrowdPermissionService implements PermissionService {
     public boolean userCanDelete(@NonNull String file) {
         try {
             CatalogueUser user = getCurrentUser();
-            DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
-            MetadataInfo document = getMetadataInfo(file, latestRevision.getRevisionID());
+            String revisionID = cachedDataRepository.getLatestRevisionId();
+            MetadataInfo document = getMetadataInfo(file, revisionID);
             return !user.isPublic() && toAccess(user, document, "DELETE");
-        } catch (DataRepositoryException ex) {
+        } catch (IOException ex) {
             String message = format("No document found for: %s", file);
             throw new PermissionDeniedException(message, ex);
         }
@@ -181,10 +179,10 @@ public class CrowdPermissionService implements PermissionService {
     public boolean userCanView(@NonNull String file) {
         try {
             CatalogueUser user = getCurrentUser();
-            DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
-            MetadataInfo document = getMetadataInfo(file, latestRevision.getRevisionID());
+            String revisionID = cachedDataRepository.getLatestRevisionId();
+            MetadataInfo document = getMetadataInfo(file, revisionID);
             return !user.isPublic() && toAccess(user, document, "VIEW");
-        } catch (DataRepositoryException ex) {
+        } catch (IOException ex) {
             String message = format("No document found for: %s", file);
             throw new PermissionDeniedException(message, ex);
         }
@@ -227,6 +225,11 @@ public class CrowdPermissionService implements PermissionService {
     }
 
     @Override
+    public boolean userCanAdminDelete() {
+        return userInGroup(DocumentController.ADMIN_DELETE_ROLE);
+    }
+
+    @Override
     public List<Group> getGroupsForUser(CatalogueUser user) {
         return (user.isPublic())
             ? Collections.emptyList()
@@ -258,8 +261,8 @@ public class CrowdPermissionService implements PermissionService {
 
     private MetadataInfo getMetadataInfo(String file, String revision) {
         try {
-            val dataDocument = repo.getData(revision, format("%s.meta", file));
-            return documentInfoMapper.readInfo(dataDocument.getInputStream());
+            val bytes = cachedDataRepository.readAtRevision(revision, format("%s.meta", file));
+            return documentInfoMapper.readInfo(new ByteArrayInputStream(bytes));
         } catch (IOException ex) {
             throw new PermissionDeniedException(
                 format(

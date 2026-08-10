@@ -1,6 +1,8 @@
 [#ftl]
 [#import "blocks.map.ftl" as blocks]
 [#list doc.mapDataDefinition.data as data]
+  [#-- When set to line data type in the editor this is true and will allow line width scaling in below macros --]
+  [#assign isLine=(data.type?upper_case == "LINE")]
   [#if data.attributes?has_content]
     [#list data.attributes as attr]
     [@blocks.layer data attr.name attr.label!attr.name]
@@ -35,10 +37,10 @@
         [/#if]
       [#else]
         CLASSITEM "${attr.id}"
-        [#if attr.buckets?has_content] [@blocks.buckets attr.id attr.buckets/] [/#if]
+        [#if attr.buckets?has_content] [@blocks.buckets attr.id attr.buckets isLine/] [/#if]
       [/#if]
 
-      [#if attr.values?has_content] [@blocks.values attr.id dataType attr.values/] [/#if]
+      [#if attr.values?has_content] [@blocks.values attr.id dataType attr.values isLine/] [/#if]
     [/@blocks.layer]
     [/#list]
   [/#if]
@@ -47,7 +49,7 @@
     [@blocks.layer data data.features.name data.features.name!data.features.label]
       CLASS
         NAME "${data.features.label}"
-        [@blocks.style data.features.style /]
+        [@blocks.style data.features.style isLine /]
       END
     [/@blocks.layer]
   [/#if]

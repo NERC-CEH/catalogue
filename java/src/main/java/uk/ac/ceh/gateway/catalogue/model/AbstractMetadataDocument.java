@@ -29,6 +29,14 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
     private MetadataInfo metadata;
     private Set<Relationship> relationships;
     private List<Keyword> keywords;
+    private List<Link> relRelation;
+    private List<Link> relIsRequiredBy;
+    private List<Link> relRequires;
+    private List<Link> relPartOf;
+    private List<Link> relHasPart;
+    private List<Link> relAll;
+    private List<Link> relReplaces;
+    private List<Link> relSource;
 
     public Set<Relationship> getRelationships() {
         return Optional.ofNullable(relationships)
@@ -62,6 +70,46 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
     @JsonIgnore
     public List<Keyword> getAllKeywords() {
         return keywords;
+    }
+
+    public List<Link> getRelRelation() {
+        return Optional.ofNullable(relRelation)
+            .orElseGet(Collections::emptyList);
+    }
+
+    public List<Link> getRelIsRequiredBy() {
+        return Optional.ofNullable(relIsRequiredBy)
+            .orElseGet(Collections::emptyList);
+    }
+
+    public List<Link> getRelRequires() {
+        return Optional.ofNullable(relRequires)
+            .orElseGet(Collections::emptyList);
+    }
+
+    public List<Link> getRelPartOf() {
+        return Optional.ofNullable(relPartOf)
+            .orElseGet(Collections::emptyList);
+    }
+
+    public List<Link> getRelHasPart() {
+        return Optional.ofNullable(relHasPart)
+            .orElseGet(Collections::emptyList);
+    }
+
+    public List<Link> getRelAll() {
+        return Optional.ofNullable(relAll)
+            .orElseGet(Collections::emptyList);
+    }
+
+    public List<Link> getRelReplaces() {
+        return Optional.ofNullable(relReplaces)
+            .orElseGet(Collections::emptyList);
+    }
+
+    public List<Link> getRelSource() {
+        return Optional.ofNullable(relSource)
+            .orElseGet(Collections::emptyList);
     }
 
     @Override
@@ -108,18 +156,18 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
         );
     }
 
-    public List<ResponsibleParty> filterResponsibleParty(List<ResponsibleParty> responsibleParties, String filterVal) {
+    public List<ResponsibleParty> filterResponsibleParty(List<ResponsibleParty> contacts, String filterVal) {
         return CollectionFilter.filterByProperty(
-            responsibleParties,
+            contacts,
             ResponsibleParty::getRole,
             filterVal,
             false
         );
     }
 
-    public List<ResponsibleParty> excludeResponsibleParty(List<ResponsibleParty> responsibleParties, String filterVal) {
+    public List<ResponsibleParty> excludeResponsibleParty(List<ResponsibleParty> contacts, String filterVal) {
         return CollectionFilter.filterByProperty(
-            responsibleParties,
+            contacts,
             ResponsibleParty::getRole,
             filterVal,
             true

@@ -34,6 +34,9 @@
 
     --nav-toggle-colour: var(--header-link-colour);
 
+    --bs-border-color: rgb(166, 166, 166);
+    --bs-border-color-light: color(from var(-bs-border-color) srgb r g b /0.5);
+
     --filter-width: 350px;
     --filter-background-colour: var(--body-background-colour);
     --filter-colour: black;

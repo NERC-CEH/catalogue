@@ -72,6 +72,38 @@ class JDBCMetricsServiceTest {
         assertThat(tables, hasItems(equalToIgnoringCase("views"), equalToIgnoringCase("downloads")));
     }
 
+    /**
+     * Both count queries filter on {@code document}. Without an index that is a full table scan, which
+     * in production means scanning a 1.1 GB SQLite file across a CIFS mount — measured at roughly 7
+     * seconds per scan, twice per record page render. Asserting the index exists rather than trusting
+     * the DDL, because it was absent from the live database for the table's entire lifetime.
+     *
+     * <p>{@code amount} is asserted too: it is what makes the index covering for
+     * {@code sum(amount) ... WHERE document = ?}, so dropping it would quietly reintroduce a table
+     * lookup per matching row while still leaving this test's {@code document} assertion satisfied.</p>
+     */
+    @SneakyThrows
+    @Test
+    void countTablesCarryACoveringIndexForTheTotalsQuery() {
+        //given/when the service has initialised its schema
+
+        //then each count table's index covers both the filter column and the summed column
+        assertThat(indexedColumnsOf("views"),
+            hasItems(equalToIgnoringCase("document"), equalToIgnoringCase("amount")));
+        assertThat(indexedColumnsOf("downloads"),
+            hasItems(equalToIgnoringCase("document"), equalToIgnoringCase("amount")));
+    }
+
+    private List<String> indexedColumnsOf(String table) throws SQLException {
+        val rs = db.getConnection().getMetaData()
+            .getIndexInfo(null, null, table.toUpperCase(Locale.ROOT), false, false);
+        val columns = new ArrayList<String>();
+        while (rs.next()) {
+            columns.add(rs.getString("COLUMN_NAME"));
+        }
+        return columns;
+    }
+
     @SneakyThrows
     @Test
     void testRecordView() {
@@ -140,6 +172,22 @@ class JDBCMetricsServiceTest {
 
         //then
         assertThat(amount, equalTo(2 * howMany));
+    }
+
+    /**
+     * A view counter is decorative, but it is read while rendering a record page, so a failure here
+     * used to propagate out through FreeMarker and 500 the whole page. In production that happened
+     * whenever a read met the hourly sync's lock on the SQLite file (SQLITE_BUSY). The count must come
+     * back absent instead, leaving the page to render without it.
+     */
+    @Test
+    void totalsAreAbsentRatherThanThrowingWhenTheDatabaseIsUnavailable() {
+        //given the database cannot be reached
+        db.shutdown();
+
+        //when/then no exception escapes, and the counts report themselves as unavailable
+        assertThat(service.totalViews(TEST_DOCUMENT), is(nullValue()));
+        assertThat(service.totalDownloads(TEST_DOCUMENT), is(nullValue()));
     }
 
     @SneakyThrows
@@ -216,6 +264,72 @@ class JDBCMetricsServiceTest {
         verify(documentRepository, times(2)).read(anyString());
         verify(jdbcTemplate, times(0)).update(anyString(), anyString(), anyString(), anyString());
 
+    }
+
+    @Test
+    void hasMetricsForIsFalseWhenNothingIsRecorded() {
+        //given/when no view or download has ever been recorded for this document
+
+        //then
+        assertThat(service.hasMetricsFor(TEST_DOCUMENT), is(false));
+    }
+
+    @SneakyThrows
+    @Test
+    void hasMetricsForIsTrueWhenOnlyAViewIsRecorded() {
+        //given
+        given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
+        service.recordView(TEST_DOCUMENT, TEST_IP1);
+        service.syncDB();
+
+        //when/then
+        assertThat(service.hasMetricsFor(TEST_DOCUMENT), is(true));
+    }
+
+    @SneakyThrows
+    @Test
+    void hasMetricsForIsTrueWhenOnlyADownloadIsRecorded() {
+        //given
+        given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
+        service.recordDownload(TEST_DOCUMENT, TEST_IP1);
+        service.syncDB();
+
+        //when/then
+        assertThat(service.hasMetricsFor(TEST_DOCUMENT), is(true));
+    }
+
+    /**
+     * Deletion is by {@code document} only, so a row belonging to a different document must survive —
+     * this is what stops an admin-delete of one orphaned record from wiping every other document's
+     * counts out of the same table.
+     */
+    @SneakyThrows
+    @Test
+    void deleteMetricsForRemovesOnlyTheGivenDocumentsRowsFromBothTables() {
+        //given
+        String otherDocument = "123e4567-e89b-12d3-a456-426614174999";
+        given(documentRepository.read(anyString())).willReturn(doc);
+        service.recordView(TEST_DOCUMENT, TEST_IP1);
+        service.recordDownload(TEST_DOCUMENT, TEST_IP1);
+        service.recordView(otherDocument, TEST_IP1);
+        service.syncDB();
+
+        //when
+        boolean result = service.deleteMetricsFor(TEST_DOCUMENT);
+
+        //then
+        assertThat(result, is(true));
+        assertThat(getDocumentsAndAmounts("views"), contains(contains(otherDocument, 1)));
+        assertThat(getDocumentsAndAmounts("downloads"), is(empty()));
+        assertThat(service.hasMetricsFor(TEST_DOCUMENT), is(false));
+    }
+
+    @Test
+    void deleteMetricsForReturnsFalseWhenThereWasNothingToDelete() {
+        //given/when no rows exist for this document
+
+        //then
+        assertThat(service.deleteMetricsFor(TEST_DOCUMENT), is(false));
     }
 
     List<List<Object>> getDocumentsAndAmounts(String table) throws SQLException {

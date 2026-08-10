@@ -2,9 +2,8 @@
     <#assign signpostURLs = nonBrowseGraphics>
 </#if>
 
-<#if distributorContacts??>
-    <#assign signpostDistributor = distributor>
-    <#assign distributorName = signpostDistributor?first.organisationName >
+<#if distributors?has_content>
+    <#assign distributorName = distributors?first.organisationName >
 <#else>
     <#assign distributorName = "a third party" >
 </#if>

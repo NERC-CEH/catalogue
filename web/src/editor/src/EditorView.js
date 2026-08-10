@@ -27,6 +27,41 @@ export default Backbone.View.extend({
     this.listenTo(this.model, 'error', function (model, response) {
       that.$('#editorAjax').toggleClass('visible')
 
+      if (response && response.status === 409) {
+        // The model still holds the user's unsaved edits (Backbone does not revert on error), and
+        // with no explicit attrs passed to save() this is exactly the JSON body that was PUT. Show it
+        // so the edits can be copied out and re-applied after reloading the latest version.
+        const submitted = JSON.stringify(model.toJSON(), null, 2)
+        Swal.fire({
+          title: 'Edit conflict',
+          html: '<p>This record was changed by another user since you opened it. ' +
+                'Your changes below were <strong>not</strong> saved. ' +
+                'Reload the record to see the latest version, then re-apply your changes.</p>' +
+                '<button type="button" id="conflictCopy" class="swal2-styled" ' +
+                'style="background-color:#3085d6">Copy changes to clipboard</button>' +
+                `<textarea id="conflictPayload" readonly rows="12" style="width:100%; resize:vertical; font-family:monospace; font-size:0.8em;">${_.escape(submitted)}</textarea>`,
+          icon: 'warning',
+          confirmButtonText: 'Close',
+          didOpen: () => {
+            const copyButton = document.getElementById('conflictCopy')
+            const payload = document.getElementById('conflictPayload')
+            if (copyButton && payload) {
+              copyButton.addEventListener('click', () => {
+                payload.select()
+                const done = () => { copyButton.textContent = 'Copied!' }
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                  navigator.clipboard.writeText(submitted).then(done, () => document.execCommand('copy'))
+                } else {
+                  document.execCommand('copy')
+                  done()
+                }
+              })
+            }
+          }
+        })
+        return
+      }
+
       const message = response?.responseJSON?.message || response?.responseText || response?.statusText || 'There was a problem communicating with the server!'
 
       Swal.fire({
@@ -113,13 +148,40 @@ export default Backbone.View.extend({
     if (boundingBox && !boundingBox.hasBoundingBox()) {
       this.model.unset('boundingBox')
     }
-    if (this.model.save()) {
-      Swal.fire({
-        title: 'Saved!',
-        icon: 'success'
-      })
-      this.saveRequired = false
+
+    this.setSaveButtonSaving()
+    const request = this.model.save(null, {
+      wait: true,
+      success: () => {
+        this.resetSaveButton()
+        Swal.fire({
+          title: 'Saved!',
+          icon: 'success'
+        })
+        this.saveRequired = false
+      },
+      error: () => {
+        this.resetSaveButton()
+      }
+    })
+
+    // save() returns false when client-side validation fails, so no request is
+    // sent and neither callback will fire — re-enable the button immediately.
+    if (!request) {
+      this.resetSaveButton()
     }
+  },
+
+  setSaveButtonSaving () {
+    this.$('#editorSave')
+      .prop('disabled', true)
+      .html('Saving… <i class="fa-solid fa-spinner fa-spin"></i>')
+  },
+
+  resetSaveButton () {
+    this.$('#editorSave')
+      .prop('disabled', false)
+      .html('Save <i class="fa-regular fa-save"></i>')
   },
 
   confirmExit () {

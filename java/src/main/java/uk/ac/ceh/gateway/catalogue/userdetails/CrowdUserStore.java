@@ -27,6 +27,7 @@ public class CrowdUserStore implements UserStore<CatalogueUser> {
     private final String crowdUsername;
     private final String crowdPassword;
     private final RestTemplate restTemplate;
+    public static final String CROWD_USER_CACHE = "crowd-user";
 
     public CrowdUserStore(
         @Value("${crowd.address}") String address,
@@ -41,7 +42,7 @@ public class CrowdUserStore implements UserStore<CatalogueUser> {
     }
 
     @Override
-    @Cacheable(value = "crowd-user")
+    @Cacheable(value = CROWD_USER_CACHE)
     public CatalogueUser getUser(String username) throws UnknownUserException {
         try {
             val uriTemplate = address + "/user?username={username}&expand=attributes";

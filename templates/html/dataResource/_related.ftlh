@@ -1,5 +1,5 @@
 
-<#if (rel_partOf?has_content && rel_partOf?size gt 0) || (rel_isRequiredBy?has_content && rel_isRequiredBy?size gt 0) || (rel_requires?has_content && rel_requires?size gt 0) || (rel_relation?has_content && rel_relation?size gt 0) >
+<#if (relPartOf?has_content && relPartOf?size gt 0) || (relIsRequiredBy?has_content && relIsRequiredBy?size gt 0) || (relRequires?has_content && relRequires?size gt 0) || (relRelation?has_content && relRelation?size gt 0) >
 
     <#macro displayRelatives id title array>
       <#if array?has_content && array?size gt 0>
@@ -16,16 +16,16 @@
       <h2>Related</h2>
 
       <#-- Related -->
-      <@displayRelatives "related" "Related datasets" rel_relation />
+      <@displayRelatives "related" "Related datasets" relRelation />
 
       <#-- Services using this data resource -->
-      <@displayRelatives "services" "Services associated with this dataset" rel_isRequiredBy />
+      <@displayRelatives "services" "Services associated with this dataset" relIsRequiredBy />
 
       <#-- Data resources linked to this service -->
-      <@displayRelatives "datasets" "Datasets associated with this service" rel_requires />
+      <@displayRelatives "datasets" "Datasets associated with this service" relRequires />
 
       <#-- PARENT record(s) -->
-      <@displayRelatives "parents" "This ${recordType} is included in the following collections" rel_partOf />
+      <@displayRelatives "parents" "This ${recordType} is included in the following collections" relPartOf />
 
     </div>
 </#if>

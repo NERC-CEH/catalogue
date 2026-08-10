@@ -3,17 +3,7 @@
 <#import "../functions.ftlh" as func>
 
 <#assign
-    otherContacts = publishers + rightsHolders
     catalogue = catalogues.retrieve(metadata.catalogue)
-
-    rel_all=jena.allRelatedRecords(uri)
-    rel_relation=jena.relationships(uri, "http://purl.org/dc/terms/relation") + jena.inverseRelationships(uri, "http://purl.org/dc/terms/relation")
-    rel_requires = jena.relationships(uri, "http://purl.org/dc/terms/requires")
-    rel_partOf = jena.relationships(uri, "http://purl.org/dc/terms/isPartOf")
-    rel_isRequiredBy = jena.inverseRelationships(uri, "http://purl.org/dc/terms/requires")
-    rel_hasPart = jena.inverseRelationships(uri, "http://purl.org/dc/terms/isPartOf")
-    rel_replaces = jena.replaces(uri)
-    rel_source = jena.relationships(uri, "http://purl.org/dc/terms/source")
 
     MD_checks = metadataQuality.check(id)
     problems = MD_checks.getProblems()
@@ -39,7 +29,7 @@
 </#if>
 
 <#assign isLinkedDoc=false linkedClass="" >
-<#if rel_source?has_content && rel_source?size gt 0>
+<#if relSource?has_content && relSource?size gt 0>
   <#assign isLinkedDoc=true linkedClass="linked" >
 </#if>
 

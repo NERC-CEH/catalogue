@@ -425,12 +425,11 @@ public class RdfTurtleTest {
             document.setId("conttest");
             document.setUri(uri);
             document.setTitle("Contact test");
-            document.setResponsibleParties(List.of(
+            document.setContactPoints(List.of(
                 ResponsibleParty.builder()
                     .familyName("Smith")
                     .givenName("John")
                     .organisationName("Test Organisation")
-                    .role("pointOfContact")
                     .build()
             ));
 

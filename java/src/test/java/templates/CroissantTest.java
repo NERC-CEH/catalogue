@@ -82,9 +82,11 @@ public class CroissantTest {
         gemini.setKeywordsDiscipline(List.of(
             Keyword.builder().value("Environmental survey").build()
         ));
-        gemini.setResponsibleParties(List.of(
-            ResponsibleParty.builder().role("author").givenName("L.").familyName("Hand").nameIdentifier("https://orcid.org/0000-0001-9570-7479").organisationName("University of Edinburgh").organisationIdentifier("https://ror.org/01nrxwf90").build(),
-            ResponsibleParty.builder().role("publisher").email("info@eidc.ac.uk").organisationName("NERC EDS Environmental Information Data Centre").organisationIdentifier("https://ror.org/04xw4m193").build()
+        gemini.setAuthors(List.of(
+            ResponsibleParty.builder().givenName("L.").familyName("Hand").nameIdentifier("https://orcid.org/0000-0001-9570-7479").organisationName("University of Edinburgh").organisationIdentifier("https://ror.org/01nrxwf90").build()
+        ));
+        gemini.setPublishers(List.of(
+            ResponsibleParty.builder().email("info@eidc.ac.uk").organisationName("NERC EDS Environmental Information Data Centre").organisationIdentifier("https://ror.org/04xw4m193").build()
         ));
         return gemini;
     }

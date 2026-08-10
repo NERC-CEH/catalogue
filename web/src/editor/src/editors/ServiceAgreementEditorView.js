@@ -270,7 +270,7 @@ export default EditorView.extend({
           label: 'Embargo',
           text: `\
 <p>Depositors may request that access to the data be restricted for an agreed period (embargoed). Embargoes and embargo periods may be subject to funder requirements. For NERC-funded research, a reasonable embargo period is considered to be a maximum of two years <strong>from the end of data collection.</strong></p>
-<p>If an embargo is required, please specify the <b>end</b> of the embargo period below.</p>
+<p>If an embargo is required, please specify the date the data are to be made available.</p>
 `
         }),
 
@@ -492,7 +492,7 @@ Details of relationships we can accommodate are available at: <a href='https://e
           text: `<p>Words orphrases that will help users to find your data. These may be discipline-specific (e.g., 'hydrology', 'soil chemistry') but may also be geographical (e.g., 'Hampshire').
 <p>Keywords can be added either as plain text or as controlled terms from a vocabulary.</p>
 <p><strong>Adding plain text:</strong>  Simply type the keyword in the box labelled "keyword".</p>\
-<p><strong>Adding controlled terms using the vocabulary lookup:</strong> We support lookup of terms from the vocabularies listed. Start typing in the search box (where it says “<i>Start typing to search controlled vocabularies</i>”). If there is a match for your search, a list of candidate terms will be displayed. You can then click on the term you want to add.</p>\
+<p><strong>Adding controlled terms using the vocabulary lookup:</strong> We support lookup of terms from the vocabularies listed. Start typing in the search box (where it says “<i>Type here to search controlled vocabularies</i>”). If there is a match for your search, a list of candidate terms will be displayed. You can then click on the term you want to add.</p>\
 <p><strong>Adding controlled terms without using the lookup:</strong> If you want to add a controlled term from a vocabulary that isn't included in the catalogue, add the keyword's uri and its label to the appropriate boxes.</p>\
 `
         }),

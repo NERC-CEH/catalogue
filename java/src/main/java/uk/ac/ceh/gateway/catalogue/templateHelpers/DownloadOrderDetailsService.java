@@ -61,24 +61,24 @@ public class DownloadOrderDetailsService {
         public DownloadOrder(List<OnlineResource> onlineResources) {
 
             var fileAccessUrls = extractFileAccessUrl(onlineResources);
+            var downloadUrls = extractDownloadUrl(onlineResources);
+            var orderUrls = extractOrderUrl(onlineResources);
+            var offlineAccessUrls = extractOfflineAccessUrl(onlineResources);
 
             supportingDocumentsUrl = extractSupportingDocumentUrl(onlineResources);
             dataAccessResources = Lists.newArrayList(Iterables.concat(
-                extractDownloadUrl(onlineResources),
-                extractOrderUrl(onlineResources),
-                fileAccessUrls
+                fileAccessUrls,
+                downloadUrls,
+                orderUrls,
+                offlineAccessUrls
             ));
-            isDataAccessible = !dataAccessResources.isEmpty();
-            isDataAddressable = !fileAccessUrls.isEmpty();
 
-            if (!isDataAccessible) {
-                // No downloads or order manager ORDERs were found. Does a
-                // message exist as a dummy order?
-                onlineResources
-                    .stream()
-                    .filter(r -> r.getFunction().equals("offlineAccess"))
-                    .forEach(dataAccessResources::add);
-            }
+            isDataAccessible =
+                !downloadUrls.isEmpty() ||
+                !orderUrls.isEmpty() ||
+                !fileAccessUrls.isEmpty();
+
+            isDataAddressable = !fileAccessUrls.isEmpty();
         }
 
         private String extractSupportingDocumentUrl(List<OnlineResource> onlineResources) {
@@ -101,6 +101,13 @@ public class DownloadOrderDetailsService {
             return onlineResources
                 .stream()
                 .filter(r -> r.getFunction().equals("fileAccess"))
+                .collect(Collectors.toList());
+        }
+
+        private List<OnlineResource> extractOfflineAccessUrl(List<OnlineResource> onlineResources) {
+            return onlineResources
+                .stream()
+                .filter(r -> r.getFunction().equals("offlineAccess"))
                 .collect(Collectors.toList());
         }
 

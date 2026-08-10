@@ -9,6 +9,9 @@ if [ "$(id -u)" = 0 ]; then
   if [ "$(stat -c '%u' /var/ceh-catalogue/datastore)" != "1000" ]; then
     chown -R gradle:gradle /var/ceh-catalogue/datastore
   fi
+  if [ "$(stat -c '%u' /var/ceh-catalogue/jena)" != "1000" ]; then
+    chown -R gradle:gradle /var/ceh-catalogue/jena
+  fi
   # Repair any root-owned Gradle build output left in the bind-mounted project by an
   # earlier root-context invocation (e.g. `docker compose run --entrypoint`), so that
   # host-side Gradle can overwrite it. `find` only touches mis-owned entries, so this is
@@ -29,4 +32,7 @@ mkdir -p /app/static /app/mapfiles /app/metrics-db /app/dropbox /app/web/css
 [ -L /app/static/css/images ] || ln -sf /app/web/node_modules/leaflet-draw/dist/images /app/static/css/images
 [ -L /app/static/webfonts ]   || ln -sf /app/web/node_modules/@fortawesome/fontawesome-free/webfonts /app/static/webfonts
 
-exec ./gradlew :java:bootRun "$@"
+# --project-cache-dir keeps the container's Gradle file-hash/config cache out of the
+# bind-mounted project tree, so it doesn't lock-contend with Gradle invoked on the host
+# against the same checkout while this process is running.
+exec ./gradlew --project-cache-dir /home/gradle/.gradle/project-cache :java:bootRun "$@"

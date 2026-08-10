@@ -1,8 +1,8 @@
 
+
 <#if downloadOrderDetails??>
   <#assign dataAccess=downloadOrderDetails.from(onlineResources) >
 </#if>
-
 
 <div class="accessButtons"><#t/>
   <@exploreButton />
@@ -16,17 +16,14 @@
 
 <#macro accessButton>
   <#if resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'model' || resourceType.value == 'software' || resourceType.value == 'computationalNotebook' || resourceType.value == 'method'>
-    <#if availability == "Available" || availability == "Controlled" >
-      <#if dataAccess?? && dataAccess.dataAccessible >
+    <#-- Keep this in step with the offcanvasAccess gate below: the button must appear whenever the
+         panel has something in it, or the panel is rendered with no way to open it. A WMS-only
+         record has no dataAccessResources but is still map viewable. -->
+    <#if (availability == "Available" || availability == "Controlled") && (dataAccess.dataAccessResources?has_content || mapViewable) >
         <a class="btn btn-ukceh" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
-          Download
+          Download/Access
           <i class="fa-solid fa-arrow-down fa-fw"></i>
         </a>
-      <#elseif externalLinks?? && externalLinks?has_content>
-        <a class="btn btn-ukceh" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
-          Access <i class="fa-solid fa-arrow-up-right-from-square"></i>
-        </a>
-      </#if>
     </#if>
   <#elseif resourceType.value == 'service' && mapViewable >
     <a class="btn btn-ukceh" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">
@@ -94,8 +91,6 @@
       </#if>
 
       <#if availability == "Available" || availability == "Controlled">
-
-        <#include "_licence.ftlh">
         <div>
           ${constraints?no_esc}
 
@@ -117,6 +112,8 @@
           </#if>
         </div>
 
+        <#include "_licence.ftlh">
+
         <#if dataAccess?? && dataAccess.dataAccessResources?has_content || mapViewable>
 
           <div class="accessOptions">
@@ -125,17 +122,6 @@
           </div>
 
           <@fileAccessInstructions />
-
-        <#elseif externalLinks?? && externalLinks?has_content>
-
-          <#list externalLinks as item>
-            <p>
-              <a href="${item.url}" class="link-offset-2" target="_blank" rel="noopener noreferrer">
-                <b>Access</b>
-                <span class="ms-3 fw-light">(${item.url})</span>
-              </a>
-            </p>
-          </#list>
 
         </#if>
 
@@ -149,20 +135,28 @@
 
 <#macro downloadOptions resources>
     <#list resources as item>
+        <#-- #assign is namespace scoped, so reset per item or a previous item's value leaks.
+             Defaults here must match the accessOption macro's own parameter defaults. -->
+        <#assign optionLabel = "Order/download">
         <#assign optionDescription = "">
+        <#assign optionIcon = "fa-download">
         <#if item.name?has_content>
           <#assign optionLabel = item.name>
         </#if>
 
-        <#if catalogue.id == 'eidc'>
-          <#if item.function == "download" && item.url?matches("^https://data-package.ceh.ac.uk/data/.+")>
+        <#if item.description?has_content>
+          <#assign optionDescription = item.description>
+        </#if>
+
+        <#if item.eidcDistribution>
+          <#if item.function == "download">
             <#assign optionLabel = "Download the whole dataset">
             <#assign optionDescription = "Download the whole dataset as a zip package">
-          <#elseif item.function == "order" && item.url?matches("^https://order-eidc.ceh.ac.uk/resources/.+")>
+          <#elseif item.function == "order">
             <#assign optionLabel = "Order the data">
             <#assign optionDescription = "Select all or part of the data and receive by email">
             <#assign optionIcon = "fa-arrow-right-from-bracket">
-          <#elseif item.function == "fileAccess" && item.url?matches("^https://catalogue.ceh.ac.uk/datastore/eidchub/.+")>
+          <#elseif item.function == "fileAccess">
             <#assign optionLabel = "Directly access files">
             <#assign optionDescription = "Access individual files ">
             <#assign optionIcon = "fa-folder-open">
@@ -177,11 +171,21 @@
           </#if>
         </#if>
 
-      <#if catalogue.id == 'eidc'>
-        <@accessOption "/download/${id}?url=${item.url}" optionLabel optionDescription optionIcon/>
-      <#else>
-        <@accessOption "${item.url}" optionLabel optionDescription optionIcon/>
-      </#if>
+        <#if item.eidcDistribution>
+            <@accessOption
+              link="/download/${id}?url=${item.url}"
+              title=optionLabel
+              description=optionDescription
+              icon=optionIcon/>
+        <#else>
+            <@accessOption
+              link="${item.url}"
+              title=optionLabel
+              description=optionDescription
+              icon=optionIcon
+              newWindow=true
+              buttonLabel="Access"/>
+        </#if>
 
     </#list>
 </#macro>
@@ -190,14 +194,22 @@
   <#if mapViewable>
     <#if mapservices?? && mapservices?has_content>
       <#list mapservices as wms>
-        <@accessOption "${wms.url}" " Web map service" "Access a web map service (WMS) for use in a GIS application" "fa-globe" "Access"/>
+        <@accessOption
+          link="${wms.url}"
+          title=" Web map service"
+          description="Access a web map service (WMS) for use in a GIS application"
+          icon="fa-globe"
+          newWindow=true
+          buttonLabel="Access"/>
       </#list>
     </#if>
   </#if>
 </#macro>
 
-<#macro accessOption link="#" title="Order/download" description="" icon="fa-download" buttonLabel="Download">
-    <a class="access" href="${link}">
+<#-- Call this with named arguments only. Positionally, an omitted argument shifts every
+     later one into the wrong parameter, which FreeMarker reports only at render time. -->
+<#macro accessOption link="#" title="Order/download" description="" icon="fa-download" newWindow=false buttonLabel="Download">
+    <a class="access" href="${link}" <#if newWindow>target="_blank"</#if>>
       <div><span class="fa-solid fa-xl ${icon}"/></div>
       <div class="accessText">
         <b>${title}</b>
