@@ -29,7 +29,7 @@ export default ObjectInputView.extend({
     '<option value="<%= value %>" <%=selected%>><%= label %></option>'
   ),
 
-  async initialize (options) {
+  initialize (options) {
     this.template = template
     this.options = options.options
     this.resourceType = options.resourceType
@@ -96,7 +96,7 @@ export default ObjectInputView.extend({
         }
 
         try {
-          const options = await $.getJSON(query)
+          const options = $.getJSON(query)
 
           response(
             _.map(options.results, d => ({
@@ -111,7 +111,7 @@ export default ObjectInputView.extend({
       },
 
       select: async (event, ui) => {
-        const infoString = await generateInformationString(ui.item.value)
+        const infoString = generateInformationString(ui.item.value)
 
         this.$('.title').val(ui.item.label)
         this.$('.identifier').val(ui.item.value)
@@ -139,12 +139,12 @@ export default ObjectInputView.extend({
     }
   },
 
-  async render () {
+  render () {
     ObjectInputView.prototype.render.apply(this)
 
     if (this.existingRecord) {
       const infoString =
-        await generateInformationString(this.model.get('target'))
+        generateInformationString(this.model.get('target'))
 
       this.$('.read-only-identifier').val(infoString)
       this.$('.relationshipRecord').removeClass('d-none')
