@@ -22,7 +22,7 @@ describe('Test RelationshipView', function () {
 
   it('test render', () => {
     // when
-    await view.render()
+    view.render()
     // then
     expect(view.$('.relationshipSearch')).toBeDefined()
   })
