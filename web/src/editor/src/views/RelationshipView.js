@@ -46,8 +46,8 @@ export default ObjectInputView.extend({
       monitoringNetwork: 'Monitoring network'
     }
 
-    const currentId = this.parentModel.get('id')
-    const currentType = this.parentModel.get('type')
+    const currentId = this.parentModel?.get('id')
+    const currentType = this.parentModel?.get('type')
     const currentResourceType = recordTypes[currentType] || currentType
 
     const autocomplete = this.$('.autocomplete').autocomplete({

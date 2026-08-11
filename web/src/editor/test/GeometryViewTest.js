@@ -11,7 +11,7 @@ describe('Test GeometryView', function () {
 
   it('test map is rendered', () => {
     // when
-    view.render()
+    await view.render()
     view.createMap()
     // then
     expect(view.$('.map')).toBeDefined()
