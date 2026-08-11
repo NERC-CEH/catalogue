@@ -4,10 +4,10 @@ import template from '../templates/Relationship'
 import ObjectInputView from './ObjectInputView'
 
 // constrain autocomplete menu so that it does not exceed the width of the associate input field
-$.ui.autocomplete.prototype._resizeMenu = function () {
-  const ul = this.menu.element
-  ul.outerWidth(this.element.outerWidth())
-}
+//$.ui.autocomplete.prototype._resizeMenu = function () {
+//  const ul = this.menu.element
+//  ul.outerWidth(this.element.outerWidth())
+//}
 
 async function generateInformationString (target) {
   // Records can be kept either as a full URI or simply a UID
@@ -29,7 +29,7 @@ export default ObjectInputView.extend({
     '<option value="<%= value %>" <%=selected%>><%= label %></option>'
   ),
 
-  initialize (options) {
+  async initialize (options) {
     this.template = template
     this.options = options.options
     this.resourceType = options.resourceType
@@ -96,7 +96,7 @@ export default ObjectInputView.extend({
         }
 
         try {
-          const options = $.getJSON(query)
+          const options = await $.getJSON(query)
 
           response(
             _.map(options.results, d => ({
@@ -111,7 +111,7 @@ export default ObjectInputView.extend({
       },
 
       select: async (event, ui) => {
-        const infoString = generateInformationString(ui.item.value)
+        const infoString = await generateInformationString(ui.item.value)
 
         this.$('.title').val(ui.item.label)
         this.$('.identifier').val(ui.item.value)
@@ -139,12 +139,12 @@ export default ObjectInputView.extend({
     }
   },
 
-  render () {
+  async render () {
     ObjectInputView.prototype.render.apply(this)
 
     if (this.existingRecord) {
       const infoString =
-        generateInformationString(this.model.get('target'))
+        await generateInformationString(this.model.get('target'))
 
       this.$('.read-only-identifier').val(infoString)
       this.$('.relationshipRecord').removeClass('d-none')
