@@ -4,10 +4,12 @@ import template from '../templates/Relationship'
 import ObjectInputView from './ObjectInputView'
 
 // constrain autocomplete menu so that it does not exceed the width of the associate input field
-//$.ui.autocomplete.prototype._resizeMenu = function () {
-//  const ul = this.menu.element
-//  ul.outerWidth(this.element.outerWidth())
-//}
+if ($.ui && $.ui.autocomplete && $.ui.autocomplete.prototype) {
+  $.ui.autocomplete.prototype._resizeMenu = function () {
+    const ul = this.menu.element
+    ul.outerWidth(this.element.outerWidth())
+  }
+}
 
 async function generateInformationString (target) {
   // Records can be kept either as a full URI or simply a UID
