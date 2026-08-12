@@ -38,6 +38,19 @@ const template = `
           Your affiliation <span class="text-danger">*</span>
         </label>
       </div>
+      <div id="scienceAreaContainer" class="mt-3 <%= model.email?.includes('@ceh.ac.uk') ? '' : 'd-none' %>">
+        <label for="scienceArea">Which science area should this be attributed to?</label>
+        <select class="form-select" data-name="scienceArea" id="scienceArea">
+            <option value="">Select science area</option>
+            <option value="2025_Biodiversity and Land Use" <%= model.scienceArea === '2025_Biodiversity and Land Use' ? 'selected' : '' %>>Biodiversity and Land Use</option>
+            <option value="2025_Environmental Pressures & Responses" <%= model.scienceArea === '2025_Environmental Pressures & Responses' ? 'selected' : '' %>>Environmental Pressures & Responses</option>
+            <option value="2025_Land-Atmosphere Interactions" <%= model.scienceArea === '2025_Land-Atmosphere Interactions' ? 'selected' : '' %>>Land-Atmosphere Interactions</option>
+            <option value="2025_National Capability and Digital Research" <%= model.scienceArea === '2025_National Capability and Digital Research' ? 'selected' : '' %>>National Capability and Digital Research</option>
+            <option value="2025_Water and Climate Science" <%= model.scienceArea === '2025_Water and Climate Science' ? 'selected' : '' %>>Water and Climate Science</option>
+            <option value="External" <%= model.scienceArea === 'External' ? 'selected' : '' %>>External</option>
+        </select>
+        <div class="invalid-feedback"></div>
+      </div>
 
       <hr class="my-5 border border-secondary border-2">
 
@@ -58,7 +71,7 @@ const template = `
           <div class="invalid-feedback"></div>
         </div>
         <div class="my-2">
-          <input type="text"
+          <input type="text" id="funderOther"
                   class="form-control"
                   data-name="funderOther"
                   style="<%= model.funder === 'Other' ? '' : 'display: none;' %>"
@@ -408,5 +421,7 @@ const template = `
       </div>
     </form>
 `
+
+
 
 export default baseTemplate(template)

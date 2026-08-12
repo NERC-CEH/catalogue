@@ -24,6 +24,9 @@ public record DepositRequestModel(
     @NotBlank(message = "Affiliation is required")
     String affiliation,
 
+    @NotBlank(message = "Science area is required")
+    String scienceArea,
+
     @AssertTrue(message = "Please check to proceed")
     Boolean checklist1,
 

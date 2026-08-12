@@ -6,6 +6,7 @@ export default NestedModel.extend({
     name: '',
     email: '',
     affiliation: '',
+    scienceArea: '',
     checklist1: false,
     checklist2: false,
     checklist3: false,
@@ -43,6 +44,13 @@ export default NestedModel.extend({
       }
     }
     if (attrs.affiliation === '') errors.push({ name: 'affiliation', message: 'Affiliation is required' })
+
+    if (attrs.email && attrs.email.includes('@ceh.ac.uk')) {
+      if (!attrs.scienceArea) {
+        errors.push({ name: 'scienceArea', message: 'Science area is required' });
+      }
+    }
+
     if (!attrs.checklist1) errors.push({ name: 'checklist1', message: 'Please check to proceed' })
     if (!attrs.checklist2) errors.push({ name: 'checklist2', message: 'Please check to proceed' })
     if (!attrs.checklist3) errors.push({ name: 'checklist3', message: 'Please check to proceed' })

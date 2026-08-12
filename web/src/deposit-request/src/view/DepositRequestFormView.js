@@ -30,8 +30,16 @@ export default ObjectInputView.extend({
     this.$el.html(this.template({
       model: this.model
     }))
+
+    const email = this.model.get('email') || ''
+
+    if (email.includes('@ceh.ac.uk')) {
+      this.$('#scienceAreaContainer').removeClass('d-none')
+    }
+
     return this
   },
+
 
   addResource (e) {
     e.preventDefault()
@@ -80,6 +88,18 @@ export default ObjectInputView.extend({
         otherItem.hide()
         otherItem.val('')
         this.model.set(nameOther, '')
+      }
+    }
+
+    if (name === 'email') {
+      const scienceArea = this.$('[data-name="scienceArea"]')
+
+      if (value.includes('@ceh.ac.uk')) {
+        scienceArea.closest('#scienceAreaContainer').removeClass('d-none')
+      } else {
+        scienceArea.closest('#scienceAreaContainer').addClass('d-none')
+        scienceArea.val('')
+        this.model.set('scienceArea', null)
       }
     }
 

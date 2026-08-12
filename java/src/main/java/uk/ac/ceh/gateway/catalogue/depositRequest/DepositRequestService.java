@@ -137,7 +137,8 @@ public class DepositRequestService {
         fields.set("customfield_13868", funders);
 
         fields.put("customfield_11950", form.name());
-        fields.put("customfield_11951", form.email());
+        fields.put("customfield_11950", form.name());
+        fields.put("customfield_12169", form.scienceArea());
 
         String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(payload);
         log.debug("Built JIRA JSON payload:\n{}", json);
