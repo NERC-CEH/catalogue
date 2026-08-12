@@ -40,7 +40,6 @@ export default ObjectInputView.extend({
     return this
   },
 
-
   addResource (e) {
     e.preventDefault()
     this.dataResourceList.add(new DataResource())

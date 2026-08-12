@@ -47,7 +47,7 @@ export default NestedModel.extend({
 
     if (attrs.email && attrs.email.includes('@ceh.ac.uk')) {
       if (!attrs.scienceArea) {
-        errors.push({ name: 'scienceArea', message: 'Science area is required' });
+        errors.push({ name: 'scienceArea', message: 'Science area is required' })
       }
     }
 

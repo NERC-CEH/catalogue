@@ -422,6 +422,4 @@ const template = `
     </form>
 `
 
-
-
 export default baseTemplate(template)
