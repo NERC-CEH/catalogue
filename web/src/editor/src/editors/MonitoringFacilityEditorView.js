@@ -220,6 +220,7 @@ export default EditorView.extend({
           modelAttribute: 'relationships',
           label: 'Relationships',
           ObjectInputView: RelationshipView,
+          parentModel: this.model,
           multiline: true,
           options: [
             { value: 'http://purl.org/dc/terms/isPartOf', label: 'Is part of' },
