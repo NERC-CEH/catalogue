@@ -254,7 +254,7 @@ const template = `
 
         <div class="my-5">
           <label class="form-label d-block">
-            Are any of these data replacing those already held by the EIDC? <span class="text-danger">*</span>
+            Are any of these data <b>replacing</b> those already held by the EIDC? <span class="text-danger">*</span>
           </label>
           <div class="form-check form-check-inline">
             <input class="form-check-input"
@@ -288,7 +288,7 @@ const template = `
         </div>
       <div class="my-5">
         <label class="form-label d-block">
-          Are any of these data related to those already held by the EIDC? <span class="text-danger">*</span>
+          Are any of these data <b>related to</b> those already held by the EIDC? <span class="text-danger">*</span>
         </label>
         <div class="form-check form-check-inline">
           <input class="form-check-input"
