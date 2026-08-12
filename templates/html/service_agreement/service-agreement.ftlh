@@ -321,7 +321,14 @@
                           </#if>
                           </td>
                         <td><#if author.email?has_content>${author.email}<#else><span class="text-danger">missing</span></#if></td>
-                        <td><#if author.nameIdentifier?has_content >${author.nameIdentifier}<#else><small class="text-muted">Not provided</small></#if></td>
+                        <td>
+                          <#if author.nameIdentifier?has_content>
+                              <#if author.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")><i class="fa-brands fa-fw fa-orcid" aria-label="ORCiD" role="img"></i></#if>
+                              ${author.nameIdentifier}
+                          <#else>
+                            <small class="text-muted">Not provided</small>
+                          </#if>
+                        </td>
                     </tr>
                 </#items>
                 </tbody>
