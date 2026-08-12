@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.depositRequest;
+    package uk.ac.ceh.gateway.catalogue.depositRequest;
 
 import lombok.ToString;
 import tools.jackson.databind.JsonNode;
@@ -138,7 +138,7 @@ public class DepositRequestService {
 
         fields.put("customfield_11950", form.name());
         fields.put("customfield_11950", form.name());
-        fields.put("customfield_12169", form.scienceArea());
+        fields.put("customfield_12169", "{'value':" + form.scienceArea() + " }");
 
         String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(payload);
         log.debug("Built JIRA JSON payload:\n{}", json);
