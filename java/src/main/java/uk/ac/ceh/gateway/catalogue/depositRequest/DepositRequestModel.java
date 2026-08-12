@@ -82,6 +82,6 @@ public record DepositRequestModel(
 
     @AssertTrue(message = "Science Area is required")
     public boolean isValidScienceArea() {
-        return !"@ceh.ac.uk".contains(email) || (scienceArea != null && !scienceArea.trim().isEmpty());
+        return email == null || !email.contains("@ceh.ac.uk") || (scienceArea != null && !scienceArea.trim().isEmpty());
     }
 }
