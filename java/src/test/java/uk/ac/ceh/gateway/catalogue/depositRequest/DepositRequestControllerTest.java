@@ -44,7 +44,7 @@ class DepositRequestControllerTest extends AbstractMvcTest {
     void postValidDepositRequest() throws Exception {
 
         DepositRequestModel body = new DepositRequestModel(
-            "Alice Smith", "alice@example.com", "UKCEH", true, true, true, true,
+            "Alice Smith", "alice@example.com", "UKCEH", "2025_Biodiversity and Land Use", true, true, true, true,
             "NERC", "", "NE123", "Yes", "Model",
             true, true, false, false,
             List.of(new DataResourceModel(
@@ -72,7 +72,7 @@ class DepositRequestControllerTest extends AbstractMvcTest {
     void postInvalidDepositRequest() throws Exception {
 
         DepositRequestModel bad = new DepositRequestModel(
-            "", "", "", false, false, false, false,
+            "", "", "", "", false, false, false, false,
             "", "", "", "", "",
             null, null, null, null,
             List.of(), "");
