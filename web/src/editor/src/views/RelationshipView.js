@@ -4,9 +4,11 @@ import template from '../templates/Relationship'
 import ObjectInputView from './ObjectInputView'
 
 // constrain autocomplete menu so that it does not exceed the width of the associate input field
-$.ui.autocomplete.prototype._resizeMenu = function () {
-  const ul = this.menu.element
-  ul.outerWidth(this.element.outerWidth())
+if ($.ui && $.ui.autocomplete && $.ui.autocomplete.prototype) {
+  $.ui.autocomplete.prototype._resizeMenu = function () {
+    const ul = this.menu.element
+    ul.outerWidth(this.element.outerWidth())
+  }
 }
 
 async function generateInformationString (target) {
@@ -26,7 +28,7 @@ async function generateInformationString (target) {
 export default ObjectInputView.extend({
 
   optionTemplate: _.template(
-    '<option value="<%= value %>" <%= selected %>><%= label %></option>'
+    '<option value="<%= value %>" <%=selected%>><%= label %></option>'
   ),
 
   async initialize (options) {
@@ -39,6 +41,7 @@ export default ObjectInputView.extend({
 
     const catalogue = $('html').data('catalogue')
 
+    // Current document details
     const recordTypes = {
       monitoringFacility: 'Monitoring facility',
       monitoringProgramme: 'Monitoring programme',
@@ -72,7 +75,7 @@ export default ObjectInputView.extend({
             }
 
             if (currentResourceType === 'Monitoring facility') {
-              return `resourceType%3A%22Monitoring%20network%22%20AND%20${encodedTerm}`
+              return 'resourceType%3A%22Monitoring%20network%22%20AND%20' + encodedTerm
             }
 
             return encodedTerm
@@ -84,18 +87,13 @@ export default ObjectInputView.extend({
         if (!searchTerm) {
           query = `/${catalogue}/documents`
         } else if (
-          selectedRelationship &&
           selectedRelationship.startsWith(
             'https://digital.ceh.ac.uk/ontology/doo/hasChild'
           )
         ) {
-          query =
-            `/${catalogue}/documents?term=` +
-            `resourceType%3A%22${encodeURIComponent(currentResourceType)}%22%20AND%20${encodedTerm}`
+          query = `/${catalogue}/documents?term=resourceType%3A%22${encodeURIComponent(currentResourceType)}%22%20AND%20${encodedTerm}`
         } else {
-          const termQuery =
-            relationshipQueries[selectedRelationship]?.() ?? encodedTerm
-
+          const termQuery = relationshipQueries[selectedRelationship]?.() ?? encodedTerm
           query = `/${catalogue}/documents?term=${termQuery}`
         }
 
@@ -120,9 +118,6 @@ export default ObjectInputView.extend({
         this.$('.title').val(ui.item.label)
         this.$('.identifier').val(ui.item.value)
         this.$('.read-only-identifier').val(infoString)
-
-        // lock relationship after record selection
-        this.$('.relationshipList').prop('disabled', true)
 
         this.$('.relationshipSearch').addClass('d-none')
         this.$('.relationshipRecord').removeClass('d-none')
@@ -149,14 +144,24 @@ export default ObjectInputView.extend({
   async render () {
     ObjectInputView.prototype.render.apply(this)
 
+    if (this.existingRecord) {
+      const infoString =
+        await generateInformationString(this.model.get('target'))
+
+      this.$('.read-only-identifier').val(infoString)
+      this.$('.relationshipRecord').removeClass('d-none')
+      this.$('.relationshipSearch').addClass('d-none')
+    }
+
     if (
       !this.model.attributes.relation &&
       !this.options.some(o => o.value === '')
     ) {
-      this.options.unshift({value: '',label: 'Choose a relationship type'})
+      this.options.unshift({
+        value: '',
+        label: 'Choose a relationship'
+      })
     }
-
-    this.$('.relationshipList').empty()
 
     this.options.forEach(option => {
       option.selected =
@@ -168,37 +173,6 @@ export default ObjectInputView.extend({
       this.$('.relationshipList')
         .append(this.optionTemplate(option))
     })
-
-    const autocompleteInput = this.$('.autocomplete')
-    const relationshipList = this.$('.relationshipList')
-
-    // Initial state
-    autocompleteInput.attr('placeholder','Choose a relationship type first')
-    autocompleteInput.prop('disabled',!relationshipList.val())
-
-    // Prevent duplicate event bindings
-    relationshipList.on('change.relationship', e => {
-      const relationship = $(e.currentTarget).val()
-      const enabled = !!relationship
-
-      autocompleteInput.prop('disabled', !enabled)
-      autocompleteInput.attr('placeholder',enabled ? 'Enter record ID or type to search…': 'Choose a relationship type first')
-    })
-
-
-
-    if (this.existingRecord) {
-      const infoString =
-        await generateInformationString(this.model.get('target'))
-
-      this.$('.read-only-identifier').val(infoString)
-
-      this.$('.relationshipRecord').removeClass('d-none')
-      this.$('.relationshipSearch').addClass('d-none')
-
-      relationshipList.prop('disabled', true)
-      autocompleteInput.prop('disabled', true)
-    }
 
     return this
   }
