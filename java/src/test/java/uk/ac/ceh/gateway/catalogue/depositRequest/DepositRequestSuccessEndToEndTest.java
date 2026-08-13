@@ -45,12 +45,14 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.ADMI
  * what {@link #referenceNumberSurvivesAStaleSessionCookie()} pins down, and it is the assertion that
  * fails on the old implementation.</p>
  *
- * <p>Note that authenticated requests here still open a session, which is nothing to do with this
- * flow: {@code AbstractPreAuthenticatedProcessingFilter} defaults to an
- * {@code HttpSessionSecurityContextRepository}, and the hand-built {@code RequestHeaderAuthenticationFilter}
- * added via {@code HttpSecurity.addFilter} never receives the repository that
- * {@code SessionCreationPolicy.STATELESS} configures. These tests therefore assert that the reference
- * survives regardless of what session the browser presents, rather than that no session exists.</p>
+ * <p>These tests assert that the reference survives regardless of what session the browser presents,
+ * rather than that no session exists. Authenticated requests used to open a session here, which was
+ * nothing to do with this flow — the hand-built authentication filters kept their default
+ * {@code HttpSessionSecurityContextRepository} despite {@code SessionCreationPolicy.STATELESS}. That is
+ * fixed separately (dri-one #271, {@code AuthFilterStatelessTest} and
+ * {@code StatelessSessionEndToEndTest}), so {@link #staleSessionCookie()} now synthesises the cookie it
+ * used to harvest. The assertions here are unchanged by that, and deliberately so: this flow must not
+ * care about sessions either way.</p>
  *
  * <p>This drives real HTTP against a real embedded server with a real cookie jar, as
  * {@code AdminDeleteCsrfEndToEndTest} does — MockMvc cannot see cookie behaviour. Authentication is
@@ -153,15 +155,17 @@ class DepositRequestSuccessEndToEndTest {
     }
 
     /**
-     * A session belonging to some earlier, unrelated request, exactly as a browser would still be
-     * holding one from a previous visit to this page.
+     * A session id the server has never issued, exactly as a browser would still be presenting one from a
+     * previous visit whose session has since gone — expired, or belonging to a pod that has been replaced.
+     *
+     * <p>This used to harvest a real cookie from an earlier request, because every authenticated request
+     * opened a session. That is fixed (dri-one #271, {@code AuthFilterStatelessTest}), so there is no
+     * longer one to harvest and the cookie is synthesised instead. That is the stronger stand-in anyway:
+     * the point of the test is that the success page does not care what session the browser presents, and
+     * an id the container cannot resolve at all is the most hostile version of that.</p>
      */
-    private String staleSessionCookie() throws Exception {
-        return get("/deposit-request/success").headers().allValues("Set-Cookie").stream()
-            .filter(header -> header.startsWith("JSESSIONID="))
-            .map(header -> header.split(";")[0])
-            .findFirst()
-            .orElseThrow(() -> new AssertionError("expected an earlier request to have opened a session"));
+    private String staleSessionCookie() {
+        return "JSESSIONID=A57E4B1D0C39F82600000000DEADBEEF";
     }
 
     @Test
