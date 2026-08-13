@@ -24,7 +24,6 @@ public record DepositRequestModel(
     @NotBlank(message = "Affiliation is required")
     String affiliation,
 
-    @NotBlank(message = "Science area is required")
     String scienceArea,
 
     @AssertTrue(message = "Please check to proceed")
@@ -79,5 +78,10 @@ public record DepositRequestModel(
     @AssertTrue(message = "You must add at least one data resource")
     public boolean isValidDataResources() {
         return dataResources != null && !dataResources.isEmpty();
+    }
+
+    @AssertTrue(message = "Science Area is required")
+    public boolean isValidScienceArea() {
+        return email == null || !email.contains("@ceh.ac.uk") || (scienceArea != null && !scienceArea.trim().isEmpty());
     }
 }

@@ -4,6 +4,7 @@ export default _.template(`
   <div>
     <label class="control-label">
       <span class="fw-bold">Please provide a short descriptive working title for the resource</span> <span class="text-danger">*</span>
+      <br><span class="text-body-tertiary">You'll be able to change this later</span>
     </label>
     <input type="text"
           data-name='title'
