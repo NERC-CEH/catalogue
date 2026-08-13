@@ -153,7 +153,7 @@ export default ObjectInputView.extend({
       !this.model.attributes.relation &&
       !this.options.some(o => o.value === '')
     ) {
-      this.options.unshift({ value: '', label: 'Choose a relationship type' })
+      this.options.unshift({value: '',label: 'Choose a relationship type'})
     }
 
     this.$('.relationshipList').empty()
@@ -173,8 +173,8 @@ export default ObjectInputView.extend({
     const relationshipList = this.$('.relationshipList')
 
     // Initial state
-    autocompleteInput.attr('placeholder', 'Choose a relationship type first')
-    autocompleteInput.prop('disabled', !relationshipList.val())
+    autocompleteInput.attr('placeholder','Choose a relationship type first')
+    autocompleteInput.prop('disabled',!relationshipList.val())
 
     // Prevent duplicate event bindings
     relationshipList.on('change.relationship', e => {
@@ -182,8 +182,9 @@ export default ObjectInputView.extend({
       const enabled = !!relationship
 
       autocompleteInput.prop('disabled', !enabled)
-      autocompleteInput.attr('placeholder', enabled ? 'Enter record ID or type to search…' : 'Choose a relationship type first')
+      autocompleteInput.attr('placeholder',enabled ? 'Enter record ID or type to search…': 'Choose a relationship type first')
     })
+
 
 
     if (this.existingRecord) {
