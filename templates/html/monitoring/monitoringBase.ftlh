@@ -30,29 +30,35 @@
             </div>
           </#if>
 
-          <#if title?? && title?has_content>
-            <h1 class="my-4">
-              <div class="fs-5">
-                <#if (metadata.state == 'draft' || metadata.state == 'pending') >
-                  <b class="text-danger">${codes.lookup('publication.state', metadata.state)?upper_case!''}</b>
-                </#if>
-                <span class="text-body-tertiary">
-                  ${codes.lookup('metadata.resourceType', type)!''}
-                </span>
-              </div>
-              <div>
-                ${title}
-                <#if operationalStatus?? && operationalStatus == "Inactive">
-                  <span class="fw-bolder px-2 py-1 ms-3 text-bg-danger fs-6 text-uppercase">inactive</span>
-                </#if>
-              </div>
+          <hgroup>
+            <#if title?? && title?has_content>
+              <h1 class="my-4">
+                <div class="fs-5">
+                  <#if (metadata.state == 'draft' || metadata.state == 'pending') >
+                    <b class="text-danger">${codes.lookup('publication.state', metadata.state)?upper_case!''}</b>
+                  </#if>
+                  <span class="text-body-tertiary">
+                    ${codes.lookup('metadata.resourceType', type)!''}
+                  </span>
+                </div>
+                <div>
+                  ${title}
+                  <#if operationalStatus?? && operationalStatus == "Inactive">
+                    <span class="fw-bolder px-2 py-1 ms-3 text-bg-danger fs-6 text-uppercase">inactive</span>
+                  </#if>
+                </div>
 
-              <@alternativeNames />
-            </h1>
-          </#if>
+                <@alternativeTitles />
+              </h1>
+            </#if>
+          </hgroup>
+
+          <@identifiers />
 
           <#if description?? && description?has_content>
-            <div class="my-4"><@b.linebreaksAndLinks description /></div>
+            <@keyValue "Description" "">
+              <@b.linebreaksAndLinks description />
+            </@keyValue>
           </#if>
 
         </div>
@@ -117,7 +123,7 @@
 
           <#if (additionalInfo?? && additionalInfo?has_content) || (keywordsParameters?? && keywordsParameters?has_content) || (keywords?? && keywords?has_content)>
             <div class="pb-5">
-              <h2>Other metadata</h2>
+              <h2>Additional information</h2>
 
               <#if additionalInfo?? && additionalInfo?has_content>
                 <#list additionalInfo as theInfo>
@@ -208,9 +214,12 @@
       <@menuLink "/documents/${id}/permission">Permissions</@menuLink>
       <@menuLink "/documents/${id}/publication">Publication status</@menuLink>
 
+      <li class="dropdown-divider"></li>
       <span class="catalogue-control">
-        <li class="dropdown-divider"></li>
         <@menuLink "/documents/${id}/catalogue">Move to a different catalogue</@menuLink>
+      </span>
+      <span class="catalogue-view-control">
+          <@menuLink "/documents/${id}/catalogue-view">Manage secondary catalogues</@menuLink>
       </span>
     </ul>
   </div>
@@ -222,14 +231,10 @@
   </a></li>
 </#macro>
 
-<#macro keyValue key description="" auto_esc=false>
-  <div class="row key-value" title="${description}">
-    <div class="col-sm-3 key">
-     ${key}
-    </div>
-    <div class="col-sm-9 value">
-      <#nested>
-    </div>
+<#macro keyValue key auto_esc=false>
+  <div class="key-value">
+    <div class="key">${key}</div>
+    <div class="value"><#nested></div>
   </div>
 </#macro>
 
@@ -489,32 +494,52 @@ Symmetrical relationships
   </#list>
 </#macro>
 
-<#macro alternativeNames>
-  <#assign altNames=[]>
+<#macro alternativeTitles>
   <#if alternateTitles?? && alternateTitles?has_content>
-    <#list alternateTitles as title>
-       <#assign altNames = altNames + [title] />
-    </#list>
-  </#if>
-
-  <#if resourceIdentifiers?? && resourceIdentifiers?has_content>
-    <#list resourceIdentifiers as identifier>
-      <#if !identifier.code?matches("^http.+[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}$")>
-        <#if identifier.codeSpace?has_content>
-          <#assign altNames = altNames + [identifier.codeSpace + "/" + identifier.code] />
-        <#else>
-          <#assign altNames = altNames + [identifier.code] />
-        </#if>
-      </#if>
-    </#list>
-  </#if>
-
-  <#if altNames?? && altNames?has_content>
-    <div class="altNames">
+    <div class="alternativeTitles">
       Also known as
-      <#list altNames as altName>
-        <span class="altName">${altName}</span><#sep>or<#t>
+      <#list alternateTitles as altTitle>
+        <span class="alternativeTitle">${altTitle}</span><#sep>or<#t>
       </#list>
     </div>
   </#if>
 </#macro>
+
+<#macro identifiers>
+  <#if resourceIdentifiers?? && resourceIdentifiers?has_content>
+
+    <#assign otherIds=[] mainIds=[]>
+    <#list resourceIdentifiers as identifier>
+      <#if !identifier.code?matches("^http.+[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}$")>
+        <#if identifier.codeSpace?has_content>
+          <#assign otherIds = otherIds + [identifier.codeSpace + "/" + identifier.code] />
+        <#else>
+          <#assign otherIds = otherIds + [identifier.code] />
+        </#if>
+      <#else>
+        <#assign mainIds = mainIds + [identifier.code] />
+      </#if>
+    </#list>
+
+    <#if mainIds?has_content>
+      <@keyValue "Identifier" "">
+          <#list mainIds as id>
+           ${id}<#sep><br>
+          </#list>
+      </@keyValue>
+    </#if>
+
+    <#if otherIds?has_content>
+      <@keyValue "Other identifiers" "">
+          <#list otherIds as id>
+            ${id}<#sep><br>
+          </#list>
+      </@keyValue>
+    </#if>
+
+  </#if>
+</#macro>
+
+
+
+

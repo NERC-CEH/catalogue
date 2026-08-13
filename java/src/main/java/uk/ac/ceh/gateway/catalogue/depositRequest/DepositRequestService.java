@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.depositRequest;
+    package uk.ac.ceh.gateway.catalogue.depositRequest;
 
 import lombok.ToString;
 import tools.jackson.databind.JsonNode;
@@ -27,6 +27,13 @@ import static uk.ac.ceh.gateway.catalogue.util.Headers.withBearerToken;
 @Service
 @ToString(exclude = {"restTemplate", "token"})
 public class DepositRequestService {
+
+    /**
+     * The JIRA components a deposit request can be raised against. The success page picks its message
+     * from these, so they are shared rather than repeated as literals on both sides.
+     */
+    public static final String DEPOSIT_REQUEST_COMPONENT = "Deposit Request";
+    public static final String INGESTION_MANAGEMENT_COMPONENT = "Ingestion Management";
 
     private final RestTemplate restTemplate;
     private final String jiraEndpoint;
@@ -90,7 +97,7 @@ public class DepositRequestService {
     }
 
     public String getJiraComponentName(DepositRequestModel form) {
-        String componentName = "Deposit Request";
+        String componentName = DEPOSIT_REQUEST_COMPONENT;
 
         if (form.funder().equals("NERC")
             && form.eidcRemit().equals("Yes")
@@ -111,7 +118,7 @@ public class DepositRequestService {
                 }
             }
             if (dataResourcePass) {
-                componentName = "Ingestion Management";
+                componentName = INGESTION_MANAGEMENT_COMPONENT;
             }
         }
 
