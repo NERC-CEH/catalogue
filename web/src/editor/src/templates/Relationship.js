@@ -14,7 +14,7 @@ export default _.template(`
     </div>
     <div class="relationshipSearch col-md-7">
         <div>
-            <input data-name="target" value="<%= data.target %>" id="relationship<%= data.index %>Target" class="editor-input autocomplete" placeholder="Enter record ID or type to search…">
+            <input data-name="target" value="<%= data.target %>" id="relationship<%= data.index %>Target" class="editor-input autocomplete" >
         </div>
     </div>
     <div class="relationshipRecord col-md-7 d-none">
