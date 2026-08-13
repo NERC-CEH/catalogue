@@ -185,6 +185,7 @@ export default ObjectInputView.extend({
       autocompleteInput.attr('placeholder', enabled ? 'Enter record ID or type to search…' : 'Choose a relationship type first')
     })
 
+
     if (this.existingRecord) {
       const infoString =
         await generateInformationString(this.model.get('target'))
