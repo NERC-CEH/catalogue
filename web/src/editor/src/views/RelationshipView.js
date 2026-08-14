@@ -119,8 +119,10 @@ export default ObjectInputView.extend({
         this.$('.identifier').val(ui.item.value)
         this.$('.read-only-identifier').val(infoString)
 
+        this.$('.relationshipList').prop('disabled', true)
         this.$('.relationshipSearch').addClass('d-none')
         this.$('.relationshipRecord').removeClass('d-none')
+
       }
     })
 
@@ -132,6 +134,17 @@ export default ObjectInputView.extend({
         .append($('<div>').html(item.html))
         .appendTo(ul)
     }
+
+    autocomplete.attr('placeholder', 'Choose a relationship type first')
+
+    // Disable until a relationship is chosen
+    this.$('.autocomplete').prop('disabled', true)
+
+    this.$('.relationshipList').on('change', (e) => {
+      const relationship = $(e.currentTarget).val()
+      this.$('.autocomplete').prop('disabled', !relationship)
+      this.$('.autocomplete').attr('placeholder', 'Enter record ID or type to search…')
+    })
 
     const target = this.model.get('target')
 
@@ -148,9 +161,10 @@ export default ObjectInputView.extend({
       const infoString =
         await generateInformationString(this.model.get('target'))
 
-      this.$('.read-only-identifier').val(infoString)
-      this.$('.relationshipRecord').removeClass('d-none')
-      this.$('.relationshipSearch').addClass('d-none')
+        this.$('.relationshipList').prop('disabled', true)
+        this.$('.read-only-identifier').val(infoString)
+        this.$('.relationshipRecord').removeClass('d-none')
+        this.$('.relationshipSearch').addClass('d-none')
     }
 
     if (
