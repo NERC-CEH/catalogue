@@ -92,6 +92,7 @@ public class CatalogueServiceConfig {
                 .facetKey("recordType")
                 .facetKey("publicationState")
                 .facetKey("parametersMeasured")
+                .facetKey("environmentalDomains")
                 .documentType(GEMINI_TYPE)
                 .documentType(MONITORING_FACILITY_TYPE)
                 .documentType(MONITORING_NETWORK_TYPE)
