@@ -6,10 +6,10 @@ import 'jquery-ui/ui/widgets/autocomplete'
 describe('Test RelationshipView', function () {
   let model = null
   let view = null
-  const options = [{ relation: 'http://purl.org/dc/terms/relation', label: 'Relationship' }]
+  const options = [{ value: 'http://purl.org/dc/terms/relation', label: 'Relationship' }]
 
   beforeEach(function () {
-    model = new EditorMetadata({ relation: 'http://purl.org/dc/terms/relation', target: '' })
+    model = new EditorMetadata({ value: 'http://purl.org/dc/terms/relation', target: '' })
     view = new RelationshipView({ model, options })
     spyOn($, 'getJSON').and.callFake((url) => {
       return {
@@ -28,15 +28,14 @@ describe('Test RelationshipView', function () {
   })
 
   it('should set relationshipSearch to d-none if target exists', async () => {
-    model = new EditorMetadata({ relation: 'http://purl.org/dc/terms/relation', target: 'target' })
+    model = new EditorMetadata({ value: 'http://purl.org/dc/terms/relation', target: 'target' })
     view = new RelationshipView({ model, options })
     await view.render()
     expect(view.$('.relationshipSearch').hasClass('d-none')).toBeTrue()
-    expect(view.$('.relationshipList').prop('disabled')).toBeTrue()
   })
 
   it('should disable relationshipList if target exists', async () => {
-    model = new EditorMetadata({ relation: 'http://purl.org/dc/terms/relation', target: 'target' })
+    model = new EditorMetadata({ value: 'http://purl.org/dc/terms/relation', target: 'target' })
     view = new RelationshipView({ model, options })
     await view.render()
     expect(view.$('.relationshipList').prop('disabled')).toBeTrue()
@@ -44,7 +43,7 @@ describe('Test RelationshipView', function () {
   })
 
   it('should set relationshipRecord to d-none if target does not exist', async () => {
-    model = new EditorMetadata({ relation: 'http://purl.org/dc/terms/relation', target: '' })
+    model = new EditorMetadata({ value: 'http://purl.org/dc/terms/relation', target: '' })
     view = new RelationshipView({ model, options })
     await view.render()
     expect(view.$('.relationshipRecord').hasClass('d-none')).toBeTrue()
@@ -61,14 +60,14 @@ describe('Test RelationshipView', function () {
   })
 
   it('should do correct http call for uid', async () => {
-    model = new EditorMetadata({ relation: 'http://purl.org/dc/terms/relation', target: 'exampleUid' })
+    model = new EditorMetadata({ value: 'http://purl.org/dc/terms/relation', target: 'exampleUid' })
     view = new RelationshipView({ model, options })
     await view.render()
     expect($.getJSON).toHaveBeenCalledWith('/documents/exampleUid')
   })
 
   it('should do correct http call for uri', async () => {
-    model = new EditorMetadata({ relation: 'http://purl.org/dc/terms/relation', target: 'http://exampleUri' })
+    model = new EditorMetadata({ value: 'http://purl.org/dc/terms/relation', target: 'http://exampleUri' })
     view = new RelationshipView({ model, options })
     await view.render()
     expect($.getJSON).toHaveBeenCalledWith('http://exampleUri')
