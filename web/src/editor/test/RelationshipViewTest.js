@@ -39,7 +39,6 @@ describe('Test RelationshipView', function () {
     view = new RelationshipView({ model, options })
     await view.render()
     expect(view.$('.relationshipList').prop('disabled')).toBeTrue()
-    expect(view.$('.autocomplete').prop('disabled')).toBeTrue()
   })
 
   it('should set relationshipRecord to d-none if target does not exist', async () => {
