@@ -6,7 +6,7 @@ import 'jquery-ui/ui/widgets/autocomplete'
 describe('Test RelationshipView', function () {
   let model = null
   let view = null
-  const options = [{ relation: 'http://purl.org/dc/terms/relation', label: 'Relationship'}]
+  const options = [{ relation: 'http://purl.org/dc/terms/relation', label: 'Relationship' }]
 
   beforeEach(function () {
     model = new EditorMetadata({ relation: 'http://purl.org/dc/terms/relation', target: '' })
@@ -28,7 +28,7 @@ describe('Test RelationshipView', function () {
   })
 
   it('should set relationshipSearch to d-none if target exists', async () => {
-    model = new EditorMetadata({relation: 'http://purl.org/dc/terms/relation', target: 'target' })
+    model = new EditorMetadata({ relation: 'http://purl.org/dc/terms/relation', target: 'target' })
     view = new RelationshipView({ model, options })
     await view.render()
     expect(view.$('.relationshipSearch').hasClass('d-none')).toBeTrue()

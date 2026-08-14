@@ -122,7 +122,6 @@ export default ObjectInputView.extend({
         this.$('.relationshipList').prop('disabled', true)
         this.$('.relationshipSearch').addClass('d-none')
         this.$('.relationshipRecord').removeClass('d-none')
-
       }
     })
 
@@ -161,10 +160,10 @@ export default ObjectInputView.extend({
       const infoString =
         await generateInformationString(this.model.get('target'))
 
-        this.$('.relationshipList').prop('disabled', true)
-        this.$('.read-only-identifier').val(infoString)
-        this.$('.relationshipRecord').removeClass('d-none')
-        this.$('.relationshipSearch').addClass('d-none')
+      this.$('.relationshipList').prop('disabled', true)
+      this.$('.read-only-identifier').val(infoString)
+      this.$('.relationshipRecord').removeClass('d-none')
+      this.$('.relationshipSearch').addClass('d-none')
     }
 
     if (
