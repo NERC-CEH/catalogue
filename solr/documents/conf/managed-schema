@@ -120,13 +120,13 @@
     <field name="inmsProject" type="keywords"/>
     <field name="inmsScale" type="keywords"/>
     <field name="inmsTopic" type="keywords"/>
-    <field name="keyword" type="keywords_lowercase"/>
-    <field name="keywordsInstrument" type="keywords_lowercase"/>
-    <field name="keywordsOther" type="keywords_lowercase"/>
-    <field name="keywordsParameters" type="keywords_lowercase"/>
-    <field name="keywordsPlace" type="keywords_lowercase"/>
-    <field name="keywordsProject" type="keywords_lowercase"/>
-    <field name="keywordsTheme" type="keywords_lowercase"/>
+    <field name="keyword" type="keywords_lowercase" indexed="true" stored="false" multiValued="true"/>
+    <field name="keywordsInstrument" type="keywords_lowercase" indexed="true" stored="false" multiValued="true"/>
+    <field name="keywordsOther" type="keywords_lowercase" indexed="true" stored="false" multiValued="true"/>
+    <field name="keywordsParameters" type="keywords_lowercase" indexed="true" stored="false" multiValued="true"/>
+    <field name="keywordsPlace" type="keywords_lowercase" indexed="true" stored="false" multiValued="true"/>
+    <field name="keywordsProject" type="keywords_lowercase" indexed="true" stored="false" multiValued="true"/>
+    <field name="keywordsTheme" type="keywords_lowercase" indexed="true" stored="false" multiValued="true"/>
     <field name="licence" type="keywords" multiValued="false"/>
     <field name="lineage" type="text_general" multiValued="false"/>
     <field name="locations" type="spatial"/>
@@ -184,5 +184,7 @@
     <copyField source="objectives" dest="objectives_raw"/>
     <field name="infrastructureCapabilities_raw" type="string"/>
     <copyField source="infrastructureCapabilities" dest="infrastructureCapabilities_raw"/>
+    <field name="keywordsParametersFacet" type="string" indexed="true" stored="true" multiValued="true"/>
+    <copyField source="keywordsParameters" dest="keywordsParametersFacet"/>
     <dynamicField name="random*" type="random"/>
 </schema>
