@@ -81,9 +81,9 @@ export default EditorView.extend({
           label: 'Parameters measured',
           ObjectInputView: KeywordVocabularyView,
           vocabs: {
-            ukceh:  ['envThes', 'gemet'],
-            eidc:  ['envThes', 'gemet'],
-            ukeof:  ['envThes', 'gemet']
+            ukceh: ['envThes', 'gemet'],
+            eidc: ['envThes', 'gemet'],
+            ukeof: ['envThes', 'gemet']
           },
           multiline: true
         }),
@@ -94,9 +94,9 @@ export default EditorView.extend({
           label: 'Keywords',
           ObjectInputView: KeywordVocabularyView,
           vocabs: {
-            ukceh:  ['envThes', 'gemet'],
-            eidc:  ['envThes', 'gemet'],
-            ukeof:  ['envThes', 'gemet']
+            ukceh: ['envThes', 'gemet'],
+            eidc: ['envThes', 'gemet'],
+            ukeof: ['envThes', 'gemet']
           },
           multiline: true
         })
