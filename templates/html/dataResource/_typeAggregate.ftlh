@@ -112,7 +112,7 @@
 <#macro card address publicationStatus availability type title icon='fa-globe' external=false >
   <#assign target = "">
   <#if external=true>
-			<#assign target="target='_blank' rel='noopener noreferrer'">
+			<#assign target=" target='_blank' rel='noopener noreferrer'"?no_esc>
 	</#if>
 
   <#assign cardClass = " ukcehcard-" + publicationStatus?lower_case >
@@ -129,11 +129,8 @@
     <#if address?has_content && address?matches("^http(|s)://.+")>
       <a class="ukcehcard ${cardClass}" href="${address}" ${target}>
 
-        <div class="ukcehcard-icon">
-          <span class="fa-stack fa-xl">
-            <i class="fa-solid fa-circle fa-stack-2x"></i>
-            <i class="fa-solid ${icon} fa-stack-1x fa-inverse"></i>
-          </span>
+        <div>
+          <span  class="ukcehcard-icon"> <i class="fa-solid ${icon}"></i></span>
         </div>
         <div class="ukcehcard-content">
           <div class="ukcehcard-type"><span>${publicationStatus}</span>${type}</div>

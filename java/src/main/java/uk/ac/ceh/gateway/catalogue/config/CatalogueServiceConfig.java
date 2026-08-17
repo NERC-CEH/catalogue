@@ -95,6 +95,7 @@ public class CatalogueServiceConfig {
                 .documentType(MONITORING_FACILITY_TYPE)
                 .documentType(MONITORING_NETWORK_TYPE)
                 .documentType(MONITORING_PROGRAMME_TYPE)
+                .documentType(RESEARCHACTIVITY_TYPE)
                 .fileUpload(false)
                 .build(),
 

@@ -25,6 +25,8 @@ public class CatalogueMediaTypes {
 
     public static final String INFRASTRUCTURERECORD_JSON_VALUE = "application/vnd.infrastructure+json";
 
+    public static final String RESEARCHACTIVITY_JSON_VALUE = "application/vnd.researchactivity+json";
+
     public static final String METHOD_JSON_VALUE = "application/vnd.method+json";
 
     public static final String GEMINI_XML_SHORT = "gemini";

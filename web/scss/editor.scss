@@ -178,8 +178,7 @@
                 }
             }
 
-            select:not(#input-accessLimitation) {
-                @extend .form-select !optional;
+            select.form-select {
                 @extend .form-select-sm !optional;
             }
 
@@ -513,8 +512,9 @@
                 }
             }
 
-            #input-accessLimitation,
-            #input-accessLimitation::picker(select) {
+            /*-- Styled selectors -- */
+            select.styledSelect,
+            select.styledSelect::picker(select) {
                 appearance: base-select;
                 font-size: 0.8rem;
                 width: 100%;
@@ -542,6 +542,12 @@
                 option {
                     padding-left: 1.35em;
 
+                    span {
+                        display: block;
+                        color: #888;
+                        font-size: 0.7rem;
+                    }
+
                     &:checked {
                         background-color: var(--ukceh-colour-data);
                     }
@@ -550,8 +556,13 @@
                         margin-left: -0.7em;
                     }
                 }
-            }
 
+                selectedcontent {
+                    span {
+                        display: none;
+                    }
+                }
+            }
 
             // VOCAB KEYWORD PICKER STYLES
             .vocabularyPicker {

@@ -23,6 +23,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
+import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
@@ -247,6 +248,7 @@ public class DocumentController extends AbstractDocumentController {
             ifMatch
         );
     }
+
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
         method = RequestMethod.POST,
@@ -279,6 +281,39 @@ public class DocumentController extends AbstractDocumentController {
             file,
             document,
             ifMatch
+        );
+    }
+
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @RequestMapping (value = "documents",
+        method = RequestMethod.POST,
+        consumes = RESEARCHACTIVITY_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newResearchActivity(
+        @ActiveUser CatalogueUser user,
+        @RequestBody ResearchActivity document,
+        @RequestParam("catalogue") String catalogue
+    ) {
+        return saveNewMetadataDocument(
+            user,
+            document,
+            catalogue,
+            "new Monitoring programme"
+        );
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping(value = "documents/{file}",
+        method = RequestMethod.PUT,
+        consumes = RESEARCHACTIVITY_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateResearchActivity(
+        @ActiveUser CatalogueUser user,
+        @PathVariable String file,
+        @RequestBody ResearchActivity document
+    ) {
+        return saveMetadataDocument(
+            user,
+            file,
+            document
         );
     }
 
@@ -430,6 +465,10 @@ public class DocumentController extends AbstractDocumentController {
             case MonitoringNetwork doc -> doc.populateFromJenaService(jenaService);
             case MonitoringProgramme doc -> doc.populateFromJenaService(jenaService);
             default -> {}
+        }
+
+        if (document instanceof ResearchActivity doc) {
+            doc.populateFromJenaService(jenaService);
         }
         return document;
     }

@@ -1,7 +1,7 @@
 import _ from 'underscore'
 
 export default _.template(`
-<select data-name="value" id="input-facilityType">
+<select data-name="value" id="input-facilityType" class="form-select">
     <option value="catchment">Catchment (incl. sub-catchments)</option>
     <option value="laboratory">Laboratory</option>
     <option value="platform">Platform</option>

@@ -1,0 +1,153 @@
+import { EditorView, InputView, SelectView } from '../index'
+import {
+  ContactView,
+  SimpleLinkView,
+  KeywordVocabularyView,
+  ParentStringView,
+  ParentView,
+  PredefinedParentView,
+  PredefinedParentLargeView,
+  RelationshipView,
+  SingleObjectView,
+  TextareaView,
+  TextOnlyView,
+  FundingView
+} from '../views'
+import {
+  Contact,
+  Funding
+} from '../models'
+export default EditorView.extend({
+
+  initialize () {
+    if (!this.model.has('type')) { this.model.set('type', 'researchActivity') }
+
+    this.sections = [{
+      label: 'General',
+      title: 'General',
+      views: [
+
+        new InputView({
+          model: this.model,
+          modelAttribute: 'title',
+          label: 'Name'
+        }),
+
+        new ParentStringView({
+          model: this.model,
+          modelAttribute: 'alternateNames',
+          label: 'Alternative names'
+        }),
+
+        new TextareaView({
+          model: this.model,
+          modelAttribute: 'description',
+          label: 'Description',
+          rows: 6
+        }),
+
+        new PredefinedParentLargeView({
+          model: this.model,
+          ModelType: Contact,
+          modelAttribute: 'contributors',
+          label: 'Contributors',
+          ObjectInputView: ContactView,
+          multiline: true,
+          roleDefault: 'contributor',
+          predefined: {
+            'UKCEH': {
+              organisationName: 'UK Centre for Ecology & Hydrology',
+              role: 'pointOfContact',
+              email: 'enquiries@ceh.ac.uk',
+              organisationIdentifier: 'https://ror.org/00pggkr55'
+            }
+          }
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'onlineResources',
+          label: 'Online resources',
+          ObjectInputView: SimpleLinkView,
+          multiline: true
+        })
+
+      ]
+    },
+    {
+      label: 'Relationships',
+      title: 'Relationships',
+      views: [
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'relationships',
+          label: 'Relationships',
+          ObjectInputView: RelationshipView,
+          multiline: true,
+          options: [
+            {
+              value: 'http://purl.org/dc/terms/relation',
+              label: 'Relation'
+            }
+          ]
+        })
+
+      ]
+    },
+    {
+      label: 'Funding',
+      title: 'Funding',
+      views: [
+
+        new PredefinedParentView({
+          model: this.model,
+          modelAttribute: 'funding',
+          ModelType: Funding,
+          multiline: true,
+          label: 'Funding',
+          ObjectInputView: FundingView,
+          predefined: {
+            BBSRC: {
+              funderName: 'Biotechnology and Biological Sciences Research Council',
+              funderIdentifier: 'https://ror.org/00cwqg982'
+            },
+            Defra: {
+              funderName: 'Department for Environment Food and Rural Affairs',
+              funderIdentifier: 'https://ror.org/00tnppw48'
+            },
+            EPSRC: {
+              funderName: 'Engineering and Physical Sciences Research Council',
+              funderIdentifier: 'https://ror.org/0439y7842'
+            },
+            ESRC: {
+              funderName: 'Economic and Social Research Council',
+              funderIdentifier: 'https://ror.org/03n0ht308'
+            },
+            'Innovate UK': {
+              funderName: 'Innovate UK',
+              funderIdentifier: 'https://ror.org/05ar5fy68'
+            },
+            MRC: {
+              funderName: 'Medical Research Council',
+              funderIdentifier: 'https://ror.org/03x94j517'
+            },
+            NERC: {
+              funderName: 'Natural Environment Research Council',
+              funderIdentifier: 'https://ror.org/02b5d8509'
+            },
+            STFC: {
+              funderName: 'Science and Technology Facilities Council',
+              funderIdentifier: 'https://ror.org/057g20z61'
+            }
+          }
+
+        })
+
+      ]
+    }
+    ]
+
+    return EditorView.prototype.initialize.apply(this)
+  }
+})

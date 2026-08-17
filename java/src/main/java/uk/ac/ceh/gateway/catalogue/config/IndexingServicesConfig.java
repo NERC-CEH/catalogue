@@ -20,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.network.NetworkIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
+import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
 import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
@@ -82,6 +83,7 @@ public class IndexingServicesConfig {
             .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(documentGenerator, baseUri))
             .register(CodeDocument.class, new JenaIndexCodeDocumentGenerator(documentGenerator, baseUri))
             .register(InfrastructureRecord.class, new JenaIndexInfrastructureRecordGenerator(documentGenerator, baseUri))
+            //.register(ResearchActivity.class, new ????????(documentGenerator, baseUri))
             .register(LinkDocument.class, new JenaIndexLinkDocumentGenerator(documentGenerator))
             .register(MonitoringFacility.class, new JenaIndexMonitoringFacilityGenerator(documentGenerator, baseUri))
             .register(MetadataDocument.class, documentGenerator);
@@ -138,6 +140,7 @@ public class IndexingServicesConfig {
             .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocumentGenerator, codeLookupService))
             .register(SampleArchive.class, new SampleArchiveIndexGenerator(metadataDocumentGenerator))
             .register(InfrastructureRecord.class, new InfrastructureRecordIndexGenerator(metadataDocumentGenerator))
+            //.register(ResearchActivity.class, new XXXXXX(metadataDocumentGenerator))
             .register(MonitoringFacility.class, new SolrIndexMonitoringFacilityGenerator(metadataDocumentGenerator))
             .register(MonitoringActivity.class, new SolrIndexMonitoringActivityGenerator(metadataDocumentGenerator))
             .register(MonitoringNetwork.class, new SolrIndexMonitoringNetworkGenerator(metadataDocumentGenerator))

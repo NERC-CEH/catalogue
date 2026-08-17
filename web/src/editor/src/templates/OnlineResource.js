@@ -30,7 +30,7 @@ export default _.template(`
         <label for="onlineResource<%= data.index %>Function">Function</label>
     </div>
     <div class="col-sm-4">
-        <select data-name="function" id="onlineResource<%= data.index %>Function"   <%= data.disabled%>>
+        <select data-name="function" id="onlineResource<%= data.index %>Function" class="form-select" <%= data.disabled%>>
             <option value="" selected >- Select Function -</option>
             <option value="browseGraphic">Browse graphic <span>(a static image such as a logo or data preview)</span></option>
             <option value="browsing">Browsing <span>(an application that allows you to browse/preview the data)</span></option>
