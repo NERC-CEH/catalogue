@@ -284,6 +284,7 @@ public class DocumentController extends AbstractDocumentController {
         );
     }
 
+/* */
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
         method = RequestMethod.POST,
@@ -292,12 +293,12 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @RequestBody ResearchActivity document,
         @RequestParam("catalogue") String catalogue
-    ) {
+    ) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(
             user,
             document,
             catalogue,
-            "new Monitoring programme"
+            "new Research Activity"
         );
     }
 
@@ -308,15 +309,17 @@ public class DocumentController extends AbstractDocumentController {
     public ResponseEntity<MetadataDocument> updateResearchActivity(
         @ActiveUser CatalogueUser user,
         @PathVariable String file,
-        @RequestBody ResearchActivity document
-    ) {
+        @RequestBody ResearchActivity document,
+        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
+    ) throws DocumentRepositoryException, IOException {
         return saveMetadataDocument(
             user,
             file,
-            document
+            document,
+            ifMatch
         );
     }
-
+/* */
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
     method = RequestMethod.POST,

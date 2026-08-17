@@ -1,16 +1,13 @@
-import { EditorView, InputView, SelectView } from '../index'
+import { EditorView, InputView } from '../index'
 import {
   ContactView,
   SimpleLinkView,
-  KeywordVocabularyView,
   ParentStringView,
   ParentView,
   PredefinedParentView,
   PredefinedParentLargeView,
   RelationshipView,
-  SingleObjectView,
   TextareaView,
-  TextOnlyView,
   FundingView
 } from '../views'
 import {
@@ -55,7 +52,7 @@ export default EditorView.extend({
           multiline: true,
           roleDefault: 'contributor',
           predefined: {
-            'UKCEH': {
+            UKCEH: {
               organisationName: 'UK Centre for Ecology & Hydrology',
               role: 'pointOfContact',
               email: 'enquiries@ceh.ac.uk',
