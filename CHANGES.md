@@ -4,6 +4,24 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.225.0] - 2026-08-17
+
+Staff can once again save a record immediately after creating it. A record created and then edited on without leaving the editor was being rejected with an error, and the only way past it was to leave the editor without saving and go back in — which risked losing the work in progress. The same error affected link records on their very first save. Both now save normally (GH dri-one#282). No data was ever lost to this: the failed saves were refused rather than applied incorrectly.
+
+## [3.224.0] - 2026-08-13
+
+Depositors can now record the science area their submission belongs to on the deposit request form, and the confirmation page shown after a successful submission is now reliable — the reference number is carried in the web address rather than held in the browser session, which previously meant the confirmation could come up blank (DRI-ONE-267). Supporting this, the application no longer keeps per-visitor state on the server, so it behaves consistently when more than one copy is running behind the load balancer (DRI-ONE-271).
+
+When linking one record to another, the search suggestions are now limited to record types that are valid for the relationship being created, and a record no longer appears in its own list of suggestions (EMC-893). The relationship editor's appearance has also been tidied.
+
+## [3.223.0] - 2026-08-06
+
+Deleting a record now also removes its accumulated view and download statistics, so figures for a deleted record no longer linger in usage reporting. Every deletion is written to an audit log recording who removed what and when. Behind the scenes, a gap in the build was closed so that changes to page templates are properly picked up by the automated tests, and changelog entries for releases 3.219.0 to 3.221.0 were added.
+
+## [3.222.0] - 2026-08-05
+
+Administrators holding the record-deletion role can now remove any record in the catalogue, including records whose stored content the application can no longer read and which previously had to be left in place. The deletion facility was reviewed before release and several issues were corrected: the protection that stops another website triggering actions on a signed-in user's behalf was not being applied on the alternative sign-in routes, record identifiers were not being safely escaped when displayed, a failure during deletion could pass unreported, and a sign-in cookie was being cleared when it should not have been. Deletion is now also restricted to the web interface rather than being callable as a general service.
+
 ## [3.221.0] - 2026-08-04
 
 Record pages load substantially faster. Their view and download totals were being recalculated on every page view by scanning the entire usage-statistics database, which had grown past a gigabyte and is held on network storage; those totals are now looked up through an index and cached, taking the work off the page-rendering path entirely. A leftover template belonging to a record type withdrawn some time ago has also been removed.
