@@ -79,6 +79,15 @@ public class SolrScheduledReindexService {
 
     /**
      * Doubles with every attempt, up to {@link #MAX_RETRY_DELAY}.
+     * <p>
+     * {@code 1L << (attempt - 1)} is 2^(attempt-1): shifting a single set bit n places left leaves it
+     * worth 2^n, so this is the exponent as exact integer arithmetic rather than a cast from
+     * {@code Math.pow}. {@code attempt} is 1-based, hence the -1: the first attempt shifts by nothing
+     * and waits {@link #FIRST_RETRY_DELAY}.
+     * <p>
+     * The literal must stay a {@code long}. As an {@code int}, an attempt of 32 would shift the bit
+     * into the sign bit and give a negative multiplier, and a negative delay is smaller than the cap
+     * below, so it would schedule in the past and retry in a tight loop instead of backing off.
      */
     Duration retryDelay(int attempt) {
         val delay = FIRST_RETRY_DELAY.multipliedBy(1L << (attempt - 1));
