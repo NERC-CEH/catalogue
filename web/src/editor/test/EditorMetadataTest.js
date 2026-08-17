@@ -69,6 +69,51 @@ describe('EditorMetadata', () => {
 
       expect(model.getRevision()).toBe('rev2')
     })
+
+    // The editor keeps one model for the whole session: a new record is created with a POST and then
+    // edited on with PUTs, never re-read in between. So the create response's ETag is the only thing
+    // that can arm the next save's precondition - without it that save goes out bare and is rejected
+    // with a 428 the user can only escape by leaving the editor and coming back.
+    it('captures the revision from a create so the next save carries an If-Match', () => {
+      const model = new EditorMetadata({ title: 'this is a title' })
+      expect(model.isNew()).toBe(true)
+      model.save()
+
+      const jqXHR = {
+        getResponseHeader: (name) => (name === 'ETag' ? '"metaRev1:rawRev1"' : null)
+      }
+      doneCallback({ id: 'doc1' }, 'success', jqXHR)
+
+      expect(model.getRevision()).toBe('metaRev1:rawRev1')
+    })
+  })
+
+  // The full journey reported from the data centre: create a record, save, carry on editing in the
+  // same open editor and save again. The second save must be an update carrying the revision the
+  // create returned.
+  describe('create then save again without re-reading the record', () => {
+    it('sends the create ETag as If-Match on the following save', () => {
+      let syncArgs
+      let doneCallback
+      spyOn(Backbone, 'sync').and.callFake((method, model, options) => {
+        syncArgs = { method, options }
+        return { done: (cb) => { doneCallback = cb } }
+      })
+
+      const model = new EditorMetadata({ title: 'this is a title' })
+      model.save()
+      expect(syncArgs.method).toBe('create')
+
+      doneCallback({ id: 'doc1' }, 'success', {
+        getResponseHeader: (name) => (name === 'ETag' ? '"metaRev1:rawRev1"' : null)
+      })
+      model.set('id', 'doc1')
+
+      model.save()
+
+      expect(syncArgs.method).toBe('update')
+      expect(syncArgs.options.headers['If-Match']).toBe('metaRev1:rawRev1')
+    })
   })
 
   // ServiceAgreement calls EditorMetadata.prototype.initialize with no arguments, so it is worth

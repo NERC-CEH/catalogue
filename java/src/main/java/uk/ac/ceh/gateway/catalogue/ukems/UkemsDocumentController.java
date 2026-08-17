@@ -29,7 +29,7 @@ public class UkemsDocumentController extends AbstractDocumentController {
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = UKEMS_DOCUMENT_JSON_VALUE)
     public ResponseEntity<MetadataDocument> newUkemsDocument(@ActiveUser CatalogueUser user, @RequestBody UkemsDocument document,
-            @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException {
+            @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(user, document, catalogue, "new UK-EMS document");
     }
 

@@ -34,7 +34,7 @@ public class InfrastructureRecordController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody InfrastructureRecord document,
             @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException {
+    ) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(user, document, catalogue, "new infrastructure record");
     }
 
