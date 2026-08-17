@@ -56,12 +56,18 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
     @Override
     public void rebuildIndex() throws DocumentIndexingException {
         try {
+            log.info("Rebuilding {} index", indexName());
             clearIndex();
             DataRevision<?> latestRevision = repo.getLatestRevision();
-            if (latestRevision != null) {
-                String revision = latestRevision.getRevisionID();
-                indexDocuments(listingService.filterFilenames(repo.getFiles(revision)), revision);
+            if (latestRevision == null) {
+                log.warn("Cannot rebuild {} index: no revision available from the data repository", indexName());
+                return;
             }
+            String revision = latestRevision.getRevisionID();
+            val documents = listingService.filterFilenames(repo.getFiles(revision));
+            log.info("Rebuilding {} index with {} documents at revision {}", indexName(), documents.size(), revision);
+            indexDocuments(documents, revision);
+            log.info("Rebuilt {} index with {} documents at revision {}", indexName(), documents.size(), revision);
         }
         catch(IOException ex) {
             throw new DocumentIndexingException(ex);
@@ -102,16 +108,38 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
     }
 
     @Override
-    public void attemptIndexing() {
+    public boolean attemptIndexing() {
         try {
             if(this.isIndexEmpty()) {
+                log.info("{} index is empty, rebuilding", indexName());
                 this.rebuildIndex();
+            } else {
+                log.debug("{} index already holds documents, not rebuilding", indexName());
             }
+            return true;
         } catch (Exception ex) {
+            if (ex.getSuppressed().length == 0) {
+                // Nothing was indexed at all - typically the index is unreachable. Log the failure
+                // itself, otherwise an empty index leaves no trace whatsoever in the log.
+                // toString() rather than getMessage(): a bare ConnectException has no message at all
+                log.warn("Could not index into {}: {}", indexName(), ex.toString(), ex);
+                return false;
+            }
+            log.warn(
+                "{} index rebuilt, but {} document(s) failed to index",
+                indexName(), ex.getSuppressed().length
+            );
             for (Throwable suppressed : ex.getSuppressed()) {
                 log.warn("Indexing error: {}", suppressed.getMessage());
             }
+            // The index was reached and rebuilt; retrying would clear and rebuild it again for the
+            // sake of documents that will fail every time.
+            return true;
         }
+    }
+
+    private String indexName() {
+        return getClass().getSimpleName();
     }
 
     /**
