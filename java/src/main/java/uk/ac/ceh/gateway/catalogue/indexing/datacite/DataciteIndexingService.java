@@ -96,7 +96,9 @@ public class DataciteIndexingService implements DocumentIndexingService {
     @Override
     public void unindexDocuments(List<String> unIndex) throws DocumentIndexingException {}
 
-    // Do nothing here
+    // Nothing to index, so there is never anything to retry
     @Override
-    public void attemptIndexing() {}
+    public boolean attemptIndexing() {
+        return true;
+    }
 }
