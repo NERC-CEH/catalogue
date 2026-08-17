@@ -454,6 +454,74 @@ class DocumentControllerTest extends AbstractMvcTest {
     }
 
     @Test
+    @SneakyThrows
+    @DisplayName("a create response carries the new record's revision as its ETag")
+    public void postEmitsETagOfCreatedDocument() {
+        //Given a create that will commit as document "123-test" at a known revision
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        GeminiDocument document = new GeminiDocument();
+        document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
+        GeminiDocument created = new GeminiDocument();
+        created.setId("123-test");
+        created.setUri("https://catalogue.ceh.ac.uk/id/123-test");
+        given(documentRepository.saveNew(user, document, "catalogue", "new Gemini Document"))
+            .willReturn(created);
+        given(cachedDataRepository.getDocumentRevisionToken("123-test")).willReturn("metaRev1:rawRev1");
+
+        //When the document is created
+        ResponseEntity<MetadataDocument> actual = controller.newGeminiDocument(user, document, "catalogue");
+
+        //Then the response carries that revision, which is the only thing the editor can use as the
+        //precondition for its very next save - it holds the model in memory rather than re-reading it
+        assertThat(actual.getStatusCode(), equalTo(HttpStatus.CREATED));
+        assertThat("the create response must carry an ETag or the editor's next PUT has no If-Match",
+            actual.getHeaders().getETag(), is("\"metaRev1:rawRev1\""));
+    }
+
+    /*
+     * The journey reported from the data centre: create a record, save it, carry on editing in the same
+     * open editor (ticking the service-agreement box on the admin tab) and save again. The editor never
+     * re-reads the document between those two saves, so the second save's If-Match can only be the ETag
+     * the create returned. When the create returns none, that second save arrives bare and is rejected
+     * with 428 - and the only way out is to leave the editor and come back, forcing a fresh GET.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("create then edit again without leaving the editor: the second save has a precondition")
+    public void roundTripCreateThenPutSucceedsWithoutLeavingTheEditor() {
+        //Given a create committing as "123-test" at "metaRev1:rawRev1"
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        GeminiDocument document = new GeminiDocument();
+        document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
+        GeminiDocument created = new GeminiDocument();
+        created.setId("123-test");
+        created.setUri("https://catalogue.ceh.ac.uk/id/123-test");
+        given(documentRepository.saveNew(user, document, "catalogue", "new Gemini Document"))
+            .willReturn(created);
+        given(cachedDataRepository.getDocumentRevisionToken("123-test"))
+            .willReturn("metaRev1:rawRev1", "metaRev1:rawRev2");
+
+        //When the record is created and its ETag kept, as the editor's model does
+        String etagFromCreate = controller.newGeminiDocument(user, document, "catalogue")
+            .getHeaders().getETag();
+
+        //And the user carries on editing and saves again, sending that ETag back as If-Match
+        GeminiDocument existing = new GeminiDocument();
+        existing.setMetadata(MetadataInfo.builder().catalogue("eidc").state("draft").build());
+        given(documentRepository.read("123-test")).willReturn(existing);
+        GeminiDocument secondEdit = new GeminiDocument();
+        given(documentRepository.save(eq(user), eq(secondEdit), eq("123-test"), any(), eq("metaRev1:rawRev1")))
+            .willReturn(secondEdit);
+
+        ResponseEntity<MetadataDocument> secondSave =
+            controller.updateGeminiDocument(user, "123-test", secondEdit, etagFromCreate);
+
+        //Then the second save is accepted rather than rejected for a missing precondition
+        assertThat(secondSave.getStatusCode(), equalTo(HttpStatus.OK));
+        verify(documentRepository).save(eq(user), eq(secondEdit), eq("123-test"), any(), eq("metaRev1:rawRev1"));
+    }
+
+    @Test
     public void checkCanCreateLinkedDocument() throws Exception {
         //Given
         CatalogueUser user = new CatalogueUser("test", "test@example.com");
@@ -767,6 +835,27 @@ class DocumentControllerTest extends AbstractMvcTest {
      * mapping and message conversion of the echoed body — because that wiring is where a mandatory
      * precondition can silently degrade to an optional one.
      */
+
+    /*
+     * The link editor asks for the record as application/link+json, which content negotiation routes to
+     * a handler of its own rather than the general document read. Both are entry points to the same
+     * edit-then-save cycle, so both have to hand back the revision that cycle's first save needs.
+     */
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    @DisplayName("reading a record as link+json carries the same ETag as reading it as gemini+json")
+    void linkDocumentReadEmitsETag() {
+        givenUserIsPermittedToView();
+        GeminiDocument existing = new GeminiDocument();
+        existing.setMetadata(MetadataInfo.builder().catalogue("eidc").state("draft").build());
+        given(documentRepository.read(id)).willReturn(existing);
+        given(cachedDataRepository.getDocumentRevisionToken(id)).willReturn("metaRev1:rawRev1");
+
+        mvc.perform(get("/documents/{id}", id).accept(LINKED_JSON_VALUE))
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.ETAG, "\"metaRev1:rawRev1\""));
+    }
 
     @Test
     @SneakyThrows

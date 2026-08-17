@@ -115,7 +115,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody GeminiDocument document,
             @RequestParam("catalogue") String catalogue
-            ) throws DocumentRepositoryException {
+            ) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(
                 user,
                 document,
@@ -151,7 +151,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @RequestBody MonitoringActivity document,
         @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException {
+    ) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(
             user,
             document,
@@ -186,7 +186,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @RequestBody MonitoringFacility document,
         @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException {
+    ) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(
             user,
             document,
@@ -221,7 +221,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @RequestBody MonitoringNetwork document,
         @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException {
+    ) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(
             user,
             document,
@@ -255,7 +255,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @RequestBody MonitoringProgramme document,
         @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException {
+    ) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(
             user,
             document,
@@ -290,7 +290,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody CehModel document,
             @RequestParam("catalogue") String catalogue
-            ) throws DocumentRepositoryException {
+            ) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(
                 user,
                 document,
@@ -325,7 +325,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody DataType document,
             @RequestParam("catalogue") String catalogue
-            ) throws DocumentRepositoryException {
+            ) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(
                 user,
                 document,
@@ -360,7 +360,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody CehModelApplication document,
             @RequestParam("catalogue") String catalogue
-            ) throws DocumentRepositoryException {
+            ) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(
                 user,
                 document,
@@ -395,7 +395,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody LinkDocument document,
             @RequestParam("catalogue") String catalogue
-            ) throws DocumentRepositoryException {
+            ) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(
                 user,
                 document,
@@ -465,15 +465,25 @@ public class DocumentController extends AbstractDocumentController {
         return "forward:/documents/" + file + "?format=" + GEMINI_XML_SHORT;
     }
 
-    @ResponseBody
+    /**
+     * The link editor reads the record through this handler rather than {@link #readMetadata}, content
+     * negotiation preferring it for {@code application/link+json}. It therefore has to carry the same
+     * {@code ETag}: it is the start of an edit-then-save cycle, and the save it leads to demands an
+     * {@code If-Match}.
+     */
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @GetMapping(value = "documents/{file}", produces = LINKED_JSON_VALUE)
-    public MetadataDocument readLinkDocument(
+    public ResponseEntity<MetadataDocument> readLinkDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable String file
-            ) throws DocumentRepositoryException {
+            ) throws DocumentRepositoryException, IOException {
         var document = documentRepository.read(file);
-        return addJenaRelationships(document);
+        String revision = cachedDataRepository.getDocumentRevisionToken(file);
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+        if (revision != null) {
+            builder.eTag(revision); // Spring quotes this into a strong ETag: "revision"
+        }
+        return builder.body(addJenaRelationships(document));
     }
 
 

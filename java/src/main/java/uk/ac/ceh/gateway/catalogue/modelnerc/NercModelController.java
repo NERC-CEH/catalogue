@@ -36,7 +36,7 @@ public class NercModelController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody NercModel document,
             @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException {
+    ) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(user, document, catalogue, "new Model");
     }
 
@@ -57,7 +57,7 @@ public class NercModelController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody NercModelUse document,
             @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException {
+    ) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(user, document, catalogue, "new Model implementation (NERC)");
     }
 

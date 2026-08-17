@@ -33,7 +33,7 @@ public class CodeDocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody CodeDocument document,
             @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException {
+    ) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(user, document, catalogue, "new code document");
     }
 

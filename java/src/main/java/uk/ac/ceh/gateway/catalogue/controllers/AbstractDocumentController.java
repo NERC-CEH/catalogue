@@ -24,14 +24,28 @@ public abstract class AbstractDocumentController {
         this.cachedDataRepository = cachedDataRepository;
     }
 
+    /**
+     * Creates a document and returns it with the revision it was committed at as the response {@code ETag}.
+     *
+     * <p>The editor keeps its model in memory across a create and every subsequent save in the same
+     * session — it does not re-read the record in between — so this response is the only place the
+     * client can learn the revision its <em>next</em> save must be predicated on. Without it that save
+     * carries no {@code If-Match} and {@link IfMatchRevision#require} rejects it with a 428 that the
+     * user can only escape by leaving the editor and re-entering, forcing a fresh GET.</p>
+     */
     protected ResponseEntity<MetadataDocument> saveNewMetadataDocument(
                     CatalogueUser user,
                     MetadataDocument document,
                     String catalogue,
                     String message
-    ) throws DocumentRepositoryException {
+    ) throws DocumentRepositoryException, IOException {
         MetadataDocument data = documentRepository.saveNew(user, document, catalogue, message);
-        return ResponseEntity.created(URI.create(data.getUri())).body(data);
+        String revision = cachedDataRepository.getDocumentRevisionToken(data.getId());
+        ResponseEntity.BodyBuilder builder = ResponseEntity.created(URI.create(data.getUri()));
+        if (revision != null) {
+            builder.eTag(revision); // Spring quotes this into a strong ETag: "revision"
+        }
+        return builder.body(data);
     }
 
     protected ResponseEntity<MetadataDocument> saveMetadataDocument(

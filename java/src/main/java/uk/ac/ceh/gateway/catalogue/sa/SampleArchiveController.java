@@ -32,7 +32,7 @@ public class SampleArchiveController extends AbstractDocumentController {
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = SAMPLE_ARCHIVE_JSON_VALUE)
     public ResponseEntity<MetadataDocument> newSampleArchive(@ActiveUser CatalogueUser user, @RequestBody SampleArchive document,
-            @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException {
+            @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(user, document, catalogue, "new Sample Archive");
     }
 
