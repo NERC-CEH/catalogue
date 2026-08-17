@@ -37,6 +37,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class SolrIndexMetadataDocumentGeneratorTest {
 
+    private static final String FDRI_VOCAB = "https://digital.ceh.ac.uk/vocab/fdri/";
+
     @Mock CodeLookupService codeLookupService;
     @Mock DocumentIdentifierService documentIdentifierService;
     @Mock VocabularyService vocabularyService;
@@ -306,6 +308,98 @@ class SolrIndexMetadataDocumentGeneratorTest {
 
         //Then
         assertThat(index.getResourceIdentifier(), empty());
+    }
+
+    @Test
+    void fdriCatchmentAddedFromVocabularyKeywords() {
+        //Given
+        GeminiDocument document = new GeminiDocument();
+        document.setKeywordsTheme(Arrays.asList(
+            Keyword.builder().URI(FDRI_VOCAB + "chess").value("Chess").build(),
+            Keyword.builder().URI(FDRI_VOCAB + "upper-severn").value("Upper Severn").build(),
+            Keyword.builder().URI("http://vocabs.ceh.ac.uk/ukscape/water").value("Water").build()
+        ));
+        given(vocabularyService.isMember(anyString(), anyString())).willReturn(false);
+        given(vocabularyService.isMember("catchment", FDRI_VOCAB + "chess")).willReturn(true);
+        given(vocabularyService.isMember("catchment", FDRI_VOCAB + "upper-severn")).willReturn(true);
+
+        //When
+        SolrIndex index = generator.generateIndex(document);
+
+        //Then
+        assertThat(index.getFdriCatchment(), containsInAnyOrder("Chess", "Upper Severn"));
+    }
+
+    @Test
+    void fdriCategoryAddedFromVocabularyKeywords() {
+        //Given
+        GeminiDocument document = new GeminiDocument();
+        document.setKeywordsTheme(Arrays.asList(
+            Keyword.builder().URI(FDRI_VOCAB + "hydrology").value("Hydrology").build(),
+            Keyword.builder().URI(FDRI_VOCAB + "geology-and-soils").value("Geology and soils").build()
+        ));
+        given(vocabularyService.isMember(anyString(), anyString())).willReturn(false);
+        given(vocabularyService.isMember("category", FDRI_VOCAB + "hydrology")).willReturn(true);
+        given(vocabularyService.isMember("category", FDRI_VOCAB + "geology-and-soils")).willReturn(true);
+
+        //When
+        SolrIndex index = generator.generateIndex(document);
+
+        //Then
+        assertThat(index.getFdriCategory(), containsInAnyOrder("Hydrology", "Geology and soils"));
+    }
+
+    @Test
+    void fdriSpatialScaleAddedFromVocabularyKeyword() {
+        //Given
+        GeminiDocument document = new GeminiDocument();
+        document.setKeywordsTheme(List.of(
+            Keyword.builder().URI(FDRI_VOCAB + "national").value("National").build()
+        ));
+        given(vocabularyService.isMember(anyString(), anyString())).willReturn(false);
+        given(vocabularyService.isMember("spatial-scale", FDRI_VOCAB + "national")).willReturn(true);
+
+        //When
+        SolrIndex index = generator.generateIndex(document);
+
+        //Then
+        assertThat(index.getFdriSpatialScale(), equalTo("National"));
+    }
+
+    @Test
+    void fdriTimeseriesDataAddedFromVocabularyKeyword() {
+        //Given
+        GeminiDocument document = new GeminiDocument();
+        document.setKeywordsTheme(List.of(
+            Keyword.builder().URI(FDRI_VOCAB + "timeseries-yes").value("Yes").build()
+        ));
+        given(vocabularyService.isMember(anyString(), anyString())).willReturn(false);
+        given(vocabularyService.isMember("timeseries", FDRI_VOCAB + "timeseries-yes")).willReturn(true);
+
+        //When
+        SolrIndex index = generator.generateIndex(document);
+
+        //Then
+        assertThat(index.getFdriTimeseriesData(), equalTo("Yes"));
+    }
+
+    @Test
+    void untaggedDocumentHasNoFdriFacetValues() {
+        //Given
+        GeminiDocument document = new GeminiDocument();
+        document.setKeywordsTheme(List.of(
+            Keyword.builder().URI("http://vocabs.ceh.ac.uk/ukscape/water").value("Water").build()
+        ));
+        given(vocabularyService.isMember(anyString(), anyString())).willReturn(false);
+
+        //When
+        SolrIndex index = generator.generateIndex(document);
+
+        //Then
+        assertThat(index.getFdriCatchment(), empty());
+        assertThat(index.getFdriCategory(), empty());
+        assertThat(index.getFdriSpatialScale(), nullValue());
+        assertThat(index.getFdriTimeseriesData(), nullValue());
     }
 
 }

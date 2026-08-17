@@ -127,6 +127,33 @@ public class KeywordVocabulariesConfig {
 
     @Profile("server-eidc")
     @Bean
+    public KeywordVocabulary fdriVocabulary(
+            @Qualifier("sparql") RestTemplate restTemplate,
+            SolrClient solrClient,
+            @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint
+            ) {
+        /* FDRI (Floods and Droughts Research Infrastructure)
+         *
+         * Harvests every FDRI concept - catchments, categories, spatial scales
+         * and the timeseries flag - so cataloguers can select them in the
+         * editor's keyword picker. The all-catalogue search facets built from
+         * these keywords are defined in CatalogueServiceConfig.
+         *
+         * See EMC-885 / dri-one #149.
+         */
+        return new SparqlKeywordVocabulary(
+                restTemplate,
+                solrClient,
+                sparqlEndpoint,
+                "<https://digital.ceh.ac.uk/vocab/fdri/>",
+                "?uri skos:prefLabel ?label .",
+                "fdri",
+                "FDRI"
+                );
+            }
+
+    @Profile("server-eidc")
+    @Bean
     public KeywordVocabulary gemetVocabulary(
             SolrClient solrClient,
             @Value("${gemet.local}") String gemetLocalPath
