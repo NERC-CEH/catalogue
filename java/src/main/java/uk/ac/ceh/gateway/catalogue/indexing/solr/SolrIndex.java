@@ -27,6 +27,10 @@ public class SolrIndex {
     private @Field("catalogue_view") List<String> catalogueView;
     private @Field String description;
     private @Field String documentType;
+    private @Field List<String> fdriCatchment;
+    private @Field List<String> fdriCategory;
+    private @Field String fdriSpatialScale;
+    private @Field String fdriTimeseriesData;
     private @Field List<String> funder;
     private @Field List<String> grant;
     private @Field String identifier;
