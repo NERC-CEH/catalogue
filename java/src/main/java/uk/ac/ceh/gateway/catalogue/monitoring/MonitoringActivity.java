@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.monitoring;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.http.MediaType;
@@ -38,7 +40,9 @@ public class MonitoringActivity extends AbstractMetadataDocument implements Well
     private List<TimePeriod> operatingPeriod;
     private List<Keyword> environmentalDomain, purposeOfCollection, keywordsParameters;
     private List<Supplemental> linksData, linksOther;
+    @JsonIgnore
     private List<Link> relUseNetworkOrFacility;
+    @JsonIgnore
     private List<Link> relSetupForProgramme;
 
     @Override
@@ -57,13 +61,25 @@ public class MonitoringActivity extends AbstractMetadataDocument implements Well
     }
 
 
+    @JsonProperty("relUseNetworkOrFacility")
     public List<Link> getRelUseNetworkOrFacility() {
         return Optional.ofNullable(relUseNetworkOrFacility)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonIgnore
+    public void setRelUseNetworkOrFacility(List<Link> relUseNetworkOrFacility) {
+        this.relUseNetworkOrFacility = relUseNetworkOrFacility;
+    }
+
+    @JsonProperty("relSetupForProgramme")
     public List<Link> getRelSetupForProgramme() {
         return Optional.ofNullable(relSetupForProgramme)
             .orElseGet(Collections::emptyList);
+    }
+
+    @JsonIgnore
+    public void setRelSetupForProgramme(List<Link> relSetupForProgramme) {
+        this.relSetupForProgramme = relSetupForProgramme;
     }
 }
