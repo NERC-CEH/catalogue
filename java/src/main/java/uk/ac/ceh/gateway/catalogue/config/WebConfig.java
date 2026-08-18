@@ -5,9 +5,11 @@ import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilterProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
@@ -15,6 +17,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.filter.ForwardedHeaderFilter;
+import org.springframework.web.filter.UrlHandlerFilter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -157,6 +160,32 @@ public class WebConfig implements WebMvcConfigurer {
         registrationBean.setFilter(new WmsFormatParameterFilter());
         registrationBean.addUrlPatterns("/maps/*");
         registrationBean.setOrder(1);
+        return registrationBean;
+    }
+
+    /**
+     * Redirects trailing-slash URLs to their canonical slash-less form, e.g.
+     * {@code /documents/} to {@code /documents}. Spring Framework 6 made
+     * {@link org.springframework.web.util.pattern.PathPatternParser} the default path matcher, which
+     * treats the two as distinct patterns, and Framework 7 removed the {@code setUseTrailingSlashMatch}
+     * opt-in entirely, so without this a trailing slash yields a bare 404.
+     *
+     * <p>Uses redirect rather than request-wrapping mode, and is ordered ahead of the Spring Security
+     * filter chain: were the path normalised in place after authorization had run, authorization would
+     * be evaluated against the un-normalised path while the handler ran against the normalised one.
+     *
+     * <p>308 is used in preference to 301 so that the method and body of a non-safe request survive
+     * the redirect.
+     */
+    @Bean
+    public FilterRegistrationBean<UrlHandlerFilter> trailingSlashRedirectFilter() {
+        val filter = UrlHandlerFilter
+            .trailingSlashHandler("/**")
+            .redirect(HttpStatus.PERMANENT_REDIRECT)
+            .build();
+        FilterRegistrationBean<UrlHandlerFilter> registrationBean
+            = new FilterRegistrationBean<>(filter);
+        registrationBean.setOrder(SecurityFilterProperties.DEFAULT_FILTER_ORDER - 1);
         return registrationBean;
     }
 
