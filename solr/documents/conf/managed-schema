@@ -104,6 +104,10 @@
     <field name="environmentalDomains" type="keywords"/>
     <field name="facilityType" type="keywords" multiValued="false"/>
     <field name="familyName" type="names" multiValued="true"/>
+    <field name="fdriCatchment" type="keywords"/>
+    <field name="fdriCategory" type="keywords"/>
+    <field name="fdriSpatialScale" type="keywords" multiValued="false"/>
+    <field name="fdriTimeseriesData" type="keywords" multiValued="false"/>
     <field name="fullName" type="names" multiValued="true"/>
     <field name="funder" type="keywords"/>
     <field name="givenName" type="keywords" multiValued="true"/>

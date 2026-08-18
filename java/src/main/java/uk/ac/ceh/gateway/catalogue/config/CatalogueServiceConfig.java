@@ -24,6 +24,10 @@ public class CatalogueServiceConfig {
         .facetKey("topic")
         .facetKey("licence")
         .facetKey("recordType")
+        .facetKey("fdriCatchment")
+        .facetKey("fdriCategory")
+        .facetKey("fdriSpatialScale")
+        .facetKey("fdriTimeseriesData")
         .fileUpload(false)
         .build();
 

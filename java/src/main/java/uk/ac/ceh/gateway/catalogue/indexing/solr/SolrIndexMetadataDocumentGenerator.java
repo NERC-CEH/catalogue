@@ -48,6 +48,10 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setCatalogueView(getCatalogueView(document))
             .setDescription(document.getDescription())
             .setDocumentType(getDocumentType(document))
+            .setFdriCatchment(grab(getKeywordsByVocabulary(document, VocabularyFacet.FDRI_CATCHMENT.getFacetName()), Keyword::getValue))
+            .setFdriCategory(grab(getKeywordsByVocabulary(document, VocabularyFacet.FDRI_CATEGORY.getFacetName()), Keyword::getValue))
+            .setFdriSpatialScale(first(getKeywordsByVocabulary(document, VocabularyFacet.FDRI_SPATIAL_SCALE.getFacetName()), Keyword::getValue))
+            .setFdriTimeseriesData(first(getKeywordsByVocabulary(document, VocabularyFacet.FDRI_TIMESERIES.getFacetName()), Keyword::getValue))
             .setIdentifier(identifierService.generateFileId(document.getId()))
             .setInmsScale(inmsScale(document))
             .setInmsTopic(grab(getKeywordsByVocabulary(document, VocabularyFacet.TOPIC.getFacetName()), Keyword::getValue))
@@ -134,6 +138,16 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
 
     public static <T> List<String> grab(T item, Function<? super T, String> mapper ) {
         return grab(Collections.singletonList(item), mapper);
+    }
+
+    // Solr fields declared multiValued="false" can hold only one value. Where a
+    // record has been tagged with several terms from a single-valued vocabulary,
+    // index the first and discard the rest rather than failing the whole document.
+    private static <T> String first(Collection<T> list, Function<? super T, String> mapper) {
+        return grab(list, mapper)
+            .stream()
+            .findFirst()
+            .orElse(null);
     }
 
     private List<Keyword> getInmsScaleKeywords(MetadataDocument document) {
