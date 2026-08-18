@@ -54,9 +54,11 @@ export default EditorView.extend({
           predefined: {
             UKCEH: {
               organisationName: 'UK Centre for Ecology & Hydrology',
-              role: 'pointOfContact',
               email: 'enquiries@ceh.ac.uk',
               organisationIdentifier: 'https://ror.org/00pggkr55'
+            },
+            Unaffiliated: {
+              organisationName: 'Unaffiliated'
             }
           }
         }),

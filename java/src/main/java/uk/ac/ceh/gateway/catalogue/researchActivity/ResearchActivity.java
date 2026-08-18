@@ -18,6 +18,7 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RDF_TTL_VALUE;
 
@@ -38,19 +39,34 @@ public class ResearchActivity extends AbstractMetadataDocument {
 
     @Data
     @AllArgsConstructor
-    public static class Funder {
-        private String funderName;
-        private String funderIdentifier;
+    public static class Organisation {
+        private String organisationName;
+        private String organisationIdentifier;
     }
 
     @JsonIgnore
-    public List<Funder> getFunders() {
-        return Optional.ofNullable(funding)
-            .orElseGet(Collections::emptyList)
-            .stream()
-            .map(f -> new Funder(
-                f.getFunderName(),
-                f.getFunderIdentifier()))
+    //De-duplicated list of contributor and funder organisations with valid identifiers
+    public List<Organisation> getOrganisations() {
+        return Stream.concat(
+                Optional.ofNullable(funding)
+                    .orElseGet(Collections::emptyList)
+                    .stream()
+                    .map(f -> new Organisation(
+                        f.getFunderName(),
+                        f.getFunderIdentifier()
+                    )),
+                Optional.ofNullable(contributors)
+                    .orElseGet(Collections::emptyList)
+                    .stream()
+                    .map(c -> new Organisation(
+                        c.getOrganisationName(),
+                        c.getOrganisationIdentifier()
+                    ))
+            )
+            .filter(o -> 
+                (o.getOrganisationName() != null && !o.getOrganisationName().isBlank()) &&
+                (o.getOrganisationIdentifier() != null && !o.getOrganisationIdentifier().isBlank())
+                )
             .distinct()
             .toList();
     }

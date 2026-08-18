@@ -9,11 +9,12 @@
     PREFIX dcat: <http://www.w3.org/ns/dcat#>
     PREFIX frapo: <http://purl.org/cerif/frapo/>
     PREFIX scoro: <http://purl.org/spar/scoro/>
-    PREFIX pro: <http://purl.org/spar/pro/>
     PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    PREFIX prov: <http://www.w3.org/ns/prov#>
+    PREFIX org: <http://www.w3.org/ns/org#>
     PREFIX schema: <http://schema.org/>
 
-    :${id} a frapo:Project, schema:ResearchProject;
+    :${id} a frapo:Project, prov:Activity;
         dcterms:title  <@displayLiteral title />  ;
 
         <#if description?has_content>
@@ -22,11 +23,9 @@
 
         <@outputList /> ;
         <@fundingList /> ;
-
+        <@assocationList /> ;
         frapo:hasHostInstitution <https://ror.org/00pggkr55> ;
         .
-
-        <@participants />
 
         <#-- UKCEH object -->
         <https://ror.org/00pggkr55> a schema:Organization ;
@@ -34,15 +33,20 @@
             schema:url <https://www.ceh.ac.uk> ;
             schema:email <mailto:enquiries@ceh.ac.uk>  .
 
-        <@contributorDetails />
+        <@assocationDetails />
         <@outputDetails />
         <@fundingDetails />
-        <@funderDetails />
+        <@contributorDetails />
+        <@organisationList />
 </#compress>
 
 <#macro displayLiteral string>
   <#--Ensure literals do not contain " characters-->
   "${string?trim?replace("\"","'")?replace("\n"," ")}"<#t>
+</#macro>
+
+<#macro displayUrl string>
+  <${string}><#t>
 </#macro>
 
 <#-- Funding -->
@@ -92,17 +96,16 @@
         </#if>
     </#macro>
 
-    <#macro funderDetails>
-        <#list funders as funder>
-            <#if funder.funderIdentifier?has_content>
-                <${funder.funderIdentifier}> a schema:Organization;
-                schema:name <@displayLiteral funder.funderName /> .
-            </#if>
-        </#list>
-    </#macro>
 <#-- Funding  ENDS-->
 
 <#-- Contributors -->
+    <#macro getAssociationID contributor index=0>
+      <#compress>
+        <#local associationID = ":assoc_" + id + "_" + index >
+        ${associationID}<#t>
+       </#compress>
+    </#macro>
+
     <#macro getContributorID contributor index=0>
       <#compress>
         <#local contributorID = ":contributor_" + id + "_" + index >
@@ -115,29 +118,49 @@
        </#compress>
     </#macro>
 
-    <#macro contributorDetails>
+    <#macro assocationList>
         <#if contributors?? & contributors?has_content>
+            prov:qualifiedAssociation <#t>
             <#list contributors as contributor>
-
-               <@getContributorID contributor contributor?index /> a foaf:Person ;  <#--What should this object be ? -->
-                    <#if contributor.fullName != '' >
-                        foaf:name <@displayLiteral contributor.fullName />;
-                    </#if>
-                    <#if contributor.organisationName != '' >
-                        vcard:org <@displayLiteral contributor.organisationName />;<#--What should this predicate be ? -->
-                    </#if>
-            .
+                <@getAssociationID contributor contributor?index /><#sep>,<#t>
             </#list>
         </#if>
     </#macro>
 
-    <#macro participants>
+    <#macro assocationDetails>
         <#if contributors?? & contributors?has_content>
             <#list contributors as contributor>
-                :contriburion_${contributor?index} a pro:RoleInTime ;
-                    pro:withRole scoro:project-member;
-                    pro:relatesToPerson <@getContributorID contributor contributor?index />;
-                    pro:relatesToDocument :${id} .
+               <@getAssociationID contributor contributor?index /> a prov:Association ;
+                prov:agent <@getContributorID contributor contributor?index /> ;
+                <#if contributor.contributorRole?has_content>prov:hadRole scoro:${contributor.contributorRole} ;</#if>
+               .
+            </#list>
+        </#if>
+    </#macro>
+
+    <#macro contributorDetails>
+        <#if contributors?? & contributors?has_content>
+            <#list contributors as contributor>
+                <#local provType = "prov:Organization" />
+                    <#if contributor.fullName?? && contributor.fullName?has_content>
+                        <#local provType = "prov:Person" />
+                    </#if>
+
+                <@getContributorID contributor contributor?index /> a ${provType} ;  
+                    <#if contributor.fullName != '' >
+                        foaf:name <@displayLiteral contributor.fullName />;
+                    </#if>
+                    <#if contributor.organisationIdentifier != '' >
+                       org:memberOf <@displayUrl contributor.organisationIdentifier /> ;
+                    <#else>
+                        <#if contributor.organisationName != '' && contributor.organisationName != 'Unaffiliated'>
+                        org:memberOf [
+                            a org:Organization ;
+                            skos:prefLabel <@displayLiteral contributor.organisationName />
+                            ] ;
+                        </#if>
+                    </#if>
+            .
             </#list>
         </#if>
     </#macro>
@@ -146,8 +169,8 @@
 
 <#-- Outputs -->
     <#macro outputList>
-        frapo:hasOutput <#t>
         <#if relHasOutput?? & relHasOutput?has_content>
+            frapo:hasOutput <#t>
             <#list relHasOutput as output>
                  <${output.href}><#sep>,</#sep><#t>
             </#list>
@@ -165,3 +188,14 @@
     </#macro>
 <#-- Outputs ENDS -->
 
+<#-- Organisations -->
+    <#macro organisationList>
+        <#if organisations?? & organisations?has_content>
+            <#list organisations as o>
+                <@displayUrl o.organisationIdentifier /> a prov:Organization, org:Organization;
+                <#if o.organisationName?has_content>foaf:name <@displayLiteral o.organisationName /> ;</#if>
+                .
+            </#list>
+        </#if>
+    </#macro>
+<#-- Organisations ENDS -->

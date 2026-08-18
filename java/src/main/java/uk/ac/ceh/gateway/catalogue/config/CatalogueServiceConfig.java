@@ -91,6 +91,8 @@ public class CatalogueServiceConfig {
                 .facetKey("ukcehService")
                 .facetKey("recordType")
                 .facetKey("publicationState")
+                .facetKey("parametersMeasured")
+                .facetKey("environmentalDomains")
                 .documentType(GEMINI_TYPE)
                 .documentType(MONITORING_FACILITY_TYPE)
                 .documentType(MONITORING_NETWORK_TYPE)
