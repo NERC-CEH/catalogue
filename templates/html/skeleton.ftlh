@@ -29,6 +29,12 @@
         <meta name="og.description" content="${description?replace("\n", " ")}">
       </#if>
       <title>${title}<#if catalogue?has_content> - ${catalogue.title}</#if></title>
+      <#-- Declared explicitly so browsers do not fall back to probing /favicon.ico at the root. -->
+      <#if catalogue?has_content>
+        <link rel="icon" href="/static/img/cataloguelogo/${catalogue.logo}">
+      <#else>
+        <link rel="icon" href="/static/img/cataloguelogo/ukceh.png">
+      </#if>
       <link rel="stylesheet" type="text/css" href="/static/css/style-<#if catalogue?has_content>${catalogue.id}<#else>${catalogues.defaultCatalogue().id}</#if>.css">
 
       <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>
