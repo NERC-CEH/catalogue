@@ -141,8 +141,9 @@ export default ObjectInputView.extend({
 
     this.$('.relationshipList').on('change', (e) => {
       const relationship = $(e.currentTarget).val()
-      this.$('.autocomplete').prop('disabled', !relationship)
-      this.$('.autocomplete').attr('placeholder', 'Enter record ID or type to search…')
+      this.$('.autocomplete')
+        .prop('disabled', !relationship)
+        .attr('placeholder', relationship ? 'Enter record ID or type to search…' : 'Choose a relationship type first')
     })
 
     const target = this.model.get('target')
