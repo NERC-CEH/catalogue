@@ -1,10 +1,6 @@
 <#compress>
     PREFIX : <${uri?replace(id,"")}>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX owl: <http://www.w3.org/2002/07/owl#>
-    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     PREFIX dcterms: <http://purl.org/dc/terms/>
     PREFIX dcat: <http://www.w3.org/ns/dcat#>
     PREFIX frapo: <http://purl.org/cerif/frapo/>
@@ -21,23 +17,24 @@
             dcterms:description <@displayLiteral description /> ;
         </#if>
 
-        <@outputList /> ;
-        <@fundingList /> ;
-        <@assocationList /> ;
+        <@outputList />
+        <@fundingList />
+        <@assocationList /> 
         frapo:hasHostInstitution <https://ror.org/00pggkr55> ;
         .
-
-        <#-- UKCEH object -->
-        <https://ror.org/00pggkr55> a schema:Organization ;
-            rdfs:label "UK Centre for Ecology & Hydrology" ;
-            schema:url <https://www.ceh.ac.uk> ;
-            schema:email <mailto:enquiries@ceh.ac.uk>  .
 
         <@assocationDetails />
         <@outputDetails />
         <@fundingDetails />
         <@contributorDetails />
         <@organisationList />
+
+        <#-- UKCEH object -->
+        <https://ror.org/00pggkr55> a schema:Organization, org:Organization ;
+            foaf:name  "UK Centre for Ecology & Hydrology" ;
+            schema:url <https://www.ceh.ac.uk> ;
+            schema:email <mailto:enquiries@ceh.ac.uk>  .
+
 </#compress>
 
 <#macro displayLiteral string>
@@ -73,6 +70,13 @@
 
                     <#if fund.funderIdentifier != '' >
                         frapo:hasFundingAgency <${fund.funderIdentifier}>;
+                    <#else>
+                        <#if fund.funderName != ''>
+                        frapo:hasFundingAgency [
+                            a org:Organization ;
+                            skos:prefLabel <@displayLiteral fund.funderName />
+                            ] ;
+                        </#if>                        
                     </#if>
 
                     <#if fund.awardURI != '' >
@@ -93,6 +97,7 @@
             <#list funding as fund>
                 <@getFundID fund fund?index /><#sep>,</#sep><#t>
             </#list>
+            ;
         </#if>
     </#macro>
 
@@ -124,6 +129,7 @@
             <#list contributors as contributor>
                 <@getAssociationID contributor contributor?index /><#sep>,<#t>
             </#list>
+            ;
         </#if>
     </#macro>
 
@@ -173,7 +179,7 @@
             frapo:hasOutput <#t>
             <#list relHasOutput as output>
                  <${output.href}><#sep>,</#sep><#t>
-            </#list>
+            </#list> ;
         </#if>
     </#macro>
 
@@ -190,12 +196,14 @@
 
 <#-- Organisations -->
     <#macro organisationList>
+        <#-- NB: Exclude UKCEH because that's already hard-coded -->
         <#if organisations?? & organisations?has_content>
-            <#list organisations as o>
+            <#list organisations?filter(o -> o.organisationIdentifier!='https://ror.org/00pggkr55') as o>
                 <@displayUrl o.organisationIdentifier /> a prov:Organization, org:Organization;
                 <#if o.organisationName?has_content>foaf:name <@displayLiteral o.organisationName /> ;</#if>
                 .
             </#list>
         </#if>
     </#macro>
+
 <#-- Organisations ENDS -->
