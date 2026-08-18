@@ -17,6 +17,7 @@ import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgumentResolver;
 import uk.ac.ceh.gateway.catalogue.citation.Citation;
@@ -125,6 +126,11 @@ public class WebConfig implements WebMvcConfigurer {
             stateResource,
             ukems
         );
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new VaryAcceptInterceptor());
     }
 
     @Override
