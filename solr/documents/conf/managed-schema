@@ -184,5 +184,7 @@
     <copyField source="objectives" dest="objectives_raw"/>
     <field name="infrastructureCapabilities_raw" type="string"/>
     <copyField source="infrastructureCapabilities" dest="infrastructureCapabilities_raw"/>
+    <field name="keywordsParametersFacet" type="string" indexed="true" multiValued="true"/>
+    <copyField source="keywordsParameters" dest="keywordsParametersFacet"/>
     <dynamicField name="random*" type="random"/>
 </schema>

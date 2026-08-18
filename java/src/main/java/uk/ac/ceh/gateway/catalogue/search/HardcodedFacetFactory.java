@@ -98,6 +98,11 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Data level")
                     .hierarchical(false)
                     .build();
+            case "parametersMeasured" -> Facet.builder()
+                .fieldName("keywordsParametersFacet")
+                    .displayName("Parameters measured")
+                    .hierarchical(false)
+                    .build();
             case "resourceType" -> Facet.builder()
                 .fieldName("resourceType")
                     .displayName("Resource type")

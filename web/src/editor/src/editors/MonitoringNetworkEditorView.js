@@ -79,14 +79,26 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'keywordsParameters',
           label: 'Parameters measured',
-          ObjectInputView: KeywordVocabularyView
+          ObjectInputView: KeywordVocabularyView,
+          vocabs: {
+            ukceh: ['envThes', 'gemet'],
+            eidc: ['envThes', 'gemet'],
+            ukeof: ['envThes', 'gemet']
+          },
+          multiline: true
         }),
 
         new ParentView({
           model: this.model,
           modelAttribute: 'keywords',
           label: 'Keywords',
-          ObjectInputView: KeywordVocabularyView
+          ObjectInputView: KeywordVocabularyView,
+          vocabs: {
+            ukceh: ['envThes', 'gemet'],
+            eidc: ['envThes', 'gemet'],
+            ukeof: ['envThes', 'gemet']
+          },
+          multiline: true
         })
 
       ]
