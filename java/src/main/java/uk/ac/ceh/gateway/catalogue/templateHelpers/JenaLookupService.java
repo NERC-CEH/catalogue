@@ -157,9 +157,14 @@ public class JenaLookupService {
     }
 
     public List<Link> inverseRelationships(String uri, String relation) {
-        String sparql = PREFIXES + " SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?publicationDate (GROUP_CONCAT(?geo; separator=', ') AS ?geom) (GROUP_CONCAT(?code; separator='|') AS ?codes) " +
+        // ?geom is projected and grouped as a plain variable, not GROUP_CONCAT-ed. A record carries at
+        // most one sf:Geometry, but it carries one dcterms:identifier per resource identifier, and the
+        // two OPTIONALs cross-product: aggregating ?geom would emit the same GeoJSON once per
+        // identifier, producing a string that is not parseable JSON. Grouping keeps it single while
+        // ?code -- genuinely multi-valued -- is still aggregated.
+        String sparql = PREFIXES + " SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?publicationDate ?geom (GROUP_CONCAT(?code; separator='|') AS ?codes) " +
             "WHERE {?node ?rel ?me; ?relation ?me. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type. " +
-            "OPTIONAL {?node <http://www.opengis.net/ont/sf#Geometry> ?geo} " +
+            "OPTIONAL {?node <http://www.opengis.net/ont/sf#Geometry> ?geom} " +
             "OPTIONAL {?node dcterms:available ?publicationDate} " +
             "OPTIONAL {?node eidc:availability ?availability} " +
             "OPTIONAL {?node doo:operationalStatus ?availability} " +
