@@ -9,6 +9,11 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ReadWrite;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.tdb2.TDB2Factory;
+import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
@@ -30,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
@@ -207,6 +213,67 @@ class NetworkIndexingServiceTest {
         assertThat(actual.get().getEastBoundLongitude(), is(closeTo(expectedEast, precision)));
         assertThat(actual.get().getWestBoundLongitude(), is(closeTo(expectedWest, precision)));
     }
+    @Test
+    @DisplayName("Rebuilds the bounding box from a real Jena lookup when a facility has several identifiers")
+    @SneakyThrows
+    void updatesBoundingBoxWhenFacilityHasMultipleIdentifiers() {
+        // given a facility indexed with a geometry AND more than one dcterms:identifier -- every record
+        // gets one identifier for its own id plus one per resourceIdentifier. This drives the real
+        // JenaLookupService rather than a mock, because the defect being guarded against was the query
+        // emitting the GeoJSON once per identifier: a hand-fed geometry string could never catch it.
+        // The malformed string reached Geometry.builder() here and threw "Error parsing geometry JSON",
+        // aborting the network bounding-box rebuild (dri-one #279).
+        double lon = 50.0;
+        double lat = 60.0;
+        String networkUri = "http://network/n1";
+        String facilityUri = "http://facility/f1";
+        String geoJson = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Point\",\"coordinates\":[" + lon + "," + lat + "]}}";
+
+        Dataset jenaTdb = TDB2Factory.createDataset();
+        jenaTdb.begin(ReadWrite.WRITE);
+        Model triples = jenaTdb.getDefaultModel();
+        triples.add(createResource(facilityUri), Ontology.DCTERMS_TITLE, "Monitoring Facility");
+        triples.add(createResource(facilityUri), Ontology.METADATA_STATUS, "published");
+        triples.add(createResource(facilityUri), Ontology.DCTERMS_TYPE, "monitoringFacility");
+        triples.add(createResource(facilityUri), Ontology.DCTERMS_ISPARTOF, createResource(networkUri));
+        triples.add(createResource(facilityUri), Ontology.SF_GEOMETRY, geoJson);
+        triples.add(createResource(facilityUri), Ontology.DCTERMS_IDENTIFIER, "f1");
+        triples.add(createResource(facilityUri), Ontology.DCTERMS_IDENTIFIER, "http://vocabs#UKEOF1234");
+        jenaTdb.commit();
+
+        MonitoringNetwork n1 = new MonitoringNetwork();
+        n1.setId("n1");
+        n1.setUri(networkUri);
+        MonitoringFacility f1 = getMonitoringFacility("f1", lon + "," + lat, n1);
+
+        // the facility node URI contains the facility id, so addFacility correctly sees it as already
+        // present in the Jena results and does not double-count it
+        BundledReaderService<MetadataDocument> reader = mock(BundledReaderService.class);
+        when(reader.readBundle(f1.getId(), REVISION)).thenReturn(f1);
+        when(reader.readBundle(networkUri, REVISION)).thenReturn(n1);
+        DocumentRepository repository = mock(DocumentRepository.class);
+
+        NetworkIndexingService service = new NetworkIndexingService(
+            mock(DocumentListingService.class),
+            reader,
+            repository,
+            new JenaLookupService(jenaTdb)
+        );
+
+        // when
+        service.indexDocuments(List.of(f1.getId()), REVISION);
+
+        // then the network is saved with the facility's bounding box, not aborted mid-rebuild
+        ArgumentCaptor<MonitoringNetwork> saved = ArgumentCaptor.forClass(MonitoringNetwork.class);
+        verify(repository).save(any(CatalogueUser.class), saved.capture(), anyString());
+        BoundingBox actual = saved.getValue().getBoundingBox();
+
+        assertThat(actual.getNorthBoundLatitude(), is(closeTo(BigDecimal.valueOf(lat), precision)));
+        assertThat(actual.getSouthBoundLatitude(), is(closeTo(BigDecimal.valueOf(lat), precision)));
+        assertThat(actual.getEastBoundLongitude(), is(closeTo(BigDecimal.valueOf(lon), precision)));
+        assertThat(actual.getWestBoundLongitude(), is(closeTo(BigDecimal.valueOf(lon), precision)));
+    }
+
     @Test
     public void getCorrectEmptyCombinedEnvelope() {
         // given
