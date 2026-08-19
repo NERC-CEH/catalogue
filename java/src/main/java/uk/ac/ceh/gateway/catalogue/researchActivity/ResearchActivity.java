@@ -18,7 +18,9 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RDF_TTL_VALUE;
 
@@ -43,33 +45,86 @@ public class ResearchActivity extends AbstractMetadataDocument {
         private String organisationName;
         private String organisationIdentifier;
     }
+    
+    @Data
+    @AllArgsConstructor
+    public static class Funder {
+        private String organisationName;
+        private String organisationIdentifier;
+        private List<Award> awards;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class Award {
+        private String awardNumber;
+        private String awardTitle;
+        private String awardURI;
+    }
 
     @JsonIgnore
-    //De-duplicated list of contributor and funder organisations with valid identifiers
+    // De-duplicated list of contributor organisations with valid identifiers
     public List<Organisation> getOrganisations() {
-        return Stream.concat(
-                Optional.ofNullable(funding)
-                    .orElseGet(Collections::emptyList)
-                    .stream()
-                    .map(f -> new Organisation(
-                        f.getFunderName(),
-                        f.getFunderIdentifier()
-                    )),
-                Optional.ofNullable(contributors)
-                    .orElseGet(Collections::emptyList)
-                    .stream()
-                    .map(c -> new Organisation(
-                        c.getOrganisationName(),
-                        c.getOrganisationIdentifier()
-                    ))
+        return Optional.ofNullable(contributors)
+            .orElseGet(Collections::emptyList)
+            .stream()
+            .map(c -> new Organisation(
+                c.getOrganisationName(),
+                c.getOrganisationIdentifier()
+            ))
+            .filter(o ->
+                o.getOrganisationName() != null &&
+                !o.getOrganisationName().isBlank() &&
+                o.getOrganisationIdentifier() != null &&
+                !o.getOrganisationIdentifier().isBlank()
             )
-            .filter(o -> 
-                (o.getOrganisationName() != null && !o.getOrganisationName().isBlank()) &&
-                (o.getOrganisationIdentifier() != null && !o.getOrganisationIdentifier().isBlank())
-                )
             .distinct()
             .toList();
     }
+     
+    //@JsonIgnore
+    public List<Funder> getFunders() {
+
+        record FunderKey(String organisationName, String organisationIdentifier) {}
+
+        return Optional.ofNullable(funding)
+            .orElseGet(Collections::emptyList)
+            .stream()
+            .filter(f ->
+                f.getFunderName() != null && !f.getFunderName().isBlank() &&
+                f.getFunderIdentifier() != null && !f.getFunderIdentifier().isBlank()
+            )
+            .collect(Collectors.groupingBy(
+                f -> new FunderKey(
+                    f.getFunderName(),
+                    f.getFunderIdentifier()
+                )
+            ))
+            .entrySet()
+            .stream()
+            .map(e -> new Funder(
+                e.getKey().organisationName(),
+                e.getKey().organisationIdentifier(),
+                e.getValue().stream()
+                    .filter(f ->
+                        Stream.of(
+                            f.getAwardNumber(),
+                            f.getAwardTitle(),
+                            f.getAwardURI()
+                        )
+                        .filter(Objects::nonNull)
+                        .anyMatch(s -> !s.isBlank())
+                    )
+                    .map(f -> new Award(
+                        f.getAwardNumber(),
+                        f.getAwardTitle(),
+                        f.getAwardURI()
+                    ))
+                    .distinct()
+                    .toList()
+            ))
+            .toList();
+            }   
 
     public void populateFromJenaService(JenaLookupService jenaService) {
         final String uri = this.getUri();

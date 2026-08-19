@@ -69,6 +69,9 @@ export default ObjectInputView.extend({
           'http://purl.org/dc/terms/replaces': () =>
             `resourceType%3A%22${encodeURIComponent(currentResourceType)}%22%20AND%20${encodedTerm}`,
 
+          'http://purl.org/cerif/frapo/hasOutput': () =>
+            `resourceType%3A(Dataset%20OR%20Model%20OR%20Software)%20AND%20${encodedTerm}`,
+
           'http://purl.org/dc/terms/isPartOf': () => {
             if (currentResourceType === 'dataset') {
               return `resourceType%3AAggregation%20AND%20${encodedTerm}`

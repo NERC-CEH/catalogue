@@ -520,8 +520,23 @@
                 width: 100%;
             }
 
-            #input-accessLimitation {
+            select.styledSelect {
+                --bs-form-select-bg-img: url(data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e);
+                width: 100%;
+                padding: 0.25rem 2.25rem 0.25rem 0.5rem;
+                font-size: 0.875rem;
+                font-weight: 400;
+                line-height: 1.5;
+                color: #828c7f;
+                background-color: #fff;
+                border: var(--bs-border-width) solid var(--bs-border-color);
+                border-radius: var(--bs-border-radius-sm);
+                transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
+                &::picker(select) {  
+                    inline-size:  anchor-size(width);
+                }
+                
                 &::picker-icon {
                     color: #999999;
                     transition: 0.4s rotate;

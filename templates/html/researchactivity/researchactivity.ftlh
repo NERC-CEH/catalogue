@@ -33,7 +33,7 @@
         </#if>
 
       <@displayContributors />
-      <@displayFunding />
+      <@funding />
       <@displayOutputs />
 
       </div>
@@ -86,7 +86,7 @@
 
     <div class="contributors">
       <#list contributors as c >
-        <div class="contributor">
+        <div class="contributor mb-4">
           <div>${c.fullName}</div>
           <div>${c.organisationName}</div>
         </div>
@@ -95,18 +95,39 @@
    </#if>
 </#macro>
 
-<#macro displayFunding>
-  <#if funding??>
-    <h2>Funding</h2>
-    <#list funding as fund>
-      <div>
-        <div>${fund.funderName}</div>
-        <div>${fund.funderIdentifier}</div>
-        <div>${fund.awardNumber}</div>
-        <div>${fund.awardTitle}</div>
-        <div>${fund.awardURI}</div>
-      </div>
-    </#list>
+<#macro funding>
+  <#if funders??>
+    <div class="funding">
+      <h2>Funding</h2>
+      <#list funders as fund>
+        <div class="funder mb-4">
+          ${fund.organisationName}
+            <div class="awards">
+              <#list fund.awards as award>
+                <#assign awardLabel = "" />
+                <#if award.awardTitle?has_content>
+                  <#assign awardLabel = award.awardTitle />
+                    <#if award.awardNumber?has_content>
+                      <#assign awardLabel += ' (' + award.awardNumber + ')' />
+                    </#if>         
+                <#elseif award.awardUri?has_content>        
+                  <#assign awardLabel = award.awardUri />
+                </#if>
+
+                <div class="award mb-1">
+                  <#if award.awardUri?has_content>
+                      <div>
+                        <a href="${award.awardUri}"target="_blank" rel="noopener noreferrer">${awardLabel}</a>
+                      </div>
+                  <#else>
+                      <div>${awardLabel}</div>
+                  </#if>                
+                </div>
+              </#list>
+            </div>
+        </div>
+      </#list>
+    </div>
   </#if>
 </#macro>
 

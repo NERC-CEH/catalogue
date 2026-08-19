@@ -1,7 +1,7 @@
 import _ from 'underscore'
 
 export default _.template(`
-<select data-name="value" id="input-accessLimitation" <%= data.disabled%>>
+<select data-name="value" class="styledSelect" id="input-accessLimitation" <%= data.disabled%>>
     <button>
       <selectedcontent></selectedcontent>
     </button>

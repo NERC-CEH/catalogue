@@ -72,13 +72,13 @@ body {
 
             img.browseGraphic {
                 @extend .mb-3;
+                @extend .mt-2;
+                @extend .ms-2;
                 @extend .float-md-end;
-                @extend .col-md-6;
-                @extend .ms-md-5;
                 mix-blend-mode: multiply;
                 width: auto;
                 height: auto;
-                max-width: min(100%, 550px);
+                max-width: min(100%, 400px);
                 max-height: 350px;
             }
         }

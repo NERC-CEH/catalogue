@@ -10,31 +10,31 @@
     PREFIX org: <http://www.w3.org/ns/org#>
     PREFIX schema: <http://schema.org/>
 
-    :${id} a frapo:Project, prov:Activity;
+    :${id} a foaf:Project, prov:Activity;
         dcterms:title  <@displayLiteral title />  ;
 
         <#if description?has_content>
             dcterms:description <@displayLiteral description /> ;
         </#if>
 
-        <@outputList />
-        <@fundingList />
-        <@assocationList /> 
+        <@listFunding />
+        <@listOutputs />
+        <@listAssocations /> 
         frapo:hasHostInstitution <https://ror.org/00pggkr55> ;
         .
 
         <@assocationDetails />
         <@outputDetails />
-        <@fundingDetails />
         <@contributorDetails />
-        <@organisationList />
+        <@listOrganisations />
+        <@listFunds />
+        <@listFunders />
 
         <#-- UKCEH object -->
-        <https://ror.org/00pggkr55> a schema:Organization, org:Organization ;
+        <https://ror.org/00pggkr55> a org:Organization ;
             foaf:name  "UK Centre for Ecology & Hydrology" ;
             schema:url <https://www.ceh.ac.uk> ;
             schema:email <mailto:enquiries@ceh.ac.uk>  .
-
 </#compress>
 
 <#macro displayLiteral string>
@@ -47,61 +47,62 @@
 </#macro>
 
 <#-- Funding -->
-    <#macro getFundID fund index=0>
-        <#local fundID = ":fund_" + id + "_" + index >
 
-        <#if fund.awardURI?matches("^http(|s)://doi.org/10\\..+$") >
-            <#local fundID = "<" + fund.awardURI + ">" >
-        <#elseif fund.awardNumber != '' >
-            <#local fundID =  ":fund_" + fund.awardNumber?replace('/', '_') >
-        </#if>
-
-        ${fundID}<#t>
+    <#macro getAwardID award index=0>
+        <#compress>
+            <#local awardID = ":award_" + award.awardNumber?trim?replace("/","_") >
+           
+            <#if award.awardURI?matches("^http(|s)://doi.org/10\\..+$") >
+                <#local awardID = "<" + award.awardURI + ">" >
+            </#if>
+            ${awardID}<#t>
+       </#compress>
     </#macro>
 
-    <#macro fundingDetails>
+    <#macro listFunding>
         <#if funding?? & funding?has_content>
+            frapo:isFundedBy <#t>
             <#list funding as fund>
-
-                <@getFundID fund fund?index /> a frapo:Grant;
-                    <#if fund.awardNumber != '' >
-                        frapo:hasGrantNumber <@displayLiteral fund.awardNumber />  ;
-                    </#if>
-
-                    <#if fund.funderIdentifier != '' >
-                        frapo:hasFundingAgency <${fund.funderIdentifier}>;
-                    <#else>
-                        <#if fund.funderName != ''>
-                        frapo:hasFundingAgency [
-                            a org:Organization ;
-                            skos:prefLabel <@displayLiteral fund.funderName />
-                            ] ;
-                        </#if>                        
-                    </#if>
-
-                    <#if fund.awardURI != '' >
-                        schema:url <${fund.awardURI}>;
-                    </#if>
-
-                    <#if fund.awardTitle != '' >
-                        dcterms:title <@displayLiteral fund.awardTitle />;
-                    </#if>
-            .
-            </#list>
-        </#if>
-    </#macro>
-
-    <#macro fundingList>
-        <#if funding?? & funding?has_content>
-        frapo:isSupportedBy <#t>
-            <#list funding as fund>
-                <@getFundID fund fund?index /><#sep>,</#sep><#t>
+                <#if fund.awardNumber?? & fund.awardNumber?has_content>
+                <@getAwardID fund fund?index /><#sep>,<#t> 
+                </#if>
             </#list>
             ;
         </#if>
     </#macro>
 
-<#-- Funding  ENDS-->
+    <#macro listFunds>
+        <#if funding?? & funding?has_content>
+            <#list funding as fund>
+                <#if fund.awardNumber?? & fund.awardNumber?has_content>
+                <@getAwardID fund fund?index /> a frapo:Grant;
+                    frapo:hasGrantNumber <@displayLiteral fund.awardNumber /> ;
+                    frapo:funds :${id} ;
+                    <#if fund.awardURI?has_content>schema:url <@displayUrl fund.awardURI /></#if> .
+                </#if>
+            </#list>
+        </#if>
+    </#macro>
+
+    <#macro listFunders>
+        <#if funders??>
+            <#list funders as funder>
+                <#local funderID = ":funder_" + id + "_" + funder?index >
+
+                ${funderID} a prov:Organization, org:Organization;
+                <#if funder.organisationName?has_content>foaf:name <@displayLiteral funder.organisationName /> ;</#if>
+                <#if funder.awards?? && funder.awards?has_content>
+                    frapo:awards <#t>
+                        <#list funder.awards as award>
+                            <#t><@getAwardID award award?index /><#sep>,<#t>
+                        </#list>;
+                </#if>
+                .
+            </#list>
+        </#if>
+    </#macro>
+<#-- Funding ENDS-->
+
 
 <#-- Contributors -->
     <#macro getAssociationID contributor index=0>
@@ -123,7 +124,7 @@
        </#compress>
     </#macro>
 
-    <#macro assocationList>
+    <#macro listAssocations>
         <#if contributors?? & contributors?has_content>
             prov:qualifiedAssociation <#t>
             <#list contributors as contributor>
@@ -172,9 +173,8 @@
     </#macro>
 <#-- Contributors ENDS -->
 
-
 <#-- Outputs -->
-    <#macro outputList>
+    <#macro listOutputs>
         <#if relHasOutput?? & relHasOutput?has_content>
             frapo:hasOutput <#t>
             <#list relHasOutput as output>
@@ -195,7 +195,7 @@
 <#-- Outputs ENDS -->
 
 <#-- Organisations -->
-    <#macro organisationList>
+    <#macro listOrganisations>
         <#-- NB: Exclude UKCEH because that's already hard-coded -->
         <#if organisations?? & organisations?has_content>
             <#list organisations?filter(o -> o.organisationIdentifier!='https://ror.org/00pggkr55') as o>
@@ -205,5 +205,6 @@
             </#list>
         </#if>
     </#macro>
-
 <#-- Organisations ENDS -->
+
+

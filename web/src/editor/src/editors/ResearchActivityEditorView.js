@@ -86,6 +86,10 @@ export default EditorView.extend({
           multiline: true,
           options: [
             {
+              value: 'http://purl.org/cerif/frapo/hasOutput',
+              label: 'Has output'
+            },
+            {
               value: 'http://purl.org/dc/terms/relation',
               label: 'Relation'
             }
