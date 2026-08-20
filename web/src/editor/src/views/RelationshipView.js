@@ -202,25 +202,3 @@ export default ObjectInputView.extend({
     return this
   }
 })
-
-
-/*
-this.options.forEach(option => {
-  option.selected =
-    (option.value === this.model.attributes.relation ||
-      option.value === '')
-      ? 'selected'
-      : ''
-
-  const label = option.description
-    ? `${option.label}<span>${option.description}</span>`
-    : option.label
-
-  this.$('.relationshipList').append(
-    this.optionTemplate({
-      ...option,
-      label
-    })
-  )
-})
-*/

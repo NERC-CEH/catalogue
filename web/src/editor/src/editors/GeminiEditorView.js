@@ -613,7 +613,7 @@ export default EditorView.extend({
             },
             {
               value: 'http://purl.org/cerif/frapo/isOutputOf',
-              label: 'Is output of',
+              label: 'Is output of'
             }
           ],
           helpText: `
