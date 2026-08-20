@@ -16,6 +16,7 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Objects;
@@ -128,14 +129,17 @@ public class ResearchActivity extends AbstractMetadataDocument {
 
     public void populateFromJenaService(JenaLookupService jenaService) {
         final String uri = this.getUri();
-        var relationList = jenaService.relationships(uri, "http://purl.org/dc/terms/relation");
+        var relationList = new ArrayList<>(jenaService.relationships(uri, "http://purl.org/dc/terms/relation"));
         relationList.addAll(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/relation"));
         this.setRelRelation(relationList);
 
         this.setRelAll(jenaService.allRelatedRecords(uri));
 
-        var relationOutputs = jenaService.relationships(uri, "http://purl.org/cerif/frapo/hasOutput");
+        var relationOutputs = new ArrayList<>(jenaService.relationships(uri, "http://purl.org/cerif/frapo/hasOutput"));
         relationOutputs.addAll(jenaService.inverseRelationships(uri, "http://purl.org/cerif/frapo/isOutputOf"));
         this.setRelHasOutput(relationOutputs);
     }
 }
+
+
+
