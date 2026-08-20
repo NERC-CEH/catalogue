@@ -183,14 +183,44 @@ export default ObjectInputView.extend({
     this.options.forEach(option => {
       option.selected =
         (option.value === this.model.attributes.relation ||
-         option.value === '')
+          option.value === '')
           ? 'selected'
           : ''
 
-      this.$('.relationshipList')
-        .append(this.optionTemplate(option))
+      const label = option.description
+        ? `${option.label}<span>${option.description}</span>`
+        : option.label
+
+      this.$('.relationshipList').append(
+        this.optionTemplate({
+          ...option,
+          label
+        })
+      )
     })
 
     return this
   }
 })
+
+
+/*
+this.options.forEach(option => {
+  option.selected =
+    (option.value === this.model.attributes.relation ||
+      option.value === '')
+      ? 'selected'
+      : ''
+
+  const label = option.description
+    ? `${option.label}<span>${option.description}</span>`
+    : option.label
+
+  this.$('.relationshipList').append(
+    this.optionTemplate({
+      ...option,
+      label
+    })
+  )
+})
+*/

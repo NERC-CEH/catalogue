@@ -594,11 +594,6 @@ export default EditorView.extend({
           multiline: true,
           options: [
             {
-              value: 'http://purl.org/cerif/frapo/isOutputOf',
-              label: 'Is output of',
-              description: 'Is output of (research activity)'
-            },
-            {
               value: 'http://purl.org/dc/terms/isPartOf',
               label: 'Part of',
               description: 'e.g., a dataset is a part of a data collection'
@@ -615,6 +610,10 @@ export default EditorView.extend({
               value: 'http://purl.org/dc/terms/requires',
               label: 'Requires',
               description: 'a related resource that is required by this resource to support its function/delivery'
+            },
+            {
+              value: 'http://purl.org/cerif/frapo/isOutputOf',
+              label: 'Is output of',
             }
           ],
           helpText: `

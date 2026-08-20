@@ -512,12 +512,11 @@
                 }
             }
 
-            /*-- Styled selectors -- */
+            /*-- Modern css select elements rich styles -- */
+            /*-- browsers that don't support appearance: base-select; will ignore these --  */
             select.styledSelect,
             select.styledSelect::picker(select) {
                 appearance: base-select;
-                font-size: 0.8rem;
-                width: 100%;
             }
 
             select.styledSelect {
@@ -549,13 +548,17 @@
                 }
 
                 span {
-                    display: block;
                     color: #888;
-                    font-size: 0.7rem;
                 }
 
                 option {
-                    padding-left: 1.35em;
+                    display: grid;
+                    grid-template-columns: 3ch auto;
+                    grid-template-rows: auto auto;
+                    border: 1px solid #dddddd;
+                    gap:0;
+                    padding: .65rem;
+                    transition: 0.2s;
 
                     span {
                         display: block;
@@ -564,11 +567,12 @@
                     }
 
                     &:checked {
-                        background-color: var(--ukceh-colour-data);
+                        background-color: color((--ukceh-colour-data-50));
                     }
 
                     &::checkmark {
-                        margin-left: -0.7em;
+                    grid-column: 1 / 2;
+                    grid-row: 1 / 3;
                     }
                 }
 
@@ -578,6 +582,7 @@
                     }
                 }
             }
+
 
             // VOCAB KEYWORD PICKER STYLES
             .vocabularyPicker {
