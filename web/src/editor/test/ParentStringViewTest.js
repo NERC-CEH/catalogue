@@ -1,3 +1,4 @@
+import $ from 'jquery'
 import Backbone from 'backbone'
 import ParentStringView from '../src/views/ParentStringView'
 
@@ -90,5 +91,113 @@ describe('ParentStringView empty rows', () => {
     view.addChild(stubEvent())
 
     expect(view.array).toEqual(['Severn', ''])
+  })
+})
+
+/**
+ * The rows are addressed by their DOM data-index attribute, so a delete that shortens this.array
+ * without renumbering the surviving rows leaves the two out of step and every later edit splices at
+ * the wrong slot - NERC-CEH/dri-one#298.
+ */
+describe('ParentStringView mid-list delete', () => {
+  const buildEnabled = (attrs, modelAttribute) => {
+    const model = new Backbone.Model(attrs)
+    const view = new ParentStringView({ model, modelAttribute })
+    return { model, view }
+  }
+
+  const indices = view => view.$('input').map((i, el) => $(el).attr('data-index')).get()
+  const rowIds = view => view.$('.existing > div').map((i, el) => el.id).get()
+  const rowWithValue = (view, value) => view.$('input').filter((i, el) => el.value === value)
+
+  const deleteRow = (view, value) => {
+    const $row = rowWithValue(view, value).closest('div').parent()
+    $row.find('button.remove').trigger('click')
+  }
+
+  const editRow = (view, from, to) => {
+    const $input = rowWithValue(view, from)
+    $input.val(to)
+    $input.trigger('change')
+  }
+
+  it('renumbers the surviving rows so data-index matches the array position', () => {
+    const { view } = buildEnabled({ alternateTitles: ['aaa', 'bbb', 'ccc'] }, 'alternateTitles')
+
+    deleteRow(view, 'bbb')
+
+    expect(view.array).toEqual(['aaa', 'ccc'])
+    expect(indices(view)).toEqual(['0', '1'])
+  })
+
+  it('keeps the row ids contiguous so no two rows share one', () => {
+    const { view } = buildEnabled({ alternateTitles: ['aaa', 'bbb', 'ccc'] }, 'alternateTitles')
+
+    deleteRow(view, 'bbb')
+
+    expect(rowIds(view)).toEqual(['inputalternateTitles0', 'inputalternateTitles1'])
+  })
+
+  it('updates a later row instead of duplicating it after a mid-list delete', () => {
+    const { model, view } = buildEnabled({ alternateTitles: ['aaa', 'bbb', 'ccc'] }, 'alternateTitles')
+    deleteRow(view, 'bbb')
+
+    editRow(view, 'ccc', 'ccc-edited')
+
+    expect(view.array).toEqual(['aaa', 'ccc-edited'])
+    expect(model.get('alternateTitles')).toEqual(['aaa', 'ccc-edited'])
+  })
+
+  it('gives an added row an index of its own after a mid-list delete', () => {
+    const { view } = buildEnabled({ alternateTitles: ['aaa', 'bbb', 'ccc'] }, 'alternateTitles')
+    deleteRow(view, 'bbb')
+
+    view.$('button.add').trigger('click')
+
+    expect(view.array).toEqual(['aaa', 'ccc', ''])
+    expect(indices(view)).toEqual(['0', '1', '2'])
+    expect(rowIds(view)).toEqual(['inputalternateTitles0', 'inputalternateTitles1', 'inputalternateTitles2'])
+  })
+
+  it('writes the added row to the model without disturbing the survivors', () => {
+    const { model, view } = buildEnabled({ inputs: ['aaa', 'bbb', 'ccc'] }, 'inputs')
+    deleteRow(view, 'bbb')
+    view.$('button.add').trigger('click')
+
+    editRow(view, '', 'ddd')
+
+    expect(model.get('inputs')).toEqual(['aaa', 'ccc', 'ddd'])
+  })
+
+  /** The added row used to reuse a survivor's slot, so editing either one overwrote the other. */
+  it('does not let an added row overwrite the survivor it was numbered after', () => {
+    const { model, view } = buildEnabled({ outputs: ['aaa', 'bbb', 'ccc'] }, 'outputs')
+    deleteRow(view, 'bbb')
+    view.$('button.add').trigger('click')
+
+    editRow(view, 'ccc', 'ccc-edited')
+
+    expect(view.array).toEqual(['aaa', 'ccc-edited', ''])
+    expect(model.get('outputs')).toEqual(['aaa', 'ccc-edited'])
+  })
+
+  it('survives deleting the first row of three', () => {
+    const { model, view } = buildEnabled({ users: ['aaa', 'bbb', 'ccc'] }, 'users')
+
+    deleteRow(view, 'aaa')
+    editRow(view, 'ccc', 'ccc-edited')
+
+    expect(model.get('users')).toEqual(['bbb', 'ccc-edited'])
+  })
+
+  it('survives two mid-list deletes in a row', () => {
+    const { model, view } = buildEnabled({ packages: ['aaa', 'bbb', 'ccc', 'ddd'] }, 'packages')
+
+    deleteRow(view, 'bbb')
+    deleteRow(view, 'ccc')
+    editRow(view, 'ddd', 'ddd-edited')
+
+    expect(view.array).toEqual(['aaa', 'ddd-edited'])
+    expect(model.get('packages')).toEqual(['aaa', 'ddd-edited'])
   })
 })
