@@ -3,7 +3,6 @@ import $ from 'jquery'
 import SingleView from '../SingleView'
 import parentTemplate from '../templates/Parent'
 import childTemplate from '../templates/MultiString'
-import template from '../templates/ChildLarge'
 import { cleanText, hasContent } from '../utils'
 
 export default SingleView.extend({
@@ -15,9 +14,6 @@ export default SingleView.extend({
   },
 
   initialize (options) {
-    if (typeof this.template === 'undefined') {
-      this.template = template
-    }
     if (typeof this.childTemplate === 'undefined') {
       this.childTemplate = childTemplate
     }

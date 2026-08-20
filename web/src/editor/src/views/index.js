@@ -74,7 +74,6 @@ export { default as InfrastructureChallengeView } from './InfrastructureChalleng
 export { default as SimpleLinkView } from './SimpleLinkView'
 export { default as ReviewView } from './ReviewView'
 export { default as OtherConstraintView } from './OtherConstraintView'
-export { default as ParentStringTextboxView } from './ParentStringTextboxView'
 export { default as PredefinedSingleObjectView } from './PredefinedSingleObjectView'
 export { default as LegiloView } from './LegiloView'
 export { default as MetadataStandardView } from './MetadataStandardView'
