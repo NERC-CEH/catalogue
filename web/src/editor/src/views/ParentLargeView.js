@@ -1,6 +1,7 @@
 import _ from 'underscore'
 import $ from 'jquery'
 import { Positionable } from '../collections'
+import { hasContent } from '../utils'
 import SingleView from '../SingleView'
 import ChildLargeView from './ChildLargeView'
 import template from '../templates/Parent'
@@ -74,7 +75,9 @@ export default SingleView.extend({
 
   updateModel () {
     const path = this.data.modelAttribute.split('.')
-    let data = this.collection.toJSON()
+    // A row that was added but never filled in is an attribute-less model. It belongs in the
+    // collection, so the form keeps showing it, but not in the record.
+    let data = this.collection.toJSON().filter(entry => hasContent(entry))
 
     while (path.length > 0) {
       const oldData = data

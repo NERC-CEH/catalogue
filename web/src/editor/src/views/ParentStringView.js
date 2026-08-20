@@ -3,8 +3,7 @@ import $ from 'jquery'
 import SingleView from '../SingleView'
 import parentTemplate from '../templates/Parent'
 import childTemplate from '../templates/MultiString'
-import template from '../templates/ChildLarge'
-import { cleanText } from '../utils'
+import { cleanText, hasContent } from '../utils'
 
 export default SingleView.extend({
 
@@ -15,9 +14,6 @@ export default SingleView.extend({
   },
 
   initialize (options) {
-    if (typeof this.template === 'undefined') {
-      this.template = template
-    }
     if (typeof this.childTemplate === 'undefined') {
       this.childTemplate = childTemplate
     }
@@ -60,7 +56,10 @@ export default SingleView.extend({
     const $target = $(event.currentTarget)
     const index = $target.data('index')
     this.array.splice(index, 1)
-    this.$(`#input${this.data.modelAttribute}${index}`).remove()
+    // Rows are addressed by their data-index attribute, so removing just the deleted row's element
+    // would leave every later row pointing at the wrong slot. Re-render instead: render() is the one
+    // place indices are assigned, so the surviving rows come back renumbered from the array.
+    this.render()
     this.updateModel()
   },
 
@@ -77,6 +76,8 @@ export default SingleView.extend({
   },
 
   updateModel () {
-    this.model.set(this.data.modelAttribute, _.clone(this.array))
+    // A row added but never typed into is an empty string. It stays in this.array so the form keeps
+    // showing it and the DOM data-index attributes still line up, but it must not reach the record.
+    this.model.set(this.data.modelAttribute, this.array.filter(entry => hasContent(entry)))
   }
 })
