@@ -60,7 +60,10 @@ export default SingleView.extend({
     const $target = $(event.currentTarget)
     const index = $target.data('index')
     this.array.splice(index, 1)
-    this.$(`#input${this.data.modelAttribute}${index}`).remove()
+    // Rows are addressed by their data-index attribute, so removing just the deleted row's element
+    // would leave every later row pointing at the wrong slot. Re-render instead: render() is the one
+    // place indices are assigned, so the surviving rows come back renumbered from the array.
+    this.render()
     this.updateModel()
   },
 
