@@ -4,7 +4,7 @@ import SingleView from '../SingleView'
 import parentTemplate from '../templates/Parent'
 import childTemplate from '../templates/MultiString'
 import template from '../templates/ChildLarge'
-import { cleanText } from '../utils'
+import { cleanText, hasContent } from '../utils'
 
 export default SingleView.extend({
 
@@ -77,6 +77,8 @@ export default SingleView.extend({
   },
 
   updateModel () {
-    this.model.set(this.data.modelAttribute, _.clone(this.array))
+    // A row added but never typed into is an empty string. It stays in this.array so the form keeps
+    // showing it and the DOM data-index attributes still line up, but it must not reach the record.
+    this.model.set(this.data.modelAttribute, this.array.filter(entry => hasContent(entry)))
   }
 })
