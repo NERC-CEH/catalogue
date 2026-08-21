@@ -19,11 +19,11 @@
 
         <@listFunding />
         <@listOutputs />
-        <@listAssocations /> 
+        <@listAssociations />
         frapo:hasHostInstitution <https://ror.org/00pggkr55> ;
         .
 
-        <@assocationDetails />
+        <@associationDetails />
         <@outputDetails />
         <@contributorDetails />
         <@listOrganisations />
@@ -37,64 +37,90 @@
             schema:email <mailto:enquiries@ceh.ac.uk>  .
 </#compress>
 
+<#--
+  Every value below originates in a free-text editor field, so nothing may be
+  interpolated into Turtle unguarded: an unescaped backslash or a space inside an
+  IRI makes the *whole* document unparseable, not just the offending triple.
+  Literals go through displayLiteral; IRIs must be checked with isIri first.
+-->
+
 <#macro displayLiteral string>
-  <#--Ensure literals do not contain " characters-->
-  "${string?trim?replace("\"","'")?replace("\n"," ")}"<#t>
+  <#--Escape backslashes before quotes, and flatten newlines-->
+  "${string?trim?replace("\\", "\\\\")?replace("\"", "'")?replace("\r", " ")?replace("\n", " ")}"<#t>
 </#macro>
 
 <#macro displayUrl string>
   <${string}><#t>
 </#macro>
 
+<#function isIri string>
+  <#-- Only an absolute http(s) IRI with no Turtle-illegal characters is safe to emit -->
+  <#return string?has_content && string?matches("^https?://[^\\s<>\"{}|\\\\^`]+$")>
+</#function>
+
+<#function localName string>
+  <#-- Turtle prefixed-name local parts cannot contain spaces or punctuation -->
+  <#return string?trim?replace("[^A-Za-z0-9_]+", "_", "r")>
+</#function>
+
 <#-- Funding -->
 
-    <#macro getAwardID award index=0>
+    <#function hasAward fund>
+      <#return fund.awardNumber?has_content || fund.awardTitle?has_content || fund.awardURI?has_content>
+    </#function>
+
+    <#macro getAwardID award>
         <#compress>
-            <#local awardID = ":award_" + award.awardNumber?trim?replace("/","_") >
-           
-            <#if award.awardURI?matches("^http(|s)://doi.org/10\\..+$") >
+            <#-- Derived from the award's own content, never its list index, because
+                 listFunds and listFunders iterate different sequences and the two
+                 identifiers have to agree. -->
+            <#if award.awardURI?matches("^https?://doi\\.org/10\\..+$")>
                 <#local awardID = "<" + award.awardURI + ">" >
+            <#elseif award.awardNumber?has_content>
+                <#local awardID = ":award_" + localName(award.awardNumber) >
+            <#elseif award.awardTitle?has_content>
+                <#local awardID = ":award_" + localName(award.awardTitle) >
+            <#else>
+                <#local awardID = ":award_" + localName(award.awardURI) >
             </#if>
             ${awardID}<#t>
        </#compress>
     </#macro>
 
     <#macro listFunding>
-        <#if funding?? & funding?has_content>
+        <#local funded = (funding![])?filter(fund -> hasAward(fund))>
+        <#if funded?has_content>
             frapo:isFundedBy <#t>
-            <#list funding as fund>
-                <#if fund.awardNumber?? & fund.awardNumber?has_content>
-                <@getAwardID fund fund?index /><#sep>,<#t> 
-                </#if>
+            <#list funded as fund>
+                <@getAwardID fund /><#sep>,<#t>
             </#list>
             ;
         </#if>
     </#macro>
 
     <#macro listFunds>
-        <#if funding?? & funding?has_content>
-            <#list funding as fund>
-                <#if fund.awardNumber?? & fund.awardNumber?has_content>
-                <@getAwardID fund fund?index /> a frapo:Grant;
-                    frapo:hasGrantNumber <@displayLiteral fund.awardNumber /> ;
-                    frapo:funds :${id} ;
-                    <#if fund.awardURI?has_content>schema:url <@displayUrl fund.awardURI /></#if> .
-                </#if>
-            </#list>
-        </#if>
+        <#list (funding![])?filter(fund -> hasAward(fund)) as fund>
+            <@getAwardID fund /> a frapo:Grant;
+                <#if fund.awardNumber?has_content>frapo:hasGrantNumber <@displayLiteral fund.awardNumber /> ;</#if>
+                <#if fund.awardTitle?has_content>dcterms:title <@displayLiteral fund.awardTitle /> ;</#if>
+                frapo:funds :${id} ;
+                <#if isIri(fund.awardURI)>schema:url <@displayUrl fund.awardURI /> ;</#if>
+            .
+        </#list>
     </#macro>
 
     <#macro listFunders>
-        <#if funders??>
+        <#if funders?has_content>
             <#list funders as funder>
                 <#local funderID = ":funder_" + id + "_" + funder?index >
 
                 ${funderID} a prov:Organization, org:Organization;
                 <#if funder.organisationName?has_content>foaf:name <@displayLiteral funder.organisationName /> ;</#if>
-                <#if funder.awards?? && funder.awards?has_content>
+                <#local awards = (funder.awards![])?filter(award -> hasAward(award))>
+                <#if awards?has_content>
                     frapo:awards <#t>
-                        <#list funder.awards as award>
-                            <#t><@getAwardID award award?index /><#sep>,<#t>
+                        <#list awards as award>
+                            <#t><@getAwardID award /><#sep>,<#t>
                         </#list>;
                 </#if>
                 .
@@ -116,7 +142,9 @@
       <#compress>
         <#local contributorID = ":contributor_" + id + "_" + index >
 
-        <#if contributor.nameIdentifier?has_content >
+        <#-- A bare ORCID number would parse as a relative IRI and silently resolve
+             against the document base, so only accept an absolute one. -->
+        <#if isIri(contributor.nameIdentifier)>
             <#local contributorID = "<" + contributor.nameIdentifier + ">" >
         </#if>
 
@@ -124,8 +152,8 @@
        </#compress>
     </#macro>
 
-    <#macro listAssocations>
-        <#if contributors?? & contributors?has_content>
+    <#macro listAssociations>
+        <#if contributors?has_content>
             prov:qualifiedAssociation <#t>
             <#list contributors as contributor>
                 <@getAssociationID contributor contributor?index /><#sep>,<#t>
@@ -134,38 +162,36 @@
         </#if>
     </#macro>
 
-    <#macro assocationDetails>
-        <#if contributors?? & contributors?has_content>
+    <#macro associationDetails>
+        <#if contributors?has_content>
             <#list contributors as contributor>
                <@getAssociationID contributor contributor?index /> a prov:Association ;
                 prov:agent <@getContributorID contributor contributor?index /> ;
-                <#if contributor.contributorRole?has_content>prov:hadRole scoro:${contributor.contributorRole} ;</#if>
+                <#if contributor.contributorRole?has_content>prov:hadRole scoro:${localName(contributor.contributorRole)?replace("_", "-")} ;</#if>
                .
             </#list>
         </#if>
     </#macro>
 
     <#macro contributorDetails>
-        <#if contributors?? & contributors?has_content>
+        <#if contributors?has_content>
             <#list contributors as contributor>
                 <#local provType = "prov:Organization" />
-                    <#if contributor.fullName?? && contributor.fullName?has_content>
+                    <#if contributor.fullName?has_content>
                         <#local provType = "prov:Person" />
                     </#if>
 
-                <@getContributorID contributor contributor?index /> a ${provType} ;  
-                    <#if contributor.fullName != '' >
+                <@getContributorID contributor contributor?index /> a ${provType} ;
+                    <#if contributor.fullName?has_content>
                         foaf:name <@displayLiteral contributor.fullName />;
                     </#if>
-                    <#if contributor.organisationIdentifier != '' >
+                    <#if isIri(contributor.organisationIdentifier)>
                        org:memberOf <@displayUrl contributor.organisationIdentifier /> ;
-                    <#else>
-                        <#if contributor.organisationName != '' && contributor.organisationName != 'Unaffiliated'>
+                    <#elseif contributor.organisationName?has_content && contributor.organisationName != 'Unaffiliated'>
                         org:memberOf [
                             a org:Organization ;
                             skos:prefLabel <@displayLiteral contributor.organisationName />
                             ] ;
-                        </#if>
                     </#if>
             .
             </#list>
@@ -175,36 +201,31 @@
 
 <#-- Outputs -->
     <#macro listOutputs>
-        <#if relHasOutput?? & relHasOutput?has_content>
+        <#local outputs = (relHasOutput![])?filter(output -> isIri(output.href))>
+        <#if outputs?has_content>
             frapo:hasOutput <#t>
-            <#list relHasOutput as output>
+            <#list outputs as output>
                  <${output.href}><#sep>,</#sep><#t>
             </#list> ;
         </#if>
     </#macro>
 
     <#macro outputDetails>
-        <#if relHasOutput?? & relHasOutput?has_content>
-            <#list relHasOutput as output>
-                <${output.href}> a <#if output.associationType == 'dataset'>dcat:Dataset<#else>frapo:Deliverable</#if> ;
-                    dcterms:title <@displayLiteral output.title /> ;
-                .
-            </#list>
-        </#if>
+        <#list (relHasOutput![])?filter(output -> isIri(output.href)) as output>
+            <${output.href}> a <#if output.associationType == 'dataset'>dcat:Dataset<#else>frapo:Deliverable</#if> ;
+                <#if output.title?has_content>dcterms:title <@displayLiteral output.title /> ;</#if>
+            .
+        </#list>
     </#macro>
 <#-- Outputs ENDS -->
 
 <#-- Organisations -->
     <#macro listOrganisations>
         <#-- NB: Exclude UKCEH because that's already hard-coded -->
-        <#if organisations?? & organisations?has_content>
-            <#list organisations?filter(o -> o.organisationIdentifier!='https://ror.org/00pggkr55') as o>
-                <@displayUrl o.organisationIdentifier /> a prov:Organization, org:Organization;
-                <#if o.organisationName?has_content>foaf:name <@displayLiteral o.organisationName /> ;</#if>
-                .
-            </#list>
-        </#if>
+        <#list (organisations![])?filter(o -> isIri(o.organisationIdentifier) && o.organisationIdentifier != 'https://ror.org/00pggkr55') as o>
+            <@displayUrl o.organisationIdentifier /> a prov:Organization, org:Organization;
+            <#if o.organisationName?has_content>foaf:name <@displayLiteral o.organisationName /> ;</#if>
+            .
+        </#list>
     </#macro>
 <#-- Organisations ENDS -->
-
-
