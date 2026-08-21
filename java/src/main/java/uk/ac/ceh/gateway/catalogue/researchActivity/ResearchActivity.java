@@ -16,6 +16,7 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -63,8 +64,8 @@ public class ResearchActivity extends AbstractMetadataDocument {
         private String awardURI;
     }
 
+    /** De-duplicated contributor organisations that carry an identifier. */
     @JsonIgnore
-    // De-duplicated list of contributor organisations with valid identifiers
     public List<Organisation> getOrganisations() {
         return Optional.ofNullable(contributors)
             .orElseGet(Collections::emptyList)
@@ -82,8 +83,13 @@ public class ResearchActivity extends AbstractMetadataDocument {
             .distinct()
             .toList();
     }
-     
-    //@JsonIgnore
+    /**
+     * Funding regrouped by funder, so a funder with several awards renders once.
+     * Derived from {@code funding}, so it must not be serialised: a stored copy
+     * would be a second source of truth that goes stale the moment funding is
+     * edited.
+     */
+    @JsonIgnore
     public List<Funder> getFunders() {
 
         record FunderKey(String organisationName, String organisationIdentifier) {}
@@ -99,7 +105,9 @@ public class ResearchActivity extends AbstractMetadataDocument {
                 f -> new FunderKey(
                     f.getFunderName(),
                     f.getFunderIdentifier()
-                )
+                ),
+                LinkedHashMap::new,
+                Collectors.toList()
             ))
             .entrySet()
             .stream()
@@ -125,7 +133,7 @@ public class ResearchActivity extends AbstractMetadataDocument {
                     .toList()
             ))
             .toList();
-            }   
+    }
 
     public void populateFromJenaService(JenaLookupService jenaService) {
         final String uri = this.getUri();
@@ -140,6 +148,3 @@ public class ResearchActivity extends AbstractMetadataDocument {
         this.setRelHasOutput(relationOutputs);
     }
 }
-
-
-
