@@ -23,9 +23,6 @@
         <#if description??>
           <div class="description">
             <div class="clearfix description-text">
-              <#if images?? && images?has_content>
-                <img src="${images?first.url}" alt="${images?first.name}" class="browseGraphic"/>
-              </#if>
               <@browseGraphic />
               <@b.linebreaksAndLinks description/>
             </div>
@@ -81,7 +78,7 @@
 </#macro>
 
 <#macro displayContributors>
-   <#if contributors??>
+   <#if contributors?has_content>
     <h2>Contributors</h2>
 
     <div class="contributors">
@@ -96,7 +93,7 @@
 </#macro>
 
 <#macro funding>
-  <#if funders??>
+  <#if funders?has_content>
     <div class="funding">
       <h2>Funding</h2>
       <#list funders as fund>
@@ -104,25 +101,31 @@
           ${fund.organisationName}
             <div class="awards">
               <#list fund.awards as award>
-                <#assign awardLabel = "" />
+                <#-- The property is awardURI, not awardUri: a mismatched name here is
+                     silently missing rather than an error, so the award disappears. -->
+                <#local awardLabel = "">
                 <#if award.awardTitle?has_content>
-                  <#assign awardLabel = award.awardTitle />
-                    <#if award.awardNumber?has_content>
-                      <#assign awardLabel += ' (' + award.awardNumber + ')' />
-                    </#if>         
-                <#elseif award.awardUri?has_content>        
-                  <#assign awardLabel = award.awardUri />
+                  <#local awardLabel = award.awardTitle>
+                  <#if award.awardNumber?has_content>
+                    <#local awardLabel = awardLabel + ' (' + award.awardNumber + ')'>
+                  </#if>
+                <#elseif award.awardNumber?has_content>
+                  <#local awardLabel = award.awardNumber>
+                <#else>
+                  <#local awardLabel = award.awardURI>
                 </#if>
 
-                <div class="award mb-1">
-                  <#if award.awardUri?has_content>
-                      <div>
-                        <a href="${award.awardUri}"target="_blank" rel="noopener noreferrer">${awardLabel}</a>
-                      </div>
-                  <#else>
-                      <div>${awardLabel}</div>
-                  </#if>                
-                </div>
+                <#if awardLabel?has_content>
+                  <div class="award mb-1">
+                    <#if award.awardURI?has_content>
+                        <div>
+                          <a href="${award.awardURI}" target="_blank" rel="noopener noreferrer">${awardLabel}</a>
+                        </div>
+                    <#else>
+                        <div>${awardLabel}</div>
+                    </#if>
+                  </div>
+                </#if>
               </#list>
             </div>
         </div>
@@ -132,51 +135,49 @@
 </#macro>
 
 <#macro displayOutputs>
-  <#if relHasOutput?has_content && relHasOutput?size gt 0 >
+  <#if relHasOutput?has_content>
       <h2>Outputs</h2>
       <div class="ukcehcards">
-        <#list relHasOutput>
-            <#items as item>
-              <@card item.href item.publicationStatus item.availability item.associationType item.title/>
-            </#items>
+        <#list relHasOutput as item>
+          <@card item.href item.publicationStatus item.availability item.associationType item.title/>
         </#list>
       </div>
   </#if>
 </#macro>
 
 <#macro card address publicationStatus availability associationType title external=false >
-  <#assign target = "">
+  <#local target = "">
   <#if external=true>
-			<#assign target="target='_blank' rel='noopener noreferrer'">
-	</#if>
-
-  <#assign cardClass = " ukcehcard-" + publicationStatus?lower_case >
-  <#if availability?has_content && availability != "Unknown">
-   <#assign cardClass += " ukcehcard-" + availability?lower_case>
-	</#if>
-
-  <#assign visible = false>
-  <#if publicationStatus=="published" || permission.userCanEdit(id)>
-     <#assign visible = true>
+    <#local target=" target='_blank' rel='noopener noreferrer'"?no_esc>
   </#if>
 
-  <#assign type=associationType icon="" >
+  <#local cardClass = " ukcehcard-" + publicationStatus?lower_case >
+  <#if availability?has_content && availability != "Unknown">
+   <#local cardClass = cardClass + " ukcehcard-" + availability?lower_case>
+	</#if>
+
+  <#local visible = false>
+  <#if publicationStatus=="published" || permission.userCanEdit(id)>
+     <#local visible = true>
+  </#if>
+
+  <#local type=associationType icon="" >
   <#if associationType = 'dataset' ||  associationType = 'nonGeographicDataset' ||  associationType = 'signpost'>
-    <#assign type="Dataset" icon="fa-solid fa-chart-column" >
+    <#local type="Dataset" icon="fa-solid fa-chart-column" >
   <#elseif associationType = "series" || associationType = "collection" || associationType = "aggregate">
-    <#assign type="Data collection" icon="fa-layer-group" >
+    <#local type="Data collection" icon="fa-layer-group" >
   <#elseif associationType = "model">
-    <#assign type="Model" icon="fa-list-check" >
+    <#local type="Model" icon="fa-list-check" >
   <#elseif associationType = "software" || associationType = "application">
-    <#assign type="Software" icon="fa-code" >
+    <#local type="Software" icon="fa-code" >
   <#elseif associationType = "computationalNotebook">
-    <#assign type="Notebook" icon="fa-book-open" >
+    <#local type="Notebook" icon="fa-book-open" >
   <#elseif associationType = "method">
-    <#assign type="Method" icon="fa-list-check">
+    <#local type="Method" icon="fa-list-check">
   <#elseif associationType = "service">
-    <#assign type="Web service" icon="fa-location-arrow" >
+    <#local type="Web service" icon="fa-location-arrow" >
   <#elseif associationType = "monitoringFacility">
-    <#assign type="Monitoring facility" icon="fa-map-pin" >
+    <#local type="Monitoring facility" icon="fa-map-pin" >
   </#if>
 
   <#if visible>
