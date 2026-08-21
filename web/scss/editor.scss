@@ -178,7 +178,11 @@
                 }
             }
 
-            select.form-select {
+            /* Opt-out rather than opt-in: selects are added by ~30 templates and a
+               new one should be styled by default. .styledSelect opts into the
+               appearance: base-select treatment further down instead. */
+            select:not(.styledSelect) {
+                @extend .form-select !optional;
                 @extend .form-select-sm !optional;
             }
 

@@ -497,9 +497,10 @@ body {
             }
 
             &-draft {
-                --_ukcehcard-background: hsl(0, 0%, 95%);
+                --_ukcehcard-background-colour: hsl(0, 0%, 95%);
                 --_ukcehcard-border-colour: #BBB;
                 --_ukcehcard-text-colour: #BBB;
+                --_ukcehcard-icon-background-colour: #BBB;
                 --_ukcehcard-border-style: dashed;
 
                 .ukcehcard-type {
@@ -512,6 +513,7 @@ body {
             &-pending {
                 --_ukcehcard-border-colour: #444;
                 --_ukcehcard-text-colour: #444;
+                --_ukcehcard-icon-background-colour: #444;
                 --_ukcehcard-border-style: dashed;
 
                 .ukcehcard-type {
@@ -538,7 +540,8 @@ body {
                 &:hover {
                     --_ukcehcard-background-colour: lightgray;
                     --_ukcehcard-text-colour: gray;
-                    --_ukcehcard-icon-colour: gray;
+                    --_ukcehcard-icon-colour: lightgray;
+                    --_ukcehcard-icon-background-colour: gray;
                 }
             }
         }
