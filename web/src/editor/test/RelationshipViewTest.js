@@ -71,4 +71,35 @@ describe('Test RelationshipView', function () {
     await view.render()
     expect($.getJSON).toHaveBeenCalledWith('http://exampleUri')
   })
+
+  describe('relationship-specific search filters', function () {
+    const outputOptions = [{ value: 'http://purl.org/cerif/frapo/hasOutput', label: 'Has output' }]
+
+    async function queryFor (relation, opts) {
+      const m = new EditorMetadata({ value: relation, target: '' })
+      const v = new RelationshipView({ model: m, options: opts })
+      // The autocomplete is bound during initialize and render() replaces the
+      // input, so capture the source callback before rendering.
+      const source = v.$('.autocomplete').autocomplete('option', 'source')
+      await v.render()
+      v.$('.relationshipList').val(relation)
+      await source({ term: 'rainfall' }, () => {})
+      return $.getJSON.calls.mostRecent().args[0]
+    }
+
+    it('restricts hasOutput to output-bearing resource types', async () => {
+      const query = await queryFor('http://purl.org/cerif/frapo/hasOutput', outputOptions)
+      expect(query).toContain('resourceType%3A(')
+      expect(query).toContain('Dataset')
+      expect(query).toContain('Model')
+      expect(query).toContain('Software')
+    })
+
+    it('quotes the non-geographic dataset label, which contains a space', async () => {
+      // resourceType is indexed as the display label from codelist.properties;
+      // an unquoted "Non-geographic dataset" would break the Solr query.
+      const query = await queryFor('http://purl.org/cerif/frapo/hasOutput', outputOptions)
+      expect(query).toContain('%22Non-geographic%20dataset%22')
+    })
+  })
 })

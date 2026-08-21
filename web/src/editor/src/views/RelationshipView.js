@@ -69,8 +69,10 @@ export default ObjectInputView.extend({
           'http://purl.org/dc/terms/replaces': () =>
             `resourceType%3A%22${encodeURIComponent(currentResourceType)}%22%20AND%20${encodedTerm}`,
 
+          // resourceType is indexed as the codelist display label, so a label
+          // containing a space has to be quoted or the Solr query breaks.
           'http://purl.org/cerif/frapo/hasOutput': () =>
-            `resourceType%3A(Dataset%20OR%20Model%20OR%20Software)%20AND%20${encodedTerm}`,
+            `resourceType%3A(Dataset%20OR%20%22Non-geographic%20dataset%22%20OR%20Model%20OR%20Software)%20AND%20${encodedTerm}`,
 
           'http://purl.org/dc/terms/isPartOf': () => {
             if (currentResourceType === 'dataset') {
