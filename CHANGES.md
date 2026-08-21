@@ -4,6 +4,22 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.228.0] - 2026-08-20
+
+Several long-standing annoyances in the record editor have been fixed. Adding a row to a list field such as keywords no longer writes an empty entry into the record before anything has been typed; those blank entries were being saved and then appeared on the published record as a stray comma in front of the first real keyword, or as a labelled row with no value at all (GH dri-one#297). Records that already carry such an entry now render correctly without needing to be re-edited.
+
+Deleting a row from the middle of a list no longer corrupts the rows beneath it. The remaining rows were left out of step with the stored values, so a later edit could write into the wrong position — the form would show two entries while the record saved three, keeping the pre-edit value alongside the new one (GH dri-one#298). Six fields were affected, among them alternative titles and model inputs and outputs. An unused editor component has also been removed (GH dri-one#302).
+
+## [3.227.0] - 2026-08-18
+
+Search gains new ways to narrow results. The FDRI filters are now available on the all-catalogue search interface, and the UKCEH catalogue has an environmental domain filter (GH dri-one#149). Grouping terms that exist only to organise those filters are no longer offered when an editor picks keywords, so they cannot be attached to a record by mistake. Results can also now be filtered by keyword directly from the web address, which makes it possible to share a link to a pre-filtered set of results (DRI-ONE-276).
+
+Monitoring Network records were failing with an error as soon as a monitoring site carrying a resource identifier was added to them; the outlines for those networks are now assembled correctly and the records display again (GH dri-one#279). The map service has been protected against oversized image requests, which had been exhausting its memory and forcing it to restart — fourteen times in production (GH dri-one#288). Smaller touches: pages now show a site icon in the browser tab, web addresses ending in a slash redirect to the correct page, and responses tell caches that the same address can return more than one format (GH dri-one#292, GH dri-one#293).
+
+## [3.226.0] - 2026-08-17
+
+The search index now recovers on its own when the search service is unavailable at start-up. A release can restart the catalogue before the search service is ready, and when that happened the index was left empty with nothing written to the logs, so the catalogue appeared to hold no records until somebody noticed and rebuilt it by hand — production sat in that state for fourteen minutes (GH dri-one#283). The application now retries until it can confirm the state of the index, and reports clearly what it found and what it rebuilt. Changelog entries for releases 3.222.0 to 3.225.0 were also added.
+
 ## [3.225.0] - 2026-08-17
 
 Staff can once again save a record immediately after creating it. A record created and then edited on without leaving the editor was being rejected with an error, and the only way past it was to leave the editor without saving and go back in — which risked losing the work in progress. The same error affected link records on their very first save. Both now save normally (GH dri-one#282). No data was ever lost to this: the failed saves were refused rather than applied incorrectly.
