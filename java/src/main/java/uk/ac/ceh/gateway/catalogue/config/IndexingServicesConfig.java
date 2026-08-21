@@ -20,7 +20,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.network.NetworkIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
-import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
 import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;

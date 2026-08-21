@@ -284,7 +284,6 @@ public class DocumentController extends AbstractDocumentController {
         );
     }
 
-/* */
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
         method = RequestMethod.POST,
@@ -319,7 +318,6 @@ public class DocumentController extends AbstractDocumentController {
             ifMatch
         );
     }
-/* */
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
     method = RequestMethod.POST,
@@ -467,11 +465,8 @@ public class DocumentController extends AbstractDocumentController {
             case MonitoringFacility doc -> doc.populateFromJenaService(jenaService);
             case MonitoringNetwork doc -> doc.populateFromJenaService(jenaService);
             case MonitoringProgramme doc -> doc.populateFromJenaService(jenaService);
+            case ResearchActivity doc -> doc.populateFromJenaService(jenaService);
             default -> {}
-        }
-
-        if (document instanceof ResearchActivity doc) {
-            doc.populateFromJenaService(jenaService);
         }
         return document;
     }
