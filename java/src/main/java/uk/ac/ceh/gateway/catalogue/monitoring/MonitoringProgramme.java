@@ -41,6 +41,7 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
     private List<TimePeriod> operatingPeriod;
     private List<Keyword> environmentalDomain, purposeOfCollection, keywordsParameters;
     private List<Supplemental> linksData, linksOther;
+    @JsonIgnore
     private String relCombinedGeometry;
     @JsonIgnore
     private List<Link> relUses;
@@ -81,8 +82,14 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
         this.setRelRelated(relationList);
     }
 
+    @JsonProperty("relCombinedGeometry")
     public String getRelCombinedGeometry() {
         return relCombinedGeometry == null ? "" : relCombinedGeometry;
+    }
+
+    @JsonIgnore
+    public void setRelCombinedGeometry(String relCombinedGeometry) {
+        this.relCombinedGeometry = relCombinedGeometry;
     }
 
     @JsonProperty("relUses")
@@ -91,10 +98,20 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonIgnore
+    public void setRelUses(List<Link> relUses) {
+        this.relUses = relUses;
+    }
+
     @JsonProperty("relSupersedes")
     public List<Link> getRelSupersedes() {
         return Optional.ofNullable(relSupersedes)
             .orElseGet(Collections::emptyList);
+    }
+
+    @JsonIgnore
+    public void setRelSupersedes(List<Link> relSupersedes) {
+        this.relSupersedes = relSupersedes;
     }
 
     @JsonProperty("relSupersededBy")
@@ -103,10 +120,20 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonIgnore
+    public void setRelSupersededBy(List<Link> relSupersededBy) {
+        this.relSupersededBy = relSupersededBy;
+    }
+
     @JsonProperty("relActivities")
     public List<Link> getRelActivities() {
         return Optional.ofNullable(relActivities)
             .orElseGet(Collections::emptyList);
+    }
+
+    @JsonIgnore
+    public void setRelActivities(List<Link> relActivities) {
+        this.relActivities = relActivities;
     }
 
     @JsonProperty("relChildProgramme")
@@ -115,15 +142,30 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonIgnore
+    public void setRelChildProgramme(List<Link> relChildProgramme) {
+        this.relChildProgramme = relChildProgramme;
+    }
+
     @JsonProperty("relParentProgramme")
     public List<Link> getRelParentProgramme() {
         return Optional.ofNullable(relParentProgramme)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonIgnore
+    public void setRelParentProgramme(List<Link> relParentProgramme) {
+        this.relParentProgramme = relParentProgramme;
+    }
+
     @JsonProperty("relRelated")
     public List<Link> getRelRelated() {
         return Optional.ofNullable(relRelated)
             .orElseGet(Collections::emptyList);
+    }
+
+    @JsonIgnore
+    public void setRelRelated(List<Link> relRelated) {
+        this.relRelated = relRelated;
     }
 }

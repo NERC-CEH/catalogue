@@ -42,6 +42,7 @@ public class MonitoringNetwork extends AbstractMetadataDocument implements WellK
     private List<Keyword> environmentalDomain, keywordsParameters;
     private List<Supplemental> linksData, linksOther;
     private BoundingBox boundingBox;
+    @JsonIgnore
     private String relCombinedGeometry;
     @JsonIgnore
     private List<Link> relFeatureList;
@@ -81,8 +82,14 @@ public class MonitoringNetwork extends AbstractMetadataDocument implements WellK
         this.setRelRelated(relationList);
     }
 
+    @JsonProperty("relCombinedGeometry")
     public String getRelCombinedGeometry() {
         return relCombinedGeometry == null ? "" : relCombinedGeometry;
+    }
+
+    @JsonIgnore
+    public void setRelCombinedGeometry(String relCombinedGeometry) {
+        this.relCombinedGeometry = relCombinedGeometry;
     }
 
     @JsonProperty("relFeatureList")

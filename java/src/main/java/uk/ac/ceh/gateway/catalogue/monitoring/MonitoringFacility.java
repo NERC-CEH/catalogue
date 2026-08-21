@@ -44,6 +44,7 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
     private List<TimePeriod> operatingPeriod;
     private List<Keyword> environmentalDomain, keywordsParameters;
     private List<AdditionalInfo> additionalInfo;
+    @JsonIgnore
     private String relCombinedGeometry;
     @JsonIgnore
     private List<Link> relBelongsToNetwork;
@@ -95,8 +96,14 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
         this.setRelRelated(relationList);
     }
 
+    @JsonProperty("relCombinedGeometry")
     public String getRelCombinedGeometry() {
         return relCombinedGeometry == null ? "" : relCombinedGeometry;
+    }
+
+    @JsonIgnore
+    public void setRelCombinedGeometry(String relCombinedGeometry) {
+        this.relCombinedGeometry = relCombinedGeometry;
     }
 
     @JsonProperty("relBelongsToNetwork")
