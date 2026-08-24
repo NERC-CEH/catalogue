@@ -2,6 +2,9 @@ package uk.ac.ceh.gateway.catalogue.search;
 
 import org.apache.solr.client.solrj.request.SolrQuery;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -1103,5 +1106,104 @@ public class SearchQueryTest {
                 hasItem(containsString("(catalogue:ukeof OR catalogue_view:ukeof)"))
             )
         );
+    }
+
+    // --- sortField validation (dri-one #314) -------------------------------------------------
+    //
+    // An unrecognised sortField used to reach SolrQuery.setSort() unchanged, so Solr answered with
+    // its own 400 and the request surfaced as a 500 with a stack trace in the application log.
+
+    private SearchQuery queryWithSortField(String field) {
+        return new SearchQuery(
+            ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            "carbon",
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            DEFAULT_FILTERS,
+            groupStore,
+            buildCatalogue("eidc"),
+            DEFAULT_FACETS,
+            field,
+            SolrQuery.ORDER.desc
+        );
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "publicationDate,       publicationDate desc",
+        "metadataDate,          metadataDate desc",
+        "incomingCitationCount, incomingCitationCount desc",
+        "title,                 title_raw desc",
+        "description,           description_raw desc",
+        "lineage,               lineage_raw desc",
+        "objectives,            objectives_raw desc",
+        "infrastructureCapabilities, infrastructureCapabilities_raw desc"
+    })
+    public void allowedSortFieldProducesExpectedSolrSortClause(String sortField, String expectedSortClause) {
+        //When
+        SolrQuery solrQuery = queryWithSortField(sortField).build();
+
+        //Then
+        assertThat(
+            "sortField " + sortField + " should sort on the field that is sortable in managed-schema",
+            solrQuery.get("sort"),
+            equalTo(expectedSortClause)
+        );
+    }
+
+    @Test
+    public void everySortableFieldIsAccepted() {
+        //Then
+        SearchQuery.SORTABLE_FIELDS.forEach(field ->
+            assertDoesNotThrow(
+                () -> queryWithSortField(field).build(),
+                "SORTABLE_FIELDS entry " + field + " should be accepted"
+            )
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "jam",                                        // simply unknown
+        "lastupdate",                                 // plausible but not in the schema
+        "metadataUpdate",                             // ditto
+        "score,incomingCitationCount",                // comma-separated list
+        "score",                                      // repeated sortField params arrive comma-joined
+        "incomingCitationCount desc,createDate desc", // direction embedded in the field name
+        "title_raw",                                  // the internal sort field, not the public name
+        "title desc"
+    })
+    public void unknownSortFieldIsRejected(String sortField) {
+        //Given
+        SearchQuery query = queryWithSortField(sortField);
+
+        //When
+        InvalidSortFieldException ex = assertThrows(InvalidSortFieldException.class, query::build);
+
+        //Then
+        assertThat(ex.getMessage(), containsString(sortField));
+        assertThat(ex.getMessage(), containsString("Allowed values"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    public void blankSortFieldMeansRelevanceRatherThanA400(String sortField) {
+        //When
+        SolrQuery solrQuery = queryWithSortField(sortField).build();
+
+        //Then
+        assertNull(solrQuery.get("sort"), "a blank sortField should leave Solr's relevance ranking in place");
+    }
+
+    @Test
+    public void blankSortFieldIsOmittedFromGeneratedUrls() {
+        //When
+        String url = queryWithSortField("").toUrl();
+
+        //Then
+        assertThat(url, not(containsString("sortField")));
     }
 }
