@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+<!--
+  Vendored verbatim from the stock Solr image, with ONE addition: the io.opentelemetry
+  logger is muted to "error" (see the AsyncLogger block below).
+
+    Source: solr:10.0.0  /opt/solr/server/resources/log4j2.xml
+    Digest: sha256:4c8d9331bc0271afd9e79ba891a6490f2b8aca31b3ca0c66a2b0c94f84f89399
+
+  ON A SOLR UPGRADE: re-extract the stock file from the new image and diff it against this
+  one, then re-apply the io.opentelemetry line on top of upstream's version. See the
+  "re-base" note in solr/Dockerfile for the exact command (it cannot be written here,
+  because a double hyphen is not legal inside an XML comment).
+
+  Anything other than the io.opentelemetry line showing up in that diff is an upstream
+  change that needs carrying across.
+  -->
+
+<!-- Default production configuration is asynchronous logging -->
+<Configuration>
+  <Appenders>
+
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <PatternLayout>
+        <Pattern>
+          %maxLen{%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p (%t) [%notEmpty{c:%X{collection}}%notEmpty{ s:%X{shard}}%notEmpty{ r:%X{replica}}%notEmpty{ x:%X{core}}%notEmpty{ t:%X{trace_id}}] %c{1.} %m%notEmpty{ =>%ex{short}}}{10240}%n
+        </Pattern>
+      </PatternLayout>
+    </Console>
+
+    <RollingRandomAccessFile
+        name="MainLogFile"
+        fileName="${sys:solr.logs.dir}/solr.log"
+        filePattern="${sys:solr.logs.dir}/solr.log.%i" >
+      <PatternLayout>
+        <Pattern>
+          %maxLen{%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p (%t) [%notEmpty{c:%X{collection}}%notEmpty{ s:%X{shard}}%notEmpty{ r:%X{replica}}%notEmpty{ x:%X{core}}%notEmpty{ t:%X{trace_id}}] %c{1.} %m%notEmpty{ =>%ex{short}}}{10240}%n
+        </Pattern>
+      </PatternLayout>
+      <Policies>
+        <OnStartupTriggeringPolicy />
+        <SizeBasedTriggeringPolicy size="32 MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="10"/>
+    </RollingRandomAccessFile>
+
+    <RollingRandomAccessFile
+        name="SlowLogFile"
+        fileName="${sys:solr.logs.dir}/solr_slow_requests.log"
+        filePattern="${sys:solr.logs.dir}/solr_slow_requests.log.%i" >
+      <PatternLayout>
+        <Pattern>
+          %maxLen{%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p (%t) [%notEmpty{c:%X{collection}}%notEmpty{ s:%X{shard}}%notEmpty{ r:%X{replica}}%notEmpty{ x:%X{core}}%notEmpty{ t:%X{trace_id}}] %c{1.} %m%notEmpty{ =>%ex{short}}}{10240}%n
+        </Pattern>
+      </PatternLayout>
+      <Policies>
+        <OnStartupTriggeringPolicy />
+        <SizeBasedTriggeringPolicy size="32 MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="10"/>
+    </RollingRandomAccessFile>
+
+  </Appenders>
+  <Loggers>
+    <!-- Use <AsyncLogger/<AsyncRoot and <Logger/<Root for asynchronous logging or synchronous logging respectively -->
+    <AsyncLogger name="org.apache.solr.update.LoggingInfoStream" level="info"/>
+    <AsyncLogger name="org.apache.zookeeper" level="warn"/>
+    <!-- HttpSolrCall adds markers denoting the handler class to allow fine grained control, metrics are
+         very noisy so by default the metrics handler is turned off to see metrics logging set DENY to ACCEPT -->
+    <AsyncLogger name="org.apache.solr.servlet.HttpSolrCall" level="info">
+      <MarkerFilter marker="org.apache.solr.handler.admin.MetricsHandler" onMatch="DENY" onMismatch="ACCEPT"/>
+    </AsyncLogger>
+    <AsyncLogger name="org.apache.solr.core.SolrCore.SlowRequest" level="info" additivity="false">
+      <AppenderRef ref="SlowLogFile"/>
+    </AsyncLogger>
+    <!-- Solr 10.0.0 closes its own OTel CallbackRegistration more than once when an index
+         searcher closes, and the SDK warns about it every time - ~9 lines per searcher close,
+         which was 96% of the entire prod Solr log (dri-one #315). Upstream behaviour and
+         functionally harmless: nothing in the cluster consumes these metrics (no ServiceMonitor,
+         no Prometheus, no OTel collector). Scoped to this logger rather than raising the root
+         level so a genuine OpenTelemetry ERROR still surfaces. -->
+    <AsyncLogger name="io.opentelemetry" level="error"/>
+    <AsyncLogger name="org.eclipse.jetty.deploy" level="warn"/>
+    <AsyncLogger name="org.eclipse.jetty.ee" level="warn"/>
+    <AsyncLogger name="org.eclipse.jetty.session" level="warn"/>
+
+    <AsyncRoot level="info">
+      <AppenderRef ref="MainLogFile"/>
+      <AppenderRef ref="STDOUT"/>
+    </AsyncRoot>
+  </Loggers>
+</Configuration>
