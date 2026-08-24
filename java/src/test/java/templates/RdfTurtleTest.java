@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
@@ -28,6 +29,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
 
 import java.io.File;
 import java.io.StringReader;
@@ -35,6 +37,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.apache.jena.rdf.model.ResourceFactory.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 
@@ -53,6 +58,7 @@ public class RdfTurtleTest {
         configuration = new Configuration(Configuration.VERSION_2_3_32);
         configuration.setDirectoryForTemplateLoading(new File("../templates"));
         configuration.setSharedVariable("jena", jenaLookupService);
+        configuration.setSharedVariable("uriNormaliser", new UriNormaliser());
 
         model = ModelFactory.createDefaultModel();
     }
@@ -494,6 +500,151 @@ public class RdfTurtleTest {
                     ).next().asResource()
                 )
             ));
+        }
+
+        @Nested
+        @DisplayName("Externally-supplied URIs are canonicalised (dri-one #318)")
+        class UriCanonicalisation {
+
+            private GeminiDocument dataset(String id) {
+                return (GeminiDocument) new GeminiDocument()
+                    .setType("dataset")
+                    .setId(id)
+                    .setUri("https://example.com/id/" + id)
+                    .setTitle("URI canonicalisation");
+            }
+
+            @Test
+            @DisplayName("a keyword concept URI loses its stray trailing slash and gains https")
+            void keywordUriCanonicalised() {
+                val document = dataset("kwtest");
+                document.setKeywordsOther(List.of(
+                    Keyword.builder().value("Scotland").URI("http://sws.geonames.org/2638360/").build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.containsResource(createResource("https://sws.geonames.org/2638360")));
+                assertFalse(model.containsResource(createResource("http://sws.geonames.org/2638360/")));
+            }
+
+            @Test
+            @DisplayName("keywordList and keywordDetail agree on the canonical node")
+            void keywordListAndDetailAgree() {
+                val document = dataset("kwagree");
+                document.setKeywordsOther(List.of(
+                    Keyword.builder().value("Scotland").URI("http://sws.geonames.org/2638360/").build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val concept = createResource("https://sws.geonames.org/2638360");
+                assertTrue(model.contains(
+                    createResource("https://example.com/id/kwagree"),
+                    createProperty("http://purl.org/dc/terms/subject"),
+                    concept
+                ));
+                assertTrue(model.contains(
+                    concept,
+                    createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                    createResource("http://www.w3.org/2004/02/skos/core#Concept")
+                ));
+            }
+
+            @Test
+            @DisplayName("a malformed keyword URI becomes a label rather than a dead-end node")
+            void malformedKeywordUriFallsBackToLabel() {
+                val document = dataset("kwbad");
+                document.setKeywordsOther(List.of(
+                    Keyword.builder()
+                        .value("Rainfall rate")
+                        .URI("hhttp://vocab.nerc.ac.uk/collection/N07/current/RAUT/")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.contains(
+                    createResource("https://example.com/id/kwbad"),
+                    createProperty("http://purl.org/dc/terms/subject"),
+                    model.createLiteral("Rainfall rate")
+                ));
+                assertTrue(model.listStatements(null, null, (org.apache.jena.rdf.model.RDFNode) null)
+                    .toList().stream()
+                    .noneMatch(st -> st.getObject().toString().contains("vocab.nerc.ac.uk")));
+            }
+
+            @Test
+            @DisplayName("a NERC vocabulary concept keeps the trailing slash that makes it resolve")
+            void significantTrailingSlashKept() {
+                val document = dataset("kwslash");
+                document.setKeywordsOther(List.of(
+                    Keyword.builder()
+                        .value("Rainfall rate")
+                        .URI("http://vocab.nerc.ac.uk/collection/N07/current/RAUT/")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.containsResource(
+                    createResource("http://vocab.nerc.ac.uk/collection/N07/current/RAUT/")
+                ));
+            }
+
+            @Test
+            @DisplayName("two spellings of one grant award collapse to a single prov:Activity")
+            void fundingAwardUrisConverge() {
+                val document = dataset("fundconv");
+                document.setFunding(List.of(
+                    Funding.builder()
+                        .awardTitle("Grant A")
+                        .awardURI("http://gtr.ukri.org/projects?ref=NE%2FS008926%2F1")
+                        .build(),
+                    Funding.builder()
+                        .awardTitle("Grant A")
+                        .awardURI("https://gtr.ukri.org/projects?ref=NE/S008926/1")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val grant = createResource("https://gtr.ukri.org/projects?ref=NE/S008926/1");
+                assertTrue(model.contains(
+                    createResource("https://example.com/id/fundconv"),
+                    createProperty("http://www.w3.org/ns/prov#wasGeneratedBy"),
+                    grant
+                ));
+                assertThat(
+                    model.listObjectsOfProperty(createProperty("http://www.w3.org/ns/prov#wasGeneratedBy"))
+                        .toSet()
+                        .size(),
+                    equalTo(1)
+                );
+            }
+
+            @Test
+            @DisplayName("an http ORCID is emitted as the https identifier it shares with its twin")
+            void orcidUpgradedToHttps() {
+                val document = dataset("orcidtest");
+                document.setAuthors(List.of(
+                    ResponsibleParty.builder()
+                        .familyName("Smith")
+                        .givenName("John")
+                        .organisationName("Test Organisation")
+                        .nameIdentifier("http://orcid.org/0000-0001-2345-6789")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.contains(
+                    createResource("https://example.com/id/orcidtest"),
+                    createProperty("http://purl.org/dc/terms/creator"),
+                    createResource("https://orcid.org/0000-0001-2345-6789")
+                ));
+                assertFalse(model.containsResource(createResource("http://orcid.org/0000-0001-2345-6789")));
+            }
         }
 
         @Nested

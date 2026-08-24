@@ -13,11 +13,17 @@
 
       <#if contact.fullName?has_content>
         <#if contact.isOrcid()>
-          <#assign contactIdentifier= "\l" + contact.nameIdentifier?trim + "\g">
+          <#local orcid = uriNormaliser.normalise(contact.nameIdentifier)>
+          <#if orcid?has_content>
+            <#assign contactIdentifier= "\l" + orcid + "\g">
+          </#if>
         </#if>
       <#else>
         <#if contact.isRor()>
-          <#assign contactIdentifier="\l" + contact.organisationIdentifier?trim + "\g">
+          <#local ror = uriNormaliser.normalise(contact.organisationIdentifier)>
+          <#if ror?has_content>
+            <#assign contactIdentifier="\l" + ror + "\g">
+          </#if>
         </#if>
       </#if>
 
@@ -36,13 +42,19 @@
         <#local contactType="foaf:Person">
         <#local contactName=contact.fullName>
         <#if contact.isOrcid()>
-          <#local contactIdentifier="\l" + contact.nameIdentifier?trim + "\g">
+          <#local orcid = uriNormaliser.normalise(contact.nameIdentifier)>
+          <#if orcid?has_content>
+            <#local contactIdentifier="\l" + orcid + "\g">
+          </#if>
         </#if>
       <#elseif contact.organisationName?has_content >
         <#local contactType="foaf:Organization">
         <#local contactName=contact.organisationName>
         <#if contact.isRor()>
-          <#local contactIdentifier="\l" + contact.organisationIdentifier?trim + "\g">
+          <#local ror = uriNormaliser.normalise(contact.organisationIdentifier)>
+          <#if ror?has_content>
+            <#local contactIdentifier="\l" + ror + "\g">
+          </#if>
         </#if>
       </#if>
 
@@ -52,11 +64,14 @@
         <#if contact.givenName?has_content >foaf:givenName "${contact.givenName?trim}" ;</#if>
         <#if contact.email?has_content>vcard:hasEmail "${contact.email?trim}" ;</#if>
 
-        foaf:member <#t/>
+        <#local memberRor = "">
         <#if contact.isRor()>
-          <${contact.organisationIdentifier?trim}> ;
-        <#else>
-          [foaf:name <@displayLiteral contact.organisationName />] ;
+          <#local memberRor = uriNormaliser.normalise(contact.organisationIdentifier)>
+        </#if>
+        <#if memberRor?has_content>
+          foaf:member <${memberRor}> ;
+        <#elseif contact.organisationName?has_content>
+          foaf:member [foaf:name <@displayLiteral contact.organisationName />] ;
         </#if>
       .
 
@@ -70,7 +85,10 @@
 
       <#assign fundIdentifier= ":" + id + "_fund" + fund?index>
       <#if fund.awardURI?has_content>
-        <#assign fundIdentifier ="\l" + fund.awardURI?trim+ "\g">
+        <#local awardUri = uriNormaliser.normalise(fund.awardURI)>
+        <#if awardUri?has_content>
+          <#assign fundIdentifier ="\l" + awardUri + "\g">
+        </#if>
       </#if>
       ${fundIdentifier?trim}<#sep>,</#sep><#t>
     </#list>
@@ -83,7 +101,10 @@
 
       <#assign fundIdentifier= ":" + id + "_fund" + fund?index>
       <#if fund.awardURI?has_content>
-        <#assign fundIdentifier ="\l" + fund.awardURI?trim+ "\g">
+        <#local awardUri = uriNormaliser.normalise(fund.awardURI)>
+        <#if awardUri?has_content>
+          <#assign fundIdentifier ="\l" + awardUri + "\g">
+        </#if>
       </#if>
 
       ${fundIdentifier?trim} a prov:Activity ; <#if fund.awardTitle?has_content>rdfs:label <@displayLiteral fund.awardTitle /></#if> .
@@ -91,13 +112,23 @@
   </#if>
 </#macro>
 
+<#--
+  A keyword is identified by its concept URI where it has a usable one, and by
+  its label otherwise. Shared by keywordList and keywordDetail so the two can
+  never disagree about which node a keyword is.
+-->
+<#function keywordUri kw>
+  <#return uriNormaliser.normalise(kw.uri!"")>
+</#function>
+
 <#macro keywordList keywords>
   <#list keywords as kw>
 
-    <#if kw.uri?has_content>
-      <#assign keyword ="\l" + kw.uri?trim+ "\g">
+    <#local kwUri = keywordUri(kw)>
+    <#if kwUri?has_content>
+      <#assign keyword ="\l" + kwUri + "\g">
     <#else>
-      <#assign keyword ='"' + kw.value?replace("\"", "") + '"'>
+      <#assign keyword ='"' + (kw.value!"")?replace("\"", "") + '"'>
     </#if>
 
     ${keyword}<#sep>,</#sep><#t>
@@ -106,8 +137,9 @@
 
 <#macro keywordDetail keywords>
   <#list keywords as kw>
-    <#if kw.uri?has_content>
-      <${kw.uri?trim}> a skos:Concept;
+    <#local kwUri = keywordUri(kw)>
+    <#if kwUri?has_content>
+      <${kwUri}> a skos:Concept;
         <#if kw.value?has_content >
           skos:prefLabel <@displayLiteral kw.value />; rdfs:label <@displayLiteral kw.value />
         </#if>
@@ -119,12 +151,13 @@
 <#macro opList >
   <#list fileset?filter(fs -> fs.observedProperty?has_content) as filesetOp>
     <#list filesetOp.observedProperty as op>
-        <#if op.uri?has_content>
-          <#assign keyword ="\l" + op.uri?trim+ "\g">
+        <#local opUri = uriNormaliser.normalise(op.uri!"")>
+        <#if opUri?has_content>
+          <#assign keyword ="\l" + opUri + "\g">
         <#elseif op.title?has_content>
           <#assign keyword ='"' + op.title?replace("\"", "") + '"'>
         <#else>
-          <#assign keyword ='"' + op.value?replace("\"", "") + '"'>
+          <#assign keyword ='"' + (op.value!"")?replace("\"", "") + '"'>
         </#if>
         ${keyword}<#sep>,</#sep><#t>
       </#list>
@@ -143,8 +176,9 @@
           <#assign opLabel = op.value>
         </#if>
 
-        <#if op.uri?has_content>
-          <${op.uri?trim}> a skos:Concept;skos:prefLabel <@displayLiteral opLabel />; rdfs:label <@displayLiteral opLabel />.
+        <#local opUri = uriNormaliser.normalise(op.uri!"")>
+        <#if opUri?has_content>
+          <${opUri}> a skos:Concept;skos:prefLabel <@displayLiteral opLabel />; rdfs:label <@displayLiteral opLabel />.
         </#if>
       </#list>
     </#if>
@@ -157,7 +191,10 @@
 
       <#assign citationIdentifier= ":" + id + "_citation" + citation?index>
       <#if citation.url?has_content>
-        <#assign citationIdentifier ="\l" + citation.url?trim + "\g">
+        <#local citationUri = uriNormaliser.normalise(citation.url)>
+        <#if citationUri?has_content>
+          <#assign citationIdentifier ="\l" + citationUri + "\g">
+        </#if>
       </#if>
       ${citationIdentifier?trim}<#sep>,</#sep><#t>
     </#list>
@@ -170,7 +207,10 @@
 
       <#assign citationIdentifier= ":" + id + "_citation" + citation?index>
       <#if citation.url?has_content>
-        <#assign citationIdentifier ="\l" + citation.url?trim + "\g">
+        <#local citationUri = uriNormaliser.normalise(citation.url)>
+        <#if citationUri?has_content>
+          <#assign citationIdentifier ="\l" + citationUri + "\g">
+        </#if>
       </#if>
 
       ${citationIdentifier?trim} a <http://purl.org/spar/fabio/Expression> ;
@@ -198,7 +238,10 @@
 
 <#macro organisationRORs>
   <#list authorPointOfContactWithRORs as contact>
-  <${contact.organisationIdentifier}> a foaf:Organization ;
+    <#local ror = uriNormaliser.normalise(contact.organisationIdentifier!"")>
+    <#if ror?has_content>
+  <${ror}> a foaf:Organization ;
     foaf:name "${contact.organisationName}" .
+    </#if>
   </#list>
 </#macro>

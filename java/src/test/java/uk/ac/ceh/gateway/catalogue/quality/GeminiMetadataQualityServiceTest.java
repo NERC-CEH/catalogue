@@ -10,6 +10,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -17,9 +19,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ResourceUtils;
 import uk.ac.ceh.gateway.catalogue.config.DownloadUrlProperties;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,6 +32,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.ERROR;
+import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.INFO;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.WARNING;
 
 
@@ -50,7 +55,7 @@ public class GeminiMetadataQualityServiceTest {
 
     @BeforeEach
     public void setup() {
-        this.service = new GeminiMetadataQualityService(documentReader, downloadUrlProperties);
+        this.service = new GeminiMetadataQualityService(documentReader, downloadUrlProperties, new UriChecks(new UriNormaliser()));
     }
 
     @Test
@@ -636,5 +641,146 @@ public class GeminiMetadataQualityServiceTest {
         //then
         assertThat(actual.getTotalErrors(), equalTo(expectedTotalErrors));
         assertThat(actual.getTotalWarnings(), equalTo(expectedTotalWarnings));
+    }
+
+    @Nested
+    @DisplayName("Externally-supplied URIs (dri-one #318)")
+    class Uris {
+
+        private List<MetadataCheck> check(String json) {
+            return service.checkUris(JsonPath.parse(json, config));
+        }
+
+        @Test
+        @DisplayName("a canonical record raises nothing")
+        void canonicalUrisAreSilent() {
+            val actual = check("""
+                {
+                  "keywordsTheme": [{"value": "Scotland", "uri": "https://sws.geonames.org/2638360"}],
+                  "funding": [{"awardURI": "https://gtr.ukri.org/projects?ref=NE/S008926/1"}],
+                  "authors": [{"nameIdentifier": "https://orcid.org/0000-0001-2345-6789"}],
+                  "accessLimitation": {"uri": "http://purl.org/coar/access_right/c_abf2"}
+                }
+                """);
+
+            assertThat(actual, is(empty()));
+        }
+
+        @Test
+        @DisplayName("a stray trailing slash is reported with the canonical form")
+        void reportsTrailingSlash() {
+            val actual = check("""
+                {"keywordsPlace": [{"value": "Scotland", "uri": "http://sws.geonames.org/2638360/"}]}
+                """);
+
+            assertThat(actual, contains(new MetadataCheck(
+                "Keyword URI is not in its canonical form, http://sws.geonames.org/2638360/ "
+                    + "should be https://sws.geonames.org/2638360",
+                INFO
+            )));
+        }
+
+        @Test
+        @DisplayName("a percent-encoded grant reference is reported with the canonical form")
+        void reportsPercentEncodedAwardUri() {
+            val actual = check("""
+                {"funding": [{"awardURI": "http://gtr.ukri.org/projects?ref=NE%2FS008926%2F1"}]}
+                """);
+
+            assertThat(actual, contains(new MetadataCheck(
+                "Funding award URI is not in its canonical form, "
+                    + "http://gtr.ukri.org/projects?ref=NE%2FS008926%2F1 "
+                    + "should be https://gtr.ukri.org/projects?ref=NE/S008926/1",
+                INFO
+            )));
+        }
+
+        @Test
+        @DisplayName("a URI that cannot be published as linked data is an error")
+        void malformedUriIsAnError() {
+            val actual = check("""
+                {"keywordsOther": [
+                  {"value": "Rainfall rate", "uri": "hhttp://vocab.nerc.ac.uk/collection/N07/current/RAUT/"}
+                ]}
+                """);
+
+            assertThat(actual, contains(new MetadataCheck(
+                "Keyword URI is not a usable URI and cannot be published as linked data: "
+                    + "hhttp://vocab.nerc.ac.uk/collection/N07/current/RAUT/",
+                ERROR
+            )));
+        }
+
+        @Test
+        @DisplayName("a URI whose trailing slash is significant is left alone")
+        void significantTrailingSlashIsNotReported() {
+            val actual = check("""
+                {"keywordsOther": [
+                  {"value": "Rainfall rate", "uri": "http://vocab.nerc.ac.uk/collection/N07/current/RAUT/"}
+                ]}
+                """);
+
+            assertThat(actual, is(empty()));
+        }
+
+        @Test
+        @DisplayName("responsible-party identifiers are checked and named by their collection")
+        void reportsContactIdentifiers() {
+            val actual = check("""
+                {"contactPoints": [{"nameIdentifier": "http://orcid.org/0000-0001-2345-6789"}]}
+                """);
+
+            assertThat(actual, contains(new MetadataCheck(
+                "ORCID on contactPoints is not in its canonical form, "
+                    + "http://orcid.org/0000-0001-2345-6789 should be https://orcid.org/0000-0001-2345-6789",
+                INFO
+            )));
+        }
+
+        @Test
+        @DisplayName("the same offending URI in two places is reported once")
+        void deduplicatesRepeatedOffenders() {
+            val actual = check("""
+                {
+                  "keywordsPlace": [{"uri": "http://sws.geonames.org/2638360/"}],
+                  "keywordsTheme": [{"uri": "http://sws.geonames.org/2638360/"}]
+                }
+                """);
+
+            assertThat(actual, hasSize(1));
+        }
+
+        @Test
+        @DisplayName("observed properties nested inside filesets are reached")
+        void reportsNestedObservedProperties() {
+            val actual = check("""
+                {"fileset": [
+                  {"observedProperty": [{"uri": "http://vocabs.lter-europe.net/EnvThes/30347"}]}
+                ]}
+                """);
+
+            assertThat(actual, contains(new MetadataCheck(
+                "Observed property URI is not in its canonical form, "
+                    + "http://vocabs.lter-europe.net/EnvThes/30347 "
+                    + "should be https://vocabs.lter-europe.net/EnvThes/30347",
+                INFO
+            )));
+        }
+
+        @Test
+        @DisplayName("a record with none of these fields is handled without error")
+        void emptyRecord() {
+            assertThat(check("{}"), is(empty()));
+        }
+
+        @Test
+        @DisplayName("blank URI values are not reported as malformed")
+        void blankUrisAreIgnored() {
+            val actual = check("""
+                {"keywordsOther": [{"value": "No concept", "uri": ""}, {"value": "Nor this"}]}
+                """);
+
+            assertThat(actual, is(empty()));
+        }
     }
 }

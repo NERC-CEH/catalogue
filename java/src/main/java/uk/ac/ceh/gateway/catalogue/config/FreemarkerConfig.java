@@ -34,6 +34,7 @@ public class FreemarkerConfig {
     private final ProfileService profileService;
     private final FileDetailsService fileDetailsService;
     private final FileListService fileListService;
+    private final UriNormaliser uriNormaliser;
     @Nullable private final ServiceAgreementQualityService serviceAgreementQualityService;
     @Nullable private final MetricsService metricsService;
     @Value("${access-button.collection.link}") private String collectionAccessButtonLink;
@@ -51,6 +52,7 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("metadataQuality", metadataQualityService);
         freemarkerConfiguration.setSharedVariable("permission", permissionService);
         freemarkerConfiguration.setSharedVariable("profile", profileService);
+        freemarkerConfiguration.setSharedVariable("uriNormaliser", uriNormaliser);
         freemarkerConfiguration.setSharedVariable("userInfo", new SecurityUserInfo());
         freemarkerConfiguration.setSharedVariable("fileDetails", fileDetailsService);
         freemarkerConfiguration.setSharedVariable("downloadUrlRegexes", downloadUrlProperties);

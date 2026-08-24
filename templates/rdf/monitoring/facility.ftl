@@ -10,7 +10,10 @@
   </#if>
 
   <#if environmentalDomain??>
-    ef:mediaMonitored <#list environmentalDomain as ad><${ad.uri}><#sep>,</#sep></#list> ;
+    <#assign monitoredMedia = environmentalDomain?filter(ad -> uriNormaliser.normalise(ad.uri!"")?has_content)>
+    <#if monitoredMedia?has_content>
+    ef:mediaMonitored <#list monitoredMedia as ad><${uriNormaliser.normalise(ad.uri)}><#sep>,</#sep></#list> ;
+    </#if>
   </#if>
 </@c.common>
 </#compress>

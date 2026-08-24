@@ -25,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
 
 import java.io.File;
 import java.io.StringReader;
@@ -93,6 +94,7 @@ public class RdfTemplateTest {
         objectMapper = JsonMapper.builder().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
         jena = mock(JenaLookupService.class);
         configuration.setSharedVariable("jena", jena);
+        configuration.setSharedVariable("uriNormaliser", new UriNormaliser());
     }
 
     @Nested

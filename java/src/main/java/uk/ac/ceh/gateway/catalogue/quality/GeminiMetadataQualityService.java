@@ -40,12 +40,15 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     );
     private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<>() {};
     private final DownloadUrlProperties downloadUrlProperties;
+    private final UriChecks uriChecks;
 
     public GeminiMetadataQualityService(
             @NonNull DocumentReader documentReader,
-            @NonNull DownloadUrlProperties downloadUrlProperties
+            @NonNull DownloadUrlProperties downloadUrlProperties,
+            @NonNull UriChecks uriChecks
     ) {
         this.documentReader = documentReader;
+        this.uriChecks = uriChecks;
         this.config = Configuration.defaultConfiguration()
             .jsonProvider(new JacksonJsonProvider())
             .mappingProvider(new JacksonMappingProvider())
@@ -85,7 +88,8 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
                     checkPublicationDate(parsedDoc, parsedMeta).stream(),
                     checkTemporalExtents(parsedDoc).stream(),
                     checkDownloadAndOrderLinks(parsedDoc).stream(),
-                    checkEmbargo(parsedDoc).stream()
+                    checkEmbargo(parsedDoc).stream(),
+                    checkUris(parsedDoc).stream()
                 ).flatMap(s -> s).toList();
                 return new Results(checks, id);
             } else {
@@ -733,4 +737,56 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             "])].value";
         return parsed.read(testPath, List.class).isEmpty();
     }
+
+    /**
+     * Reports URIs in the record that are not in the form the RDF templates
+     * emit, so that an editor can correct the record itself. See
+     * {@link UriChecks}.
+     */
+    List<MetadataCheck> checkUris(DocumentContext parsed) {
+        return uriChecks.check(parsed, URI_FIELDS);
+    }
+
+    /**
+     * Every field here is emitted as an RDF node identifier by the templates
+     * under {@code templates/rdf/}.
+     */
+    private static Map<String, String> uriFields() {
+        val fields = new LinkedHashMap<String, String>();
+        Stream.of(
+            "keywordsDiscipline",
+            "keywordsInstrument",
+            "keywordsPlace",
+            "keywordsProject",
+            "keywordsTheme",
+            "keywordsOther",
+            "topicCategories"
+        ).forEach(field -> fields.put("$." + field + "[*].uri", "Keyword URI"));
+
+        Stream.of(
+            "authors",
+            "contactPoints",
+            "publishers",
+            "custodians",
+            "distributorContacts",
+            "rightsHolders",
+            "contributors",
+            "otherContacts"
+        ).forEach(field -> {
+            fields.put("$." + field + "[*].nameIdentifier", "ORCID on " + field);
+            fields.put("$." + field + "[*].organisationIdentifier", "Organisation identifier on " + field);
+        });
+
+        fields.put("$.fileset[*].observedProperty[*].uri", "Observed property URI");
+        fields.put("$.funding[*].awardURI", "Funding award URI");
+        fields.put("$.incomingCitations[*].url", "Incoming citation URL");
+        fields.put("$.supplemental[*].url", "Supplemental link URL");
+        fields.put("$.onlineResources[*].url", "Online resource URL");
+        fields.put("$.useConstraints[*].uri", "Use constraint URI");
+        fields.put("$.licences[*].uri", "Licence URI");
+        fields.put("$.accessLimitation.uri", "Access limitation URI");
+        return Collections.unmodifiableMap(fields);
+    }
+
+    private static final Map<String, String> URI_FIELDS = uriFields();
 }

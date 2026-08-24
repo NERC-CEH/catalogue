@@ -1,11 +1,12 @@
 <#if licences?has_content>
   dcterms:license <#t>
   <#list licences as licence>
-    <#if licence.uri?has_content>
-      <#if licence.uri?contains("/licences/ogl/")>
+    <#assign licenceUri = uriNormaliser.normalise(licence.uri!"")>
+    <#if licenceUri?has_content>
+      <#if licenceUri?contains("/licences/ogl/")>
         <https://spdx.org/licenses/OGL-UK-3.0.ttl>
       <#else>
-        <${licence.uri?trim}>
+        <${licenceUri}>
       </#if>
     <#elseif licence.value?has_content>
       [ a dcterms:LicenseDocument;
@@ -30,8 +31,9 @@
 </#if>
 
 <#if accessLimitation?has_content>
-  <#if accessLimitation.uri?has_content>
-    dcterms:accessRights <${accessLimitation.uri?trim}> ;
+  <#assign accessRightsUri = uriNormaliser.normalise(accessLimitation.uri!"")>
+  <#if accessRightsUri?has_content>
+    dcterms:accessRights <${accessRightsUri}> ;
   <#else>
     dcterms:accessRights [
       a dcterms:RightsStatement ;
