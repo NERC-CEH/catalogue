@@ -120,6 +120,7 @@ public class CatalogueServiceConfig {
                 .facetKey("grant")
                 .facetKey("publicationState")
                 .documentType(GEMINI_TYPE)
+                .documentType(RESEARCHACTIVITY_TYPE)
                 .fileUpload(false)
                 .build(),
 

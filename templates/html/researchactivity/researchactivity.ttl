@@ -114,6 +114,10 @@
             <#list funders as funder>
                 <#local funderID = ":funder_" + id + "_" + funder?index >
 
+                <#if funder.organisationIdentifier?has_content>
+                    <#local funderID = "<" + funder.organisationIdentifier + ">">
+                </#if>
+                
                 ${funderID} a prov:Organization, org:Organization;
                 <#if funder.organisationName?has_content>foaf:name <@displayLiteral funder.organisationName /> ;</#if>
                 <#local awards = (funder.awards![])?filter(award -> hasAward(award))>

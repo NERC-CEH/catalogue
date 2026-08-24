@@ -1,6 +1,6 @@
 <#import "../skeleton.ftlh" as skeleton>
 <#import "../blocks.ftlh" as b>
-
+<#import "../macro-card.ftlh" as card>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
   <div id="metadata" class="metadata">
@@ -139,59 +139,8 @@
       <h2>Outputs</h2>
       <div class="ukcehcards">
         <#list relHasOutput as item>
-          <@card item.href item.publicationStatus item.availability item.associationType item.title/>
+          <@card.card item.href item.publicationStatus item.availability item.associationType item.title/>
         </#list>
       </div>
-  </#if>
-</#macro>
-
-<#macro card address publicationStatus availability associationType title external=false >
-  <#local target = "">
-  <#if external=true>
-    <#local target=" target='_blank' rel='noopener noreferrer'"?no_esc>
-  </#if>
-
-  <#local cardClass = " ukcehcard-" + publicationStatus?lower_case >
-  <#if availability?has_content && availability != "Unknown">
-   <#local cardClass = cardClass + " ukcehcard-" + availability?lower_case>
-	</#if>
-
-  <#local visible = false>
-  <#if publicationStatus=="published" || permission.userCanEdit(id)>
-     <#local visible = true>
-  </#if>
-
-  <#local type=associationType icon="" >
-  <#if associationType = 'dataset' ||  associationType = 'nonGeographicDataset' ||  associationType = 'signpost'>
-    <#local type="Dataset" icon="fa-solid fa-chart-column" >
-  <#elseif associationType = "series" || associationType = "collection" || associationType = "aggregate">
-    <#local type="Data collection" icon="fa-layer-group" >
-  <#elseif associationType = "model">
-    <#local type="Model" icon="fa-list-check" >
-  <#elseif associationType = "software" || associationType = "application">
-    <#local type="Software" icon="fa-code" >
-  <#elseif associationType = "computationalNotebook">
-    <#local type="Notebook" icon="fa-book-open" >
-  <#elseif associationType = "method">
-    <#local type="Method" icon="fa-list-check">
-  <#elseif associationType = "service">
-    <#local type="Web service" icon="fa-location-arrow" >
-  <#elseif associationType = "monitoringFacility">
-    <#local type="Monitoring facility" icon="fa-map-pin" >
-  </#if>
-
-  <#if visible>
-    <#if address?has_content && address?matches("^http(|s)://.+")>
-      <a class="ukcehcard new${cardClass}" href="${address}" ${target}>
-
-        <div>
-          <span class="ukcehcard-icon"><i class="fa-solid ${icon}"></i></span>
-        </div>
-        <div class="ukcehcard-content">
-          <div class="ukcehcard-type"><span>${publicationStatus}</span>${type}</div>
-          <div class="ukcehcard-title">${title}</div>
-        </div>
-      </a>
-    </#if>
   </#if>
 </#macro>

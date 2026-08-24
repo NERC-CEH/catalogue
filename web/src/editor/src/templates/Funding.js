@@ -6,7 +6,7 @@ export default _.template(`
         <label for="funding<%= data.index %>FunderName">Funding body</label>
     </div>
     <div class="col-sm-10">
-        <input placeholder='e.g. NERC' data-name='funderName' class="editor-input" id="funding<%= data.index %>FunderName" value="<%= data.funderName %>">
+        <input placeholder="Start typing to show a list of organisations. Pick from the list if possible" data-name='funderName' class="orgAutocomplete editor-input" id="funding<%= data.index %>FunderName" value="<%= data.funderName %>">
     </div>
 </div>
 <div class="row">
@@ -14,7 +14,7 @@ export default _.template(`
         <label for="funding<%= data.index %>FunderIdentifier">Funding body ID</label>
     </div>
     <div class="col-sm-10">
-        <input placeholder='e.g. https://ror.org/xxxxxx' data-name='funderIdentifier' class="editor-input" id="funding<%= data.index %>FunderIdentifier" value="<%= data.funderIdentifier %>">
+        <input placeholder="https//ror.org/..." class="ror editor-input" data-name='funderIdentifier' id="funding<%= data.index %>FunderIdentifier" value="<%= data.funderIdentifier %>">
     </div>
 </div>
 <div class="row">
@@ -27,7 +27,7 @@ export default _.template(`
 </div>
 <div class="row">
     <div class="col-sm-2">
-        <label for="funding<%= data.index %>AwardTitle">Award reference</label>
+        <label for="funding<%= data.index %>AwardNumber">Award reference</label>
     </div>
     <div class="col-sm-10">
         <input placeholder='e.g. NE/J015105/1' data-name='awardNumber' class="editor-input" id="funding<%= data.index %>AwardNumber" value="<%= data.awardNumber %>">
@@ -35,7 +35,7 @@ export default _.template(`
 </div>
 <div class="row">
     <div class="col-sm-2">
-        <label for="funding<%= data.index %>AwardTitle">Award URL</label>
+        <label for="funding<%= data.index %>AwardURI">Award URL</label>
     </div>
     <div class="col-sm-10">
         <input placeholder='e.g. https://gtr.ukri.org/projects?ref=NE/J015644/1' data-name='awardURI' class="editor-input" id="funding<%= data.index %>AwardURI" value="<%= data.awardURI %>">

@@ -98,8 +98,7 @@ public class ResearchActivity extends AbstractMetadataDocument {
             .orElseGet(Collections::emptyList)
             .stream()
             .filter(f ->
-                f.getFunderName() != null && !f.getFunderName().isBlank() &&
-                f.getFunderIdentifier() != null && !f.getFunderIdentifier().isBlank()
+                f.getFunderName() != null && !f.getFunderName().isBlank()
             )
             .collect(Collectors.groupingBy(
                 f -> new FunderKey(

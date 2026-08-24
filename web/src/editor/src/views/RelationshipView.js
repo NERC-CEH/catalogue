@@ -72,7 +72,7 @@ export default ObjectInputView.extend({
           // resourceType is indexed as the codelist display label, so a label
           // containing a space has to be quoted or the Solr query breaks.
           'http://purl.org/cerif/frapo/hasOutput': () =>
-            `resourceType%3A(Dataset%20OR%20%22Non-geographic%20dataset%22%20OR%20Model%20OR%20Software)%20AND%20${encodedTerm}`,
+            `${encodedTerm}&facet=recordType%7C(Model%20OR%20Dataset%20OR%20Map%20(web%20service)%20OR%20Software%20OR%20Non-geographic%20dataset)`,
 
           'http://purl.org/dc/terms/isPartOf': () => {
             if (currentResourceType === 'dataset') {
