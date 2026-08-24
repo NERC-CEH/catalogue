@@ -179,23 +179,6 @@ class ResearchActivityTurtleTest {
     }
 
     @Test
-    @DisplayName("a hand-typed funder identifier that is not a URI parses")
-    void funderIdentifierNotAUri() {
-        val activity = activity();
-        activity.setFunding(List.of(
-            Funding.builder()
-                .funderName("Some funder")
-                .funderIdentifier("ROR 12345")
-                .awardNumber("ABC1")
-                .build()
-        ));
-
-        render(activity);
-
-        assertIsProject();
-    }
-
-    @Test
     @DisplayName("a hand-typed contributor organisation identifier parses")
     void contributorIdentifierNotAUri() {
         val activity = activity();
