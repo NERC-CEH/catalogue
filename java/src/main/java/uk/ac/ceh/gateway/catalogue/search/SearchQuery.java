@@ -34,6 +34,29 @@ public class SearchQuery {
         "infrastructureCapabilities"
     );
 
+    // The only values accepted for the sortField request parameter.  Anything else is rejected
+    // with a 400 rather than being handed to Solr, which answers an unknown sort field with a
+    // server-side 400 that used to surface as a 500 (dri-one #314).
+    //
+    // Every entry must be single-valued and indexed in managed-schema, either directly or - for
+    // tokenised text_general fields, which Solr cannot sort on - via its _raw copy above.
+    // SearchController repeats this set as OpenAPI allowableValues; SearchControllerTest asserts
+    // the two stay in step.
+    public static final Set<String> SORTABLE_FIELDS = Set.of(
+        "publicationDate",
+        "metadataDate",
+        "incomingCitationCount",
+        "title",
+        "description",
+        "lineage",
+        "objectives",
+        "infrastructureCapabilities"
+    );
+
+    private static final String SORTABLE_FIELDS_DESCRIPTION = SORTABLE_FIELDS.stream()
+        .sorted()
+        .collect(Collectors.joining(", "));
+
     // Legacy field names that were renamed; translate silently so old bookmarked URLs keep working.
     private static final Map<String, String> LEGACY_FIELD_NAMES = Map.of(
         "resourceStatus", "availability"
@@ -320,7 +343,7 @@ public class SearchQuery {
             });
         }
 
-        if(sortField != null) {
+        if(sortField != null && !sortField.isBlank()) {
             builder.queryParam(SORT_FIELD_PARAM, sortField);
             if (sortOrder != null) {
                 builder.queryParam(SORT_ORDER_PARAM, sortOrder);
@@ -449,7 +472,12 @@ public class SearchQuery {
     }
 
     private void setSortOrder(SolrQuery query) {
-        if (sortField != null) {
+        if (sortField != null && !sortField.isBlank()) {
+            if (!SORTABLE_FIELDS.contains(sortField)) {
+                throw new InvalidSortFieldException(
+                    "Unknown sort field: " + sortField + ". Allowed values: " + SORTABLE_FIELDS_DESCRIPTION
+                );
+            }
             final String maybeRawSuffix = RAW_SORT_FIELDS.contains(sortField) ? "_raw" : "";
             query.setSort(sortField + maybeRawSuffix, sortOrder);
         } else if (DEFAULT_SEARCH_TERM.equals(term)) {

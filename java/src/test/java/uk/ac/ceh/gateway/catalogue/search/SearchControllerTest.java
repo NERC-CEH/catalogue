@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
 import freemarker.template.Configuration;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.bind.annotation.RequestParam;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -29,8 +31,13 @@ import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -354,4 +361,35 @@ class SearchControllerTest extends AbstractMvcTest {
             .andExpect(status().isBadRequest());
     }
 
+    @Test
+    @DisplayName("The sortField OpenAPI allowableValues match the set the query actually accepts")
+    void openApiSortFieldValuesMatchTheAllowList() {
+        int checked = 0;
+        for (val method : SearchController.class.getDeclaredMethods()) {
+            for (val parameter : method.getParameters()) {
+                val requestParam = parameter.getAnnotation(RequestParam.class);
+                if (requestParam == null || !SearchController.SORT_FIELD_PARAM.equals(requestParam.value())) {
+                    continue;
+                }
+                val documented = parameter.getAnnotation(Parameter.class);
+                assertThat(
+                    "sortField on " + method.getName() + " should document its allowed values",
+                    documented,
+                    is(notNullValue())
+                );
+                assertThat(
+                    "OpenAPI allowableValues on " + method.getName()
+                        + " have drifted from SearchQuery.SORTABLE_FIELDS",
+                    Set.of(documented.schema().allowableValues()),
+                    equalTo(SearchQuery.SORTABLE_FIELDS)
+                );
+                checked++;
+            }
+        }
+        assertThat(
+            "both search endpoints should expose a documented sortField parameter",
+            checked,
+            equalTo(2)
+        );
+    }
 }
