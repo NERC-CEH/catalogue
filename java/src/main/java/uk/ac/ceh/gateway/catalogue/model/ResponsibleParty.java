@@ -52,9 +52,15 @@ public class ResponsibleParty {
         return nameIdentifier.matches("^https?://orcid\\.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$");
     }
 
+    /**
+     * An ISNI is as good a persistent identifier for a person as an ORCID, and
+     * is used as one when emitting RDF. {@code http} is accepted for the same
+     * reason as in {@link #isOrcid()}: a record that supplies the plain-scheme
+     * form still means the person, and canonicalisation upgrades it.
+     */
     @JsonIgnore
     public boolean isIsni() {
-        return nameIdentifier.matches("^https://isni\\.org/isni/\\d{15}(X|\\d)$");
+        return nameIdentifier.matches("^https?://isni\\.org/isni/\\d{15}(X|\\d)$");
     }
 
     @JsonIgnore

@@ -29,6 +29,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
 
 import java.io.File;
@@ -39,6 +40,7 @@ import java.util.List;
 import static org.apache.jena.rdf.model.ResourceFactory.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.matchesRegex;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
@@ -58,7 +60,9 @@ public class RdfTurtleTest {
         configuration = new Configuration(Configuration.VERSION_2_3_32);
         configuration.setDirectoryForTemplateLoading(new File("../templates"));
         configuration.setSharedVariable("jena", jenaLookupService);
-        configuration.setSharedVariable("uriNormaliser", new UriNormaliser());
+        val uriNormaliser = new UriNormaliser();
+        configuration.setSharedVariable("uriNormaliser", uriNormaliser);
+        configuration.setSharedVariable("contactUri", new ContactUri(uriNormaliser));
 
         model = ModelFactory.createDefaultModel();
     }
@@ -644,6 +648,140 @@ public class RdfTurtleTest {
                     createResource("https://orcid.org/0000-0001-2345-6789")
                 ));
                 assertFalse(model.containsResource(createResource("http://orcid.org/0000-0001-2345-6789")));
+            }
+        }
+
+        @Nested
+        @DisplayName("A person is one node across records (dri-one #319)")
+        class PersonIdentity {
+
+            private static final String CREATOR = "http://purl.org/dc/terms/creator";
+            private static final String CONTACT_POINT = "http://www.w3.org/ns/dcat#contactPoint";
+            private static final String FOAF_NAME = "http://xmlns.com/foaf/0.1/name";
+
+            private GeminiDocument dataset(String id) {
+                return (GeminiDocument) new GeminiDocument()
+                    .setType("dataset")
+                    .setId(id)
+                    .setUri("https://example.com/id/" + id)
+                    .setTitle("Person identity");
+            }
+
+            private ResponsibleParty author(String familyName, String givenName) {
+                return ResponsibleParty.builder()
+                    .familyName(familyName)
+                    .givenName(givenName)
+                    .organisationName("UK Centre for Ecology & Hydrology")
+                    .build();
+            }
+
+            @Test
+            @DisplayName("an author on two records is one node, where they used to be two")
+            void sharedAcrossRecords() {
+                val first = dataset("personone");
+                first.setAuthors(List.of(author("Wood", "Claire")));
+                val second = dataset("persontwo");
+                second.setAuthors(List.of(author("Wood", "Claire")));
+
+                template("rdf/ttl.ftl", first);
+                template("rdf/ttl.ftl", second);
+
+                val creators = model.listObjectsOfProperty(createProperty(CREATOR)).toSet();
+                assertThat(creators.size(), equalTo(1));
+                assertThat(
+                    creators.iterator().next().asResource().getURI(),
+                    matchesRegex("https://example\\.com/id/person_[0-9a-f]{16}")
+                );
+            }
+
+            @Test
+            @DisplayName("moving an author up the list no longer changes who they are")
+            void independentOfPosition() {
+                val first = dataset("posone");
+                first.setAuthors(List.of(author("Smart", "Simon"), author("Wood", "Claire")));
+                val second = dataset("postwo");
+                second.setAuthors(List.of(author("Wood", "Claire"), author("Smart", "Simon")));
+
+                template("rdf/ttl.ftl", first);
+                template("rdf/ttl.ftl", second);
+
+                assertThat(model.listObjectsOfProperty(createProperty(CREATOR)).toSet().size(), equalTo(2));
+            }
+
+            @Test
+            @DisplayName("an author who is also the contact point is one node the record links twice")
+            void sharedAcrossRolesInOneRecord() {
+                val document = dataset("bothroles");
+                document.setAuthors(List.of(author("Wood", "Claire")));
+                document.setContactPoints(List.of(author("Wood", "Claire")));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/bothroles");
+                val person = model.listObjectsOfProperty(record, createProperty(CREATOR)).next().asResource();
+                assertTrue(model.contains(record, createProperty(CONTACT_POINT), person));
+                assertThat(
+                    model.listResourcesWithProperty(
+                        createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                        createResource("http://xmlns.com/foaf/0.1/Person")
+                    ).toList().size(),
+                    equalTo(1)
+                );
+            }
+
+            @Test
+            @DisplayName("the node carries the name it was derived from, so it can be reconciled later")
+            void nodeIsSelfDescribing() {
+                val document = dataset("selfdesc");
+                document.setAuthors(List.of(author("Wood", "Claire")));
+
+                template("rdf/ttl.ftl", document);
+
+                val person = model.listObjectsOfProperty(createProperty(CREATOR)).next().asResource();
+                assertTrue(model.contains(person, createProperty(FOAF_NAME), model.createLiteral("Wood, C.")));
+                assertTrue(model.contains(
+                    person,
+                    createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                    createResource("http://xmlns.com/foaf/0.1/Person")
+                ));
+            }
+
+            @Test
+            @DisplayName("an ISNI identifies the author, which isIsni() never did before #319")
+            void isni() {
+                val document = dataset("isnitest");
+                document.setAuthors(List.of(
+                    ResponsibleParty.builder()
+                        .familyName("Wood")
+                        .givenName("Claire")
+                        .nameIdentifier("https://isni.org/isni/0000000121032683")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.contains(
+                    createResource("https://example.com/id/isnitest"),
+                    createProperty(CREATOR),
+                    createResource("https://isni.org/isni/0000000121032683")
+                ));
+            }
+
+            @Test
+            @DisplayName("an organisation without a ROR stays on its record-scoped node")
+            void organisationWithoutRor() {
+                val document = dataset("orgtest");
+                document.setContactPoints(List.of(
+                    ResponsibleParty.builder().organisationName("Butterfly Conservation").build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.contains(
+                    createResource("https://example.com/id/orgtest"),
+                    createProperty(CONTACT_POINT),
+                    createResource("https://example.com/id/orgtest_c0")
+                ));
             }
         }
 

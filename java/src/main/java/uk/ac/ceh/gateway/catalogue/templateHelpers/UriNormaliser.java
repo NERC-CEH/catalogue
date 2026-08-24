@@ -62,6 +62,10 @@ public class UriNormaliser {
         Map.entry("doi.org", new HostPolicy(true, TrailingSlash.STRIP)),
         Map.entry("ror.org", new HostPolicy(true, TrailingSlash.STRIP)),
         Map.entry("orcid.org", new HostPolicy(true, TrailingSlash.STRIP)),
+        // Pre-emptive: no isni.org URI appears in production yet (dri-one #319),
+        // but ISNI publishes its identifiers over https with no trailing slash,
+        // and the first record to supply one should not split against the next.
+        Map.entry("isni.org", new HostPolicy(true, TrailingSlash.STRIP)),
         Map.entry("www.wikidata.org", new HostPolicy(true, TrailingSlash.STRIP)),
         Map.entry("creativecommons.org", new HostPolicy(true, TrailingSlash.STRIP)),
         Map.entry("vocabs.lter-europe.net", new HostPolicy(true, TrailingSlash.LEAVE)),
