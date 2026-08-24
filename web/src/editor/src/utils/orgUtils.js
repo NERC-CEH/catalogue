@@ -1,7 +1,7 @@
 import _ from 'underscore'
 import $ from 'jquery'
 
-export function createOrgAutocomplete(id, obj, identifierFieldName = 'organisationIdentifier') {
+export function createOrgAutocomplete( id, obj, identifierFieldName = 'organisationIdentifier') {
   const selector = `[data-name=${identifierFieldName}]`
 
   obj.$(id).autocomplete({
