@@ -67,6 +67,10 @@
       sdo:variableMeasured <@opList /> ;
     </#if>
 
+    <#if fileset?? && fileset?has_content && fileset?filter(fs -> fs.observedProperty?filter(op -> observedPropertyUri(op)?has_content)?has_content)?has_content>
+      sosa:observedProperty <@opSosaList /> ;
+    </#if>
+
     <#if funding?has_content>
     prov:wasGeneratedBy <@fundingList /> ;
     </#if>

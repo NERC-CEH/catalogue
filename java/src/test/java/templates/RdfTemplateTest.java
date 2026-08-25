@@ -154,6 +154,12 @@ public class RdfTemplateTest {
             Property varMeasured = model.createProperty("https://schema.org/variableMeasured");
             assertTrue(model.contains(subject, varMeasured, model.createResource("https://prop-a.example.com")));
             assertTrue(model.contains(subject, varMeasured, model.createResource("https://prop-b.example.com")));
+
+            // dri-one #326: sosa:observedProperty alongside sdo:variableMeasured for every
+            // observed property that already carries a uri
+            Property sosaObservedProperty = model.createProperty("http://www.w3.org/ns/sosa/observedProperty");
+            assertTrue(model.contains(subject, sosaObservedProperty, model.createResource("https://prop-a.example.com")));
+            assertTrue(model.contains(subject, sosaObservedProperty, model.createResource("https://prop-b.example.com")));
         }
 
         @Test

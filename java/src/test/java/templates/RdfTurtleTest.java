@@ -797,6 +797,8 @@ public class RdfTurtleTest {
             private static final String RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
             private static final String SKOS_CONCEPT = "http://www.w3.org/2004/02/skos/core#Concept";
             private static final String FOAF_ORGANIZATION = "http://xmlns.com/foaf/0.1/Organization";
+            private static final String SDO_VARIABLE_MEASURED = "https://schema.org/variableMeasured";
+            private static final String SOSA_OBSERVED_PROPERTY = "http://www.w3.org/ns/sosa/observedProperty";
 
             private GeminiDocument dataset(String id) {
                 return (GeminiDocument) new GeminiDocument()
@@ -862,6 +864,61 @@ public class RdfTurtleTest {
                 assertTrue(model.contains(concept, createProperty(RDF_TYPE), createResource(SKOS_CONCEPT)));
                 assertFalse(model.contains(concept, createProperty(SKOS_PREF_LABEL), (org.apache.jena.rdf.model.RDFNode) null));
                 assertFalse(model.contains(concept, createProperty(RDFS_LABEL), (org.apache.jena.rdf.model.RDFNode) null));
+            }
+
+            @Test
+            @DisplayName("an observed property with a uri also gets a sosa:observedProperty triple alongside sdo:variableMeasured (dri-one #326)")
+            void observedPropertyWithUriAlsoGetsSosaObservedProperty() {
+                val document = dataset("opsosatest");
+                document.setFileset(List.of(
+                    Fileset.builder()
+                        .filesetName("data.csv")
+                        .observedProperty(List.of(
+                            ObservedProperty.builder()
+                                .title("Wrong title")
+                                .value("Wrong value")
+                                .uri("https://vocab.nerc.ac.uk/collection/P07/current/CFSN0381/")
+                                .build()
+                        ))
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val subject = createResource("https://example.com/id/opsosatest");
+                val concept = createResource("https://vocab.nerc.ac.uk/collection/P07/current/CFSN0381/");
+                assertTrue(model.contains(subject, createProperty(SDO_VARIABLE_MEASURED), concept));
+                assertTrue(model.contains(subject, createProperty(SOSA_OBSERVED_PROPERTY), concept));
+            }
+
+            @Test
+            @DisplayName("an observed property without a uri gets only the unchanged sdo:variableMeasured literal, no sosa:observedProperty (dri-one #326)")
+            void observedPropertyWithoutUriGetsNoSosaObservedProperty() {
+                val document = dataset("opnourisosatest");
+                document.setFileset(List.of(
+                    Fileset.builder()
+                        .filesetName("data.csv")
+                        .observedProperty(List.of(
+                            ObservedProperty.builder()
+                                .title("Free text property")
+                                .build()
+                        ))
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val subject = createResource("https://example.com/id/opnourisosatest");
+                assertTrue(model.contains(
+                    subject,
+                    createProperty(SDO_VARIABLE_MEASURED),
+                    model.createLiteral("Free text property")
+                ));
+                assertFalse(model.contains(
+                    subject,
+                    createProperty(SOSA_OBSERVED_PROPERTY),
+                    (org.apache.jena.rdf.model.RDFNode) null
+                ));
             }
 
             @Test

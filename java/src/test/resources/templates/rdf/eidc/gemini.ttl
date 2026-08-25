@@ -51,6 +51,7 @@ dcterms:subject
 <http://onto.nerc.ac.uk/CEHMD/topic/1>,
 <https://vocabs.lter-europe.net/EnvThes/30349> ;
 sdo:variableMeasured <https://test-observed-properties.ac.uk> ;
+sosa:observedProperty <https://test-observed-properties.ac.uk> ;
 prov:wasGeneratedBy
 <https://testaward.ac.uk> ;
 a dcat:Dataset;
