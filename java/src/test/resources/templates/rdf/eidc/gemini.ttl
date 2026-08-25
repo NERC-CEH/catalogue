@@ -16,6 +16,7 @@ PREFIX sdo: <https://schema.org/>
 PREFIX ef: <http://www.w3.org/2015/03/inspire/ef/>
 PREFIX doo: <https://digital.ceh.ac.uk/ontology/doo/>
 PREFIX adms: <http://www.w3.org/ns/adms#>
+PREFIX frapo: <http://purl.org/cerif/frapo/>
 PREFIX : <http://localhost:8080/id/>
 :f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16
 dcterms:title "Test title" ;
@@ -52,7 +53,7 @@ dcterms:subject
 <https://vocabs.lter-europe.net/EnvThes/30349> ;
 sdo:variableMeasured <https://test-observed-properties.ac.uk> ;
 prov:wasGeneratedBy
-<https://testaward.ac.uk> ;
+:grant_d8eb992155e350a7 ;
 a dcat:Dataset;
 dcterms:type dcmitype:Dataset ;
 dcterms:available "2025-02-05"^^xsd:date ;
@@ -117,4 +118,11 @@ skos:prefLabel "water turbidity of stagnant surface water"; rdfs:label "water tu
 <https://test-observed-properties.ac.uk> a skos:Concept;skos:prefLabel "Test observed properties title"; rdfs:label "Test observed properties title".
 <https://ror.org/00pggkr55> a foaf:Organization ;
 foaf:name "UK Centre for Ecology & Hydrology" .
-<https://testaward.ac.uk> a prov:Activity ; rdfs:label "Test supplemental award name" .
+:grant_d8eb992155e350a7 a frapo:Grant, prov:Activity ;
+rdfs:label "Test supplemental award name" ;
+frapo:hasGrantNumber "Test supplemental award reference" ;
+owl:sameAs <https://testaward.ac.uk> ;
+frapo:funds :f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16 .
+<https://ror.org/00cwqg982> a frapo:FundingAgency ;
+foaf:name "Biotechnology and Biological Sciences Research Council" ;
+frapo:awards :grant_d8eb992155e350a7 .

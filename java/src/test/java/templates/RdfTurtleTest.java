@@ -30,6 +30,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
 
 import java.io.File;
@@ -63,6 +64,7 @@ public class RdfTurtleTest {
         val uriNormaliser = new UriNormaliser();
         configuration.setSharedVariable("uriNormaliser", uriNormaliser);
         configuration.setSharedVariable("contactUri", new ContactUri(uriNormaliser));
+        configuration.setSharedVariable("fundingUri", new FundingUri(uriNormaliser));
 
         model = ModelFactory.createDefaultModel();
     }
@@ -648,6 +650,139 @@ public class RdfTurtleTest {
                     createResource("https://orcid.org/0000-0001-2345-6789")
                 ));
                 assertFalse(model.containsResource(createResource("http://orcid.org/0000-0001-2345-6789")));
+            }
+        }
+
+        @Nested
+        @DisplayName("Funding is emitted as a frapo:Grant (dri-one #324)")
+        class FrapoGrant {
+
+            private static final String WAS_GENERATED_BY = "http://www.w3.org/ns/prov#wasGeneratedBy";
+            private static final String RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+            private static final String FRAPO_GRANT = "http://purl.org/cerif/frapo/Grant";
+            private static final String FRAPO_FUNDING_AGENCY = "http://purl.org/cerif/frapo/FundingAgency";
+            private static final String FRAPO_HAS_GRANT_NUMBER = "http://purl.org/cerif/frapo/hasGrantNumber";
+            private static final String FRAPO_AWARDS = "http://purl.org/cerif/frapo/awards";
+            private static final String FRAPO_FUNDS = "http://purl.org/cerif/frapo/funds";
+            private static final String FOAF_NAME = "http://xmlns.com/foaf/0.1/name";
+            private static final String OWL_SAME_AS = "http://www.w3.org/2002/07/owl#sameAs";
+            private static final String RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
+
+            private GeminiDocument dataset(String id) {
+                return (GeminiDocument) new GeminiDocument()
+                    .setType("dataset")
+                    .setId(id)
+                    .setUri("https://example.com/id/" + id)
+                    .setTitle("Frapo grant");
+            }
+
+            @Test
+            @DisplayName("an award number and a ROR funder produce a full frapo:Grant / frapo:FundingAgency pair")
+            void grantAndRorFunderAreEmitted() {
+                val document = dataset("grantror");
+                document.setFunding(List.of(
+                    Funding.builder()
+                        .funderName("UK Research and Innovation")
+                        .funderIdentifier("https://ror.org/00cwqg982")
+                        .awardTitle("Test grant")
+                        .awardNumber("NE/R016429/1")
+                        .awardURI("https://gtr.ukri.org/projects?ref=NE/R016429/1")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/grantror");
+                val grant = model.listObjectsOfProperty(record, createProperty(WAS_GENERATED_BY)).next().asResource();
+
+                assertTrue(model.contains(grant, createProperty(RDF_TYPE), createResource(FRAPO_GRANT)));
+                assertTrue(model.contains(grant, createProperty(FRAPO_HAS_GRANT_NUMBER), model.createLiteral("NE/R016429/1")));
+                assertTrue(model.contains(grant, createProperty(RDFS_LABEL), model.createLiteral("Test grant")));
+                assertTrue(model.contains(grant, createProperty(FRAPO_FUNDS), record));
+                assertTrue(model.contains(
+                    grant,
+                    createProperty(OWL_SAME_AS),
+                    createResource("https://gtr.ukri.org/projects?ref=NE/R016429/1")
+                ));
+
+                val funder = createResource("https://ror.org/00cwqg982");
+                assertTrue(model.contains(funder, createProperty(RDF_TYPE), createResource(FRAPO_FUNDING_AGENCY)));
+                assertTrue(model.contains(funder, createProperty(FOAF_NAME), model.createLiteral("UK Research and Innovation")));
+                assertTrue(model.contains(funder, createProperty(FRAPO_AWARDS), grant));
+            }
+
+            @Test
+            @DisplayName("a grant node minted from awardNumber is stable across differing awardURI spellings")
+            void grantIdentityIsStableAcrossAwardUriVariants() {
+                val document = dataset("grantstable");
+                document.setFunding(List.of(
+                    Funding.builder()
+                        .awardTitle("Grant A")
+                        .awardNumber("NE/S008926/1")
+                        .awardURI("http://gtr.ukri.org/projects?ref=NE%2FS008926%2F1")
+                        .build(),
+                    Funding.builder()
+                        .awardTitle("Grant A")
+                        .awardNumber("NE/S008926/1")
+                        .awardURI("https://gtr.ukri.org/projects?ref=NE/S008926/1")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                assertThat(
+                    model.listObjectsOfProperty(createProperty(WAS_GENERATED_BY)).toSet().size(),
+                    equalTo(1)
+                );
+                assertThat(
+                    model.listResourcesWithProperty(createProperty(FRAPO_HAS_GRANT_NUMBER)).toList().size(),
+                    equalTo(1)
+                );
+            }
+
+            @Test
+            @DisplayName("a funder identifier that is not a ROR still gets frapo:awards and foaf:name")
+            void nonRorFunderIsStillEmitted() {
+                val document = dataset("nonror");
+                document.setFunding(List.of(
+                    Funding.builder()
+                        .funderName("Some Other Funder")
+                        .funderIdentifier("https://example.org/funder/123")
+                        .awardNumber("AB123")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val funder = createResource("https://example.org/funder/123");
+                assertTrue(model.contains(funder, createProperty(RDF_TYPE), createResource(FRAPO_FUNDING_AGENCY)));
+                assertTrue(model.contains(funder, createProperty(FOAF_NAME), model.createLiteral("Some Other Funder")));
+                assertTrue(model.contains(
+                    funder,
+                    createProperty(FRAPO_AWARDS),
+                    model.listObjectsOfProperty(
+                        createResource("https://example.com/id/nonror"),
+                        createProperty(WAS_GENERATED_BY)
+                    ).next().asResource()
+                ));
+            }
+
+            @Test
+            @DisplayName("without an awardNumber, awardURI is still the grant's identity (current behaviour)")
+            void awardUriIsIdentityWhenNoAwardNumber() {
+                val document = dataset("nonum");
+                document.setFunding(List.of(
+                    Funding.builder()
+                        .awardTitle("Grant without a number")
+                        .awardURI("https://testaward.ac.uk")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val grant = createResource("https://testaward.ac.uk");
+                assertTrue(model.contains(grant, createProperty(RDF_TYPE), createResource(FRAPO_GRANT)));
+                assertFalse(model.contains(grant, createProperty(FRAPO_HAS_GRANT_NUMBER), (org.apache.jena.rdf.model.RDFNode) null));
             }
         }
 
