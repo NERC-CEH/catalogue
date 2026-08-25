@@ -114,6 +114,42 @@ class CatalogueToTurtleServiceTest {
         ).orElse(false));
     }
 
+    /**
+     * dri-one #330: a manual export trigger must not publish a stale prefetched payload, so
+     * {@code refresh()} has to rebuild the cache from the current documents every time it's called -
+     * not just once, the way the cache would otherwise settle after the first {@code fetchCatalogues()}.
+     */
+    @Test
+    void refreshRebuildsThePrefetchedCatalogueEachTimeItIsCalled() {
+        //Given
+        given(catalogueService.retrieve(catalogueKey))
+            .willReturn(catalogue);
+
+        //When
+        service.refresh();
+        service.refresh();
+
+        //Then
+        verify(catalogueService, times(2)).retrieve(catalogueKey);
+    }
+
+    @Test
+    void getBigTtlAfterRefreshServesTheFreshCacheWithoutRefetching() {
+        //Given
+        given(catalogueService.retrieve(catalogueKey))
+            .willReturn(catalogue);
+
+        //When
+        service.refresh();
+        val result = service.getBigTtl(catalogueKey);
+
+        //Then
+        verify(catalogueService, times(1)).retrieve(catalogueKey);
+        assertTrue(result.map(
+            ttl -> ttl.contains("<%s/documents>".formatted(catalogueKey))
+        ).orElse(false));
+    }
+
     @Test
     void getOtherBigTtlWithoutPrefetch() {
         //Given

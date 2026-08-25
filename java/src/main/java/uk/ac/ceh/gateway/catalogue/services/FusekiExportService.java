@@ -28,6 +28,7 @@ import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,7 @@ public class FusekiExportService implements CatalogueExportService {
     private final DocumentsToTurtleService documentsToTurtleService;
     private final VoidStatsService voidStatsService;
     private final MetadataListingService metadataListingService;
+    private volatile Date lastExported;
 
     public FusekiExportService(
         DocumentsToTurtleService documentsToTurtleService,
@@ -76,9 +78,15 @@ public class FusekiExportService implements CatalogueExportService {
 
     private record TurtleStats(long triples, Map<String, Long> classEntityCounts) {}
 
+    /**
+     * Refreshes the prefetched Turtle cache (e.g. eidc) before every export, scheduled or manual,
+     * so this never publishes a stale prefetched payload. See
+     * {@link uk.ac.ceh.gateway.catalogue.exports.CatalogueToTurtleService#refresh()}.
+     */
     @Scheduled(initialDelay = TimeConstants.ONE_MINUTE, fixedDelay = TimeConstants.ONE_DAY)
     public void runExport() {
         log.info("Running Fuseki export");
+        documentsToTurtleService.refresh();
         Map<String, String> catalogueTtls = new LinkedHashMap<>();
         catalogueIds.forEach(id ->
             documentsToTurtleService.getBigTtl(id).ifPresent(ttl -> catalogueTtls.put(id, ttl))
@@ -100,6 +108,13 @@ public class FusekiExportService implements CatalogueExportService {
                 ts.classEntityCounts()
             ));
         });
+        lastExported = new Date();
+    }
+
+    @Override
+    public Date getLastExported() {
+        Date exported = this.lastExported;
+        return exported == null ? null : new Date(exported.getTime());
     }
 
     private TurtleStats parseTurtleStats(String ttl) {

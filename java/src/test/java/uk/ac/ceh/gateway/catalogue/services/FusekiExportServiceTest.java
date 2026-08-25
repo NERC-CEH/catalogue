@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.client.RestClientResponseException;
 import uk.ac.ceh.gateway.catalogue.exports.DocumentsToTurtleService;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
@@ -23,11 +24,13 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @ExtendWith(MockitoExtension.class)
@@ -183,5 +186,69 @@ public class FusekiExportServiceTest {
         // then — eidc stats updated, ukeof stats cleared
         assertThat(voidStatsService.get("eidc")).isPresent();
         assertThat(voidStatsService.get("ukeof")).isEmpty();
+    }
+
+    /**
+     * dri-one #330: {@code CatalogueToTurtleService} prefetches eidc's turtle once a day, separately
+     * from this export. Without an explicit refresh, a manual trigger would just republish that stale
+     * cached value instead of current data.
+     */
+    @Test
+    @SneakyThrows
+    void runExportRefreshesThePrefetchCacheBeforeExporting() {
+        // given
+        given(documentsToTurtleService.getBigTtl(any()))
+            .willReturn(Optional.of("ttl"));
+        given(metadataListingService.getPublicDocumentsOfCatalogue(anyString()))
+            .willReturn(List.of());
+        mockServer
+            .expect(requestTo(equalTo(FUSEKI_DATASET_URL + "?graph=" + BASE_URI)))
+            .andExpect(method(HttpMethod.PUT))
+            .andRespond(withSuccess());
+
+        // when
+        service.runExport();
+
+        // then
+        verify(documentsToTurtleService).refresh();
+    }
+
+    @Test
+    @SneakyThrows
+    void tracksWhenTheExportLastCompletedSuccessfully() {
+        // given
+        assertThat(service.getLastExported()).isNull();
+        given(documentsToTurtleService.getBigTtl(any()))
+            .willReturn(Optional.of("ttl"));
+        given(metadataListingService.getPublicDocumentsOfCatalogue(anyString()))
+            .willReturn(List.of());
+        mockServer
+            .expect(requestTo(equalTo(FUSEKI_DATASET_URL + "?graph=" + BASE_URI)))
+            .andExpect(method(HttpMethod.PUT))
+            .andRespond(withSuccess());
+
+        // when
+        service.runExport();
+
+        // then
+        assertThat(service.getLastExported()).isNotNull();
+    }
+
+    @Test
+    @SneakyThrows
+    void doesNotUpdateLastExportedWhenPostingToFusekiFails() {
+        // given
+        given(documentsToTurtleService.getBigTtl(any()))
+            .willReturn(Optional.of("ttl"));
+        mockServer
+            .expect(requestTo(equalTo(FUSEKI_DATASET_URL + "?graph=" + BASE_URI)))
+            .andExpect(method(HttpMethod.PUT))
+            .andRespond(withServerError());
+
+        // when
+        assertThrows(RestClientResponseException.class, service::runExport);
+
+        // then
+        assertThat(service.getLastExported()).isNull();
     }
 }
