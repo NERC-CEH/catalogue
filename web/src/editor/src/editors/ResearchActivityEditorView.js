@@ -43,6 +43,84 @@ export default EditorView.extend({
           rows: 6
         }),
 
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'onlineResources',
+          label: 'Online resources',
+          ObjectInputView: SimpleLinkView,
+          multiline: true
+        })
+
+      ]
+    },
+    {
+      label: 'Contacts',
+      title: 'Contacts',
+      views: [
+        new PredefinedParentLargeView({
+          model: this.model,
+          ModelType: Contact,
+          modelAttribute: 'contactPoints',
+          label: 'Contact point',
+          ObjectInputView: ContactView,
+          multiline: true,
+          roleDefault: 'pointOfContact',
+          predefined: {
+            'UKCEH Bangor': {
+              organisationName: 'UK Centre for Ecology & Hydrology',
+              role: 'pointOfContact',
+              email: 'enquiries@ceh.ac.uk',
+              organisationIdentifier: 'https://ror.org/00pggkr55',
+              address: {
+                deliveryPoint: 'Environment Centre Wales, Deiniol Road',
+                postalCode: 'LL57 2UW',
+                city: 'Bangor',
+                administrativeArea: 'Gwynedd',
+                country: 'United Kingdom'
+              }
+            },
+            'UKCEH Edinburgh': {
+              organisationName: 'UK Centre for Ecology & Hydrology',
+              role: 'pointOfContact',
+              email: 'enquiries@ceh.ac.uk',
+              organisationIdentifier: 'https://ror.org/00pggkr55',
+              address: {
+                deliveryPoint: 'Bush Estate',
+                postalCode: 'EH26 0QB',
+                city: 'Penicuik',
+                administrativeArea: 'Midlothian',
+                country: 'United Kingdom'
+              }
+            },
+            'UKCEH Lancaster': {
+              organisationName: 'UK Centre for Ecology & Hydrology',
+              role: 'pointOfContact',
+              email: 'enquiries@ceh.ac.uk',
+              organisationIdentifier: 'https://ror.org/00pggkr55',
+              address: {
+                deliveryPoint: 'Lancaster Environment Centre, Library Avenue, Bailrigg',
+                postalCode: 'LA1 4AP',
+                city: 'Lancaster',
+                administrativeArea: 'Lancashire',
+                country: 'United Kingdom'
+              }
+            },
+            'UKCEH Wallingford': {
+              organisationName: 'UK Centre for Ecology & Hydrology',
+              role: 'pointOfContact',
+              email: 'enquiries@ceh.ac.uk',
+              organisationIdentifier: 'https://ror.org/00pggkr55',
+              address: {
+                deliveryPoint: 'Maclean Building, Benson Lane, Crowmarsh Gifford',
+                postalCode: 'OX10 8BB',
+                city: 'Wallingford',
+                administrativeArea: 'Oxfordshire',
+                country: 'United Kingdom'
+              }
+            }
+          }
+        }),
+
         new PredefinedParentLargeView({
           model: this.model,
           ModelType: Contact,
@@ -61,39 +139,6 @@ export default EditorView.extend({
               organisationName: 'Unaffiliated'
             }
           }
-        }),
-
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'onlineResources',
-          label: 'Online resources',
-          ObjectInputView: SimpleLinkView,
-          multiline: true
-        })
-
-      ]
-    },
-    {
-      label: 'Relationships',
-      title: 'Relationships',
-      views: [
-
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'relationships',
-          label: 'Relationships',
-          ObjectInputView: RelationshipView,
-          multiline: true,
-          options: [
-            {
-              value: 'http://purl.org/cerif/frapo/hasOutput',
-              label: 'Has output'
-            },
-            {
-              value: 'http://purl.org/dc/terms/relation',
-              label: 'Relation'
-            }
-          ]
         })
 
       ]
@@ -145,6 +190,31 @@ export default EditorView.extend({
             }
           }
 
+        })
+
+      ]
+    },
+        {
+      label: 'Relationships',
+      title: 'Relationships',
+      views: [
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'relationships',
+          label: 'Relationships',
+          ObjectInputView: RelationshipView,
+          multiline: true,
+          options: [
+            {
+              value: 'http://purl.org/cerif/frapo/hasOutput',
+              label: 'Has output'
+            },
+            {
+              value: 'http://purl.org/dc/terms/relation',
+              label: 'Relation'
+            }
+          ]
         })
 
       ]

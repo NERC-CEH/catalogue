@@ -37,7 +37,8 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RDF_TTL_VALUE;
 public class ResearchActivity extends AbstractMetadataDocument {
 
     private List<String> alternateNames;
-    private List<ResponsibleParty> contributors;
+    private List<ResponsibleParty> contactPoints = new ArrayList<>();
+    private List<ResponsibleParty> contributors = new ArrayList<>();
     private List<Funding> funding;
     private List<OnlineResource> onlineResources;
 
