@@ -194,7 +194,7 @@ export default EditorView.extend({
 
       ]
     },
-        {
+    {
       label: 'Relationships',
       title: 'Relationships',
       views: [
