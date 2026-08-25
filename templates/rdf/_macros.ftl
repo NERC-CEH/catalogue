@@ -20,6 +20,30 @@
   </#if>
 </#macro>
 
+<#--
+  A contact's role, mapped onto the Digital Objects Ontology's pro:RoleInTime
+  pattern (dri-one #323). Additive: dcterms:creator, dcat:contactPoint and
+  dcterms:publisher stay exactly as they are, so DataCite/DOI consumers and
+  DCAT tooling keep working. This only adds the detail needed to ask who
+  curated a dataset, who led it, or who the field technician was.
+
+  contributorRole is the editor's fixed six-value vocabulary and takes
+  precedence; role is a second, much broader controlled list where only
+  a handful of values have a confirmed DOO equivalent. Everything else is
+  left unmapped rather than guessed.
+-->
+<#function doiRoleUri contact>
+  <#if contact.contributorRole == "dataCreator"><#return "scoro:data-creator"></#if>
+  <#if contact.contributorRole == "dataCurator"><#return "scoro:data-curator"></#if>
+  <#if contact.contributorRole == "collaborator"><#return "scoro:collaborator"></#if>
+  <#if contact.contributorRole == "researcher"><#return "scoro:researcher"></#if>
+  <#if contact.contributorRole == "technician"><#return "scoro:technician"></#if>
+  <#if contact.contributorRole == "projectLeader"><#return "scoro:project-leader"></#if>
+  <#if contact.role == "author"><#return "pro:author"></#if>
+  <#if contact.role == "principalInvestigator"><#return "scoro:principal-investigator"></#if>
+  <#return "">
+</#function>
+
 <#macro contactDetail contacts prefix="c">
   <#if contacts?has_content>
     <#list contacts as contact>
@@ -50,6 +74,15 @@
           foaf:member [foaf:name <@displayLiteral contact.organisationName />] ;
         </#if>
       .
+
+      <#local doiRole = doiRoleUri(contact)>
+      <#if doiRole?has_content>
+        ${contactIdentifier} pro:holdsRoleInTime [
+          a pro:RoleInTime ;
+          pro:withRole ${doiRole} ;
+          pro:relatesToEntity :${id}
+        ] .
+      </#if>
 
     </#list>
   </#if>
