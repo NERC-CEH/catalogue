@@ -212,6 +212,31 @@
   </#list>
 </#macro>
 
+<#--
+  A licence or access-rights statement with only free text (no URI) is
+  identified by a node minted from that text (dri-one #327), so the same
+  wording is one node wherever it recurs and can be filtered/compared
+  instead of being an unidentifiable blank node. Mirrors the minting done
+  inline in _rights.ftl, so the two can never disagree about which node a
+  piece of text is.
+-->
+<#macro rightsDetail>
+  <#if licences?has_content>
+    <#list licences as licence>
+      <#if !(uriNormaliser.normalise(licence.uri!"")?has_content) && licence.value?has_content>
+${licenceUris.mintLicence(licence.value)} a dcterms:LicenseDocument ;
+  rdfs:label <@displayLiteral licence.value?replace("\n", " ") /> .
+      </#if>
+    </#list>
+  </#if>
+  <#if accessLimitation?has_content
+    && !(uriNormaliser.normalise(accessLimitation.uri!"")?has_content)
+    && accessLimitation.value?has_content>
+${licenceUris.mintAccessRights(accessLimitation.value)} a dcterms:RightsStatement ;
+  rdfs:label <@displayLiteral accessLimitation.value /> .
+  </#if>
+</#macro>
+
 <#macro organisationRORs>
   <#list authorPointOfContactWithRORs as contact>
     <#local ror = uriNormaliser.normalise(contact.organisationIdentifier!"")>
