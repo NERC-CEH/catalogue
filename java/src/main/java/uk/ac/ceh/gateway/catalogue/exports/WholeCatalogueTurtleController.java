@@ -9,7 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,6 +20,11 @@ import java.util.stream.Collectors;
 @ToString
 @Controller
 public class WholeCatalogueTurtleController {
+
+    // Turtle is only well-formed UTF-8; without an explicit charset a client can fall back to a
+    // platform default and mangle the very literals dri-one #328 is about, so pin it here rather
+    // than relying on the default text/turtle produced by MediaType.valueOf.
+    private static final MediaType RDF_TTL_UTF8 = new MediaType(CatalogueMediaTypes.RDF_TTL, StandardCharsets.UTF_8);
 
     private final DocumentsToTurtleService docsToTurtle;
     private final List<String> fusekiCatalogueIds;
@@ -35,7 +42,7 @@ public class WholeCatalogueTurtleController {
         return docsToTurtle.getBigTtl(catalogueId).map(ttl -> {
             log.info("serving big turtle for {}", catalogueId);
             return ResponseEntity.ok()
-                .contentType(MediaType.valueOf("text/turtle"))
+                .contentType(RDF_TTL_UTF8)
                 .body(ttl);
         }).orElseGet(() -> {
             log.info("not serving big turtle for unknown catalogue {}", catalogueId);
@@ -57,7 +64,7 @@ public class WholeCatalogueTurtleController {
         }
         log.info("serving combined turtle for Fuseki catalogues: {}", fusekiCatalogueIds);
         return ResponseEntity.ok()
-            .contentType(MediaType.valueOf("text/turtle"))
+            .contentType(RDF_TTL_UTF8)
             .body(combined);
     }
 }

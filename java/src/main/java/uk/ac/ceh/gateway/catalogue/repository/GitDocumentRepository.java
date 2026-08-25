@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.repository;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import tools.jackson.databind.json.JsonMapper;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
@@ -25,10 +26,19 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Slf4j
 @ToString(onlyExplicitlyIncluded = true)
 public class GitDocumentRepository implements DocumentRepository {
+    /**
+     * Telltale signature of double-encoded ("mojibake") text - UTF-8 bytes decoded as
+     * CP1252/Latin-1 and re-encoded as UTF-8 - matching the verification query from dri-one #328
+     * ({@code REGEX(STR(?o), "â€|Â[^ ]")}). Guards against any ingest path (known or not yet
+     * found) baking further corrupted literals into the store.
+     */
+    private static final Pattern MOJIBAKE_PATTERN = Pattern.compile("â€|Â[^ ]");
+
     private final DocumentTypeLookupService documentTypeLookupService;
     private final DocumentReadingService documentReader;
     private final DocumentIdentifierService documentIdentifierService;
@@ -36,6 +46,7 @@ public class GitDocumentRepository implements DocumentRepository {
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final ResourceIdentifierLookupService resourceIdentifierLookupService;
     private final GitRepoWrapper repo;
+    private final JsonMapper objectMapper;
 
     public GitDocumentRepository(
         DocumentTypeLookupService documentTypeLookupService,
@@ -44,7 +55,8 @@ public class GitDocumentRepository implements DocumentRepository {
         DocumentWritingService documentWriter,
         BundledReaderService<MetadataDocument> documentBundleReader,
         ResourceIdentifierLookupService resourceIdentifierLookupService,
-        GitRepoWrapper repo
+        GitRepoWrapper repo,
+        JsonMapper objectMapper
     ) {
         this.documentTypeLookupService = documentTypeLookupService;
         this.documentReader = documentReader;
@@ -53,6 +65,7 @@ public class GitDocumentRepository implements DocumentRepository {
         this.documentBundleReader = documentBundleReader;
         this.resourceIdentifierLookupService = resourceIdentifierLookupService;
         this.repo = repo;
+        this.objectMapper = objectMapper;
         log.info("Creating");
     }
 
@@ -247,6 +260,7 @@ public class GitDocumentRepository implements DocumentRepository {
         addRecordUriAsResourceIdentifier(document, uri);
         document.setUri(uri);
         validateUniqueResourceIdentifiers(document, id);
+        validateNoMojibake(document, id);
         repo.save(
             user,
             id,
@@ -331,6 +345,22 @@ public class GitDocumentRepository implements DocumentRepository {
                             "Resource identifiers must be unique."
                     );
                 });
+        }
+    }
+
+    /**
+     * Guards against dri-one #328 (double-encoded/"mojibake" literals): scans the document as it
+     * will actually be written for the CP1252-decoded-as-UTF-8 signature and refuses the save if
+     * found, rather than baking further corrupted literals into the store.
+     */
+    private void validateNoMojibake(MetadataDocument document, String id) {
+        String json = objectMapper.writeValueAsString(document);
+        if (MOJIBAKE_PATTERN.matcher(json).find()) {
+            throw new MojibakeTextException(
+                "Document " + id + " contains text matching the double-encoding (mojibake) signature " +
+                    "described in dri-one #328 (e.g. â€ or Â immediately followed by a " +
+                    "non-space character). Please re-enter the affected text using its intended characters."
+            );
         }
     }
 
