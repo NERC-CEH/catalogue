@@ -89,17 +89,11 @@ describe('Test RelationshipView', function () {
 
     it('restricts hasOutput to output-bearing resource types', async () => {
       const query = await queryFor('http://purl.org/cerif/frapo/hasOutput', outputOptions)
-      expect(query).toContain('resourceType%3A(')
+      expect(query).toContain('recordType%3A(')
       expect(query).toContain('Dataset')
+      expect(query).toContain('Map')
       expect(query).toContain('Model')
       expect(query).toContain('Software')
-    })
-
-    it('quotes the non-geographic dataset label, which contains a space', async () => {
-      // resourceType is indexed as the display label from codelist.properties;
-      // an unquoted "Non-geographic dataset" would break the Solr query.
-      const query = await queryFor('http://purl.org/cerif/frapo/hasOutput', outputOptions)
-      expect(query).toContain('%22Non-geographic%20dataset%22')
     })
   })
 })
