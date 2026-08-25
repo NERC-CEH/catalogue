@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
+import java.util.Optional;
 
 /**
  * Decides which RDF node a funding entry's grant is, and returns it ready to
@@ -67,20 +68,39 @@ public class FundingUri {
      * @return a Turtle node: an {@code <IRI>} or a prefixed name, never blank
      */
     public String identify(Funding fund, String recordId, int index) {
-        val recordScoped = ":" + recordId + "_fund" + index;
-
         if (!fund.getAwardNumber().isBlank()) {
             return GRANT_PREFIX + hash(awardNumberKey(fund.getAwardNumber()));
         }
 
-        if (!fund.getAwardURI().isBlank()) {
-            val canonical = uriNormaliser.normalise(fund.getAwardURI());
-            if (!canonical.isEmpty()) {
-                return "<" + canonical + ">";
-            }
-        }
+        return canonicalAwardUri(fund)
+            .map(canonical -> "<" + canonical + ">")
+            .orElseGet(() -> ":" + recordId + "_fund" + index);
+    }
 
-        return recordScoped;
+    /**
+     * @return whether this funding entry has anything of its own to assert —
+     *         an award number, a resolvable award URI, an award title, or a
+     *         funder identifier. When none of these are present, {@link
+     *         #identify} can only fall back to the record-scoped stub node,
+     *         and that node would carry nothing beyond {@code rdf:type}: a
+     *         production audit (dri-one #322) found 832 such empty {@code
+     *         prov:Activity} nodes. Templates use this to suppress the node
+     *         — and the link to it — entirely, rather than assert a grant
+     *         the record says nothing about.
+     */
+    public boolean hasContent(Funding fund) {
+        return !fund.getAwardNumber().isBlank()
+            || canonicalAwardUri(fund).isPresent()
+            || !fund.getAwardTitle().isBlank()
+            || !fund.getFunderIdentifier().isBlank();
+    }
+
+    private Optional<String> canonicalAwardUri(Funding fund) {
+        if (fund.getAwardURI().isBlank()) {
+            return Optional.empty();
+        }
+        val canonical = uriNormaliser.normalise(fund.getAwardURI());
+        return canonical.isEmpty() ? Optional.empty() : Optional.of(canonical);
     }
 
     /**
