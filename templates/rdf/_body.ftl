@@ -53,6 +53,9 @@
     <#list jena.relationships(uri, "http://purl.org/dc/terms/relation")>
       dcterms:relation <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
+    <#list jena.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises")>
+      doo:utilises <#items as item><${item.href}><#sep>, </#items> ;
+    </#list>
 
     <#--Citations-->
     <#if incomingCitations?has_content>

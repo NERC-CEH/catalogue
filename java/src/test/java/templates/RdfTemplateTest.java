@@ -127,6 +127,10 @@ public class RdfTemplateTest {
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/222212345").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/222254321").build()
             ));
+            given(jena.relationships(geminiDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/utilises")).willReturn(List.of(
+                Link.builder().href("https://catalogue.ceh.ac.uk/id/333312345").build(),
+                Link.builder().href("https://catalogue.ceh.ac.uk/id/333354321").build()
+            ));
 
             // when
             val actual = template("rdf/ttl.ftl", geminiDocument);

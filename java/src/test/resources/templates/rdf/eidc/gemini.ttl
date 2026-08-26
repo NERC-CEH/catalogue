@@ -42,6 +42,7 @@ dcterms:publisher
 dcterms:isPartOf <https://catalogue.ceh.ac.uk/id/000012345>, <https://catalogue.ceh.ac.uk/id/000054321> ;
 dcterms:replaces <https://catalogue.ceh.ac.uk/id/111112345>, <https://catalogue.ceh.ac.uk/id/111154321> ;
 dcterms:relation <https://catalogue.ceh.ac.uk/id/222212345>, <https://catalogue.ceh.ac.uk/id/222254321> ;
+doo:utilises <https://catalogue.ceh.ac.uk/id/333312345>, <https://catalogue.ceh.ac.uk/id/333354321> ;
 dcterms:isReferencedBy
 <https://test-admin-url.ac.uk> ;
 dcterms:subject

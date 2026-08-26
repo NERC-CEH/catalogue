@@ -329,6 +329,41 @@ public class RdfTurtleTest {
         }
 
         @Test
+        void loadGeminiDatasetUtilisesMonitoringFacility() {
+            // A dataset produced at a monitoring facility links to it via doo:utilises,
+            // so "which datasets came from facility X?" is answerable (dri-one #325).
+            //given
+            val uri = "https://example.com/id/utilises1";
+            val document = new GeminiDocument()
+                .setType("dataset")
+                .setId("utilises1")
+                .setUri(uri)
+                .setTitle("Utilises test");
+
+            given(jenaLookupService.relationships(uri, "http://purl.org/dc/terms/isPartOf")).willReturn(List.of());
+            given(jenaLookupService.relationships(uri, "http://purl.org/dc/terms/replaces")).willReturn(List.of());
+            given(jenaLookupService.relationships(uri, "http://purl.org/dc/terms/relation")).willReturn(List.of());
+            given(jenaLookupService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"))
+                .willReturn(List.of(
+                    Link.builder().href("https://example.com/id/facility123").build()
+                ));
+
+            //when
+            template("rdf/ttl.ftl", document);
+
+            //then
+            assertTrue(
+                model.contains(
+                    createStatement(
+                        createResource(uri),
+                        createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises"),
+                        createResource("https://example.com/id/facility123")
+                    )
+                )
+            );
+        }
+
+        @Test
         void loadGeminiAggregation() {
             //given
             val uri = "https://example.com/id/99987654";
