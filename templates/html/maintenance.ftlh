@@ -53,6 +53,24 @@
           <input class="btn btn-outline-secondary" type="submit" value="Rebuild">
         </form>
       </div>
+
+      <#-- Only advertised when the exports profile is active, i.e. CatalogueExportService exists. -->
+      <#if exportsAvailable>
+        <div class="my-5">
+          <p><b>Fuseki Export</b>
+            <span class="ms-5">
+              <#if lastExported??>
+                Last exported ${lastExported?datetime}
+              <#else>
+                Never exported
+              </#if>
+            </span>
+          </p>
+          <form method="POST" action="/maintenance/exports/fuseki">
+            <input class="btn btn-outline-secondary" type="submit" value="Export to Fuseki">
+          </form>
+        </div>
+      </#if>
     </div>
 
     <#-- Only advertised to holders of ROLE_CIG_ADMIN_DELETE. The page itself is @Secured, so this is

@@ -11,13 +11,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestClientResponseException;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
+import uk.ac.ceh.gateway.catalogue.exports.CatalogueExportService;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.mapserver.MapServerIndexingService;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 @Slf4j
 @ToString
@@ -29,17 +32,27 @@ public class MaintenanceController {
     private final DocumentIndexingService solrIndex;
     private final DocumentIndexingService linkingService;
     private final MapServerIndexingService mapserverService;
+    private final Optional<CatalogueExportService> catalogueExportService;
 
+    /**
+     * {@code CatalogueExportService} only exists under the {@code exports} profile, but this controller
+     * is not profile-gated - every catalogue context (with or without {@code exports}) builds a
+     * {@code MaintenanceController}. A plain constructor dependency on {@code CatalogueExportService}
+     * would therefore stop any non-{@code exports} context from starting. {@code Optional} lets Spring
+     * inject an empty value when the bean is absent instead of failing to wire the controller at all.
+     */
     public MaintenanceController(
         DataRepositoryOptimizingService repoService,
         @Qualifier("solr-index") DocumentIndexingService solrIndex,
         @Qualifier("jena-index") DocumentIndexingService linkingService,
-        @Qualifier("mapserver-index") DocumentIndexingService mapserverService
+        @Qualifier("mapserver-index") DocumentIndexingService mapserverService,
+        Optional<CatalogueExportService> catalogueExportService
     ) {
         this.repoService = repoService;
         this.solrIndex = solrIndex;
         this.linkingService = linkingService;
         this.mapserverService = (MapServerIndexingService) mapserverService;
+        this.catalogueExportService = catalogueExportService;
         log.info("Creating");
     }
 
@@ -69,6 +82,8 @@ public class MaintenanceController {
             toReturn.addMessage(dre.getMessage());
         }
         toReturn.setLastOptimized(repoService.getLastOptimized());
+        toReturn.setExportsAvailable(catalogueExportService.isPresent());
+        catalogueExportService.ifPresent(service -> toReturn.setLastExported(service.getLastExported()));
         return toReturn;
     }
 
@@ -131,6 +146,35 @@ public class MaintenanceController {
         } catch (DocumentIndexingException ex) {
             MaintenanceResponse response = loadMaintenancePage().addMessage(ex.getMessage());
             Arrays.stream(ex.getSuppressed()).forEach(e -> response.addMessage(e.getMessage()));
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(response);
+        }
+    }
+
+    /**
+     * Triggers the Fuseki export on demand, rather than waiting for its once-a-day {@code @Scheduled}
+     * run. Blocks the request thread for the duration of the export - the same trade-off the other
+     * maintenance actions above already make for their own potentially slow rebuilds - rather than
+     * running it asynchronously, so success/failure can be reported in this one response exactly like
+     * the other actions.
+     */
+    @RequestMapping(value="/exports/fuseki",
+                    method = RequestMethod.POST)
+    @ResponseBody
+    public HttpEntity<MaintenanceResponse> exportToFuseki() {
+        if (catalogueExportService.isEmpty()) {
+            MaintenanceResponse response = loadMaintenancePage()
+                .addMessage("Fuseki export is not available: the 'exports' profile is not active");
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(response);
+        }
+        try {
+            catalogueExportService.get().runExport();
+            return ResponseEntity.ok(loadMaintenancePage().addMessage("Fuseki export completed"));
+        } catch (RestClientResponseException ex) {
+            MaintenanceResponse response = loadMaintenancePage().addMessage(ex.getMessage());
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(response);
