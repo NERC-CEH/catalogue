@@ -76,25 +76,84 @@
           <#if contact.isRor()>
             <#local memberRor = uriNormaliser.normalise(contact.organisationIdentifier)>
           </#if>
+          <#--
+            An affiliation is only asserted for a person. Where the contact is
+            itself the organisation, contactName and organisationName are the
+            same string, so foaf:member would make the organisation a member of
+            a second node bearing its own name — 24 such statements in
+            production, and while a blank node left them unreachable, a minted
+            one would promote a false statement to a stable, joinable
+            identifier (dri-one #334).
+          -->
+          <#local memberOrg = "">
+          <#if contactType == "foaf:Person">
+            <#local memberOrg = contactUri.identifyOrganisation(contact)>
+          </#if>
           <#if memberRor?has_content>
             foaf:member <${memberRor}> ;
-          <#elseif contact.organisationName?has_content>
-            foaf:member [foaf:name <@displayLiteral contact.organisationName />] ;
+          <#elseif memberOrg?has_content>
+            foaf:member ${memberOrg} ;
           </#if>
         .
+
+        <#--
+          The affiliation that has no ROR. Unlike the ROR node above — an
+          externally-governed identifier that must not be given record text
+          (dri-one #320) — this node is minted from the organisation's name, so
+          the name is what identifies it and asserting it is safe. Emitting it
+          here rather than in a detail macro keeps it beside the reference: the
+          same organisation named on several contacts writes the same triples,
+          which RDF collapses.
+        -->
+        <#if !memberRor?has_content && memberOrg?has_content>
+${memberOrg} a foaf:Organization ;
+  foaf:name <@displayLiteral contact.organisationName /> .
+        </#if>
       </#if>
 
+      <#--
+        The role statement gets its own node rather than a blank one (dri-one
+        #334). A pro:RoleInTime is a reified statement, and reification exists
+        so the statement can be pointed at — which is exactly what a blank node
+        prevents.
+      -->
       <#local doiRole = doiRoleUri(contact)>
       <#if doiRole?has_content>
-        ${contactIdentifier} pro:holdsRoleInTime [
-          a pro:RoleInTime ;
+        <#local roleNode = contactUri.identifyRole(contactIdentifier, doiRole, id)>
+        ${contactIdentifier} pro:holdsRoleInTime ${roleNode} .
+        ${roleNode} a pro:RoleInTime ;
           pro:withRole ${doiRole} ;
-          pro:relatesToEntity :${id}
-        ] .
+          pro:relatesToEntity :${id} .
       </#if>
 
     </#list>
   </#if>
+</#macro>
+
+<#--
+  A distribution's file format, identified by its IANA media type registration
+  where the record supplies a media type and by a node minted from its name
+  otherwise (FormatUri, dri-one #334). Shared with the dcterms:format list in
+  turtle/_dataset.ftl through formatUris, so the two can never disagree about
+  which node a format is.
+
+  The media-type node is externally governed and shared with every other DCAT
+  publisher, so it gets its type and nothing derived from record text — the
+  same rule keywordDetail and organisationRORs follow (dri-one #320). The
+  minted node is keyed on the name, so its label is what identifies it and is
+  safe to assert.
+-->
+<#macro formatDetail>
+  <#list (distributionFormats![])?filter(f -> formatUris.hasContent(f)) as format>
+    <#local mediaType = formatUris.mediaTypeUri(format)>
+    <#if mediaType?has_content>
+<${mediaType}> a dcterms:IMT .
+    <#else>
+${formatUris.identify(format)} a dcterms:IMT ;
+  rdf:value <@displayLiteral format.name /> ;
+  rdfs:label <@displayLiteral format.name /> .
+    </#if>
+  </#list>
 </#macro>
 
 <#--
@@ -322,6 +381,18 @@ ${licenceUris.mintLicence(licence.value)} a dcterms:LicenseDocument ;
 ${licenceUris.mintAccessRights(accessLimitation.value)} a dcterms:RightsStatement ;
   rdfs:label <@displayLiteral accessLimitation.value /> .
   </#if>
+  <#--
+    The copyright notice each dcterms:rights in turtle/_rights.ftl points at.
+    Filtered identically there and here, so neither can describe a node the
+    other did not reference. The substitutions are cosmetic — Turtle has no
+    escape for a literal newline, and © survives the round trip unreliably —
+    and are applied only to the emitted literal: mintCopyright keys on the
+    stored text, so how a notice is rendered cannot change which node it is.
+  -->
+  <#list (copyrights![])?filter(c -> c.value?has_content) as copyright>
+${licenceUris.mintCopyright(copyright.value)} a dcterms:RightsStatement ;
+  odrs:copyrightNotice <@displayLiteral copyright.value?replace("©","copyright")?replace("\n", " ") /> .
+  </#list>
 </#macro>
 
 <#--

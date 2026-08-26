@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,9 +18,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
+import uk.ac.ceh.gateway.catalogue.gemini.DistributionInfo;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
@@ -34,6 +37,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.FormatUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.LicenceUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
 
@@ -75,6 +79,7 @@ public class RdfTurtleTest {
         configuration.setSharedVariable("contactUri", new ContactUri(uriNormaliser));
         configuration.setSharedVariable("fundingUri", new FundingUri(uriNormaliser));
         configuration.setSharedVariable("licenceUris", new LicenceUri());
+        configuration.setSharedVariable("formatUris", new FormatUri());
         configuration.setSharedVariable("keywordUri", new KeywordUri(uriNormaliser, keywordVocabulary));
 
         model = ModelFactory.createDefaultModel();
@@ -1831,6 +1836,326 @@ public class RdfTurtleTest {
                     createProperty("http://www.w3.org/2000/01/rdf-schema#label"),
                     model.createLiteral("No limitations to public access")
                 ));
+            }
+        }
+
+        @Nested
+        @DisplayName("Blank node identity (dri-one #334)")
+        class BlankNodeIdentity {
+
+            private static final String FORMAT = "http://purl.org/dc/terms/format";
+            private static final String RIGHTS = "http://purl.org/dc/terms/rights";
+            private static final String MEMBER = "http://xmlns.com/foaf/0.1/member";
+            private static final String HOLDS_ROLE = "http://purl.org/spar/pro/holdsRoleInTime";
+            private static final String COPYRIGHT_NOTICE = "http://schema.theodi.org/odrs#copyrightNotice";
+            private static final String FOAF_NAME = "http://xmlns.com/foaf/0.1/name";
+            private static final String RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+            private static final String RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
+            private static final String IMT = "http://purl.org/dc/terms/IMT";
+            private static final String CSV_IANA = "https://www.iana.org/assignments/media-types/text/csv";
+
+            /**
+             * A dataset with one download, so the dcat:distribution block — and
+             * with it dcterms:format — actually renders.
+             */
+            private GeminiDocument dataset(String id) {
+                return (GeminiDocument) new GeminiDocument()
+                    .setType("dataset")
+                    .setOnlineResources(List.of(
+                        OnlineResource.builder()
+                            .url("https://data-package.ceh.ac.uk/data/" + id)
+                            .function("download")
+                            .build()
+                    ))
+                    .setId(id)
+                    .setUri("https://example.com/id/" + id)
+                    .setTitle("Blank node identity");
+            }
+
+            private GeminiDocument withFormat(String id, String name, String type) {
+                val document = dataset(id);
+                document.setDistributionFormats(List.of(
+                    DistributionInfo.builder().name(name).type(type).version("unknown").build()
+                ));
+                return document;
+            }
+
+            private GeminiDocument withCopyright(String id, String notice) {
+                val document = dataset(id);
+                document.setUseConstraints(List.of(
+                    ResourceConstraint.builder().code("copyright").value(notice).build()
+                ));
+                return document;
+            }
+
+            private GeminiDocument withAffiliation(
+                String id, String familyName, String givenName, String organisation, String ror
+            ) {
+                val document = dataset(id);
+                document.setAuthors(List.of(
+                    ResponsibleParty.builder()
+                        .familyName(familyName)
+                        .givenName(givenName)
+                        .organisationName(organisation)
+                        .organisationIdentifier(ror)
+                        .role("author")
+                        .build()
+                ));
+                return document;
+            }
+
+            private List<RDFNode> objectsOf(String subjectUri, String property) {
+                return model.listObjectsOfProperty(
+                    createResource(subjectUri), createProperty(property)
+                ).toList();
+            }
+
+            /** @return every object of {@code property} anywhere in the model. */
+            private List<RDFNode> allObjectsOf(String property) {
+                return model.listObjectsOfProperty(createProperty(property)).toList();
+            }
+
+            @Test
+            @DisplayName("no site fixed by #334 emits a blank node any more")
+            void noneOfTheFixedSitesIsBlank() {
+                val document = withFormat("nobnodes", "Comma-separated values (CSV)", "text/csv");
+                document.setUseConstraints(List.of(
+                    ResourceConstraint.builder().code("copyright").value("© UKCEH 2026").build()
+                ));
+                document.setAuthors(List.of(
+                    ResponsibleParty.builder()
+                        .familyName("Wood")
+                        .givenName("Claire")
+                        .organisationName("University of Exeter")
+                        .role("author")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                for (val property : List.of(FORMAT, RIGHTS, MEMBER, HOLDS_ROLE)) {
+                    val objects = allObjectsOf(property);
+                    assertFalse(objects.isEmpty(), () -> property + " emitted nothing to assert about");
+                    objects.forEach(object -> assertFalse(
+                        object.isAnon(), () -> property + " still points at a blank node: " + object
+                    ));
+                }
+            }
+
+            @Test
+            @DisplayName("dcat:distribution is deliberately still a blank node")
+            void distributionRemainsBlank() {
+                template("rdf/ttl.ftl", withFormat("distblank", "Comma-separated values (CSV)", "text/csv"));
+
+                val distributions = allObjectsOf("http://www.w3.org/ns/dcat#distribution");
+                assertThat(distributions.size(), equalTo(1));
+                assertTrue(
+                    distributions.getFirst().isAnon(),
+                    "#334 left dcat:distribution out of scope: naming it means deciding whether a "
+                        + "record's several download URLs are one distribution or several, which the "
+                        + "issue did not settle. Its 1.001:1 ratio means there is nothing to "
+                        + "deduplicate either way, and a blank node still traverses fine — "
+                        + "?d dcat:distribution/dcterms:format ?f reaches the format regardless."
+                );
+            }
+
+            @Test
+            @DisplayName("a format with a media type is the IANA registration, shared across records")
+            void mediaTypeBecomesTheIanaNode() {
+                template("rdf/ttl.ftl", withFormat("fmtA", "Comma-separated values (CSV)", "text/csv"));
+                template("rdf/ttl.ftl", withFormat("fmtB", "CSV", "text/csv"));
+
+                assertThat(
+                    "two records naming the same media type differently converge on one node",
+                    allObjectsOf(FORMAT).stream().distinct().toList(),
+                    equalTo(List.<RDFNode>of(createResource(CSV_IANA)))
+                );
+                assertTrue(model.contains(
+                    createResource(CSV_IANA), createProperty(RDF_TYPE), createResource(IMT)
+                ));
+            }
+
+            @Test
+            @DisplayName("the IANA node carries no label taken from record text (dri-one #320)")
+            void ianaNodeGetsNoRecordText() {
+                template("rdf/ttl.ftl", withFormat("fmtnolabel", "Comma-separated values (CSV)", "text/csv"));
+
+                val ianaNode = createResource(CSV_IANA);
+                assertThat(
+                    "the media type is externally governed, so only its type is ours to assert",
+                    model.listStatements(ianaNode, null, (RDFNode) null).toList().size(), equalTo(1)
+                );
+            }
+
+            @Test
+            @DisplayName("a format with no media type is minted from its name, and keeps its label")
+            void formatWithoutMediaTypeIsMinted() {
+                template("rdf/ttl.ftl", withFormat("fmtmint", "Shapefile", ""));
+
+                val format = allObjectsOf(FORMAT).getFirst();
+                assertFalse(format.isAnon(), "a format with no media type should still be identified");
+                assertThat(format.asResource().getURI(), matchesRegex("https://example\\.com/id/format_[0-9a-f]{16}"));
+                assertTrue(model.contains(
+                    format.asResource(), createProperty(RDFS_LABEL), model.createLiteral("Shapefile")
+                ));
+            }
+
+            @Test
+            @DisplayName("the same format name spelled in two cases is one node")
+            void formatNameCaseFolds() {
+                template("rdf/ttl.ftl", withFormat("fmtcaseA", "GeoJSON", ""));
+                template("rdf/ttl.ftl", withFormat("fmtcaseB", "geojson", ""));
+
+                assertThat(
+                    allObjectsOf(FORMAT).stream().distinct().toList().size(), equalTo(1)
+                );
+            }
+
+            @Test
+            @DisplayName("a format with neither name nor media type emits no dcterms:format at all")
+            void emptyFormatIsSuppressed() {
+                template("rdf/ttl.ftl", withFormat("fmtempty", "", ""));
+
+                assertTrue(
+                    allObjectsOf(FORMAT).isEmpty(),
+                    "an unidentifiable format should be suppressed, not given an empty node"
+                );
+            }
+
+            @Test
+            @DisplayName("something that is not a media type does not become an IANA URI")
+            void malformedMediaTypeFallsBackToMinting() {
+                template("rdf/ttl.ftl", withFormat("fmtbadtype", "Shapefile", "not a media type"));
+
+                val format = allObjectsOf(FORMAT).getFirst();
+                assertThat(format.asResource().getURI(), matchesRegex("https://example\\.com/id/format_[0-9a-f]{16}"));
+            }
+
+            @Test
+            @DisplayName("the same copyright notice on two records is one node")
+            void copyrightNoticeIsSharedAcrossRecords() {
+                val notice = "This dataset is owned by UK Centre for Ecology & Hydrology";
+                template("rdf/ttl.ftl", withCopyright("cpyA", notice));
+                template("rdf/ttl.ftl", withCopyright("cpyB", "  this dataset is owned by UK Centre for Ecology & Hydrology  "));
+
+                val rightsA = objectsOf("https://example.com/id/cpyA", RIGHTS);
+                assertThat(
+                    "case and surrounding whitespace should not fork the notice",
+                    objectsOf("https://example.com/id/cpyB", RIGHTS), equalTo(rightsA)
+                );
+                assertTrue(model.contains(
+                    rightsA.getFirst().asResource(),
+                    createProperty(COPYRIGHT_NOTICE),
+                    model.createLiteral(notice)
+                ));
+            }
+
+            @Test
+            @DisplayName("a copyright notice with no text emits no dcterms:rights")
+            void emptyCopyrightNoticeIsSuppressed() {
+                template("rdf/ttl.ftl", withCopyright("cpyempty", ""));
+
+                assertTrue(
+                    objectsOf("https://example.com/id/cpyempty", RIGHTS).isEmpty(),
+                    "an empty notice should be suppressed, not minted as a node standing for nothing"
+                );
+            }
+
+            @Test
+            @DisplayName("the same affiliation on two records is one organisation node, carrying its name")
+            void affiliationIsSharedAcrossRecords() {
+                template("rdf/ttl.ftl", withAffiliation("orgA", "Wood", "Claire", "University of Exeter", ""));
+                template("rdf/ttl.ftl", withAffiliation("orgB", "Dodd", "Ben", "University of Exeter", ""));
+
+                val organisations = allObjectsOf(MEMBER);
+                assertThat(
+                    "one organisation named on two records is one node",
+                    organisations.stream().distinct().toList().size(), equalTo(1)
+                );
+                val organisation = organisations.getFirst().asResource();
+                assertThat(organisation.getURI(), matchesRegex("https://example\\.com/id/organisation_[0-9a-f]{16}"));
+                assertTrue(model.contains(
+                    organisation, createProperty(FOAF_NAME), model.createLiteral("University of Exeter")
+                ));
+            }
+
+            @Test
+            @DisplayName("an affiliation with a ROR still uses the ROR, and mints nothing")
+            void rorAffiliationIsUnchanged() {
+                template("rdf/ttl.ftl",
+                    withAffiliation("orgror", "Wood", "Claire", "UK Centre for Ecology & Hydrology", "https://ror.org/00pggkr55"));
+
+                assertThat(
+                    allObjectsOf(MEMBER),
+                    equalTo(List.<RDFNode>of(createResource("https://ror.org/00pggkr55")))
+                );
+                assertFalse(
+                    model.contains(createResource("https://ror.org/00pggkr55"), createProperty(FOAF_NAME), (RDFNode) null),
+                    "a ROR is externally governed and must not be given the record's typed name (dri-one #320)"
+                );
+            }
+
+            @Test
+            @DisplayName("an organisation-only contact is not made a member of itself")
+            void organisationContactHasNoAffiliation() {
+                val document = dataset("orgself");
+                document.setAuthors(List.of(
+                    ResponsibleParty.builder()
+                        .organisationName("UK Environmental Change Network")
+                        .role("author")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(
+                    allObjectsOf(MEMBER).isEmpty(),
+                    "the contact is the organisation, so foaf:member would assert membership of a "
+                        + "second node carrying its own name"
+                );
+            }
+
+            @Test
+            @DisplayName("a definite article still forks an organisation — the accepted limitation")
+            void organisationVariantsStillFork() {
+                template("rdf/ttl.ftl", withAffiliation("orgvarA", "Wood", "Claire", "University of Edinburgh", ""));
+                template("rdf/ttl.ftl", withAffiliation("orgvarB", "Dodd", "Ben", "The University of Edinburgh", ""));
+
+                assertThat(
+                    "minting makes the variants visible and joinable; reconciling them is data cleanup",
+                    allObjectsOf(MEMBER).stream().distinct().toList().size(), equalTo(2)
+                );
+            }
+
+            @Test
+            @DisplayName("a role statement is a node that can be pointed at, not a blank one")
+            void roleInTimeIsIdentified() {
+                template("rdf/ttl.ftl", withAffiliation("roleA", "Wood", "Claire", "University of Exeter", ""));
+
+                val roles = allObjectsOf(HOLDS_ROLE);
+                assertThat(roles.size(), equalTo(1));
+                val role = roles.getFirst().asResource();
+                assertThat(role.getURI(), matchesRegex("https://example\\.com/id/role_[0-9a-f]{16}"));
+                assertTrue(model.contains(
+                    role, createProperty("http://purl.org/spar/pro/withRole"),
+                    createResource("http://purl.org/spar/pro/author")
+                ));
+                assertTrue(model.contains(
+                    role, createProperty("http://purl.org/spar/pro/relatesToEntity"),
+                    createResource("https://example.com/id/roleA")
+                ));
+            }
+
+            @Test
+            @DisplayName("the same person in the same role on two records gets a node per record")
+            void roleInTimeIsScopedToItsRecord() {
+                template("rdf/ttl.ftl", withAffiliation("roleB", "Wood", "Claire", "University of Exeter", ""));
+                template("rdf/ttl.ftl", withAffiliation("roleC", "Wood", "Claire", "University of Exeter", ""));
+
+                assertThat(
+                    "a RoleInTime states a role held on one record, so it cannot be shared between records",
+                    allObjectsOf(HOLDS_ROLE).stream().distinct().toList().size(), equalTo(2)
+                );
             }
         }
     }

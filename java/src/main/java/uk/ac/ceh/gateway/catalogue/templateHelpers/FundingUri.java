@@ -6,10 +6,7 @@ import lombok.val;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.HexFormat;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -47,15 +44,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FundingUri {
 
-    /**
-     * 64 bits of SHA-256, matching {@link ContactUri}'s person node — at any
-     * plausible number of distinct grants the chance of a collision is
-     * negligible, and a collision would only merge two grants sharing the same
-     * funder reference, the same failure the funder's own numbering already
-     * accepts.
-     */
-    private static final int HASH_BYTES = 8;
-
     /** Local-name prefix, so a minted node is recognisable as one in the store. */
     private static final String GRANT_PREFIX = ":grant_";
 
@@ -69,7 +57,7 @@ public class FundingUri {
      */
     public String identify(Funding fund, String recordId, int index) {
         if (!fund.getAwardNumber().isBlank()) {
-            return GRANT_PREFIX + hash(awardNumberKey(fund.getAwardNumber()));
+            return MintedNode.from(GRANT_PREFIX, awardNumberKey(fund.getAwardNumber()));
         }
 
         return canonicalAwardUri(fund)
@@ -111,19 +99,6 @@ public class FundingUri {
      * separators are part of what a funder-provided identifier means.
      */
     private static String awardNumberKey(String awardNumber) {
-        return awardNumber.trim().toLowerCase();
-    }
-
-    private static String hash(String key) {
-        val digest = sha256().digest(key.getBytes(StandardCharsets.UTF_8));
-        return HexFormat.of().formatHex(digest, 0, HASH_BYTES);
-    }
-
-    private static MessageDigest sha256() {
-        try {
-            return MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException ex) {
-            throw new IllegalStateException("SHA-256 is required of every JVM", ex);
-        }
+        return awardNumber.trim().toLowerCase(Locale.ROOT);
     }
 }

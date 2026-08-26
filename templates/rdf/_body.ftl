@@ -87,6 +87,7 @@
       branch rather than as a second list of type names, so the two cannot drift.
     -->
     <#assign emitsRights = false>
+    <#assign emitsFormats = false>
     <#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
       <#assign emitsRights = true>
       <#include "turtle/_dataset.ftl">
@@ -132,6 +133,10 @@
 
     <#if emitsRights>
       <@rightsDetail />
+    </#if>
+
+    <#if emitsFormats>
+      <@formatDetail />
     </#if>
 
     <@fundingDetail />

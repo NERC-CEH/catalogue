@@ -232,4 +232,124 @@ class ContactUriTest {
             assertThat(service.identify(named(displayName), "rec", "a", 4), is(equalTo(":rec_a4")));
         }
     }
+
+    @Nested
+    @DisplayName("Identifying an affiliation with no ROR (dri-one #334)")
+    class Affiliations {
+
+        private static ResponsibleParty at(String organisationName) {
+            return ResponsibleParty.builder()
+                .familyName("Wood").givenName("Claire")
+                .organisationName(organisationName)
+                .build();
+        }
+
+        @Test
+        @DisplayName("an organisation is identified by its name, and recognisable as minted")
+        void organisationMints() {
+            assertThat(
+                service.identifyOrganisation(at("University of Exeter")),
+                matchesRegex(":organisation_[0-9a-f]{16}")
+            );
+        }
+
+        @Test
+        @DisplayName("the same organisation on two contacts is one node")
+        void sameOrganisationOneNode() {
+            assertThat(
+                service.identifyOrganisation(at("University of Exeter")),
+                is(service.identifyOrganisation(at("university of exeter")))
+            );
+        }
+
+        @ParameterizedTest
+        @DisplayName("punctuation, spacing and accents do not fork an organisation")
+        @ValueSource(strings = {
+            "UK Centre for Ecology & Hydrology",
+            "UK Centre for Ecology and Hydrology",
+            "The University of Edinburgh",
+            "Institute of Terrestrial Ecology"
+        })
+        void differentInstitutionsStayDifferent(String name) {
+            assertThat(
+                "only spelling-identical names converge; the rest is data cleanup",
+                service.identifyOrganisation(at(name)),
+                not(equalTo(service.identifyOrganisation(at("University of Edinburgh"))))
+            );
+        }
+
+        @Test
+        @DisplayName("an ampersand written out is a different organisation, deliberately")
+        void ampersandIsNotNormalised() {
+            assertThat(
+                service.identifyOrganisation(at("UK Centre for Ecology & Hydrology")),
+                not(equalTo(service.identifyOrganisation(at("UK Centre for Ecology and Hydrology"))))
+            );
+        }
+
+        @Test
+        @DisplayName("a contact naming no organisation gets no node, rather than an empty one")
+        void noOrganisation() {
+            assertThat(service.identifyOrganisation(person("Wood", "Claire")), is(""));
+            assertThat(service.identifyOrganisation(at("   ")), is(""));
+        }
+
+        @Test
+        @DisplayName("an organisation and a person sharing a name do not collide")
+        void prefixesKeepNodeTypesApart() {
+            assertThat(
+                service.identifyOrganisation(at("Wood")),
+                not(equalTo(service.identify(named("Wood"), "rec", "a", 0)))
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("Identifying a role held on a record (dri-one #334)")
+    class Roles {
+
+        @Test
+        @DisplayName("the role node is recognisable as minted")
+        void roleMints() {
+            assertThat(
+                service.identifyRole(":person_abc", "pro:author", "record1"),
+                matchesRegex(":role_[0-9a-f]{16}")
+            );
+        }
+
+        @Test
+        @DisplayName("the same person, role and record always give the same node")
+        void stable() {
+            assertThat(
+                service.identifyRole(":person_abc", "pro:author", "record1"),
+                is(service.identifyRole(":person_abc", "pro:author", "record1"))
+            );
+        }
+
+        @Test
+        @DisplayName("a role is scoped to its record, so the same role elsewhere is a different node")
+        void scopedToTheRecord() {
+            assertThat(
+                service.identifyRole(":person_abc", "pro:author", "record1"),
+                not(equalTo(service.identifyRole(":person_abc", "pro:author", "record2")))
+            );
+        }
+
+        @Test
+        @DisplayName("changing the person or the role changes the node")
+        void everyPartOfTheKeyCounts() {
+            val base = service.identifyRole(":person_abc", "pro:author", "record1");
+            assertThat(base, not(equalTo(service.identifyRole(":person_xyz", "pro:author", "record1"))));
+            assertThat(base, not(equalTo(service.identifyRole(":person_abc", "scoro:data-curator", "record1"))));
+        }
+
+        @Test
+        @DisplayName("the key parts cannot run together, so a shifted boundary is a different node")
+        void keyPartsCannotRunTogether() {
+            assertThat(
+                service.identifyRole(":person_ab", "cpro:author", "record1"),
+                not(equalTo(service.identifyRole(":person_abc", "pro:author", "record1")))
+            );
+        }
+    }
 }
