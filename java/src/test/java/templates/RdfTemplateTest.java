@@ -27,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.LicenceUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.KeywordUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
 import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabularySolrQueryService;
@@ -102,6 +103,7 @@ public class RdfTemplateTest {
         configuration.setSharedVariable("uriNormaliser", uriNormaliser);
         configuration.setSharedVariable("contactUri", new ContactUri(uriNormaliser));
         configuration.setSharedVariable("fundingUri", new FundingUri(uriNormaliser));
+        configuration.setSharedVariable("licenceUris", new LicenceUri());
         configuration.setSharedVariable(
             "keywordUri",
             new KeywordUri(uriNormaliser, mock(KeywordVocabularySolrQueryService.class))
@@ -166,6 +168,12 @@ public class RdfTemplateTest {
             Property varMeasured = model.createProperty("https://schema.org/variableMeasured");
             assertTrue(model.contains(subject, varMeasured, model.createResource("https://prop-a.example.com")));
             assertTrue(model.contains(subject, varMeasured, model.createResource("https://prop-b.example.com")));
+
+            // dri-one #326: sosa:observedProperty alongside sdo:variableMeasured for every
+            // observed property that already carries a uri
+            Property sosaObservedProperty = model.createProperty("http://www.w3.org/ns/sosa/observedProperty");
+            assertTrue(model.contains(subject, sosaObservedProperty, model.createResource("https://prop-a.example.com")));
+            assertTrue(model.contains(subject, sosaObservedProperty, model.createResource("https://prop-b.example.com")));
         }
 
         @Test

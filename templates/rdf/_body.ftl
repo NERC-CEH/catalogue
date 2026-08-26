@@ -43,14 +43,16 @@
     </#if>
 
     <#--Relationships-->
-    <#list jena.relationships(uri, "http://purl.org/dc/terms/isPartOf")>
+    <#-- dri-one #327: a target that is itself withdrawn/unpublished (available in the Jena
+         index, but not to the outside world) must not be linked to as if it resolved. -->
+    <#list jena.relationships(uri, "http://purl.org/dc/terms/isPartOf")?filter(item -> item.availability != "Deleted")>
       dcterms:isPartOf <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
-    <#list jena.relationships(uri, "http://purl.org/dc/terms/replaces")>
+    <#list jena.relationships(uri, "http://purl.org/dc/terms/replaces")?filter(item -> item.availability != "Deleted")>
       dcterms:replaces <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
 
-    <#list jena.relationships(uri, "http://purl.org/dc/terms/relation")>
+    <#list jena.relationships(uri, "http://purl.org/dc/terms/relation")?filter(item -> item.availability != "Deleted")>
       dcterms:relation <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
     <#list jena.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises")>
@@ -68,6 +70,10 @@
 
     <#if fileset?? && fileset?has_content && fileset?filter(fs -> fs.observedProperty?has_content)?has_content>
       sdo:variableMeasured <@opList /> ;
+    </#if>
+
+    <#if fileset?? && fileset?has_content && fileset?filter(fs -> fs.observedProperty?filter(op -> observedPropertyUri(op)?has_content)?has_content)?has_content>
+      sosa:observedProperty <@opSosaList /> ;
     </#if>
 
     <#if funding?filter(f -> fundingUri.hasContent(f))?has_content>
@@ -113,6 +119,8 @@
     <#if authorPointOfContactWithRORs?has_content>
       <@organisationRORs />
     </#if>
+
+    <@rightsDetail />
 
     <@fundingDetail />
   <#else>

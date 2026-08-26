@@ -16,16 +16,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
-import uk.ac.ceh.gateway.catalogue.model.Fileset;
 import uk.ac.ceh.gateway.catalogue.model.Link;
-import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.model.Fileset;
+import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
@@ -33,15 +34,13 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
-import uk.ac.ceh.gateway.catalogue.templateHelpers.KeywordUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.LicenceUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
-import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabularySolrQueryService;
 
 import java.io.File;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 import static org.apache.jena.rdf.model.ResourceFactory.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,7 +49,10 @@ import static org.hamcrest.Matchers.matchesRegex;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
+import java.util.Optional;
 import static org.mockito.Mockito.verifyNoInteractions;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.KeywordUri;
+import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabularySolrQueryService;
 
 @Slf4j
 @DisplayName("RDF Turtle templating")
@@ -72,6 +74,7 @@ public class RdfTurtleTest {
         configuration.setSharedVariable("uriNormaliser", uriNormaliser);
         configuration.setSharedVariable("contactUri", new ContactUri(uriNormaliser));
         configuration.setSharedVariable("fundingUri", new FundingUri(uriNormaliser));
+        configuration.setSharedVariable("licenceUris", new LicenceUri());
         configuration.setSharedVariable("keywordUri", new KeywordUri(uriNormaliser, keywordVocabulary));
 
         model = ModelFactory.createDefaultModel();
@@ -938,6 +941,8 @@ public class RdfTurtleTest {
             private static final String RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
             private static final String SKOS_CONCEPT = "http://www.w3.org/2004/02/skos/core#Concept";
             private static final String FOAF_ORGANIZATION = "http://xmlns.com/foaf/0.1/Organization";
+            private static final String SDO_VARIABLE_MEASURED = "https://schema.org/variableMeasured";
+            private static final String SOSA_OBSERVED_PROPERTY = "http://www.w3.org/ns/sosa/observedProperty";
 
             private GeminiDocument dataset(String id) {
                 return (GeminiDocument) new GeminiDocument()
@@ -1003,6 +1008,61 @@ public class RdfTurtleTest {
                 assertTrue(model.contains(concept, createProperty(RDF_TYPE), createResource(SKOS_CONCEPT)));
                 assertFalse(model.contains(concept, createProperty(SKOS_PREF_LABEL), (org.apache.jena.rdf.model.RDFNode) null));
                 assertFalse(model.contains(concept, createProperty(RDFS_LABEL), (org.apache.jena.rdf.model.RDFNode) null));
+            }
+
+            @Test
+            @DisplayName("an observed property with a uri also gets a sosa:observedProperty triple alongside sdo:variableMeasured (dri-one #326)")
+            void observedPropertyWithUriAlsoGetsSosaObservedProperty() {
+                val document = dataset("opsosatest");
+                document.setFileset(List.of(
+                    Fileset.builder()
+                        .filesetName("data.csv")
+                        .observedProperty(List.of(
+                            ObservedProperty.builder()
+                                .title("Wrong title")
+                                .value("Wrong value")
+                                .uri("https://vocab.nerc.ac.uk/collection/P07/current/CFSN0381/")
+                                .build()
+                        ))
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val subject = createResource("https://example.com/id/opsosatest");
+                val concept = createResource("https://vocab.nerc.ac.uk/collection/P07/current/CFSN0381/");
+                assertTrue(model.contains(subject, createProperty(SDO_VARIABLE_MEASURED), concept));
+                assertTrue(model.contains(subject, createProperty(SOSA_OBSERVED_PROPERTY), concept));
+            }
+
+            @Test
+            @DisplayName("an observed property without a uri gets only the unchanged sdo:variableMeasured literal, no sosa:observedProperty (dri-one #326)")
+            void observedPropertyWithoutUriGetsNoSosaObservedProperty() {
+                val document = dataset("opnourisosatest");
+                document.setFileset(List.of(
+                    Fileset.builder()
+                        .filesetName("data.csv")
+                        .observedProperty(List.of(
+                            ObservedProperty.builder()
+                                .title("Free text property")
+                                .build()
+                        ))
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val subject = createResource("https://example.com/id/opnourisosatest");
+                assertTrue(model.contains(
+                    subject,
+                    createProperty(SDO_VARIABLE_MEASURED),
+                    model.createLiteral("Free text property")
+                ));
+                assertFalse(model.contains(
+                    subject,
+                    createProperty(SOSA_OBSERVED_PROPERTY),
+                    (org.apache.jena.rdf.model.RDFNode) null
+                ));
             }
 
             @Test
@@ -1166,6 +1226,117 @@ public class RdfTurtleTest {
                 template("rdf/ttl.ftl", document);
 
                 assertFalse(model.contains(null, createProperty(HOLDS_ROLE_IN_TIME)));
+            }
+        }
+
+        @Nested
+        @DisplayName("Dangling references to unpublished records are not linked (dri-one #327)")
+        class DanglingReferences {
+
+            private static final String IS_PART_OF = "http://purl.org/dc/terms/isPartOf";
+            private static final String REPLACES = "http://purl.org/dc/terms/replaces";
+            private static final String RELATION = "http://purl.org/dc/terms/relation";
+
+            private GeminiDocument dataset(String id) {
+                return (GeminiDocument) new GeminiDocument()
+                    .setType("dataset")
+                    .setId(id)
+                    .setUri("https://example.com/id/" + id)
+                    .setTitle("Dangling references");
+            }
+
+            @Test
+            @DisplayName("isPartOf: a withdrawn target is not linked, a published one still is")
+            void isPartOfFiltersWithdrawnTargets() {
+                val document = dataset("danglepartof");
+                given(jenaLookupService.relationships(document.getUri(), IS_PART_OF)).willReturn(List.of(
+                    Link.builder().href("https://example.com/id/published").availability("Available").build(),
+                    Link.builder().href("https://example.com/id/withdrawn").availability("Deleted").build()
+                ));
+                given(jenaLookupService.relationships(document.getUri(), REPLACES)).willReturn(List.of());
+                given(jenaLookupService.relationships(document.getUri(), RELATION)).willReturn(List.of());
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.contains(
+                    createResource(document.getUri()),
+                    createProperty(IS_PART_OF),
+                    createResource("https://example.com/id/published")
+                ));
+                assertFalse(model.contains(
+                    createResource(document.getUri()),
+                    createProperty(IS_PART_OF),
+                    createResource("https://example.com/id/withdrawn")
+                ));
+            }
+
+            @Test
+            @DisplayName("replaces: a withdrawn target is not linked")
+            void replacesFiltersWithdrawnTargets() {
+                val document = dataset("danglereplaces");
+                given(jenaLookupService.relationships(document.getUri(), IS_PART_OF)).willReturn(List.of());
+                given(jenaLookupService.relationships(document.getUri(), REPLACES)).willReturn(List.of(
+                    Link.builder().href("https://example.com/id/replacesPublished").availability("Available").build(),
+                    Link.builder().href("https://example.com/id/replacesWithdrawn").availability("Deleted").build()
+                ));
+                given(jenaLookupService.relationships(document.getUri(), RELATION)).willReturn(List.of());
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.contains(
+                    createResource(document.getUri()),
+                    createProperty(REPLACES),
+                    createResource("https://example.com/id/replacesPublished")
+                ));
+                assertFalse(model.contains(
+                    createResource(document.getUri()),
+                    createProperty(REPLACES),
+                    createResource("https://example.com/id/replacesWithdrawn")
+                ));
+            }
+
+            @Test
+            @DisplayName("relation: a withdrawn target is not linked")
+            void relationFiltersWithdrawnTargets() {
+                val document = dataset("danglerelation");
+                given(jenaLookupService.relationships(document.getUri(), IS_PART_OF)).willReturn(List.of());
+                given(jenaLookupService.relationships(document.getUri(), REPLACES)).willReturn(List.of());
+                given(jenaLookupService.relationships(document.getUri(), RELATION)).willReturn(List.of(
+                    Link.builder().href("https://example.com/id/relationPublished").availability("Available").build(),
+                    Link.builder().href("https://example.com/id/relationWithdrawn").availability("Deleted").build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.contains(
+                    createResource(document.getUri()),
+                    createProperty(RELATION),
+                    createResource("https://example.com/id/relationPublished")
+                ));
+                assertFalse(model.contains(
+                    createResource(document.getUri()),
+                    createProperty(RELATION),
+                    createResource("https://example.com/id/relationWithdrawn")
+                ));
+            }
+
+            @Test
+            @DisplayName("a target with no availability recorded is still linked (unknown is not the same as withdrawn)")
+            void targetWithNoAvailabilityIsStillLinked() {
+                val document = dataset("dangleunknown");
+                given(jenaLookupService.relationships(document.getUri(), IS_PART_OF)).willReturn(List.of(
+                    Link.builder().href("https://example.com/id/noAvailabilityRecorded").build()
+                ));
+                given(jenaLookupService.relationships(document.getUri(), REPLACES)).willReturn(List.of());
+                given(jenaLookupService.relationships(document.getUri(), RELATION)).willReturn(List.of());
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.contains(
+                    createResource(document.getUri()),
+                    createProperty(IS_PART_OF),
+                    createResource("https://example.com/id/noAvailabilityRecorded")
+                ));
             }
         }
 
@@ -1335,6 +1506,167 @@ public class RdfTurtleTest {
                         )
                     )
                 );
+            }
+
+            private void assertLicenceCanonicalises(String id, String suppliedLicenceUri, String expectedSpdxUri) {
+                val uri = "https://example.com/id/" + id;
+                val document = new GeminiDocument()
+                    .setType("dataset")
+                    .setUseConstraints(List.of(
+                        ResourceConstraint.builder().code("license").uri(suppliedLicenceUri).build()
+                    ))
+                    .setUri(uri)
+                    .setId(id)
+                    .setTitle("Test");
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(
+                    model.contains(
+                        createStatement(
+                            createResource(uri),
+                            createProperty("http://purl.org/dc/terms/license"),
+                            createResource(expectedSpdxUri)
+                        )
+                    ),
+                    () -> "expected " + suppliedLicenceUri + " to canonicalise to " + expectedSpdxUri
+                );
+            }
+
+            @Test
+            @DisplayName("three non-SPDX spellings of the Open Government Licence converge on the SPDX URI (dri-one #327)")
+            void openGovernmentLicenceSpellingsConverge() {
+                val ogl = "https://spdx.org/licenses/OGL-UK-3.0.ttl";
+                assertLicenceCanonicalises("oglspell1", "https://eidc.ac.uk/licences/OGL/plain", ogl);
+                assertLicenceCanonicalises("oglspell2", "https://nationalarchives.gov.uk/doc/open-government-licence/", ogl);
+                assertLicenceCanonicalises(
+                    "oglspell3", "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/", ogl
+                );
+            }
+
+            @Test
+            @DisplayName("four spellings of Creative Commons Attribution converge on the SPDX URI (dri-one #327)")
+            void creativeCommonsAttributionSpellingsConverge() {
+                val ccBy = "https://spdx.org/licenses/CC-BY-4.0.ttl";
+                assertLicenceCanonicalises("ccby1", "https://creativecommons.org/licenses/by/4.0/", ccBy);
+                assertLicenceCanonicalises("ccby2", "https://creativecommons.org/licenses/by/4.0/deed.en", ccBy);
+                assertLicenceCanonicalises("ccby3", "http://creativecommons.org/licenses/by-nd/4.0", ccBy.replace("BY", "BY-ND"));
+                assertLicenceCanonicalises("ccby4", "https://creativecommons.org/licenses/by-nc/4.0", ccBy.replace("BY", "BY-NC"));
+            }
+
+            @Test
+            @DisplayName("a catalogue-local licence is one node whichever eidc host it was entered under (dri-one #327)")
+            void eidcHostSplitLicenceConverges() {
+                val uriA = "https://example.com/id/hostsplitA";
+                val documentA = new GeminiDocument()
+                    .setType("dataset")
+                    .setUseConstraints(List.of(
+                        ResourceConstraint.builder().code("license").uri("https://eidc.ac.uk/licences/ecn/plain").build()
+                    ))
+                    .setUri(uriA).setId("hostsplitA").setTitle("Test A");
+
+                val uriB = "https://example.com/id/hostsplitB";
+                val documentB = new GeminiDocument()
+                    .setType("dataset")
+                    .setUseConstraints(List.of(
+                        ResourceConstraint.builder().code("license").uri("https://eidc.ceh.ac.uk/licences/ecn/plain").build()
+                    ))
+                    .setUri(uriB).setId("hostsplitB").setTitle("Test B");
+
+                template("rdf/ttl.ftl", documentA);
+                template("rdf/ttl.ftl", documentB);
+
+                val licenceA = model.listObjectsOfProperty(
+                    createResource(uriA), createProperty("http://purl.org/dc/terms/license")
+                ).next();
+                val licenceB = model.listObjectsOfProperty(
+                    createResource(uriB), createProperty("http://purl.org/dc/terms/license")
+                ).next();
+                assertThat(licenceA, equalTo(licenceB));
+                assertThat(licenceA.toString(), equalTo("https://eidc.ac.uk/licences/ecn/plain"));
+            }
+
+            @Test
+            @DisplayName("a licence with only free text is minted a stable node, not a blank node (dri-one #327)")
+            void freeTextLicenceIsMintedNotBlank() {
+                val uri = "https://example.com/id/mintlicence";
+                val document = new GeminiDocument()
+                    .setType("dataset")
+                    .setUseConstraints(List.of(
+                        ResourceConstraint.builder().code("license").value("Bespoke click-through licence text").build()
+                    ))
+                    .setUri(uri)
+                    .setId("mintlicence")
+                    .setTitle("Test");
+
+                template("rdf/ttl.ftl", document);
+
+                val licenceObjects = model.listObjectsOfProperty(
+                    createResource(uri), createProperty("http://purl.org/dc/terms/license")
+                ).toList();
+                assertThat(licenceObjects.size(), equalTo(1));
+                assertTrue(licenceObjects.get(0).isURIResource(), "expected a named node, not a blank node");
+                assertTrue(model.contains(
+                    licenceObjects.get(0).asResource(),
+                    createProperty("http://www.w3.org/2000/01/rdf-schema#label"),
+                    model.createLiteral("Bespoke click-through licence text")
+                ));
+            }
+
+            @Test
+            @DisplayName("the same free-text licence value mints the same node on two different records (dri-one #327)")
+            void freeTextLicenceIsDeterministic() {
+                val text = "Bespoke click-through licence text";
+
+                val uriA = "https://example.com/id/mintdeta";
+                val documentA = new GeminiDocument()
+                    .setType("dataset")
+                    .setUseConstraints(List.of(ResourceConstraint.builder().code("license").value(text).build()))
+                    .setUri(uriA).setId("mintdeta").setTitle("Test A");
+
+                val uriB = "https://example.com/id/mintdetb";
+                val documentB = new GeminiDocument()
+                    .setType("dataset")
+                    .setUseConstraints(List.of(ResourceConstraint.builder().code("license").value(text).build()))
+                    .setUri(uriB).setId("mintdetb").setTitle("Test B");
+
+                template("rdf/ttl.ftl", documentA);
+                template("rdf/ttl.ftl", documentB);
+
+                val licenceA = model.listObjectsOfProperty(
+                    createResource(uriA), createProperty("http://purl.org/dc/terms/license")
+                ).next();
+                val licenceB = model.listObjectsOfProperty(
+                    createResource(uriB), createProperty("http://purl.org/dc/terms/license")
+                ).next();
+                assertThat(licenceA, equalTo(licenceB));
+            }
+
+            @Test
+            @DisplayName("an accessRights statement with only free text is minted a stable node, not a blank node (dri-one #327)")
+            void freeTextAccessRightsIsMintedNotBlank() {
+                val uri = "https://example.com/id/mintaccess";
+                val document = (GeminiDocument) new GeminiDocument()
+                    .setType("dataset")
+                    .setUri(uri)
+                    .setId("mintaccess")
+                    .setTitle("Test");
+                document.setAccessLimitation(
+                    AccessLimitation.builder().value("No limitations to public access").build()
+                );
+
+                template("rdf/ttl.ftl", document);
+
+                val accessObjects = model.listObjectsOfProperty(
+                    createResource(uri), createProperty("http://purl.org/dc/terms/accessRights")
+                ).toList();
+                assertThat(accessObjects.size(), equalTo(1));
+                assertTrue(accessObjects.get(0).isURIResource(), "expected a named node, not a blank node");
+                assertTrue(model.contains(
+                    accessObjects.get(0).asResource(),
+                    createProperty("http://www.w3.org/2000/01/rdf-schema#label"),
+                    model.createLiteral("No limitations to public access")
+                ));
             }
         }
     }

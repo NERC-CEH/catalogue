@@ -3,15 +3,9 @@
   <#list licences as licence>
     <#assign licenceUri = uriNormaliser.normalise(licence.uri!"")>
     <#if licenceUri?has_content>
-      <#if licenceUri?contains("/licences/ogl/")>
-        <https://spdx.org/licenses/OGL-UK-3.0.ttl>
-      <#else>
-        <${licenceUri}>
-      </#if>
+      <${licenceUris.canonicalise(licenceUri)}>
     <#elseif licence.value?has_content>
-      [ a dcterms:LicenseDocument;
-      rdfs:label <@displayLiteral licence.value?replace("\n", " ") />;
-      ]
+      ${licenceUris.mintLicence(licence.value)}
     </#if>
   <#sep>,</#sep>
   </#list>;
@@ -34,10 +28,7 @@
   <#assign accessRightsUri = uriNormaliser.normalise(accessLimitation.uri!"")>
   <#if accessRightsUri?has_content>
     dcterms:accessRights <${accessRightsUri}> ;
-  <#else>
-    dcterms:accessRights [
-      a dcterms:RightsStatement ;
-      rdfs:label <@displayLiteral accessLimitation.value/>
-    ] ;
+  <#elseif accessLimitation.value?has_content>
+    dcterms:accessRights ${licenceUris.mintAccessRights(accessLimitation.value)} ;
   </#if>
 </#if>
