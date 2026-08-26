@@ -15,6 +15,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
@@ -287,6 +288,45 @@ class MaintenanceControllerTest extends AbstractMvcTest {
         //Then
         assertThat(((ResponseEntity<MaintenanceResponse>) response).getStatusCode(), equalTo(HttpStatus.INTERNAL_SERVER_ERROR));
         assertThat(response.getBody().getMessages(), hasItem("Fuseki is down"));
+    }
+
+    @Test
+    public void checkThatFusekiConnectionFailureIsReportedNotThrown() {
+        // RestClientResponseException only covers a 4xx/5xx *response*. A refused connection or a
+        // timeout is ResourceAccessException - a sibling, not a subclass - and refresh() is
+        // @SneakyThrows over IOException/TemplateException. Catching only the response type let
+        // all of those escape as a bare 500 instead of reaching the page.
+        //Given
+        CatalogueExportService exportService = mock(CatalogueExportService.class);
+        doThrow(new ResourceAccessException("Connection refused: fuseki:3030"))
+            .when(exportService).runExport();
+        MaintenanceController controllerWithExports = new MaintenanceController(
+            repoService, indexService, linkingService, mapserverService, Optional.of(exportService)
+        );
+
+        //When
+        HttpEntity<MaintenanceResponse> response = controllerWithExports.exportToFuseki();
+
+        //Then
+        assertThat(((ResponseEntity<MaintenanceResponse>) response).getStatusCode(), equalTo(HttpStatus.INTERNAL_SERVER_ERROR));
+        assertThat(response.getBody().getMessages(), hasItem(containsString("Connection refused")));
+    }
+
+    @Test
+    public void checkThatFusekiRenderFailureIsReportedNotThrown() {
+        //Given - what a @SneakyThrows IOException out of refresh()/render looks like at this layer
+        CatalogueExportService exportService = mock(CatalogueExportService.class);
+        doThrow(new RuntimeException("Template rendering failed")).when(exportService).runExport();
+        MaintenanceController controllerWithExports = new MaintenanceController(
+            repoService, indexService, linkingService, mapserverService, Optional.of(exportService)
+        );
+
+        //When
+        HttpEntity<MaintenanceResponse> response = controllerWithExports.exportToFuseki();
+
+        //Then
+        assertThat(((ResponseEntity<MaintenanceResponse>) response).getStatusCode(), equalTo(HttpStatus.INTERNAL_SERVER_ERROR));
+        assertThat(response.getBody().getMessages(), hasItem(containsString("Template rendering failed")));
     }
 
     @Test

@@ -55,7 +55,7 @@
     <#list jena.relationships(uri, "http://purl.org/dc/terms/relation")?filter(item -> item.availability != "Deleted")>
       dcterms:relation <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
-    <#list jena.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises")>
+    <#list jena.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises")?filter(item -> item.availability != "Deleted")>
       doo:utilises <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
 
@@ -80,13 +80,23 @@
     prov:wasGeneratedBy <@fundingList /> ;
     </#if>
 
+    <#--
+      emitsRights tracks whether the type-specific include below pulls in
+      turtle/_rights.ftl, so that rightsDetail only describes a minted licence or
+      access-rights node when something actually references it. Set alongside each
+      branch rather than as a second list of type names, so the two cannot drift.
+    -->
+    <#assign emitsRights = false>
     <#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
+      <#assign emitsRights = true>
       <#include "turtle/_dataset.ftl">
     <#elseif type=='aggregate'|| type=='collection'|| type=='series'>
-      <#include "turtle/_aggregation.ftl">
+      <#include "turtle/_aggregation.ftl"> <#--no rights block-->
     <#elseif type=='service'>
+      <#assign emitsRights = true>
       <#include "turtle/_service.ftl">
     <#elseif type=='software' || type=='model'|| type=='computationalNotebook'>
+      <#assign emitsRights = true>
       <#include "turtle/_code.ftl">
     </#if>
 
@@ -120,7 +130,9 @@
       <@organisationRORs />
     </#if>
 
-    <@rightsDetail />
+    <#if emitsRights>
+      <@rightsDetail />
+    </#if>
 
     <@fundingDetail />
   <#else>

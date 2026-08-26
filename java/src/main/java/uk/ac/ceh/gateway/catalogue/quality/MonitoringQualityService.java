@@ -202,8 +202,14 @@ public class MonitoringQualityService implements MetadataQualityService {
     }
 
     /**
-     * Every field here is emitted as an RDF node identifier by the templates
-     * under {@code templates/rdf/monitoring/}. See {@link UriChecks}.
+     * URI-bearing fields on a monitoring record, checked so that a malformed or
+     * non-canonical value gets reported to an editor. See {@link UriChecks}.
+     *
+     * <p>Note these are <em>not</em> all emitted as RDF: of the fields below only
+     * {@code environmentalDomain[*].uri} reaches the templates under
+     * {@code templates/rdf/monitoring/} (as {@code ef:mediaMonitored}). The rest are
+     * checked because a broken URI is worth correcting wherever it is used, not
+     * because it would break the linked data.
      */
     private static Map<String, String> uriFields() {
         val fields = new LinkedHashMap<String, String>();

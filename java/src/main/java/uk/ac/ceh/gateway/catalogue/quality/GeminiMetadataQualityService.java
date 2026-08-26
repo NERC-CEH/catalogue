@@ -748,8 +748,14 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     }
 
     /**
-     * Every field here is emitted as an RDF node identifier by the templates
-     * under {@code templates/rdf/}.
+     * URI-bearing fields on a Gemini record, checked so that a malformed or
+     * non-canonical value gets reported to an editor.
+     *
+     * <p>Note these are <em>not</em> all emitted as RDF: {@code topicCategories},
+     * {@code supplemental} and {@code onlineResources} in particular do not appear in
+     * the templates under {@code templates/rdf/}. They are checked because a broken
+     * URI is worth correcting wherever it is used, not because it would break the
+     * linked data.
      */
     private static Map<String, String> uriFields() {
         val fields = new LinkedHashMap<String, String>();

@@ -133,8 +133,19 @@
       <#if fund.funderIdentifier?has_content>
         <#local funderUri = uriNormaliser.normalise(fund.funderIdentifier)>
         <#if funderUri?has_content>
+          <#--
+            No foaf:name from fund.funderName. funderIdentifier is an
+            externally-governed shared identifier (a ROR, or a Crossref funder
+            DOI), so every record naming that funder writes to the one node:
+            "Biotechnology and Biological Sciences Research Council" and
+            "BBSRC" both land on ror.org/00cwqg982 and both persist, because
+            RDF is set-based. That is the corruption dri-one #320 removed from
+            contactDetail and organisationRORs, and it applies here for the
+            same reason. Consumers resolve the identifier; where we do assert a
+            name for a ROR it comes from the controlled list in
+            catalogue.ttl.ftl, not from record text.
+          -->
           <${funderUri}> a frapo:FundingAgency ;
-            <#if fund.funderName?has_content>foaf:name <@displayLiteral fund.funderName /> ;</#if>
             frapo:awards ${grantIdentifier} .
         </#if>
       </#if>

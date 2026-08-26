@@ -300,7 +300,7 @@ public class MonitoringQualityServiceTest {
             Results.Severity.INFO
         )));
         assertThat(results.getErrorList(), contains(new MetadataCheck(
-            "Environmental domain URI is not a usable URI and cannot be published as linked data: "
+            "Environmental domain URI is not a usable URI: "
                 + "hhttp://vocab.nerc.ac.uk/collection/N07/current/RAUT/",
             Results.Severity.ERROR
         )));

@@ -18,6 +18,7 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.KeywordUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.LicenceUri;
 import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabularySolrQueryService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
@@ -80,6 +81,10 @@ class CatalogueToTurtleServiceTest {
             "keywordUri",
             new KeywordUri(uriNormaliser, org.mockito.Mockito.mock(KeywordVocabularySolrQueryService.class))
         );
+        // Registered even though no fixture here currently carries a licence: this must mirror
+        // FreemarkerConfig, or the first licence-bearing fixture added to this test fails with a
+        // confusing "licenceUris is undefined" rather than anything to do with the change made.
+        configuration.setSharedVariable("licenceUris", new LicenceUri());
         configuration.setSharedVariable("jena", jenaLookupService);
         service = new CatalogueToTurtleService(
             catalogueService,

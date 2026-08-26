@@ -35,6 +35,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -115,6 +116,34 @@ public class GitDocumentRepositoryTest {
         //Then
         verify(repo).save(eq(user), eq("test"), eq(message), any(MetadataInfo.class), any());
         verify(repo).save(eq(user), eq("test"), eq("File upload for id: test"), any(MetadataInfo.class), any(), isNull(), any());
+    }
+
+    @Test
+    @SneakyThrows
+    public void uploadingMojibakeCommitsNothingAtAll() {
+        // The raw blob used to be committed before the mojibake check ran, so a rejected upload
+        // left an orphaned raw commit in the datastore with no document to go with it.
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        InputStream inputStream = new ByteArrayInputStream(
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>".getBytes()
+        );
+        ResourceConstraint copyright = ResourceConstraint.builder()
+            .code("copyright")
+            .value("Â© Natural Environment Research Council")
+            .build();
+        GeminiDocument document = (GeminiDocument) new GeminiDocument().setUseConstraints(List.of(copyright));
+
+        given(documentReader.read(any(), any(), any())).willReturn(document);
+        // No generateUri stub: the guard now throws before the raw commit, so nothing downstream runs.
+        given(documentIdentifierService.generateFileId(null)).willReturn("test");
+
+        //When / Then
+        assertThrows(
+            MojibakeTextException.class,
+            () -> documentRepository.save(user, inputStream, MediaType.TEXT_XML, "GEMINI_DOCUMENT", "ceh", "message")
+        );
+        verifyNoInteractions(repo);
     }
 
     @Test
@@ -283,6 +312,90 @@ public class GitDocumentRepositoryTest {
             MojibakeTextException.class,
             () -> documentRepository.save(user, document, currentId, "message")
         );
+    }
+
+    @Test
+    @SneakyThrows
+    public void savingARecordThatAlreadyContainedMojibakeDoesNotThrow() {
+        // The corruption predates the guard, so an editor fixing an unrelated field on one of the
+        // already-affected records must not be blocked - only newly introduced matches are.
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        MetadataInfo metadataInfo = MetadataInfo.builder().build();
+        String currentId = "tulips";
+
+        GeminiDocument stored = (GeminiDocument) new GeminiDocument()
+            .setUseConstraints(List.of(
+                ResourceConstraint.builder().code("copyright").value("Â© 2020 UKCEH").build()
+            ))
+            .setMetadata(metadataInfo);
+        given(documentBundleReader.readBundle(currentId)).willReturn(stored);
+
+        GeminiDocument incoming = (GeminiDocument) new GeminiDocument()
+            .setUseConstraints(List.of(
+                ResourceConstraint.builder().code("copyright").value("Â© 2020 UKCEH").build()
+            ))
+            .setMetadata(metadataInfo);
+        incoming.setTitle("A corrected title");
+        given(documentIdentifierService.generateUri(currentId))
+            .willReturn("http://localhost:8080/id/" + currentId);
+
+        //When / Then
+        assertDoesNotThrow(() -> documentRepository.save(user, incoming, currentId, "message"));
+    }
+
+    @Test
+    @SneakyThrows
+    public void addingMoreMojibakeToAnAlreadyAffectedRecordThrows() {
+        // Counting occurrences, not just comparing the set: a second Â© pasted somewhere else is
+        // still new corruption even though that sequence was already in the record.
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        MetadataInfo metadataInfo = MetadataInfo.builder().build();
+        String currentId = "tulips";
+
+        GeminiDocument stored = (GeminiDocument) new GeminiDocument()
+            .setUseConstraints(List.of(
+                ResourceConstraint.builder().code("copyright").value("Â© 2020 UKCEH").build()
+            ))
+            .setMetadata(metadataInfo);
+        given(documentBundleReader.readBundle(currentId)).willReturn(stored);
+
+        GeminiDocument incoming = (GeminiDocument) new GeminiDocument()
+            .setUseConstraints(List.of(
+                ResourceConstraint.builder().code("copyright").value("Â© 2020 UKCEH").build(),
+                ResourceConstraint.builder().code("copyright").value("Also Â© someone else").build()
+            ))
+            .setMetadata(metadataInfo);
+        given(documentIdentifierService.generateUri(currentId))
+            .willReturn("http://localhost:8080/id/" + currentId);
+
+        //When / Then
+        assertThrows(
+            MojibakeTextException.class,
+            () -> documentRepository.save(user, incoming, currentId, "message")
+        );
+    }
+
+    @Test
+    @SneakyThrows
+    public void savingLegitimateCapitalAWithCircumflexFollowedByALetterDoesNotThrow() {
+        // "Â" followed by a letter is ordinary text in several languages - Vietnamese "Ân",
+        // upper-cased Romanian "CÂMPINA", Welsh "TÂN" - and is plausible in a name or a place
+        // keyword. Real mojibake is "Â" standing in for punctuation or a symbol.
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        MetadataInfo metadataInfo = MetadataInfo.builder().build();
+
+        GeminiDocument document = (GeminiDocument) new GeminiDocument().setMetadata(metadataInfo);
+        document.setTitle("Soil survey of CÂMPINA and TÂN districts");
+
+        String currentId = "tulips";
+        given(documentIdentifierService.generateUri(currentId))
+            .willReturn("http://localhost:8080/id/" + currentId);
+
+        //When / Then
+        assertDoesNotThrow(() -> documentRepository.save(user, document, currentId, "message"));
     }
 
     @Test

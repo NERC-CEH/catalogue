@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestClientResponseException;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.exports.CatalogueExportService;
@@ -173,7 +172,13 @@ public class MaintenanceController {
         try {
             catalogueExportService.get().runExport();
             return ResponseEntity.ok(loadMaintenancePage().addMessage("Fuseki export completed"));
-        } catch (RestClientResponseException ex) {
+        } catch (Exception ex) {
+            // Deliberately wide. RestClientResponseException only covers a 4xx/5xx *response*
+            // from Fuseki; a refused connection or timeout is ResourceAccessException, a sibling
+            // rather than a subclass, and CatalogueToTurtleService.refresh() is @SneakyThrows over
+            // IOException/TemplateException - which cannot be named in a catch here at all, since
+            // the compiler cannot see them being thrown. Anything narrower escapes as a bare 500
+            // instead of being reported on the page, which is what this endpoint exists to avoid.
             MaintenanceResponse response = loadMaintenancePage().addMessage(ex.getMessage());
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
