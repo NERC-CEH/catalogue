@@ -18,6 +18,7 @@ import java.util.List;
 import static uk.ac.ceh.gateway.catalogue.services.MetadataListingService.METADATA_LISTINGS_CACHE;
 import static uk.ac.ceh.gateway.catalogue.userdetails.CrowdGroupStore.CROWD_GROUP_CACHE;
 import static uk.ac.ceh.gateway.catalogue.userdetails.CrowdUserStore.CROWD_USER_CACHE;
+import static uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabularySolrQueryService.EXACT_LABEL_CACHE;
 import static uk.ac.ceh.gateway.catalogue.wms.GetCapabilitiesObtainerService.CAPABILITIES_CACHE;
 
 // Enabled in every real environment; disabled under the "test" profile (which all @SpringBootTest
@@ -77,6 +78,19 @@ public class CacheConfig implements CachingConfigurer {
         // whole working set stays warm.
         List.of(JDBCMetricsService.VIEW_TOTALS_CACHE, JDBCMetricsService.DOWNLOAD_TOTALS_CACHE).forEach(cache ->
             cacheManager.registerCustomCache(cache, expireAfterWrite(6000, Duration.ofMinutes(10)).build()));
+
+        // Free-text keyword to vocabulary concept, resolved once per URI-less keyword while a
+        // record renders as RDF (dri-one #321). Without this a record with twenty free-text
+        // keywords costs twenty Solr round trips on every render, and the same handful of
+        // common keywords is re-resolved for record after record.
+        //
+        // Staleness is bounded by design: the vocabularies behind the keywords core are
+        // re-indexed weekly (SparqlKeywordVocabulary/LocalKeywordVocabulary run on a seven-day
+        // schedule), so a term cannot appear or move faster than that, and the worst a stale
+        // entry does is leave a keyword as the literal it has always been. Bounded on entry
+        // count because the key is arbitrary depositor text, not a member of a known set.
+        cacheManager.registerCustomCache(EXACT_LABEL_CACHE,
+            expireAfterWrite(20000, Duration.ofHours(24)).build());
 
         return cacheManager;
     }

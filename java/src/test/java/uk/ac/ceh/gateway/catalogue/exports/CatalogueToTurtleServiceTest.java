@@ -16,6 +16,8 @@ import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.KeywordUri;
+import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabularySolrQueryService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -72,6 +74,10 @@ class CatalogueToTurtleServiceTest {
         val uriNormaliser = new UriNormaliser();
         configuration.setSharedVariable("uriNormaliser", uriNormaliser);
         configuration.setSharedVariable("contactUri", new ContactUri(uriNormaliser));
+        configuration.setSharedVariable(
+            "keywordUri",
+            new KeywordUri(uriNormaliser, org.mockito.Mockito.mock(KeywordVocabularySolrQueryService.class))
+        );
         configuration.setSharedVariable("jena", jenaLookupService);
         service = new CatalogueToTurtleService(
             catalogueService,

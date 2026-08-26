@@ -26,7 +26,9 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.KeywordUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
+import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabularySolrQueryService;
 
 import java.io.File;
 import java.io.StringReader;
@@ -98,6 +100,10 @@ public class RdfTemplateTest {
         val uriNormaliser = new UriNormaliser();
         configuration.setSharedVariable("uriNormaliser", uriNormaliser);
         configuration.setSharedVariable("contactUri", new ContactUri(uriNormaliser));
+        configuration.setSharedVariable(
+            "keywordUri",
+            new KeywordUri(uriNormaliser, mock(KeywordVocabularySolrQueryService.class))
+        );
     }
 
     @Nested
