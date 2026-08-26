@@ -73,11 +73,7 @@ dcat:accessURL
 dcterms:license <https://spdx.org/licenses/OGL-UK-3.0.ttl>
 ;
 dcterms:accessRights <http://purl.org/coar/access_right/c_abf2> ;
-dcterms:format
-[
-a dcterms:IMT ;
-rdf:value "Comma-separated values (CSV)" ; rdfs:label "Comma-separated values (CSV)"
-] ;
+dcterms:format <https://www.iana.org/assignments/media-types/text/csv> ;
 ];
 dcterms:creator
 <https://orcid.org/0000-0001-2345-6789> ;
@@ -103,11 +99,10 @@ foaf:givenName "Author" ;
 vcard:hasEmail "enquiries@ceh.ac.uk" ;
 foaf:member <https://ror.org/00pggkr55> ;
 .
-<https://orcid.org/0000-0001-2345-6789> pro:holdsRoleInTime [
-a pro:RoleInTime ;
+<https://orcid.org/0000-0001-2345-6789> pro:holdsRoleInTime :role_c850511b14958c73 .
+:role_c850511b14958c73 a pro:RoleInTime ;
 pro:withRole scoro:data-curator ;
-pro:relatesToEntity :f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16
-] .
+pro:relatesToEntity :f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16 .
 <https://test-admin-url.ac.uk> a <http://purl.org/spar/fabio/Expression> ;
 dcterms:bibliographicCitation "Test Admin details";
 .
@@ -119,6 +114,7 @@ dcterms:bibliographicCitation "Test Admin details";
 <https://vocabs.lter-europe.net/EnvThes/30349> a skos:Concept .
 <https://test-observed-properties.ac.uk> a skos:Concept .
 <https://ror.org/00pggkr55> a foaf:Organization .
+<https://www.iana.org/assignments/media-types/text/csv> a dcterms:IMT .
 :grant_d8eb992155e350a7 a frapo:Grant, prov:Activity ;
 rdfs:label "Test supplemental award name" ;
 frapo:hasGrantNumber "Test supplemental award reference" ;

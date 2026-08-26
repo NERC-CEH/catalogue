@@ -18,6 +18,7 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.KeywordUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.FormatUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.LicenceUri;
 import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabularySolrQueryService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
@@ -85,6 +86,7 @@ class CatalogueToTurtleServiceTest {
         // FreemarkerConfig, or the first licence-bearing fixture added to this test fails with a
         // confusing "licenceUris is undefined" rather than anything to do with the change made.
         configuration.setSharedVariable("licenceUris", new LicenceUri());
+        configuration.setSharedVariable("formatUris", new FormatUri());
         configuration.setSharedVariable("jena", jenaLookupService);
         service = new CatalogueToTurtleService(
             catalogueService,

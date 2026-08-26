@@ -6,11 +6,7 @@ import lombok.val;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
-import java.util.HexFormat;
 
 /**
  * Decides which RDF node a contact is, and returns it ready to emit as Turtle.
@@ -47,10 +43,13 @@ import java.util.HexFormat;
  * "UK Centre for Ecology &amp; Hydrology" and "University of the West of
  * England". The fix for a wrong merge is the ORCID the record should carry.
  *
- * <p>The key is hashed rather than slugged. A name is not URI-safe — spaces,
- * commas, apostrophes, accents, arbitrary length — and a readable slug invites
- * consumers to parse the URI as an assertion about the name. {@code foaf:name}
- * sits on the node itself, so nothing is lost by making the identifier opaque.
+ * <p>The key is hashed rather than slugged (see {@link MintedNode}). A name is
+ * not URI-safe — spaces, commas, apostrophes, accents, arbitrary length — and a
+ * readable slug invites consumers to parse the URI as an assertion about the
+ * name. {@code foaf:name} sits on the node itself, so nothing is lost by making
+ * the identifier opaque. At the ~3,400 distinct names in production the chance
+ * of a hash collision is about 3e-13, and a collision would merge two people:
+ * the same failure the key already accepts for shared names.
  *
  * <p>Note that a person's name is not a lookup: the templates render one record
  * at a time and cannot see the rest of the corpus, so the node has to be a pure
@@ -61,15 +60,14 @@ import java.util.HexFormat;
 @RequiredArgsConstructor
 public class ContactUri {
 
-    /**
-     * 64 bits of SHA-256. At the ~3,400 distinct names in production the chance
-     * of any collision is about 3e-13; a collision would merge two people, the
-     * same failure the key already accepts for shared names.
-     */
-    private static final int HASH_BYTES = 8;
-
     /** Local-name prefix, so a minted node is recognisable as one in the store. */
     private static final String PERSON_PREFIX = ":person_";
+
+    /** @see #identifyOrganisation */
+    private static final String ORGANISATION_PREFIX = ":organisation_";
+
+    /** @see #identifyRole */
+    private static final String ROLE_PREFIX = ":role_";
 
     private final UriNormaliser uriNormaliser;
 
@@ -107,7 +105,61 @@ public class ContactUri {
 
     private String personNode(ResponsibleParty contact, String fallback) {
         val key = nameKey(contact.getFullName());
-        return key.isEmpty() ? fallback : PERSON_PREFIX + hash(key);
+        return key.isEmpty() ? fallback : MintedNode.from(PERSON_PREFIX, key);
+    }
+
+    /**
+     * Identifies the organisation a contact says they belong to, where that
+     * organisation has no ROR.
+     *
+     * <p>{@link #identify} already resolves a ROR to the ROR node itself. The
+     * fallback — a contact whose affiliation is only a typed name — used to be
+     * emitted as {@code foaf:member [foaf:name "..."]}, a blank node. A
+     * production audit (dri-one #334) found 3,128 of them standing for 774
+     * distinct names: the University of Exeter appeared 91 times as 91
+     * unrelated nodes, so no query could ask which datasets an institution
+     * holds.
+     *
+     * <p>Keyed on the organisation's name by the same rule as a person's, and
+     * with the same limitation: {@code "University of Edinburgh"} and
+     * {@code "The University of Edinburgh"} are two institutions as far as this
+     * is concerned, as are {@code "Institute of Terrestrial Ecology"} and the
+     * {@code "UK Centre for Ecology & Hydrology"} it was renamed to. Minting
+     * makes those pairs visible and joinable; reconciling them is data cleanup,
+     * and the durable fix is the ROR the record should carry.
+     *
+     * @param contact the contact whose stated affiliation to identify
+     * @return a prefixed name, or blank where the contact names no organisation
+     */
+    public String identifyOrganisation(ResponsibleParty contact) {
+        val key = nameKey(contact.getOrganisationName());
+        return key.isEmpty() ? "" : MintedNode.from(ORGANISATION_PREFIX, key);
+    }
+
+    /**
+     * Identifies the {@code pro:RoleInTime} tying a contact to the role they
+     * held on one record.
+     *
+     * <p>Emitted as a blank node when the role vocabulary arrived (dri-one
+     * #323). A {@code RoleInTime} is a reified statement — person, role,
+     * record — and reification exists so the statement can be pointed at,
+     * which a blank node is precisely what prevents. Nothing of it had reached
+     * production before #334, because {@code doiRoleUri} fires on essentially
+     * every author: the first export would have added roughly 16,000 blank
+     * nodes to the ~15,600 already there.
+     *
+     * <p>Unlike the other minted nodes this one needs no normalisation. Its key
+     * is three identifiers that are themselves already canonical, so the node
+     * is stable by construction, and two identical role statements on one
+     * record converge rather than forking.
+     *
+     * @param contactNode the Turtle node {@link #identify} returned for the contact
+     * @param roleUri     the Turtle node for the role, from {@code doiRoleUri}
+     * @param recordId    the id of the record the role was held on
+     * @return a prefixed name
+     */
+    public String identifyRole(String contactNode, String roleUri, String recordId) {
+        return MintedNode.from(ROLE_PREFIX, contactNode, roleUri, recordId);
     }
 
     /**
@@ -124,18 +176,5 @@ public class ContactUri {
             .filter(Character::isLetterOrDigit)
             .forEach(codePoint -> key.appendCodePoint(Character.toLowerCase(codePoint)));
         return key.toString();
-    }
-
-    private static String hash(String key) {
-        val digest = sha256().digest(key.getBytes(StandardCharsets.UTF_8));
-        return HexFormat.of().formatHex(digest, 0, HASH_BYTES);
-    }
-
-    private static MessageDigest sha256() {
-        try {
-            return MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException ex) {
-            throw new IllegalStateException("SHA-256 is required of every JVM", ex);
-        }
     }
 }

@@ -4,13 +4,8 @@ import lombok.ToString;
 import lombok.val;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.HexFormat;
 import java.util.Locale;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -43,11 +38,9 @@ import java.util.regex.Pattern;
 @ToString
 public class LicenceUri {
 
-    /** 64 bits of SHA-256 — see {@link ContactUri} for the collision-risk reasoning this mirrors. */
-    private static final int HASH_BYTES = 8;
-
     private static final String LICENCE_PREFIX = ":licence_";
     private static final String ACCESS_RIGHTS_PREFIX = ":accessRights_";
+    private static final String COPYRIGHT_PREFIX = ":copyright_";
 
     private static final String OGL_UK_3_0 = "https://spdx.org/licenses/OGL-UK-3.0.ttl";
     private static final String CC_BY_4_0 = "https://spdx.org/licenses/CC-BY-4.0.ttl";
@@ -142,7 +135,7 @@ public class LicenceUri {
      * @return a Turtle prefixed name, stable for the same text however many times it is called
      */
     public String mintLicence(String text) {
-        return LICENCE_PREFIX + hash(textKey(text));
+        return MintedNode.from(LICENCE_PREFIX, textKey(text));
     }
 
     /**
@@ -154,7 +147,29 @@ public class LicenceUri {
      * @return a Turtle prefixed name, stable for the same text however many times it is called
      */
     public String mintAccessRights(String text) {
-        return ACCESS_RIGHTS_PREFIX + hash(textKey(text));
+        return MintedNode.from(ACCESS_RIGHTS_PREFIX, textKey(text));
+    }
+
+    /**
+     * The {@code dcterms:rights} counterpart of {@link #mintLicence}, for the
+     * copyright notice a record states alongside its licence.
+     *
+     * <p>These were the last free-text rights statement still emitted as a
+     * blank node: a production audit (dri-one #334) found 2,185 of them
+     * standing for 270 distinct notices, so the same notice — typically one
+     * institution's standard wording, repeated across its whole holding —
+     * could not be counted, compared or corrected in one place.
+     *
+     * <p>Keyed on the notice as the record stores it, before the template's
+     * cosmetic substitutions for Turtle output (the © sign, embedded
+     * newlines). {@link #textKey} already folds whitespace, and keying on the
+     * stored text keeps the node independent of how it is rendered.
+     *
+     * @param text the copyright notice ({@code copyright.value}); must not be null
+     * @return a Turtle prefixed name, stable for the same text however many times it is called
+     */
+    public String mintCopyright(String text) {
+        return MintedNode.from(COPYRIGHT_PREFIX, textKey(text));
     }
 
     /**
@@ -164,18 +179,5 @@ public class LicenceUri {
      */
     private static String textKey(String text) {
         return text.trim().toLowerCase(Locale.ROOT).replaceAll("\\s+", " ");
-    }
-
-    private static String hash(String key) {
-        val digest = sha256().digest(key.getBytes(StandardCharsets.UTF_8));
-        return HexFormat.of().formatHex(digest, 0, HASH_BYTES);
-    }
-
-    private static MessageDigest sha256() {
-        try {
-            return MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException ex) {
-            throw new IllegalStateException("SHA-256 is required of every JVM", ex);
-        }
     }
 }
