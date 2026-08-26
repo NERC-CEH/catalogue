@@ -7,17 +7,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import tools.jackson.databind.json.JsonMapper;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataConflictException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.MojibakeTextException;
 import uk.ac.ceh.gateway.catalogue.model.ResourceIdentifierExistsException;
 import uk.ac.ceh.gateway.catalogue.services.ResourceIdentifierLookupService;
 
@@ -32,6 +35,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,6 +54,10 @@ public class GitDocumentRepositoryTest {
     ResourceIdentifierLookupService resourceIdentifierLookupService;
     @Mock GitRepoWrapper repo;
 
+    // A real (not mocked) mapper: the mojibake guard scans the document's actual serialised
+    // form, so the test needs genuine JSON output rather than a stubbed one.
+    private final JsonMapper objectMapper = JsonMapper.builder().build();
+
     private GitDocumentRepository documentRepository;
 
     @BeforeEach
@@ -61,7 +69,8 @@ public class GitDocumentRepositoryTest {
                             documentWritingService,
                             documentBundleReader,
                             resourceIdentifierLookupService,
-                            repo);
+                            repo,
+                            objectMapper);
         lenient().when(resourceIdentifierLookupService.findDocumentIdsByRi(any())).thenReturn(List.of());
     }
 
@@ -246,6 +255,61 @@ public class GitDocumentRepositoryTest {
 
         // Should not throw: re-saving a record that owns its own identifier is allowed.
         documentRepository.save(user, document, currentId, "message");
+    }
+
+    @Test
+    @SneakyThrows
+    public void savingMojibakeTextThrows() {
+        //Given a copyright notice already double-encoded, e.g. "©" (U+00A9) mis-decoded via
+        //CP1252 into "Â©" (U+00C2 U+00A9) - the dri-one #328 signature.
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        MetadataInfo metadataInfo = MetadataInfo.builder().build();
+
+        ResourceConstraint copyright = ResourceConstraint.builder()
+            .code("copyright")
+            .value("Â© 2020 UKCEH, some rights reserved")
+            .build();
+
+        GeminiDocument document = (GeminiDocument) new GeminiDocument()
+            .setUseConstraints(List.of(copyright))
+            .setMetadata(metadataInfo);
+
+        String currentId = "tulips";
+        given(documentIdentifierService.generateUri(currentId))
+            .willReturn("http://localhost:8080/id/" + currentId);
+
+        //When / Then
+        assertThrows(
+            MojibakeTextException.class,
+            () -> documentRepository.save(user, document, currentId, "message")
+        );
+    }
+
+    @Test
+    @SneakyThrows
+    public void savingOrdinaryTextContainingCapitalAWithCircumflexDoesNotThrow() {
+        //Given text that happens to contain a plain "Â" followed by a space (e.g. a symbol
+        //written out with a trailing space) - this must NOT be treated as mojibake.
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        MetadataInfo metadataInfo = MetadataInfo.builder().build();
+
+        ResourceConstraint copyright = ResourceConstraint.builder()
+            .code("copyright")
+            .value("Field strength is measured in Â mT and is freely available")
+            .build();
+
+        GeminiDocument document = (GeminiDocument) new GeminiDocument()
+            .setUseConstraints(List.of(copyright))
+            .setMetadata(metadataInfo);
+
+        String currentId = "tulips";
+        given(documentIdentifierService.generateUri(currentId))
+            .willReturn("http://localhost:8080/id/" + currentId);
+
+        //When / Then: should not throw
+        assertDoesNotThrow(
+            () -> documentRepository.save(user, document, currentId, "message")
+        );
     }
 
     @Test

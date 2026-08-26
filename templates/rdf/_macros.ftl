@@ -20,6 +20,30 @@
   </#if>
 </#macro>
 
+<#--
+  A contact's role, mapped onto the Digital Objects Ontology's pro:RoleInTime
+  pattern (dri-one #323). Additive: dcterms:creator, dcat:contactPoint and
+  dcterms:publisher stay exactly as they are, so DataCite/DOI consumers and
+  DCAT tooling keep working. This only adds the detail needed to ask who
+  curated a dataset, who led it, or who the field technician was.
+
+  contributorRole is the editor's fixed six-value vocabulary and takes
+  precedence; role is a second, much broader controlled list where only
+  a handful of values have a confirmed DOO equivalent. Everything else is
+  left unmapped rather than guessed.
+-->
+<#function doiRoleUri contact>
+  <#if contact.contributorRole == "dataCreator"><#return "scoro:data-creator"></#if>
+  <#if contact.contributorRole == "dataCurator"><#return "scoro:data-curator"></#if>
+  <#if contact.contributorRole == "collaborator"><#return "scoro:collaborator"></#if>
+  <#if contact.contributorRole == "researcher"><#return "scoro:researcher"></#if>
+  <#if contact.contributorRole == "technician"><#return "scoro:technician"></#if>
+  <#if contact.contributorRole == "projectLeader"><#return "scoro:project-leader"></#if>
+  <#if contact.role == "author"><#return "pro:author"></#if>
+  <#if contact.role == "principalInvestigator"><#return "scoro:principal-investigator"></#if>
+  <#return "">
+</#function>
+
 <#macro contactDetail contacts prefix="c">
   <#if contacts?has_content>
     <#list contacts as contact>
@@ -60,41 +84,61 @@
         .
       </#if>
 
+      <#local doiRole = doiRoleUri(contact)>
+      <#if doiRole?has_content>
+        ${contactIdentifier} pro:holdsRoleInTime [
+          a pro:RoleInTime ;
+          pro:withRole ${doiRole} ;
+          pro:relatesToEntity :${id}
+        ] .
+      </#if>
+
     </#list>
   </#if>
 </#macro>
 
+<#--
+  A grant is identified by the most trustworthy identifier it carries: a node
+  minted from the funder's own awardNumber, or the awardURI where no award
+  number was supplied, and otherwise a node scoped to this record (dri-one
+  #322, #324). A funding entry with none of awardTitle, awardNumber, awardURI
+  or funderIdentifier is suppressed entirely rather than falling back to that
+  record-scoped node: it would carry nothing but rdf:type, an empty node
+  standing for a grant the record says nothing about (dri-one #322). Shared
+  by fundingList and fundingDetail — both filter through fundingUri.hasContent
+  so the two can never disagree about which entries are suppressed, nor which
+  node a funding entry that survives the filter is.
+-->
 <#macro fundingList>
-  <#if funding?has_content>
-    <#list funding as fund>
-
-      <#assign fundIdentifier= ":" + id + "_fund" + fund?index>
-      <#if fund.awardURI?has_content>
-        <#local awardUri = uriNormaliser.normalise(fund.awardURI)>
-        <#if awardUri?has_content>
-          <#assign fundIdentifier ="\l" + awardUri + "\g">
-        </#if>
-      </#if>
-      ${fundIdentifier?trim}<#sep>,</#sep><#t>
-    </#list>
-  </#if>
+  <#list funding?filter(f -> fundingUri.hasContent(f)) as fund>
+    ${fundingUri.identify(fund, id, fund?index)}<#sep>,</#sep><#t>
+  </#list>
 </#macro>
 
 <#macro fundingDetail>
-  <#if  funding?has_content>
-    <#list funding as fund>
+  <#list funding?filter(f -> fundingUri.hasContent(f)) as fund>
 
-      <#assign fundIdentifier= ":" + id + "_fund" + fund?index>
-      <#if fund.awardURI?has_content>
-        <#local awardUri = uriNormaliser.normalise(fund.awardURI)>
-        <#if awardUri?has_content>
-          <#assign fundIdentifier ="\l" + awardUri + "\g">
+      <#local grantIdentifier = fundingUri.identify(fund, id, fund?index)>
+
+      ${grantIdentifier} a frapo:Grant, prov:Activity ;
+        <#if fund.awardTitle?has_content>rdfs:label <@displayLiteral fund.awardTitle /> ;</#if>
+        <#if fund.awardNumber?has_content>frapo:hasGrantNumber <@displayLiteral fund.awardNumber /> ;</#if>
+        <#if fund.awardNumber?has_content && fund.awardURI?has_content>
+          <#local awardSameAs = uriNormaliser.normalise(fund.awardURI)>
+          <#if awardSameAs?has_content>owl:sameAs <${awardSameAs}> ;</#if>
+        </#if>
+        frapo:funds :${id} ;
+      .
+
+      <#if fund.funderIdentifier?has_content>
+        <#local funderUri = uriNormaliser.normalise(fund.funderIdentifier)>
+        <#if funderUri?has_content>
+          <${funderUri}> a frapo:FundingAgency ;
+            <#if fund.funderName?has_content>foaf:name <@displayLiteral fund.funderName /> ;</#if>
+            frapo:awards ${grantIdentifier} .
         </#if>
       </#if>
-
-      ${fundIdentifier?trim} a prov:Activity ; <#if fund.awardTitle?has_content>rdfs:label <@displayLiteral fund.awardTitle /></#if> .
-    </#list>
-  </#if>
+  </#list>
 </#macro>
 
 <#--
