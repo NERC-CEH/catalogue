@@ -97,35 +97,45 @@
   </#if>
 </#macro>
 
+<#--
+  A grant is identified by the most trustworthy identifier it carries: a node
+  minted from the funder's own awardNumber, or the awardURI where no award
+  number was supplied, and otherwise a node scoped to this record (dri-one
+  #322, #324). Shared by fundingList and fundingDetail so the two can never
+  disagree about which node a funding entry is.
+-->
 <#macro fundingList>
   <#if funding?has_content>
     <#list funding as fund>
-
-      <#assign fundIdentifier= ":" + id + "_fund" + fund?index>
-      <#if fund.awardURI?has_content>
-        <#local awardUri = uriNormaliser.normalise(fund.awardURI)>
-        <#if awardUri?has_content>
-          <#assign fundIdentifier ="\l" + awardUri + "\g">
-        </#if>
-      </#if>
-      ${fundIdentifier?trim}<#sep>,</#sep><#t>
+      ${fundingUri.identify(fund, id, fund?index)}<#sep>,</#sep><#t>
     </#list>
   </#if>
 </#macro>
 
 <#macro fundingDetail>
-  <#if  funding?has_content>
+  <#if funding?has_content>
     <#list funding as fund>
 
-      <#assign fundIdentifier= ":" + id + "_fund" + fund?index>
-      <#if fund.awardURI?has_content>
-        <#local awardUri = uriNormaliser.normalise(fund.awardURI)>
-        <#if awardUri?has_content>
-          <#assign fundIdentifier ="\l" + awardUri + "\g">
+      <#local grantIdentifier = fundingUri.identify(fund, id, fund?index)>
+
+      ${grantIdentifier} a frapo:Grant, prov:Activity ;
+        <#if fund.awardTitle?has_content>rdfs:label <@displayLiteral fund.awardTitle /> ;</#if>
+        <#if fund.awardNumber?has_content>frapo:hasGrantNumber <@displayLiteral fund.awardNumber /> ;</#if>
+        <#if fund.awardNumber?has_content && fund.awardURI?has_content>
+          <#local awardSameAs = uriNormaliser.normalise(fund.awardURI)>
+          <#if awardSameAs?has_content>owl:sameAs <${awardSameAs}> ;</#if>
+        </#if>
+        frapo:funds :${id} ;
+      .
+
+      <#if fund.funderIdentifier?has_content>
+        <#local funderUri = uriNormaliser.normalise(fund.funderIdentifier)>
+        <#if funderUri?has_content>
+          <${funderUri}> a frapo:FundingAgency ;
+            <#if fund.funderName?has_content>foaf:name <@displayLiteral fund.funderName /> ;</#if>
+            frapo:awards ${grantIdentifier} .
         </#if>
       </#if>
-
-      ${fundIdentifier?trim} a prov:Activity ; <#if fund.awardTitle?has_content>rdfs:label <@displayLiteral fund.awardTitle /></#if> .
     </#list>
   </#if>
 </#macro>
