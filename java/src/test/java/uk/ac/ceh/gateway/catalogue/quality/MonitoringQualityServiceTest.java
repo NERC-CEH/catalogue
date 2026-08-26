@@ -3,12 +3,14 @@ package uk.ac.ceh.gateway.catalogue.quality;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ResourceUtils;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -24,7 +26,7 @@ public class MonitoringQualityServiceTest {
 
     @BeforeEach
     public void setup() {
-        this.service = new MonitoringQualityService(documentReader);
+        this.service = new MonitoringQualityService(documentReader, new UriChecks(new UriNormaliser()));
     }
 
     @Test
@@ -273,5 +275,34 @@ public class MonitoringQualityServiceTest {
             "southBoundLatitude should be less than northBoundLatitude",
             "southBoundLatitude is out of range"
         ));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("non-canonical and unusable URIs are reported so the record can be fixed (dri-one #318)")
+    public void reportsNonCanonicalUris() {
+        given(documentReader.read("monitoringNetworkNonCanonicalUris", "raw"))
+            .willReturn(
+                ResourceUtils.getFile(getClass().getResource("ukeof/monitoringNetworkNonCanonicalUris.raw"))
+            );
+        given(documentReader.read("monitoringNetworkNonCanonicalUris", "meta"))
+            .willReturn(
+                ResourceUtils.getFile(getClass().getResource("ukeof/monitoringNetworkNonCanonicalUris.meta"))
+            );
+
+        //when
+        val results = this.service.check("monitoringNetworkNonCanonicalUris");
+
+        //then
+        assertThat(results.getInfoList(), contains(new MetadataCheck(
+            "Keyword URI is not in its canonical form, http://sws.geonames.org/2638360/ "
+                + "should be https://sws.geonames.org/2638360",
+            Results.Severity.INFO
+        )));
+        assertThat(results.getErrorList(), contains(new MetadataCheck(
+            "Environmental domain URI is not a usable URI and cannot be published as linked data: "
+                + "hhttp://vocab.nerc.ac.uk/collection/N07/current/RAUT/",
+            Results.Severity.ERROR
+        )));
     }
 }
