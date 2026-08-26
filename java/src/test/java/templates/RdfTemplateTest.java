@@ -28,7 +28,9 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.LicenceUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.KeywordUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
+import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabularySolrQueryService;
 
 import java.io.File;
 import java.io.StringReader;
@@ -102,6 +104,10 @@ public class RdfTemplateTest {
         configuration.setSharedVariable("contactUri", new ContactUri(uriNormaliser));
         configuration.setSharedVariable("fundingUri", new FundingUri(uriNormaliser));
         configuration.setSharedVariable("licenceUris", new LicenceUri());
+        configuration.setSharedVariable(
+            "keywordUri",
+            new KeywordUri(uriNormaliser, mock(KeywordVocabularySolrQueryService.class))
+        );
     }
 
     @Nested

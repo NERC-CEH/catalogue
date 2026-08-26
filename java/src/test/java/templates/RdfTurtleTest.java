@@ -49,6 +49,10 @@ import static org.hamcrest.Matchers.matchesRegex;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
+import java.util.Optional;
+import static org.mockito.Mockito.verifyNoInteractions;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.KeywordUri;
+import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabularySolrQueryService;
 
 @Slf4j
 @DisplayName("RDF Turtle templating")
@@ -58,6 +62,7 @@ public class RdfTurtleTest {
     Configuration configuration;
     Model model;
     @Mock JenaLookupService jenaLookupService;
+    @Mock KeywordVocabularySolrQueryService keywordVocabulary;
 
     @SneakyThrows
     @BeforeEach
@@ -70,6 +75,7 @@ public class RdfTurtleTest {
         configuration.setSharedVariable("contactUri", new ContactUri(uriNormaliser));
         configuration.setSharedVariable("fundingUri", new FundingUri(uriNormaliser));
         configuration.setSharedVariable("licenceUris", new LicenceUri());
+        configuration.setSharedVariable("keywordUri", new KeywordUri(uriNormaliser, keywordVocabulary));
 
         model = ModelFactory.createDefaultModel();
     }
@@ -1331,6 +1337,142 @@ public class RdfTurtleTest {
                     createProperty(IS_PART_OF),
                     createResource("https://example.com/id/noAvailabilityRecorded")
                 ));
+            }
+        }
+
+        @Nested
+        @DisplayName("A bare keyword literal is promoted to a concept already in the vocabularies (dri-one #321)")
+        class LiteralSubjectPromotion {
+
+            private static final String SUBJECT = "http://purl.org/dc/terms/subject";
+            private static final String THEME = "http://purl.org/dc/terms/theme";
+            private static final String RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+            private static final String SKOS_CONCEPT = "http://www.w3.org/2004/02/skos/core#Concept";
+            private static final String GEMET_SOIL_MOISTURE = "https://www.eionet.europa.eu/gemet/concept/7842";
+
+            private GeminiDocument dataset(String id) {
+                return (GeminiDocument) new GeminiDocument()
+                    .setType("dataset")
+                    .setId(id)
+                    .setUri("https://example.com/id/" + id)
+                    .setTitle("Literal subject promotion");
+            }
+
+            private uk.ac.ceh.gateway.catalogue.vocabularies.Keyword concept(String label, String url) {
+                return new uk.ac.ceh.gateway.catalogue.vocabularies.Keyword(label, "GEMET", url);
+            }
+
+            @Test
+            @SneakyThrows
+            @DisplayName("a keyword with no URI whose label matches one known concept becomes that concept")
+            void unambiguousLiteralBecomesAConceptIri() {
+                given(keywordVocabulary.resolveExactLabel("Soil moisture"))
+                    .willReturn(Optional.of(concept("Soil moisture", GEMET_SOIL_MOISTURE)));
+
+                val document = dataset("kwpromote");
+                document.setKeywordsOther(List.of(Keyword.builder().value("Soil moisture").build()));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.contains(
+                    createResource("https://example.com/id/kwpromote"),
+                    createProperty(SUBJECT),
+                    createResource(GEMET_SOIL_MOISTURE)
+                ));
+                assertFalse(model.contains(
+                    createResource("https://example.com/id/kwpromote"),
+                    createProperty(SUBJECT),
+                    model.createLiteral("Soil moisture")
+                ));
+            }
+
+            @Test
+            @SneakyThrows
+            @DisplayName("a promoted keyword is typed as a concept, exactly as one carrying its own URI is")
+            void promotedKeywordIsTypedAsAConcept() {
+                given(keywordVocabulary.resolveExactLabel("Soil moisture"))
+                    .willReturn(Optional.of(concept("Soil moisture", GEMET_SOIL_MOISTURE)));
+
+                val document = dataset("kwpromotetype");
+                document.setKeywordsOther(List.of(Keyword.builder().value("Soil moisture").build()));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.contains(
+                    createResource(GEMET_SOIL_MOISTURE),
+                    createProperty(RDF_TYPE),
+                    createResource(SKOS_CONCEPT)
+                ));
+            }
+
+            @Test
+            @SneakyThrows
+            @DisplayName("dcterms:theme is promoted too, and agrees with the dcterms:subject node")
+            void themeIsPromotedAsWell() {
+                given(keywordVocabulary.resolveExactLabel("Soil moisture"))
+                    .willReturn(Optional.of(concept("Soil moisture", GEMET_SOIL_MOISTURE)));
+
+                val document = dataset("kwtheme");
+                document.setKeywordsTheme(List.of(Keyword.builder().value("Soil moisture").build()));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/kwtheme");
+                assertTrue(model.contains(record, createProperty(THEME), createResource(GEMET_SOIL_MOISTURE)));
+                assertTrue(model.contains(record, createProperty(SUBJECT), createResource(GEMET_SOIL_MOISTURE)));
+            }
+
+            @Test
+            @SneakyThrows
+            @DisplayName("a keyword matching no known concept stays a literal")
+            void unmatchedLiteralStaysALiteral() {
+                given(keywordVocabulary.resolveExactLabel("Freeform keyword")).willReturn(Optional.empty());
+
+                val document = dataset("kwnomatch");
+                document.setKeywordsOther(List.of(Keyword.builder().value("Freeform keyword").build()));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.contains(
+                    createResource("https://example.com/id/kwnomatch"),
+                    createProperty(SUBJECT),
+                    model.createLiteral("Freeform keyword")
+                ));
+            }
+
+            @Test
+            @SneakyThrows
+            @DisplayName("an ambiguous keyword stays a literal rather than being guessed at")
+            void ambiguousLiteralStaysALiteral() {
+                // The service reports ambiguity as "no single concept"; see
+                // KeywordVocabularySolrQueryServiceTest for how two candidates produce that.
+                given(keywordVocabulary.resolveExactLabel("Soil moisture")).willReturn(Optional.empty());
+
+                val document = dataset("kwambiguous");
+                document.setKeywordsOther(List.of(Keyword.builder().value("Soil moisture").build()));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.contains(
+                    createResource("https://example.com/id/kwambiguous"),
+                    createProperty(SUBJECT),
+                    model.createLiteral("Soil moisture")
+                ));
+            }
+
+            @Test
+            @SneakyThrows
+            @DisplayName("a keyword that carries its own URI is not looked up at all")
+            void keywordWithItsOwnUriIsNotLookedUp() {
+                val document = dataset("kwownuri");
+                document.setKeywordsOther(List.of(
+                    Keyword.builder().value("Scotland").URI("http://sws.geonames.org/2638360/").build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.containsResource(createResource("https://sws.geonames.org/2638360")));
+                verifyNoInteractions(keywordVocabulary);
             }
         }
 

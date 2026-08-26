@@ -142,18 +142,15 @@
 </#macro>
 
 <#--
-  A keyword is identified by its concept URI where it has a usable one, and by
-  its label otherwise. Shared by keywordList and keywordDetail so the two can
-  never disagree about which node a keyword is.
+  A keyword is identified by its concept URI where it has a usable one, by the
+  concept its text unambiguously names where it does not (KeywordUri, dri-one
+  #321), and by its label otherwise. Shared by keywordList and keywordDetail so
+  the two can never disagree about which node a keyword is.
 -->
-<#function keywordUri kw>
-  <#return uriNormaliser.normalise(kw.uri!"")>
-</#function>
-
 <#macro keywordList keywords>
   <#list keywords as kw>
 
-    <#local kwUri = keywordUri(kw)>
+    <#local kwUri = keywordUri.identify(kw)>
     <#if kwUri?has_content>
       <#assign keyword ="\l" + kwUri + "\g">
     <#else>
@@ -165,16 +162,18 @@
 </#macro>
 
 <#--
-  kw.uri identifies an externally-governed, shared concept (GeoNames, GEMET,
-  CEHMD, NVS, ...); kw.value is only ever this record's depositor-typed label
-  for it. Asserting that label as the concept's skos:prefLabel/rdfs:label would
-  overwrite shared vocabulary data with whatever any one record happened to
-  type, typos included (dri-one #320) — so where the concept has a URI, emit
-  only its type and nothing derived from record text.
+  The node keywordUri picks is an externally-governed, shared concept (GeoNames,
+  GEMET, CEHMD, NVS, ...); kw.value is only ever this record's depositor-typed
+  label for it. Asserting that label as the concept's skos:prefLabel/rdfs:label
+  would overwrite shared vocabulary data with whatever any one record happened
+  to type, typos included (dri-one #320) — so where the keyword resolves to a
+  concept, emit only its type and nothing derived from record text. A keyword
+  promoted from a literal (dri-one #321) is no different: it is the same shared
+  node, reached by its label instead of by a URI on the record.
 -->
 <#macro keywordDetail keywords>
   <#list keywords as kw>
-    <#local kwUri = keywordUri(kw)>
+    <#local kwUri = keywordUri.identify(kw)>
     <#if kwUri?has_content>
       <${kwUri}> a skos:Concept .<#t>
     </#if>
