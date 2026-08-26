@@ -821,6 +821,45 @@ public class RdfTurtleTest {
                 assertTrue(model.contains(grant, createProperty(RDF_TYPE), createResource(FRAPO_GRANT)));
                 assertFalse(model.contains(grant, createProperty(FRAPO_HAS_GRANT_NUMBER), (org.apache.jena.rdf.model.RDFNode) null));
             }
+
+            @Test
+            @DisplayName("a funding entry with nothing to identify it produces no node and no link (dri-one #322)")
+            void emptyFundingEntryIsSuppressed() {
+                val document = dataset("fundempty");
+                document.setFunding(List.of(
+                    Funding.builder().build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/fundempty");
+                assertFalse(model.contains(record, createProperty(WAS_GENERATED_BY), (org.apache.jena.rdf.model.RDFNode) null));
+                assertTrue(model.listResourcesWithProperty(createProperty(RDF_TYPE), createResource(FRAPO_GRANT)).toList().isEmpty());
+                assertTrue(model.listResourcesWithProperty(createProperty(RDF_TYPE), createResource("http://www.w3.org/ns/prov#Activity")).toList().isEmpty());
+            }
+
+            @Test
+            @DisplayName("a stub funding entry alongside a real one only emits the real one (dri-one #322)")
+            void stubEntryDoesNotSuppressARealSibling() {
+                val document = dataset("fundmixed");
+                document.setFunding(List.of(
+                    Funding.builder().build(),
+                    Funding.builder()
+                        .awardNumber("NE/Z000000/1")
+                        .awardTitle("Real grant")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/fundmixed");
+                val generatedBy = model.listObjectsOfProperty(record, createProperty(WAS_GENERATED_BY)).toSet();
+                assertThat(generatedBy.size(), equalTo(1));
+
+                val grant = generatedBy.iterator().next().asResource();
+                assertTrue(model.contains(grant, createProperty(RDF_TYPE), createResource(FRAPO_GRANT)));
+                assertTrue(model.contains(grant, createProperty(FRAPO_HAS_GRANT_NUMBER), model.createLiteral("NE/Z000000/1")));
+            }
         }
 
         @Nested

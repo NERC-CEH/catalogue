@@ -70,7 +70,7 @@
       sdo:variableMeasured <@opList /> ;
     </#if>
 
-    <#if funding?has_content>
+    <#if funding?filter(f -> fundingUri.hasContent(f))?has_content>
     prov:wasGeneratedBy <@fundingList /> ;
     </#if>
 

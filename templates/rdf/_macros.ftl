@@ -101,20 +101,22 @@
   A grant is identified by the most trustworthy identifier it carries: a node
   minted from the funder's own awardNumber, or the awardURI where no award
   number was supplied, and otherwise a node scoped to this record (dri-one
-  #322, #324). Shared by fundingList and fundingDetail so the two can never
-  disagree about which node a funding entry is.
+  #322, #324). A funding entry with none of awardTitle, awardNumber, awardURI
+  or funderIdentifier is suppressed entirely rather than falling back to that
+  record-scoped node: it would carry nothing but rdf:type, an empty node
+  standing for a grant the record says nothing about (dri-one #322). Shared
+  by fundingList and fundingDetail — both filter through fundingUri.hasContent
+  so the two can never disagree about which entries are suppressed, nor which
+  node a funding entry that survives the filter is.
 -->
 <#macro fundingList>
-  <#if funding?has_content>
-    <#list funding as fund>
-      ${fundingUri.identify(fund, id, fund?index)}<#sep>,</#sep><#t>
-    </#list>
-  </#if>
+  <#list funding?filter(f -> fundingUri.hasContent(f)) as fund>
+    ${fundingUri.identify(fund, id, fund?index)}<#sep>,</#sep><#t>
+  </#list>
 </#macro>
 
 <#macro fundingDetail>
-  <#if funding?has_content>
-    <#list funding as fund>
+  <#list funding?filter(f -> fundingUri.hasContent(f)) as fund>
 
       <#local grantIdentifier = fundingUri.identify(fund, id, fund?index)>
 
@@ -136,8 +138,7 @@
             frapo:awards ${grantIdentifier} .
         </#if>
       </#if>
-    </#list>
-  </#if>
+  </#list>
 </#macro>
 
 <#--
