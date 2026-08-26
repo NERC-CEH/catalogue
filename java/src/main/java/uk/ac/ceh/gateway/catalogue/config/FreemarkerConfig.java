@@ -30,6 +30,7 @@ public class FreemarkerConfig {
     private final FundingUri fundingUri;
     private final GeminiExtractor geminiExtractor;
     private final JenaLookupService jenaLookupService;
+    private final LicenceUri licenceUri;
     private final MapServerDetailsService mapServerDetailsService;
     private final MultiDocumentTypeMetadataQualityService metadataQualityService;
     private final PermissionService permissionService;
@@ -52,6 +53,7 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("fundingUri", fundingUri);
         freemarkerConfiguration.setSharedVariable("geminiHelper", geminiExtractor);
         freemarkerConfiguration.setSharedVariable("jena", jenaLookupService);
+        freemarkerConfiguration.setSharedVariable("licenceUris", licenceUri);
         freemarkerConfiguration.setSharedVariable("mapServerDetails", mapServerDetailsService);
         freemarkerConfiguration.setSharedVariable("metadataQuality", metadataQualityService);
         freemarkerConfiguration.setSharedVariable("permission", permissionService);
