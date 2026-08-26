@@ -23,6 +23,7 @@ import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
 public class FreemarkerConfig {
     private final CatalogueService catalogueService;
     private final CodeLookupService codeLookupService;
+    private final ContactUri contactUri;
     private final DownloadOrderDetailsService downloadOrderDetailsService;
     private final freemarker.template.Configuration freemarkerConfiguration;
     private final DownloadUrlProperties downloadUrlProperties;
@@ -45,6 +46,7 @@ public class FreemarkerConfig {
     public void configureFreemarkerSharedVariables() {
         freemarkerConfiguration.setSharedVariable("catalogues", catalogueService);
         freemarkerConfiguration.setSharedVariable("codes", codeLookupService);
+        freemarkerConfiguration.setSharedVariable("contactUri", contactUri);
         freemarkerConfiguration.setSharedVariable("downloadOrderDetails", downloadOrderDetailsService);
         freemarkerConfiguration.setSharedVariable("geminiHelper", geminiExtractor);
         freemarkerConfiguration.setSharedVariable("jena", jenaLookupService);

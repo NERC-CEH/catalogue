@@ -5,29 +5,17 @@
   <#t>"${string?trim?replace("\"","'")?replace("\n"," ")}"
 </#macro>
 
+<#--
+  A contact is identified by the most trustworthy identifier it carries: an ORCID
+  or ISNI for a person, a ROR for an organisation, and otherwise a node minted
+  from the person's own name, so the same researcher is one node across every
+  record they appear on (dri-one #319). Shared by contactList and contactDetail
+  so the two can never disagree about which node a contact is.
+-->
 <#macro contactList contacts prefix="c">
   <#if contacts?has_content>
     <#list contacts as contact>
-
-      <#assign contactIdentifier= ":" + id + "_" + prefix +  contact?index>
-
-      <#if contact.fullName?has_content>
-        <#if contact.isOrcid()>
-          <#local orcid = uriNormaliser.normalise(contact.nameIdentifier)>
-          <#if orcid?has_content>
-            <#assign contactIdentifier= "\l" + orcid + "\g">
-          </#if>
-        </#if>
-      <#else>
-        <#if contact.isRor()>
-          <#local ror = uriNormaliser.normalise(contact.organisationIdentifier)>
-          <#if ror?has_content>
-            <#assign contactIdentifier="\l" + ror + "\g">
-          </#if>
-        </#if>
-      </#if>
-
-      ${contactIdentifier}<#sep>,</#sep><#t>
+      ${contactUri.identify(contact, id, prefix, contact?index)}<#sep>,</#sep><#t>
     </#list>
   </#if>
 </#macro>
@@ -36,26 +24,14 @@
   <#if contacts?has_content>
     <#list contacts as contact>
 
-      <#local contactIdentifier = ":" + id + "_" + prefix + contact?index >
+      <#local contactIdentifier = contactUri.identify(contact, id, prefix, contact?index)>
 
       <#if contact.fullName?has_content>
         <#local contactType="foaf:Person">
         <#local contactName=contact.fullName>
-        <#if contact.isOrcid()>
-          <#local orcid = uriNormaliser.normalise(contact.nameIdentifier)>
-          <#if orcid?has_content>
-            <#local contactIdentifier="\l" + orcid + "\g">
-          </#if>
-        </#if>
       <#elseif contact.organisationName?has_content >
         <#local contactType="foaf:Organization">
         <#local contactName=contact.organisationName>
-        <#if contact.isRor()>
-          <#local ror = uriNormaliser.normalise(contact.organisationIdentifier)>
-          <#if ror?has_content>
-            <#local contactIdentifier="\l" + ror + "\g">
-          </#if>
-        </#if>
       </#if>
 
       ${contactIdentifier} a ${contactType} ;
