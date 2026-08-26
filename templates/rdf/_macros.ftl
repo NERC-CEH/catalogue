@@ -216,6 +216,28 @@
   </#list>
 </#macro>
 
+<#--
+  dri-one #326: sosa:observedProperty duplicates sdo:variableMeasured, but
+  only for observed properties that already carry a uri to a controlled-
+  vocabulary concept - choosing/backfilling that vocabulary for the free-text
+  ones is deferred to a follow-up issue. Unlike opList's sdo:variableMeasured,
+  there is no literal fallback here: an observed property without a usable
+  uri contributes nothing to this list, so it never picks up a bogus concept.
+-->
+<#function observedPropertyUri op>
+  <#return uriNormaliser.normalise(op.uri!"")>
+</#function>
+
+<#macro opSosaList>
+  <#list fileset?filter(fs -> fs.observedProperty?filter(op -> observedPropertyUri(op)?has_content)?has_content) as filesetOp>
+    <#list filesetOp.observedProperty?filter(op -> observedPropertyUri(op)?has_content) as op>
+      <#assign sosaOp = "\l" + observedPropertyUri(op) + "\g">
+      ${sosaOp}<#sep>,</#sep><#t>
+    </#list>
+    <#sep>,</#sep><#t>
+  </#list>
+</#macro>
+
 <#macro incomingCitationList>
   <#if incomingCitations?has_content>
     <#list incomingCitations as citation>
