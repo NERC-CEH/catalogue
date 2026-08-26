@@ -108,20 +108,12 @@ pro:relatesToEntity :f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16
 <https://test-admin-url.ac.uk> a <http://purl.org/spar/fabio/Expression> ;
 dcterms:bibliographicCitation "Test Admin details";
 .
-<https://vocabs.lter-europe.net/EnvThes/30347> a skos:Concept;
-skos:prefLabel "water pH of stagnant surface water"; rdfs:label "water pH of stagnant surface water"
-. <http://onto.nerc.ac.uk/CAST/276> a skos:Concept;
-skos:prefLabel "water level"; rdfs:label "water level"
-. <http://onto.nerc.ac.uk/CAST/187> a skos:Concept;
-skos:prefLabel "water depth measurement"; rdfs:label "water depth measurement"
-. <http://onto.nerc.ac.uk/CAST/287> a skos:Concept;
-skos:prefLabel "water flux"; rdfs:label "water flux"
-. <http://onto.nerc.ac.uk/CEHMD/topic/1> a skos:Concept;
-skos:prefLabel "Agriculture"; rdfs:label "Agriculture"
-. <https://vocabs.lter-europe.net/EnvThes/30349> a skos:Concept;
-skos:prefLabel "water turbidity of stagnant surface water"; rdfs:label "water turbidity of stagnant surface water"
-.
-<https://test-observed-properties.ac.uk> a skos:Concept;skos:prefLabel "Test observed properties title"; rdfs:label "Test observed properties title".
-<https://ror.org/00pggkr55> a foaf:Organization ;
-foaf:name "UK Centre for Ecology & Hydrology" .
+<https://vocabs.lter-europe.net/EnvThes/30347> a skos:Concept .
+<http://onto.nerc.ac.uk/CAST/276> a skos:Concept .
+<http://onto.nerc.ac.uk/CAST/187> a skos:Concept .
+<http://onto.nerc.ac.uk/CAST/287> a skos:Concept .
+<http://onto.nerc.ac.uk/CEHMD/topic/1> a skos:Concept .
+<https://vocabs.lter-europe.net/EnvThes/30349> a skos:Concept .
+<https://test-observed-properties.ac.uk> a skos:Concept .
+<https://ror.org/00pggkr55> a foaf:Organization .
 <https://testaward.ac.uk> a prov:Activity ; rdfs:label "Test supplemental award name" .
