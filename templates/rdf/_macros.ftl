@@ -34,22 +34,31 @@
         <#local contactName=contact.organisationName>
       </#if>
 
-      ${contactIdentifier} a ${contactType} ;
-        foaf:name "${contactName?trim}" ;
-        <#if contact.familyName?has_content >foaf:familyName "${contact.familyName?trim}" ;</#if>
-        <#if contact.givenName?has_content >foaf:givenName "${contact.givenName?trim}" ;</#if>
-        <#if contact.email?has_content>vcard:hasEmail "${contact.email?trim}" ;</#if>
+      <#-- An organisation-only contact identified by a ROR (see ContactUri, dri-one
+        #319) is the ROR node itself, so the record's free-text organisation name
+        must not be asserted as its foaf:name — that would overwrite an
+        externally-governed identifier with whatever a depositor happened to type
+        (dri-one #320). Emit only the type in that case. -->
+      <#if contactType == "foaf:Organization" && contact.isRor()>
+        ${contactIdentifier} a ${contactType} .
+      <#else>
+        ${contactIdentifier} a ${contactType} ;
+          foaf:name "${contactName?trim}" ;
+          <#if contact.familyName?has_content >foaf:familyName "${contact.familyName?trim}" ;</#if>
+          <#if contact.givenName?has_content >foaf:givenName "${contact.givenName?trim}" ;</#if>
+          <#if contact.email?has_content>vcard:hasEmail "${contact.email?trim}" ;</#if>
 
-        <#local memberRor = "">
-        <#if contact.isRor()>
-          <#local memberRor = uriNormaliser.normalise(contact.organisationIdentifier)>
-        </#if>
-        <#if memberRor?has_content>
-          foaf:member <${memberRor}> ;
-        <#elseif contact.organisationName?has_content>
-          foaf:member [foaf:name <@displayLiteral contact.organisationName />] ;
-        </#if>
-      .
+          <#local memberRor = "">
+          <#if contact.isRor()>
+            <#local memberRor = uriNormaliser.normalise(contact.organisationIdentifier)>
+          </#if>
+          <#if memberRor?has_content>
+            foaf:member <${memberRor}> ;
+          <#elseif contact.organisationName?has_content>
+            foaf:member [foaf:name <@displayLiteral contact.organisationName />] ;
+          </#if>
+        .
+      </#if>
 
     </#list>
   </#if>
@@ -122,15 +131,19 @@
   </#list>
 </#macro>
 
+<#--
+  kw.uri identifies an externally-governed, shared concept (GeoNames, GEMET,
+  CEHMD, NVS, ...); kw.value is only ever this record's depositor-typed label
+  for it. Asserting that label as the concept's skos:prefLabel/rdfs:label would
+  overwrite shared vocabulary data with whatever any one record happened to
+  type, typos included (dri-one #320) — so where the concept has a URI, emit
+  only its type and nothing derived from record text.
+-->
 <#macro keywordDetail keywords>
   <#list keywords as kw>
     <#local kwUri = keywordUri(kw)>
     <#if kwUri?has_content>
-      <${kwUri}> a skos:Concept;
-        <#if kw.value?has_content >
-          skos:prefLabel <@displayLiteral kw.value />; rdfs:label <@displayLiteral kw.value />
-        </#if>
-        .<#t>
+      <${kwUri}> a skos:Concept .<#t>
     </#if>
   </#list>
 </#macro>
@@ -152,20 +165,18 @@
   </#list>
 </#macro>
 
+<#--
+  Same reasoning as keywordDetail: an observed property's uri identifies a
+  shared concept, and op.title/op.value are only ever this record's own text
+  for it. See dri-one #320.
+-->
 <#macro opDetail>
   <#list fileset as filesetOp>
     <#if filesetOp.observedProperty?has_content>
       <#list filesetOp.observedProperty as op>
-        <#assign opLabel = "unknown">
-        <#if op.title?has_content>
-          <#assign opLabel = op.title>
-        <#elseif op.value?has_content>
-          <#assign opLabel = op.value>
-        </#if>
-
         <#local opUri = uriNormaliser.normalise(op.uri!"")>
         <#if opUri?has_content>
-          <${opUri}> a skos:Concept;skos:prefLabel <@displayLiteral opLabel />; rdfs:label <@displayLiteral opLabel />.
+          <${opUri}> a skos:Concept .
         </#if>
       </#list>
     </#if>
@@ -223,12 +234,20 @@
   </#list>
 </#macro>
 
+<#--
+  authorPointOfContactWithRORs (GeminiDocument#getAuthorPointOfContactWithRORs)
+  is one contact per distinct ROR seen among this record's authors/contact
+  points, so contact.organisationName here is whichever person's typed
+  affiliation happened to be first — not the organisation's own name. Asserting
+  it as the ROR's foaf:name is the same corruption keywordDetail/opDetail had:
+  a shared, externally-governed node accumulating every string anyone ever
+  typed for it, across every record (dri-one #320). Emit only the type.
+-->
 <#macro organisationRORs>
   <#list authorPointOfContactWithRORs as contact>
     <#local ror = uriNormaliser.normalise(contact.organisationIdentifier!"")>
     <#if ror?has_content>
-  <${ror}> a foaf:Organization ;
-    foaf:name "${contact.organisationName}" .
+  <${ror}> a foaf:Organization .
     </#if>
   </#list>
 </#macro>

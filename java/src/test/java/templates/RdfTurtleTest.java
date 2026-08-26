@@ -22,7 +22,9 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
+import uk.ac.ceh.gateway.catalogue.model.Fileset;
 import uk.ac.ceh.gateway.catalogue.model.Link;
+import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
@@ -956,6 +958,151 @@ public class RdfTurtleTest {
                     createProperty(CONTACT_POINT),
                     createResource("https://example.com/id/orgtest_c0")
                 ));
+            }
+        }
+
+        @Nested
+        @DisplayName("Record text is not written onto shared authority URIs (dri-one #320)")
+        class SharedAuthorityData {
+
+            private static final String SKOS_PREF_LABEL = "http://www.w3.org/2004/02/skos/core#prefLabel";
+            private static final String RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
+            private static final String FOAF_NAME = "http://xmlns.com/foaf/0.1/name";
+            private static final String RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+            private static final String SKOS_CONCEPT = "http://www.w3.org/2004/02/skos/core#Concept";
+            private static final String FOAF_ORGANIZATION = "http://xmlns.com/foaf/0.1/Organization";
+
+            private GeminiDocument dataset(String id) {
+                return (GeminiDocument) new GeminiDocument()
+                    .setType("dataset")
+                    .setId(id)
+                    .setUri("https://example.com/id/" + id)
+                    .setTitle("Shared authority data");
+            }
+
+            @Test
+            @DisplayName("a keyword with a shared concept URI gets no prefLabel or rdfs:label from record text")
+            void keywordConceptGetsNoLabelFromRecordText() {
+                val document = dataset("kwlabeltest");
+                document.setKeywordsOther(List.of(
+                    Keyword.builder().value("Scoland").URI("http://sws.geonames.org/2638360/").build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val concept = createResource("https://sws.geonames.org/2638360");
+                assertTrue(model.contains(concept, createProperty(RDF_TYPE), createResource(SKOS_CONCEPT)));
+                assertFalse(model.contains(concept, createProperty(SKOS_PREF_LABEL), (org.apache.jena.rdf.model.RDFNode) null));
+                assertFalse(model.contains(concept, createProperty(RDFS_LABEL), (org.apache.jena.rdf.model.RDFNode) null));
+            }
+
+            @Test
+            @DisplayName("a keyword with no URI still renders as a plain literal in the subject list")
+            void keywordWithoutUriStillWorks() {
+                val document = dataset("kwnouritest");
+                document.setKeywordsOther(List.of(
+                    Keyword.builder().value("Freeform keyword").build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.contains(
+                    createResource("https://example.com/id/kwnouritest"),
+                    createProperty("http://purl.org/dc/terms/subject"),
+                    model.createLiteral("Freeform keyword")
+                ));
+            }
+
+            @Test
+            @DisplayName("an observed property with a shared concept URI gets no prefLabel or rdfs:label from record text")
+            void observedPropertyConceptGetsNoLabelFromRecordText() {
+                val document = dataset("optest");
+                document.setFileset(List.of(
+                    Fileset.builder()
+                        .filesetName("data.csv")
+                        .observedProperty(List.of(
+                            ObservedProperty.builder()
+                                .title("Wrong title")
+                                .value("Wrong value")
+                                .uri("https://vocab.nerc.ac.uk/collection/P07/current/CFSN0381/")
+                                .build()
+                        ))
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val concept = createResource("https://vocab.nerc.ac.uk/collection/P07/current/CFSN0381/");
+                assertTrue(model.contains(concept, createProperty(RDF_TYPE), createResource(SKOS_CONCEPT)));
+                assertFalse(model.contains(concept, createProperty(SKOS_PREF_LABEL), (org.apache.jena.rdf.model.RDFNode) null));
+                assertFalse(model.contains(concept, createProperty(RDFS_LABEL), (org.apache.jena.rdf.model.RDFNode) null));
+            }
+
+            @Test
+            @DisplayName("an organisation-only contact identified by a ROR gets no foaf:name from record text")
+            void organisationOnlyContactOnRorGetsNoNameFromRecordText() {
+                val document = dataset("orgrortest");
+                document.setContactPoints(List.of(
+                    ResponsibleParty.builder()
+                        .organisationName("University of the West of England")
+                        .organisationIdentifier("https://ror.org/00pggkr55")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val ror = createResource("https://ror.org/00pggkr55");
+                assertTrue(model.contains(ror, createProperty(RDF_TYPE), createResource(FOAF_ORGANIZATION)));
+                assertFalse(model.contains(ror, createProperty(FOAF_NAME), (org.apache.jena.rdf.model.RDFNode) null));
+                assertTrue(model.contains(
+                    createResource("https://example.com/id/orgrortest"),
+                    createProperty("http://www.w3.org/ns/dcat#contactPoint"),
+                    ror
+                ));
+            }
+
+            @Test
+            @DisplayName("organisationRORs never writes a person's typed affiliation onto the shared ROR node")
+            void organisationRorsGetsNoNameFromRecordText() {
+                val document = dataset("rorafftest");
+                document.setAuthors(List.of(
+                    ResponsibleParty.builder()
+                        .familyName("Wood")
+                        .givenName("Claire")
+                        .organisationName("University of the West of England")
+                        .organisationIdentifier("https://ror.org/00pggkr55")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val ror = createResource("https://ror.org/00pggkr55");
+                assertTrue(model.contains(ror, createProperty(RDF_TYPE), createResource(FOAF_ORGANIZATION)));
+                assertFalse(model.contains(ror, createProperty(FOAF_NAME), (org.apache.jena.rdf.model.RDFNode) null));
+            }
+
+            @Test
+            @DisplayName("organisationRORs stays parseable and name-free even with whitespace and an embedded quote")
+            void organisationRorsHandlesMessyTextSafely() {
+                val document = dataset("rormessytest");
+                document.setAuthors(List.of(
+                    ResponsibleParty.builder()
+                        .familyName("Wood")
+                        .givenName("Claire")
+                        .organisationName("  \"UK Centre for Ecology & Hydrology\"  ")
+                        .organisationIdentifier("https://ror.org/00pggkr55")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val ror = createResource("https://ror.org/00pggkr55");
+                assertTrue(model.contains(ror, createProperty(RDF_TYPE), createResource(FOAF_ORGANIZATION)));
+                assertFalse(model.contains(ror, createProperty(FOAF_NAME), (org.apache.jena.rdf.model.RDFNode) null));
+                assertThat(
+                    model.listStatements(ror, null, (org.apache.jena.rdf.model.RDFNode) null).toList().size(),
+                    equalTo(1)
+                );
             }
         }
 
