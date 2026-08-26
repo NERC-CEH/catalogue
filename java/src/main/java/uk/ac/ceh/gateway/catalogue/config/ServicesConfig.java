@@ -168,7 +168,8 @@ public class ServicesConfig {
         DocumentTypeLookupService documentTypeLookupService,
         DocumentWritingService documentWritingService,
         ResourceIdentifierLookupService resourceIdentifierLookupService,
-        GitRepoWrapper gitRepoWrapper
+        GitRepoWrapper gitRepoWrapper,
+        JsonMapper objectMapper
     ) {
         return new GitDocumentRepository(
             documentTypeLookupService,
@@ -177,7 +178,8 @@ public class ServicesConfig {
             documentWritingService,
             bundledReaderService,
             resourceIdentifierLookupService,
-            gitRepoWrapper
+            gitRepoWrapper,
+            objectMapper
         );
     }
 

@@ -1074,6 +1074,102 @@ public class RdfTurtleTest {
         }
 
         @Nested
+        @DisplayName("contributorRole/role reach RDF via pro:RoleInTime (dri-one #323)")
+        class ContributorRoleModel {
+
+            private static final String HOLDS_ROLE_IN_TIME = "http://purl.org/spar/pro/holdsRoleInTime";
+            private static final String WITH_ROLE = "http://purl.org/spar/pro/withRole";
+            private static final String RELATES_TO_ENTITY = "http://purl.org/spar/pro/relatesToEntity";
+            private static final String ROLE_IN_TIME_TYPE = "http://purl.org/spar/pro/RoleInTime";
+            private static final String CONTACT_POINT = "http://www.w3.org/ns/dcat#contactPoint";
+            private static final String CREATOR = "http://purl.org/dc/terms/creator";
+
+            private GeminiDocument dataset(String id) {
+                return (GeminiDocument) new GeminiDocument()
+                    .setType("dataset")
+                    .setId(id)
+                    .setUri("https://example.com/id/" + id)
+                    .setTitle("Contributor role");
+            }
+
+            @Test
+            @DisplayName("a contributorRole of dataCurator produces a pro:RoleInTime node with scoro:data-curator")
+            void contributorRoleDataCurator() {
+                val document = dataset("roletest");
+                document.setContactPoints(List.of(
+                    ResponsibleParty.builder()
+                        .familyName("Wood")
+                        .givenName("Claire")
+                        .contributorRole("dataCurator")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/roletest");
+                val person = model.listObjectsOfProperty(record, createProperty(CONTACT_POINT)).next().asResource();
+
+                assertTrue(model.contains(person, createProperty(HOLDS_ROLE_IN_TIME)));
+                val roleInTime = model.listObjectsOfProperty(person, createProperty(HOLDS_ROLE_IN_TIME))
+                    .next().asResource();
+                assertTrue(model.contains(
+                    roleInTime,
+                    createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                    createResource(ROLE_IN_TIME_TYPE)
+                ));
+                assertTrue(model.contains(
+                    roleInTime,
+                    createProperty(WITH_ROLE),
+                    createResource("http://purl.org/spar/scoro/data-curator")
+                ));
+                assertTrue(model.contains(roleInTime, createProperty(RELATES_TO_ENTITY), record));
+            }
+
+            @Test
+            @DisplayName("a role of author produces a pro:RoleInTime node with pro:author")
+            void roleAuthor() {
+                val document = dataset("roleauthor");
+                document.setAuthors(List.of(
+                    ResponsibleParty.builder()
+                        .familyName("Smith")
+                        .givenName("John")
+                        .role("author")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/roleauthor");
+                val person = model.listObjectsOfProperty(record, createProperty(CREATOR)).next().asResource();
+
+                val roleInTime = model.listObjectsOfProperty(person, createProperty(HOLDS_ROLE_IN_TIME))
+                    .next().asResource();
+                assertTrue(model.contains(
+                    roleInTime,
+                    createProperty(WITH_ROLE),
+                    createResource("http://purl.org/spar/pro/author")
+                ));
+                assertTrue(model.contains(roleInTime, createProperty(RELATES_TO_ENTITY), record));
+            }
+
+            @Test
+            @DisplayName("no pro:holdsRoleInTime triple when contributorRole and role are both blank")
+            void noRoleTripleWhenBlank() {
+                val document = dataset("roleblank");
+                document.setContactPoints(List.of(
+                    ResponsibleParty.builder()
+                        .familyName("Wood")
+                        .givenName("Claire")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                assertFalse(model.contains(null, createProperty(HOLDS_ROLE_IN_TIME)));
+            }
+        }
+
+        @Nested
         @DisplayName("A bare keyword literal is promoted to a concept already in the vocabularies (dri-one #321)")
         class LiteralSubjectPromotion {
 
