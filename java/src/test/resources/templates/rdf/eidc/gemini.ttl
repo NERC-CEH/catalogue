@@ -17,6 +17,8 @@ PREFIX ef: <http://www.w3.org/2015/03/inspire/ef/>
 PREFIX doo: <https://digital.ceh.ac.uk/ontology/doo/>
 PREFIX adms: <http://www.w3.org/ns/adms#>
 PREFIX frapo: <http://purl.org/cerif/frapo/>
+PREFIX pro: <http://purl.org/spar/pro/>
+PREFIX scoro: <http://purl.org/spar/scoro/>
 PREFIX : <http://localhost:8080/id/>
 :f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16
 dcterms:title "Test title" ;
@@ -100,6 +102,11 @@ foaf:givenName "Author" ;
 vcard:hasEmail "enquiries@ceh.ac.uk" ;
 foaf:member <https://ror.org/00pggkr55> ;
 .
+<https://orcid.org/0000-0001-2345-6789> pro:holdsRoleInTime [
+a pro:RoleInTime ;
+pro:withRole scoro:data-curator ;
+pro:relatesToEntity :f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16
+] .
 <https://test-admin-url.ac.uk> a <http://purl.org/spar/fabio/Expression> ;
 dcterms:bibliographicCitation "Test Admin details";
 .

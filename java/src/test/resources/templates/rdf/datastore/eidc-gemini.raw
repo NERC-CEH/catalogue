@@ -280,6 +280,7 @@
       "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
       "organisationIdentifier": "https://ror.org/00pggkr55",
+      "contributorRole": "dataCurator",
       "email": "enquiries@ceh.ac.uk",
       "nameIdentifier": "https://orcid.org/0000-0001-2345-6789",
       "address": {
