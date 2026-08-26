@@ -718,8 +718,61 @@ public class RdfTurtleTest {
 
                 val funder = createResource("https://ror.org/00cwqg982");
                 assertTrue(model.contains(funder, createProperty(RDF_TYPE), createResource(FRAPO_FUNDING_AGENCY)));
-                assertTrue(model.contains(funder, createProperty(FOAF_NAME), model.createLiteral("UK Research and Innovation")));
                 assertTrue(model.contains(funder, createProperty(FRAPO_AWARDS), grant));
+            }
+
+            @Test
+            @DisplayName("a funder identifier gets no foaf:name from the record's own funderName")
+            void funderIdentifierGetsNoNameFromRecordText() {
+                val document = dataset("fundernoname");
+                document.setFunding(List.of(
+                    Funding.builder()
+                        .funderName("BBSRC")
+                        .funderIdentifier("https://ror.org/00cwqg982")
+                        .awardNumber("BB/X000001/1")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val funder = createResource("https://ror.org/00cwqg982");
+                assertTrue(model.contains(funder, createProperty(RDF_TYPE), createResource(FRAPO_FUNDING_AGENCY)));
+                assertFalse(model.contains(funder, createProperty(FOAF_NAME), (org.apache.jena.rdf.model.RDFNode) null));
+            }
+
+            @Test
+            @DisplayName("two records naming one funder differently leave it with a single description")
+            void oneFunderIsNotGivenCompetingNames() {
+                // The defect this guards: funderIdentifier is an externally-governed shared node,
+                // so "Biotechnology and Biological Sciences Research Council" from one record and
+                // "BBSRC" from another would both persist on it - the corruption dri-one #320
+                // removed from contactDetail and organisationRORs.
+                val first = dataset("funderone");
+                first.setFunding(List.of(Funding.builder()
+                    .funderName("Biotechnology and Biological Sciences Research Council")
+                    .funderIdentifier("https://ror.org/00cwqg982")
+                    .awardNumber("BB/X000001/1")
+                    .build()));
+                template("rdf/ttl.ftl", first);
+                val afterFirst = model.listStatements(
+                    createResource("https://ror.org/00cwqg982"), null, (org.apache.jena.rdf.model.RDFNode) null
+                ).toList().size();
+
+                val second = dataset("fundertwo");
+                second.setFunding(List.of(Funding.builder()
+                    .funderName("BBSRC")
+                    .funderIdentifier("https://ror.org/00cwqg982")
+                    .awardNumber("BB/X000002/1")
+                    .build()));
+                template("rdf/ttl.ftl", second);
+
+                // Only the type plus one frapo:awards per grant - never a competing name.
+                assertFalse(model.contains(
+                    createResource("https://ror.org/00cwqg982"),
+                    createProperty(FOAF_NAME),
+                    (org.apache.jena.rdf.model.RDFNode) null
+                ));
+                assertThat(afterFirst, equalTo(2));
             }
 
             @Test
@@ -752,7 +805,7 @@ public class RdfTurtleTest {
             }
 
             @Test
-            @DisplayName("a funder identifier that is not a ROR still gets frapo:awards and foaf:name")
+            @DisplayName("a funder identifier that is not a ROR is still emitted, also without a name")
             void nonRorFunderIsStillEmitted() {
                 val document = dataset("nonror");
                 document.setFunding(List.of(
@@ -767,7 +820,9 @@ public class RdfTurtleTest {
 
                 val funder = createResource("https://example.org/funder/123");
                 assertTrue(model.contains(funder, createProperty(RDF_TYPE), createResource(FRAPO_FUNDING_AGENCY)));
-                assertTrue(model.contains(funder, createProperty(FOAF_NAME), model.createLiteral("Some Other Funder")));
+                // No foaf:name here either: a non-ROR funderIdentifier is still an externally-owned
+                // identifier, so the same rule applies as for a ROR.
+                assertFalse(model.contains(funder, createProperty(FOAF_NAME), (org.apache.jena.rdf.model.RDFNode) null));
                 assertTrue(model.contains(
                     funder,
                     createProperty(FRAPO_AWARDS),
@@ -1236,6 +1291,7 @@ public class RdfTurtleTest {
             private static final String IS_PART_OF = "http://purl.org/dc/terms/isPartOf";
             private static final String REPLACES = "http://purl.org/dc/terms/replaces";
             private static final String RELATION = "http://purl.org/dc/terms/relation";
+            private static final String UTILISES = "https://digital.ceh.ac.uk/ontology/doo/utilises";
 
             private GeminiDocument dataset(String id) {
                 return (GeminiDocument) new GeminiDocument()
@@ -1243,6 +1299,64 @@ public class RdfTurtleTest {
                     .setId(id)
                     .setUri("https://example.com/id/" + id)
                     .setTitle("Dangling references");
+            }
+
+            @Test
+            @DisplayName("doo:utilises: a withdrawn target is not linked, a published one still is")
+            void utilisesFiltersWithdrawnTargets() {
+                // doo:utilises (dri-one #325) was added to _body.ftl after the availability filter
+                // (dri-one #327) and did not pick it up, so it was the one relationship predicate
+                // that could still point at a withdrawn record.
+                val document = dataset("dangleutilises");
+                given(jenaLookupService.relationships(document.getUri(), IS_PART_OF)).willReturn(List.of());
+                given(jenaLookupService.relationships(document.getUri(), REPLACES)).willReturn(List.of());
+                given(jenaLookupService.relationships(document.getUri(), RELATION)).willReturn(List.of());
+                given(jenaLookupService.relationships(document.getUri(), UTILISES)).willReturn(List.of(
+                    Link.builder().href("https://example.com/id/facilityLive").availability("Available").build(),
+                    Link.builder().href("https://example.com/id/facilityGone").availability("Deleted").build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.contains(
+                    createResource(document.getUri()),
+                    createProperty(UTILISES),
+                    createResource("https://example.com/id/facilityLive")
+                ));
+                assertFalse(model.contains(
+                    createResource(document.getUri()),
+                    createProperty(UTILISES),
+                    createResource("https://example.com/id/facilityGone")
+                ));
+            }
+
+            @Test
+            @DisplayName("doo:utilises: a facility with an operational status, not an availability, is still linked")
+            void utilisesKeepsFacilityTargets() {
+                // A monitoring facility's ?availability binds from doo:operationalStatus
+                // ("Operational"/"Closed"), never "Deleted", so the filter must be a no-op for the
+                // usual case rather than dropping every facility link.
+                val document = dataset("dangleutilisesfacility");
+                given(jenaLookupService.relationships(document.getUri(), IS_PART_OF)).willReturn(List.of());
+                given(jenaLookupService.relationships(document.getUri(), REPLACES)).willReturn(List.of());
+                given(jenaLookupService.relationships(document.getUri(), RELATION)).willReturn(List.of());
+                given(jenaLookupService.relationships(document.getUri(), UTILISES)).willReturn(List.of(
+                    Link.builder().href("https://example.com/id/cosmosMorley").availability("Operational").build(),
+                    Link.builder().href("https://example.com/id/cosmosClosed").availability("Closed").build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.contains(
+                    createResource(document.getUri()),
+                    createProperty(UTILISES),
+                    createResource("https://example.com/id/cosmosMorley")
+                ));
+                assertTrue(model.contains(
+                    createResource(document.getUri()),
+                    createProperty(UTILISES),
+                    createResource("https://example.com/id/cosmosClosed")
+                ));
             }
 
             @Test
@@ -1584,6 +1698,56 @@ public class RdfTurtleTest {
                 ).next();
                 assertThat(licenceA, equalTo(licenceB));
                 assertThat(licenceA.toString(), equalTo("https://eidc.ac.uk/licences/ecn/plain"));
+            }
+
+            @Test
+            @DisplayName("an aggregate emits no minted licence node, having no rights block to reference it")
+            void aggregateGetsNoOrphanLicenceNode() {
+                // rightsDetail was called unconditionally, but turtle/_aggregation.ftl includes no
+                // rights block - so a collection with a free-text licence gained a described
+                // :licence_<hash> node that nothing pointed at.
+                val uri = "https://example.com/id/orphanlicence";
+                val document = new GeminiDocument()
+                    .setType("collection")
+                    .setUseConstraints(List.of(
+                        ResourceConstraint.builder().code("license").value("Bespoke click-through licence text").build()
+                    ))
+                    .setUri(uri)
+                    .setId("orphanlicence")
+                    .setTitle("Aggregate with a licence");
+
+                template("rdf/ttl.ftl", document);
+
+                assertFalse(
+                    model.contains(
+                        null,
+                        createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                        createResource("http://purl.org/dc/terms/LicenseDocument")
+                    ),
+                    "a collection has no rights block, so it must not describe a licence node"
+                );
+            }
+
+            @Test
+            @DisplayName("a dataset still emits its minted licence node (regression on the guard above)")
+            void datasetStillGetsItsLicenceNode() {
+                val uri = "https://example.com/id/keptlicence";
+                val document = new GeminiDocument()
+                    .setType("dataset")
+                    .setUseConstraints(List.of(
+                        ResourceConstraint.builder().code("license").value("Bespoke click-through licence text").build()
+                    ))
+                    .setUri(uri)
+                    .setId("keptlicence")
+                    .setTitle("Dataset with a licence");
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.contains(
+                    null,
+                    createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                    createResource("http://purl.org/dc/terms/LicenseDocument")
+                ));
             }
 
             @Test

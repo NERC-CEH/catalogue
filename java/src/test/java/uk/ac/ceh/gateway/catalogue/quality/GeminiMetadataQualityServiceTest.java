@@ -696,7 +696,7 @@ public class GeminiMetadataQualityServiceTest {
         }
 
         @Test
-        @DisplayName("a URI that cannot be published as linked data is an error")
+        @DisplayName("a URI that cannot be parsed at all is an error")
         void malformedUriIsAnError() {
             val actual = check("""
                 {"keywordsOther": [
@@ -705,7 +705,7 @@ public class GeminiMetadataQualityServiceTest {
                 """);
 
             assertThat(actual, contains(new MetadataCheck(
-                "Keyword URI is not a usable URI and cannot be published as linked data: "
+                "Keyword URI is not a usable URI: "
                     + "hhttp://vocab.nerc.ac.uk/collection/N07/current/RAUT/",
                 ERROR
             )));

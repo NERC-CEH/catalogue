@@ -125,5 +125,4 @@ frapo:hasGrantNumber "Test supplemental award reference" ;
 owl:sameAs <https://testaward.ac.uk> ;
 frapo:funds :f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16 .
 <https://ror.org/00cwqg982> a frapo:FundingAgency ;
-foaf:name "Biotechnology and Biological Sciences Research Council" ;
 frapo:awards :grant_d8eb992155e350a7 .

@@ -61,7 +61,11 @@ public class UriChecks {
         val canonical = uriNormaliser.normalise(given);
         if (canonical.isEmpty()) {
             return Optional.of(new MetadataCheck(
-                format("%s is not a usable URI and cannot be published as linked data: %s", description, given),
+                // Deliberately does not claim the value "cannot be published as linked data":
+                // not every field checked here reaches the RDF templates (see the field maps in
+                // GeminiMetadataQualityService and MonitoringQualityService), so that wording was
+                // false for most of them. A URI this malformed is worth reporting either way.
+                format("%s is not a usable URI: %s", description, given),
                 ERROR
             ));
         }
