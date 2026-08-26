@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Setter;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
@@ -44,18 +45,25 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
     @JsonIgnore
     private String relCombinedGeometry;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relUses;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relSupersedes;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relSupersededBy;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relActivities;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relChildProgramme;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relParentProgramme;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relRelated;
 
     @Override
@@ -87,21 +95,12 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
         return relCombinedGeometry == null ? "" : relCombinedGeometry;
     }
 
-    @JsonIgnore
-    public void setRelCombinedGeometry(String relCombinedGeometry) {
-        this.relCombinedGeometry = relCombinedGeometry;
-    }
-
     @JsonProperty("relUses")
     public List<Link> getRelUses() {
         return Optional.ofNullable(relUses)
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelUses(List<Link> relUses) {
-        this.relUses = relUses;
-    }
 
     @JsonProperty("relSupersedes")
     public List<Link> getRelSupersedes() {
@@ -109,10 +108,6 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelSupersedes(List<Link> relSupersedes) {
-        this.relSupersedes = relSupersedes;
-    }
 
     @JsonProperty("relSupersededBy")
     public List<Link> getRelSupersededBy() {
@@ -120,20 +115,11 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelSupersededBy(List<Link> relSupersededBy) {
-        this.relSupersededBy = relSupersededBy;
-    }
 
     @JsonProperty("relActivities")
     public List<Link> getRelActivities() {
         return Optional.ofNullable(relActivities)
             .orElseGet(Collections::emptyList);
-    }
-
-    @JsonIgnore
-    public void setRelActivities(List<Link> relActivities) {
-        this.relActivities = relActivities;
     }
 
     @JsonProperty("relChildProgramme")
@@ -142,20 +128,10 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelChildProgramme(List<Link> relChildProgramme) {
-        this.relChildProgramme = relChildProgramme;
-    }
-
     @JsonProperty("relParentProgramme")
     public List<Link> getRelParentProgramme() {
         return Optional.ofNullable(relParentProgramme)
             .orElseGet(Collections::emptyList);
-    }
-
-    @JsonIgnore
-    public void setRelParentProgramme(List<Link> relParentProgramme) {
-        this.relParentProgramme = relParentProgramme;
     }
 
     @JsonProperty("relRelated")
@@ -164,8 +140,4 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelRelated(List<Link> relRelated) {
-        this.relRelated = relRelated;
-    }
 }
