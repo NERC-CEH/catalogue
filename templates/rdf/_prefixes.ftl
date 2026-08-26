@@ -16,3 +16,4 @@ PREFIX sdo: <https://schema.org/>
 PREFIX ef: <http://www.w3.org/2015/03/inspire/ef/>
 PREFIX doo: <https://digital.ceh.ac.uk/ontology/doo/>
 PREFIX adms: <http://www.w3.org/ns/adms#>
+PREFIX frapo: <http://purl.org/cerif/frapo/>
