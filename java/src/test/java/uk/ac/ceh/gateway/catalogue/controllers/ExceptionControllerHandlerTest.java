@@ -27,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataConflictException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataPreconditionRequiredException;
+import uk.ac.ceh.gateway.catalogue.model.MojibakeTextException;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import org.apache.solr.client.solrj.RemoteSolrException;
 import uk.ac.ceh.gateway.catalogue.search.InvalidFacetException;
@@ -201,6 +202,22 @@ class ExceptionControllerHandlerTest {
 
         //When
         ResponseEntity<Object> response = controller.handleInvalidSortFieldException(ex);
+
+        //Then
+        assertThat(response.getStatusCode(), equalTo(BAD_REQUEST));
+        assert response.getBody() != null;
+        assertThat(((ErrorResponse) response.getBody()).getMessage(), equalTo(mess));
+    }
+
+    @Test
+    @DisplayName("A save containing double-encoded (mojibake) text becomes a 400 (dri-one #328)")
+    public void checkThatMojibakeTextExceptionReturnsBadRequest() {
+        //Given
+        String mess = "Document tulips contains text matching the double-encoding (mojibake) signature";
+        MojibakeTextException ex = new MojibakeTextException(mess);
+
+        //When
+        ResponseEntity<Object> response = controller.handleMojibakeText(ex);
 
         //Then
         assertThat(response.getStatusCode(), equalTo(BAD_REQUEST));
