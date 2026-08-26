@@ -26,6 +26,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.LicenceUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
 
@@ -99,6 +100,7 @@ public class RdfTemplateTest {
         val uriNormaliser = new UriNormaliser();
         configuration.setSharedVariable("uriNormaliser", uriNormaliser);
         configuration.setSharedVariable("contactUri", new ContactUri(uriNormaliser));
+        configuration.setSharedVariable("fundingUri", new FundingUri(uriNormaliser));
         configuration.setSharedVariable("licenceUris", new LicenceUri());
     }
 
