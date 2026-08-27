@@ -247,6 +247,10 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
                 new TypeRef<List<Map<String, Double>>>() {}
         );
 
+        if (boundingBoxes.size() > 1) {
+            toReturn.add(new MetadataCheck("Only one bounding box is permitted", ERROR));
+        }
+
         boundingBoxes.forEach(boundingBox -> {
             boundingBox.forEach((_, value) -> {
                 if (BigDecimal.valueOf(value).scale() > 3) {
