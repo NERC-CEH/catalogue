@@ -18,6 +18,16 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 public class DataciteRequestService {
+
+    // Map contributor roles to values used by DataCite
+    private static final Map<String, String> CONTRIBUTOR_ROLE_MAP = Map.of(
+        "data-curator", "DataCurator",
+        "researcher", "Researcher",
+        "project-leader", "ProjectLeader",
+        "project-manager", "ProjectManager",
+        "workpackage-leader", "WorkPackageLeader"
+    );
+
     public List<DataciteRequest.Attributes.FundingReference> fundingDetails(List<Funding> funders) {
         return funders.stream()
             .map(funder -> {
@@ -288,8 +298,17 @@ public class DataciteRequestService {
                     contacts.add(dataciteContactHelper(custodian, "contributor", "HostingInstitution"));
                 }
                 for (ResponsibleParty contributor : document.getContributors()) {
-                    contacts.add(dataciteContactHelper(contributor, "contributor", contributor.getContributorRole()));
-                }
+                    String role = CONTRIBUTOR_ROLE_MAP.getOrDefault(
+                        contributor.getContributorRole(),
+                        "Other"
+                    );
+
+                    contacts.add(dataciteContactHelper(
+                        contributor,
+                        "contributor",
+                        role
+                    ));
+                }                
             }
         }
         return contacts;

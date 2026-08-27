@@ -34,6 +34,8 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
     private List<Link> relRequires;
     private List<Link> relPartOf;
     private List<Link> relHasPart;
+    private List<Link> relHasOutput;
+    private List<Link> relIsOutputOf;
     private List<Link> relAll;
     private List<Link> relReplaces;
     private List<Link> relSource;
@@ -94,6 +96,15 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
 
     public List<Link> getRelHasPart() {
         return Optional.ofNullable(relHasPart)
+            .orElseGet(Collections::emptyList);
+    }
+
+    public List<Link> getRelHasOutput() {
+        return Optional.ofNullable(relHasOutput)
+            .orElseGet(Collections::emptyList);
+    }
+    public List<Link> getRelIsOutputOf() {
+        return Optional.ofNullable(relIsOutputOf)
             .orElseGet(Collections::emptyList);
     }
 

@@ -152,6 +152,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         this.setRelHasPart(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/isPartOf"));
         this.setRelReplaces(jenaService.replaces(uri));
         this.setRelSource(jenaService.relationships(uri, "http://purl.org/dc/terms/source"));
+        this.setRelIsOutputOf(jenaService.inverseRelationships(uri, "http://purl.org/cerif/frapo/hasOutput"));
     }
 
     @Data

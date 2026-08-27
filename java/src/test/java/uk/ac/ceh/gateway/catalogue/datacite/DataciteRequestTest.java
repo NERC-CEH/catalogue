@@ -223,13 +223,13 @@ public class DataciteRequestTest {
             .displayName("Jean-Luc Picard")
             .honorificPrefix(null)
             .familyName(null)
-            .contributorRole("dataCurator")
+            .contributorRole("data-curator")
             .build();
         when(docMock.getContributors()).thenReturn(List.of(contributor));
 
         List<DataciteContact> contributors = attributes.dataciteContact(docMock, "contributor");
         assertEquals(1, contributors.size());
-        assertEquals("dataCurator", contributors.getFirst().contributorType());
+        assertEquals("DataCurator", contributors.getFirst().contributorType());
     }
 
     @Test

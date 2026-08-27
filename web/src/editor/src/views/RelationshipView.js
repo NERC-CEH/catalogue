@@ -69,6 +69,11 @@ export default ObjectInputView.extend({
           'http://purl.org/dc/terms/replaces': () =>
             `resourceType%3A%22${encodeURIComponent(currentResourceType)}%22%20AND%20${encodedTerm}`,
 
+          // resourceType is indexed as the codelist display label, so a label
+          // containing a space has to be quoted or the Solr query breaks.
+          'http://purl.org/cerif/frapo/hasOutput': () =>
+            `${encodedTerm}&facet=recordType%7C(Model%20OR%20Dataset%20OR%20Map%20(web%20service)%20OR%20Software)`,
+
           'http://purl.org/dc/terms/isPartOf': () => {
             if (currentResourceType === 'dataset') {
               return `resourceType%3AAggregation%20AND%20${encodedTerm}`
@@ -180,12 +185,20 @@ export default ObjectInputView.extend({
     this.options.forEach(option => {
       option.selected =
         (option.value === this.model.attributes.relation ||
-         option.value === '')
+          option.value === '')
           ? 'selected'
           : ''
 
-      this.$('.relationshipList')
-        .append(this.optionTemplate(option))
+      const label = option.description
+        ? `${option.label}<span>${option.description}</span>`
+        : option.label
+
+      this.$('.relationshipList').append(
+        this.optionTemplate({
+          ...option,
+          label
+        })
+      )
     })
 
     return this

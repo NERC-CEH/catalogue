@@ -6,7 +6,7 @@ export default _.template(`
         <label for="coupledResource<%= data.index %>OperationName">Operation Name</label>
     </div>
     <div class="col-lg-4">
-        <select data-name='operationName' id="coupledResource<%= data.index %>OperationName" <%= data.disabled%>>
+        <select data-name='operationName' class="form-select" id="coupledResource<%= data.index %>OperationName" <%= data.disabled%>>
             <option value="">- Select Operation -</option>
             <option>COM</option>
             <option>Corba</option>

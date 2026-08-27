@@ -1,7 +1,7 @@
 import _ from 'underscore'
 
 export default _.template(`
-<select data-name="value" >
+<select data-name="value" class="form-select" >
     <option value="" selected >- Add Topic Category -</option>
     <option value="biota">Biota&nbsp;&nbsp;&nbsp;&nbsp;(Flora and/or fauna in natural environment)</option>
     <option value="boundaries">Boundaries&nbsp;&nbsp;&nbsp;&nbsp;(Legal land descriptions)</option>

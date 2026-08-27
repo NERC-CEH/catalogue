@@ -23,6 +23,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
+import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
@@ -247,6 +248,7 @@ public class DocumentController extends AbstractDocumentController {
             ifMatch
         );
     }
+
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
         method = RequestMethod.POST,
@@ -282,6 +284,40 @@ public class DocumentController extends AbstractDocumentController {
         );
     }
 
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @RequestMapping (value = "documents",
+        method = RequestMethod.POST,
+        consumes = RESEARCHACTIVITY_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newResearchActivity(
+        @ActiveUser CatalogueUser user,
+        @RequestBody ResearchActivity document,
+        @RequestParam("catalogue") String catalogue
+    ) throws DocumentRepositoryException, IOException {
+        return saveNewMetadataDocument(
+            user,
+            document,
+            catalogue,
+            "new Research Activity"
+        );
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping(value = "documents/{file}",
+        method = RequestMethod.PUT,
+        consumes = RESEARCHACTIVITY_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateResearchActivity(
+        @ActiveUser CatalogueUser user,
+        @PathVariable String file,
+        @RequestBody ResearchActivity document,
+        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
+    ) throws DocumentRepositoryException, IOException {
+        return saveMetadataDocument(
+            user,
+            file,
+            document,
+            ifMatch
+        );
+    }
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
     method = RequestMethod.POST,
@@ -429,6 +465,7 @@ public class DocumentController extends AbstractDocumentController {
             case MonitoringFacility doc -> doc.populateFromJenaService(jenaService);
             case MonitoringNetwork doc -> doc.populateFromJenaService(jenaService);
             case MonitoringProgramme doc -> doc.populateFromJenaService(jenaService);
+            case ResearchActivity doc -> doc.populateFromJenaService(jenaService);
             default -> {}
         }
         return document;

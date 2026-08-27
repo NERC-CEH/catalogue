@@ -32,10 +32,12 @@ import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.DownloadUrlProperties;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
+import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
+import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
@@ -68,6 +70,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.Is.is;
@@ -276,6 +280,8 @@ class DocumentControllerTest extends AbstractMvcTest {
             Arguments.of(new DataType(), APPLICATION_JSON, JSON, null),
             Arguments.of(new InfrastructureRecord(), TEXT_HTML, HTML, null),
             Arguments.of(new InfrastructureRecord(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new ResearchActivity(), TEXT_HTML, HTML, null),
+            Arguments.of(new ResearchActivity(), APPLICATION_JSON, JSON, null),
             Arguments.of(gemini, TEXT_HTML, HTML, null),
             Arguments.of(gemini, APPLICATION_JSON, JSON, "gemini.json"),
             Arguments.of(gemini, GEMINI_XML, GEMINI_XML_SHORT,  "gemini.xml"),
@@ -296,6 +302,89 @@ class DocumentControllerTest extends AbstractMvcTest {
             Arguments.of(new SampleArchive(), TEXT_HTML, HTML, null),
             Arguments.of(new SampleArchive(), APPLICATION_JSON, JSON, null)
         );
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("Research activity HTML renders funding and outputs")
+    void researchActivityHtmlRendersFundingAndOutputs() {
+        // The awardURI property is easy to mistype as awardUri, which FreeMarker
+        // treats as missing rather than an error, so the award silently vanishes.
+        //given
+        val document = new ResearchActivity();
+        document.setFunding(List.of(
+            Funding.builder()
+                .funderName("Natural Environment Research Council")
+                .funderIdentifier("https://ror.org/02b5d8509")
+                .awardTitle("DURESS")
+                .awardNumber("NE/J015644/1")
+                .awardURI("https://gtr.ukri.org/projects?ref=NE/J015644/1")
+                .build()
+        ));
+        // relHasOutput is populated from Jena by the controller, so stubbing the
+        // lookup exercises the real path rather than a pre-set field.
+        given(jenaService.relationships("https://example.com/" + id, "http://purl.org/cerif/frapo/hasOutput"))
+            .willReturn(List.of(
+                Link.builder()
+                    .href("https://example.com/id/output-1")
+                    .title("An output dataset")
+                    .associationType("dataset")
+                    .publicationStatus("published")
+                    .availability("Unknown")
+                    .build()
+            ));
+
+        givenUserIsPermittedToView();
+        givenMetadataDocument(document);
+        givenCatalogue();
+        givenDefaultCatalogue();
+        givenFreemarkerConfiguration();
+        givenProfileNotActive();
+        givenCodeLookup();
+        givenMetadataQuality();
+
+        //when
+        val result = mvc.perform(get("/documents/{id}", id).accept(TEXT_HTML))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        //then
+        assertThat(result, containsString("Natural Environment Research Council"));
+        assertThat(result, containsString("DURESS (NE/J015644/1)"));
+        assertThat(result, containsString("https://gtr.ukri.org/projects?ref=NE/J015644/1"));
+        assertThat(result, containsString("An output dataset"));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("Research activity HTML omits empty funding and contributor headings")
+    void researchActivityHtmlOmitsEmptySections() {
+        //given
+        val document = new ResearchActivity();
+        document.setFunding(Collections.emptyList());
+        document.setContributors(Collections.emptyList());
+
+        givenUserIsPermittedToView();
+        givenMetadataDocument(document);
+        givenCatalogue();
+        givenDefaultCatalogue();
+        givenFreemarkerConfiguration();
+        givenProfileNotActive();
+        givenCodeLookup();
+        givenMetadataQuality();
+
+        //when
+        val result = mvc.perform(get("/documents/{id}", id).accept(TEXT_HTML))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        //then
+        assertThat(result, not(containsString("<h2>Funding</h2>")));
+        assertThat(result, not(containsString("<h2>Contributors</h2>")));
     }
 
     @SuppressWarnings("unused")

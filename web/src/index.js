@@ -9,7 +9,7 @@ import {
   CehModelApplicationEditorView,
   CehModelEditorView, CodeDocumentEditorView,
   DataTypeEditorView,
-  GeminiEditorView, InfrastructureRecordEditorView,
+  GeminiEditorView, InfrastructureRecordEditorView, ResearchActivityEditorView,
   LinkEditorView,
   MonitoringEditorView,
   MonitoringActivityEditorView,
@@ -233,6 +233,11 @@ function initEditor () {
       View: InfrastructureRecordEditorView,
       Model: EditorMetadata,
       mediaType: 'application/vnd.infrastructure+json'
+    },
+    researchactivity: {
+      View: ResearchActivityEditorView,
+      Model: EditorMetadata,
+      mediaType: 'application/vnd.researchactivity+json'
     }
   }
 

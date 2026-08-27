@@ -111,13 +111,18 @@ public class ResponsibleParty {
     private String toTitlecase(String camelCase) {
         StringBuilder result = new StringBuilder();
 
+        // Contributor roles are SCoRO terms, which are hyphenated rather than camel
+        // case (data-creator, workpackage-leader), so treat a separator as a word
+        // break too or the hyphen survives into the rendered label.
+        String words = camelCase.replace('-', ' ').replace('_', ' ');
+
         // Pretend space before first character
         char prevChar = ' ';
 
         // insert space before capitals
-        for(int i = 0; i < camelCase.length(); i++)
+        for(int i = 0; i < words.length(); i++)
         {
-            char c = camelCase.charAt(i);
+            char c = words.charAt(i);
             if( prevChar == ' ')
             {
                 result.append(Character.toLowerCase(c));

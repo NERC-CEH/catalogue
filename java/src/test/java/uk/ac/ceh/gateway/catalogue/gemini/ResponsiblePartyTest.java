@@ -35,4 +35,53 @@ public class ResponsiblePartyTest {
         assertThat("actual role should equal expected", actual, equalTo(expected));
     }
 
+
+    @Test
+    public void hyphenatedContributorRoleIsHumanReadable() {
+        //Given SCoRO contributor roles are hyphenated, not camel case
+        ResponsibleParty contributor = ResponsibleParty.builder().contributorRole("data-creator").build();
+
+        //When
+        String actual = contributor.getContributorRoleDisplayName();
+
+        //Then
+        assertThat("hyphen should render as a word break", actual, equalTo("data creator"));
+    }
+
+    @Test
+    public void multiWordHyphenatedContributorRoleIsHumanReadable() {
+        //Given
+        ResponsibleParty contributor = ResponsibleParty.builder().contributorRole("workpackage-leader").build();
+
+        //When
+        String actual = contributor.getContributorRoleDisplayName();
+
+        //Then
+        assertThat("hyphen should render as a word break", actual, equalTo("workpackage leader"));
+    }
+
+    @Test
+    public void singleWordContributorRoleIsUnchanged() {
+        //Given
+        ResponsibleParty contributor = ResponsibleParty.builder().contributorRole("researcher").build();
+
+        //When
+        String actual = contributor.getContributorRoleDisplayName();
+
+        //Then
+        assertThat(actual, equalTo("researcher"));
+    }
+
+    @Test
+    public void legacyCamelCaseContributorRoleStillReadable() {
+        //Given records saved before the SCoRO rename still hold camel case
+        ResponsibleParty contributor = ResponsibleParty.builder().contributorRole("dataCreator").build();
+
+        //When
+        String actual = contributor.getContributorRoleDisplayName();
+
+        //Then
+        assertThat(actual, equalTo("data creator"));
+    }
+
 }
