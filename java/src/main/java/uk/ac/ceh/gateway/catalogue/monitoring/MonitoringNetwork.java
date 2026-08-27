@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Setter;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
@@ -17,13 +18,11 @@ import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RDF_TTL_VALUE;
 
 @Data
@@ -43,22 +42,31 @@ public class MonitoringNetwork extends AbstractMetadataDocument implements WellK
     private List<Supplemental> linksData, linksOther;
     private BoundingBox boundingBox;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private String relCombinedGeometry;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relFeatureList;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relUsedBy;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relUtilisedBy;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relSupersedes;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relSupersededBy;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relChildNetwork;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relParentNetwork;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relRelated;
 
     @Override
@@ -87,20 +95,10 @@ public class MonitoringNetwork extends AbstractMetadataDocument implements WellK
         return relCombinedGeometry == null ? "" : relCombinedGeometry;
     }
 
-    @JsonIgnore
-    public void setRelCombinedGeometry(String relCombinedGeometry) {
-        this.relCombinedGeometry = relCombinedGeometry;
-    }
-
     @JsonProperty("relFeatureList")
     public List<Link> getRelFeatureList() {
         return Optional.ofNullable(relFeatureList)
             .orElseGet(Collections::emptyList);
-    }
-
-    @JsonIgnore
-    public void setRelFeatureList(List<Link> relFeatureList) {
-        this.relFeatureList = relFeatureList;
     }
 
     @JsonProperty("relUsedBy")
@@ -109,20 +107,10 @@ public class MonitoringNetwork extends AbstractMetadataDocument implements WellK
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelUsedBy(List<Link> relUsedBy) {
-        this.relUsedBy = relUsedBy;
-    }
-
     @JsonProperty("relUtilisedBy")
     public List<Link> getRelUtilisedBy() {
         return Optional.ofNullable(relUtilisedBy)
             .orElseGet(Collections::emptyList);
-    }
-
-    @JsonIgnore
-    public void setRelUtilisedBy(List<Link> relUtilisedBy) {
-        this.relUtilisedBy = relUtilisedBy;
     }
 
     @JsonProperty("relSupersedes")
@@ -131,20 +119,10 @@ public class MonitoringNetwork extends AbstractMetadataDocument implements WellK
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelSupersedes(List<Link> relSupersedes) {
-        this.relSupersedes = relSupersedes;
-    }
-
     @JsonProperty("relSupersededBy")
     public List<Link> getRelSupersededBy() {
         return Optional.ofNullable(relSupersededBy)
             .orElseGet(Collections::emptyList);
-    }
-
-    @JsonIgnore
-    public void setRelSupersededBy(List<Link> relSupersededBy) {
-        this.relSupersededBy = relSupersededBy;
     }
 
     @JsonProperty("relChildNetwork")
@@ -153,31 +131,16 @@ public class MonitoringNetwork extends AbstractMetadataDocument implements WellK
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelChildNetwork(List<Link> relChildNetwork) {
-        this.relChildNetwork = relChildNetwork;
-    }
-
     @JsonProperty("relParentNetwork")
     public List<Link> getRelParentNetwork() {
         return Optional.ofNullable(relParentNetwork)
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelParentNetwork(List<Link> relParentNetwork) {
-        this.relParentNetwork = relParentNetwork;
-    }
-
     @JsonProperty("relRelated")
     public List<Link> getRelRelated() {
         return Optional.ofNullable(relRelated)
             .orElseGet(Collections::emptyList);
-    }
-
-    @JsonIgnore
-    public void setRelRelated(List<Link> relRelated) {
-        this.relRelated = relRelated;
     }
 }
 

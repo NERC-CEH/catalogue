@@ -43,6 +43,7 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
     private List<Keyword> environmentalDomain, purposeOfCollection, keywordsParameters;
     private List<Supplemental> linksData, linksOther;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private String relCombinedGeometry;
     @JsonIgnore
     @Setter(onMethod_ = @JsonIgnore)

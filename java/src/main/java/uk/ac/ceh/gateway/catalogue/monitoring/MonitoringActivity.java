@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Setter;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
@@ -17,12 +18,10 @@ import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RDF_TTL_VALUE;
 
 @Data
@@ -41,8 +40,10 @@ public class MonitoringActivity extends AbstractMetadataDocument implements Well
     private List<Keyword> environmentalDomain, purposeOfCollection, keywordsParameters;
     private List<Supplemental> linksData, linksOther;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relUseNetworkOrFacility;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relSetupForProgramme;
 
     @Override
@@ -67,19 +68,10 @@ public class MonitoringActivity extends AbstractMetadataDocument implements Well
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelUseNetworkOrFacility(List<Link> relUseNetworkOrFacility) {
-        this.relUseNetworkOrFacility = relUseNetworkOrFacility;
-    }
 
     @JsonProperty("relSetupForProgramme")
     public List<Link> getRelSetupForProgramme() {
         return Optional.ofNullable(relSetupForProgramme)
             .orElseGet(Collections::emptyList);
-    }
-
-    @JsonIgnore
-    public void setRelSetupForProgramme(List<Link> relSetupForProgramme) {
-        this.relSetupForProgramme = relSetupForProgramme;
     }
 }

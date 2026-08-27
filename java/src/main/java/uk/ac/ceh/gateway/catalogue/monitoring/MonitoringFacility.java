@@ -3,10 +3,7 @@ package uk.ac.ceh.gateway.catalogue.monitoring;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
-import lombok.val;
+import lombok.*;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
@@ -18,7 +15,6 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,22 +41,31 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
     private List<Keyword> environmentalDomain, keywordsParameters;
     private List<AdditionalInfo> additionalInfo;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private String relCombinedGeometry;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relBelongsToNetwork;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relUsedBy;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relUtilisedBy;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relSupersedes;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relSupersededBy;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relChildFacility;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relParentFacility;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relRelated;
 
     @Data
@@ -101,20 +106,10 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
         return relCombinedGeometry == null ? "" : relCombinedGeometry;
     }
 
-    @JsonIgnore
-    public void setRelCombinedGeometry(String relCombinedGeometry) {
-        this.relCombinedGeometry = relCombinedGeometry;
-    }
-
     @JsonProperty("relBelongsToNetwork")
     public List<Link> getRelBelongsToNetwork() {
         return Optional.ofNullable(relBelongsToNetwork)
             .orElseGet(Collections::emptyList);
-    }
-
-    @JsonIgnore
-    public void setRelBelongsToNetwork(List<Link> relBelongsToNetwork) {
-        this.relBelongsToNetwork = relBelongsToNetwork;
     }
 
     @JsonProperty("relUsedBy")
@@ -123,20 +118,10 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelUsedBy(List<Link> relUsedBy) {
-        this.relUsedBy = relUsedBy;
-    }
-
     @JsonProperty("relUtilisedBy")
     public List<Link> getRelUtilisedBy() {
         return Optional.ofNullable(relUtilisedBy)
             .orElseGet(Collections::emptyList);
-    }
-
-    @JsonIgnore
-    public void setRelUtilisedBy(List<Link> relUtilisedBy) {
-        this.relUtilisedBy = relUtilisedBy;
     }
 
     @JsonProperty("relSupersedes")
@@ -145,20 +130,10 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelSupersedes(List<Link> relSupersedes) {
-        this.relSupersedes = relSupersedes;
-    }
-
     @JsonProperty("relSupersededBy")
     public List<Link> getRelSupersededBy() {
         return Optional.ofNullable(relSupersededBy)
             .orElseGet(Collections::emptyList);
-    }
-
-    @JsonIgnore
-    public void setRelSupersededBy(List<Link> relSupersededBy) {
-        this.relSupersededBy = relSupersededBy;
     }
 
     @JsonProperty("relChildFacility")
@@ -167,30 +142,15 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelChildFacility(List<Link> relChildFacility) {
-        this.relChildFacility = relChildFacility;
-    }
-
     @JsonProperty("relParentFacility")
     public List<Link> getRelParentFacility() {
         return Optional.ofNullable(relParentFacility)
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelParentFacility(List<Link> relParentFacility) {
-        this.relParentFacility = relParentFacility;
-    }
-
     @JsonProperty("relRelated")
     public List<Link> getRelRelated() {
         return Optional.ofNullable(relRelated)
             .orElseGet(Collections::emptyList);
-    }
-
-    @JsonIgnore
-    public void setRelRelated(List<Link> relRelated) {
-        this.relRelated = relRelated;
     }
 }
