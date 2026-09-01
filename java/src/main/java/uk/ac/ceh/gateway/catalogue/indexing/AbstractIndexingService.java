@@ -57,7 +57,10 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
     public void rebuildIndex() throws DocumentIndexingException {
         try {
             log.info("Rebuilding {} index", indexName());
-            clearIndex();
+            // Read the data repository *before* clearing anything. A repository which cannot be
+            // read - a git pack whose .idx is missing, an unmounted share - throws here, and
+            // clearing first would discard a working index with nothing available to repopulate
+            // it, turning a read fault into an empty catalogue.
             DataRevision<?> latestRevision = repo.getLatestRevision();
             if (latestRevision == null) {
                 log.warn("Cannot rebuild {} index: no revision available from the data repository", indexName());
@@ -66,6 +69,7 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
             String revision = latestRevision.getRevisionID();
             val documents = listingService.filterFilenames(repo.getFiles(revision));
             log.info("Rebuilding {} index with {} documents at revision {}", indexName(), documents.size(), revision);
+            clearIndex();
             indexDocuments(documents, revision);
             log.info("Rebuilt {} index with {} documents at revision {}", indexName(), documents.size(), revision);
         }
