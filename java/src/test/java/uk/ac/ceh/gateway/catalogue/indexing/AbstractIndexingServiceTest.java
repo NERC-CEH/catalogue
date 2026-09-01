@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
@@ -19,10 +20,12 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 import java.net.ConnectException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -200,6 +203,43 @@ class AbstractIndexingServiceTest {
         assertThat(warnings()).anyMatch(e -> e.getFormattedMessage().contains("no revision"));
     }
 
+    @Test
+    @DisplayName("does not clear the index when the data repository cannot be read")
+    @SneakyThrows
+    void doesNotClearIndexWhenRepositoryUnreadable() {
+        // A datastore whose pack index is missing throws on the very first read. Clearing before
+        // that read would empty a perfectly good index with nothing available to repopulate it.
+        given(repo.getLatestRevision()).willThrow(
+            new DataRepositoryException("Missing unknown 235ad70dcb07283c03b913879e249a8b6b94b49d")
+        );
+
+        assertThrows(DocumentIndexingException.class, () -> service.rebuildIndex());
+
+        assertThat(service.events).doesNotContain("clear");
+    }
+
+    @Test
+    @DisplayName("does not clear the index when there is no revision to index")
+    @SneakyThrows
+    void doesNotClearIndexWhenNoRevisionAvailable() {
+        given(repo.getLatestRevision()).willReturn(null);
+
+        service.rebuildIndex();
+
+        assertThat(service.events).doesNotContain("clear");
+    }
+
+    @Test
+    @DisplayName("clears the index before indexing once the repository has been read")
+    @SneakyThrows
+    void clearsIndexBeforeIndexingOnRebuild() {
+        givenRepositoryContains("doc1", "doc2");
+
+        service.rebuildIndex();
+
+        assertThat(service.events).containsExactly("clear", "index", "index");
+    }
+
     @SneakyThrows
     @SuppressWarnings("unchecked")
     private void givenRepositoryContains(String... documents) {
@@ -219,6 +259,7 @@ class AbstractIndexingServiceTest {
     private static class TestIndexingService extends AbstractIndexingService<MetadataDocument, Object> {
         boolean indexEmpty = true;
         boolean rebuildCalled = false;
+        final List<String> events = new ArrayList<>();
         DocumentIndexingException rebuildException;
         Exception isIndexEmptyException;
 
@@ -239,8 +280,8 @@ class AbstractIndexingServiceTest {
         }
 
         @Override public void unindexDocuments(List<String> ids) {}
-        @Override protected void clearIndex() {}
-        @Override protected void index(Object o) {}
+        @Override protected void clearIndex() { events.add("clear"); }
+        @Override protected void index(Object o) { events.add("index"); }
 
         @Override
         @SneakyThrows
