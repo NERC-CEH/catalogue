@@ -24,7 +24,7 @@
     <#list boundingBoxes as extent>
      dcterms:spatial [
         a dcterms:Location ;
-        dcat:bbox "${extent.wkt}"^^geo:wktLiteral ;
+        dcat:bbox "${ttl.escape(extent.wkt)}"^^geo:wktLiteral ;
       ] ;
     </#list>
 
@@ -179,7 +179,7 @@
       <#list otherIds>
         adms:identifier <#t>
           <#items as id>
-            "<#if id.codeSpace?? && id.codeSpace?has_content && !id.codeSpace?starts_with("http")>${id.codeSpace}/</#if>${id.code}"<#t>
+            "<#if id.codeSpace?? && id.codeSpace?has_content && !id.codeSpace?starts_with("http")>${ttl.escape(id.codeSpace)}/</#if>${ttl.escape(id.code)}"<#t>
           <#sep>,</#sep><#t>
           </#items> ;<#t>
       </#list>
@@ -199,7 +199,7 @@
       <#list otherIds>
         adms:identifier <#t>
           <#items as id>
-            "<#if id.codeSpace?? && id.codeSpace?has_content && !id.codeSpace?starts_with("http")>${id.codeSpace}/</#if>${id.code}"<#t>
+            "<#if id.codeSpace?? && id.codeSpace?has_content && !id.codeSpace?starts_with("http")>${ttl.escape(id.codeSpace)}/</#if>${ttl.escape(id.code)}"<#t>
           <#sep>,</#sep><#t>
           </#items> ;<#t>
       </#list>

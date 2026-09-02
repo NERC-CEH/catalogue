@@ -1,11 +1,12 @@
 <#ftl output_format="plainText">
 <#compress>
 <#import "_common.ftl" as c>
+<#import "../_turtle.ftl" as ttl>
 <@c.common rdftype="sosa:Platform, doo:EnvironmentalMonitoringFacility" prefixed=prefixed!true>
 
   <#if !locationConfidential>
     <#if geometry?has_content>
-      dcterms:geometry "${geometry.wkt?replace('Optional[','')?replace(']$','','r')}"^^geo:wktLiteral ;
+      dcterms:geometry "${ttl.escape(geometry.wkt?replace('Optional[','')?replace(']$','','r'))}"^^geo:wktLiteral ;
     </#if>
   </#if>
 

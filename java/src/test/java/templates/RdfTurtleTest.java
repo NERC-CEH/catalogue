@@ -2159,4 +2159,223 @@ public class RdfTurtleTest {
             }
         }
     }
+
+    /**
+     * Every {@code template(...)} call here parses the rendered Turtle with
+     * {@link RDFDataMgr}, which throws on a malformed literal — so these tests
+     * fail at the render, exactly as Fuseki's parser did in production, rather
+     * than on an assertion about the model.
+     */
+    @Nested
+    @DisplayName("Escaping literals for Turtle (dri-one #344)")
+    class LiteralEscaping {
+
+        private static final String GRANT_NUMBER = "http://purl.org/cerif/frapo/hasGrantNumber";
+        private static final String TITLE = "http://purl.org/dc/terms/title";
+        private static final String DESCRIPTION = "http://purl.org/dc/terms/description";
+        private static final String SUBJECT = "http://purl.org/dc/terms/subject";
+        private static final String FAMILY_NAME = "http://xmlns.com/foaf/0.1/familyName";
+        private static final String FOAF_NAME = "http://xmlns.com/foaf/0.1/name";
+        private static final String ADMS_IDENTIFIER = "http://www.w3.org/ns/adms#identifier";
+
+        private GeminiDocument dataset(String id) {
+            return (GeminiDocument) new GeminiDocument()
+                .setType("dataset")
+                .setId(id)
+                .setUri("https://example.com/id/" + id)
+                .setTitle("Literal escaping");
+        }
+
+        private List<RDFNode> objectsOf(String property) {
+            return model.listObjectsOfProperty(createProperty(property)).toList();
+        }
+
+        private String soleLiteral(String property) {
+            val objects = objectsOf(property);
+            assertThat(property + " should have produced exactly one literal", objects.size(), equalTo(1));
+            return objects.getFirst().asLiteral().getString();
+        }
+
+        /**
+         * The literal that broke production. A Royal Society International
+         * Collaboration Award is written with backslashes, {@code \R} is not a
+         * legal Turtle escape, and the PUT is all-or-nothing — so this one
+         * award number rejected the whole 20MB graph for a week.
+         */
+        @Test
+        @DisplayName("a Royal Society award number survives the round trip")
+        void royalSocietyAwardNumber() {
+            val document = dataset("rsgrant");
+            document.setFunding(List.of(
+                Funding.builder().awardNumber("ICA\\R1\\180100").build()
+            ));
+
+            template("rdf/ttl.ftl", document);
+
+            assertThat(
+                "the backslashes must reach the consumer intact, not merely parse",
+                soleLiteral(GRANT_NUMBER), equalTo("ICA\\R1\\180100")
+            );
+        }
+
+        @Test
+        @DisplayName("a Windows path pasted into a description survives the round trip")
+        void backslashInDescription() {
+            val document = dataset("winpath");
+            document.setDescription("Source data held at C:\\Reports\\2026\\raw.csv");
+
+            template("rdf/ttl.ftl", document);
+
+            assertThat(soleLiteral(DESCRIPTION), equalTo("Source data held at C:\\Reports\\2026\\raw.csv"));
+        }
+
+        @Test
+        @DisplayName("a backslash in a contact's name survives, on the raw literals too")
+        void backslashInContactName() {
+            val document = dataset("bsname");
+            document.setAuthors(List.of(
+                ResponsibleParty.builder()
+                    .familyName("O\\Brien")
+                    .givenName("Sinead")
+                    .organisationName("Institute of \\Something")
+                    .role("author")
+                    .build()
+            ));
+
+            template("rdf/ttl.ftl", document);
+
+            assertThat(
+                "foaf:familyName interpolates directly rather than through displayLiteral",
+                soleLiteral(FAMILY_NAME), equalTo("O\\Brien")
+            );
+            assertTrue(
+                objectsOf(FOAF_NAME).stream()
+                    .anyMatch(o -> o.asLiteral().getString().equals("Institute of \\Something")),
+                "the minted organisation node's foaf:name should carry the backslash intact"
+            );
+        }
+
+        @Test
+        @SneakyThrows
+        @DisplayName("a backslash in a keyword with no URI survives the literal fallback")
+        void backslashInKeywordLiteral() {
+            given(keywordVocabulary.resolveExactLabel("Soil\\moisture")).willReturn(Optional.empty());
+
+            val document = dataset("bskeyword");
+            document.setKeywordsOther(List.of(Keyword.builder().value("Soil\\moisture").build()));
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(
+                objectsOf(SUBJECT).stream()
+                    .anyMatch(o -> o.isLiteral() && o.asLiteral().getString().equals("Soil\\moisture")),
+                "the keyword literal fallback stripped quotes but not backslashes"
+            );
+        }
+
+        @Test
+        @DisplayName("a backslash in an alternate identifier survives")
+        void backslashInAdmsIdentifier() {
+            val document = dataset("bsident");
+            document.setResourceIdentifiers(List.of(
+                ResourceIdentifier.builder().code("REF\\2026\\001").codeSpace("local").build()
+            ));
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(
+                objectsOf(ADMS_IDENTIFIER).stream()
+                    .anyMatch(o -> o.isLiteral() && o.asLiteral().getString().equals("local/REF\\2026\\001")),
+                "adms:identifier interpolates the code directly into a literal"
+            );
+        }
+
+        @Test
+        @DisplayName("a backslash in a monitoring facility's title survives its own displayLiteral")
+        void backslashInMonitoringTitle() {
+            val facility = new MonitoringFacility()
+                .setId("bsfacility")
+                .setUri("https://example.com/id/bsfacility")
+                .setTitle("Site A\\B");
+
+            template("rdf/monitoring/facility.ftl", facility);
+
+            assertThat(
+                "the monitoring templates carry a second copy of displayLiteral",
+                soleLiteral(TITLE), equalTo("Site A\\B")
+            );
+        }
+
+        @Test
+        @DisplayName("a trailing backslash does not escape the literal's own closing quote")
+        void trailingBackslash() {
+            val document = dataset("bstrailing");
+            document.setDescription("Ends with a backslash\\");
+
+            template("rdf/ttl.ftl", document);
+
+            assertThat(soleLiteral(DESCRIPTION), equalTo("Ends with a backslash\\"));
+        }
+
+        @Test
+        @DisplayName("a doubled backslash is not collapsed")
+        void doubledBackslash() {
+            val document = dataset("bsdouble");
+            document.setDescription("UNC path \\\\server\\share");
+
+            template("rdf/ttl.ftl", document);
+
+            assertThat(soleLiteral(DESCRIPTION), equalTo("UNC path \\\\server\\share"));
+        }
+
+        @Test
+        @DisplayName("a double quote still becomes an apostrophe, and a line break a space")
+        void quotesAndNewlinesKeepTheirLongstandingTreatment() {
+            val document = dataset("bsquote");
+            document.setDescription("A \"quoted\" phrase\nand a second line");
+
+            template("rdf/ttl.ftl", document);
+
+            assertThat(
+                "substituting rather than escaping these is lossy but is what every "
+                    + "already-published literal carries; see templates/rdf/_turtle.ftl",
+                soleLiteral(DESCRIPTION), equalTo("A 'quoted' phrase and a second line")
+            );
+        }
+
+        @Test
+        @DisplayName("a record with a backslash in every text field still parses")
+        void backslashEverywhere() {
+            val document = dataset("bsall");
+            document.setTitle("Title\\A");
+            document.setDescription("Description\\B");
+            document.setLineage("Lineage\\C");
+            document.setAuthors(List.of(
+                ResponsibleParty.builder()
+                    .familyName("Family\\D").givenName("Given\\E")
+                    .organisationName("Org\\F").email("a\\b@example.com")
+                    .role("author").build()
+            ));
+            document.setFunding(List.of(
+                Funding.builder().awardNumber("Award\\G").awardTitle("Grant\\H").build()
+            ));
+            document.setUseConstraints(List.of(
+                ResourceConstraint.builder().code("copyright").value("Copyright\\I").build(),
+                ResourceConstraint.builder().code("license").value("Licence\\J").build()
+            ));
+            document.setDistributionFormats(List.of(
+                DistributionInfo.builder().name("Format\\K").type("").version("unknown").build()
+            ));
+            document.setOnlineResources(List.of(
+                OnlineResource.builder()
+                    .url("https://data-package.ceh.ac.uk/data/bsall").function("download").build()
+            ));
+
+            // The render is the assertion: a malformed literal anywhere in it throws.
+            template("rdf/ttl.ftl", document);
+
+            assertThat(soleLiteral(TITLE), equalTo("Title\\A"));
+            assertThat(soleLiteral(DESCRIPTION), equalTo("Description\\B"));
+        }
+    }
 }

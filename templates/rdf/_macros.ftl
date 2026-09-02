@@ -1,8 +1,8 @@
 <#setting date_format = 'yyyy-MM-dd'>
+<#import "_turtle.ftl" as ttl>
 
 <#macro displayLiteral string>
-  <#--Ensure literals do not contain " characters or line breaks-->
-  <#t>"${string?trim?replace("\"","'")?replace("\n"," ")}"
+  <#t>"${ttl.escape(string?trim)}"
 </#macro>
 
 <#--
@@ -67,10 +67,10 @@
         ${contactIdentifier} a ${contactType} .
       <#else>
         ${contactIdentifier} a ${contactType} ;
-          foaf:name "${contactName?trim}" ;
-          <#if contact.familyName?has_content >foaf:familyName "${contact.familyName?trim}" ;</#if>
-          <#if contact.givenName?has_content >foaf:givenName "${contact.givenName?trim}" ;</#if>
-          <#if contact.email?has_content>vcard:hasEmail "${contact.email?trim}" ;</#if>
+          foaf:name "${ttl.escape(contactName?trim)}" ;
+          <#if contact.familyName?has_content >foaf:familyName "${ttl.escape(contact.familyName?trim)}" ;</#if>
+          <#if contact.givenName?has_content >foaf:givenName "${ttl.escape(contact.givenName?trim)}" ;</#if>
+          <#if contact.email?has_content>vcard:hasEmail "${ttl.escape(contact.email?trim)}" ;</#if>
 
           <#local memberRor = "">
           <#if contact.isRor()>
@@ -224,7 +224,7 @@ ${formatUris.identify(format)} a dcterms:IMT ;
     <#if kwUri?has_content>
       <#assign keyword ="\l" + kwUri + "\g">
     <#else>
-      <#assign keyword ='"' + (kw.value!"")?replace("\"", "") + '"'>
+      <#assign keyword ='"' + ttl.escape(kw.value!"") + '"'>
     </#if>
 
     ${keyword}<#sep>,</#sep><#t>
@@ -257,9 +257,9 @@ ${formatUris.identify(format)} a dcterms:IMT ;
         <#if opUri?has_content>
           <#assign keyword ="\l" + opUri + "\g">
         <#elseif op.title?has_content>
-          <#assign keyword ='"' + op.title?replace("\"", "") + '"'>
+          <#assign keyword ='"' + ttl.escape(op.title) + '"'>
         <#else>
-          <#assign keyword ='"' + (op.value!"")?replace("\"", "") + '"'>
+          <#assign keyword ='"' + ttl.escape(op.value!"") + '"'>
         </#if>
         ${keyword}<#sep>,</#sep><#t>
       </#list>
