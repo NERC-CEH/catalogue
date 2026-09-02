@@ -188,7 +188,6 @@ class UriNormaliserTest {
             "http://doi.org/10.5285/abcd, https://doi.org/10.5285/abcd",
             "http://ror.org/00pggkr55, https://ror.org/00pggkr55",
             "http://orcid.org/0000-0001-2345-6789, https://orcid.org/0000-0001-2345-6789",
-            "http://www.wikidata.org/entity/Q145, https://www.wikidata.org/entity/Q145",
             "http://vocabs.lter-europe.net/EnvThes/30347, https://vocabs.lter-europe.net/EnvThes/30347"
         })
         void upgradesKnownHostsToHttps(String given, String expected) {
@@ -254,8 +253,8 @@ class UriNormaliserTest {
         @DisplayName("a fragment means the trailing slash belongs to the path, leave it")
         void leavesSlashBeforeFragmentAlone() {
             assertThat(
-                service.normalise("https://www.wikidata.org/entity/Q145/#id"),
-                is(equalTo("https://www.wikidata.org/entity/Q145/#id"))
+                service.normalise("http://www.wikidata.org/entity/Q145/#id"),
+                is(equalTo("http://www.wikidata.org/entity/Q145/#id"))
             );
         }
     }

@@ -169,7 +169,7 @@ public class DataciteRequestTest {
 
     @Test
     void testExtractSubjects() {
-        Keyword k1 = Keyword.builder().value("climate").URI("https://www.wikidata.org/entity/Q123").build();
+        Keyword k1 = Keyword.builder().value("climate").URI("http://www.wikidata.org/entity/Q123").build();
         Keyword k2 = Keyword.builder().value("").URI("https://inspire.ec.europa.eu/theme/abc").build();
         Keyword k3 = Keyword.builder().value("mountains").URI("").build();
         List<Subject> subjects = attributes.extractSubjects(List.of(k1, k2, k3));
