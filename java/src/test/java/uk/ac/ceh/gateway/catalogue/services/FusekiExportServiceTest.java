@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestClientResponseException;
 import uk.ac.ceh.gateway.catalogue.exports.DocumentsToTurtleService;
-import uk.ac.ceh.gateway.catalogue.exports.VocabularyLabelsService;
+import uk.ac.ceh.gateway.catalogue.exports.VocabularyGraphService;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 import org.springframework.http.HttpMethod;
@@ -44,7 +44,7 @@ public class FusekiExportServiceTest {
     private FusekiExportService service;
     @Mock private DocumentsToTurtleService documentsToTurtleService;
     @Mock private MetadataListingService metadataListingService;
-    @Mock private VocabularyLabelsService vocabularyLabelsService;
+    @Mock private VocabularyGraphService vocabularyGraphService;
     private VoidStatsService voidStatsService;
     private MockRestServiceServer mockServer;
 
@@ -74,7 +74,7 @@ public class FusekiExportServiceTest {
             FUSEKI_PASSWORD,
             voidStatsService,
             metadataListingService,
-            vocabularyLabelsService
+            vocabularyGraphService
         );
     }
 
@@ -130,7 +130,7 @@ public class FusekiExportServiceTest {
     void exportsVocabularyGraphsSeparately() {
         given(documentsToTurtleService.getBigTtl(any())).willReturn(Optional.of("ttl"));
         given(metadataListingService.getPublicDocumentsOfCatalogue(anyString())).willReturn(List.of());
-        given(vocabularyLabelsService.graphs()).willReturn(new LinkedHashMap<>(Map.of(
+        given(vocabularyGraphService.graphs(any())).willReturn(new LinkedHashMap<>(Map.of(
             GEMET_GRAPH, "gemet-ttl"
         )));
 
@@ -157,7 +157,7 @@ public class FusekiExportServiceTest {
         val graphs = new LinkedHashMap<String, String>();
         graphs.put(GEMET_GRAPH, "gemet-ttl");
         graphs.put(ENVTHES_GRAPH, "envthes-ttl");
-        given(vocabularyLabelsService.graphs()).willReturn(graphs);
+        given(vocabularyGraphService.graphs(any())).willReturn(graphs);
 
         mockServer.expect(requestTo(equalTo(FUSEKI_DATASET_URL + "?graph=" + BASE_URI)))
             .andRespond(withSuccess());
@@ -183,7 +183,7 @@ public class FusekiExportServiceTest {
     void noLabelsWritesNoGraph() {
         given(documentsToTurtleService.getBigTtl(any())).willReturn(Optional.of("ttl"));
         given(metadataListingService.getPublicDocumentsOfCatalogue(anyString())).willReturn(List.of());
-        given(vocabularyLabelsService.graphs()).willReturn(Map.of());
+        given(vocabularyGraphService.graphs(any())).willReturn(Map.of());
 
         mockServer.expect(requestTo(equalTo(FUSEKI_DATASET_URL + "?graph=" + BASE_URI)))
             .andRespond(withSuccess());
