@@ -58,57 +58,85 @@
         <#local contactName=contact.organisationName>
       </#if>
 
-      <#-- An organisation-only contact identified by a ROR (see ContactUri, dri-one
-        #319) is the ROR node itself, so the record's free-text organisation name
-        must not be asserted as its foaf:name — that would overwrite an
-        externally-governed identifier with whatever a depositor happened to type
-        (dri-one #320). Emit only the type in that case. -->
-      <#if contactType == "foaf:Organization" && contact.isRor()>
-        ${contactIdentifier} a ${contactType} .
-      <#else>
-        ${contactIdentifier} a ${contactType} ;
+      <#--
+        Whether the node we are about to describe is an externally-governed
+        identifier: a ROR for an organisation, an ORCID or ISNI for a person.
+
+        Tested on the emitted node rather than on contact.isRor()/isOrcid(),
+        because ContactUri falls back to a minted node when an identifier is
+        present but unusable. Only ContactUri knows which way that went, and it
+        signals it in the node itself — an <IRI> is external, a prefixed name is
+        ours. Re-deriving the precedence here would let the two drift apart.
+      -->
+      <#local externalNode = contactIdentifier?starts_with("<")>
+
+      <#--
+        The affiliation, worked out for every contact: a ROR where the record
+        supplies a usable one, otherwise a node minted from the organisation's
+        name.
+
+        Not asserted where the contact IS the organisation. contactName and
+        organisationName are then the same string, so foaf:member would make the
+        organisation a member of a second node bearing its own name — 24 such
+        statements in production before dri-one #334.
+      -->
+      <#local memberRor = "">
+      <#local memberOrg = "">
+      <#if contactType == "foaf:Person">
+        <#if contact.isRor()>
+          <#local memberRor = uriNormaliser.normalise(contact.organisationIdentifier)>
+        </#if>
+        <#local memberOrg = contactUri.identifyOrganisation(contact)>
+      </#if>
+
+      <#--
+        Identity literals are asserted only on a node we minted. Writing them
+        onto an external identifier overwrites a shared node with whatever a
+        depositor happened to type, since every record naming it writes to the
+        same node and RDF keeps all of it (dri-one #320). Production showed
+        exactly that once ORCIDs were included: 281 ORCIDs carrying more than
+        one foaf:name, including one researcher's ORCID asserting a different
+        person's name (dri-one #348).
+
+        foaf:member stays on both. It is not a claim about who the person is,
+        but about what this record says of them, so it belongs with
+        pro:holdsRoleInTime rather than with the name. An email address is
+        asserted on neither — see the note below.
+      -->
+      ${contactIdentifier} a ${contactType} ;
+        <#if !externalNode>
           foaf:name "${ttl.escape(contactName?trim)}" ;
           <#if contact.familyName?has_content >foaf:familyName "${ttl.escape(contact.familyName?trim)}" ;</#if>
           <#if contact.givenName?has_content >foaf:givenName "${ttl.escape(contact.givenName?trim)}" ;</#if>
-          <#if contact.email?has_content>vcard:hasEmail "${ttl.escape(contact.email?trim)}" ;</#if>
+        </#if>
+        <#if memberRor?has_content>
+          foaf:member <${memberRor}> ;
+        <#elseif memberOrg?has_content>
+          foaf:member ${memberOrg} ;
+        </#if>
+      .
 
-          <#local memberRor = "">
-          <#if contact.isRor()>
-            <#local memberRor = uriNormaliser.normalise(contact.organisationIdentifier)>
-          </#if>
-          <#--
-            An affiliation is only asserted for a person. Where the contact is
-            itself the organisation, contactName and organisationName are the
-            same string, so foaf:member would make the organisation a member of
-            a second node bearing its own name — 24 such statements in
-            production, and while a blank node left them unreachable, a minted
-            one would promote a false statement to a stable, joinable
-            identifier (dri-one #334).
-          -->
-          <#local memberOrg = "">
-          <#if contactType == "foaf:Person">
-            <#local memberOrg = contactUri.identifyOrganisation(contact)>
-          </#if>
-          <#if memberRor?has_content>
-            foaf:member <${memberRor}> ;
-          <#elseif memberOrg?has_content>
-            foaf:member ${memberOrg} ;
-          </#if>
-        .
+      <#--
+        No vcard:hasEmail, on any contact. The RDF export has no per-role
+        context, and the record page already withholds these addresses per role
+        — templates/html/dataResource/_contacts.ftlh passes showEmail=false for
+        authors — while this export published them for everyone. 5,066 people
+        holding the author role had an address in the graph that their own
+        record page does not show, 3,693 of the 3,710 distinct addresses being
+        individuals' rather than role inboxes (dri-one #348).
+      -->
 
-        <#--
-          The affiliation that has no ROR. Unlike the ROR node above — an
-          externally-governed identifier that must not be given record text
-          (dri-one #320) — this node is minted from the organisation's name, so
-          the name is what identifies it and asserting it is safe. Emitting it
-          here rather than in a detail macro keeps it beside the reference: the
-          same organisation named on several contacts writes the same triples,
-          which RDF collapses.
-        -->
-        <#if !memberRor?has_content && memberOrg?has_content>
+      <#--
+        The affiliation that has no ROR. Unlike a ROR — an externally-governed
+        identifier that must not be given record text (dri-one #320) — this node
+        is minted from the organisation's name, so the name is what identifies
+        it and asserting it is safe. Emitted here rather than in a detail macro
+        to keep it beside the reference: the same organisation named on several
+        contacts writes the same triples, which RDF collapses.
+      -->
+      <#if !memberRor?has_content && memberOrg?has_content>
 ${memberOrg} a foaf:Organization ;
   foaf:name <@displayLiteral contact.organisationName /> .
-        </#if>
       </#if>
 
       <#--

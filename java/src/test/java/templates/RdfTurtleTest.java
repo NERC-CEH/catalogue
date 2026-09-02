@@ -2378,4 +2378,169 @@ public class RdfTurtleTest {
             assertThat(soleLiteral(DESCRIPTION), equalTo("Description\\B"));
         }
     }
+
+    @Nested
+    @DisplayName("What the export asserts about a contact (dri-one #348)")
+    class ContactAssertions {
+
+        private static final String RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+        private static final String FOAF_NAME = "http://xmlns.com/foaf/0.1/name";
+        private static final String FAMILY_NAME = "http://xmlns.com/foaf/0.1/familyName";
+        private static final String GIVEN_NAME = "http://xmlns.com/foaf/0.1/givenName";
+        private static final String MEMBER = "http://xmlns.com/foaf/0.1/member";
+        private static final String HAS_EMAIL = "http://www.w3.org/2006/vcard/ns#hasEmail";
+        private static final String HOLDS_ROLE = "http://purl.org/spar/pro/holdsRoleInTime";
+
+        private static final String ORCID = "https://orcid.org/0000-0002-0394-2998";
+        private static final String ISNI = "https://isni.org/isni/0000000121032683";
+        private static final String ROR = "https://ror.org/00pggkr55";
+
+        private GeminiDocument dataset(String id) {
+            return (GeminiDocument) new GeminiDocument()
+                .setType("dataset")
+                .setId(id)
+                .setUri("https://example.com/id/" + id)
+                .setTitle("Contact assertions");
+        }
+
+        private ResponsibleParty.ResponsiblePartyBuilder person() {
+            return ResponsibleParty.builder()
+                .familyName("Wood").givenName("Claire")
+                .email("claire.wood@example.com")
+                .organisationName("UK Centre for Ecology & Hydrology")
+                .role("author");
+        }
+
+        private GeminiDocument withAuthor(String id, ResponsibleParty author) {
+            val document = dataset(id);
+            document.setAuthors(List.of(author));
+            return document;
+        }
+
+        /** Every predicate the model asserts about one subject. */
+        private List<String> predicatesOf(String subject) {
+            return model.listStatements(createResource(subject), null, (RDFNode) null)
+                .toList().stream()
+                .map(s -> s.getPredicate().getURI())
+                .distinct().sorted().toList();
+        }
+
+        @Test
+        @DisplayName("no contact's email address is published, whatever their role")
+        void noEmailAnywhere() {
+            val document = dataset("noemail");
+            document.setAuthors(List.of(person().build()));
+            document.setContactPoints(List.of(
+                person().familyName("Emmett").givenName("Bridget").email("bridget@example.com").build()
+            ));
+            document.setPublishers(List.of(
+                ResponsibleParty.builder()
+                    .organisationName("NERC EDS Environmental Information Data Centre")
+                    .organisationIdentifier("https://ror.org/04xw4m193")
+                    .email("info@eidc.ac.uk")
+                    .build()
+            ));
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(
+                model.listObjectsOfProperty(createProperty(HAS_EMAIL)).toList().isEmpty(),
+                "the record page withholds author addresses per role; this export had no "
+                    + "role context and published everyone's"
+            );
+        }
+
+        @Test
+        @DisplayName("an ORCID gets its type, its affiliation and its role — and nothing else")
+        void orcidCarriesNoRecordText() {
+            template("rdf/ttl.ftl", withAuthor("orcid", person().nameIdentifier(ORCID).build()));
+
+            assertThat(
+                "writing record text onto a shared external identifier is what dri-one #320 "
+                    + "forbids, and what accumulated 281 conflicting names in production",
+                predicatesOf(ORCID),
+                equalTo(List.of(HOLDS_ROLE, RDF_TYPE, MEMBER))
+            );
+        }
+
+        @Test
+        @DisplayName("an ISNI is treated exactly as an ORCID is")
+        void isniCarriesNoRecordText() {
+            template("rdf/ttl.ftl", withAuthor("isni", person().nameIdentifier(ISNI).build()));
+
+            assertThat(predicatesOf(ISNI), equalTo(List.of(HOLDS_ROLE, RDF_TYPE, MEMBER)));
+        }
+
+        @Test
+        @DisplayName("an ORCID keeps its stated affiliation, and the organisation node with it")
+        void orcidKeepsItsAffiliation() {
+            template("rdf/ttl.ftl", withAuthor("orcidaff", person().nameIdentifier(ORCID).build()));
+
+            val organisations = model.listObjectsOfProperty(
+                createResource(ORCID), createProperty(MEMBER)
+            ).toList();
+            assertThat(organisations.size(), equalTo(1));
+
+            val organisation = organisations.getFirst().asResource();
+            assertThat(organisation.getURI(), matchesRegex("https://example\\.com/id/organisation_[0-9a-f]{16}"));
+            assertTrue(
+                model.contains(organisation, createProperty(FOAF_NAME),
+                    model.createLiteral("UK Centre for Ecology & Hydrology")),
+                "the organisation node is minted from its name, so the name identifies it "
+                    + "and asserting it is safe — unlike on the ORCID"
+            );
+        }
+
+        @Test
+        @DisplayName("an ORCID with a ROR affiliation points at the ROR itself")
+        void orcidWithRorAffiliation() {
+            template("rdf/ttl.ftl", withAuthor("orcidror",
+                person().nameIdentifier(ORCID).organisationIdentifier(ROR).build()));
+
+            assertThat(
+                model.listObjectsOfProperty(createResource(ORCID), createProperty(MEMBER)).toList(),
+                equalTo(List.<RDFNode>of(createResource(ROR)))
+            );
+        }
+
+        @Test
+        @DisplayName("a contact with no persistent identifier keeps its name on the minted node")
+        void mintedPersonKeepsItsName() {
+            template("rdf/ttl.ftl", withAuthor("minted", person().build()));
+
+            val minted = model.listSubjectsWithProperty(createProperty(FOAF_NAME)).toList().stream()
+                .filter(s -> s.getURI() != null && s.getURI().contains("/id/person_"))
+                .findFirst().orElseThrow();
+
+            assertTrue(model.contains(minted, createProperty(FOAF_NAME), model.createLiteral("Wood, C.")));
+            assertTrue(model.contains(minted, createProperty(FAMILY_NAME), model.createLiteral("Wood")));
+            assertTrue(model.contains(minted, createProperty(GIVEN_NAME), model.createLiteral("Claire")));
+            assertFalse(
+                model.contains(minted, createProperty(HAS_EMAIL), (RDFNode) null),
+                "the node is keyed on the name, so the name is safe to assert; the email is not"
+            );
+        }
+
+        @Test
+        @DisplayName("a ROR-identified organisation contact still carries only its type")
+        void rorOrganisationIsStillTypeOnly() {
+            val document = dataset("rororg");
+            document.setPublishers(List.of(
+                ResponsibleParty.builder()
+                    .organisationName("UK Centre for Ecology & Hydrology")
+                    .organisationIdentifier(ROR)
+                    .email("enquiries@example.com")
+                    .build()
+            ));
+
+            template("rdf/ttl.ftl", document);
+
+            assertThat(
+                "a ROR-identified organisation is the organisation, so it takes no name, "
+                    + "no email and no membership of itself (dri-one #320, #334)",
+                predicatesOf(ROR), equalTo(List.of(RDF_TYPE))
+            );
+        }
+    }
+
 }
