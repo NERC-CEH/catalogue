@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestClientResponseException;
 import uk.ac.ceh.gateway.catalogue.exports.DocumentsToTurtleService;
+import uk.ac.ceh.gateway.catalogue.exports.VocabularyLabelsService;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 import org.springframework.http.HttpMethod;
@@ -19,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -28,6 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
@@ -38,6 +44,7 @@ public class FusekiExportServiceTest {
     private FusekiExportService service;
     @Mock private DocumentsToTurtleService documentsToTurtleService;
     @Mock private MetadataListingService metadataListingService;
+    @Mock private VocabularyLabelsService vocabularyLabelsService;
     private VoidStatsService voidStatsService;
     private MockRestServiceServer mockServer;
 
@@ -66,7 +73,8 @@ public class FusekiExportServiceTest {
             FUSEKI_USERNAME,
             FUSEKI_PASSWORD,
             voidStatsService,
-            metadataListingService
+            metadataListingService,
+            vocabularyLabelsService
         );
     }
 
@@ -110,6 +118,80 @@ public class FusekiExportServiceTest {
         mockServer.verify();
         verify(documentsToTurtleService).getBigTtl(FUSEKI_CATALOGUE_IDS.get(0));
         verify(documentsToTurtleService).getBigTtl(FUSEKI_CATALOGUE_IDS.get(1));
+    }
+
+
+    private static final String GEMET_GRAPH = "http://www.eionet.europa.eu/gemet/";
+    private static final String ENVTHES_GRAPH = "http://vocabs.lter-europe.net/EnvThes/";
+
+    @Test
+    @SneakyThrows
+    @DisplayName("each vocabulary's labels go to their own graph, alongside the catalogue's")
+    void exportsVocabularyGraphsSeparately() {
+        given(documentsToTurtleService.getBigTtl(any())).willReturn(Optional.of("ttl"));
+        given(metadataListingService.getPublicDocumentsOfCatalogue(anyString())).willReturn(List.of());
+        given(vocabularyLabelsService.graphs()).willReturn(new LinkedHashMap<>(Map.of(
+            GEMET_GRAPH, "gemet-ttl"
+        )));
+
+        mockServer.expect(requestTo(equalTo(FUSEKI_DATASET_URL + "?graph=" + BASE_URI)))
+            .andExpect(method(HttpMethod.PUT))
+            .andExpect(content().string(equalTo("ttl\nttl")))
+            .andRespond(withSuccess());
+        mockServer.expect(requestTo(equalTo(FUSEKI_DATASET_URL + "?graph=" + GEMET_GRAPH)))
+            .andExpect(method(HttpMethod.PUT))
+            .andExpect(content().string(equalTo("gemet-ttl")))
+            .andRespond(withSuccess());
+
+        service.runExport();
+
+        mockServer.verify();
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("one vocabulary graph failing stops neither the others nor the export")
+    void oneVocabularyGraphFailingDoesNotStopTheRest() {
+        given(documentsToTurtleService.getBigTtl(any())).willReturn(Optional.of("ttl"));
+        given(metadataListingService.getPublicDocumentsOfCatalogue(anyString())).willReturn(List.of());
+        val graphs = new LinkedHashMap<String, String>();
+        graphs.put(GEMET_GRAPH, "gemet-ttl");
+        graphs.put(ENVTHES_GRAPH, "envthes-ttl");
+        given(vocabularyLabelsService.graphs()).willReturn(graphs);
+
+        mockServer.expect(requestTo(equalTo(FUSEKI_DATASET_URL + "?graph=" + BASE_URI)))
+            .andRespond(withSuccess());
+        // The first vocabulary graph is rejected, exactly as the catalogue graph was
+        // for a week over one bad literal (dri-one #344).
+        mockServer.expect(requestTo(equalTo(FUSEKI_DATASET_URL + "?graph=" + GEMET_GRAPH)))
+            .andRespond(withServerError());
+        mockServer.expect(requestTo(equalTo(FUSEKI_DATASET_URL + "?graph=" + ENVTHES_GRAPH)))
+            .andRespond(withSuccess());
+
+        service.runExport();
+
+        mockServer.verify();
+        assertThat(
+            "the export still completed, so the catalogue graph and the void stats are current",
+            service.getLastExported(), is(notNullValue())
+        );
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("no vocabulary labels means no vocabulary graph is written at all")
+    void noLabelsWritesNoGraph() {
+        given(documentsToTurtleService.getBigTtl(any())).willReturn(Optional.of("ttl"));
+        given(metadataListingService.getPublicDocumentsOfCatalogue(anyString())).willReturn(List.of());
+        given(vocabularyLabelsService.graphs()).willReturn(Map.of());
+
+        mockServer.expect(requestTo(equalTo(FUSEKI_DATASET_URL + "?graph=" + BASE_URI)))
+            .andRespond(withSuccess());
+
+        service.runExport();
+
+        // A graph a previous run filled is left as it was, rather than emptied.
+        mockServer.verify();
     }
 
     private static final String EIDC_TTL =
