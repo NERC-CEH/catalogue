@@ -1064,7 +1064,8 @@ public class RdfTurtleTest {
 
                 template("rdf/ttl.ftl", document);
 
-                val concept = createResource("https://vocab.nerc.ac.uk/collection/P07/current/CFSN0381/");
+                // the record supplies https; NVS mints http, so that is the node (dri-one #350)
+                val concept = createResource("http://vocab.nerc.ac.uk/collection/P07/current/CFSN0381/");
                 assertTrue(model.contains(concept, createProperty(RDF_TYPE), createResource(SKOS_CONCEPT)));
                 assertFalse(model.contains(concept, createProperty(SKOS_PREF_LABEL), (org.apache.jena.rdf.model.RDFNode) null));
                 assertFalse(model.contains(concept, createProperty(RDFS_LABEL), (org.apache.jena.rdf.model.RDFNode) null));
@@ -1090,7 +1091,8 @@ public class RdfTurtleTest {
                 template("rdf/ttl.ftl", document);
 
                 val subject = createResource("https://example.com/id/opsosatest");
-                val concept = createResource("https://vocab.nerc.ac.uk/collection/P07/current/CFSN0381/");
+                // the record supplies https; NVS mints http, so that is the node (dri-one #350)
+                val concept = createResource("http://vocab.nerc.ac.uk/collection/P07/current/CFSN0381/");
                 assertTrue(model.contains(subject, createProperty(SDO_VARIABLE_MEASURED), concept));
                 assertTrue(model.contains(subject, createProperty(SOSA_OBSERVED_PROPERTY), concept));
             }
@@ -1467,7 +1469,7 @@ public class RdfTurtleTest {
             private static final String THEME = "http://purl.org/dc/terms/theme";
             private static final String RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
             private static final String SKOS_CONCEPT = "http://www.w3.org/2004/02/skos/core#Concept";
-            private static final String GEMET_SOIL_MOISTURE = "https://www.eionet.europa.eu/gemet/concept/7842";
+            private static final String GEMET_SOIL_MOISTURE = "http://www.eionet.europa.eu/gemet/concept/7842";
 
             private GeminiDocument dataset(String id) {
                 return (GeminiDocument) new GeminiDocument()
