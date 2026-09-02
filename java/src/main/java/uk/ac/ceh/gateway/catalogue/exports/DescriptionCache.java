@@ -4,15 +4,23 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.jena.query.Dataset;
+import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -42,6 +50,30 @@ import java.util.Optional;
  * the age the caller will accept and this only reports what it holds and when
  * it was taken. Nothing is ever evicted: a stale copy is more useful than none
  * when an authority is unreachable, and the caller can choose to use it.
+ *
+ * <h2>Surviving the pod, without putting a database on a file share</h2>
+ *
+ * <p>The store itself is pod-local and does not outlive the container: every
+ * persistent volume in the cluster is a CIFS share mounted {@code nobrl}, with
+ * byte-range locking disabled, and TDB2 relies on exactly that locking to keep
+ * one JVM's hands off another's database. A single-replica Deployment is no
+ * protection either — the default rolling update starts the new pod before the
+ * old one stops, so two JVMs would briefly share the directory. Jena's own
+ * guidance is that a TDB database must not live on a network filesystem, and
+ * the precedent in this stack agrees: {@code jena.location} is unmounted and
+ * Fuseki, which persists a real TDB2, declares no volumes at all.
+ *
+ * <p>So what goes on the share is not the database but a snapshot of it: one
+ * N-Quads file, written whole and read whole. That is a plain sequential file
+ * — no locking, no memory mapping, nothing CIFS handles badly — and it is what
+ * lets a recreated pod start warm instead of spending days refetching 2,686
+ * entities. N-Quads because it carries the graph names, so each entity's
+ * description and the retrieval times come back in the graphs they were in.
+ *
+ * <p>The snapshot is treated as disposable throughout. If it is missing,
+ * unreadable, half-written by a pod that died mid-save, or trampled by two pods
+ * saving at once, the cache simply starts empty and refills — which is the
+ * behaviour there was before it existed. Nothing here may ever fail an export.
  */
 @Slf4j
 @Profile("exports")
@@ -58,6 +90,9 @@ public class DescriptionCache {
 
     private final Dataset dataset;
     private final Clock clock;
+    private final Path snapshot;
+    /** Whether anything has been stored since the snapshot was last written. */
+    private volatile boolean changed;
 
     /**
      * Annotated because there are two constructors and Spring will not choose
@@ -65,14 +100,113 @@ public class DescriptionCache {
      * constructor found".
      */
     @Autowired
-    public DescriptionCache(@Qualifier("descriptionCacheDataset") Dataset dataset) {
-        this(dataset, Clock.systemUTC());
+    public DescriptionCache(
+        @Qualifier("descriptionCacheDataset") Dataset dataset,
+        @Value("${jena.descriptionCache.snapshot:}") String snapshot
+    ) {
+        this(dataset, Clock.systemUTC(), snapshot);
     }
 
     DescriptionCache(Dataset dataset, Clock clock) {
+        this(dataset, clock, "");
+    }
+
+    DescriptionCache(Dataset dataset, Clock clock, String snapshot) {
         this.dataset = dataset;
         this.clock = clock;
-        log.info("Creating");
+        this.snapshot = snapshot == null || snapshot.isBlank() ? null : Path.of(snapshot);
+        log.info("Creating{}", this.snapshot == null ? " without a snapshot" : " with snapshot " + this.snapshot);
+        load();
+    }
+
+    /**
+     * Reads the snapshot back, if there is one. Called from the constructor
+     * rather than a lifecycle hook so that the cache is never observable in a
+     * half-loaded state: the first {@link #get} cannot run before this has.
+     */
+    private void load() {
+        if (snapshot == null || !Files.isReadable(snapshot)) {
+            return;
+        }
+        // Parsed into a dataset of its own first. A half-written file throws
+        // part-way through, and it must not take the live cache with it.
+        val loaded = DatasetFactory.create();
+        try {
+            RDFDataMgr.read(loaded, snapshot.toUri().toString(), Lang.NQUADS);
+        } catch (Exception ex) {
+            log.warn("Could not read the description cache snapshot at {}, starting empty: {}",
+                snapshot, ex.getMessage());
+            return;
+        }
+        dataset.begin(ReadWrite.WRITE);
+        try {
+            val names = loaded.listNames();
+            var graphs = 0;
+            while (names.hasNext()) {
+                val name = names.next();
+                dataset.replaceNamedModel(name, loaded.getNamedModel(name));
+                graphs++;
+            }
+            dataset.commit();
+            log.info("Recovered {} graphs from the description cache snapshot at {}", graphs, snapshot);
+        } catch (Exception ex) {
+            dataset.abort();
+            log.warn("Could not load the description cache snapshot at {}: {}", snapshot, ex.getMessage());
+        } finally {
+            dataset.end();
+        }
+    }
+
+    /**
+     * Writes the snapshot, if anything has changed since the last time. Called
+     * once a run rather than once a description: this rewrites the whole file,
+     * and at a few thousand entities that is a couple of megabytes.
+     *
+     * <p>Written to a sibling temporary file and moved into place, so a reader
+     * sees either the previous snapshot or the new one. The move is atomic where
+     * the filesystem supports it; on a CIFS share it may not be, which is the
+     * one window in which a crash could leave an unreadable file — recovered
+     * from by {@link #load} starting empty.
+     */
+    public void save() {
+        if (snapshot == null || !changed) {
+            return;
+        }
+        val temporary = snapshot.resolveSibling(snapshot.getFileName() + ".part");
+        dataset.begin(ReadWrite.READ);
+        try {
+            if (snapshot.getParent() != null) {
+                Files.createDirectories(snapshot.getParent());
+            }
+            try (val out = Files.newOutputStream(temporary)) {
+                RDFDataMgr.write(out, dataset, Lang.NQUADS);
+            }
+            move(temporary, snapshot);
+            changed = false;
+            log.info("Wrote the description cache snapshot to {}", snapshot);
+        } catch (Exception ex) {
+            // A snapshot that cannot be written costs a cold start after the next
+            // pod recreation. It must never cost the export.
+            log.warn("Could not write the description cache snapshot to {}: {}", snapshot, ex.getMessage());
+            try {
+                Files.deleteIfExists(temporary);
+            } catch (Exception ignored) {
+                log.debug("Could not remove the partial snapshot at {}", temporary);
+            }
+        } finally {
+            dataset.end();
+        }
+    }
+
+    private static void move(Path from, Path to) throws Exception {
+        try {
+            Files.move(from, to, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        } catch (AtomicMoveNotSupportedException ex) {
+            // CIFS does not offer one. The replace is still a single operation as
+            // far as this process is concerned; it is simply not guaranteed to be
+            // one to a concurrent reader.
+            Files.move(from, to, StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 
     /**
@@ -124,6 +258,7 @@ public class DescriptionCache {
             metadata.add(entity, property, metadata.createTypedLiteral(
                 Instant.now(clock).toString(), "http://www.w3.org/2001/XMLSchema#dateTime"));
             dataset.commit();
+            changed = true;
         } catch (Exception ex) {
             dataset.abort();
             // A cache that cannot be written is a slow export, not a broken one.

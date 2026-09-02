@@ -45,6 +45,15 @@ import java.util.Set;
  * <p>Both authorities publish under CC0, which is why no {@code dcterms:license}
  * appears on these graphs while the vocabulary ones are still unresolved — the
  * terms here are known, and stated.
+ *
+ * <h2>A graph is published whole or not at all</h2>
+ *
+ * <p>The export writes each graph with a single PUT, which replaces it. That
+ * makes a partially-filled cache dangerous rather than merely incomplete: a run
+ * that had only reached 200 of 561 organisations would replace a full ROR graph
+ * with a third of one, and the endpoint would then lose and regain descriptions
+ * every time the pod was recreated. So a graph is left alone until the run
+ * behind it is complete — see {@link IdentityRetriever.Descriptions#deferred()}.
  */
 @Slf4j
 @Profile("exports")
@@ -112,9 +121,25 @@ public class IdentityGraphService implements SourceGraphProvider {
                 log.warn("No identities retrieved for {}, leaving its graph as it is", authority.uriPrefix());
                 continue;
             }
+            if (described.deferred() > 0) {
+                // The cache is still filling, so this run holds only part of what
+                // the authority has to say. The export's PUT replaces a graph
+                // wholesale, so publishing now would swap a full graph for a
+                // partial one and then swap it back over the following days --
+                // the endpoint would visibly lose and regain descriptions on
+                // every deploy. Leaving the graph alone until the cache is warm
+                // costs freshness for a few runs and nothing else.
+                log.info(
+                    "Not publishing {} yet: {} of {} entities are still to be fetched, "
+                        + "and replacing the graph now would publish less than it already holds",
+                    authority.uriPrefix(), described.deferred(), wanted.size()
+                );
+                continue;
+            }
 
-            addProvenance(described, authority);
-            turtleByGraph.put(authority.uriPrefix(), serialise(described));
+            val model = described.model();
+            addProvenance(model, authority);
+            turtleByGraph.put(authority.uriPrefix(), serialise(model));
         }
         return turtleByGraph;
     }

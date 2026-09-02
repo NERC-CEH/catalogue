@@ -8,8 +8,11 @@ import org.apache.jena.vocabulary.RDFS;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -131,6 +134,140 @@ class DescriptionCacheTest {
         // A TDB2-backed model is only valid inside its transaction, so this
         // would throw if the cache handed one back rather than a copy.
         assertThat(held.listStatements().toList().size(), is(1));
+    }
+
+    @Nested
+    @DisplayName("Surviving pod recreation via a snapshot on the share")
+    class Snapshot {
+
+        @TempDir
+        Path directory;
+
+        /** A cache backed by {@link #dataset}, snapshotting to {@code file}. */
+        private DescriptionCache cache(Path file) {
+            return new DescriptionCache(dataset, Clock.fixed(now, ZoneOffset.UTC), file.toString());
+        }
+
+        /** A cache with its own empty store, standing in for a recreated pod. */
+        private DescriptionCache recreatedPod(Path file) {
+            return new DescriptionCache(
+                TDB2Factory.createDataset(), Clock.fixed(now, ZoneOffset.UTC), file.toString());
+        }
+
+        @Test
+        @DisplayName("a description written before the pod died is there after it")
+        void descriptionsSurvive() {
+            val file = directory.resolve("cache.nq");
+            val live = cache(file);
+            live.put(ORCID, description("Claire Wood"));
+            live.save();
+
+            val held = recreatedPod(file).get(ORCID, Duration.ofDays(14));
+
+            assertTrue(held.isPresent(), "without this the pod refetches 2,686 entities");
+            assertTrue(held.get().contains(createResource(ORCID), RDFS.label, "Claire Wood"));
+        }
+
+        @Test
+        @DisplayName("the retrieval time survives too, so a recovered copy still ages")
+        void timestampsSurvive() {
+            val file = directory.resolve("cache.nq");
+            val live = cache(file);
+            live.put(ORCID, description("Claire Wood"));
+            live.save();
+
+            // A recovered description whose timestamp had been lost would either
+            // look brand new for ever or be refetched immediately. Neither is a
+            // cache.
+            val recovered = new DescriptionCache(
+                TDB2Factory.createDataset(),
+                Clock.fixed(now.plus(Duration.ofDays(15)), ZoneOffset.UTC),
+                file.toString());
+
+            assertThat(recovered.get(ORCID, Duration.ofDays(14)).isPresent(), is(false));
+            assertTrue(recovered.get(ORCID, Duration.ofDays(365)).isPresent());
+        }
+
+        @Test
+        @DisplayName("a remembered empty answer survives, though it has no triples to write")
+        void emptyDescriptionsSurvive() {
+            // The subtle one. An entity the authority had nothing to say about is
+            // an empty named graph, and an empty graph contributes no quads at
+            // all to the file. What carries it across is its timestamp in the
+            // metadata graph, which is also what get() keys on -- so the negative
+            // result survives a round trip that cannot represent it directly.
+            val file = directory.resolve("cache.nq");
+            val live = cache(file);
+            live.put(ORCID, ModelFactory.createDefaultModel());
+            live.save();
+
+            val held = recreatedPod(file).get(ORCID, Duration.ofDays(14));
+
+            assertTrue(held.isPresent(), "otherwise a silent authority is asked again every run");
+            assertThat(held.get().size(), is(0L));
+        }
+
+        @Test
+        @DisplayName("no snapshot configured writes no file")
+        void snapshotIsOptional() {
+            val cache = new DescriptionCache(dataset, Clock.fixed(now, ZoneOffset.UTC), "");
+            cache.put(ORCID, description("Claire Wood"));
+            cache.save();
+
+            assertThat(directory.toFile().list().length, is(0));
+        }
+
+        @Test
+        @DisplayName("nothing is written when nothing has changed")
+        void saveIsSkippedWhenClean() throws Exception {
+            val file = directory.resolve("cache.nq");
+            val cache = cache(file);
+            cache.put(ORCID, description("Claire Wood"));
+            cache.save();
+            val firstWrite = java.nio.file.Files.getLastModifiedTime(file);
+
+            cache.save();
+
+            assertThat(
+                "a daily export that fetched nothing should not rewrite the file",
+                java.nio.file.Files.getLastModifiedTime(file), is(firstWrite)
+            );
+        }
+
+        @Test
+        @DisplayName("an unreadable snapshot starts the cache empty rather than failing")
+        void corruptSnapshotIsSurvivable() throws Exception {
+            val file = directory.resolve("cache.nq");
+            java.nio.file.Files.writeString(file, "this is not N-Quads <<<\n");
+
+            val cache = recreatedPod(file);
+
+            assertThat("a half-written file is the cost of a crash mid-save, not an outage",
+                cache.get(ORCID, Duration.ofDays(14)).isPresent(), is(false));
+            assertThat(cache.size(), is(0L));
+        }
+
+        @Test
+        @DisplayName("a missing snapshot is not an error, since the first run has none")
+        void missingSnapshotIsSurvivable() {
+            val cache = recreatedPod(directory.resolve("never-written.nq"));
+
+            assertThat(cache.size(), is(0L));
+        }
+
+        @Test
+        @DisplayName("no partial file is left behind after a successful save")
+        void noPartialFileRemains() {
+            val file = directory.resolve("cache.nq");
+            val live = cache(file);
+            live.put(ORCID, description("Claire Wood"));
+            live.save();
+
+            assertThat(
+                java.util.List.of(directory.toFile().list()),
+                is(java.util.List.of("cache.nq"))
+            );
+        }
     }
 
     @Test

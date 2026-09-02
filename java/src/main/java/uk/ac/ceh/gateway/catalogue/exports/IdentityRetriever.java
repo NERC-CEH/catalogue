@@ -181,12 +181,33 @@ public class IdentityRetriever {
     }
 
     /**
+     * What one run of {@link #describe} managed to obtain.
+     *
+     * <p>{@code deferred} is the number of entities this run never asked about
+     * at all, because the budget ran out before reaching them and no copy of any
+     * age was held. It is deliberately separate from the entities that were
+     * asked about and could not be reached: those we can do nothing more for,
+     * whereas a deferred entity will simply be described by a later run.
+     *
+     * <p>That distinction is what tells a caller whether the model in hand is
+     * the best that can currently be had, or merely the first slice of a cache
+     * that is still filling. Only the caller can decide what to do about it —
+     * see {@link IdentityGraphService#graphs}.
+     */
+    public record Descriptions(Model model, int deferred) {
+        public boolean isEmpty() {
+            return model.isEmpty();
+        }
+    }
+
+    /**
      * @param uris      the entities to describe, all from one authority
      * @param authority which authority they belong to
      * @return a model describing as many of them as could be obtained, from the
-     *         cache where it is fresh and from the authority otherwise
+     *         cache where it is fresh and from the authority otherwise, together
+     *         with the number left for a later run
      */
-    public Model describe(Collection<String> uris, Authority authority) {
+    public Descriptions describe(Collection<String> uris, Authority authority) {
         val combined = ModelFactory.createDefaultModel();
         var fetched = 0;
         var cached = 0;
@@ -229,7 +250,12 @@ public class IdentityRetriever {
         }
         log.info("{}: {} fetched, {} from cache, {} deferred to a later run, {} unavailable",
             authority, fetched, cached, deferred, failed);
-        return combined;
+        if (fetched > 0) {
+            // The only thing that changes the cache is a fetch, so this is the
+            // only point at which the snapshot needs rewriting.
+            cache.save();
+        }
+        return new Descriptions(combined, deferred);
     }
 
     private Model retrieve(String uri, Authority authority) {

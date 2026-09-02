@@ -131,7 +131,7 @@ class IdentityRetrieverTest {
                 .andExpect(header("Accept", "text/turtle"))
                 .andRespond(withSuccess(orcidResponse(), MediaType.valueOf("text/turtle")));
 
-            val model = retriever("").describe(List.of(ORCID), IdentityRetriever.Authority.ORCID);
+            val model = retriever("").describe(List.of(ORCID), IdentityRetriever.Authority.ORCID).model();
             val person = createResource(ORCID);
 
             server.verify();
@@ -174,7 +174,7 @@ class IdentityRetrieverTest {
             server.expect(requestTo(ROR_API))
                 .andRespond(withSuccess(rorResponse(), MediaType.APPLICATION_JSON));
 
-            val model = retriever("").describe(List.of(ROR), IdentityRetriever.Authority.ROR);
+            val model = retriever("").describe(List.of(ROR), IdentityRetriever.Authority.ROR).model();
             val organisation = createResource(ROR);
 
             server.verify();
@@ -200,7 +200,7 @@ class IdentityRetrieverTest {
             server.expect(requestTo(ROR_API))
                 .andRespond(withSuccess(rorResponse(), MediaType.APPLICATION_JSON));
 
-            val model = retriever("").describe(List.of(ROR), IdentityRetriever.Authority.ROR);
+            val model = retriever("").describe(List.of(ROR), IdentityRetriever.Authority.ROR).model();
 
             assertTrue(
                 model.contains(createResource(ROR), OWL.sameAs,
@@ -247,7 +247,7 @@ class IdentityRetrieverTest {
 
             val retriever = retriever("");
             retriever.describe(List.of(ORCID), IdentityRetriever.Authority.ORCID);
-            val second = retriever.describe(List.of(ORCID), IdentityRetriever.Authority.ORCID);
+            val second = retriever.describe(List.of(ORCID), IdentityRetriever.Authority.ORCID).model();
 
             // once() means a second request fails verification.
             server.verify();
@@ -318,6 +318,51 @@ class IdentityRetrieverTest {
         }
 
         @Test
+        @DisplayName("the entities the budget did not reach are reported, not silently dropped")
+        void deferredEntitiesAreReported() {
+            val many = IntStream.range(0, 100)
+                .mapToObj(i -> "https://ror.org/org%02d".formatted(i))
+                .toList();
+            IntStream.range(0, 40).forEach(i ->
+                server.expect(requestTo(org.hamcrest.Matchers.startsWith(
+                        "https://api.ror.org/v2/organizations/")))
+                    .andRespond(withSuccess(rorResponse(), MediaType.APPLICATION_JSON)));
+
+            val described = retriever("", 40).describe(many, IdentityRetriever.Authority.ROR);
+
+            assertThat(
+                "the caller cannot tell a warm cache from a filling one without this",
+                described.deferred(), is(60)
+            );
+        }
+
+        @Test
+        @DisplayName("nothing is deferred once every entity has been reached")
+        void nothingDeferredWhenTheCacheIsWarm() {
+            server.expect(once(), requestTo(ORCID))
+                .andRespond(withSuccess(orcidResponse(), MediaType.valueOf("text/turtle")));
+
+            val retriever = retriever("");
+            retriever.describe(List.of(ORCID), IdentityRetriever.Authority.ORCID);
+            val second = retriever.describe(List.of(ORCID), IdentityRetriever.Authority.ORCID);
+
+            assertThat(second.deferred(), is(0));
+        }
+
+        @Test
+        @DisplayName("an entity asked about and unreachable is not deferred, because a later run cannot help")
+        void unreachableIsNotDeferred() {
+            server.expect(requestTo(ORCID)).andRespond(withServerError());
+
+            val described = retriever("").describe(List.of(ORCID), IdentityRetriever.Authority.ORCID);
+
+            assertThat(
+                "deferring means not yet asked; this one was asked and had nothing to give",
+                described.deferred(), is(0)
+            );
+        }
+
+        @Test
         @DisplayName("an unreachable authority falls back to any copy held, however old")
         void staleBeatsNothing() {
             server.expect(once(), requestTo(ORCID))
@@ -333,7 +378,7 @@ class IdentityRetrieverTest {
                 Clock.fixed(java.time.Instant.now().plus(java.time.Duration.ofDays(30)), java.time.ZoneOffset.UTC));
 
             val model = new IdentityRetriever(restTemplate, aged, "", 200)
-                .describe(List.of(ORCID), IdentityRetriever.Authority.ORCID);
+                .describe(List.of(ORCID), IdentityRetriever.Authority.ORCID).model();
 
             assertTrue(
                 model.contains(createResource(ORCID), RDFS.label, "Claire Wood"),
@@ -346,7 +391,7 @@ class IdentityRetrieverTest {
         void unreachableAndUncachedIsAbsent() {
             server.expect(requestTo(ORCID)).andRespond(withServerError());
 
-            val model = retriever("").describe(List.of(ORCID), IdentityRetriever.Authority.ORCID);
+            val model = retriever("").describe(List.of(ORCID), IdentityRetriever.Authority.ORCID).model();
 
             assertThat(model.size(), is(0L));
         }
