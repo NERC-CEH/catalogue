@@ -23,7 +23,7 @@ import lombok.val;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
-import uk.ac.ceh.gateway.catalogue.exports.VocabularyLabelsService;
+import uk.ac.ceh.gateway.catalogue.exports.VocabularyGraphService;
 import java.io.StringReader;
 import static org.apache.jena.rdf.model.ResourceFactory.createProperty;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
@@ -155,7 +155,7 @@ class WellKnownControllerTest extends AbstractMvcTest {
             named,
             hasItem("https://catalogue.ceh.ac.uk")
         );
-        for (val source : new VocabularyLabelsService(null, null).sourceGraphs()) {
+        for (val source : new VocabularyGraphService(null, null, null).sourceGraphs()) {
             assertThat(named, hasItem(source.graph()));
         }
     }
