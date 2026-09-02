@@ -68,7 +68,7 @@ public class UriNormaliser {
         Map.entry("isni.org", new HostPolicy(true, TrailingSlash.STRIP)),
         Map.entry("www.wikidata.org", new HostPolicy(false, TrailingSlash.STRIP)),
         Map.entry("creativecommons.org", new HostPolicy(true, TrailingSlash.STRIP)),
-        Map.entry("vocabs.lter-europe.net", new HostPolicy(true, TrailingSlash.LEAVE)),
+        Map.entry("vocabs.lter-europe.net", new HostPolicy(false, TrailingSlash.STRIP)),
         Map.entry("hdl.handle.net", new HostPolicy(true, TrailingSlash.LEAVE)),
         Map.entry("codes.wmo.int", new HostPolicy(true, TrailingSlash.LEAVE)),
         Map.entry("cdm21006.contentdm.oclc.org", new HostPolicy(true, TrailingSlash.LEAVE)),

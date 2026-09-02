@@ -48,12 +48,12 @@ doo:utilises <https://catalogue.ceh.ac.uk/id/333312345>, <https://catalogue.ceh.
 dcterms:isReferencedBy
 <https://test-admin-url.ac.uk> ;
 dcterms:subject
-<https://vocabs.lter-europe.net/EnvThes/30347>,
+<http://vocabs.lter-europe.net/EnvThes/30347>,
 <http://onto.nerc.ac.uk/CAST/276>,
 <http://onto.nerc.ac.uk/CAST/187>,
 <http://onto.nerc.ac.uk/CAST/287>,
 <http://onto.nerc.ac.uk/CEHMD/topic/1>,
-<https://vocabs.lter-europe.net/EnvThes/30349> ;
+<http://vocabs.lter-europe.net/EnvThes/30349> ;
 sdo:variableMeasured <https://test-observed-properties.ac.uk> ;
 sosa:observedProperty <https://test-observed-properties.ac.uk> ;
 prov:wasGeneratedBy
@@ -106,12 +106,12 @@ pro:relatesToEntity :f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16 .
 <https://test-admin-url.ac.uk> a <http://purl.org/spar/fabio/Expression> ;
 dcterms:bibliographicCitation "Test Admin details";
 .
-<https://vocabs.lter-europe.net/EnvThes/30347> a skos:Concept .
+<http://vocabs.lter-europe.net/EnvThes/30347> a skos:Concept .
 <http://onto.nerc.ac.uk/CAST/276> a skos:Concept .
 <http://onto.nerc.ac.uk/CAST/187> a skos:Concept .
 <http://onto.nerc.ac.uk/CAST/287> a skos:Concept .
 <http://onto.nerc.ac.uk/CEHMD/topic/1> a skos:Concept .
-<https://vocabs.lter-europe.net/EnvThes/30349> a skos:Concept .
+<http://vocabs.lter-europe.net/EnvThes/30349> a skos:Concept .
 <https://test-observed-properties.ac.uk> a skos:Concept .
 <https://ror.org/00pggkr55> a foaf:Organization .
 <https://www.iana.org/assignments/media-types/text/csv> a dcterms:IMT .
