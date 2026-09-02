@@ -66,7 +66,7 @@ public class UriNormaliser {
         // but ISNI publishes its identifiers over https with no trailing slash,
         // and the first record to supply one should not split against the next.
         Map.entry("isni.org", new HostPolicy(true, TrailingSlash.STRIP)),
-        Map.entry("www.wikidata.org", new HostPolicy(true, TrailingSlash.STRIP)),
+        Map.entry("www.wikidata.org", new HostPolicy(false, TrailingSlash.STRIP)),
         Map.entry("creativecommons.org", new HostPolicy(true, TrailingSlash.STRIP)),
         Map.entry("vocabs.lter-europe.net", new HostPolicy(true, TrailingSlash.LEAVE)),
         Map.entry("hdl.handle.net", new HostPolicy(true, TrailingSlash.LEAVE)),

@@ -157,7 +157,7 @@
           <#if keyword.uri?matches("^http[s]?://inspire.ec.europa.eu/\\S+$")>
             <#assign subjectScheme="European Union INSPIRE registry" schemeURI="http://inspire.ec.europa.eu/registry/">
           <#elseif keyword.uri?matches("^http[s]?://www.wikidata.org/entity/\\S+$")>
-            <#assign subjectScheme="Wikidata" schemeURI="https://www.wikidata.org/">
+            <#assign subjectScheme="Wikidata" schemeURI="http://www.wikidata.org/">
           <#elseif keyword.uri?matches("^http[s]?://sws.geonames.org/\\S+$")>
             <#assign subjectScheme="Geonames" schemeURI="https://www.geonames.org/">
           <#elseif keyword.uri?matches("^http[s]?://www.eionet.europa.eu/gemet/concept/\\S+$")>

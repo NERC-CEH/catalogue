@@ -225,7 +225,7 @@ public class DataciteRequestService {
                     schemeUri = "http://inspire.ec.europa.eu/registry/";
                 } else if (uri.matches("^https?://www\\.wikidata\\.org/entity/\\S+$")) {
                     subjectScheme = "Wikidata";
-                    schemeUri = "https://www.wikidata.org/";
+                    schemeUri = "http://www.wikidata.org/";
                 } else if (uri.matches("^https?://sws\\.geonames\\.org/\\S+$")) {
                     subjectScheme = "Geonames";
                     schemeUri = "http://www.geonames.org/";
