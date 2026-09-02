@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 @DisplayName("Deciding which RDF node a keyword is")
 class KeywordUriTest {
 
-    private static final String GEMET_SOIL_MOISTURE = "https://www.eionet.europa.eu/gemet/concept/7842";
+    private static final String GEMET_SOIL_MOISTURE = "http://www.eionet.europa.eu/gemet/concept/7842";
 
     @Mock private KeywordVocabularySolrQueryService vocabulary;
 

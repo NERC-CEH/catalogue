@@ -22,6 +22,7 @@ import uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.exports.CatalogueExportService;
 import uk.ac.ceh.gateway.catalogue.exports.DocumentsToTurtleService;
+import uk.ac.ceh.gateway.catalogue.exports.VocabularyLabelsService;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 
@@ -50,6 +51,7 @@ public class FusekiExportService implements CatalogueExportService {
     private final DocumentsToTurtleService documentsToTurtleService;
     private final VoidStatsService voidStatsService;
     private final MetadataListingService metadataListingService;
+    private final VocabularyLabelsService vocabularyLabelsService;
     private volatile Date lastExported;
 
     public FusekiExportService(
@@ -61,7 +63,8 @@ public class FusekiExportService implements CatalogueExportService {
         @Value("${fuseki.username}") String fusekiUsername,
         @Value("${fuseki.password}") String fusekiPassword,
         VoidStatsService voidStatsService,
-        MetadataListingService metadataListingService
+        MetadataListingService metadataListingService,
+        VocabularyLabelsService vocabularyLabelsService
     ) {
         log.info("Creating");
 
@@ -74,6 +77,7 @@ public class FusekiExportService implements CatalogueExportService {
         this.documentsToTurtleService = documentsToTurtleService;
         this.voidStatsService = voidStatsService;
         this.metadataListingService = metadataListingService;
+        this.vocabularyLabelsService = vocabularyLabelsService;
     }
 
     private record TurtleStats(long triples, Map<String, Long> classEntityCounts) {}
@@ -95,8 +99,9 @@ public class FusekiExportService implements CatalogueExportService {
             log.info("No documents to export");
             return;
         }
-        post(String.join("\n", catalogueTtls.values()));
+        post(baseUri, String.join("\n", catalogueTtls.values()));
         log.info("Posted public metadata documents as ttl to {}", fusekiUrl);
+        postVocabularyLabels();
         catalogueIds.stream()
             .filter(id -> !catalogueTtls.containsKey(id))
             .forEach(voidStatsService::remove);
@@ -109,6 +114,35 @@ public class FusekiExportService implements CatalogueExportService {
             ));
         });
         lastExported = new Date();
+    }
+
+    /**
+     * Publishes the vocabulary labels the application already holds, one named
+     * graph per authority (dri-one #350 phase 1).
+     *
+     * <p>Each graph is written in its own try/catch and none of them can fail
+     * the export. The PUT is all-or-nothing per graph, which is exactly how one
+     * malformed literal in one grant number held back all 234,000 catalogue
+     * triples for a week (dri-one #344); separating the writes means an
+     * unavailable vocabulary, or a bad label in one of them, cannot stop the
+     * catalogue graph from updating — or stop the other vocabularies publishing.
+     */
+    private void postVocabularyLabels() {
+        Map<String, String> graphs;
+        try {
+            graphs = vocabularyLabelsService.graphs();
+        } catch (Exception ex) {
+            log.warn("Could not build the vocabulary label graphs, skipping them: {}", ex.getMessage());
+            return;
+        }
+        graphs.forEach((graph, ttl) -> {
+            try {
+                post(graph, ttl);
+                log.info("Posted vocabulary labels to graph {}", graph);
+            } catch (Exception ex) {
+                log.warn("Could not post vocabulary labels to graph {}: {}", graph, ex.getMessage());
+            }
+        });
     }
 
     @Override
@@ -136,8 +170,8 @@ public class FusekiExportService implements CatalogueExportService {
         return new TurtleStats(model.size(), Map.copyOf(classEntityCounts));
     }
 
-    private void post(String data) {
-        String serverUrl = fusekiUrl + "?graph=" + baseUri;
+    private void post(String graph, String data) {
+        String serverUrl = fusekiUrl + "?graph=" + graph;
 
         try {
             // PUT the data - this works if there's no graph and if there's an existing graph, in which case it's updated

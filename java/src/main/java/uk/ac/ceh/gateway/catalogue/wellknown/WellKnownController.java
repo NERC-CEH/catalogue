@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.exports.VocabularyLabelsService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +34,7 @@ public class WellKnownController {
     private final List<String> catalogueIds;
     private final CatalogueService catalogueService;
     private final VoidStatsService voidStatsService;
+    private final VocabularyLabelsService vocabularyLabelsService;
 
     public WellKnownController(
         Configuration freemarkerConfig,
@@ -40,7 +42,8 @@ public class WellKnownController {
         @Value("${fuseki.sparqlEndpoint}") String sparqlUrl,
         @Value("#{'${fuseki.catalogueIds:}'.split(',')}") List<String> catalogueIds,
         CatalogueService catalogueService,
-        VoidStatsService voidStatsService
+        VoidStatsService voidStatsService,
+        VocabularyLabelsService vocabularyLabelsService
     ) {
         this.freemarkerConfig = freemarkerConfig;
         this.baseUri = baseUri;
@@ -48,6 +51,7 @@ public class WellKnownController {
         this.catalogueIds = catalogueIds.stream().filter(id -> !id.isBlank()).toList();
         this.catalogueService = catalogueService;
         this.voidStatsService = voidStatsService;
+        this.vocabularyLabelsService = vocabularyLabelsService;
         log.info("Creating");
     }
 
@@ -68,6 +72,11 @@ public class WellKnownController {
         model.put("sparqlUrl", sparqlUrl);
         model.put("catalogues", catalogues);
         model.put("stats", stats);
+        // The named graphs the endpoint holds: the catalogue's own, plus one per
+        // authority whose labels we republish (dri-one #350). Advertised here so
+        // a consumer can discover them rather than having to be told.
+        model.put("catalogueGraph", baseUri);
+        model.put("sourceGraphs", vocabularyLabelsService.sourceGraphs());
         String body = FreeMarkerTemplateUtils.processTemplateIntoString(
             freemarkerConfig.getTemplate("rdf/void.ftl"),
             model

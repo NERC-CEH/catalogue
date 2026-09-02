@@ -46,7 +46,7 @@ import static uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabularySolrQuer
 @DisplayName("Caching of keyword label resolution (dri-one #321)")
 class KeywordVocabularySolrQueryServiceCachingTest {
 
-    private static final String CONCEPT = "https://www.eionet.europa.eu/gemet/concept/7842";
+    private static final String CONCEPT = "http://www.eionet.europa.eu/gemet/concept/7842";
 
     @Configuration
     @EnableCaching

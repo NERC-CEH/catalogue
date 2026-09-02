@@ -31,7 +31,9 @@ import java.util.regex.Pattern;
  * <p>Scheme preference and trailing-slash policy are deliberately per-host
  * (see {@link #HOST_POLICIES}). Both are only safe where we know which form the
  * host publishes: {@code vocab.nerc.ac.uk} concept URIs, for instance,
- * canonically <em>end</em> in a slash, so a blanket strip would break them.
+ * canonically <em>end</em> in a slash, so a blanket strip would break them, and
+ * most controlled vocabularies mint their concept URIs under {@code http} — for
+ * them an upgrade to {@code https} does not reach the same identifier.
  * Unlisted hosts keep their scheme and trailing slash untouched.
  *
  * <p>Rejected input is returned as an empty string so that templates can fall
@@ -45,9 +47,28 @@ public class UriNormaliser {
     /** Whether the trailing slash of a URI on a given host is significant. */
     private enum TrailingSlash { STRIP, LEAVE }
 
-    private record HostPolicy(boolean preferHttps, TrailingSlash trailingSlash) {}
+    /**
+     * Which scheme a host's identifiers canonically use. {@code LEAVE} is for
+     * hosts we have not checked — guessing either way would mint a second
+     * identifier for something that already has one.
+     */
+    private enum Scheme {
+        HTTPS("https"), HTTP("http"), LEAVE(null);
 
-    private static final HostPolicy DEFAULT_POLICY = new HostPolicy(false, TrailingSlash.LEAVE);
+        private final String canonical;
+
+        Scheme(String canonical) {
+            this.canonical = canonical;
+        }
+
+        String applyTo(String scheme) {
+            return canonical == null ? scheme : canonical;
+        }
+    }
+
+    private record HostPolicy(Scheme scheme, TrailingSlash trailingSlash) {}
+
+    private static final HostPolicy DEFAULT_POLICY = new HostPolicy(Scheme.LEAVE, TrailingSlash.LEAVE);
 
     /**
      * Hosts we have measured emitting more than one form of the same URI, and
@@ -57,24 +78,55 @@ public class UriNormaliser {
      * so a future record cannot reintroduce the split.
      */
     private static final Map<String, HostPolicy> HOST_POLICIES = Map.ofEntries(
-        Map.entry("gtr.ukri.org", new HostPolicy(true, TrailingSlash.STRIP)),
-        Map.entry("sws.geonames.org", new HostPolicy(true, TrailingSlash.STRIP)),
-        Map.entry("doi.org", new HostPolicy(true, TrailingSlash.STRIP)),
-        Map.entry("ror.org", new HostPolicy(true, TrailingSlash.STRIP)),
-        Map.entry("orcid.org", new HostPolicy(true, TrailingSlash.STRIP)),
+        Map.entry("gtr.ukri.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.STRIP)),
+        Map.entry("sws.geonames.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.STRIP)),
+        Map.entry("doi.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.STRIP)),
+        Map.entry("ror.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.STRIP)),
+        Map.entry("orcid.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.STRIP)),
         // Pre-emptive: no isni.org URI appears in production yet (dri-one #319),
         // but ISNI publishes its identifiers over https with no trailing slash,
         // and the first record to supply one should not split against the next.
-        Map.entry("isni.org", new HostPolicy(true, TrailingSlash.STRIP)),
-        Map.entry("www.wikidata.org", new HostPolicy(false, TrailingSlash.STRIP)),
-        Map.entry("creativecommons.org", new HostPolicy(true, TrailingSlash.STRIP)),
-        Map.entry("vocabs.lter-europe.net", new HostPolicy(false, TrailingSlash.STRIP)),
-        Map.entry("hdl.handle.net", new HostPolicy(true, TrailingSlash.LEAVE)),
-        Map.entry("codes.wmo.int", new HostPolicy(true, TrailingSlash.LEAVE)),
-        Map.entry("cdm21006.contentdm.oclc.org", new HostPolicy(true, TrailingSlash.LEAVE)),
-        Map.entry("www.nationalarchives.gov.uk", new HostPolicy(true, TrailingSlash.LEAVE)),
-        Map.entry("gotw.nerc.ac.uk", new HostPolicy(true, TrailingSlash.LEAVE)),
-        Map.entry("eidc.ceh.ac.uk", new HostPolicy(true, TrailingSlash.LEAVE))
+        Map.entry("isni.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.STRIP)),
+        Map.entry("www.wikidata.org", new HostPolicy(Scheme.LEAVE, TrailingSlash.STRIP)),
+        Map.entry("creativecommons.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.STRIP)),
+        // A controlled vocabulary's concept URI is an identifier the authority
+        // mints, not an address for fetching it. Upgrading its scheme does not
+        // reach the same identifier, it invents a second one — so these are
+        // pinned to the scheme the authority actually publishes, in both
+        // directions, rather than merely left alone. Each was checked against
+        // the authority itself, and they do not all agree (dri-one #350):
+        //
+        //   vocabs.lter-europe.net  EnvThes: the eLTER store holds 60,808
+        //     triples under http and none under https. Previously forced to
+        //     https here, which split its 102 URIs in the graph from the
+        //     authority's own form and from the labels the keyword harvest
+        //     stores — KeywordVocabulariesConfig already queries the http graph.
+        //   www.eionet.europa.eu    GEMET: getConcept returns
+        //     "uri": "http://..." and rejects the https form with HTTP 400.
+        //   vocab.nerc.ac.uk        NVS: returns <http://...> as the subject
+        //     even when the request itself is made over https.
+        //   onto.nerc.ac.uk         CAST: the graph on vocabs.ceh.ac.uk is
+        //     named <http://onto.nerc.ac.uk/CAST/>.
+        //   aims.fao.org            AGROVOC: mints http.
+        //
+        // Trailing slashes differ per vocabulary too. An NVS concept URI
+        // canonically ends in one, so stripping would break it; an EnvThes URI
+        // does not, so a stray slash is stripped to converge the two forms
+        // (df2e4cdaa). The rest are left alone because nobody has checked them.
+        Map.entry("vocabs.lter-europe.net", new HostPolicy(Scheme.HTTP, TrailingSlash.STRIP)),
+        Map.entry("www.eionet.europa.eu", new HostPolicy(Scheme.HTTP, TrailingSlash.LEAVE)),
+        Map.entry("vocab.nerc.ac.uk", new HostPolicy(Scheme.HTTP, TrailingSlash.LEAVE)),
+        Map.entry("onto.nerc.ac.uk", new HostPolicy(Scheme.HTTP, TrailingSlash.LEAVE)),
+        Map.entry("aims.fao.org", new HostPolicy(Scheme.HTTP, TrailingSlash.LEAVE)),
+        // The newer UKCEH vocabularies are the exception: their graphs are
+        // named <https://digital.ceh.ac.uk/vocab/...>.
+        Map.entry("digital.ceh.ac.uk", new HostPolicy(Scheme.HTTPS, TrailingSlash.LEAVE)),
+        Map.entry("hdl.handle.net", new HostPolicy(Scheme.HTTPS, TrailingSlash.LEAVE)),
+        Map.entry("codes.wmo.int", new HostPolicy(Scheme.HTTPS, TrailingSlash.LEAVE)),
+        Map.entry("cdm21006.contentdm.oclc.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.LEAVE)),
+        Map.entry("www.nationalarchives.gov.uk", new HostPolicy(Scheme.HTTPS, TrailingSlash.LEAVE)),
+        Map.entry("gotw.nerc.ac.uk", new HostPolicy(Scheme.HTTPS, TrailingSlash.LEAVE)),
+        Map.entry("eidc.ceh.ac.uk", new HostPolicy(Scheme.HTTPS, TrailingSlash.LEAVE))
     );
 
     /** RFC 3986 Appendix B, restricted to the hierarchical {@code scheme://authority} form. */
@@ -147,9 +199,7 @@ public class UriNormaliser {
         var fragment = matcher.group("fragment");
 
         var policy = HOST_POLICIES.getOrDefault(host(authority), DEFAULT_POLICY);
-        if (policy.preferHttps()) {
-            scheme = "https";
-        }
+        scheme = policy.scheme().applyTo(scheme);
         if (policy.trailingSlash() == TrailingSlash.STRIP && fragment == null) {
             if (query != null) {
                 query = stripTrailingSlash(query);

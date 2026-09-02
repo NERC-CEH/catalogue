@@ -17,9 +17,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class SparqlUiController {
 
     private final String sparqlEndpoint;
+    private final String catalogueGraph;
 
-    public SparqlUiController(@Value("${fuseki.sparqlEndpoint}") String sparqlEndpoint) {
+    public SparqlUiController(
+        @Value("${fuseki.sparqlEndpoint}") String sparqlEndpoint,
+        @Value("${documents.baseUri}") String catalogueGraph
+    ) {
         this.sparqlEndpoint = sparqlEndpoint;
+        // FusekiExportService PUTs the catalogue's Turtle to ?graph=<baseUri>, so
+        // this is the graph name the example queries have to use. Passed in rather
+        // than written into the page, which would break on dev and staging.
+        this.catalogueGraph = catalogueGraph;
         log.info("Creating");
     }
 
@@ -31,6 +39,7 @@ public class SparqlUiController {
     @GetMapping("sparql")
     public String sparqlUiPage(Model model) {
         model.addAttribute("sparqlEndpoint", sparqlEndpoint);
+        model.addAttribute("catalogueGraph", catalogueGraph);
         return "html/sparql-ui";
     }
 }

@@ -187,10 +187,62 @@ class UriNormaliserTest {
             "http://gtr.ukri.org/projects?ref=NE/J015644/1, https://gtr.ukri.org/projects?ref=NE/J015644/1",
             "http://doi.org/10.5285/abcd, https://doi.org/10.5285/abcd",
             "http://ror.org/00pggkr55, https://ror.org/00pggkr55",
-            "http://orcid.org/0000-0001-2345-6789, https://orcid.org/0000-0001-2345-6789"
+            "http://orcid.org/0000-0001-2345-6789, https://orcid.org/0000-0001-2345-6789",
+            "http://digital.ceh.ac.uk/vocab/ra/1, https://digital.ceh.ac.uk/vocab/ra/1"
         })
         void upgradesKnownHostsToHttps(String given, String expected) {
             assertThat(service.normalise(given), is(equalTo(expected)));
+        }
+
+        /**
+         * Checked against each authority rather than assumed: the eLTER store
+         * holds EnvThes only under http, GEMET's getConcept returns an http uri
+         * and rejects the https form with 400, NVS returns an http subject even
+         * over an https request, the CAST graph on vocabs.ceh.ac.uk is named
+         * with http, and AGROVOC mints http (dri-one #350).
+         */
+        @ParameterizedTest
+        @DisplayName("a vocabulary that mints http keeps it — upgrading invents a second concept URI")
+        @ValueSource(strings = {
+            "http://vocabs.lter-europe.net/EnvThes/30347",
+            "http://www.eionet.europa.eu/gemet/concept/530",
+            "http://vocab.nerc.ac.uk/collection/N07/current/UNRS/",
+            "http://onto.nerc.ac.uk/CAST/187",
+            "http://aims.fao.org/aos/agrovoc/c_8543"
+        })
+        void vocabularyConceptsKeepHttp(String conceptUri) {
+            assertThat(service.normalise(conceptUri), is(equalTo(conceptUri)));
+        }
+
+        @ParameterizedTest
+        @DisplayName("and a record supplying https for one is brought back to it, so both forms converge")
+        @CsvSource({
+            "https://vocabs.lter-europe.net/EnvThes/30347, http://vocabs.lter-europe.net/EnvThes/30347",
+            "https://www.eionet.europa.eu/gemet/concept/530, http://www.eionet.europa.eu/gemet/concept/530",
+            "https://vocab.nerc.ac.uk/collection/N07/current/UNRS/, http://vocab.nerc.ac.uk/collection/N07/current/UNRS/",
+            "https://onto.nerc.ac.uk/CAST/187, http://onto.nerc.ac.uk/CAST/187",
+            "https://aims.fao.org/aos/agrovoc/c_8543, http://aims.fao.org/aos/agrovoc/c_8543"
+        })
+        void vocabularyConceptsAreBroughtBackToHttp(String given, String expected) {
+            assertThat(service.normalise(given), is(equalTo(expected)));
+        }
+
+        @Test
+        @DisplayName("a stray trailing slash on an EnvThes concept is stripped, converging the two forms")
+        void envThesTrailingSlashIsStripped() {
+            assertThat(
+                service.normalise("https://vocabs.lter-europe.net/EnvThes/30347/"),
+                is(equalTo("http://vocabs.lter-europe.net/EnvThes/30347"))
+            );
+        }
+
+        @Test
+        @DisplayName("an NVS concept keeps its trailing slash, which is part of the identifier")
+        void nvsTrailingSlashSurvives() {
+            assertThat(
+                service.normalise("https://vocab.nerc.ac.uk/collection/N07/current/UNRS/"),
+                is(equalTo("http://vocab.nerc.ac.uk/collection/N07/current/UNRS/"))
+            );
         }
 
         @Test
