@@ -274,4 +274,56 @@ class VocabularyLabelsServiceTest {
             assertThat(service.graphs(), is(Map.of()));
         }
     }
+
+    @Nested
+    @DisplayName("Declaring what the endpoint offers")
+    class SourceGraphDeclaration {
+
+        @Test
+        @DisplayName("the declared graphs do not depend on what the index currently holds")
+        void declarationIsIndependentOfContent() {
+            givenSolrHolds(List.of());
+
+            assertThat(
+                "the VoID description advertises what the endpoint offers, not what happens "
+                    + "to be in Solr this minute",
+                service.sourceGraphs().stream().map(VocabularyLabelsService.Authority::graph).toList(),
+                containsInAnyOrder(
+                    GEMET_GRAPH, ENVTHES_GRAPH, CAST_GRAPH,
+                    "https://digital.ceh.ac.uk/vocab/ra/",
+                    "https://digital.ceh.ac.uk/vocab/fdri/"
+                )
+            );
+        }
+
+        @Test
+        @DisplayName("every declared graph is one the exporter would actually write to")
+        void declarationMatchesWhatIsWritten() {
+            givenSolrHolds(List.of(
+                new Keyword("archaeology", "gemet", "http://www.eionet.europa.eu/gemet/concept/530"),
+                new Keyword("A horizon", "envThes", "http://vocabs.lter-europe.net/EnvThes/41"),
+                new Keyword("nitrogen", "cast", "http://onto.nerc.ac.uk/CAST/273"),
+                new Keyword("Air quality", "research-activity", "https://digital.ceh.ac.uk/vocab/ra/7"),
+                new Keyword("Catchment", "fdri", "https://digital.ceh.ac.uk/vocab/fdri/3")
+            ));
+
+            val declared = service.sourceGraphs().stream()
+                .map(VocabularyLabelsService.Authority::graph).sorted().toList();
+            val written = service.graphs().keySet().stream().sorted().toList();
+
+            assertThat(
+                "a description that drifts from what is written is worse than no description",
+                written, is(declared)
+            );
+        }
+
+        @Test
+        @DisplayName("each declared graph carries a title, so the description is readable")
+        void everyGraphHasATitle() {
+            assertTrue(
+                service.sourceGraphs().stream().noneMatch(a -> a.title() == null || a.title().isBlank()),
+                "an unlabelled dataset in a discovery document tells a consumer nothing"
+            );
+        }
+    }
 }

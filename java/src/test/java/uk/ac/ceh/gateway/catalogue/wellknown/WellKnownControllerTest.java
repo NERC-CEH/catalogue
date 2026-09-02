@@ -19,6 +19,17 @@ import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 
 import java.util.Map;
 
+import lombok.val;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
+import uk.ac.ceh.gateway.catalogue.exports.VocabularyLabelsService;
+import java.io.StringReader;
+import static org.apache.jena.rdf.model.ResourceFactory.createProperty;
+import static org.apache.jena.rdf.model.ResourceFactory.createResource;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -99,5 +110,91 @@ class WellKnownControllerTest extends AbstractMvcTest {
                 content().string(containsString("void:classPartition")),
                 content().string(containsString("void:propertyPartition"))
             );
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("the VoID description is parseable Turtle, not merely a string that contains the right words")
+    void voidDescriptionParses() {
+        givenFreemarkerConfiguration();
+        givenEidcCatalogue();
+
+        val body = mvc.perform(get("/.well-known/void"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        val model = ModelFactory.createDefaultModel();
+        // Throws on malformed Turtle, which is the point: a discovery document
+        // nothing can parse advertises nothing.
+        RDFDataMgr.read(model, new StringReader(body), null, Lang.TURTLE);
+        assertTrue(model.size() > 0, "the description should assert something");
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("every named graph the endpoint holds is advertised, the catalogue's and each authority's")
+    void advertisesEveryNamedGraph() {
+        givenFreemarkerConfiguration();
+        givenEidcCatalogue();
+
+        val body = mvc.perform(get("/.well-known/void"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        val model = ModelFactory.createDefaultModel();
+        RDFDataMgr.read(model, new StringReader(body), null, Lang.TURTLE);
+
+        val named = model.listObjectsOfProperty(
+                createProperty("http://www.w3.org/ns/sparql-service-description#name"))
+            .toList().stream()
+            .map(node -> node.asResource().getURI())
+            .toList();
+
+        assertThat(
+            "VoID cannot express named graphs, so this is the service description's job",
+            named,
+            hasItem("https://catalogue.ceh.ac.uk")
+        );
+        for (val source : new VocabularyLabelsService(null, null).sourceGraphs()) {
+            assertThat(named, hasItem(source.graph()));
+        }
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("each authority graph is described as a dataset in its own right")
+    void describesEachAuthorityGraph() {
+        givenFreemarkerConfiguration();
+        givenEidcCatalogue();
+
+        val body = mvc.perform(get("/.well-known/void"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        val model = ModelFactory.createDefaultModel();
+        RDFDataMgr.read(model, new StringReader(body), null, Lang.TURTLE);
+
+        val gemet = createResource("http://www.eionet.europa.eu/gemet/");
+        assertTrue(
+            model.contains(gemet, createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                createResource("http://rdfs.org/ns/void#Dataset")),
+            "a consumer should be able to discover what the graph holds, not just that it exists"
+        );
+        assertTrue(
+            model.listObjectsOfProperty(gemet, createProperty("http://purl.org/dc/terms/license"))
+                .toList().isEmpty(),
+            "no licence is claimed for an authority's content until one has been established"
+        );
+    }
+
+    private void givenEidcCatalogue() {
+        given(catalogueService.retrieve("eidc"))
+            .willReturn(Catalogue.builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc.ac.uk")
+                .contactUrl("")
+                .logo("eidc.png")
+                .build());
     }
 }

@@ -15,6 +15,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,7 @@ public class VocabularyLabelsService {
      * checked against each authority: the NERC and eLTER vocabularies mint
      * {@code http}, the newer UKCEH ones {@code https}.
      */
-    private record Authority(String graph, String title) {}
+    public record Authority(String graph, String title) {}
 
     private static final Map<String, Authority> AUTHORITIES = Map.of(
         "gemet", new Authority(
@@ -112,6 +113,24 @@ public class VocabularyLabelsService {
         this.uriNormaliser = uriNormaliser;
         this.clock = clock;
         log.info("Creating");
+    }
+
+    /**
+     * The graphs this service publishes to, whether or not the keyword index
+     * currently holds anything for them.
+     *
+     * <p>Separate from {@link #graphs()} on purpose: that reports what there is
+     * to publish right now, whereas this is the declaration of what the endpoint
+     * offers, which is what the VoID description at {@code /.well-known/void}
+     * advertises. One list, so the description cannot drift from what is
+     * actually written.
+     *
+     * @return the source graphs, ordered by graph IRI so the description is stable
+     */
+    public List<Authority> sourceGraphs() {
+        return AUTHORITIES.values().stream()
+            .sorted(Comparator.comparing(Authority::graph))
+            .toList();
     }
 
     /**
