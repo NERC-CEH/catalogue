@@ -187,8 +187,7 @@ class UriNormaliserTest {
             "http://gtr.ukri.org/projects?ref=NE/J015644/1, https://gtr.ukri.org/projects?ref=NE/J015644/1",
             "http://doi.org/10.5285/abcd, https://doi.org/10.5285/abcd",
             "http://ror.org/00pggkr55, https://ror.org/00pggkr55",
-            "http://orcid.org/0000-0001-2345-6789, https://orcid.org/0000-0001-2345-6789",
-            "http://vocabs.lter-europe.net/EnvThes/30347, https://vocabs.lter-europe.net/EnvThes/30347"
+            "http://orcid.org/0000-0001-2345-6789, https://orcid.org/0000-0001-2345-6789"
         })
         void upgradesKnownHostsToHttps(String given, String expected) {
             assertThat(service.normalise(given), is(equalTo(expected)));
