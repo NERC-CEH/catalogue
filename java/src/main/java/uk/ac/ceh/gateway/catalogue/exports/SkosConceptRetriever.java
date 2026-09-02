@@ -23,6 +23,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -48,13 +51,23 @@ import java.util.Set;
  * properties that describe a concept — with the concept itself as subject.
  * Everything else is discarded.
  *
- * <h2>No cache</h2>
+ * <h2>Why there is a cache, having argued there should not be</h2>
  *
- * <p>Deliberately none. The catalogue references 132 concepts across these
- * three vocabularies, and the export runs once a day: a hundred requests daily
- * does not justify a persistent store, its refresh policy, or its staleness
- * bugs. If the referenced set grows by an order of magnitude this is the first
- * thing to revisit.
+ * <p>Phase 2 shipped without one, on the grounds that 132 concepts against a
+ * daily export is a hundred requests a day and not worth a persistent store.
+ * That reasoning was about politeness and cost, and on those terms it still
+ * holds. What it missed is that the cache is load-bearing for correctness.
+ *
+ * <p>The export publishes each graph with a single PUT, which replaces it. So a
+ * run in which a third of NVS happened to time out did not merely fetch less —
+ * it replaced a complete graph with a partial one, and the endpoint lost
+ * descriptions until the next successful run put them back. Without somewhere
+ * to keep the previous answer there is nothing to fall back on, and no way for
+ * the caller to tell a thin run from a genuinely smaller vocabulary.
+ *
+ * <p>So a concept's description is kept, and a copy of any age is used when the
+ * authority cannot be reached. A transient failure then costs freshness rather
+ * than content, which is the whole point.
  */
 @Slf4j
 @Profile("exports")
@@ -80,15 +93,36 @@ public class SkosConceptRetriever {
         SKOS.notation, SKOS.broader, SKOS.narrower, SKOS.related, SKOS.inScheme
     );
 
+    /**
+     * How old a cached concept description may be before it is fetched again.
+     *
+     * <p>Shorter than the fortnight {@link IdentityRetriever#MAX_AGE} allows a
+     * person, and deliberately: a researcher's name is settled, whereas a
+     * thesaurus can gain a definition or move a concept in its hierarchy on any
+     * release. At 132 concepts a week this is still a couple of dozen requests
+     * a day.
+     */
+    static final Duration MAX_AGE = Duration.ofDays(7);
+
+    /**
+     * The age limit for the fallback: any copy at all. Spelt this way rather
+     * than as some large number of days chosen to look reasonable, because the
+     * intent is explicitly "whatever you have".
+     */
+    private static final Duration FOREVER = ChronoUnit.FOREVER.getDuration();
+
     private final RestTemplate restTemplate;
     private final String ukcehSparqlEndpoint;
+    private final DescriptionCache cache;
 
     public SkosConceptRetriever(
         @Qualifier("authorities") RestTemplate restTemplate,
-        @Value("${ukceh.sparql.endpoint}") String ukcehSparqlEndpoint
+        @Value("${ukceh.sparql.endpoint}") String ukcehSparqlEndpoint,
+        DescriptionCache cache
     ) {
         this.restTemplate = restTemplate;
         this.ukcehSparqlEndpoint = ukcehSparqlEndpoint;
+        this.cache = cache;
         log.info("Creating");
     }
 
@@ -96,15 +130,72 @@ public class SkosConceptRetriever {
      * @param conceptUris the concepts to describe, all from one authority
      * @param retrieval   how that authority publishes its descriptions
      * @return a model holding only {@link #PUBLISHED} statements about those
-     *         concepts. Concepts that could not be retrieved are simply absent —
-     *         the caller decides whether too many are missing to publish.
+     *         concepts, taken from the cache where a copy is fresh and from the
+     *         authority otherwise. A concept absent from the result is one
+     *         neither source could supply — the caller decides what to do about
+     *         that, but a later run cannot help it either.
      */
     public Model describe(Collection<String> conceptUris, Retrieval retrieval) {
-        return retrieval == Retrieval.UKCEH_SPARQL
-            ? viaSparql(conceptUris)
-            : viaContentNegotiation(conceptUris);
+        val combined = ModelFactory.createDefaultModel();
+        val wanted = new ArrayList<String>();
+        var cached = 0;
+
+        for (val conceptUri : conceptUris) {
+            val fresh = cache.get(conceptUri, MAX_AGE);
+            if (fresh.isPresent()) {
+                combined.add(fresh.get());
+                cached++;
+            } else {
+                wanted.add(conceptUri);
+            }
+        }
+        if (wanted.isEmpty()) {
+            log.info("{} concept descriptions, all from cache", cached);
+            return combined;
+        }
+
+        val retrieved = retrieval == Retrieval.UKCEH_SPARQL
+            ? viaSparql(wanted)
+            : viaContentNegotiation(wanted);
+
+        var fetched = 0;
+        var stale = 0;
+        var unavailable = 0;
+        for (val conceptUri : wanted) {
+            val description = ModelFactory.createDefaultModel();
+            copyStatementsAbout(retrieved, conceptUri, description);
+            if (!description.isEmpty()) {
+                cache.put(conceptUri, description);
+                combined.add(description);
+                fetched++;
+                continue;
+            }
+            // Nothing came back for this one. A copy of any age is better than
+            // dropping the concept from the graph: this is the case that used to
+            // shrink a published graph whenever a vocabulary server had a bad
+            // minute. Note the description is NOT re-cached, so its age keeps
+            // counting and the next run tries the authority again.
+            val held = cache.get(conceptUri, FOREVER);
+            if (held.isPresent()) {
+                combined.add(held.get());
+                stale++;
+            } else {
+                unavailable++;
+            }
+        }
+        if (fetched > 0) {
+            cache.save();
+        }
+        log.info("{} concept descriptions: {} fetched, {} from cache, {} stale, {} unavailable",
+            conceptUris.size(), fetched, cached, stale, unavailable);
+        return combined;
     }
 
+    /**
+     * Returns everything the authority said, unfiltered. Reducing it to the
+     * published properties happens per concept in {@link #describe}, because
+     * each concept's description is cached separately.
+     */
     private Model viaContentNegotiation(Collection<String> conceptUris) {
         val combined = ModelFactory.createDefaultModel();
         var failed = 0;
@@ -114,7 +205,7 @@ public class SkosConceptRetriever {
                 failed++;
                 continue;
             }
-            copyStatementsAbout(retrieved, conceptUri, combined);
+            combined.add(retrieved);
         }
         if (failed > 0) {
             log.warn("Could not retrieve {} of {} concept descriptions", failed, conceptUris.size());
@@ -177,9 +268,7 @@ public class SkosConceptRetriever {
             }
             val retrieved = ModelFactory.createDefaultModel();
             RDFDataMgr.read(retrieved, new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8)), Lang.TURTLE);
-            val filtered = ModelFactory.createDefaultModel();
-            conceptUris.forEach(uri -> copyStatementsAbout(retrieved, uri, filtered));
-            return filtered;
+            return retrieved;
         } catch (Exception ex) {
             log.warn("Could not retrieve {} concept descriptions from {}: {}",
                 conceptUris.size(), ukcehSparqlEndpoint, ex.getMessage());
