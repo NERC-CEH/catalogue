@@ -79,24 +79,12 @@ dcterms:creator
 <https://orcid.org/0000-0001-2345-6789> ;
 dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en> .
 <https://orcid.org/0000-2222-2345-6789> a foaf:Person ;
-foaf:name "Contact, P." ;
-foaf:familyName "Contact" ;
-foaf:givenName "pointOfContact" ;
-vcard:hasEmail "enquiries@ceh.ac.uk" ;
 foaf:member <https://ror.org/00pggkr55> ;
 .
 <https://orcid.org/0000-4444-2345-6789> a foaf:Person ;
-foaf:name "Test, P." ;
-foaf:familyName "Test" ;
-foaf:givenName "Publisher" ;
-vcard:hasEmail "info@eidc.ac.uk" ;
 foaf:member <https://ror.org/04xw4m193> ;
 .
 <https://orcid.org/0000-0001-2345-6789> a foaf:Person ;
-foaf:name "Contact, A." ;
-foaf:familyName "Contact" ;
-foaf:givenName "Author" ;
-vcard:hasEmail "enquiries@ceh.ac.uk" ;
 foaf:member <https://ror.org/00pggkr55> ;
 .
 <https://orcid.org/0000-0001-2345-6789> pro:holdsRoleInTime :role_c850511b14958c73 .
