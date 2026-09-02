@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -64,6 +65,8 @@ import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
 import uk.ac.ceh.gateway.catalogue.wms.MapServerGetFeatureInfoErrorHandler;
 
 import javax.xml.xpath.XPathExpressionException;
+import java.net.http.HttpClient;
+import java.time.Duration;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
@@ -80,6 +83,33 @@ public class ServicesConfig {
     public RestTemplate normalRestTemplate() {
         log.info("Creating Normal RestTemplate");
         return new RestTemplate();
+    }
+
+    /**
+     * For calls out to third-party authorities — ORCID, ROR and the SKOS
+     * vocabularies — which unlike our own services are neither on our network
+     * nor under our control.
+     *
+     * <p>The distinction that matters is the timeouts. A Fuseki export now makes
+     * hundreds of outbound calls per run, and the shared {@code normal} template
+     * has none, so a single authority that accepts a connection and then stops
+     * answering would hold the export's scheduler thread open until the socket
+     * gave up on its own. Bounding the number of requests per run, which
+     * {@link uk.ac.ceh.gateway.catalogue.exports.IdentityRetriever} does, bounds
+     * nothing if any one of them can last forever.
+     */
+    @Bean
+    @Qualifier("authorities")
+    public RestTemplate authorityRestTemplate(
+        @Value("${authorities.connectTimeout:10s}") Duration connectTimeout,
+        @Value("${authorities.readTimeout:30s}") Duration readTimeout
+    ) {
+        log.info("Creating Authorities RestTemplate (connect={}, read={})", connectTimeout, readTimeout);
+        val requestFactory = new JdkClientHttpRequestFactory(
+            HttpClient.newBuilder().connectTimeout(connectTimeout).build()
+        );
+        requestFactory.setReadTimeout(readTimeout);
+        return new RestTemplate(requestFactory);
     }
 
     @Bean

@@ -84,7 +84,7 @@ public class SkosConceptRetriever {
     private final String ukcehSparqlEndpoint;
 
     public SkosConceptRetriever(
-        @Qualifier("normal") RestTemplate restTemplate,
+        @Qualifier("authorities") RestTemplate restTemplate,
         @Value("${ukceh.sparql.endpoint}") String ukcehSparqlEndpoint
     ) {
         this.restTemplate = restTemplate;

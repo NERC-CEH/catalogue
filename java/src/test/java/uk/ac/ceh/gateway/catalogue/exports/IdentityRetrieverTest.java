@@ -58,8 +58,13 @@ class IdentityRetrieverTest {
     }
 
     private IdentityRetriever retriever(String rorClientId) {
+        return retriever(rorClientId, 200);
+    }
+
+    private IdentityRetriever retriever(String rorClientId, int rorUnidentifiedBudget) {
         return new IdentityRetriever(
-            restTemplate, new DescriptionCache(dataset, Clock.systemUTC()), rorClientId);
+            restTemplate, new DescriptionCache(dataset, Clock.systemUTC()),
+            rorClientId, rorUnidentifiedBudget);
     }
 
     /** ORCID's real shape: the person, plus the profile document and account node. */
@@ -250,13 +255,12 @@ class IdentityRetrieverTest {
         }
 
         @Test
-        @DisplayName("without a client id, ROR is asked exactly the low limit's worth in one run")
+        @DisplayName("without a client id, ROR is asked no more than its configured budget in one run")
         void unidentifiedRorRunIsBudgeted() {
-            // ROR allows an unidentified client 50 requests per 5 minutes, so a
-            // 561-organisation first fill has to spread over several runs.
-            // Exactly 40 expectations for 100 organisations: fewer requests than
-            // that leaves an expectation unmet and verify() fails, more finds no
-            // expectation and throws. So this pins the budget from both sides.
+            // Exactly 40 expectations for 100 organisations, against a budget of
+            // 40: fewer requests than that leaves an expectation unmet and
+            // verify() fails, more finds no expectation and throws. So this pins
+            // the budget from both sides.
             val many = IntStream.range(0, 100)
                 .mapToObj(i -> "https://ror.org/org%02d".formatted(i))
                 .toList();
@@ -265,9 +269,52 @@ class IdentityRetrieverTest {
                         "https://api.ror.org/v2/organizations/")))
                     .andRespond(withSuccess(rorResponse(), MediaType.APPLICATION_JSON)));
 
-            retriever("").describe(many, IdentityRetriever.Authority.ROR);
+            retriever("", 40).describe(many, IdentityRetriever.Authority.ROR);
 
             server.verify();
+        }
+
+        @Test
+        @DisplayName("a client id lifts the budget past the whole set, so one run fills it")
+        void identifiedRorRunIsNotBudgetedToTheLowLimit() {
+            val many = IntStream.range(0, 100)
+                .mapToObj(i -> "https://ror.org/org%02d".formatted(i))
+                .toList();
+            IntStream.range(0, 100).forEach(i ->
+                server.expect(requestTo(org.hamcrest.Matchers.startsWith(
+                        "https://api.ror.org/v2/organizations/")))
+                    .andRespond(withSuccess(rorResponse(), MediaType.APPLICATION_JSON)));
+
+            // The unidentified budget is deliberately set below the set size, to
+            // show that it is the client id and not the budget doing the work.
+            retriever("our-client-id", 40).describe(many, IdentityRetriever.Authority.ROR);
+
+            server.verify();
+        }
+
+        @Test
+        @DisplayName("the configured budget is high enough for a first fill to finish before it goes stale")
+        void configuredBudgetConverges() throws Exception {
+            // A budget that cannot fill the set inside MAX_AGE never fills it at
+            // all: the entities fetched on the first run are stale again before
+            // the last ones are reached, so every subsequent run spends its
+            // budget refetching the head of the list. At 561 organisations and a
+            // fortnight, 40 a run — the figure that matches ROR's unidentified
+            // rate limit — is just under the line, which is why the property
+            // exists and why lowering it is not a free choice.
+            val organisations = 561;
+            val properties = new java.util.Properties();
+            try (var in = getClass().getResourceAsStream("/application.properties")) {
+                properties.load(in);
+            }
+            val budget = Integer.parseInt(properties.getProperty("ror.unidentifiedRequestsPerRun"));
+            val runsToFill = (organisations + budget - 1) / budget;
+
+            assertTrue(
+                runsToFill < IdentityRetriever.MAX_AGE.toDays(),
+                () -> "%d a run needs %d daily runs to fetch %d organisations, but they go stale after %d"
+                    .formatted(budget, runsToFill, organisations, IdentityRetriever.MAX_AGE.toDays())
+            );
         }
 
         @Test
@@ -277,7 +324,7 @@ class IdentityRetrieverTest {
                 .andRespond(withSuccess(orcidResponse(), MediaType.valueOf("text/turtle")));
 
             // Fill the cache, then age it past the refresh limit and fail the refetch.
-            new IdentityRetriever(restTemplate, new DescriptionCache(dataset, Clock.systemUTC()), "")
+            new IdentityRetriever(restTemplate, new DescriptionCache(dataset, Clock.systemUTC()), "", 200)
                 .describe(List.of(ORCID), IdentityRetriever.Authority.ORCID);
 
             val laterServer = MockRestServiceServer.createServer(restTemplate);
@@ -285,7 +332,7 @@ class IdentityRetrieverTest {
             val aged = new DescriptionCache(dataset,
                 Clock.fixed(java.time.Instant.now().plus(java.time.Duration.ofDays(30)), java.time.ZoneOffset.UTC));
 
-            val model = new IdentityRetriever(restTemplate, aged, "")
+            val model = new IdentityRetriever(restTemplate, aged, "", 200)
                 .describe(List.of(ORCID), IdentityRetriever.Authority.ORCID);
 
             assertTrue(

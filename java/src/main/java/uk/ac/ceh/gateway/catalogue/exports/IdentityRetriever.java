@@ -102,8 +102,12 @@ public class IdentityRetriever {
      *   access-control-allow-headers: ...,X-Amz-Security-Token,Client-Id
      *
      * From Q3 2026 ROR requires one: an identified client keeps the 2,000
-     * requests per 5 minutes, an unidentified one drops to 50. Registration is
-     * free at https://ror.org/api-client-id.
+     * requests per 5 minutes, an unidentified one drops to 50.
+     *
+     * <p>Registration is free but currently paused, and ROR says the new limits
+     * are not yet being enforced, so the header is plumbed through and left
+     * unset rather than omitted — the announcement is a delay, not a
+     * cancellation, and the only thing needed when it reopens is the property.
      */
     private static final String ROR_CLIENT_ID_HEADER = "Client-Id";
 
@@ -126,36 +130,52 @@ public class IdentityRetriever {
     private final RestTemplate restTemplate;
     private final DescriptionCache cache;
     private final String rorClientId;
+    private final int rorUnidentifiedBudget;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public IdentityRetriever(
-        @Qualifier("normal") RestTemplate restTemplate,
+        @Qualifier("authorities") RestTemplate restTemplate,
         DescriptionCache cache,
-        @Value("${ror.clientId:}") String rorClientId
+        @Value("${ror.clientId:}") String rorClientId,
+        @Value("${ror.unidentifiedRequestsPerRun:200}") int rorUnidentifiedBudget
     ) {
         this.restTemplate = restTemplate;
         this.cache = cache;
         this.rorClientId = rorClientId;
-        log.info("Creating{}", rorClientId.isBlank() ? " without a ROR client id" : "");
+        this.rorUnidentifiedBudget = rorUnidentifiedBudget;
+        log.info("Creating{}", rorClientId.isBlank()
+            ? " without a ROR client id, so at most %d organisations a run".formatted(rorUnidentifiedBudget)
+            : "");
     }
 
     /**
      * How many entities may be fetched from one authority in a single run.
      *
-     * <p>Neither authority can be filled in one export. ROR allows 50 requests
-     * per 5 minutes to an unidentified client, so 561 organisations would take
-     * the best part of an hour and look like abuse; with a client id the limit
-     * is 2,000 per 5 minutes and the whole set fits comfortably. ORCID publishes
-     * no limit we could find and returns no rate-limit headers, so it gets a
-     * deliberately conservative budget.
+     * <p>Being under budget is not a failure: the cache persists, so a first
+     * fill completes over several daily runs, and once full only the entities
+     * that have aged past {@link #MAX_AGE} are fetched at all.
      *
-     * <p>Being under budget is not a failure. The cache persists, so a first
-     * fill simply completes over several daily runs, and once full only the
-     * entities that have aged past {@link #MAX_AGE} are fetched at all.
+     * <p>But a budget can be set too low to converge, and the interaction with
+     * {@link #MAX_AGE} is what decides that. At 40 organisations a run, 561 of
+     * them take fifteen runs — by which time the ones fetched on day one are
+     * already stale again, so the budget goes on refetching them and the tail of
+     * the list is never reached at all. A first fill has to finish comfortably
+     * inside {@link #MAX_AGE} or it never finishes. 200 a run fills ROR in three,
+     * and steady state is then the ~40 a day that age out, which fits inside even
+     * the 50-per-5-minutes an unidentified client will get.
+     *
+     * <p>That number is configurable because the constraint is not ours to
+     * predict: ROR's new limits are announced but not yet enforced, and client id
+     * registration is paused, so neither the ceiling nor our ability to raise it
+     * is fixed today. See {@code ror.unidentifiedRequestsPerRun}.
+     *
+     * <p>ORCID publishes no limit we could find and returns no rate-limit
+     * headers, so it keeps a deliberately conservative budget — 500 a run still
+     * fills its 2,125 people in five.
      */
     private int budgetFor(Authority authority) {
         return switch (authority) {
-            case ROR -> rorClientId.isBlank() ? 40 : 600;
+            case ROR -> rorClientId.isBlank() ? rorUnidentifiedBudget : 600;
             case ORCID -> 500;
         };
     }
