@@ -34,10 +34,6 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             "nonGeographicDataset",
             "service"
     );
-    private final Set<String> allowedEmails = ImmutableSet.of(
-            "enquiries@ceh.ac.uk",
-            "info@eidc.ac.uk"
-    );
     private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<>() {};
     private final DownloadUrlProperties downloadUrlProperties;
     private final UriChecks uriChecks;
@@ -58,7 +54,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     }
 
     // Entries MUST be lowercase - checkPointOfContact lowercases before matching.
-    public static final Set<String> ALLOWED_UKCEH_EMAILS = Set.of(
+    public static final Set<String> ALLOWED_EMAILS = Set.of(
         "enquiries@ceh.ac.uk",
         "cosmosuk@ceh.ac.uk",
         "ecn@ceh.ac.uk",
@@ -496,7 +492,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             .flatMap(Stream::ofNullable)
             .filter(email -> {
                 val normalised = email.toLowerCase();
-                return normalised.endsWith("@ceh.ac.uk") && !ALLOWED_UKCEH_EMAILS.contains(normalised);
+                return normalised.endsWith("@ceh.ac.uk") && !ALLOWED_EMAILS.contains(normalised);
             })
             .forEach(email -> toReturn.add(
                 new MetadataCheck(
@@ -629,7 +625,10 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         authors.stream()
             .map(author -> author.get("email"))
             .flatMap(Stream::ofNullable)
-            .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk") && !email.equals("info@eidc.ac.uk"))
+            .filter(email -> {
+                val normalised = email.toLowerCase();
+                return normalised.endsWith("@ceh.ac.uk") && !ALLOWED_EMAILS.contains(normalised);
+            })
             .forEach(email -> toReturn.add(new MetadataCheck(format("Author's email address is %s", email), ERROR)));
 
         return toReturn;
