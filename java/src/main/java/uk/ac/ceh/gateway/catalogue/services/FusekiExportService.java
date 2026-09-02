@@ -22,7 +22,7 @@ import uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.exports.CatalogueExportService;
 import uk.ac.ceh.gateway.catalogue.exports.DocumentsToTurtleService;
-import uk.ac.ceh.gateway.catalogue.exports.VocabularyLabelsService;
+import uk.ac.ceh.gateway.catalogue.exports.VocabularyGraphService;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 
@@ -31,6 +31,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -51,7 +54,7 @@ public class FusekiExportService implements CatalogueExportService {
     private final DocumentsToTurtleService documentsToTurtleService;
     private final VoidStatsService voidStatsService;
     private final MetadataListingService metadataListingService;
-    private final VocabularyLabelsService vocabularyLabelsService;
+    private final VocabularyGraphService vocabularyGraphService;
     private volatile Date lastExported;
 
     public FusekiExportService(
@@ -64,7 +67,7 @@ public class FusekiExportService implements CatalogueExportService {
         @Value("${fuseki.password}") String fusekiPassword,
         VoidStatsService voidStatsService,
         MetadataListingService metadataListingService,
-        VocabularyLabelsService vocabularyLabelsService
+        VocabularyGraphService vocabularyGraphService
     ) {
         log.info("Creating");
 
@@ -77,7 +80,7 @@ public class FusekiExportService implements CatalogueExportService {
         this.documentsToTurtleService = documentsToTurtleService;
         this.voidStatsService = voidStatsService;
         this.metadataListingService = metadataListingService;
-        this.vocabularyLabelsService = vocabularyLabelsService;
+        this.vocabularyGraphService = vocabularyGraphService;
     }
 
     private record TurtleStats(long triples, Map<String, Long> classEntityCounts) {}
@@ -101,12 +104,20 @@ public class FusekiExportService implements CatalogueExportService {
         }
         post(baseUri, String.join("\n", catalogueTtls.values()));
         log.info("Posted public metadata documents as ttl to {}", fusekiUrl);
-        postVocabularyLabels();
+
+        // Parsed once and used twice: the VoID stats below, and the set of
+        // external concepts the vocabulary graphs describe. Parsing 20MB of
+        // Turtle a second time to answer the second question would be wasteful.
+        Map<String, Model> parsed = new LinkedHashMap<>();
+        catalogueTtls.forEach((id, ttl) -> parsed.put(id, parse(ttl)));
+
+        postVocabularyGraphs(referencedIris(parsed.values()));
+
         catalogueIds.stream()
             .filter(id -> !catalogueTtls.containsKey(id))
             .forEach(voidStatsService::remove);
-        catalogueTtls.forEach((id, ttl) -> {
-            TurtleStats ts = parseTurtleStats(ttl);
+        parsed.forEach((id, model) -> {
+            TurtleStats ts = turtleStats(model);
             voidStatsService.update(id, new VoidStats(
                 metadataListingService.getPublicDocumentsOfCatalogue(id).size(),
                 ts.triples(),
@@ -127,10 +138,10 @@ public class FusekiExportService implements CatalogueExportService {
      * unavailable vocabulary, or a bad label in one of them, cannot stop the
      * catalogue graph from updating — or stop the other vocabularies publishing.
      */
-    private void postVocabularyLabels() {
+    private void postVocabularyGraphs(Set<String> referencedIris) {
         Map<String, String> graphs;
         try {
-            graphs = vocabularyLabelsService.graphs();
+            graphs = vocabularyGraphService.graphs(referencedIris);
         } catch (Exception ex) {
             log.warn("Could not build the vocabulary label graphs, skipping them: {}", ex.getMessage());
             return;
@@ -151,14 +162,34 @@ public class FusekiExportService implements CatalogueExportService {
         return exported == null ? null : new Date(exported.getTime());
     }
 
-    private TurtleStats parseTurtleStats(String ttl) {
+    private Model parse(String ttl) {
         Model model = ModelFactory.createDefaultModel();
         try (InputStream is = new ByteArrayInputStream(ttl.getBytes(StandardCharsets.UTF_8))) {
             RDFDataMgr.read(model, is, Lang.TURTLE);
         } catch (Exception e) {
-            log.warn("Failed to parse Turtle for stats: {}", e.getMessage());
-            return new TurtleStats(0L, Map.of());
+            log.warn("Failed to parse exported Turtle: {}", e.getMessage());
+            return ModelFactory.createDefaultModel();
         }
+        return model;
+    }
+
+    /**
+     * Every IRI the catalogue's graph refers to. The vocabulary graphs describe
+     * only concepts something actually cites, so this is the input to that:
+     * objects rather than subjects, since a subject in this graph is one of our
+     * own records or a node we minted.
+     */
+    private static Set<String> referencedIris(Collection<Model> models) {
+        Set<String> iris = new HashSet<>();
+        models.forEach(model -> model.listObjects().forEachRemaining(object -> {
+            if (object.isURIResource()) {
+                iris.add(object.asResource().getURI());
+            }
+        }));
+        return iris;
+    }
+
+    private TurtleStats turtleStats(Model model) {
         Map<String, Long> classEntityCounts = model.listStatements(null, RDF.type, (RDFNode) null)
             .toList()
             .stream()
