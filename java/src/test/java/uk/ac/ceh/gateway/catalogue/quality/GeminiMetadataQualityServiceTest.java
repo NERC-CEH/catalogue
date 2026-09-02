@@ -755,13 +755,13 @@ public class GeminiMetadataQualityServiceTest {
         void reportsNestedObservedProperties() {
             val actual = check("""
                 {"fileset": [
-                  {"observedProperty": [{"uri": "https://vocabs.lter-europe.net/EnvThes/30347"}]}
+                  {"observedProperty": [{"uri": "http://vocabs.lter-europe.net/EnvThes/30347/"}]}
                 ]}
                 """);
 
             assertThat(actual, contains(new MetadataCheck(
                 "Observed property URI is not in its canonical form, "
-                    + "https://vocabs.lter-europe.net/EnvThes/30347 "
+                    + "http://vocabs.lter-europe.net/EnvThes/30347/ "
                     + "should be http://vocabs.lter-europe.net/EnvThes/30347",
                 INFO
             )));

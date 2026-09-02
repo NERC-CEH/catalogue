@@ -228,6 +228,15 @@ class UriNormaliserTest {
         }
 
         @Test
+        @DisplayName("a stray trailing slash on an EnvThes concept is stripped, converging the two forms")
+        void envThesTrailingSlashIsStripped() {
+            assertThat(
+                service.normalise("https://vocabs.lter-europe.net/EnvThes/30347/"),
+                is(equalTo("http://vocabs.lter-europe.net/EnvThes/30347"))
+            );
+        }
+
+        @Test
         @DisplayName("an NVS concept keeps its trailing slash, which is part of the identifier")
         void nvsTrailingSlashSurvives() {
             assertThat(

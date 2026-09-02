@@ -109,9 +109,11 @@ public class UriNormaliser {
         //     named <http://onto.nerc.ac.uk/CAST/>.
         //   aims.fao.org            AGROVOC: mints http.
         //
-        // Trailing slashes are left alone throughout: an NVS concept URI
-        // canonically ends in one, so a strip would break it.
-        Map.entry("vocabs.lter-europe.net", new HostPolicy(Scheme.HTTP, TrailingSlash.LEAVE)),
+        // Trailing slashes differ per vocabulary too. An NVS concept URI
+        // canonically ends in one, so stripping would break it; an EnvThes URI
+        // does not, so a stray slash is stripped to converge the two forms
+        // (df2e4cdaa). The rest are left alone because nobody has checked them.
+        Map.entry("vocabs.lter-europe.net", new HostPolicy(Scheme.HTTP, TrailingSlash.STRIP)),
         Map.entry("www.eionet.europa.eu", new HostPolicy(Scheme.HTTP, TrailingSlash.LEAVE)),
         Map.entry("vocab.nerc.ac.uk", new HostPolicy(Scheme.HTTP, TrailingSlash.LEAVE)),
         Map.entry("onto.nerc.ac.uk", new HostPolicy(Scheme.HTTP, TrailingSlash.LEAVE)),
