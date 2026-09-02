@@ -72,7 +72,7 @@ import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
 @Profile("exports")
 @Service
 @ToString(exclude = {"solrClient", "uriNormaliser", "skosConceptRetriever"})
-public class VocabularyGraphService {
+public class VocabularyGraphService implements SourceGraphProvider {
 
     private static final String COLLECTION = "keywords";
 
@@ -172,7 +172,15 @@ public class VocabularyGraphService {
      * is what the VoID description at {@code /.well-known/void} advertises. One
      * list, so the description cannot drift from what is actually written.
      */
-    public List<Authority> sourceGraphs() {
+    @Override
+    public List<SourceGraph> sourceGraphs() {
+        return authorities().stream()
+            .map(authority -> new SourceGraph(authority.graph(), authority.title()))
+            .toList();
+    }
+
+    /** The full descriptors, which only this class needs. */
+    private static List<Authority> authorities() {
         return AUTHORITIES.stream().sorted(Comparator.comparing(Authority::graph)).toList();
     }
 
@@ -185,11 +193,12 @@ public class VocabularyGraphService {
      *         previous run's content is left alone instead of being replaced
      *         with less.
      */
+    @Override
     public Map<String, String> graphs(Set<String> referencedConcepts) {
         val localLabels = readLocalLabels();
         val turtleByGraph = new LinkedHashMap<String, String>();
 
-        for (val authority : sourceGraphs()) {
+        for (val authority : authorities()) {
             val model = ModelFactory.createDefaultModel();
 
             if (authority.localVocabId() != null) {

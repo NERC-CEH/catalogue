@@ -296,7 +296,7 @@ class VocabularyGraphServiceTest {
             givenHarvestedLabels(List.of());
 
             assertThat(
-                service.sourceGraphs().stream().map(VocabularyGraphService.Authority::graph).toList(),
+                service.sourceGraphs().stream().map(SourceGraphProvider.SourceGraph::graph).toList(),
                 containsInAnyOrder(GEMET, ENVTHES, CAST, NVS, AGROVOC,
                     "https://digital.ceh.ac.uk/vocab/ra/", "https://digital.ceh.ac.uk/vocab/fdri/")
             );

@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestClientResponseException;
 import uk.ac.ceh.gateway.catalogue.exports.DocumentsToTurtleService;
-import uk.ac.ceh.gateway.catalogue.exports.VocabularyGraphService;
+import uk.ac.ceh.gateway.catalogue.exports.SourceGraphProvider;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 import org.springframework.http.HttpMethod;
@@ -44,7 +44,7 @@ public class FusekiExportServiceTest {
     private FusekiExportService service;
     @Mock private DocumentsToTurtleService documentsToTurtleService;
     @Mock private MetadataListingService metadataListingService;
-    @Mock private VocabularyGraphService vocabularyGraphService;
+    @Mock private SourceGraphProvider vocabularyGraphService;
     private VoidStatsService voidStatsService;
     private MockRestServiceServer mockServer;
 
@@ -74,7 +74,7 @@ public class FusekiExportServiceTest {
             FUSEKI_PASSWORD,
             voidStatsService,
             metadataListingService,
-            vocabularyGraphService
+            List.of(vocabularyGraphService)
         );
     }
 

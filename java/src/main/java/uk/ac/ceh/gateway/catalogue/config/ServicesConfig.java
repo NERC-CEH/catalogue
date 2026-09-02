@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
@@ -241,6 +242,10 @@ public class ServicesConfig {
         log.info("geof:distance registered: " + isRegistered);
     }
 
+    // @Primary because the description cache (below) is a second Dataset bean,
+    // and a dozen services inject Dataset without a qualifier. Without this they
+    // all fail with "expected single matching bean but found 2".
+    @Primary
     @Bean(destroyMethod = "close")
     @Profile("!test")
     public org.apache.jena.query.Dataset tdbModel(
@@ -250,11 +255,31 @@ public class ServicesConfig {
         return TDB2Factory.connectDataset(location);
     }
 
+    @Primary
     @Bean(destroyMethod = "close")
     @Profile("test")
     public org.apache.jena.query.Dataset tdbModelInMemory() {
         log.info("Creating in-memory Dataset for tests");
         return TDB2Factory.createDataset();
+    }
+
+    /**
+     * A store of its own for the cached authority descriptions (dri-one #350
+     * phase 3), kept apart from the search index: they hold third-party data on
+     * a different lifecycle, and rebuilding the index must not discard a
+     * fortnight of politely-fetched ORCID records.
+     */
+    @Bean(name = "descriptionCacheDataset", destroyMethod = "close")
+    @Profile("exports")
+    public org.apache.jena.query.Dataset descriptionCacheDataset(
+        @Value("${jena.descriptionCache.location:}") String location
+    ) {
+        if (location.isBlank()) {
+            log.info("Creating in-memory description cache: no jena.descriptionCache.location set");
+            return TDB2Factory.createDataset();
+        }
+        log.info("Creating description cache at: {}", location);
+        return TDB2Factory.connectDataset(location);
     }
 
     @Bean
