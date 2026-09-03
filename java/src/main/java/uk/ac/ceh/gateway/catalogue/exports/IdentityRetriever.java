@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.exports;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -116,6 +117,14 @@ public class IdentityRetriever {
      * cancellation, and the only thing needed when it reopens is the property.
      */
     private static final String ROR_CLIENT_ID_HEADER = "Client-Id";
+
+    /**
+     * Well-formed enough for a language tag: a primary subtag of letters, then
+     * any number of alphanumeric subtags. ROR uses ISO 639-1 today, but this
+     * accepts the longer codes BCP 47 allows rather than assuming two letters.
+     */
+    private static final java.util.regex.Pattern LANGUAGE_TAG =
+        java.util.regex.Pattern.compile("[a-zA-Z]{2,8}(-[a-zA-Z0-9]{1,8})*");
 
     private static final String FOAF = "http://xmlns.com/foaf/0.1/";
 
@@ -397,20 +406,34 @@ public class IdentityRetriever {
                 if (value == null || value.isBlank()) {
                     continue;
                 }
+                // ROR tags each name with the language it is in, and the tag is
+                // what makes the alias list usable rather than merely present.
+                // UKCEH's record carries a Welsh and a French name alongside the
+                // English one; published untagged, "Centre britannique pour
+                // l'Écologie et l'Hydrologie" is not an alternative spelling of
+                // anything a consumer can act on. Null for the acronym, which is
+                // correct -- UKCEH is not English text.
+                val literal = literal(description, value, name.path("lang").asString());
                 val types = name.path("types");
                 // ROR marks one name for display; the rest are aliases and
                 // acronyms, which are what let a differently-spelled record be
                 // recognised as the same institution.
                 if (contains(types, "ror_display")) {
-                    description.add(organisation, RDFS.label, value);
-                    description.add(organisation, propertyOf(FOAF + "name"), value);
+                    description.add(organisation, RDFS.label, literal);
+                    description.add(organisation, propertyOf(FOAF + "name"), literal);
+                    // Also skos:prefLabel, so an organisation can be looked up
+                    // exactly as a vocabulary concept is: the source graphs are
+                    // queried together, and there is no reason for a consumer to
+                    // need one predicate for a concept's name and another for an
+                    // organisation's.
+                    description.add(organisation, SKOS.prefLabel, literal);
                 } else {
                     // skos:altLabel, not org:alternateName. The Organization
                     // Ontology defines no such property -- and its namespace is
                     // http, not the https this used -- so the aliases and
                     // acronyms that are the whole point of publishing ROR were
                     // going out under a term no consumer can resolve.
-                    description.add(organisation, SKOS.altLabel, value);
+                    description.add(organisation, SKOS.altLabel, literal);
                 }
             }
 
@@ -547,6 +570,25 @@ public class IdentityRetriever {
         // rather than quietly publishing less.
         log.warn("{} returned {}", url, status);
         return Outcome.TRANSIENT;
+    }
+
+    /**
+     * A literal carrying the language ROR recorded, where it recorded one.
+     *
+     * <p>The tag is checked for the same reason IRIs are (see {@link Iris}): a
+     * malformed one serialises into Turtle that will not re-parse, and the
+     * export's PUT is all-or-nothing, so a single bad tag in one organisation's
+     * record would reject the whole graph. Jena does not validate it.
+     */
+    private static Literal literal(Model model, String value, String lang) {
+        if (lang == null || lang.isBlank()) {
+            return model.createLiteral(value);
+        }
+        if (!LANGUAGE_TAG.matcher(lang).matches()) {
+            log.warn("Ignoring malformed language tag '{}' on '{}'", lang, value);
+            return model.createLiteral(value);
+        }
+        return model.createLiteral(value, lang);
     }
 
     /**

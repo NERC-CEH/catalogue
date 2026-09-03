@@ -43,6 +43,12 @@ import java.util.Set;
  * all, so {@code Institute of Terrestrial Ecology} will never come from there.
  * The remaining variants stay a data-cleanup matter.
  *
+ * <p>The aliases are also multilingual — UKCEH's record carries a Welsh and a
+ * French name — so each is published with the language tag ROR recorded, and
+ * the acronym with none, because ROR records none and an acronym is not English
+ * text. An untagged {@code Centre britannique pour l'Écologie et l'Hydrologie}
+ * is not an alternative spelling a consumer can act on.
+ *
  * <p>Both authorities publish under CC0, which is why no {@code dcterms:license}
  * appears on these graphs while the vocabulary ones are still unresolved — the
  * terms here are known, and stated.

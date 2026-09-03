@@ -102,9 +102,10 @@ class IdentityRetrieverTest {
               "id": "https://ror.org/00pggkr55",
               "established": 2000,
               "names": [
-                {"types": ["ror_display", "label"], "value": "UK Centre for Ecology & Hydrology"},
-                {"types": ["acronym"], "value": "UKCEH"},
-                {"types": ["alias"], "value": "Canolfan Ecoleg a Hydroleg y DU"}
+                {"lang": "en", "types": ["ror_display", "label"], "value": "UK Centre for Ecology & Hydrology"},
+                {"lang": null, "types": ["acronym"], "value": "UKCEH"},
+                {"lang": "cy", "types": ["alias"], "value": "Canolfan Ecoleg a Hydroleg y DU"},
+                {"lang": "fr", "types": ["alias"], "value": "Centre britannique pour l'Ecologie et l'Hydrologie"}
               ],
               "links": [
                 {"type": "website", "value": "https://www.ceh.ac.uk/"},
@@ -181,12 +182,15 @@ class IdentityRetrieverTest {
 
             server.verify();
             assertTrue(model.contains(organisation, RDF.type, createResource(FOAF + "Organization")));
-            assertTrue(model.contains(organisation, RDFS.label, "UK Centre for Ecology & Hydrology"),
-                "the display name");
+            assertTrue(model.contains(organisation, RDFS.label,
+                    "UK Centre for Ecology & Hydrology", "en"),
+                "the display name, in the language ROR recorded it in");
             assertTrue(model.contains(organisation, SKOS.altLabel, "UKCEH"),
-                "the acronym, which is one of the spellings our records use");
-            assertTrue(model.contains(organisation, SKOS.altLabel, "Canolfan Ecoleg a Hydroleg y DU"),
-                "and the aliases");
+                "the acronym, untagged because ROR records no language for it "
+                    + "-- an acronym is not English text");
+            assertTrue(model.contains(organisation, SKOS.altLabel,
+                    "Canolfan Ecoleg a Hydroleg y DU", "cy"),
+                "and the aliases, each in its own language");
             assertFalse(
                 model.listStatements().toList().stream().anyMatch(
                     statement -> statement.getPredicate().getURI().contains("ns/org#")),
@@ -198,6 +202,70 @@ class IdentityRetrieverTest {
             assertTrue(model.contains(organisation, OWL.sameAs,
                     createResource("https://doi.org/10.13039/501100011027")),
                 "the Crossref funder id links an organisation to the funder DOIs on grants");
+        }
+
+        @Test
+        @DisplayName("the display name is a prefLabel as well, so an organisation looks up like a concept")
+        void displayNameIsAlsoAPrefLabel() {
+            server.expect(requestTo(ROR_API))
+                .andRespond(withSuccess(rorResponse(), MediaType.APPLICATION_JSON));
+
+            val model = retriever("").describe(List.of(ROR), IdentityRetriever.Authority.ROR).model();
+
+            assertTrue(
+                model.contains(createResource(ROR), SKOS.prefLabel,
+                    "UK Centre for Ecology & Hydrology", "en"),
+                "the source graphs are queried together, so a consumer should not need one "
+                    + "predicate for a concept's name and another for an organisation's"
+            );
+        }
+
+        @Test
+        @DisplayName("every name ROR tagged carries its tag, and only those")
+        void languageTagsFollowTheData() {
+            server.expect(requestTo(ROR_API))
+                .andRespond(withSuccess(rorResponse(), MediaType.APPLICATION_JSON));
+
+            val model = retriever("").describe(List.of(ROR), IdentityRetriever.Authority.ROR).model();
+            val organisation = createResource(ROR);
+
+            assertTrue(model.contains(organisation, SKOS.altLabel,
+                    "Centre britannique pour l'Ecologie et l'Hydrologie", "fr"),
+                "a French alias published untagged is not an alternative spelling of "
+                    + "anything a consumer can act on");
+            assertThat(
+                "the acronym has no language, and must not acquire the record's",
+                model.listObjectsOfProperty(organisation, SKOS.altLabel).toList().stream()
+                    .filter(node -> "UKCEH".equals(node.asLiteral().getString()))
+                    .map(node -> node.asLiteral().getLanguage())
+                    .toList(),
+                is(List.of(""))
+            );
+        }
+
+        @Test
+        @DisplayName("a malformed language tag is dropped rather than published")
+        void malformedLanguageTagIsDropped() {
+            // Jena does not validate a language tag, and the export's PUT is
+            // all-or-nothing -- so one bad tag in one organisation's record
+            // would serialise into Turtle that will not re-parse and reject the
+            // whole graph, exactly as one bad escape did in dri-one #344.
+            server.expect(requestTo(ROR_API))
+                .andRespond(withSuccess(rorResponseWithBadLanguageTag(), MediaType.APPLICATION_JSON));
+
+            val model = retriever("").describe(List.of(ROR), IdentityRetriever.Authority.ROR).model();
+
+            assertTrue(
+                model.contains(createResource(ROR), RDFS.label, "UK Centre for Ecology & Hydrology"),
+                "the name is kept; only the unusable tag is discarded"
+            );
+
+            val writer = new java.io.StringWriter();
+            org.apache.jena.riot.RDFDataMgr.write(writer, model, org.apache.jena.riot.Lang.TURTLE);
+            val reparsed = org.apache.jena.rdf.model.ModelFactory.createDefaultModel();
+            org.apache.jena.riot.RDFDataMgr.read(reparsed,
+                new java.io.StringReader(writer.toString()), null, org.apache.jena.riot.Lang.TURTLE);
+            assertThat("and what is published re-parses", reparsed.size(), is(model.size()));
         }
 
         @Test
@@ -239,6 +307,21 @@ class IdentityRetrieverTest {
             // The expectation is the assertion: an unversioned URL would not match.
             server.verify();
         }
+    }
+
+    /** A ROR record whose language tag would not survive serialisation. */
+    private static String rorResponseWithBadLanguageTag() {
+        return """
+            {
+              "id": "https://ror.org/00pggkr55",
+              "names": [
+                {"lang": "en gb", "types": ["ror_display"], "value": "UK Centre for Ecology & Hydrology"}
+              ],
+              "links": [],
+              "external_ids": [],
+              "locations": []
+            }
+            """;
     }
 
     /** A ROR record whose website and wikidata id cannot be used as IRIs. */
