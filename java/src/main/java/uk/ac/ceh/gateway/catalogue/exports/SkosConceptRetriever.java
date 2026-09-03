@@ -142,7 +142,23 @@ public class SkosConceptRetriever {
         val wanted = new ArrayList<String>();
         var cached = 0;
 
-        for (val conceptUri : conceptUris) {
+        // Dropped before anything else touches them. A concept URI is
+        // interpolated into the SPARQL VALUES clause below, so one containing a
+        // brace, a pipe or a backslash makes the whole query a syntax error --
+        // which returns nothing, which the caller's publish-whole-or-not-at-all
+        // guard turns into a permanently frozen graph. One bad keyword in one
+        // record would stop a whole vocabulary indefinitely.
+        //
+        // It is also not a usable cache key: the cache stores a description in a
+        // named graph keyed by this string.
+        val usable = conceptUris.stream().filter(Iris::isPublishable).toList();
+        if (usable.size() < conceptUris.size()) {
+            log.warn("Ignoring {} concept URIs that are not usable as IRIs: {}",
+                conceptUris.size() - usable.size(),
+                conceptUris.stream().filter(uri -> !Iris.isPublishable(uri)).toList());
+        }
+
+        for (val conceptUri : usable) {
             val fresh = cache.get(conceptUri, MAX_AGE);
             if (fresh.isPresent()) {
                 combined.add(fresh.get());
@@ -195,7 +211,7 @@ public class SkosConceptRetriever {
             cache.save();
         }
         log.info("{} concept descriptions: {} fetched, {} from cache, {} stale, {} unavailable",
-            conceptUris.size(), fetched, cached, stale, unavailable);
+            usable.size(), fetched, cached, stale, unavailable);
         return combined;
     }
 

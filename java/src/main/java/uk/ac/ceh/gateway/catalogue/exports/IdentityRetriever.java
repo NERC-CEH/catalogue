@@ -7,6 +7,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.RDF;
@@ -164,18 +165,21 @@ public class IdentityRetriever {
     private final DescriptionCache cache;
     private final String rorClientId;
     private final int rorUnidentifiedBudget;
+    private final int orcidBudget;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public IdentityRetriever(
         @Qualifier("authorities") RestTemplate restTemplate,
         DescriptionCache cache,
         @Value("${ror.clientId:}") String rorClientId,
-        @Value("${ror.unidentifiedRequestsPerRun:200}") int rorUnidentifiedBudget
+        @Value("${ror.unidentifiedRequestsPerRun:200}") int rorUnidentifiedBudget,
+        @Value("${orcid.requestsPerRun:500}") int orcidBudget
     ) {
         this.restTemplate = restTemplate;
         this.cache = cache;
         this.rorClientId = rorClientId;
         this.rorUnidentifiedBudget = rorUnidentifiedBudget;
+        this.orcidBudget = orcidBudget;
         log.info("Creating{}", rorClientId.isBlank()
             ? " without a ROR client id, so at most %d organisations a run".formatted(rorUnidentifiedBudget)
             : "");
@@ -203,13 +207,17 @@ public class IdentityRetriever {
      * is fixed today. See {@code ror.unidentifiedRequestsPerRun}.
      *
      * <p>ORCID publishes no limit we could find and returns no rate-limit
-     * headers, so it keeps a deliberately conservative budget — 500 a run still
-     * fills its 2,125 people in five.
+     * headers, so it keeps a deliberately conservative budget — 500 a run fills
+     * its 2,125 people in five. It is configurable for the same reason and
+     * subject to the same convergence rule, which is easy to breach without
+     * noticing: the referenced set grows with the catalogue, and at 500 a run
+     * the ceiling is 500 × 14 = 7,000 people. Past that the graph stalls
+     * permanently and says so only at {@code INFO}. Headroom today is 3.3×.
      */
     private int budgetFor(Authority authority) {
         return switch (authority) {
             case ROR -> rorClientId.isBlank() ? rorUnidentifiedBudget : 600;
-            case ORCID -> 500;
+            case ORCID -> orcidBudget;
         };
     }
 
@@ -415,11 +423,8 @@ public class IdentityRetriever {
 
             for (val link : json.path("links")) {
                 if ("website".equals(link.path("type").asString())) {
-                    val value = link.path("value").asString();
-                    if (value != null && !value.isBlank()) {
-                        description.add(organisation, propertyOf(FOAF + "homepage"),
-                            description.getResource(value));
-                    }
+                    addIfPublishable(description, organisation, propertyOf(FOAF + "homepage"),
+                        link.path("value").asString(), uri);
                 }
             }
 
@@ -448,16 +453,20 @@ public class IdentityRetriever {
                     default -> null;
                 };
                 if (equivalent != null) {
-                    description.add(organisation, OWL.sameAs, description.getResource(equivalent));
+                    // The identifier is ROR's, not ours, and it is concatenated
+                    // into a URI here -- a stray space in one makes an IRI that
+                    // Jena will happily write and no consumer can use.
+                    addIfPublishable(description, organisation, OWL.sameAs, equivalent, uri);
                 }
             }
 
             for (val location : json.path("locations")) {
                 val countryCode = location.path("geonames_details").path("country_code").asString();
                 if (countryCode != null && !countryCode.isBlank()) {
-                    description.add(organisation, propertyOf("http://purl.org/dc/terms/spatial"),
-                        description.getResource("http://publications.europa.eu/resource/authority/country/"
-                            + countryCode));
+                    addIfPublishable(description, organisation,
+                        propertyOf("http://purl.org/dc/terms/spatial"),
+                        "http://publications.europa.eu/resource/authority/country/" + countryCode,
+                        uri);
                     break;
                 }
             }
@@ -538,6 +547,26 @@ public class IdentityRetriever {
         // rather than quietly publishing less.
         log.warn("{} returned {}", url, status);
         return Outcome.TRANSIENT;
+    }
+
+    /**
+     * Adds a statement whose object is an IRI taken from the authority's data,
+     * unless that IRI is unusable.
+     *
+     * <p>Jena writes a bad IRI with only a {@code WARN} and then re-reads it, so
+     * without this it reaches the endpoint and each consumer discovers it
+     * separately. See {@link Iris}.
+     */
+    private static void addIfPublishable(
+        Model model, Resource subject, Property predicate, String iri, String source
+    ) {
+        if (!Iris.isPublishable(iri)) {
+            if (iri != null && !iri.isBlank()) {
+                log.warn("Ignoring unusable IRI '{}' from {}", iri, source);
+            }
+            return;
+        }
+        model.add(subject, predicate, model.getResource(iri));
     }
 
     private static boolean contains(JsonNode array, String value) {

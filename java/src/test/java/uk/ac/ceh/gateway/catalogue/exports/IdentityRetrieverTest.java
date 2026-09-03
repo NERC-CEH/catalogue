@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.exports;
 
 import lombok.val;
 import org.apache.jena.query.Dataset;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.tdb2.TDB2Factory;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
@@ -67,7 +66,7 @@ class IdentityRetrieverTest {
     private IdentityRetriever retriever(String rorClientId, int rorUnidentifiedBudget) {
         return new IdentityRetriever(
             restTemplate, new DescriptionCache(dataset, Clock.systemUTC()),
-            rorClientId, rorUnidentifiedBudget);
+            rorClientId, rorUnidentifiedBudget, 500);
     }
 
     /** ORCID's real shape: the person, plus the profile document and account node. */
@@ -242,6 +241,83 @@ class IdentityRetrieverTest {
         }
     }
 
+    /** A ROR record whose website and wikidata id cannot be used as IRIs. */
+    private static String rorResponseWithBadIris() {
+        return """
+            {
+              "id": "https://ror.org/00pggkr55",
+              "names": [
+                {"value": "UK Centre for Ecology & Hydrology", "types": ["ror_display"]}
+              ],
+              "links": [{"type": "website", "value": "not a url at all"}],
+              "external_ids": [
+                {"type": "wikidata", "preferred": null, "all": ["Q1 2 3"]},
+                {"type": "fundref", "preferred": "501100011027", "all": ["501100011027"]}
+              ],
+              "locations": []
+            }
+            """;
+    }
+
+    @Nested
+    @DisplayName("IRIs taken from the authority's data")
+    class BadIris {
+
+        @Test
+        @DisplayName("an unusable cross-reference is dropped rather than published")
+        void unusableCrossReferenceIsDropped() {
+            // ROR's identifiers are concatenated into URIs, so a stray space in
+            // one makes an IRI Jena writes with only a WARN and no consumer can
+            // resolve. dri-one #344 is what one unpublishable character costs
+            // when the export's PUT is all-or-nothing.
+            server.expect(requestTo(ROR_API))
+                .andRespond(withSuccess(rorResponseWithBadIris(), MediaType.APPLICATION_JSON));
+
+            val model = retriever("").describe(List.of(ROR), IdentityRetriever.Authority.ROR).model();
+
+            assertTrue(
+                model.listStatements().toList().stream()
+                    .filter(statement -> statement.getObject().isURIResource())
+                    .noneMatch(statement -> statement.getObject().asResource().getURI().contains(" ")),
+                "no IRI containing a space should reach the graph"
+            );
+            assertFalse(
+                model.contains(createResource(ROR), createProperty(FOAF + "homepage")),
+                "and a website that is not a URI at all should not be published as one"
+            );
+        }
+
+        @Test
+        @DisplayName("the rest of the record still comes through")
+        void therestOfTheRecordSurvives() {
+            // Dropping the bad values must not cost the good ones: one broken
+            // cross-reference should not lose the organisation its name.
+            server.expect(requestTo(ROR_API))
+                .andRespond(withSuccess(rorResponseWithBadIris(), MediaType.APPLICATION_JSON));
+
+            val model = retriever("").describe(List.of(ROR), IdentityRetriever.Authority.ROR).model();
+
+            assertTrue(model.contains(createResource(ROR), RDFS.label,
+                "UK Centre for Ecology & Hydrology"));
+        }
+
+        @Test
+        @DisplayName("a serialised graph re-parses, which is what the export's PUT requires")
+        void graphRoundTrips() {
+            server.expect(requestTo(ROR_API))
+                .andRespond(withSuccess(rorResponseWithBadIris(), MediaType.APPLICATION_JSON));
+            val model = retriever("").describe(List.of(ROR), IdentityRetriever.Authority.ROR).model();
+
+            val writer = new java.io.StringWriter();
+            org.apache.jena.riot.RDFDataMgr.write(writer, model, org.apache.jena.riot.Lang.TURTLE);
+            val reparsed = org.apache.jena.rdf.model.ModelFactory.createDefaultModel();
+            org.apache.jena.riot.RDFDataMgr.read(reparsed,
+                new java.io.StringReader(writer.toString()), null, org.apache.jena.riot.Lang.TURTLE);
+
+            assertThat(reparsed.size(), is(model.size()));
+        }
+    }
+
     @Nested
     @DisplayName("When an authority pushes back")
     class PushBack {
@@ -355,7 +431,7 @@ class IdentityRetrieverTest {
                 Clock.fixed(java.time.Instant.now().plus(java.time.Duration.ofDays(30)),
                     java.time.ZoneOffset.UTC));
 
-            val described = new IdentityRetriever(restTemplate, aged, "", 200)
+            val described = new IdentityRetriever(restTemplate, aged, "", 200, 500)
                 .describe(List.of(ORCID), IdentityRetriever.Authority.ORCID);
 
             assertThat(
@@ -422,28 +498,47 @@ class IdentityRetrieverTest {
             server.verify();
         }
 
-        @Test
-        @DisplayName("the configured budget is high enough for a first fill to finish before it goes stale")
-        void configuredBudgetConverges() throws Exception {
+        /**
+         * How many entities of each authority the catalogue references, and the
+         * property that decides how many of them one run may fetch.
+         *
+         * <p>The counts are the recorded state of the graph, not a guess. They
+         * are here so that the budgets are checked against something real; when
+         * the catalogue grows past what a budget can fill, this test is what
+         * says so.
+         */
+        static java.util.stream.Stream<org.junit.jupiter.params.provider.Arguments> budgets() {
+            return java.util.stream.Stream.of(
+                org.junit.jupiter.params.provider.Arguments.of(
+                    "ror.unidentifiedRequestsPerRun", 561, "organisations"),
+                org.junit.jupiter.params.provider.Arguments.of(
+                    "orcid.requestsPerRun", 2125, "people")
+            );
+        }
+
+        @org.junit.jupiter.params.ParameterizedTest(name = "{0} can fill {1} {2} before they go stale")
+        @org.junit.jupiter.params.provider.MethodSource("budgets")
+        @DisplayName("each configured budget is high enough for a first fill to finish before it goes stale")
+        void configuredBudgetConverges(String property, int entities, String what) throws Exception {
             // A budget that cannot fill the set inside MAX_AGE never fills it at
             // all: the entities fetched on the first run are stale again before
             // the last ones are reached, so every subsequent run spends its
             // budget refetching the head of the list. At 561 organisations and a
-            // fortnight, 40 a run — the figure that matches ROR's unidentified
-            // rate limit — is just under the line, which is why the property
-            // exists and why lowering it is not a free choice.
-            val organisations = 561;
+            // fortnight, 40 a run -- the figure matching ROR's unidentified rate
+            // limit -- is just under the line, which is why these are properties
+            // and why lowering one is not a free choice.
             val properties = new java.util.Properties();
             try (var in = getClass().getResourceAsStream("/application.properties")) {
                 properties.load(in);
             }
-            val budget = Integer.parseInt(properties.getProperty("ror.unidentifiedRequestsPerRun"));
-            val runsToFill = (organisations + budget - 1) / budget;
+            val budget = Integer.parseInt(properties.getProperty(property));
+            val runsToFill = (entities + budget - 1) / budget;
 
             assertTrue(
                 runsToFill < IdentityRetriever.MAX_AGE.toDays(),
-                () -> "%d a run needs %d daily runs to fetch %d organisations, but they go stale after %d"
-                    .formatted(budget, runsToFill, organisations, IdentityRetriever.MAX_AGE.toDays())
+                () -> "%s=%d needs %d daily runs to fetch %d %s, but they go stale after %d"
+                    .formatted(property, budget, runsToFill, entities, what,
+                        IdentityRetriever.MAX_AGE.toDays())
             );
         }
 
@@ -480,7 +575,7 @@ class IdentityRetrieverTest {
         }
 
         @Test
-        @DisplayName("an entity asked about and unreachable is not deferred, because a later run cannot help")
+        @DisplayName("an entity asked about and unreachable is counted as a failure, not a deferral")
         void unreachableIsNotDeferred() {
             server.expect(requestTo(ORCID)).andRespond(withServerError());
 
@@ -489,6 +584,11 @@ class IdentityRetrieverTest {
             assertThat(
                 "deferring means not yet asked; this one was asked and had nothing to give",
                 described.deferred(), is(0)
+            );
+            assertThat(
+                "but it still held the graph back -- the original code counted only "
+                    + "deferrals, and published a graph missing everything that failed",
+                described.transientFailures(), is(1)
             );
         }
 
@@ -499,7 +599,7 @@ class IdentityRetrieverTest {
                 .andRespond(withSuccess(orcidResponse(), MediaType.valueOf("text/turtle")));
 
             // Fill the cache, then age it past the refresh limit and fail the refetch.
-            new IdentityRetriever(restTemplate, new DescriptionCache(dataset, Clock.systemUTC()), "", 200)
+            new IdentityRetriever(restTemplate, new DescriptionCache(dataset, Clock.systemUTC()), "", 200, 500)
                 .describe(List.of(ORCID), IdentityRetriever.Authority.ORCID);
 
             val laterServer = MockRestServiceServer.createServer(restTemplate);
@@ -507,7 +607,7 @@ class IdentityRetrieverTest {
             val aged = new DescriptionCache(dataset,
                 Clock.fixed(java.time.Instant.now().plus(java.time.Duration.ofDays(30)), java.time.ZoneOffset.UTC));
 
-            val model = new IdentityRetriever(restTemplate, aged, "", 200)
+            val model = new IdentityRetriever(restTemplate, aged, "", 200, 500)
                 .describe(List.of(ORCID), IdentityRetriever.Authority.ORCID).model();
 
             assertTrue(

@@ -41,6 +41,7 @@ class SkosConceptRetrieverTest {
     private static final String NVS = "http://vocab.nerc.ac.uk/collection/P07/current/CFSN0381/";
     private static final String OTHER = "http://vocab.nerc.ac.uk/collection/P07/current/OTHER/";
     private static final String SPARQL = "http://vocabs.invalid/query";
+    private static final String CAST = "http://onto.nerc.ac.uk/CAST/273";
 
     private MockRestServiceServer server;
     private SkosConceptRetriever retriever;
@@ -103,6 +104,17 @@ class SkosConceptRetrieverTest {
                 skos:prefLabel "salinity" ;
                 skos:definition "The salt content of sea water." .
             """.formatted(OTHER);
+    }
+
+    /** A CAST concept, for the batch-query path. */
+    private static String castResponse() {
+        return """
+            @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+            <%s> a skos:Concept ;
+                skos:prefLabel "nitrogen" ;
+                skos:altLabel "N" .
+            """.formatted(CAST);
     }
 
     /** OTHER's response, pointing at another concept as its broader term. */
@@ -245,6 +257,60 @@ class SkosConceptRetrieverTest {
                 List.of("http://onto.nerc.ac.uk/CAST/273"), SkosConceptRetriever.Retrieval.UKCEH_SPARQL);
 
             assertThat(model.size(), is(0L));
+        }
+    }
+
+    @Nested
+    @DisplayName("A concept URI that is not a usable IRI")
+    class UnusableConceptUris {
+
+        @Test
+        @DisplayName("is dropped before the query is built, so it cannot cost the whole batch")
+        void unusableUriDoesNotBreakTheBatch() {
+            // The URI is interpolated into the VALUES clause, so a brace makes
+            // the whole CONSTRUCT a syntax error -- the endpoint returns 400,
+            // describe returns nothing, and the caller's
+            // publish-whole-or-not-at-all guard then freezes the graph
+            // indefinitely. One bad keyword in one record would stop CAST for
+            // good.
+            val bad = "http://onto.nerc.ac.uk/CAST/{broken}";
+            server.expect(requestTo(org.hamcrest.Matchers.startsWith(SPARQL)))
+                // The assertion that matters: the brace must never reach the
+                // query at all. Checking only that the good concept came back
+                // would pass even if the bad URI were interpolated, because this
+                // mock answers whatever it is sent -- a real endpoint would 400.
+                // Not a check for an encoded brace: the query text itself is full
+                // of them (CONSTRUCT { ... }, VALUES ?concept { ... }). What must
+                // be absent is this concept.
+                .andExpect(request -> assertFalse(
+                    request.getURI().toString().contains("broken"),
+                    "an unusable concept URI must not be built into the SPARQL query"))
+                .andRespond(withSuccess(castResponse(), MediaType.valueOf("text/turtle")));
+
+            val model = retriever.describe(
+                List.of(CAST, bad), SkosConceptRetriever.Retrieval.UKCEH_SPARQL);
+
+            server.verify();
+            assertTrue(
+                model.contains(createResource(CAST), SKOS.prefLabel, "nitrogen"),
+                "the good concept is still described"
+            );
+            assertFalse(model.containsResource(createResource(bad)));
+        }
+
+        @Test
+        @DisplayName("is not asked for over HTTP either, since it cannot be a URL")
+        void unusableUriIsNotDereferenced() {
+            val bad = "http://vocab.nerc.ac.uk/collection/P07/current/pi|pe/";
+            server.expect(once(), requestTo(NVS))
+                .andRespond(withSuccess(nvsResponse(), MediaType.valueOf("text/turtle")));
+
+            val model = retriever.describe(
+                List.of(NVS, bad), SkosConceptRetriever.Retrieval.CONTENT_NEGOTIATION);
+
+            // Only NVS is expected, so an attempt on the bad URI would throw.
+            server.verify();
+            assertTrue(model.containsResource(createResource(NVS)));
         }
     }
 

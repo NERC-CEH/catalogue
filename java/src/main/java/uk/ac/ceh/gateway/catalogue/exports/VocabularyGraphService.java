@@ -276,6 +276,15 @@ public class VocabularyGraphService implements SourceGraphProvider {
             if (uri.isEmpty() || keyword.getLabel() == null || keyword.getLabel().isBlank()) {
                 continue;
             }
+            // Where a malformed keyword URL enters the graph. Jena would write
+            // it with only a WARN, so it would reach the endpoint and each
+            // consumer would find it separately. Reported, never repaired --
+            // dri-one #331 settled that URI quality is not corrected on our
+            // side, and guessing what a depositor meant would be exactly that.
+            if (!Iris.isPublishable(uri)) {
+                log.warn("Harvested keyword URL is not usable as an IRI, skipping: {}", uri);
+                continue;
+            }
             val concept = model.getResource(uri);
             model.add(concept, RDF.type, SKOS.Concept);
             model.add(concept, SKOS.prefLabel, keyword.getLabel());
