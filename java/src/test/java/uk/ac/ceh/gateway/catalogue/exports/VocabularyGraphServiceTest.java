@@ -209,8 +209,13 @@ class VocabularyGraphServiceTest {
         }
 
         @Test
-        @DisplayName("a partial retrieval still publishes, since some description beats none")
+        @DisplayName("a partial retrieval still publishes, since what is missing is what no run could get")
         void partialRetrievalStillPublishes() {
+            // This was once a compromise -- "some description beats none" -- and
+            // is now simply correct: the retriever falls back to a stored copy
+            // per concept, so a concept still absent from its result is one that
+            // has never been retrieved and that a later run cannot help either.
+            // Holding the graph back for it would hold it back for good.
             givenHarvestedLabels(List.of());
             givenRetrieverReturns(skosFor(NVS_CONCEPT, "sea water temperature", "A measurement.", NVS + "x"));
 
@@ -220,13 +225,40 @@ class VocabularyGraphServiceTest {
         }
 
         @Test
-        @DisplayName("an unreadable keyword index does not stop retrieval from publishing")
+        @DisplayName("an unreadable keyword index does not stop a vocabulary that is not harvested")
         void solrFailureDoesNotBlockRetrieval() throws Exception {
+            // NVS is retrieval-only, so its graph never held harvested labels
+            // and losing them costs it nothing.
             given(solrClient.query(anyString(), any(SolrQuery.class), eq(POST)))
                 .willThrow(new RuntimeException("connection refused"));
             givenRetrieverReturns(skosFor(NVS_CONCEPT, "sea water temperature", "A measurement.", NVS + "x"));
 
             assertThat(service.graphs(Set.of(NVS_CONCEPT)).keySet(), hasItem(NVS));
+        }
+
+        @Test
+        @DisplayName("but it does hold back a harvested vocabulary, whose graph is mostly labels")
+        void solrFailureHoldsBackAHarvestedVocabulary() throws Exception {
+            given(solrClient.query(anyString(), any(SolrQuery.class), eq(POST)))
+                .willThrow(new RuntimeException("connection refused"));
+            givenRetrieverReturns(skosFor(CAST_NITROGEN, "nitrogen", "An element.", CAST + "1"));
+
+            assertThat(
+                "publishing CAST from retrieval alone would drop its harvested labels",
+                service.graphs(Set.of(CAST_NITROGEN)).keySet(), not(hasItem(CAST))
+            );
+        }
+
+        @Test
+        @DisplayName("a harvest that silently returned nothing is treated as a fault, not an empty vocabulary")
+        void emptyHarvestIsTreatedAsAFault() {
+            // Solr is perfectly healthy here and simply holds no CAST labels.
+            // dri-one #349 found two vocabularies harvesting into silence, and
+            // the endpoint would have published that silence as fact.
+            givenHarvestedLabels(List.of(new Keyword("river", "gemet", GEMET + "1000")));
+            givenRetrieverReturns(skosFor(CAST_NITROGEN, "nitrogen", "An element.", CAST + "1"));
+
+            assertThat(service.graphs(Set.of(CAST_NITROGEN)).keySet(), not(hasItem(CAST)));
         }
     }
 
@@ -296,7 +328,7 @@ class VocabularyGraphServiceTest {
             givenHarvestedLabels(List.of());
 
             assertThat(
-                service.sourceGraphs().stream().map(VocabularyGraphService.Authority::graph).toList(),
+                service.sourceGraphs().stream().map(SourceGraphProvider.SourceGraph::graph).toList(),
                 containsInAnyOrder(GEMET, ENVTHES, CAST, NVS, AGROVOC,
                     "https://digital.ceh.ac.uk/vocab/ra/", "https://digital.ceh.ac.uk/vocab/fdri/")
             );

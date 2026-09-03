@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
-import uk.ac.ceh.gateway.catalogue.exports.VocabularyGraphService;
+import uk.ac.ceh.gateway.catalogue.exports.SourceGraphProvider;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class WellKnownController {
     private final List<String> catalogueIds;
     private final CatalogueService catalogueService;
     private final VoidStatsService voidStatsService;
-    private final VocabularyGraphService vocabularyGraphService;
+    private final List<SourceGraphProvider> sourceGraphProviders;
 
     public WellKnownController(
         Configuration freemarkerConfig,
@@ -43,7 +44,7 @@ public class WellKnownController {
         @Value("#{'${fuseki.catalogueIds:}'.split(',')}") List<String> catalogueIds,
         CatalogueService catalogueService,
         VoidStatsService voidStatsService,
-        VocabularyGraphService vocabularyGraphService
+        List<SourceGraphProvider> sourceGraphProviders
     ) {
         this.freemarkerConfig = freemarkerConfig;
         this.baseUri = baseUri;
@@ -51,7 +52,7 @@ public class WellKnownController {
         this.catalogueIds = catalogueIds.stream().filter(id -> !id.isBlank()).toList();
         this.catalogueService = catalogueService;
         this.voidStatsService = voidStatsService;
-        this.vocabularyGraphService = vocabularyGraphService;
+        this.sourceGraphProviders = sourceGraphProviders;
         log.info("Creating");
     }
 
@@ -76,7 +77,10 @@ public class WellKnownController {
         // authority whose labels we republish (dri-one #350). Advertised here so
         // a consumer can discover them rather than having to be told.
         model.put("catalogueGraph", baseUri);
-        model.put("sourceGraphs", vocabularyGraphService.sourceGraphs());
+        model.put("sourceGraphs", sourceGraphProviders.stream()
+            .flatMap(provider -> provider.sourceGraphs().stream())
+            .sorted(Comparator.comparing(SourceGraphProvider.SourceGraph::graph))
+            .toList());
         String body = FreeMarkerTemplateUtils.processTemplateIntoString(
             freemarkerConfig.getTemplate("rdf/void.ftl"),
             model

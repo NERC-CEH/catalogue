@@ -67,12 +67,35 @@ import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
  * content on differing terms and we have not established them; claiming the
  * wrong one would be worse than claiming none. Recording them is a follow-up,
  * and is needed before this data is redistributed further.
+ *
+ * <h2>A graph is published whole or not at all</h2>
+ *
+ * <p>Because the PUT replaces a graph rather than adding to it, publishing a
+ * degraded version is worse than publishing nothing: the endpoint loses what it
+ * had. Three ways a run can be degraded, and what happens to each:
+ *
+ * <ul>
+ *   <li><b>The harvested labels are missing</b> — Solr unreachable, or a harvest
+ *       that returned nothing. The graph is held back, since labels are the bulk
+ *       of what most of these graphs hold.</li>
+ *   <li><b>Retrieval failed entirely</b> — held back, as before.</li>
+ *   <li><b>Retrieval partly failed</b> — no longer degrading, because
+ *       {@link SkosConceptRetriever} now falls back to a cached copy per
+ *       concept. What is missing from its result is what no run could get.</li>
+ * </ul>
+ *
+ * <p>One gap remains, and is left open knowingly: a run that starts with an
+ * empty cache and meets a partly-unavailable authority still publishes a thin
+ * graph. Closing it would mean a completeness threshold, which would freeze a
+ * graph for good the first time a concept was permanently withdrawn. The
+ * cache's snapshot makes an empty cache rare, which is the cheaper half of the
+ * problem to attack.
  */
 @Slf4j
 @Profile("exports")
 @Service
 @ToString(exclude = {"solrClient", "uriNormaliser", "skosConceptRetriever"})
-public class VocabularyGraphService {
+public class VocabularyGraphService implements SourceGraphProvider {
 
     private static final String COLLECTION = "keywords";
 
@@ -172,7 +195,15 @@ public class VocabularyGraphService {
      * is what the VoID description at {@code /.well-known/void} advertises. One
      * list, so the description cannot drift from what is actually written.
      */
-    public List<Authority> sourceGraphs() {
+    @Override
+    public List<SourceGraph> sourceGraphs() {
+        return authorities().stream()
+            .map(authority -> new SourceGraph(authority.graph(), authority.title()))
+            .toList();
+    }
+
+    /** The full descriptors, which only this class needs. */
+    private static List<Authority> authorities() {
         return AUTHORITIES.stream().sorted(Comparator.comparing(Authority::graph)).toList();
     }
 
@@ -185,15 +216,30 @@ public class VocabularyGraphService {
      *         previous run's content is left alone instead of being replaced
      *         with less.
      */
+    @Override
     public Map<String, String> graphs(Set<String> referencedConcepts) {
         val localLabels = readLocalLabels();
         val turtleByGraph = new LinkedHashMap<String, String>();
 
-        for (val authority : sourceGraphs()) {
+        for (val authority : authorities()) {
             val model = ModelFactory.createDefaultModel();
 
             if (authority.localVocabId() != null) {
-                addLocalLabels(model, localLabels.getOrDefault(authority.localVocabId(), List.of()));
+                val harvested = localLabels.getOrDefault(authority.localVocabId(), List.of());
+                if (harvested.isEmpty()) {
+                    // A harvested vocabulary with no labels is a fault, not an
+                    // empty vocabulary: Solr unreachable, or a harvest that
+                    // silently brought back nothing (dri-one #349 found two of
+                    // those). Either way the labels are the bulk of what this
+                    // graph holds, and CAST also carries retrieved SKOS — so
+                    // going ahead would replace a graph of labels and
+                    // definitions with one holding definitions alone, and
+                    // publish the fault. Leaving the previous graph in place
+                    // loses a day's freshness and nothing else.
+                    log.warn("No harvested labels for {}, leaving its graph as it is", authority.graph());
+                    continue;
+                }
+                addLocalLabels(model, harvested);
             }
 
             if (authority.retrieval() != null) {
@@ -228,6 +274,15 @@ public class VocabularyGraphService {
         for (val keyword : keywords) {
             val uri = uriNormaliser.normalise(keyword.getUrl());
             if (uri.isEmpty() || keyword.getLabel() == null || keyword.getLabel().isBlank()) {
+                continue;
+            }
+            // Where a malformed keyword URL enters the graph. Jena would write
+            // it with only a WARN, so it would reach the endpoint and each
+            // consumer would find it separately. Reported, never repaired --
+            // dri-one #331 settled that URI quality is not corrected on our
+            // side, and guessing what a depositor meant would be exactly that.
+            if (!Iris.isPublishable(uri)) {
+                log.warn("Harvested keyword URL is not usable as an IRI, skipping: {}", uri);
                 continue;
             }
             val concept = model.getResource(uri);

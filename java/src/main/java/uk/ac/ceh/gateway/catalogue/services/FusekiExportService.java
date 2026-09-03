@@ -22,7 +22,7 @@ import uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.exports.CatalogueExportService;
 import uk.ac.ceh.gateway.catalogue.exports.DocumentsToTurtleService;
-import uk.ac.ceh.gateway.catalogue.exports.VocabularyGraphService;
+import uk.ac.ceh.gateway.catalogue.exports.SourceGraphProvider;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 
@@ -54,7 +54,7 @@ public class FusekiExportService implements CatalogueExportService {
     private final DocumentsToTurtleService documentsToTurtleService;
     private final VoidStatsService voidStatsService;
     private final MetadataListingService metadataListingService;
-    private final VocabularyGraphService vocabularyGraphService;
+    private final List<SourceGraphProvider> sourceGraphProviders;
     private volatile Date lastExported;
 
     public FusekiExportService(
@@ -67,7 +67,7 @@ public class FusekiExportService implements CatalogueExportService {
         @Value("${fuseki.password}") String fusekiPassword,
         VoidStatsService voidStatsService,
         MetadataListingService metadataListingService,
-        VocabularyGraphService vocabularyGraphService
+        List<SourceGraphProvider> sourceGraphProviders
     ) {
         log.info("Creating");
 
@@ -80,7 +80,7 @@ public class FusekiExportService implements CatalogueExportService {
         this.documentsToTurtleService = documentsToTurtleService;
         this.voidStatsService = voidStatsService;
         this.metadataListingService = metadataListingService;
-        this.vocabularyGraphService = vocabularyGraphService;
+        this.sourceGraphProviders = sourceGraphProviders;
     }
 
     private record TurtleStats(long triples, Map<String, Long> classEntityCounts) {}
@@ -111,7 +111,7 @@ public class FusekiExportService implements CatalogueExportService {
         Map<String, Model> parsed = new LinkedHashMap<>();
         catalogueTtls.forEach((id, ttl) -> parsed.put(id, parse(ttl)));
 
-        postVocabularyGraphs(referencedIris(parsed.values()));
+        postSourceGraphs(referencedIris(parsed.values()));
 
         catalogueIds.stream()
             .filter(id -> !catalogueTtls.containsKey(id))
@@ -138,22 +138,27 @@ public class FusekiExportService implements CatalogueExportService {
      * unavailable vocabulary, or a bad label in one of them, cannot stop the
      * catalogue graph from updating — or stop the other vocabularies publishing.
      */
-    private void postVocabularyGraphs(Set<String> referencedIris) {
-        Map<String, String> graphs;
-        try {
-            graphs = vocabularyGraphService.graphs(referencedIris);
-        } catch (Exception ex) {
-            log.warn("Could not build the vocabulary label graphs, skipping them: {}", ex.getMessage());
-            return;
-        }
-        graphs.forEach((graph, ttl) -> {
+    private void postSourceGraphs(Set<String> referencedIris) {
+        for (SourceGraphProvider provider : sourceGraphProviders) {
+            Map<String, String> graphs;
             try {
-                post(graph, ttl);
-                log.info("Posted vocabulary labels to graph {}", graph);
+                graphs = provider.graphs(referencedIris);
             } catch (Exception ex) {
-                log.warn("Could not post vocabulary labels to graph {}: {}", graph, ex.getMessage());
+                // One provider failing must not cost the others, any more than
+                // one graph failing costs the catalogue's.
+                log.warn("Could not build source graphs from {}: {}",
+                    provider.getClass().getSimpleName(), ex.getMessage());
+                continue;
             }
-        });
+            graphs.forEach((graph, ttl) -> {
+                try {
+                    post(graph, ttl);
+                    log.info("Posted source graph {}", graph);
+                } catch (Exception ex) {
+                    log.warn("Could not post source graph {}: {}", graph, ex.getMessage());
+                }
+            });
+        }
     }
 
     @Override
