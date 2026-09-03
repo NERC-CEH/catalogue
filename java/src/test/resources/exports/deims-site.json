@@ -1,0 +1,393 @@
+{
+ "title": "Allt a'Mharcaidh - United Kingdom",
+ "id": {
+  "prefix": "https://deims.org/",
+  "suffix": "b7f692ef-10b0-432e-ab42-a3e9b764c5cc"
+ },
+ "type": "site",
+ "created": "2012-12-25T18:55:54+01:00",
+ "changed": "2023-07-28T11:25:45+02:00",
+ "attributes": {
+  "affiliation": {
+   "networks": [
+    {
+     "network": {
+      "name": "ILTER",
+      "id": {
+       "prefix": "https://deims.org/networks/",
+       "suffix": "1aa7ccb2-a14b-43d6-90ac-5e0a6bc1d65b"
+      }
+     },
+     "siteCode": null,
+     "verified": true
+    },
+    {
+     "network": {
+      "name": "LTER Europe",
+      "id": {
+       "prefix": "https://deims.org/networks/",
+       "suffix": "4742ffca-65ac-4aae-815f-83738500a1fc"
+      }
+     },
+     "siteCode": null,
+     "verified": true
+    },
+    {
+     "network": {
+      "name": "UK ECN",
+      "id": {
+       "prefix": "https://deims.org/networks/",
+       "suffix": "a197664f-569e-4df6-933a-86de676dbfc5"
+      }
+     },
+     "siteCode": "LTER_EU_UK_031",
+     "verified": true
+    },
+    {
+     "network": {
+      "name": "UK Upland Waters Monitoring Network",
+      "id": {
+       "prefix": "https://deims.org/networks/",
+       "suffix": "421275c4-acb7-4d5e-8cd8-929707ba28bd"
+      }
+     },
+     "siteCode": "UWMN_02",
+     "verified": false
+    }
+   ],
+   "projects": [
+    {
+     "label": "eLTER (H2020)",
+     "uri": "https://cordis.europa.eu/project/id/654359"
+    },
+    {
+     "label": "eLTER PLUS (H2020) - RA",
+     "uri": "https://doi.org/10.3030/871128"
+    },
+    {
+     "label": "eLTER PLUS (H2020) - TA",
+     "uri": "https://doi.org/10.3030/871128"
+    }
+   ]
+  },
+  "contact": {
+   "siteManager": [
+    {
+     "type": "person",
+     "name": "A Person",
+     "email": "contact@example.invalid",
+     "orcid": null
+    }
+   ],
+   "operatingOrganisation": [
+    {
+     "type": "organisation",
+     "name": "Scottish Environment Protection Agency (SEPA)",
+     "url": null,
+     "ror": null
+    },
+    {
+     "type": "organisation",
+     "name": "UK Centre for Ecology & Hydrology (UKCEH)",
+     "url": "https://www.ceh.ac.uk/",
+     "ror": "https://ror.org/00pggkr55"
+    }
+   ],
+   "metadataProvider": [
+    {
+     "type": "organisation",
+     "name": "ENSIS Ltd, Environmental Change Research Centre, University College London",
+     "url": null,
+     "ror": null
+    },
+    {
+     "type": "person",
+     "name": "A Person",
+     "email": "contact@example.invalid",
+     "orcid": null
+    },
+    {
+     "type": "person",
+     "name": "A Person",
+     "email": "contact@example.invalid",
+     "orcid": null
+    }
+   ],
+   "fundingAgency": null,
+   "siteUrl": [
+    {
+     "title": "ECN web site",
+     "value": "https://ecn.ac.uk/"
+    }
+   ]
+  },
+  "general": {
+   "abstract": "UK ECN site.  Allt a'Mharcaidh is a stream site on the western flank of the Cairngorm Mountains. The catchment area is 998ha and it drains to the River Feshie, a tributary of the River Spey. The catchment rises from 325m at the sampling site to 1111m and is covered by alpine and peaty podsols (60%) and blanket peat (40%). The underlying geology is intrusive biotite-granite of the Lower Old Red Sandstone age. Vegetation is characterised by a heather/fescue grass mixture (90%) with native pinewoods (c. 2%) interspersed along the lowest reaches. The catchment comprises part of the Cairngorm National Nature Reserve and land-use is confined to deer grazing. The stream gradient is steep and exposed bedrock, rapids and waterfalls and large boulders characterise the monitored channel section. Note: this site is a single point sampling location (gauging station) on a river. The shape file indicates the whole river catchment.The stream site is nested within the Cairngorms National Park LTSER site (http://data.lter-europe.net/deims/site/LTER_EU_UK_059), which also contains the Cairngorms terrestrial ECN site. ",
+   "citation": null,
+   "relatedIdentifiers": null,
+   "status": {
+    "label": "Operational",
+    "uri": "http://vocabs.lter-europe.net/elter_cl/10772"
+   },
+   "yearEstablished": 1992,
+   "yearClosed": null,
+   "relatedSites": [
+    {
+     "typeOfRelationship": {
+      "label": "belongs to",
+      "uri": "null"
+     },
+     "listOfSites": [
+      {
+       "type": "site",
+       "title": "Cairngorms National Park LTSER - United Kingdom",
+       "id": {
+        "prefix": "https://deims.org/",
+        "suffix": "1b94503d-285c-4028-a3db-bc78e31dea07"
+       },
+       "changed": "2025-01-07T11:11:07+0100"
+      }
+     ]
+    }
+   ],
+   "siteName": "Allt a'Mharcaidh",
+   "shortName": "R14",
+   "siteType": "Stationary land-based site",
+   "protectionLevel": [
+    {
+     "label": "Category IV \u2013 Habitat/Species Management Area",
+     "uri": "http://dd.eionet.europa.eu/vocabularyconcept/cdda/IucnCategoryValue/IV"
+    },
+    {
+     "label": "Category V \u2013 Protected Landscape/Seascape/Area",
+     "uri": "http://dd.eionet.europa.eu/vocabularyconcept/cdda/IucnCategoryValue/V"
+    }
+   ],
+   "landUse": null,
+   "images": [
+    {
+     "url": "https://deims.org/sites/default/files/photos/allt-amharcaidh-united-kingdom_2727.jpg",
+     "alt": "Allt a'Mharcaidh stream"
+    },
+    {
+     "url": "https://deims.org/sites/default/files/photos/allt-amharcaidh-united-kingdom_2728.jpg",
+     "alt": "Gauging station"
+    },
+    {
+     "url": "https://deims.org/sites/default/files/photos/allt-amharcaidh-united-kingdom_2875.jpg",
+     "alt": "Gauging station"
+    },
+    {
+     "url": "https://deims.org/sites/default/files/photos/allt-amharcaidh-united-kingdom_2876.jpg",
+     "alt": "Allt a'Mharcaidh stream"
+    },
+    {
+     "url": "https://deims.org/sites/default/files/photos/allt-amharcaidh-united-kingdom_2877.jpg",
+     "alt": "Allt a'Mharcaidh stream"
+    }
+   ]
+  },
+  "environmentalCharacteristics": {
+   "airTemperature": {
+    "yearlyAverage": 5.72,
+    "monthlyAverage": null,
+    "unit": "\u00b0C",
+    "referencePeriod": null
+   },
+   "precipitation": {
+    "yearlyAverage": 1152.2,
+    "monthlyAverage": null,
+    "unit": "mm",
+    "referencePeriod": null
+   },
+   "biogeographicalRegion": "atlantic",
+   "biome": "freshwater_rivers",
+   "ecosystemType": [
+    {
+     "label": "Large river headwaters",
+     "uri": null
+    },
+    {
+     "label": "Rivers",
+     "uri": null
+    }
+   ],
+   "eunisHabitat": [
+    {
+     "label": "Inland surface waters (C)",
+     "uri": null
+    },
+    {
+     "label": "Permanent non-tidal, fast, turbulent watercourses (C2.2)",
+     "uri": null
+    },
+    {
+     "label": "Surface running waters (C2)",
+     "uri": null
+    }
+   ],
+   "landforms": null,
+   "geoBonBiome": [
+    "Fresh water rivers"
+   ],
+   "geology": "The underlying geology is intrusive biotite-granite of Lower Old Red Sandstone age.",
+   "hydrology": "The gradient is steep throughout the upper catchment. Exposed bedrock, rapids, waterfalls and large boulders characterise the channel section utilised for biological monitoring. At low flow the stream bifurcates leaving large parts of the 10 m wide boulder-strewn bed exposed above the water line.",
+   "soils": "Subalpine soils cover 60% and alpine soils and rankers 40% of the catchment area.",
+   "vegetation": "Vegetation in the catchment is characterised by a heather/fescue grass mixture (c. 95%) with native Pinus sylvestris pinewoods (c. 5%) interspersed along the lowest reaches."
+  },
+  "geographic": {
+   "boundaries": "POLYGON ((-3.8505646461362 57.118118062554, -3.8430774787091 57.116950581381, -3.8393539438856 57.116767545217, -3.8343277619678 57.11675204667, -3.830495489515 57.115470852204, -3.827989965612 57.113397589413, -3.8260938360403 57.111493696858, -3.8245037998325 57.11136827207, -3.8186713306798 57.11160161191, -3.8159577948519 57.11083862782, -3.8138264101761 57.11081005717, -3.8109425512619 57.111030050117, -3.811896862227 57.109322460647, -3.8125193053982 57.107530515033, -3.8125428813705 57.105776943198, -3.8122463072488 57.104176579515, -3.810640214281 57.102595140721, -3.8079939302793 57.099967245267, -3.806844903539 57.098795185807, -3.8064506437489 57.097873737426, -3.8066613708905 57.095921344457, -3.806680456092 57.094518484124, -3.806337704784 57.092859340899, -3.8058049670098 57.091333684188, -3.8039281601963 57.088656580064, -3.8034771346576 57.087236714292, -3.8040439227581 57.086545091398, -3.8049292720199 57.085670582189, -3.8065394662963 57.085112491305, -3.8075868157812 57.083980070189, -3.8079517332211 57.083404260725, -3.8078035038114 57.083049809444, -3.8073917645229 57.080868663236, -3.8080218764052 57.080360345074, -3.8090893767315 57.079869481124, -3.8102475699863 57.079448615495, -3.8107112284197 57.079109097177, -3.8108189426785 57.07863208615, -3.8104950563316 57.078256403884, -3.8102171140238 57.077927602375, -3.8105969827041 57.077660613079, -3.8112420518318 57.077461106798, -3.8117068350418 57.077145340871, -3.8165738637605 57.076694497595, -3.8185007634564 57.075929586216, -3.8196691969036 57.075722437564, -3.8233246040049 57.076382471316, -3.8260582568242 57.076936974486, -3.8278537302638 57.077053427269, -3.8296278198222 57.077621850203, -3.8310324733481 57.079550699121, -3.8317582821259 57.080990230914, -3.8327285940687 57.081189995799, -3.8359909518898 57.081831642139, -3.8364070780342 57.082301000088, -3.8374561784269 57.084092354059, -3.8378899804008 57.0849180406, -3.8383002871375 57.085268613738, -3.84051712562 57.085949253939, -3.8410371048669 57.086749891359, -3.8420429622382 57.087662248809, -3.84288494139 57.088790964533, -3.8445147772435 57.089955625318, -3.8480200361879 57.091948443519, -3.8488103913369 57.092838667973, -3.8514277392853 57.093655847374, -3.8521001138412 57.094002504509, -3.8533386459161 57.094317013039, -3.8553122544312 57.095357588069, -3.8568622948393 57.095786314419, -3.8588440421266 57.096113527234, -3.8601382457414 57.096664872901, -3.8610742258177 57.097910940645, -3.8606310407284 57.098654481892, -3.8601771250064 57.099184224452, -3.8594283766394 57.099932296221, -3.8583486060824 57.101921462487, -3.8579798870952 57.103281983782, -3.8584889560587 57.104724581604, -3.8581329480585 57.1054668194, -3.8568173014393 57.107548613825, -3.8534093270662 57.109292870342, -3.8506749714504 57.110313902437, -3.8497296341004 57.111070757136, -3.8482621556702 57.112310760524, -3.8478345463581 57.113594852626, -3.8485059327829 57.115011321027, -3.8504078320368 57.117003947699, -3.8508314040728 57.11782974228, -3.8505732890581 57.118130712839, -3.8505646461362 57.118118062554))",
+   "coordinates": "POINT (-3.843425 57.114196)",
+   "country": [
+    "United Kingdom"
+   ],
+   "elevation": {
+    "avg": 718,
+    "min": 325,
+    "max": 1111,
+    "unit": "msl"
+   },
+   "size": {
+    "value": 998,
+    "unit": "ha"
+   },
+   "relatedLocations": [
+    {
+     "title": "Allt a'Mharcaidh",
+     "id": {
+      "prefix": "https://deims.org/locations/",
+      "suffix": "fdc54f1c-7ca1-47ea-a9db-37e8e738b8b6"
+     },
+     "changed": "2024-05-07T14:22:37+0200"
+    }
+   ]
+  },
+  "focusDesignScale": {
+   "experiments": {
+    "design": "no experimentation",
+    "scale": "na"
+   },
+   "observations": {
+    "design": "only observation",
+    "scale": "plot within catchment"
+   },
+   "observedProperties": [
+    {
+     "label": "chlorophyll content of water",
+     "uri": "http://vocabs.lter-europe.net/EnvThes/10088"
+    },
+    {
+     "label": "dissolved nutrient",
+     "uri": "http://vocabs.lter-europe.net/EnvThes/22107"
+    },
+    {
+     "label": "dissolved organic carbon in water",
+     "uri": "http://vocabs.lter-europe.net/EnvThes/10307"
+    },
+    {
+     "label": "ecosystem parameter",
+     "uri": "http://vocabs.lter-europe.net/EnvThes/20939"
+    },
+    {
+     "label": "species abundance",
+     "uri": "http://vocabs.lter-europe.net/EnvThes/10018"
+    },
+    {
+     "label": "species presence",
+     "uri": "http://vocabs.lter-europe.net/EnvThes/10081"
+    },
+    {
+     "label": "stage height",
+     "uri": "http://vocabs.lter-europe.net/EnvThes/22290"
+    },
+    {
+     "label": "suspended solids",
+     "uri": "http://vocabs.lter-europe.net/EnvThes/22293"
+    },
+    {
+     "label": "total organic carbon",
+     "uri": "http://vocabs.lter-europe.net/EnvThes/22297"
+    },
+    {
+     "label": "water acidity",
+     "uri": "http://vocabs.lter-europe.net/EnvThes/22030"
+    },
+    {
+     "label": "water alkalinity",
+     "uri": "http://vocabs.lter-europe.net/EnvThes/10303"
+    },
+    {
+     "label": "water level",
+     "uri": "http://vocabs.lter-europe.net/EnvThes/30025"
+    },
+    {
+     "label": "water parameter",
+     "uri": "http://vocabs.lter-europe.net/EnvThes/20945"
+    },
+    {
+     "label": "water quality",
+     "uri": "http://vocabs.lter-europe.net/EnvThes/22312"
+    },
+    {
+     "label": "water temperature",
+     "uri": "http://vocabs.lter-europe.net/EnvThes/22313"
+    },
+    {
+     "label": "water transparency",
+     "uri": "http://vocabs.lter-europe.net/EnvThes/10392"
+    }
+   ]
+  },
+  "infrastructure": {
+   "accessibleAllYear": true,
+   "accessType": "regular car",
+   "allPartsAccessible": false,
+   "maintenanceInterval": null,
+   "permanentPowerSupply": false,
+   "operation": {
+    "permanent": false,
+    "notes": "ECN freshwater monitoring is carried out at least once per month",
+    "siteVisitInterval": 30
+   },
+   "notes": "Accommodation in nearby villages",
+   "collection": [
+    {
+     "label": "Data portal",
+     "uri": null
+    },
+    {
+     "label": "Relational database",
+     "uri": null
+    },
+    {
+     "label": "Spatial data file (GIS)",
+     "uri": null
+    },
+    {
+     "label": "Structured file",
+     "uri": null
+    }
+   ],
+   "data": {
+    "policy": {
+     "url": [
+      {
+       "title": null,
+       "value": "http://data.ecn.ac.uk/datapolicy.asp"
+      }
+     ],
+     "rights": [
+      "Formal acknowledgement of the dataset providers"
+     ],
+     "notes": null
+    }
+   }
+  },
+  "relatedResources": null,
+  "projectRelated": {
+   "lter": {
+    "lterSiteClassification": "Extensive Site"
+   }
+  }
+ }
+}
