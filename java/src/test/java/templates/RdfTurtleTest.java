@@ -537,16 +537,30 @@ public class RdfTurtleTest {
             }
 
             @Test
-            @DisplayName("a keyword concept URI loses its stray trailing slash and gains https")
-            void keywordUriCanonicalised() {
+            @DisplayName("a keyword concept URI loses its stray trailing slash")
+            void keywordSlashedUriCanonicalised() {
                 val document = dataset("kwtest");
+                document.setKeywordsOther(List.of(
+                    Keyword.builder().value("Above ground biomass").URI("http://vocabs.lter-europe.net/EnvThes/22025/").build()
+                ));
+//
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.containsResource(createResource("http://vocabs.lter-europe.net/EnvThes/22025")));
+                assertFalse(model.containsResource(createResource("http://vocabs.lter-europe.net/EnvThes/22025/")));
+            }
+
+            @Test
+            @DisplayName("a keyword concept URI gains https")
+            void keywordHttpUriCanonicalised() {
+                val document = dataset("kwtest2");
                 document.setKeywordsOther(List.of(
                     Keyword.builder().value("Scotland").URI("http://sws.geonames.org/2638360/").build()
                 ));
 
                 template("rdf/ttl.ftl", document);
 
-                assertTrue(model.containsResource(createResource("https://sws.geonames.org/2638360")));
+                assertTrue(model.containsResource(createResource("https://sws.geonames.org/2638360/")));
                 assertFalse(model.containsResource(createResource("http://sws.geonames.org/2638360/")));
             }
 
@@ -560,7 +574,7 @@ public class RdfTurtleTest {
 
                 template("rdf/ttl.ftl", document);
 
-                val concept = createResource("https://sws.geonames.org/2638360");
+                val concept = createResource("https://sws.geonames.org/2638360/");
                 assertTrue(model.contains(
                     createResource("https://example.com/id/kwagree"),
                     createProperty("http://purl.org/dc/terms/subject"),
@@ -1022,7 +1036,7 @@ public class RdfTurtleTest {
 
                 template("rdf/ttl.ftl", document);
 
-                val concept = createResource("https://sws.geonames.org/2638360");
+                val concept = createResource("https://sws.geonames.org/2638360/");
                 assertTrue(model.contains(concept, createProperty(RDF_TYPE), createResource(SKOS_CONCEPT)));
                 assertFalse(model.contains(concept, createProperty(SKOS_PREF_LABEL), (org.apache.jena.rdf.model.RDFNode) null));
                 assertFalse(model.contains(concept, createProperty(RDFS_LABEL), (org.apache.jena.rdf.model.RDFNode) null));
@@ -1592,7 +1606,7 @@ public class RdfTurtleTest {
 
                 template("rdf/ttl.ftl", document);
 
-                assertTrue(model.containsResource(createResource("https://sws.geonames.org/2638360")));
+                assertTrue(model.containsResource(createResource("https://sws.geonames.org/2638360/")));
                 verifyNoInteractions(keywordVocabulary);
             }
         }

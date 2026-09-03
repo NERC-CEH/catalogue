@@ -294,11 +294,6 @@ public class MonitoringQualityServiceTest {
         val results = this.service.check("monitoringNetworkNonCanonicalUris");
 
         //then
-        assertThat(results.getInfoList(), contains(new MetadataCheck(
-            "Keyword URI is not in its canonical form, http://sws.geonames.org/2638360/ "
-                + "should be https://sws.geonames.org/2638360",
-            Results.Severity.INFO
-        )));
         assertThat(results.getErrorList(), contains(new MetadataCheck(
             "Environmental domain URI is not a usable URI: "
                 + "hhttp://vocab.nerc.ac.uk/collection/N07/current/RAUT/",

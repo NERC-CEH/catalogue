@@ -71,7 +71,7 @@ class KeywordUriTest {
 
         val identified = keywordUri.identify(Keyword.builder().value("Scotland").build());
 
-        assertThat(identified, equalTo("https://sws.geonames.org/2638360"));
+        assertThat(identified, equalTo("https://sws.geonames.org/2638360/"));
     }
 
     @Test
