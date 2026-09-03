@@ -25,6 +25,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Remembers what an authority said about an entity, so the export does not ask
@@ -158,9 +159,13 @@ public class DescriptionCache {
     }
 
     /**
-     * Writes the snapshot, if anything has changed since the last time. Called
-     * once a run rather than once a description: this rewrites the whole file,
-     * and at a few thousand entities that is a couple of megabytes.
+     * Writes the snapshot, if anything has changed since the last time.
+     *
+     * <p>Called once per authority that fetched something, not once per
+     * description — so up to five times in a run across the vocabularies and the
+     * two identity authorities, each rewriting the whole file. At a few thousand
+     * entities that is a couple of megabytes a time, which is why it is guarded
+     * by the change flag rather than called unconditionally.
      *
      * <p>Written to a sibling temporary file and moved into place, so a reader
      * sees either the previous snapshot or the new one. The move is atomic where
@@ -172,7 +177,10 @@ public class DescriptionCache {
         if (snapshot == null || !changed) {
             return;
         }
-        val temporary = snapshot.resolveSibling(snapshot.getFileName() + ".part");
+        // A unique name per write. Two pods overlap during a rolling update,
+        // and a shared temporary path would let them interleave into one file.
+        val temporary = snapshot.resolveSibling(
+            snapshot.getFileName() + "." + UUID.randomUUID() + ".part");
         dataset.begin(ReadWrite.READ);
         try {
             if (snapshot.getParent() != null) {
@@ -216,7 +224,15 @@ public class DescriptionCache {
      *         than {@code maxAge}
      */
     public Optional<Model> get(String uri, Duration maxAge) {
-        dataset.begin(ReadWrite.READ);
+        try {
+            dataset.begin(ReadWrite.READ);
+        } catch (Exception ex) {
+            // Nothing here may fail an export. A cache that cannot be read is a
+            // slow export; an exception escaping into describe() would cost the
+            // whole provider its graphs.
+            log.warn("Could not read the description cache: {}", ex.getMessage());
+            return Optional.empty();
+        }
         try {
             val retrievedAt = retrievedAt(uri);
             if (retrievedAt.isEmpty()) {
@@ -236,6 +252,9 @@ public class DescriptionCache {
             val copy = ModelFactory.createDefaultModel();
             copy.add(dataset.getNamedModel(uri));
             return Optional.of(copy);
+        } catch (Exception ex) {
+            log.warn("Could not read the cached description of {}: {}", uri, ex.getMessage());
+            return Optional.empty();
         } finally {
             dataset.end();
         }
@@ -248,7 +267,12 @@ public class DescriptionCache {
      * rather than retrying every run.
      */
     public void put(String uri, Model description) {
-        dataset.begin(ReadWrite.WRITE);
+        try {
+            dataset.begin(ReadWrite.WRITE);
+        } catch (Exception ex) {
+            log.warn("Could not open the description cache for writing: {}", ex.getMessage());
+            return;
+        }
         try {
             dataset.replaceNamedModel(uri, description);
             val metadata = dataset.getNamedModel(METADATA_GRAPH);
@@ -289,7 +313,12 @@ public class DescriptionCache {
 
     /** For tests and diagnostics: how many descriptions are held. */
     public long size() {
-        dataset.begin(ReadWrite.READ);
+        try {
+            dataset.begin(ReadWrite.READ);
+        } catch (Exception ex) {
+            log.warn("Could not read the description cache: {}", ex.getMessage());
+            return 0L;
+        }
         try {
             var count = 0L;
             val names = dataset.listNames();
@@ -299,6 +328,9 @@ public class DescriptionCache {
                 }
             }
             return count;
+        } catch (Exception ex) {
+            log.warn("Could not count cached descriptions: {}", ex.getMessage());
+            return 0L;
         } finally {
             dataset.end();
         }

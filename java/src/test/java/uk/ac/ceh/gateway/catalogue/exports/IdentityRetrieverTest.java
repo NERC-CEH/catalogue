@@ -7,11 +7,13 @@ import org.apache.jena.tdb2.TDB2Factory;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.apache.jena.vocabulary.SKOS;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
@@ -31,6 +33,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.headerDoesNotExist;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @DisplayName("Retrieving what ORCID and ROR say (dri-one #350 phase 3)")
@@ -181,12 +184,16 @@ class IdentityRetrieverTest {
             assertTrue(model.contains(organisation, RDF.type, createResource(FOAF + "Organization")));
             assertTrue(model.contains(organisation, RDFS.label, "UK Centre for Ecology & Hydrology"),
                 "the display name");
-            assertTrue(model.contains(organisation,
-                    createProperty("https://www.w3.org/ns/org#alternateName"), "UKCEH"),
+            assertTrue(model.contains(organisation, SKOS.altLabel, "UKCEH"),
                 "the acronym, which is one of the spellings our records use");
-            assertTrue(model.contains(organisation,
-                    createProperty("https://www.w3.org/ns/org#alternateName"), "Canolfan Ecoleg a Hydroleg y DU"),
+            assertTrue(model.contains(organisation, SKOS.altLabel, "Canolfan Ecoleg a Hydroleg y DU"),
                 "and the aliases");
+            assertFalse(
+                model.listStatements().toList().stream().anyMatch(
+                    statement -> statement.getPredicate().getURI().contains("ns/org#")),
+                "org:alternateName is not a real property, and the Organization Ontology "
+                    + "namespace is http rather than https; aliases belong on skos:altLabel"
+            );
             assertTrue(model.contains(organisation, createProperty(FOAF + "homepage"),
                 createResource("https://www.ceh.ac.uk/")));
             assertTrue(model.contains(organisation, OWL.sameAs,
@@ -232,6 +239,129 @@ class IdentityRetrieverTest {
 
             // The expectation is the assertion: an unversioned URL would not match.
             server.verify();
+        }
+    }
+
+    @Nested
+    @DisplayName("When an authority pushes back")
+    class PushBack {
+
+        private static java.util.List<String> organisations(int count) {
+            return IntStream.range(0, count)
+                .mapToObj(i -> "https://ror.org/org%02d".formatted(i))
+                .toList();
+        }
+
+        @Test
+        @DisplayName("a 429 stops the run asking that authority for anything more")
+        void rateLimitStopsTheRun() {
+            // Exactly one request is expected for 100 organisations: the 429
+            // ends the run's dealings with ROR, so a second request finds no
+            // expectation and throws.
+            server.expect(once(), requestTo(org.hamcrest.Matchers.startsWith(
+                    "https://api.ror.org/v2/organizations/")))
+                .andRespond(withStatus(HttpStatus.TOO_MANY_REQUESTS));
+
+            retriever("", 40).describe(organisations(100), IdentityRetriever.Authority.ROR);
+
+            server.verify();
+        }
+
+        @Test
+        @DisplayName("the entities it never got to are deferred, so the graph is held back")
+        void rateLimitedEntitiesAreDeferred() {
+            server.expect(once(), requestTo(org.hamcrest.Matchers.startsWith(
+                    "https://api.ror.org/v2/organizations/")))
+                .andRespond(withStatus(HttpStatus.TOO_MANY_REQUESTS));
+
+            val described = retriever("", 40)
+                .describe(organisations(100), IdentityRetriever.Authority.ROR);
+
+            assertThat(
+                "the 100th organisation was never asked about, so a later run will get it",
+                described.isComplete(), is(false)
+            );
+            assertThat(described.deferred(), is(99));
+        }
+
+        @Test
+        @DisplayName("a failed request costs budget, so a failing authority is not hammered")
+        void failuresConsumeBudget() {
+            // The budget used to count successes, so a run against a failing
+            // authority made a request for every entity however small the
+            // budget was -- the one situation the budget exists for.
+            IntStream.range(0, 40).forEach(i ->
+                server.expect(requestTo(org.hamcrest.Matchers.startsWith(
+                        "https://api.ror.org/v2/organizations/")))
+                    .andRespond(withServerError()));
+
+            retriever("", 40).describe(organisations(100), IdentityRetriever.Authority.ROR);
+
+            // 40 expectations for 100 organisations: a 41st request would throw.
+            server.verify();
+        }
+
+        @Test
+        @DisplayName("a 5xx is transient, so it holds the graph back")
+        void serverErrorIsTransient() {
+            server.expect(requestTo(ORCID)).andRespond(withServerError());
+
+            val described = retriever("").describe(List.of(ORCID), IdentityRetriever.Authority.ORCID);
+
+            assertThat(described.transientFailures(), is(1));
+            assertThat(described.isComplete(), is(false));
+        }
+
+        @Test
+        @DisplayName("a 404 is definitive, so it must not hold the graph back for ever")
+        void notFoundIsDefinitive() {
+            // A mistyped ORCID in a record 404s today and will 404 for ever.
+            // Blocking on it would freeze the graph permanently.
+            server.expect(requestTo(ORCID)).andRespond(withStatus(HttpStatus.NOT_FOUND));
+
+            val described = retriever("").describe(List.of(ORCID), IdentityRetriever.Authority.ORCID);
+
+            assertThat(described.transientFailures(), is(0));
+            assertThat(described.deferred(), is(0));
+            assertThat("nothing a later run can do, so the rest may still publish",
+                described.isComplete(), is(true));
+        }
+
+        @Test
+        @DisplayName("a response that is not the RDF we asked for is transient, not silent")
+        void unparseableResponseIsTransient() {
+            // This is the shape an unfollowed redirect had: a 200 whose body is
+            // a short piece of HTML. It used to vanish at log.debug, which
+            // logging.level.root=warn does not emit at all.
+            server.expect(requestTo(ORCID))
+                .andRespond(withSuccess("<html><body>Moved</body></html>", MediaType.TEXT_HTML));
+
+            val described = retriever("").describe(List.of(ORCID), IdentityRetriever.Authority.ORCID);
+
+            assertThat(described.transientFailures(), is(1));
+        }
+
+        @Test
+        @DisplayName("an entity with a stored copy is not counted against the run")
+        void aStoredCopyMeansNothingIsMissing() {
+            server.expect(requestTo(ORCID))
+                .andRespond(withSuccess(orcidResponse(), MediaType.valueOf("text/turtle")));
+            val retriever = retriever("");
+            retriever.describe(List.of(ORCID), IdentityRetriever.Authority.ORCID);
+
+            val laterServer = MockRestServiceServer.createServer(restTemplate);
+            laterServer.expect(requestTo(ORCID)).andRespond(withServerError());
+            val aged = new DescriptionCache(dataset,
+                Clock.fixed(java.time.Instant.now().plus(java.time.Duration.ofDays(30)),
+                    java.time.ZoneOffset.UTC));
+
+            val described = new IdentityRetriever(restTemplate, aged, "", 200)
+                .describe(List.of(ORCID), IdentityRetriever.Authority.ORCID);
+
+            assertThat(
+                "the stale copy fills the gap, so the graph loses nothing and may publish",
+                described.isComplete(), is(true)
+            );
         }
     }
 

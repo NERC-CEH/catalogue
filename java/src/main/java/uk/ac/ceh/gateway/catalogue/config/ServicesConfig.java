@@ -106,7 +106,20 @@ public class ServicesConfig {
     ) {
         log.info("Creating Authorities RestTemplate (connect={}, read={})", connectTimeout, readTimeout);
         val requestFactory = new JdkClientHttpRequestFactory(
-            HttpClient.newBuilder().connectTimeout(connectTimeout).build()
+            HttpClient.newBuilder()
+                // Not the default. HttpClient.newBuilder() is Redirect.NEVER,
+                // whereas the plain RestTemplate this replaced used
+                // SimpleClientHttpRequestFactory, which follows them. Both
+                // authorities that publish RDF by content negotiation redirect:
+                // orcid.org/<id> 302s to pub.orcid.org/<id> and AGROVOC 301s
+                // http to https. Without this every response is the redirect's
+                // short HTML body, which is not blank -- so it is returned as if
+                // it were the payload and then fails to parse as RDF, silently,
+                // for every entity. NORMAL rather than ALWAYS: an https to http
+                // downgrade should not be followed.
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .connectTimeout(connectTimeout)
+                .build()
         );
         requestFactory.setReadTimeout(readTimeout);
         return new RestTemplate(requestFactory);

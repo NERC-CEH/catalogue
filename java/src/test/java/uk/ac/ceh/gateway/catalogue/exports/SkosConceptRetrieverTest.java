@@ -105,6 +105,17 @@ class SkosConceptRetrieverTest {
             """.formatted(OTHER);
     }
 
+    /** OTHER's response, pointing at another concept as its broader term. */
+    private static String otherResponseNaming(String broader) {
+        return """
+            @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+            <%s> a skos:Concept ;
+                skos:prefLabel "salinity" ;
+                skos:broader <%s> .
+            """.formatted(OTHER, broader);
+    }
+
     @Nested
     @DisplayName("Dereferencing the concept URI")
     class ContentNegotiation {
@@ -325,6 +336,61 @@ class SkosConceptRetrieverTest {
             // into a week of silence about that concept.
             later.verify();
             assertTrue(model.contains(createResource(NVS), SKOS.prefLabel, "sea water temperature"));
+        }
+
+        @Test
+        @DisplayName("a neighbour mentioning a concept does not count as describing it")
+        void beingMentionedIsNotBeingDescribed() {
+            // NVS and AGROVOC hierarchies mean both ends of a skos:broader are
+            // routinely in the referenced set, so this is the common case rather
+            // than a contrived one. NVS is cached well, then ages out; its
+            // refetch fails while OTHER succeeds with a response naming it.
+            server.expect(requestTo(NVS))
+                .andRespond(withSuccess(nvsResponse(), MediaType.valueOf("text/turtle")));
+            retriever.describe(List.of(NVS), SkosConceptRetriever.Retrieval.CONTENT_NEGOTIATION);
+
+            val later = MockRestServiceServer.createServer(restTemplate);
+            later.expect(requestTo(NVS)).andRespond(withServerError());
+            later.expect(requestTo(OTHER))
+                .andRespond(withSuccess(otherResponseNaming(NVS), MediaType.valueOf("text/turtle")));
+
+            val model = laterRun(Duration.ofDays(8)).describe(
+                List.of(NVS, OTHER), SkosConceptRetriever.Retrieval.CONTENT_NEGOTIATION);
+
+            assertTrue(
+                model.contains(createResource(NVS), SKOS.prefLabel, "sea water temperature"),
+                "NVS's own failed fetch must fall back to the stored copy; being named "
+                    + "as OTHER's broader concept must not make it look freshly described"
+            );
+            assertFalse(
+                model.contains(createResource(NVS), SKOS.narrower, createResource(OTHER)),
+                "and nothing from OTHER's response may be published as NVS's own assertion"
+            );
+        }
+
+        @Test
+        @DisplayName("a good stored description is not overwritten by a failed refetch")
+        void failedRefetchDoesNotReplaceTheStoredCopy() {
+            server.expect(requestTo(NVS))
+                .andRespond(withSuccess(nvsResponse(), MediaType.valueOf("text/turtle")));
+            retriever.describe(List.of(NVS), SkosConceptRetriever.Retrieval.CONTENT_NEGOTIATION);
+
+            val later = MockRestServiceServer.createServer(restTemplate);
+            later.expect(requestTo(NVS)).andRespond(withServerError());
+            later.expect(requestTo(OTHER))
+                .andRespond(withSuccess(otherResponseNaming(NVS), MediaType.valueOf("text/turtle")));
+
+            laterRun(Duration.ofDays(8)).describe(
+                List.of(NVS, OTHER), SkosConceptRetriever.Retrieval.CONTENT_NEGOTIATION);
+
+            // Had the failed refetch been cached, the damage would outlive the
+            // run: a bare type triple stamped fresh, hiding the good copy for a
+            // week.
+            val held = cache.get(NVS, Duration.ofDays(14)).orElseThrow();
+            assertTrue(
+                held.contains(createResource(NVS), SKOS.prefLabel, "sea water temperature"),
+                "the stored description should still be the one the authority gave us"
+            );
         }
 
         @Test

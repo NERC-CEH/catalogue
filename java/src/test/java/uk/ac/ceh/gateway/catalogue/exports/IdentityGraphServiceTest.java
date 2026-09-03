@@ -61,12 +61,17 @@ class IdentityGraphServiceTest {
 
     /** A run that reached every entity it was asked about. */
     private static IdentityRetriever.Descriptions complete(Model model) {
-        return new IdentityRetriever.Descriptions(model, 0);
+        return new IdentityRetriever.Descriptions(model, 0, 0);
     }
 
     /** A run that ran out of budget with {@code deferred} entities still to fetch. */
     private static IdentityRetriever.Descriptions stillFilling(Model model, int deferred) {
-        return new IdentityRetriever.Descriptions(model, deferred);
+        return new IdentityRetriever.Descriptions(model, deferred, 0);
+    }
+
+    /** A run where the authority could not serve {@code failures} of the entities. */
+    private static IdentityRetriever.Descriptions withFailures(Model model, int failures) {
+        return new IdentityRetriever.Descriptions(model, 0, failures);
     }
 
     private static Model personNamed(String uri, String label) {
@@ -236,6 +241,21 @@ class IdentityGraphServiceTest {
             assertThat(
                 "the export's PUT replaces the graph, so publishing a third of it now "
                     + "would drop the rest until the cache warmed up again",
+                service.graphs(Set.of(CLAIRE)).keySet(), not(hasItem(ORCID_GRAPH))
+            );
+        }
+
+        @Test
+        @DisplayName("a graph is not replaced when the authority could not serve some entities")
+        void transientFailuresAlsoHoldTheGraphBack() {
+            // The hole the review found. These entities are just as absent from
+            // this run's model as ones the budget never reached, and a timeout
+            // or a rate limit is every bit as likely to succeed tomorrow -- so
+            // publishing now drops them from the endpoint.
+            given(retriever.describe(any(), eq(IdentityRetriever.Authority.ORCID)))
+                .willReturn(withFailures(personNamed(CLAIRE, "Claire Wood"), 400));
+
+            assertThat(
                 service.graphs(Set.of(CLAIRE)).keySet(), not(hasItem(ORCID_GRAPH))
             );
         }

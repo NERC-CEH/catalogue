@@ -28,6 +28,7 @@ import java.io.StringReader;
 import static org.apache.jena.rdf.model.ResourceFactory.createProperty;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.Matchers.containsString;
@@ -156,6 +157,9 @@ class WellKnownControllerTest extends AbstractMvcTest {
             named,
             hasItem("https://catalogue.ceh.ac.uk")
         );
+        assertThat(
+            "an empty provider list would make the assertions below vacuous",
+            sourceGraphProviders, hasSize(2));
         for (val source : sourceGraphProviders.stream().flatMap(p -> p.sourceGraphs().stream()).toList()) {
             assertThat(named, hasItem(source.graph()));
         }

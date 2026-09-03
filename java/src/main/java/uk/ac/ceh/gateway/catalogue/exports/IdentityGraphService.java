@@ -10,6 +10,7 @@ import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.apache.jena.vocabulary.SKOS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -52,8 +53,14 @@ import java.util.Set;
  * makes a partially-filled cache dangerous rather than merely incomplete: a run
  * that had only reached 200 of 561 organisations would replace a full ROR graph
  * with a third of one, and the endpoint would then lose and regain descriptions
- * every time the pod was recreated. So a graph is left alone until the run
- * behind it is complete — see {@link IdentityRetriever.Descriptions#deferred()}.
+ * every time the pod was recreated. So a graph is left alone unless the run
+ * behind it is complete — see
+ * {@link IdentityRetriever.Descriptions#isComplete()}.
+ *
+ * <p>"Complete" counts both entities the run never reached and entities the
+ * authority could not serve. Only an entity the authority <em>definitively</em>
+ * does not hold is excused, because a 404 for a mistyped identifier would
+ * otherwise hold the graph back for ever.
  */
 @Slf4j
 @Profile("exports")
@@ -121,18 +128,24 @@ public class IdentityGraphService implements SourceGraphProvider {
                 log.warn("No identities retrieved for {}, leaving its graph as it is", authority.uriPrefix());
                 continue;
             }
-            if (described.deferred() > 0) {
-                // The cache is still filling, so this run holds only part of what
-                // the authority has to say. The export's PUT replaces a graph
-                // wholesale, so publishing now would swap a full graph for a
-                // partial one and then swap it back over the following days --
-                // the endpoint would visibly lose and regain descriptions on
-                // every deploy. Leaving the graph alone until the cache is warm
-                // costs freshness for a few runs and nothing else.
+            if (!described.isComplete()) {
+                // This run holds only part of what the authority has to say. The
+                // export's PUT replaces a graph wholesale, so publishing now
+                // would swap a full graph for a partial one and then swap it
+                // back over the following days -- the endpoint would visibly
+                // lose and regain descriptions. Leaving the graph alone costs
+                // freshness for a run and nothing else.
+                //
+                // Both counts matter, and the second was originally missed: an
+                // entity the authority failed to serve is just as absent from
+                // this graph as one the budget never reached, and a timeout or
+                // a rate limit is every bit as likely to succeed tomorrow.
                 log.info(
-                    "Not publishing {} yet: {} of {} entities are still to be fetched, "
-                        + "and replacing the graph now would publish less than it already holds",
-                    authority.uriPrefix(), described.deferred(), wanted.size()
+                    "Not publishing {} yet: of {} entities, {} are still to be fetched and "
+                        + "{} could not be served, so replacing the graph would publish less "
+                        + "than it already holds",
+                    authority.uriPrefix(), wanted.size(),
+                    described.deferred(), described.transientFailures()
                 );
                 continue;
             }
@@ -162,7 +175,7 @@ public class IdentityGraphService implements SourceGraphProvider {
 
     private static String serialise(Model model) {
         model.setNsPrefix("foaf", "http://xmlns.com/foaf/0.1/");
-        model.setNsPrefix("org", "https://www.w3.org/ns/org#");
+        model.setNsPrefix("skos", SKOS.getURI());
         model.setNsPrefix("owl", OWL.getURI());
         model.setNsPrefix("rdfs", RDFS.getURI());
         model.setNsPrefix("dcterms", DCTerms.getURI());

@@ -27,7 +27,9 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -154,16 +156,22 @@ public class SkosConceptRetriever {
             return combined;
         }
 
-        val retrieved = retrieval == Retrieval.UKCEH_SPARQL
-            ? viaSparql(wanted)
-            : viaContentNegotiation(wanted);
+        val responses = responses(wanted, retrieval);
 
         var fetched = 0;
         var stale = 0;
         var unavailable = 0;
         for (val conceptUri : wanted) {
             val description = ModelFactory.createDefaultModel();
-            copyStatementsAbout(retrieved, conceptUri, description);
+            // Each concept is read from the response that described it, never
+            // from the union of the batch. Sharing one model across concepts
+            // let a statement in B's response be published as though A's
+            // authority had asserted it, and -- worse -- made A look described
+            // when its own fetch had failed, which cached the mistake.
+            val response = responses.get(conceptUri);
+            if (response != null) {
+                copyStatementsAbout(response, conceptUri, description);
+            }
             if (!description.isEmpty()) {
                 cache.put(conceptUri, description);
                 combined.add(description);
@@ -192,12 +200,25 @@ public class SkosConceptRetriever {
     }
 
     /**
-     * Returns everything the authority said, unfiltered. Reducing it to the
-     * published properties happens per concept in {@link #describe}, because
-     * each concept's description is cached separately.
+     * What each concept was described by, keyed by concept. A concept absent
+     * from the map was not described at all.
+     *
+     * <p>The two transports differ in how far a response can legitimately
+     * reach. Dereferencing gives one response per concept, and only that
+     * response may describe it. The SPARQL CONSTRUCT names every concept in the
+     * batch, so its single document legitimately describes all of them — but
+     * even there the per-concept extraction matters, because a concept appears
+     * in that document as the object of its neighbours' {@code skos:broader}
+     * whether or not the store held anything about it.
      */
-    private Model viaContentNegotiation(Collection<String> conceptUris) {
-        val combined = ModelFactory.createDefaultModel();
+    private Map<String, Model> responses(Collection<String> conceptUris, Retrieval retrieval) {
+        if (retrieval == Retrieval.UKCEH_SPARQL) {
+            val batch = viaSparql(conceptUris);
+            val byConcept = new LinkedHashMap<String, Model>();
+            conceptUris.forEach(uri -> byConcept.put(uri, batch));
+            return byConcept;
+        }
+        val byConcept = new LinkedHashMap<String, Model>();
         var failed = 0;
         for (val conceptUri : conceptUris) {
             val retrieved = fetchTurtle(conceptUri);
@@ -205,12 +226,12 @@ public class SkosConceptRetriever {
                 failed++;
                 continue;
             }
-            combined.add(retrieved);
+            byConcept.put(conceptUri, retrieved);
         }
         if (failed > 0) {
             log.warn("Could not retrieve {} of {} concept descriptions", failed, conceptUris.size());
         }
-        return combined;
+        return byConcept;
     }
 
     private Model fetchTurtle(String conceptUri) {
@@ -276,20 +297,29 @@ public class SkosConceptRetriever {
         }
     }
 
-    /** Copies the published SKOS statements about one concept, and its type. */
+    /**
+     * Copies the published SKOS statements about one concept, and its type.
+     *
+     * <p>Nothing is written unless at least one such statement was found. The
+     * test used to be {@code containsResource}, which is true when the concept
+     * appears <em>anywhere</em> in the source — including as the object of
+     * someone else's {@code skos:broader}. Being mentioned by a neighbour is not
+     * being described, and treating it as such made an empty extraction look
+     * like a successful retrieval, so the type triple alone was cached over a
+     * good description and the fallback to the stored copy was skipped.
+     */
     private static void copyStatementsAbout(Model source, String conceptUri, Model target) {
         val concept = source.getResource(conceptUri);
-        if (!source.containsResource(concept)) {
+        val published = source.listStatements(concept, null, (RDFNode) null).toList().stream()
+            .filter(statement -> PUBLISHED.contains(statement.getPredicate()))
+            // A literal, or a URI: never a blank node, which would drag the
+            // authority's internal structure in behind it.
+            .filter(statement -> !statement.getObject().isAnon())
+            .toList();
+        if (published.isEmpty()) {
             return;
         }
         target.add(target.getResource(conceptUri), RDF.type, SKOS.Concept);
-        source.listStatements(concept, null, (RDFNode) null).forEachRemaining(statement -> {
-            if (PUBLISHED.contains(statement.getPredicate())
-                // A literal, or a URI: never a blank node, which would drag the
-                // authority's internal structure in behind it.
-                && !statement.getObject().isAnon()) {
-                target.add(statement);
-            }
-        });
+        published.forEach(target::add);
     }
 }

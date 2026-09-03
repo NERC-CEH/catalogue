@@ -12,6 +12,7 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDFS;
+import org.apache.jena.vocabulary.SKOS;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -20,6 +21,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -27,6 +31,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -112,7 +117,6 @@ public class IdentityRetriever {
     private static final String ROR_CLIENT_ID_HEADER = "Client-Id";
 
     private static final String FOAF = "http://xmlns.com/foaf/0.1/";
-    private static final String ORG = "https://www.w3.org/ns/org#";
 
     /**
      * What an ORCID record may contribute. Deliberately narrow: ORCID's RDF also
@@ -126,6 +130,35 @@ public class IdentityRetriever {
         propertyOf(FOAF + "givenName"),
         propertyOf(FOAF + "familyName")
     );
+
+    /**
+     * How an attempt to reach an authority turned out. The distinction that
+     * matters is not success versus failure but whether a later run could do
+     * better, because that is what decides whether a graph may be published.
+     */
+    private enum Outcome {
+        /** A description was obtained. */
+        OK,
+        /** The authority asked us to slow down. Nothing more is asked of it this run. */
+        RATE_LIMITED,
+        /** A timeout, a 5xx, or a response that was not the RDF we asked for. */
+        TRANSIENT,
+        /** The authority does not hold this entity — a 404 for a mistyped identifier. */
+        DEFINITIVE
+    }
+
+    private record Retrieved(Outcome outcome, Model model) {
+        static Retrieved ok(Model model) {
+            return new Retrieved(Outcome.OK, model);
+        }
+
+        static Retrieved failed(Outcome outcome) {
+            return new Retrieved(outcome, ModelFactory.createDefaultModel());
+        }
+    }
+
+    /** The age limit for the fallback: any copy at all, however old. */
+    private static final Duration FOREVER = ChronoUnit.FOREVER.getDuration();
 
     private final RestTemplate restTemplate;
     private final DescriptionCache cache;
@@ -183,20 +216,35 @@ public class IdentityRetriever {
     /**
      * What one run of {@link #describe} managed to obtain.
      *
-     * <p>{@code deferred} is the number of entities this run never asked about
-     * at all, because the budget ran out before reaching them and no copy of any
-     * age was held. It is deliberately separate from the entities that were
-     * asked about and could not be reached: those we can do nothing more for,
-     * whereas a deferred entity will simply be described by a later run.
+     * <p>Two counts, because two different things make a run's model thinner
+     * than the authority could have made it, and both mean a later run will do
+     * better:
      *
-     * <p>That distinction is what tells a caller whether the model in hand is
-     * the best that can currently be had, or merely the first slice of a cache
-     * that is still filling. Only the caller can decide what to do about it —
-     * see {@link IdentityGraphService#graphs}.
+     * <ul>
+     *   <li>{@code deferred} — entities never asked about, because the budget
+     *       ran out before reaching them (or the authority told us to stop) and
+     *       no copy of any age was held.</li>
+     *   <li>{@code transientFailures} — entities asked about, where the failure
+     *       was of a kind that may not recur (a timeout, a 5xx, a rate limit, a
+     *       response that was not RDF) and again nothing was held.</li>
+     * </ul>
+     *
+     * <p>An entity the authority <em>definitively</em> does not have — a 404 for
+     * a mistyped ORCID — is counted in neither, because no later run can help
+     * it and blocking on it would block the graph for good.
      */
-    public record Descriptions(Model model, int deferred) {
+    public record Descriptions(Model model, int deferred, int transientFailures) {
         public boolean isEmpty() {
             return model.isEmpty();
+        }
+
+        /**
+         * Whether this is the best the authority could currently give. A run
+         * that is not complete must not be published: see
+         * {@link IdentityGraphService#graphs}.
+         */
+        public boolean isComplete() {
+            return deferred == 0 && transientFailures == 0;
         }
     }
 
@@ -205,16 +253,19 @@ public class IdentityRetriever {
      * @param authority which authority they belong to
      * @return a model describing as many of them as could be obtained, from the
      *         cache where it is fresh and from the authority otherwise, together
-     *         with the number left for a later run
+     *         with what was left for a later run
      */
     public Descriptions describe(Collection<String> uris, Authority authority) {
         val combined = ModelFactory.createDefaultModel();
+        var attempted = 0;
         var fetched = 0;
         var cached = 0;
-        var failed = 0;
+        var transientFailures = 0;
+        var definitive = 0;
+        var deferred = 0;
+        var stopped = false;
 
         val budget = budgetFor(authority);
-        var deferred = 0;
 
         for (val uri : uris) {
             val fresh = cache.get(uri, MAX_AGE);
@@ -223,50 +274,76 @@ public class IdentityRetriever {
                 cached++;
                 continue;
             }
-            if (fetched >= budget) {
-                // Out of budget for this run. Any copy we hold is still better
-                // than nothing, and the rest are picked up by the next run.
-                val held = cache.get(uri, Duration.ofDays(365 * 100));
-                held.ifPresent(combined::add);
-                deferred++;
+            // Out of budget, or told to stop. Either way this entity is not
+            // asked about: any copy we hold is still better than nothing, and
+            // the rest are picked up by the next run.
+            //
+            // The budget counts attempts rather than successes on purpose. When
+            // it counted successes, a failing authority cost no budget at all,
+            // so the one condition the budget exists for -- being asked to slow
+            // down -- was the condition in which it stopped limiting anything.
+            if (stopped || attempted >= budget) {
+                val held = cache.get(uri, FOREVER);
+                if (held.isPresent()) {
+                    combined.add(held.get());
+                    cached++;
+                } else {
+                    deferred++;
+                }
                 continue;
             }
+
+            attempted++;
             val retrieved = retrieve(uri, authority);
-            if (retrieved != null) {
-                cache.put(uri, retrieved);
-                combined.add(retrieved);
+            if (retrieved.outcome() == Outcome.OK) {
+                cache.put(uri, retrieved.model());
+                combined.add(retrieved.model());
                 fetched++;
                 continue;
             }
-            // Unreachable. A copy of any age beats nothing: a name from a
-            // fortnight ago is still that person's name.
-            val stale = cache.get(uri, Duration.ofDays(365 * 100));
-            if (stale.isPresent()) {
-                combined.add(stale.get());
+            if (retrieved.outcome() == Outcome.RATE_LIMITED) {
+                // The authority has asked us to stop. Continuing to the budget
+                // ceiling would be both rude and pointless, so nothing more is
+                // asked of it this run and the remainder is left for tomorrow.
+                log.warn("{} is rate limiting us; asking it for nothing more this run", authority);
+                stopped = true;
+            }
+
+            // A copy of any age beats nothing: a name from a fortnight ago is
+            // still that person's name.
+            val held = cache.get(uri, FOREVER);
+            if (held.isPresent()) {
+                combined.add(held.get());
                 cached++;
+            } else if (retrieved.outcome() == Outcome.DEFINITIVE) {
+                // The authority has no such record. Nothing to publish and
+                // nothing a later run can do, so this must not hold the graph.
+                definitive++;
             } else {
-                failed++;
+                transientFailures++;
             }
         }
-        log.info("{}: {} fetched, {} from cache, {} deferred to a later run, {} unavailable",
-            authority, fetched, cached, deferred, failed);
+        log.info("{}: {} fetched, {} from cache, {} deferred, {} temporarily unavailable, "
+                + "{} not held by the authority",
+            authority, fetched, cached, deferred, transientFailures, definitive);
         if (fetched > 0) {
             // The only thing that changes the cache is a fetch, so this is the
             // only point at which the snapshot needs rewriting.
             cache.save();
         }
-        return new Descriptions(combined, deferred);
+        return new Descriptions(combined, deferred, transientFailures);
     }
 
-    private Model retrieve(String uri, Authority authority) {
+    private Retrieved retrieve(String uri, Authority authority) {
         return authority == Authority.ROR ? fetchRor(uri) : fetchOrcid(uri);
     }
 
-    private Model fetchOrcid(String uri) {
-        val body = get(uri, "text/turtle", "");
-        if (body == null) {
-            return null;
+    private Retrieved fetchOrcid(String uri) {
+        val response = get(uri, "text/turtle", "");
+        if (response.outcome() != Outcome.OK) {
+            return Retrieved.failed(response.outcome());
         }
+        val body = response.body();
         try {
             val parsed = ModelFactory.createDefaultModel();
             RDFDataMgr.read(parsed, new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8)), Lang.TURTLE);
@@ -278,10 +355,13 @@ public class IdentityRetriever {
                     description.add(statement);
                 }
             });
-            return description;
+            return Retrieved.ok(description);
         } catch (Exception ex) {
-            log.debug("Could not read ORCID RDF for {}: {}", uri, ex.getMessage());
-            return null;
+            // Not the RDF we asked for. Treated as transient: the likeliest
+            // causes are an error page or a partial response, not a record
+            // that will always be unreadable.
+            log.warn("ORCID response for {} was not readable RDF: {}", uri, ex.getMessage());
+            return Retrieved.failed(Outcome.TRANSIENT);
         }
     }
 
@@ -291,12 +371,13 @@ public class IdentityRetriever {
      * is, when it was established, its website, and the identifiers it is known
      * by elsewhere. ROR's own administrative bookkeeping is left behind.
      */
-    private Model fetchRor(String uri) {
+    private Retrieved fetchRor(String uri) {
         val id = uri.substring(uri.lastIndexOf('/') + 1);
-        val body = get(ROR_API + id, "application/json", rorClientId);
-        if (body == null) {
-            return null;
+        val response = get(ROR_API + id, "application/json", rorClientId);
+        if (response.outcome() != Outcome.OK) {
+            return Retrieved.failed(response.outcome());
         }
+        val body = response.body();
         try {
             val json = objectMapper.readTree(body);
             val description = ModelFactory.createDefaultModel();
@@ -316,7 +397,12 @@ public class IdentityRetriever {
                     description.add(organisation, RDFS.label, value);
                     description.add(organisation, propertyOf(FOAF + "name"), value);
                 } else {
-                    description.add(organisation, propertyOf(ORG + "alternateName"), value);
+                    // skos:altLabel, not org:alternateName. The Organization
+                    // Ontology defines no such property -- and its namespace is
+                    // http, not the https this used -- so the aliases and
+                    // acronyms that are the whole point of publishing ROR were
+                    // going out under a term no consumer can resolve.
+                    description.add(organisation, SKOS.altLabel, value);
                 }
             }
 
@@ -376,14 +462,26 @@ public class IdentityRetriever {
                 }
             }
 
-            return description;
+            return Retrieved.ok(description);
         } catch (Exception ex) {
-            log.debug("Could not read ROR JSON for {}: {}", uri, ex.getMessage());
-            return null;
+            log.warn("ROR response for {} was not readable JSON: {}", uri, ex.getMessage());
+            return Retrieved.failed(Outcome.TRANSIENT);
         }
     }
 
-    private String get(String url, String accept, String clientId) {
+    private record HttpResponse(Outcome outcome, String body) {}
+
+    /**
+     * One request, with its failure classified rather than flattened.
+     *
+     * <p>It used to catch everything, log at {@code debug} and return null. Two
+     * problems with that. {@code logging.level.root=warn} means debug is not
+     * emitted in production at all, so a rate-limited export was
+     * indistinguishable from a healthy one; and a 429 was handled identically
+     * to a hostname that does not resolve, when the two call for opposite
+     * responses.
+     */
+    private HttpResponse get(String url, String accept, String clientId) {
         try {
             val headers = new HttpHeaders();
             headers.setAccept(List.of(MediaType.valueOf(accept)));
@@ -392,13 +490,54 @@ public class IdentityRetriever {
             }
             val response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
             val body = response.getBody();
-            return body == null || body.isBlank() ? null : body;
+            if (body == null || body.isBlank()) {
+                // A 200 with nothing in it. Not a record that does not exist —
+                // more likely a proxy or an error page — so worth trying again.
+                log.warn("Empty body from {}", url);
+                return new HttpResponse(Outcome.TRANSIENT, null);
+            }
+            return new HttpResponse(Outcome.OK, body);
+        } catch (HttpClientErrorException ex) {
+            return new HttpResponse(clientErrorOutcome(url, ex), null);
+        } catch (HttpServerErrorException ex) {
+            log.warn("{} returned {}", url, ex.getStatusCode());
+            return new HttpResponse(Outcome.TRANSIENT, null);
         } catch (Exception ex) {
-            // Deliberately wide: an authority can fail in every way an HTTP call
-            // can, and none of it should stop the other entities or the export.
-            log.debug("Could not reach {}: {}", url, ex.getMessage());
-            return null;
+            // Still deliberately wide: a timeout, a DNS failure, a reset
+            // connection. None of it should stop the other entities or the
+            // export, and all of it may be different tomorrow.
+            log.warn("Could not reach {}: {}", url, ex.getMessage());
+            return new HttpResponse(Outcome.TRANSIENT, null);
         }
+    }
+
+    /**
+     * A 4xx is the interesting case: only some of them mean "and it will still
+     * be 4xx tomorrow".
+     */
+    private static Outcome clientErrorOutcome(String url, HttpClientErrorException ex) {
+        val status = ex.getStatusCode();
+        if (status.value() == HttpStatus.TOO_MANY_REQUESTS.value()) {
+            // Logged loudly, and with what the authority told us, because this
+            // is the signal that our per-run budget is set wrong.
+            val retryAfter = ex.getResponseHeaders() == null
+                ? null : ex.getResponseHeaders().getFirst("Retry-After");
+            log.warn("{} rate limited us (429){}", url,
+                retryAfter == null ? "" : ", Retry-After: " + retryAfter);
+            return Outcome.RATE_LIMITED;
+        }
+        if (status.value() == HttpStatus.NOT_FOUND.value()
+            || status.value() == HttpStatus.GONE.value()) {
+            // The authority does not have it. A mistyped ORCID in a record will
+            // 404 for ever, so this must not be allowed to hold a graph back.
+            log.info("{} is not held by the authority ({})", url, status);
+            return Outcome.DEFINITIVE;
+        }
+        // 401, 403, 400 and friends: our fault or a misconfiguration, and
+        // treated as transient so that it holds the graph back and is noticed
+        // rather than quietly publishing less.
+        log.warn("{} returned {}", url, status);
+        return Outcome.TRANSIENT;
     }
 
     private static boolean contains(JsonNode array, String value) {
