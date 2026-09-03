@@ -28,8 +28,10 @@ import java.io.StringReader;
 import static org.apache.jena.rdf.model.ResourceFactory.createProperty;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.empty;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
@@ -157,10 +159,17 @@ class WellKnownControllerTest extends AbstractMvcTest {
             named,
             hasItem("https://catalogue.ceh.ac.uk")
         );
+        // Not a fixed count: that would break on every phase of dri-one #350
+        // that adds an authority, for no benefit. What makes the loop below
+        // meaningful is simply that there is something in it.
+        val declared = sourceGraphProviders.stream()
+            .flatMap(provider -> provider.sourceGraphs().stream())
+            .toList();
         assertThat(
-            "an empty provider list would make the assertions below vacuous",
-            sourceGraphProviders, hasSize(2));
-        for (val source : sourceGraphProviders.stream().flatMap(p -> p.sourceGraphs().stream()).toList()) {
+            "an empty declaration would make the assertions below vacuous",
+            declared, is(not(empty()))
+        );
+        for (val source : declared) {
             assertThat(named, hasItem(source.graph()));
         }
     }
