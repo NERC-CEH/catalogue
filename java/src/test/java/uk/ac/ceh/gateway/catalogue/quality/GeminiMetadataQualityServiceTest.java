@@ -656,7 +656,7 @@ public class GeminiMetadataQualityServiceTest {
         void canonicalUrisAreSilent() {
             val actual = check("""
                 {
-                  "keywordsTheme": [{"value": "Scotland", "uri": "https://sws.geonames.org/2638360"}],
+                  "keywordsTheme": [{"value": "Scotland", "uri": "https://sws.geonames.org/2638360/"}],
                   "funding": [{"awardURI": "https://gtr.ukri.org/projects?ref=NE/S008926/1"}],
                   "authors": [{"nameIdentifier": "https://orcid.org/0000-0001-2345-6789"}],
                   "accessLimitation": {"uri": "http://purl.org/coar/access_right/c_abf2"}
@@ -670,12 +670,12 @@ public class GeminiMetadataQualityServiceTest {
         @DisplayName("a stray trailing slash is reported with the canonical form")
         void reportsTrailingSlash() {
             val actual = check("""
-                {"keywordsPlace": [{"value": "Scotland", "uri": "http://sws.geonames.org/2638360/"}]}
+                {"keywordsOther": [{"value": "Above ground biomass", "uri": "http://vocabs.lter-europe.net/EnvThes/22025/"}]}
                 """);
 
             assertThat(actual, contains(new MetadataCheck(
-                "Keyword URI is not in its canonical form, http://sws.geonames.org/2638360/ "
-                    + "should be https://sws.geonames.org/2638360",
+                "Keyword URI is not in its canonical form, http://vocabs.lter-europe.net/EnvThes/22025/ "
+                    + "should be http://vocabs.lter-europe.net/EnvThes/22025",
                 INFO
             )));
         }
@@ -742,8 +742,8 @@ public class GeminiMetadataQualityServiceTest {
         void deduplicatesRepeatedOffenders() {
             val actual = check("""
                 {
-                  "keywordsPlace": [{"uri": "http://sws.geonames.org/2638360/"}],
-                  "keywordsTheme": [{"uri": "http://sws.geonames.org/2638360/"}]
+                  "keywordsPlace": [{"uri": "http://vocabs.lter-europe.net/EnvThes/22025/"}],
+                  "keywordsTheme": [{"uri": "http://vocabs.lter-europe.net/EnvThes/22025/"}]
                 }
                 """);
 

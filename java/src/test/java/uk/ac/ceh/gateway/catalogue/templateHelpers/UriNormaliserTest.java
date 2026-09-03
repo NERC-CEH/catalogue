@@ -264,24 +264,32 @@ class UriNormaliserTest {
     class TrailingSlash {
 
         @Test
-        @DisplayName("the bare and slashed forms of a geonames place produce the same node")
-        void geonamesFormsConverge() {
+        @DisplayName("a GeoNames URI gains its canonical trailing slash")
+        void appendsTrailingSlashForGeoNames() {
             assertThat(
-                service.normalise("http://sws.geonames.org/2638360/"),
-                is(equalTo("https://sws.geonames.org/2638360"))
-            );
-            assertThat(
-                service.normalise("http://sws.geonames.org/2638360"),
-                is(equalTo(service.normalise("http://sws.geonames.org/2638360/")))
+                service.normalise("https://sws.geonames.org/2635167"),
+                is(equalTo("https://sws.geonames.org/2635167/"))
             );
         }
 
         @Test
-        @DisplayName("a NERC vocabulary concept URI keeps the slash that makes it resolve")
-        void keepsSignificantTrailingSlash() {
+        @DisplayName("GeoNames variants converge on a single canonical URI")
+        void canonicalisesGeoNamesVariants() {
+            var expected = "https://sws.geonames.org/2635167/";
+
             assertThat(
-                service.normalise("http://vocab.nerc.ac.uk/collection/N07/current/RAUT/"),
-                is(equalTo("http://vocab.nerc.ac.uk/collection/N07/current/RAUT/"))
+                service.normalise("http://sws.geonames.org/2635167"),
+                is(equalTo(expected))
+            );
+
+            assertThat(
+                service.normalise("https://sws.geonames.org/2635167"),
+                is(equalTo(expected))
+            );
+
+            assertThat(
+                service.normalise("https://sws.geonames.org/2635167/"),
+                is(equalTo(expected))
             );
         }
 
@@ -295,8 +303,8 @@ class UriNormaliserTest {
         @DisplayName("only one slash is stripped")
         void stripsASingleSlash() {
             assertThat(
-                service.normalise("https://sws.geonames.org/2638360//"),
-                is(equalTo("https://sws.geonames.org/2638360/"))
+                service.normalise("http://vocabs.lter-europe.net/EnvThes/22025//"),
+                is(equalTo("http://vocabs.lter-europe.net/EnvThes/22025/"))
             );
         }
 

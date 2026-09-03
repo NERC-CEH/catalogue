@@ -29,12 +29,12 @@ import java.util.regex.Pattern;
  * </ol>
  *
  * <p>Scheme preference and trailing-slash policy are deliberately per-host
- * (see {@link #HOST_POLICIES}). Both are only safe where we know which form the
- * host publishes: {@code vocab.nerc.ac.uk} concept URIs, for instance,
- * canonically <em>end</em> in a slash, so a blanket strip would break them, and
- * most controlled vocabularies mint their concept URIs under {@code http} — for
- * them an upgrade to {@code https} does not reach the same identifier.
- * Unlisted hosts keep their scheme and trailing slash untouched.
+ * Scheme preference and trailing-slash policy are deliberately per-host
+ * (see {@link #HOST_POLICIES}). Some hosts publish canonical identifiers
+ * without a trailing slash, others require one. For example,
+ * {@code sws.geonames.org} identifiers canonically terminate with a slash,
+ * whereas {@code ror.org} identifiers do not. Unlisted hosts keep their
+ * supplied trailing slash unchanged.
  *
  * <p>Rejected input is returned as an empty string so that templates can fall
  * back to a blank node or a plain literal via {@code ?has_content}.
@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 public class UriNormaliser {
 
     /** Whether the trailing slash of a URI on a given host is significant. */
-    private enum TrailingSlash { STRIP, LEAVE }
+    private enum TrailingSlash { STRIP, LEAVE, APPEND }
 
     /**
      * Which scheme a host's identifiers canonically use. {@code LEAVE} is for
@@ -79,7 +79,7 @@ public class UriNormaliser {
      */
     private static final Map<String, HostPolicy> HOST_POLICIES = Map.ofEntries(
         Map.entry("gtr.ukri.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.STRIP)),
-        Map.entry("sws.geonames.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.STRIP)),
+        Map.entry("sws.geonames.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.APPEND)),
         Map.entry("doi.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.STRIP)),
         Map.entry("ror.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.STRIP)),
         Map.entry("orcid.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.STRIP)),
@@ -88,7 +88,7 @@ public class UriNormaliser {
         // and the first record to supply one should not split against the next.
         Map.entry("isni.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.STRIP)),
         Map.entry("www.wikidata.org", new HostPolicy(Scheme.LEAVE, TrailingSlash.STRIP)),
-        Map.entry("creativecommons.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.STRIP)),
+        Map.entry("creativecommons.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.APPEND)),
         // A controlled vocabulary's concept URI is an identifier the authority
         // mints, not an address for fetching it. Upgrading its scheme does not
         // reach the same identifier, it invents a second one — so these are
@@ -200,11 +200,18 @@ public class UriNormaliser {
 
         var policy = HOST_POLICIES.getOrDefault(host(authority), DEFAULT_POLICY);
         scheme = policy.scheme().applyTo(scheme);
+
         if (policy.trailingSlash() == TrailingSlash.STRIP && fragment == null) {
             if (query != null) {
                 query = stripTrailingSlash(query);
             } else if (path.length() > 1) {
                 path = stripTrailingSlash(path);
+            }
+        }
+
+        if (policy.trailingSlash() == TrailingSlash.APPEND && fragment == null) {
+            if (query == null && !path.endsWith("/")) {
+                path = path + "/";
             }
         }
 
