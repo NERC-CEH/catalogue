@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ac.ceh.gateway.catalogue.CatalogueWebTest;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -111,6 +113,24 @@ class EidcApplicationContextTest {
         val cacheManager = applicationContext.getBean(CacheManager.class);
         assertNotNull(cacheManager.getCache(JDBCMetricsService.VIEW_TOTALS_CACHE));
         assertNotNull(cacheManager.getCache(JDBCMetricsService.DOWNLOAD_TOTALS_CACHE));
+    }
+
+    /**
+     * {@code spring.task.scheduling.pool.size} only reaches a scheduler that Boot auto-configures:
+     * {@code TaskSchedulingConfigurations.TaskSchedulerConfiguration} backs off entirely if the
+     * application defines a {@code TaskScheduler} or {@code ScheduledExecutorService} bean of its
+     * own, and the property then silently governs nothing. Asserting the pool size on the bean the
+     * production context actually holds is what catches that. See dri-one #354.
+     */
+    @Test
+    @DisplayName("Scheduled tasks share the auto-configured pool of four threads")
+    void taskSchedulerHonoursConfiguredPoolSize() {
+        val taskScheduler = applicationContext.getBean(TaskScheduler.class);
+        Assertions.assertInstanceOf(ThreadPoolTaskScheduler.class, taskScheduler);
+        Assertions.assertEquals(
+            4,
+            ((ThreadPoolTaskScheduler) taskScheduler).getScheduledThreadPoolExecutor().getCorePoolSize()
+        );
     }
 
     @Test
