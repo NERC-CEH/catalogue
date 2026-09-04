@@ -12,12 +12,11 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.task.TaskSchedulingProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ac.ceh.gateway.catalogue.CatalogueWebTest;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -32,6 +31,7 @@ import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.*;
+import java.util.concurrent.ScheduledExecutorService;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -117,32 +117,54 @@ class EidcApplicationContextTest {
     }
 
     /**
-     * {@code spring.task.scheduling.pool.size} only reaches a scheduler that Boot auto-configures:
-     * {@code TaskSchedulingConfigurations.TaskSchedulerConfiguration} backs off entirely if the
+     * {@code spring.task.scheduling.pool.size} only reaches a scheduler that Boot auto-configures,
+     * and {@code TaskSchedulingConfigurations.TaskSchedulerConfiguration} backs off entirely if the
      * application defines a {@code TaskScheduler} or {@code ScheduledExecutorService} bean of its
-     * own, and the property then silently governs nothing. Checking the bean the production context
-     * actually holds is what catches that. See dri-one #354.
+     * own — the properties then silently govern nothing. See dri-one #354.
      * <p>
-     * The assertion is against the property as resolved <em>in this context</em> rather than the
-     * literal 4, because {@code test.properties} pins the pool back to Boot's default of 1 here: the
-     * scheduler is real, and so are the ungated {@code @Scheduled} methods hanging off it, so a pool
-     * of 4 in a cached test context means four of the vocabulary downloads running at once inside a
-     * 512m Gradle worker. What matters here is the wiring — that the property reaches the bean at
-     * all — and that holds whatever the number is. The shipped value of 4 is asserted against the
-     * real {@code application.properties} by {@code SchedulingConfigTest}.
+     * The check is on bean <em>definitions</em> rather than on the pool size, because scheduling is
+     * switched off in tests (dri-one #356) and the scheduler standing in here is therefore
+     * {@code SchedulingConfig}'s discarding one, not Boot's pool. The back-off trigger is still
+     * exactly what is asserted: one scheduler, contributed by {@code SchedulingConfig} under the name
+     * Boot itself would use, and no {@code ScheduledExecutorService} anywhere. Anything else added
+     * later — a custom {@code TaskScheduler} for one service, say — shows up here as a second
+     * definition, which is the regression this test exists to catch. The shipped pool size of 4 is
+     * asserted against the real {@code application.properties} by {@link SchedulingConfigTest}.
      */
     @Test
-    @DisplayName("Scheduled tasks share the auto-configured pool the property asks for")
-    void taskSchedulerHonoursConfiguredPoolSize() {
-        val taskScheduler = applicationContext.getBean(TaskScheduler.class);
-        Assertions.assertInstanceOf(
-            ThreadPoolTaskScheduler.class,
-            taskScheduler,
-            "auto-configuration backed off, so spring.task.scheduling.* governs nothing"
+    @DisplayName("Nothing defines a scheduler of its own, so spring.task.scheduling.* still governs")
+    void applicationDefinesNoSchedulerOfItsOwn() {
+        Assertions.assertArrayEquals(
+            new String[]{SchedulingConfig.TASK_SCHEDULER_BEAN},
+            applicationContext.getBeanNamesForType(TaskScheduler.class),
+            "a second TaskScheduler bean makes Boot's auto-configuration back off"
         );
-        Assertions.assertEquals(
-            applicationContext.getBean(TaskSchedulingProperties.class).getPool().getSize(),
-            ((ThreadPoolTaskScheduler) taskScheduler).getScheduledThreadPoolExecutor().getCorePoolSize()
+        Assertions.assertArrayEquals(
+            new String[0],
+            applicationContext.getBeanNamesForType(ScheduledExecutorService.class),
+            "a ScheduledExecutorService bean makes Boot's auto-configuration back off too"
+        );
+    }
+
+    /**
+     * The production wiring is loaded here without the {@code test} profile, which is the point of
+     * this class — and is also what makes it the context most exposed to dri-one #356, since
+     * {@code SolrScheduledReindexService} is {@code @Profile("!test")} and so loads only here. Its
+     * retry chain is scheduled programmatically, so suppressing {@code @Scheduled} registration alone
+     * would not stop it; the discarding scheduler is what does.
+     */
+    @Test
+    @DisplayName("No scheduled work runs in a test context")
+    void schedulingIsOffInTests() {
+        Assertions.assertArrayEquals(
+            new String[0],
+            applicationContext.getBeanNamesForType(ScheduledAnnotationBeanPostProcessor.class),
+            "@Scheduled methods are being registered, so they will fire mid-suite"
+        );
+        Assertions.assertInstanceOf(
+            SchedulingConfig.DiscardingTaskScheduler.class,
+            applicationContext.getBean(TaskScheduler.class),
+            "a live scheduler here means SolrScheduledReindexService's retry chain still runs"
         );
     }
 
