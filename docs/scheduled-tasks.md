@@ -161,10 +161,43 @@ The tests are `SchedulingConfigTest`, which loads the shipped `application.prope
 asserts the bound values, that a task running when the scheduler shuts down finishes
 uninterrupted, and that a queued one is dropped rather than awaited; plus one assertion in
 `EidcApplicationContextTest` that the production context's scheduler really is the
-auto-configured pool of four, since the property governs nothing if anything else defines a
+auto-configured pool, since the property governs nothing if anything else defines a
 `TaskScheduler` bean. Deleting the properties fails three of those; removing the customizer
 fails the fourth and makes the run 20 seconds slower, which is the behaviour it exists to
 prevent.
+
+### Why the test suite overrides both properties
+
+`application-test.properties` and `uk/ac/ceh/gateway/catalogue/test.properties` both put
+`pool.size` back to 1 and `await-termination` back to false. That is deliberate, and it is not
+a hedge against the production values — do not delete it to "make the tests match production".
+
+`@EnableScheduling` sits on `CatalogueApplication`, so every `@SpringBootTest` in this
+repository gets a real scheduler with the real `@Scheduled` methods attached, and Spring caches
+those contexts for the lifetime of the test JVM. Every ungated entry in the table above has an
+`initialDelay` between one and five minutes — shorter than a suite run — so the GEMET, ROR and
+SPARQL vocabulary retrievals, the Jena and MapServer reindex checks and the Turtle prefetch all
+genuinely execute during the tests, against their real endpoints. That leak is much older than
+this change and is not fixed here; what the overrides do is stop the production values turning
+it into a build failure. With the shipped values, CI showed both halves of that:
+
+- a pool of four lets four of those tasks run at once in each cached context, and a Gradle test
+  worker gets 512m by default, so the suite exhausted the heap — surfacing as an
+  `OutOfMemoryError` inside an unrelated context load (`OnlineResourceControllerTest`), which
+  then failed every test sharing that context;
+- awaiting termination replaces `shutdownNow()` with a 20-second wait per context close, and
+  those retrievals sit blocked on network reads that never complete in CI, so every one of the
+  ~25 cached contexts burned the full budget as the shutdown hook closed them — 8m20s of pure
+  waiting, taking `test_java` from 179s to 1004s.
+
+The shipped values keep their coverage regardless, because `SchedulingConfigTest` reads the real
+`application.properties` through `ConfigDataApplicationContextInitializer` with no profile
+active, so neither override is visible to it.
+
+The real fix for the underlying leak is to stop ungated `@Scheduled` beans doing outbound work in
+test contexts at all — `SolrScheduledReindexService` already shows the pattern with
+`@Profile("!test")`. That is a larger change than this one and has not been made yet; until it is,
+these overrides are what keeps the suite honest about it.
 
 ### The container check
 
