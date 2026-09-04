@@ -30,11 +30,17 @@ import java.util.Set;
  * itself for Turtle returns 79 KB of HTML with a 200, so a content-negotiating
  * fetch would succeed and then fail to parse.
  *
- * <p>And GeoNames describes the feature as {@code …/2635167/}, with a trailing
- * slash, while the catalogue's graph holds {@code …/2635167} without one. The
- * statements are therefore re-subjected. This is a host where
- * {@link uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser} leaves the
- * slash alone, so the two forms genuinely coexist and neither side is wrong.
+ * <p>And the trailing slash is not fixed. GeoNames describes the feature as
+ * {@code …/2635167/} with one; the production graph was built when
+ * {@link uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser} stripped it,
+ * so its 254 features are slashless, and that host is now {@code APPEND}, so
+ * the next export will hold the slashed form instead. Statements are therefore
+ * re-subjected onto whichever IRI was asked about rather than onto either form
+ * specifically, which is what keeps the graph joining across that change.
+ *
+ * <p>The cost of the switch is one refetch: descriptions cached under the
+ * slashless keys are orphaned, and the 254 features refill over two runs at this
+ * source's budget.
  *
  * <h2>Why the names are dropped</h2>
  *

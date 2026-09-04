@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
  * </ol>
  *
  * <p>Scheme preference and trailing-slash policy are deliberately per-host
- * Scheme preference and trailing-slash policy are deliberately per-host
  * (see {@link #HOST_POLICIES}). Some hosts publish canonical identifiers
  * without a trailing slash, others require one. For example,
  * {@code sws.geonames.org} identifiers canonically terminate with a slash,
@@ -87,7 +86,14 @@ public class UriNormaliser {
         // but ISNI publishes its identifiers over https with no trailing slash,
         // and the first record to supply one should not split against the next.
         Map.entry("isni.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.STRIP)),
-        Map.entry("www.wikidata.org", new HostPolicy(Scheme.LEAVE, TrailingSlash.STRIP)),
+        // Was LEAVE because nobody had checked which form Wikidata mints. It
+        // mints http: Special:EntityData/Q26612.ttl declares
+        // @prefix wd: <http://www.wikidata.org/entity/> and contains no https
+        // entity subject at all, and the Query Service answers under the same
+        // form. 15 records hold the https form, splitting those entities from
+        // the other 2,033 and from every description phase 5 publishes, so this
+        // converges them (dri-one #350).
+        Map.entry("www.wikidata.org", new HostPolicy(Scheme.HTTP, TrailingSlash.STRIP)),
         Map.entry("creativecommons.org", new HostPolicy(Scheme.HTTPS, TrailingSlash.APPEND)),
         // A controlled vocabulary's concept URI is an identifier the authority
         // mints, not an address for fetching it. Upgrading its scheme does not

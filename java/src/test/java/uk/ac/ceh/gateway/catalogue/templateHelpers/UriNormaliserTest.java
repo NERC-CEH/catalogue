@@ -309,6 +309,26 @@ class UriNormaliserTest {
         }
 
         @Test
+        @DisplayName("a Wikidata entity is pinned to http, which is the form Wikidata mints")
+        void wikidataIsPinnedToHttp() {
+            // 15 records held the https form, splitting those entities from the
+            // other 2,033 and from every description dri-one #350 phase 5
+            // publishes. Wikidata's own Special:EntityData declares
+            // @prefix wd: <http://www.wikidata.org/entity/> and carries no https
+            // entity subject at all, so http is not a preference but the
+            // identifier the authority issues.
+            assertThat(
+                service.normalise("https://www.wikidata.org/entity/Q26612"),
+                is(equalTo("http://www.wikidata.org/entity/Q26612"))
+            );
+            assertThat(
+                "and the canonical form is left as it is",
+                service.normalise("http://www.wikidata.org/entity/Q26612"),
+                is(equalTo("http://www.wikidata.org/entity/Q26612"))
+            );
+        }
+
+        @Test
         @DisplayName("a fragment means the trailing slash belongs to the path, leave it")
         void leavesSlashBeforeFragmentAlone() {
             assertThat(

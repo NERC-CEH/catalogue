@@ -105,6 +105,41 @@
       ]
     },
     {
+      name: "What species a dataset is about, named by Wikidata",
+      query: [
+        "# The catalogue records a subject as a bare identifier and says no more",
+        "# about it: <.../entity/Q58697> and nothing else. Wikidata's graph is",
+        "# what turns that into a name.",
+        "#",
+        "# Note ?name and ?taxonName are both optional and both worth asking",
+        "# for. Some species have no English label in Wikidata at all -- the",
+        "# scientific name is the only name they have, and for a species it is",
+        "# arguably the better one anyway.",
+        "PREFIX dcterms: <http://purl.org/dc/terms/>",
+        "PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>",
+        "PREFIX schema:  <http://schema.org/>",
+        "PREFIX wdt:     <http://www.wikidata.org/prop/direct/>",
+        "",
+        "SELECT ?title ?name ?taxonName ?kind ?description",
+        "WHERE {",
+        "  GRAPH <" + CATALOGUE_GRAPH + "> {",
+        "    ?dataset dcterms:title ?title ;",
+        "             dcterms:subject ?subject .",
+        "  }",
+        "  GRAPH <http://www.wikidata.org/entity/> {",
+        "    ?subject wdt:P31 ?type .",
+        "    OPTIONAL { ?subject rdfs:label ?name }",
+        "    OPTIONAL { ?subject wdt:P225 ?taxonName }",
+        "    OPTIONAL { ?subject schema:description ?description }",
+        "    # The type is named in the same graph, so 'instance of Q16521'",
+        "    # reads as 'taxon' without a second lookup.",
+        "    OPTIONAL { ?type rdfs:label ?kind }",
+        "  }",
+        "}",
+        "LIMIT 25"
+      ]
+    },
+    {
       name: "Datasets, their licence and their funder",
       query: [
         "# Entirely within the catalogue graph, for comparison: no external",
