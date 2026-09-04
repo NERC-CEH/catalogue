@@ -7,7 +7,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 @OpenAPIDefinition(info = @Info(
     title = "Environmental Information Data Centre (EIDC) Catalogue API",
@@ -17,7 +16,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 ))
 @EnableAsync
 @EnableCaching
-@EnableScheduling
+// @EnableScheduling is deliberately not here: it lives on SchedulingConfig.SchedulingEnabled, behind
+// catalogue.scheduling.enabled, so the test suite can stop @Scheduled methods being registered at
+// all. On this class it applied to every @SpringBootTest in the repository. See dri-one #356.
 @SpringBootApplication
 public class CatalogueApplication {
 

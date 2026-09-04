@@ -9,10 +9,14 @@ import org.springframework.boot.autoconfigure.task.TaskSchedulingProperties;
 import org.springframework.boot.task.ThreadPoolTaskSchedulerBuilder;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.support.PeriodicTrigger;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -129,6 +133,86 @@ class SchedulingConfigTest {
                 .as("without SchedulingConfig's customizer this burns the whole await period")
                 .isLessThan(Duration.ofSeconds(5));
         });
+    }
+
+    /**
+     * The switch of dri-one #356 defaults to on, and has to: no deployment sets it, so if the default
+     * were off — or if the property name were ever mistyped — every scheduled task in the table in
+     * {@code docs/scheduled-tasks.md} would quietly stop, with a healthy-looking pod to show for it.
+     * This asserts the default from the other side of the same coin as
+     * {@link #turningSchedulingOffRegistersNothing()}: no property set, everything registered.
+     */
+    @Test
+    @DisplayName("Scheduling is on unless something explicitly turns it off")
+    void schedulingIsOnByDefault() {
+        contextRunner.run(context -> {
+            assertThat(context)
+                .as("no @Scheduled method is registered without this processor")
+                .hasSingleBean(ScheduledAnnotationBeanPostProcessor.class);
+            assertThat(context.getBean(TaskScheduler.class))
+                .as("Boot's scheduler is @ConditionalOnBean on that processor")
+                .isInstanceOf(ThreadPoolTaskScheduler.class);
+            assertThat(((ThreadPoolTaskScheduler) context.getBean(TaskScheduler.class))
+                .getScheduledThreadPoolExecutor().getCorePoolSize())
+                .as("the shipped pool size, on the bean rather than on a builder")
+                .isEqualTo(4);
+        });
+    }
+
+    /**
+     * Off means nothing is registered <em>and</em> nothing submitted by hand runs either. The second
+     * half is the one that matters for {@code SolrScheduledReindexService}, which schedules its
+     * startup retry chain programmatically rather than through {@code @Scheduled} and so is untouched
+     * by dropping the annotation processor.
+     */
+    @Test
+    @DisplayName("Turning scheduling off registers nothing and discards what is submitted")
+    void turningSchedulingOffRegistersNothing() {
+        contextRunner
+            .withPropertyValues(SchedulingConfig.ENABLED_PROPERTY + "=false")
+            .run(context -> {
+                assertThat(context).doesNotHaveBean(ScheduledAnnotationBeanPostProcessor.class);
+
+                val taskScheduler = context.getBean(TaskScheduler.class);
+                assertThat(taskScheduler)
+                    .as("something must satisfy the beans that inject a TaskScheduler")
+                    .isInstanceOf(SchedulingConfig.DiscardingTaskScheduler.class);
+
+                val ran = new AtomicBoolean(false);
+                val future = taskScheduler.schedule(() -> ran.set(true), Instant.now());
+                // Due immediately, so a scheduler that intended to run it would have by now.
+                Thread.sleep(200);
+                assertThat(ran).isFalse();
+                assertThat(future.isCancelled()).isTrue();
+            });
+    }
+
+    /**
+     * Every overload, not just the one {@code SolrScheduledReindexService} happens to call today: a
+     * half-implemented stand-in that quietly runs the fixed-delay variants would reintroduce #356 for
+     * whichever caller reached for it next.
+     */
+    @Test
+    @DisplayName("Every way of submitting a task is discarded, not just the one in use")
+    void everySchedulingOverloadIsDiscarded() throws InterruptedException {
+        val scheduler = new SchedulingConfig.DiscardingTaskScheduler();
+        val ran = new AtomicBoolean(false);
+        val task = (Runnable) () -> ran.set(true);
+        val now = Instant.now();
+        val tick = Duration.ofMillis(1);
+
+        val futures = List.of(
+            scheduler.schedule(task, new PeriodicTrigger(tick)),
+            scheduler.schedule(task, now),
+            scheduler.scheduleAtFixedRate(task, now, tick),
+            scheduler.scheduleAtFixedRate(task, tick),
+            scheduler.scheduleWithFixedDelay(task, now, tick),
+            scheduler.scheduleWithFixedDelay(task, tick)
+        );
+
+        Thread.sleep(200);
+        assertThat(ran).isFalse();
+        assertThat(futures).allSatisfy(future -> assertThat(future.isCancelled()).isTrue());
     }
 
     private ThreadPoolTaskScheduler buildScheduler(ThreadPoolTaskSchedulerBuilder builder) {

@@ -8,8 +8,8 @@ configuration file cannot state — what none of them covers.
 
 ## What runs on a schedule
 
-`@EnableScheduling` on `CatalogueApplication` puts all of these on the auto-configured
-`taskScheduler`. Cadences are `fixedDelay`, so a run is scheduled *after* the previous one
+`@EnableScheduling` (on `SchedulingConfig.SchedulingEnabled`, see below) puts all of these on
+the auto-configured `taskScheduler`. Cadences are `fixedDelay`, so a run is scheduled *after* the previous one
 finishes and runs cannot overlap or pile up; only the cron entries are wall-clock.
 
 | Bean | Cadence | Profile | What an interrupted run costs |
@@ -159,45 +159,60 @@ SIGTERM.
 
 The tests are `SchedulingConfigTest`, which loads the shipped `application.properties` and
 asserts the bound values, that a task running when the scheduler shuts down finishes
-uninterrupted, and that a queued one is dropped rather than awaited; plus one assertion in
-`EidcApplicationContextTest` that the production context's scheduler really is the
-auto-configured pool, since the property governs nothing if anything else defines a
-`TaskScheduler` bean. Deleting the properties fails three of those; removing the customizer
-fails the fourth and makes the run 20 seconds slower, which is the behaviour it exists to
-prevent.
+uninterrupted, and that a queued one is dropped rather than awaited; plus two assertions in
+`EidcApplicationContextTest` that nothing in the production wiring defines a `TaskScheduler` or
+`ScheduledExecutorService` of its own, since the properties govern nothing if anything does.
+Deleting the properties fails three of those; removing the customizer fails another and makes
+the run 20 seconds slower, which is the behaviour it exists to prevent.
 
-### Why the test suite overrides both properties
+### Why nothing is scheduled during tests
 
-`application-test.properties` and `uk/ac/ceh/gateway/catalogue/test.properties` both put
-`pool.size` back to 1 and `await-termination` back to false. That is deliberate, and it is not
-a hedge against the production values — do not delete it to "make the tests match production".
+Both `application-test.properties` and `uk/ac/ceh/gateway/catalogue/test.properties` set
+`catalogue.scheduling.enabled=false`. That is deliberate — do not remove it to "make the tests
+match production".
 
-`@EnableScheduling` sits on `CatalogueApplication`, so every `@SpringBootTest` in this
-repository gets a real scheduler with the real `@Scheduled` methods attached, and Spring caches
-those contexts for the lifetime of the test JVM. Every ungated entry in the table above has an
-`initialDelay` between one and five minutes — shorter than a suite run — so the GEMET, ROR and
-SPARQL vocabulary retrievals, the Jena and MapServer reindex checks and the Turtle prefetch all
-genuinely execute during the tests, against their real endpoints. That leak is much older than
-this change and is not fixed here; what the overrides do is stop the production values turning
-it into a build failure. With the shipped values, CI showed both halves of that:
+`@EnableScheduling` used to sit on `CatalogueApplication`, which meant every `@SpringBootTest` in
+the repository (~44 classes) built a context with a real scheduler and the real `@Scheduled`
+methods attached to it, and Spring caches those contexts for the lifetime of the test JVM. Every
+ungated entry in the table above has an `initialDelay` between one and five minutes — shorter
+than a suite run — so an ordinary `./gradlew :java:test` really did download the GEMET and ROR
+vocabularies, run the SPARQL keyword retrievals, attempt Jena and MapServer reindexes and
+prefetch Turtle for whole catalogues, against live endpoints, from every cached context.
 
-- a pool of four lets four of those tasks run at once in each cached context, and a Gradle test
-  worker gets 512m by default, so the suite exhausted the heap — surfacing as an
-  `OutOfMemoryError` inside an unrelated context load (`OnlineResourceControllerTest`), which
-  then failed every test sharing that context;
+That was latent for years; raising the pool to four and awaiting termination made it fatal, and
+CI showed both halves at once (pipeline 42457):
+
+- four of those tasks per cached context exhausted the 512m a Gradle test worker gets by default,
+  surfacing as an `OutOfMemoryError` inside an unrelated context load
+  (`OnlineResourceControllerTest`) and failing every test that shared that context;
 - awaiting termination replaces `shutdownNow()` with a 20-second wait per context close, and
-  those retrievals sit blocked on network reads that never complete in CI, so every one of the
-  ~25 cached contexts burned the full budget as the shutdown hook closed them — 8m20s of pure
-  waiting, taking `test_java` from 179s to 1004s.
+  those retrievals sit blocked on network reads that never complete in CI, so all ~25 cached
+  contexts burned the full budget as the shutdown hook closed them — 8m20s of waiting, taking
+  `test_java` from 179s to 1004s.
 
-The shipped values keep their coverage regardless, because `SchedulingConfigTest` reads the real
-`application.properties` through `ConfigDataApplicationContextInitializer` with no profile
-active, so neither override is visible to it.
+`@EnableScheduling` therefore moved to `SchedulingConfig.SchedulingEnabled`, behind
+`catalogue.scheduling.enabled` (dri-one #356). The beans themselves are untouched, so the wiring
+assertions in the production-context tests still hold; only the registration goes.
 
-The real fix for the underlying leak is to stop ungated `@Scheduled` beans doing outbound work in
-test contexts at all — `SolrScheduledReindexService` already shows the pattern with
-`@Profile("!test")`. That is a larger change than this one and has not been made yet; until it is,
-these overrides are what keeps the suite honest about it.
+Two details are worth knowing before changing any of this.
+
+**The default must stay on.** No deployment sets the property, so `matchIfMissing = true` is what
+keeps production scheduled at all. A mistyped property name or an inverted default would silently
+stop the Fuseki export, the vocabulary refreshes, the metrics sync and the empty-index repair,
+with a healthy-looking pod to show for it. `SchedulingConfigTest.schedulingIsOnByDefault` asserts
+the default, and the disabled branch logs at WARN precisely so a deployment that somehow reaches
+it says so.
+
+**Dropping the annotation processor is not sufficient on its own.** Boot's `taskScheduler` bean is
+`@ConditionalOnBean` on that processor, so it disappears too — and `SolrScheduledReindexService`,
+which is `@Profile("!test")` and therefore loads only in the three production-context tests,
+injects one and schedules its startup retry chain *programmatically* rather than through
+`@Scheduled`. `SchedulingConfig.SchedulingDisabled` supplies a discarding `TaskScheduler` for that
+case, which both satisfies the injection point and stops the retry chain.
+
+The shipped production values keep their coverage regardless, because `SchedulingConfigTest` reads
+the real `application.properties` through `ConfigDataApplicationContextInitializer` with no
+profile active, so neither test properties file is visible to it.
 
 ### The container check
 
