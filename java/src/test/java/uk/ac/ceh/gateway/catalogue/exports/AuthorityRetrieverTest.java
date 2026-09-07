@@ -329,6 +329,56 @@ class AuthorityRetrieverTest {
         }
 
         @Test
+        @DisplayName("an authority that answers and describes nothing replaces a stale copy with nothing")
+        void okButEmptyDoesNotFallBack() {
+            // The one behaviour change the vocabularies feel. SKOS could not
+            // tell "answered and holds nothing about this concept" from "the
+            // fetch failed": a failed fetch was simply absent from its response
+            // map, an OK-but-unmatched response yielded an empty model, and both
+            // fell back to the any-age cached copy. Only a failure falls back
+            // now, on the grounds that the package republishes what an authority
+            // currently says -- so continuing to serve our old copy asserts
+            // something it no longer does.
+            //
+            // The cost is accepted: a concept temporarily missing from a
+            // vocabulary release loses its description until it returns. The
+            // graph-level isEmpty() guard still prevents a whole graph emptying.
+            val source = new StubSource(10, 1) {
+                @Override
+                public Map<String, Model> describe(List<String> batch, String body) {
+                    return Map.of();
+                }
+            };
+            val stale = ModelFactory.createDefaultModel();
+            stale.add(stale.getResource(THING + "a"), RDFS.label, "last year's description");
+            new DescriptionCache(dataset, Clock.fixed(Instant.parse("2024-09-07T10:00:00Z"), ZoneOffset.UTC))
+                .put(THING + "a", stale);
+            respondWith("a response describing nothing we asked about");
+
+            val described = retriever.describe(List.of(THING + "a"), source);
+
+            assertThat("the stale copy is not republished", described.model().isEmpty(), is(true));
+            assertThat("and this does not hold the graph back, since no later run can help",
+                described.isComplete(), is(true));
+        }
+
+        @Test
+        @DisplayName("but a failure still falls back, which is the distinction that changed")
+        void failureStillFallsBack() {
+            val source = new StubSource(10, 1);
+            val stale = ModelFactory.createDefaultModel();
+            stale.add(stale.getResource(THING + "a"), RDFS.label, "last year's description");
+            new DescriptionCache(dataset, Clock.fixed(Instant.parse("2024-09-07T10:00:00Z"), ZoneOffset.UTC))
+                .put(THING + "a", stale);
+            respondWith(HttpStatus.INTERNAL_SERVER_ERROR);
+
+            val described = retriever.describe(List.of(THING + "a"), source);
+
+            assertThat("a bad minute at a vocabulary server must not shrink the graph",
+                labelOf(described.model(), THING + "a"), is("last year's description"));
+        }
+
+        @Test
         @DisplayName("an authority reached with nothing to say is remembered, not asked again")
         void negativeIsCached() {
             val source = new StubSource(10, 1) {

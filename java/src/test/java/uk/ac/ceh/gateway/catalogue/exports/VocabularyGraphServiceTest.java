@@ -64,14 +64,18 @@ class VocabularyGraphServiceTest {
     private static final String NVS_CONCEPT = NVS + "collection/P07/current/CFSN0381/";
 
     @Mock private SolrClient solrClient;
-    @Mock private SkosConceptRetriever retriever;
+    @Mock private AuthorityRetriever retriever;
     private VocabularyGraphService service;
+    private final NvsSource nvsSource = new NvsSource();
+    private final CastSource castSource = new CastSource("https://vocabs.ceh.ac.uk/sparql");
+    private final AgrovocSource agrovocSource = new AgrovocSource();
 
     @BeforeEach
     void setUp() {
         service = new VocabularyGraphService(
             solrClient,
             new UriNormaliser(),
+            List.of(nvsSource, castSource, agrovocSource),
             retriever,
             Clock.fixed(Instant.parse("2026-09-02T12:00:00Z"), ZoneOffset.UTC)
         );
@@ -85,7 +89,8 @@ class VocabularyGraphServiceTest {
     }
 
     private void givenRetrieverReturns(Model model) {
-        given(retriever.describe(any(), any())).willReturn(model);
+        given(retriever.describe(any(), any()))
+            .willReturn(new AuthorityRetriever.Descriptions(model, 0, 0));
     }
 
     private static Model skosFor(String conceptUri, String prefLabel, String definition, String broader) {
@@ -141,7 +146,7 @@ class VocabularyGraphServiceTest {
             val graphs = service.graphs(Set.of(GEMET + "concept/530"));
 
             assertThat(graphs.keySet(), contains(GEMET));
-            verify(retriever, never()).describe(any(), eq(SkosConceptRetriever.Retrieval.CONTENT_NEGOTIATION));
+            verify(retriever, never()).describe(any(), eq(nvsSource));
         }
     }
 
@@ -172,10 +177,14 @@ class VocabularyGraphServiceTest {
 
             verify(retriever).describe(
                 argThat(uris -> uris.size() == 1 && uris.contains(NVS_CONCEPT)),
-                eq(SkosConceptRetriever.Retrieval.CONTENT_NEGOTIATION));
+                eq(nvsSource));
+            // A stronger assertion than the one this replaced. Both authorities
+            // shared the CONTENT_NEGOTIATION enum, so the old test could only
+            // check that each batch went to "the dereferencing retrieval" -- not
+            // that AGROVOC's concept went to AGROVOC.
             verify(retriever).describe(
                 argThat(uris -> uris.size() == 1 && uris.contains(AGROVOC + "c_8543")),
-                eq(SkosConceptRetriever.Retrieval.CONTENT_NEGOTIATION));
+                eq(agrovocSource));
         }
 
         @Test
