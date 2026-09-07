@@ -2,13 +2,22 @@ package uk.ac.ceh.gateway.catalogue.exports;
 
 import lombok.val;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
+import org.apache.jena.vocabulary.SKOS;
 import uk.ac.ceh.gateway.catalogue.exports.SourceGraphProvider.SourceGraph;
 
+import java.io.StringWriter;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * The namespaces the source graphs use, and the one writer of their provenance.
@@ -35,11 +44,62 @@ final class SourceGraphs {
     static final String FOAF = "http://xmlns.com/foaf/0.1/";
     static final String SCHEMA = "http://schema.org/";
     static final String WDT = "http://www.wikidata.org/prop/direct/";
+    static final String GN = "http://www.geonames.org/ontology#";
+    static final String WGS84 = "http://www.w3.org/2003/01/geo/wgs84_pos#";
+    static final String BIBO = "http://purl.org/ontology/bibo/";
 
     /** The terms ORCID, ROR and Wikidata all release their public records under. */
     static final String CC0 = "https://creativecommons.org/publicdomain/zero/1.0/";
 
+    /**
+     * The conventional prefix for each namespace a source graph can declare.
+     *
+     * <p>Prefixes are cosmetic — an unmapped namespace simply appears in full —
+     * but they are what makes a graph readable to someone who curls it. Derived
+     * from {@link SourceGraph#vocabularies()} rather than hand-listed per
+     * service, so a source that starts emitting a new vocabulary gets its prefix
+     * by saying so once.
+     */
+    private static final Map<String, String> PREFIXES = Map.ofEntries(
+        Map.entry(FOAF, "foaf"),
+        Map.entry(SKOS.getURI(), "skos"),
+        Map.entry(OWL.getURI(), "owl"),
+        Map.entry(RDFS.getURI(), "rdfs"),
+        Map.entry(DCTerms.getURI(), "dcterms"),
+        Map.entry(GN, "gn"),
+        Map.entry(WGS84, "wgs84_pos"),
+        Map.entry(BIBO, "bibo"),
+        Map.entry(SCHEMA, "schema"),
+        Map.entry(WDT, "wdt"),
+        Map.entry(VOID, "void"),
+        Map.entry(PROV, "prov"),
+        Map.entry(XSD, "xsd")
+    );
+
+    /** On every source graph, because {@link #addProvenance} writes them. */
+    private static final List<String> ALWAYS = List.of(
+        DCTerms.getURI(), VOID, PROV, XSD, RDFS.getURI());
+
     private SourceGraphs() {
+    }
+
+    /**
+     * Serialised by Jena rather than assembled as text, so literal escaping is
+     * the parser's problem and not ours. A single unescaped backslash in one
+     * hand-built literal took down every export for a week (dri-one #344).
+     */
+    static String serialise(Model model, SourceGraph source) {
+        Stream.concat(ALWAYS.stream(), source.vocabularies().stream())
+            .distinct()
+            .forEach(namespace -> {
+                val prefix = PREFIXES.get(namespace);
+                if (prefix != null) {
+                    model.setNsPrefix(prefix, namespace);
+                }
+            });
+        val writer = new StringWriter();
+        RDFDataMgr.write(writer, model, Lang.TURTLE);
+        return writer.toString();
     }
 
     /**

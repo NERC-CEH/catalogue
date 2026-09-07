@@ -52,7 +52,7 @@ import java.util.Map;
 @Slf4j
 @Profile("exports")
 @Component
-class GtrSource implements ReferenceSource {
+class GtrSource implements AuthoritySource {
 
     private static final String PREFIX = "https://gtr.ukri.org/";
     private static final String PROJECT_PREFIX = PREFIX + "projects?ref=";

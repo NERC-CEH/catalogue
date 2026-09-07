@@ -61,7 +61,7 @@ import java.util.Set;
 @Slf4j
 @Profile("exports")
 @Component
-class GeoNamesSource implements ReferenceSource {
+class GeoNamesSource implements AuthoritySource {
 
     private static final String PREFIX = "https://sws.geonames.org/";
     private static final String GN = "http://www.geonames.org/ontology#";

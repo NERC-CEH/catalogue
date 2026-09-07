@@ -37,7 +37,7 @@ import java.util.Set;
  */
 @Profile("exports")
 @Component
-class OrcidSource implements IdentitySource {
+class OrcidSource implements AuthoritySource {
 
     private static final String PREFIX = "https://orcid.org/";
     private static final String FOAF = SourceGraphs.FOAF;

@@ -385,7 +385,7 @@ class ReferenceSourceTest {
     @DisplayName("Every source")
     class EverySource {
 
-        private static java.util.stream.Stream<ReferenceSource> sources() {
+        private static java.util.stream.Stream<AuthoritySource> sources() {
             return java.util.stream.Stream.of(
                 new DoiSource(), new GeoNamesSource(), new DeimsSource(), new GtrSource());
         }
@@ -393,7 +393,7 @@ class ReferenceSourceTest {
         @org.junit.jupiter.params.ParameterizedTest
         @org.junit.jupiter.params.provider.MethodSource("sources")
         @DisplayName("declares a graph, a title, and a budget that converges inside its refresh age")
-        void budgetConverges(ReferenceSource source) {
+        void budgetConverges(AuthoritySource source) {
             assertTrue(Iris.isPublishable(source.graph()), "the graph name must be a usable IRI");
             assertFalse(source.title() == null || source.title().isBlank());
 
@@ -413,7 +413,7 @@ class ReferenceSourceTest {
         @org.junit.jupiter.params.ParameterizedTest
         @org.junit.jupiter.params.provider.MethodSource("sources")
         @DisplayName("claims only its own IRIs")
-        void claimsOnlyItsOwn(ReferenceSource source) {
+        void claimsOnlyItsOwn(AuthoritySource source) {
             assertFalse(source.describes("https://catalogue.ceh.ac.uk/id/abc"));
             assertFalse(source.describes("https://orcid.org/0000-0002-0394-2998"));
             assertFalse(source.describes("https://ror.org/00pggkr55"));

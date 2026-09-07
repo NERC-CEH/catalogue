@@ -56,7 +56,7 @@ import java.util.Set;
 @Slf4j
 @Profile("exports")
 @Component
-class DoiSource implements ReferenceSource {
+class DoiSource implements AuthoritySource {
 
     private static final String PREFIX = "https://doi.org/";
     /** Our own prefix. These DOIs resolve here, so asking about them asks us. */
