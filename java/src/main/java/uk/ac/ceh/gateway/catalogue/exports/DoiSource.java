@@ -17,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -105,13 +106,9 @@ class DoiSource implements ReferenceSource {
     }
 
     @Override
-    public String requestUrl(String iri) {
-        return iri;
-    }
-
-    @Override
-    public String accept() {
-        return "text/turtle";
+    public Request request(List<String> batch) {
+        // doi.org content-negotiates, so the IRI is the request.
+        return Request.get(batch.getFirst(), "text/turtle");
     }
 
     @Override
@@ -128,7 +125,14 @@ class DoiSource implements ReferenceSource {
     }
 
     @Override
-    public Model describe(String iri, String body) {
+    public Map<String, Model> describe(List<String> batch, String body) {
+        val iri = batch.getFirst();
+        val description = describeOne(iri, body);
+        return description.isEmpty() ? Map.of() : Map.of(iri, description);
+    }
+
+    /** Unchanged from the single-entity mapper this replaced. */
+    private Model describeOne(String iri, String body) {
         val description = ModelFactory.createDefaultModel();
         val parsed = ModelFactory.createDefaultModel();
         try {

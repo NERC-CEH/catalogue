@@ -44,41 +44,45 @@ import java.util.Set;
 @Slf4j
 @Profile("exports")
 @Service
-@ToString(exclude = "referenceRetriever")
+@ToString(exclude = {"sources", "retriever"})
 public class ReferenceGraphService implements SourceGraphProvider {
 
     private static final String GN = "http://www.geonames.org/ontology#";
     private static final String WGS84 = "http://www.w3.org/2003/01/geo/wgs84_pos#";
     private static final String BIBO = "http://purl.org/ontology/bibo/";
 
-    private final ReferenceRetriever referenceRetriever;
+    private final List<ReferenceSource> sources;
+    private final AuthorityRetriever retriever;
     private final WithheldGraphLog withheldGraphLog;
     private final Clock clock;
 
     /** @see VocabularyGraphService for why this annotation is needed. */
     @Autowired
     public ReferenceGraphService(
-        ReferenceRetriever referenceRetriever,
+        List<ReferenceSource> sources,
+        AuthorityRetriever retriever,
         WithheldGraphLog withheldGraphLog
     ) {
-        this(referenceRetriever, withheldGraphLog, Clock.systemUTC());
+        this(sources, retriever, withheldGraphLog, Clock.systemUTC());
     }
 
     /** Package-private, so a test can fix the clock in the provenance header. */
     ReferenceGraphService(
-        ReferenceRetriever referenceRetriever,
+        List<ReferenceSource> sources,
+        AuthorityRetriever retriever,
         WithheldGraphLog withheldGraphLog,
         Clock clock
     ) {
-        this.referenceRetriever = referenceRetriever;
+        this.sources = List.copyOf(sources);
+        this.retriever = retriever;
         this.withheldGraphLog = withheldGraphLog;
         this.clock = clock;
-        log.info("Creating");
+        log.info("Creating with {} sources", this.sources.size());
     }
 
     @Override
     public List<SourceGraph> sourceGraphs() {
-        return referenceRetriever.sources().stream()
+        return sources.stream()
             .map(ReferenceGraphService::sourceGraph)
             .toList();
     }
@@ -93,7 +97,7 @@ public class ReferenceGraphService implements SourceGraphProvider {
     public Map<String, String> graphs(Set<String> referencedIris) {
         val turtleByGraph = new LinkedHashMap<String, String>();
 
-        for (val source : referenceRetriever.sources()) {
+        for (val source : sources) {
             val wanted = referencedIris.stream()
                 .filter(source::describes)
                 .sorted()
@@ -102,7 +106,7 @@ public class ReferenceGraphService implements SourceGraphProvider {
                 continue;
             }
 
-            val described = referenceRetriever.describe(wanted, source);
+            val described = retriever.describe(wanted, source);
             if (described.isEmpty()) {
                 log.warn("Nothing retrieved for {}, leaving its graph as it is", source.graph());
                 continue;

@@ -15,6 +15,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -93,13 +94,8 @@ class DeimsSource implements ReferenceSource {
     }
 
     @Override
-    public String requestUrl(String iri) {
-        return API + iri.substring(PREFIX.length());
-    }
-
-    @Override
-    public String accept() {
-        return "application/json";
+    public Request request(List<String> batch) {
+        return Request.get(API + batch.getFirst().substring(PREFIX.length()), "application/json");
     }
 
     @Override
@@ -115,7 +111,14 @@ class DeimsSource implements ReferenceSource {
     }
 
     @Override
-    public Model describe(String iri, String body) {
+    public Map<String, Model> describe(List<String> batch, String body) {
+        val iri = batch.getFirst();
+        val description = describeOne(iri, body);
+        return description.isEmpty() ? Map.of() : Map.of(iri, description);
+    }
+
+    /** Unchanged from the single-entity mapper this replaced. */
+    private Model describeOne(String iri, String body) {
         val description = ModelFactory.createDefaultModel();
         JsonNode json;
         try {

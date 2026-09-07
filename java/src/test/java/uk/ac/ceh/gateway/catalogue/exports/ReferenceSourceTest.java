@@ -4,6 +4,8 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+
+import java.util.List;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.DCTerms;
@@ -41,6 +43,21 @@ class ReferenceSourceTest {
     private static final String WGS84 = "http://www.w3.org/2003/01/geo/wgs84_pos#";
     private static final String BIBO = "http://purl.org/ontology/bibo/";
 
+    /**
+     * What the source says about one entity. The mappers describe a batch now,
+     * because two authorities answer about hundreds at a time, but every
+     * assertion below is about a single entity.
+     */
+    private static Model describeOne(AuthoritySource source, String iri, String body) {
+        return source.describe(List.of(iri), body)
+            .getOrDefault(iri, ModelFactory.createDefaultModel());
+    }
+
+    /** Where the source would ask about one entity. */
+    private static String uriAskedFor(AuthoritySource source, String iri) {
+        return source.request(List.of(iri)).uri().toString();
+    }
+
     @SneakyThrows
     private static String fixture(String name) {
         try (val in = ReferenceSourceTest.class.getResourceAsStream("/exports/" + name)) {
@@ -67,7 +84,7 @@ class ReferenceSourceTest {
         @Test
         @DisplayName("the paper is described under the IRI the catalogue holds, not Crossref's")
         void statementsAreReSubjected() {
-            val model = source.describe(DOI, fixture("crossref-work.ttl"));
+            val model = describeOne(source, DOI, fixture("crossref-work.ttl"));
 
             assertTrue(
                 model.contains(createResource(DOI), DCTerms.title,
@@ -85,7 +102,7 @@ class ReferenceSourceTest {
         @Test
         @DisplayName("the journal is named, not merely pointed at")
         void journalIsNamed() {
-            val model = source.describe(DOI, fixture("crossref-work.ttl"));
+            val model = describeOne(source, DOI, fixture("crossref-work.ttl"));
             val journal = createResource("https://id.crossref.org/issn/0048-9697");
 
             assertTrue(model.contains(createResource(DOI), DCTerms.isPartOf, journal));
@@ -99,7 +116,7 @@ class ReferenceSourceTest {
         @Test
         @DisplayName("the authors are left out, so a second population of person nodes is not minted")
         void authorsAreNotImported() {
-            val model = source.describe(DOI, fixture("crossref-work.ttl"));
+            val model = describeOne(source, DOI, fixture("crossref-work.ttl"));
 
             assertTrue(
                 model.listStatements().toList().stream().noneMatch(statement ->
@@ -123,7 +140,7 @@ class ReferenceSourceTest {
         void wrongResponseContributesNothing() {
             // The pipeline caches per entity, so a mapper that accepted any
             // response would cache one paper's description under another's IRI.
-            val model = source.describe(
+            val model = describeOne(source, 
                 "https://doi.org/10.1111/some.other.paper", fixture("crossref-work.ttl"));
 
             assertThat(model.size(), is(0L));
@@ -140,15 +157,16 @@ class ReferenceSourceTest {
         @Test
         @DisplayName("RDF is fetched from about.rdf, since the IRI itself serves HTML")
         void requestUrlIsTheDocument() {
-            assertThat(source.requestUrl(FEATURE), is(FEATURE + "/about.rdf"));
+            assertThat(uriAskedFor(source, FEATURE), is(FEATURE + "/about.rdf"));
             assertThat("and a trailing slash must not produce a double one",
-                source.requestUrl(FEATURE + "/"), is(FEATURE + "/about.rdf"));
+                uriAskedFor(source, FEATURE + "/"), is(FEATURE + "/about.rdf"));
+            assertThat(source.request(List.of(FEATURE)).accept(), is("application/rdf+xml"));
         }
 
         @Test
         @DisplayName("the feature is described under the catalogue's slashless IRI")
         void statementsAreReSubjected() {
-            val model = source.describe(FEATURE, fixture("geonames-feature.rdf"));
+            val model = describeOne(source, FEATURE, fixture("geonames-feature.rdf"));
 
             assertTrue(
                 model.contains(createResource(FEATURE), createProperty(GN + "name"), "United Kingdom"),
@@ -164,7 +182,7 @@ class ReferenceSourceTest {
         @Test
         @DisplayName("what makes a place joinable is kept")
         void structuralPropertiesAreKept() {
-            val model = source.describe(FEATURE, fixture("geonames-feature.rdf"));
+            val model = describeOne(source, FEATURE, fixture("geonames-feature.rdf"));
             val feature = createResource(FEATURE);
 
             assertTrue(model.contains(feature, createProperty(GN + "countryCode"), "GB"));
@@ -179,7 +197,7 @@ class ReferenceSourceTest {
         @Test
         @DisplayName("the 241 multilingual aliases are not, because 254 features of them would cost a fifth of the store")
         void aliasesAreDropped() {
-            val model = source.describe(FEATURE, fixture("geonames-feature.rdf"));
+            val model = describeOne(source, FEATURE, fixture("geonames-feature.rdf"));
 
             assertFalse(model.contains(createResource(FEATURE), createProperty(GN + "alternateName")));
             assertFalse(model.contains(createResource(FEATURE), createProperty(GN + "officialName")));
@@ -193,7 +211,7 @@ class ReferenceSourceTest {
         @Test
         @DisplayName("document links are not facts about the place")
         void documentLinksAreDropped() {
-            val model = source.describe(FEATURE, fixture("geonames-feature.rdf"));
+            val model = describeOne(source, FEATURE, fixture("geonames-feature.rdf"));
             val feature = createResource(FEATURE);
 
             assertFalse(model.contains(feature, createProperty(GN + "childrenFeatures")),
@@ -214,7 +232,7 @@ class ReferenceSourceTest {
         @Test
         @DisplayName("the site is described from its API record")
         void mapsTheRecord() {
-            val model = source.describe(SITE, fixture("deims-site.json"));
+            val model = describeOne(source, SITE, fixture("deims-site.json"));
             val site = createResource(SITE);
 
             assertTrue(model.contains(site, RDFS.label, "Allt a'Mharcaidh - United Kingdom"));
@@ -232,7 +250,7 @@ class ReferenceSourceTest {
             assertTrue(fixture("deims-site.json").contains("contact@example.invalid"),
                 "the fixture must still contain contacts for this test to mean anything");
 
-            val model = source.describe(SITE, fixture("deims-site.json"));
+            val model = describeOne(source, SITE, fixture("deims-site.json"));
             val published = model.listStatements().toList().toString();
 
             assertFalse(published.contains("@example.invalid"),
@@ -244,7 +262,7 @@ class ReferenceSourceTest {
         @Test
         @DisplayName("the representative point is published latitude-first despite WKT being the reverse")
         void coordinatesAreNotTransposed() {
-            val model = source.describe(SITE, fixture("deims-site.json"));
+            val model = describeOne(source, SITE, fixture("deims-site.json"));
             val site = createResource(SITE);
 
             // POINT (-3.843425 57.114196) is longitude then latitude. Reading it
@@ -256,7 +274,7 @@ class ReferenceSourceTest {
         @Test
         @DisplayName("the networks a site belongs to are linked and named")
         void networksAreLinked() {
-            val model = source.describe(SITE, fixture("deims-site.json"));
+            val model = describeOne(source, SITE, fixture("deims-site.json"));
             val network = createResource("https://deims.org/networks/1aa7ccb2-a14b-43d6-90ac-5e0a6bc1d65b");
 
             assertTrue(model.contains(createResource(SITE), DCTerms.isPartOf, network));
@@ -275,7 +293,7 @@ class ReferenceSourceTest {
         @Test
         @DisplayName("a response that is not JSON yields nothing rather than throwing")
         void unreadableResponseYieldsNothing() {
-            assertThat(source.describe(SITE, "<html>not json</html>").size(), is(0L));
+            assertThat(describeOne(source, SITE, "<html>not json</html>").size(), is(0L));
         }
     }
 
@@ -290,15 +308,16 @@ class ReferenceSourceTest {
         @DisplayName("the reference is searched for, since ?ref= is silently ignored")
         void requestUrlUsesTheSearchParameter() {
             assertThat(
-                source.requestUrl(GRANT),
+                uriAskedFor(source, GRANT),
                 is("https://gtr.ukri.org/gtr/api/projects?q=NE%2FR016429%2F1")
             );
+            assertThat(source.request(List.of(GRANT)).accept(), is("application/json"));
         }
 
         @Test
         @DisplayName("the grant is described from its own project record")
         void mapsTheProject() {
-            val model = source.describe(GRANT, fixture("gtr-project.json"));
+            val model = describeOne(source, GRANT, fixture("gtr-project.json"));
             val grant = createResource(GRANT);
 
             assertTrue(model.contains(grant, RDFS.label,
@@ -321,7 +340,7 @@ class ReferenceSourceTest {
             assertTrue(body.contains("AH/V01241X/1"),
                 "the fixture must contain the wrong grant for this test to mean anything");
 
-            val model = source.describe(GRANT, body);
+            val model = describeOne(source, GRANT, body);
 
             assertThat(
                 "position in a search result says nothing about identity",
@@ -334,7 +353,7 @@ class ReferenceSourceTest {
         void nearMissIsRefused() {
             // ?q= is a search, so a longer reference sharing a prefix is exactly
             // the kind of thing it could return.
-            val model = source.describe(
+            val model = describeOne(source, 
                 "https://gtr.ukri.org/projects?ref=NE/R016429/2", fixture("gtr-project.json"));
 
             assertThat(model.size(), is(0L));
@@ -343,7 +362,7 @@ class ReferenceSourceTest {
         @Test
         @DisplayName("the investigators are left out, as with Crossref's contributors")
         void investigatorsAreNotImported() {
-            val model = source.describe(GRANT, fixture("gtr-project.json"));
+            val model = describeOne(source, GRANT, fixture("gtr-project.json"));
 
             assertTrue(
                 model.listStatements().toList().stream()
