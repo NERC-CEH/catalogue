@@ -50,7 +50,7 @@ class ReferenceGraphServiceTest {
     private static final String DOI = "https://doi.org/10.1016/j.example.2020.1";
     private static final String FEATURE = "https://sws.geonames.org/2635167";
 
-    @Mock private ReferenceRetriever retriever;
+    @Mock private AuthorityRetriever retriever;
     private ReferenceGraphService service;
     private WithheldGraphLog withheldGraphLog;
     private final DoiSource doiSource = new DoiSource();
@@ -58,10 +58,11 @@ class ReferenceGraphServiceTest {
 
     @BeforeEach
     void setUp() {
-        given(retriever.sources()).willReturn(List.of(doiSource, geoNamesSource));
         withheldGraphLog = new WithheldGraphLog();
-        service = new ReferenceGraphService(retriever, withheldGraphLog,
-            Clock.fixed(Instant.parse("2026-09-03T09:00:00Z"), ZoneOffset.UTC));
+        // The sources are injected now rather than fetched from the retriever,
+        // so there is nothing to stub for the declaration side.
+        service = new ReferenceGraphService(List.of(doiSource, geoNamesSource), retriever,
+            withheldGraphLog, Clock.fixed(Instant.parse("2026-09-03T09:00:00Z"), ZoneOffset.UTC));
     }
 
     private static Model labelled(String uri, String label) {
@@ -70,8 +71,8 @@ class ReferenceGraphServiceTest {
         return model;
     }
 
-    private static ReferenceRetriever.Descriptions complete(Model model) {
-        return new ReferenceRetriever.Descriptions(model, 0, 0);
+    private static AuthorityRetriever.Descriptions complete(Model model) {
+        return new AuthorityRetriever.Descriptions(model, 0, 0);
     }
 
     private static Model parse(String turtle) {
@@ -195,7 +196,7 @@ class ReferenceGraphServiceTest {
         @DisplayName("a graph is not replaced with part of itself")
         void partialRunIsNotPublished() {
             given(retriever.describe(any(), eq(doiSource))).willReturn(
-                new ReferenceRetriever.Descriptions(labelled(DOI, "A paper"), 500, 0));
+                new AuthorityRetriever.Descriptions(labelled(DOI, "A paper"), 500, 0));
 
             assertThat(
                 "the PUT replaces the graph, so publishing 300 of 882 works now would drop "
@@ -208,7 +209,7 @@ class ReferenceGraphServiceTest {
         @DisplayName("nor when the authority could not serve some of them")
         void transientFailuresAlsoHoldItBack() {
             given(retriever.describe(any(), eq(doiSource))).willReturn(
-                new ReferenceRetriever.Descriptions(labelled(DOI, "A paper"), 0, 12));
+                new AuthorityRetriever.Descriptions(labelled(DOI, "A paper"), 0, 12));
 
             assertThat(service.graphs(Set.of(DOI)).keySet(), not(hasItem("https://doi.org/")));
         }
@@ -217,7 +218,7 @@ class ReferenceGraphServiceTest {
         @DisplayName("one authority holding back does not stop the others")
         void oneSourceDoesNotBlockAnother() {
             given(retriever.describe(any(), eq(doiSource))).willReturn(
-                new ReferenceRetriever.Descriptions(labelled(DOI, "A paper"), 40, 0));
+                new AuthorityRetriever.Descriptions(labelled(DOI, "A paper"), 40, 0));
             given(retriever.describe(any(), eq(geoNamesSource)))
                 .willReturn(complete(labelled(FEATURE, "United Kingdom")));
 

@@ -34,6 +34,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -46,14 +47,16 @@ class WikidataGraphServiceTest {
     private static final String GRAPH = "http://www.wikidata.org/entity/";
     private static final String SPECKLED_WOOD = GRAPH + "Q663181";
 
-    @Mock private WikidataRetriever retriever;
+    @Mock private AuthorityRetriever retriever;
+    private final WikidataSource source = new WikidataSource(
+        "https://query.wikidata.org/sparql", "ukceh-catalogue-export/1.0", 500, 8);
     private WithheldGraphLog withheldGraphLog;
     private WikidataGraphService service;
 
     @BeforeEach
     void setUp() {
         withheldGraphLog = new WithheldGraphLog();
-        service = new WikidataGraphService(retriever, withheldGraphLog,
+        service = new WikidataGraphService(source, retriever, withheldGraphLog,
             Clock.fixed(Instant.parse("2026-09-03T13:00:00Z"), ZoneOffset.UTC));
     }
 
@@ -63,8 +66,8 @@ class WikidataGraphServiceTest {
         return model;
     }
 
-    private static WikidataRetriever.Descriptions complete(Model model) {
-        return new WikidataRetriever.Descriptions(model, 0, 0);
+    private static AuthorityRetriever.Descriptions complete(Model model) {
+        return new AuthorityRetriever.Descriptions(model, 0, 0);
     }
 
     private static Model parse(String turtle) {
@@ -80,7 +83,7 @@ class WikidataGraphServiceTest {
         @Test
         @DisplayName("only Wikidata entities, and only well-formed ones")
         void onlyWikidataEntities() {
-            given(retriever.describe(any())).willReturn(complete(labelled(SPECKLED_WOOD, "Speckled Wood")));
+            given(retriever.describe(any(), any())).willReturn(complete(labelled(SPECKLED_WOOD, "Speckled Wood")));
 
             service.graphs(Set.of(
                 SPECKLED_WOOD,
@@ -89,14 +92,14 @@ class WikidataGraphServiceTest {
                 "https://catalogue.ceh.ac.uk/id/x"));
 
             verify(retriever).describe(argThat(iris ->
-                iris.size() == 1 && iris.contains(SPECKLED_WOOD)));
+                iris.size() == 1 && iris.contains(SPECKLED_WOOD)), eq(source));
         }
 
         @Test
         @DisplayName("nothing referenced means no request and no graph")
         void nothingReferenced() {
             assertThat(service.graphs(Set.of()), is(Map.of()));
-            verify(retriever, never()).describe(any());
+            verify(retriever, never()).describe(any(), any());
         }
     }
 
@@ -107,7 +110,7 @@ class WikidataGraphServiceTest {
         @Test
         @DisplayName("descriptions go in Wikidata's graph, not the catalogue's")
         void graphIsWikidatas() {
-            given(retriever.describe(any())).willReturn(complete(labelled(SPECKLED_WOOD, "Speckled Wood")));
+            given(retriever.describe(any(), any())).willReturn(complete(labelled(SPECKLED_WOOD, "Speckled Wood")));
 
             val graphs = service.graphs(Set.of(SPECKLED_WOOD));
 
@@ -119,7 +122,7 @@ class WikidataGraphServiceTest {
         @Test
         @DisplayName("CC0 is claimed, because Wikidata's terms are not in doubt")
         void licenceIsAsserted() {
-            given(retriever.describe(any())).willReturn(complete(labelled(SPECKLED_WOOD, "Speckled Wood")));
+            given(retriever.describe(any(), any())).willReturn(complete(labelled(SPECKLED_WOOD, "Speckled Wood")));
 
             val model = parse(service.graphs(Set.of(SPECKLED_WOOD)).get(GRAPH));
 
@@ -130,7 +133,7 @@ class WikidataGraphServiceTest {
         @Test
         @DisplayName("the graph records when the copy was taken")
         void provenance() {
-            given(retriever.describe(any())).willReturn(complete(labelled(SPECKLED_WOOD, "Speckled Wood")));
+            given(retriever.describe(any(), any())).willReturn(complete(labelled(SPECKLED_WOOD, "Speckled Wood")));
 
             val model = parse(service.graphs(Set.of(SPECKLED_WOOD)).get(GRAPH));
 
@@ -150,7 +153,7 @@ class WikidataGraphServiceTest {
         @Test
         @DisplayName("nothing retrieved leaves the graph alone rather than emptying it")
         void nothingRetrieved() {
-            given(retriever.describe(any()))
+            given(retriever.describe(any(), any()))
                 .willReturn(complete(ModelFactory.createDefaultModel()));
 
             assertThat(service.graphs(Set.of(SPECKLED_WOOD)).keySet(), not(hasItem(GRAPH)));
@@ -159,8 +162,8 @@ class WikidataGraphServiceTest {
         @Test
         @DisplayName("a graph is not replaced with part of itself")
         void partialRunIsNotPublished() {
-            given(retriever.describe(any())).willReturn(
-                new WikidataRetriever.Descriptions(labelled(SPECKLED_WOOD, "Speckled Wood"), 1500, 0));
+            given(retriever.describe(any(), any())).willReturn(
+                new AuthorityRetriever.Descriptions(labelled(SPECKLED_WOOD, "Speckled Wood"), 1500, 0));
 
             assertThat(
                 "one failed batch is 500 entities, so publishing now would drop them all",
@@ -171,8 +174,8 @@ class WikidataGraphServiceTest {
         @Test
         @DisplayName("nor when a batch could not be served")
         void transientFailuresAlsoHoldItBack() {
-            given(retriever.describe(any())).willReturn(
-                new WikidataRetriever.Descriptions(labelled(SPECKLED_WOOD, "Speckled Wood"), 0, 500));
+            given(retriever.describe(any(), any())).willReturn(
+                new AuthorityRetriever.Descriptions(labelled(SPECKLED_WOOD, "Speckled Wood"), 0, 500));
 
             assertThat(service.graphs(Set.of(SPECKLED_WOOD)).keySet(), not(hasItem(GRAPH)));
         }

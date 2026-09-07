@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The grants the records acknowledge, as Gateway to Research describes them.
@@ -89,15 +90,12 @@ class GtrSource implements ReferenceSource {
     }
 
     @Override
-    public String requestUrl(String iri) {
+    public Request request(List<String> batch) {
         // The reference contains slashes, which must not survive into the query
         // string as path separators.
-        return API + URLEncoder.encode(reference(iri), StandardCharsets.UTF_8);
-    }
-
-    @Override
-    public String accept() {
-        return "application/json";
+        return Request.get(
+            API + URLEncoder.encode(reference(batch.getFirst()), StandardCharsets.UTF_8),
+            "application/json");
     }
 
     @Override
@@ -114,7 +112,14 @@ class GtrSource implements ReferenceSource {
     }
 
     @Override
-    public Model describe(String iri, String body) {
+    public Map<String, Model> describe(List<String> batch, String body) {
+        val iri = batch.getFirst();
+        val description = describeOne(iri, body);
+        return description.isEmpty() ? Map.of() : Map.of(iri, description);
+    }
+
+    /** Unchanged from the single-entity mapper this replaced. */
+    private Model describeOne(String iri, String body) {
         val description = ModelFactory.createDefaultModel();
         JsonNode json;
         try {

@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.StringWriter;
 import java.time.Clock;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +58,7 @@ import java.util.Set;
  * with a third of one, and the endpoint would then lose and regain descriptions
  * every time the pod was recreated. So a graph is left alone unless the run
  * behind it is complete — see
- * {@link IdentityRetriever.Descriptions#isComplete()}.
+ * {@link AuthorityRetriever.Descriptions#isComplete()}.
  *
  * <p>"Complete" counts both entities the run never reached and entities the
  * authority could not serve. Only an entity the authority <em>definitively</em>
@@ -69,89 +68,70 @@ import java.util.Set;
 @Slf4j
 @Profile("exports")
 @Service
-@ToString(exclude = "identityRetriever")
+@ToString(exclude = {"sources", "retriever"})
 public class IdentityGraphService implements SourceGraphProvider {
 
-    /**
-     * What each of these graphs is, in the one place both descriptions of it are
-     * read from.
-     *
-     * <p>The two do not hold the same terms, which is why the vocabularies are
-     * per-authority rather than shared: an ORCID record contributes a name in
-     * FOAF and nothing else, whereas a ROR record also carries SKOS labels for
-     * its aliases, {@code owl:sameAs} links to Fundref and Wikidata, and
-     * {@code dcterms:spatial}. Advertising SKOS on the ORCID graph, as the VoID
-     * description used to, points a consumer at a query that returns nothing.
-     */
-    private static final Map<IdentityRetriever.Authority, SourceGraph> GRAPHS = Map.of(
-        IdentityRetriever.Authority.ORCID,
-        new SourceGraph(
-            IdentityRetriever.Authority.ORCID.uriPrefix(),
-            "ORCID, as published by the researchers themselves",
-            "Researchers as they describe themselves in ORCID: their own name, given and family.",
-            List.of(SourceGraphs.FOAF, RDFS.getURI()),
-            SourceGraphs.CC0),
-        IdentityRetriever.Authority.ROR,
-        new SourceGraph(
-            IdentityRetriever.Authority.ROR.uriPrefix(),
-            "ROR, the Research Organization Registry",
-            "Research organisations as ROR registers them: official name, aliases and acronym, "
-                + "country, website, and the identifiers they are known by elsewhere.",
-            List.of(SourceGraphs.FOAF, SKOS.getURI(), DCTerms.getURI(), OWL.getURI(), RDFS.getURI()),
-            SourceGraphs.CC0)
-    );
-
-    private final IdentityRetriever identityRetriever;
+    private final List<IdentitySource> sources;
+    private final AuthorityRetriever retriever;
     private final WithheldGraphLog withheldGraphLog;
     private final Clock clock;
 
     /** @see VocabularyGraphService for why this annotation is needed. */
     @Autowired
     public IdentityGraphService(
-        IdentityRetriever identityRetriever,
+        List<IdentitySource> sources,
+        AuthorityRetriever retriever,
         WithheldGraphLog withheldGraphLog
     ) {
-        this(identityRetriever, withheldGraphLog, Clock.systemUTC());
+        this(sources, retriever, withheldGraphLog, Clock.systemUTC());
     }
 
     /** Package-private, so a test can fix the clock in the provenance header. */
     IdentityGraphService(
-        IdentityRetriever identityRetriever,
+        List<IdentitySource> sources,
+        AuthorityRetriever retriever,
         WithheldGraphLog withheldGraphLog,
         Clock clock
     ) {
-        this.identityRetriever = identityRetriever;
+        this.sources = List.copyOf(sources);
+        this.retriever = retriever;
         this.withheldGraphLog = withheldGraphLog;
         this.clock = clock;
-        log.info("Creating");
+        log.info("Creating with {} sources", this.sources.size());
     }
 
     @Override
     public List<SourceGraph> sourceGraphs() {
-        return Arrays.stream(IdentityRetriever.Authority.values()).map(GRAPHS::get).toList();
+        return sources.stream().map(IdentityGraphService::sourceGraph).toList();
+    }
+
+    /** Everything said about one authority's graph, declared by the source itself. */
+    private static SourceGraph sourceGraph(IdentitySource source) {
+        return new SourceGraph(source.graph(), source.title(), source.description(),
+            source.vocabularies(), source.licence());
     }
 
     @Override
     public Map<String, String> graphs(Set<String> referencedIris) {
         val turtleByGraph = new LinkedHashMap<String, String>();
 
-        for (val authority : IdentityRetriever.Authority.values()) {
+        for (val source : sources) {
+            // Which IRIs are the source's own concern now: an ORCID's account
+            // node (…#orcid-id) is referenced by ORCID's own RDF, not by us, and
+            // is not a person.
             val wanted = referencedIris.stream()
-                .filter(iri -> iri.startsWith(authority.uriPrefix()))
-                // An ORCID's account node (…#orcid-id) is referenced by ORCID's
-                // own RDF, not by us, and is not a person.
-                .filter(iri -> !iri.contains("#"))
+                .filter(source::describes)
                 .sorted()
                 .toList();
             if (wanted.isEmpty()) {
                 continue;
             }
 
-            val described = identityRetriever.describe(wanted, authority);
+            val described = retriever.describe(wanted, source);
             if (described.isEmpty()) {
                 // Nothing at all, from the authority or the cache. Publishing an
                 // empty graph would replace whatever is already there with less.
-                log.warn("No identities retrieved for {}, leaving its graph as it is", authority.uriPrefix());
+                log.warn("No identities retrieved for {}, leaving its graph as it is", source.graph());
                 continue;
             }
             if (!described.isComplete()) {
@@ -166,15 +146,15 @@ public class IdentityGraphService implements SourceGraphProvider {
                 // entity the authority failed to serve is just as absent from
                 // this graph as one the budget never reached, and a timeout or
                 // a rate limit is every bit as likely to succeed tomorrow.
-                withheldGraphLog.withheld(authority.uriPrefix(), wanted.size(),
+                withheldGraphLog.withheld(source.graph(), wanted.size(),
                     described.deferred(), described.transientFailures());
                 continue;
             }
 
             val model = described.model();
-            SourceGraphs.addProvenance(model, GRAPHS.get(authority), clock);
-            turtleByGraph.put(authority.uriPrefix(), serialise(model));
-            withheldGraphLog.published(authority.uriPrefix());
+            SourceGraphs.addProvenance(model, sourceGraph(source), clock);
+            turtleByGraph.put(source.graph(), serialise(model));
+            withheldGraphLog.published(source.graph());
         }
         return turtleByGraph;
     }

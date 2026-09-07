@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
@@ -77,22 +78,26 @@ import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
  *       that returned nothing. The graph is held back, since labels are the bulk
  *       of what most of these graphs hold.</li>
  *   <li><b>Retrieval failed entirely</b> — held back, as before.</li>
- *   <li><b>Retrieval partly failed</b> — no longer degrading, because
- *       {@link SkosConceptRetriever} now falls back to a cached copy per
+ *   <li><b>Retrieval partly failed</b> — not degrading, because
+ *       {@link AuthorityRetriever} falls back to a cached copy of any age per
  *       concept. What is missing from its result is what no run could get.</li>
  * </ul>
  *
  * <p>One gap remains, and is left open knowingly: a run that starts with an
  * empty cache and meets a partly-unavailable authority still publishes a thin
- * graph. Closing it would mean a completeness threshold, which would freeze a
- * graph for good the first time a concept was permanently withdrawn. The
- * cache's snapshot makes an empty cache rare, which is the cheaper half of the
- * problem to attack.
+ * graph. The retriever now <em>reports</em> that — every source returns
+ * {@link AuthorityRetriever.Descriptions#isComplete()}, which these graphs alone
+ * do not consult — so closing it is a one-line change rather than the missing
+ * machinery it used to be. It is left for its own review because adopting the
+ * guard means a vocabulary graph starts being held back where today it is
+ * published, and because a completeness threshold would freeze a graph the first
+ * time a concept was permanently withdrawn. The cache's snapshot makes an empty
+ * cache rare, which is the cheaper half of the problem to attack.
  */
 @Slf4j
 @Profile("exports")
 @Service
-@ToString(exclude = {"solrClient", "uriNormaliser", "skosConceptRetriever"})
+@ToString(exclude = {"solrClient", "uriNormaliser", "sources", "retriever"})
 public class VocabularyGraphService implements SourceGraphProvider {
 
     private static final String COLLECTION = "keywords";
@@ -115,13 +120,11 @@ public class VocabularyGraphService implements SourceGraphProvider {
      * @param graph        the named graph it is published to, and the authority's own namespace
      * @param title        a human-readable name, for the VoID description
      * @param localVocabId its id in the Solr keyword index, or null if it is not harvested
-     * @param retrieval    how to fetch full SKOS, or null if the authority does not offer it
      */
     public record Authority(
         String graph,
         String title,
-        String localVocabId,
-        SkosConceptRetriever.Retrieval retrieval
+        String localVocabId
     ) {}
 
     /**
@@ -139,27 +142,25 @@ public class VocabularyGraphService implements SourceGraphProvider {
      */
     private static final List<Authority> AUTHORITIES = List.of(
         new Authority("http://www.eionet.europa.eu/gemet/",
-            "GEMET, the GEneral Multilingual Environmental Thesaurus", "gemet", null),
+            "GEMET, the GEneral Multilingual Environmental Thesaurus", "gemet"),
         new Authority("http://vocabs.lter-europe.net/EnvThes/",
-            "EnvThes, the eLTER environmental thesaurus", "envThes", null),
+            "EnvThes, the eLTER environmental thesaurus", "envThes"),
         new Authority("http://onto.nerc.ac.uk/CAST/",
-            "CAST, the NERC CEH categories and subjects thesaurus", "cast",
-            SkosConceptRetriever.Retrieval.UKCEH_SPARQL),
+            "CAST, the NERC CEH categories and subjects thesaurus", "cast"),
         new Authority("https://digital.ceh.ac.uk/vocab/ra/",
-            "UKCEH research activities", "research-activity", null),
+            "UKCEH research activities", "research-activity"),
         new Authority("https://digital.ceh.ac.uk/vocab/fdri/",
-            "FDRI, Floods and Droughts Research Infrastructure terms", "fdri", null),
+            "FDRI, Floods and Droughts Research Infrastructure terms", "fdri"),
         new Authority("http://vocab.nerc.ac.uk/",
-            "NVS, the NERC Vocabulary Server", null,
-            SkosConceptRetriever.Retrieval.CONTENT_NEGOTIATION),
+            "NVS, the NERC Vocabulary Server", null),
         new Authority("http://aims.fao.org/aos/agrovoc/",
-            "AGROVOC, the FAO multilingual thesaurus", null,
-            SkosConceptRetriever.Retrieval.CONTENT_NEGOTIATION)
+            "AGROVOC, the FAO multilingual thesaurus", null)
     );
 
     private final SolrClient solrClient;
     private final UriNormaliser uriNormaliser;
-    private final SkosConceptRetriever skosConceptRetriever;
+    private final List<VocabularySource> sources;
+    private final AuthorityRetriever retriever;
     private final Clock clock;
 
     /**
@@ -171,23 +172,33 @@ public class VocabularyGraphService implements SourceGraphProvider {
     public VocabularyGraphService(
         SolrClient solrClient,
         UriNormaliser uriNormaliser,
-        SkosConceptRetriever skosConceptRetriever
+        List<VocabularySource> sources,
+        AuthorityRetriever retriever
     ) {
-        this(solrClient, uriNormaliser, skosConceptRetriever, Clock.systemUTC());
+        this(solrClient, uriNormaliser, sources, retriever, Clock.systemUTC());
     }
 
     /** Package-private, so a test can fix the clock in the provenance header. */
     VocabularyGraphService(
         SolrClient solrClient,
         UriNormaliser uriNormaliser,
-        SkosConceptRetriever skosConceptRetriever,
+        List<VocabularySource> sources,
+        AuthorityRetriever retriever,
         Clock clock
     ) {
         this.solrClient = solrClient;
         this.uriNormaliser = uriNormaliser;
-        this.skosConceptRetriever = skosConceptRetriever;
+        this.sources = List.copyOf(sources);
+        this.retriever = retriever;
         this.clock = clock;
-        log.info("Creating");
+        log.info("Creating with {} fetching vocabularies", this.sources.size());
+    }
+
+    /** The source that fetches for this authority, if any does. */
+    private Optional<VocabularySource> sourceFor(Authority authority) {
+        return sources.stream()
+            .filter(source -> source.graph().equals(authority.graph()))
+            .findFirst();
     }
 
     /**
@@ -255,14 +266,15 @@ public class VocabularyGraphService implements SourceGraphProvider {
                 addLocalLabels(model, harvested);
             }
 
-            if (authority.retrieval() != null) {
+            val source = sourceFor(authority);
+            if (source.isPresent()) {
                 val wanted = referencedConcepts.stream()
-                    .filter(uri -> uri.startsWith(authority.graph()))
+                    .filter(source.get()::describes)
                     .sorted()
                     .toList();
                 if (!wanted.isEmpty()) {
-                    val retrieved = skosConceptRetriever.describe(wanted, authority.retrieval());
-                    if (retrieved.isEmpty()) {
+                    val described = retriever.describe(wanted, source.get());
+                    if (described.isEmpty()) {
                         // Every retrieval failed. Publishing what is left would
                         // replace a good graph with a poorer one, so leave the
                         // previous version in place instead.
@@ -270,7 +282,13 @@ public class VocabularyGraphService implements SourceGraphProvider {
                             authority.graph());
                         continue;
                     }
-                    model.add(retrieved);
+                    // isComplete() is deliberately not consulted. These graphs
+                    // now report it, unlike before, but adopting it would begin
+                    // holding a vocabulary graph back when a run is incomplete
+                    // -- the behaviour the identity, reference and Wikidata
+                    // graphs already have, and a change worth reviewing on its
+                    // own rather than smuggling in with this one.
+                    model.add(described.model());
                 }
             }
 
