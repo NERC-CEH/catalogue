@@ -14,6 +14,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -67,6 +68,17 @@ class DeimsSource implements ReferenceSource {
     @Override
     public String title() {
         return "DEIMS-SDR, the Dynamic Ecological Information Management System";
+    }
+
+    @Override
+    public String description() {
+        return "eLTER monitoring sites as DEIMS-SDR describes them: name, abstract, site type, "
+            + "representative point, country and the networks they belong to.";
+    }
+
+    @Override
+    public List<String> vocabularies() {
+        return List.of(DCTerms.getURI(), RDFS.getURI(), WGS84, GN);
     }
 
     @Override

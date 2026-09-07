@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -94,6 +95,17 @@ class GeoNamesSource implements ReferenceSource {
     @Override
     public String title() {
         return "GeoNames, the geographical database";
+    }
+
+    @Override
+    public String description() {
+        return "Named places as GeoNames describes them: name, feature type, country, "
+            + "coordinates, population and parent features.";
+    }
+
+    @Override
+    public List<String> vocabularies() {
+        return List.of(GN, WGS84, RDFS.getURI());
     }
 
     @Override

@@ -26,12 +26,37 @@ import java.util.Set;
 public interface SourceGraphProvider {
 
     /**
-     * One graph a provider publishes to.
+     * One graph a provider publishes to, and everything said about it.
      *
-     * @param graph the named graph, which is also the authority's own namespace
-     * @param title a human-readable name, for the VoID description
+     * <p>It carries the description and the vocabularies as well as the title
+     * because the same graph is described in two places — the {@code void:Dataset}
+     * written into the graph itself by {@link SourceGraphs#addProvenance}, and the
+     * entry {@code /.well-known/void} publishes — and those had drifted apart.
+     * Every source graph was advertised as SKOS concept labels, which was true of
+     * phase 1 and of nothing added since: the DOI, GeoNames, GtR and DEIMS graphs
+     * hold no SKOS at all, and the ORCID graph holds FOAF. Both descriptions now
+     * come from here, so a new authority cannot be advertised as the last one was.
+     *
+     * @param graph        the named graph, which is also the authority's own namespace
+     * @param title        a human-readable name
+     * @param description  what the graph holds, in one line
+     * @param vocabularies the namespaces of the terms actually used in it
+     * @param licence      the authority's licence, or null where we have not
+     *                     established it — see {@link ReferenceSource#licence()}
+     *                     for why an unknown one is stated as nothing rather than
+     *                     guessed at
      */
-    record SourceGraph(String graph, String title) {}
+    record SourceGraph(
+        String graph,
+        String title,
+        String description,
+        List<String> vocabularies,
+        String licence
+    ) {
+        public SourceGraph {
+            vocabularies = List.copyOf(vocabularies);
+        }
+    }
 
     /**
      * The graphs this provider publishes to, whether or not there is currently

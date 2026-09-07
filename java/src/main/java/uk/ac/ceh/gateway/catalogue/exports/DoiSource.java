@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -83,6 +84,19 @@ class DoiSource implements ReferenceSource {
     @Override
     public String title() {
         return "Crossref and DataCite, as the publishers of the cited works registered them";
+    }
+
+    @Override
+    public String description() {
+        return "Cited works as their registration agency describes them: title, date, publisher "
+            + "and the journal they appeared in.";
+    }
+
+    @Override
+    public List<String> vocabularies() {
+        // No SKOS: a work is not a concept. PUBLISHED is all dcterms, and the
+        // journal carries a bibo:issn.
+        return List.of(DCTerms.getURI(), BIBO);
     }
 
     @Override

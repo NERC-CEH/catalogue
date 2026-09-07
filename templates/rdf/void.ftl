@@ -2,11 +2,25 @@
 @prefix foaf:    <http://xmlns.com/foaf/0.1/> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix dcat:    <http://www.w3.org/ns/dcat#> .
-@prefix dcmitype: <http://purl.org/dc/dcmitype/> .
-@prefix doo:     <https://digital.ceh.ac.uk/ontology/doo/> .
 @prefix prov:    <http://www.w3.org/ns/prov#> .
-@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
 @prefix sd:      <http://www.w3.org/ns/sparql-service-description#> .
+
+<#--
+  Every literal in this document is assembled by hand rather than serialised by
+  Jena, so escaping is this template's problem. One unescaped backslash in one
+  hand-built literal took every export down for a week (dri-one #344), and a
+  line break in a title would break this document the same way -- which the
+  backslash-and-quote pair of ?replace calls that used to sit inline at each
+  literal did not cover.
+
+  Not templates/rdf/_turtle.ftl's escape(), which substitutes an apostrophe for a
+  double quote to stay byte-compatible with years of already-published literals.
+  There is nothing published here to stay compatible with, so this escapes the
+  quote properly instead.
+-->
+<#function lit text>
+  <#return text?replace('\\', '\\\\')?replace('"', '\\"')?replace('\r', ' ')?replace('\n', ' ')>
+</#function>
 
 <${baseUri}/.well-known/void>
     a void:DatasetDescription ;
@@ -65,30 +79,43 @@
     .
 
 <#--
-  One dataset per authority whose concept labels the catalogue republishes. The
-  catalogue asserts nothing of its own in these graphs — they hold the
-  authority's own labels, harvested unchanged — which is exactly why they are
-  separate graphs rather than merged into the catalogue's.
+  One dataset per authority the catalogue republishes. The catalogue asserts
+  nothing of its own in these graphs — they hold the authority's own statements,
+  republished unchanged — which is exactly why they are separate graphs rather
+  than merged into the catalogue's.
 
-  No dcterms:license is claimed: the authorities license on differing terms and
-  they have not been established, and the wrong claim would be worse than none.
+  Title, description, vocabularies and licence all come from the SourceGraph the
+  provider declares, which is the same one written into the graph itself as its
+  void:Dataset header. They used to be written here instead, and every graph was
+  described as SKOS concept labels with a skos:prefLabel partition — true of the
+  vocabularies, and of nothing added after them: the DOI, GeoNames, GtR and DEIMS
+  graphs hold no SKOS at all and the ORCID graph holds FOAF (dri-one #350).
+
+  A licence is stated only where the authority's terms are established. ORCID,
+  ROR and Wikidata release their public records under CC0 and GeoNames under
+  CC-BY; the vocabularies license on differing terms that have not been
+  established, and the wrong claim would be worse than none.
 -->
 <#list sourceGraphs![] as source>
 <${source.graph()}>
     a void:Dataset ;
-    dcterms:title "${source.title()?replace('\\', '\\\\')?replace('"', '\\"')}"@en ;
-    dcterms:description "Concept labels as published by the authority, republished unchanged."@en ;
+    dcterms:title "${lit(source.title())}"@en ;
+    dcterms:description "${lit(source.description())}"@en ;
     void:sparqlEndpoint <${sparqlUrl}> ;
     void:uriSpace "${source.graph()}" ;
-    void:vocabulary <http://www.w3.org/2004/02/skos/core#> ;
-    void:propertyPartition [ void:property skos:prefLabel ] ;
+<#list source.vocabularies() as vocabulary>
+    void:vocabulary <${vocabulary}> ;
+</#list>
+<#if source.licence()??>
+    dcterms:license <${source.licence()}> ;
+</#if>
     .
 </#list>
 <#list catalogues as cat>
 
 <${baseUri}/${cat.id}/documents>
     a void:Dataset ;
-    dcterms:title "${cat.title?replace('\\', '\\\\')?replace('"', '\\"')}"@en ;
+    dcterms:title "${lit(cat.title)}"@en ;
     dcterms:subject <http://dbpedia.org/resource/Environmental_science> ;
     foaf:homepage <${baseUri}/${cat.id}/documents> ;
     void:sparqlEndpoint <${sparqlUrl}> ;
@@ -98,7 +125,6 @@
     void:vocabulary <http://www.opengis.net/ont/geosparql#> ;
     void:vocabulary <http://www.w3.org/ns/prov#> ;
     void:vocabulary <http://xmlns.com/foaf/0.1/> ;
-    void:vocabulary <http://www.w3.org/2006/vcard/ns#> ;
 <#if (stats[cat.id])??>
     void:entities ${stats[cat.id].entities()?c} ;
     void:triples ${stats[cat.id].triples()?c} ;

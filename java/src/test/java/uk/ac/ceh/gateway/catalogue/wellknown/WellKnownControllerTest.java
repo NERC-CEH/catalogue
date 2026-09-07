@@ -28,6 +28,8 @@ import java.io.StringReader;
 import static org.apache.jena.rdf.model.ResourceFactory.createProperty;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -44,6 +46,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("WellKnownController")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties = "fuseki.catalogueIds=eidc")
 class WellKnownControllerTest extends AbstractMvcTest {
+
+    private static final String VOID = "http://rdfs.org/ns/void#";
+    private static final String DCTERMS = "http://purl.org/dc/terms/";
+    private static final String SKOS_NS = "http://www.w3.org/2004/02/skos/core#";
+    private static final String VCARD_NS = "http://www.w3.org/2006/vcard/ns#";
 
     @MockitoBean private CatalogueService catalogueService;
     @MockitoBean private ProfileService profileService;
@@ -199,6 +206,107 @@ class WellKnownControllerTest extends AbstractMvcTest {
                 .toList().isEmpty(),
             "no licence is claimed for an authority's content until one has been established"
         );
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("each authority graph is described as the provider declares it, not as SKOS labels")
+    void describesEachAuthorityGraphFromItsOwnDeclaration() {
+        givenFreemarkerConfiguration();
+        givenEidcCatalogue();
+
+        val model = voidDescription();
+
+        val declared = sourceGraphProviders.stream()
+            .flatMap(provider -> provider.sourceGraphs().stream())
+            .toList();
+        assertThat("an empty declaration would make the assertions below vacuous",
+            declared, is(not(empty())));
+
+        for (val source : declared) {
+            val graph = createResource(source.graph());
+            assertThat("the title in the document must be the declared one, for " + source.graph(),
+                model.listObjectsOfProperty(graph, createProperty(DCTERMS + "title"))
+                    .toList().stream().map(node -> node.asLiteral().getString()).toList(),
+                contains(source.title()));
+            // The description used to be a constant in the template, which said
+            // "concept labels" about graphs holding works, places, grants and
+            // people (dri-one #350).
+            assertThat("the description must be the declared one, for " + source.graph(),
+                model.listObjectsOfProperty(graph, createProperty(DCTERMS + "description"))
+                    .toList().stream().map(node -> node.asLiteral().getString()).toList(),
+                contains(source.description()));
+            // And this was hardcoded to SKOS for every graph, whatever it held.
+            assertThat("the vocabularies must be the ones the graph actually uses, for "
+                    + source.graph(),
+                model.listObjectsOfProperty(graph, createProperty(VOID + "vocabulary"))
+                    .toList().stream().map(node -> node.asResource().getURI()).toList(),
+                containsInAnyOrder(source.vocabularies().toArray()));
+            assertThat("a licence is stated exactly where one is established, for " + source.graph(),
+                model.listObjectsOfProperty(graph, createProperty(DCTERMS + "license"))
+                    .toList().stream().map(node -> node.asResource().getURI()).toList(),
+                source.licence() == null ? is(empty()) : contains(source.licence()));
+        }
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("a graph holding no SKOS is not advertised as holding SKOS")
+    void doesNotClaimSkosForNonSkosGraphs() {
+        givenFreemarkerConfiguration();
+        givenEidcCatalogue();
+
+        val model = voidDescription();
+
+        // Crossref's works are dcterms and bibo; GeoNames' places are gn and
+        // wgs84_pos. Both were advertised with a skos:prefLabel partition, which
+        // is a query returning nothing.
+        for (val graph : new String[]{"https://doi.org/", "https://sws.geonames.org/"}) {
+            val vocabularies = model
+                .listObjectsOfProperty(createResource(graph), createProperty(VOID + "vocabulary"))
+                .toList().stream().map(node -> node.asResource().getURI()).toList();
+            assertThat("this graph really is declared, or the assertion below proves nothing",
+                vocabularies, is(not(empty())));
+            assertThat(graph + " holds no SKOS",
+                vocabularies, not(hasItem(SKOS_NS)));
+        }
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("the catalogue graph no longer claims vcard, whose only term #348 removed")
+    void doesNotClaimVcard() {
+        givenFreemarkerConfiguration();
+        givenEidcCatalogue();
+
+        val body = voidBody();
+        val model = voidDescription(body);
+
+        assertThat("vcard:hasEmail was the only vcard term the export ever wrote",
+            body, not(containsString(VCARD_NS)));
+        assertThat(
+            model.listObjectsOfProperty(createProperty(VOID + "vocabulary"))
+                .toList().stream().map(node -> node.asResource().getURI()).toList(),
+            not(hasItem(VCARD_NS)));
+    }
+
+    @SneakyThrows
+    private String voidBody() {
+        return mvc.perform(get("/.well-known/void"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+    }
+
+    @SneakyThrows
+    private org.apache.jena.rdf.model.Model voidDescription() {
+        return voidDescription(voidBody());
+    }
+
+    /** Parsed, so an assertion is about the graph rather than about the text. */
+    private org.apache.jena.rdf.model.Model voidDescription(String body) {
+        val model = ModelFactory.createDefaultModel();
+        RDFDataMgr.read(model, new StringReader(body), null, Lang.TURTLE);
+        return model;
     }
 
     private void givenEidcCatalogue() {

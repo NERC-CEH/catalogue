@@ -20,8 +20,6 @@ import uk.ac.ceh.gateway.catalogue.vocabularies.Keyword;
 
 import java.io.StringWriter;
 import java.time.Clock;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -102,8 +100,14 @@ public class VocabularyGraphService implements SourceGraphProvider {
     /** Solr's default row limit is 10; the whole collection is ~8,700 documents. */
     private static final int PAGE_SIZE = 1000;
 
-    private static final String VOID = "http://rdfs.org/ns/void#";
-    private static final String PROV = "http://www.w3.org/ns/prov#";
+    /**
+     * What a vocabulary graph holds. The same for all of them, unlike the other
+     * providers': these really are SKOS concept descriptions, which is what the
+     * VoID document used to claim about every source graph regardless.
+     */
+    private static final String DESCRIPTION =
+        "Concept descriptions as published by the authority: preferred and alternate labels, "
+            + "definitions, notations and the broader/narrower hierarchy.";
 
     /**
      * One external vocabulary and how its graph is built.
@@ -197,9 +201,18 @@ public class VocabularyGraphService implements SourceGraphProvider {
      */
     @Override
     public List<SourceGraph> sourceGraphs() {
-        return authorities().stream()
-            .map(authority -> new SourceGraph(authority.graph(), authority.title()))
-            .toList();
+        return authorities().stream().map(VocabularyGraphService::sourceGraph).toList();
+    }
+
+    /**
+     * No licence: the authorities license their content on differing terms and we
+     * have not established them, and the wrong claim would be worse than none.
+     * Recording them is a follow-up, and is needed before this data is
+     * redistributed further.
+     */
+    private static SourceGraph sourceGraph(Authority authority) {
+        return new SourceGraph(authority.graph(), authority.title(), DESCRIPTION,
+            List.of(SKOS.getURI()), null);
     }
 
     /** The full descriptors, which only this class needs. */
@@ -264,7 +277,7 @@ public class VocabularyGraphService implements SourceGraphProvider {
             if (model.isEmpty()) {
                 continue;
             }
-            addProvenance(model, authority);
+            SourceGraphs.addProvenance(model, sourceGraph(authority), clock);
             turtleByGraph.put(authority.graph(), serialise(model));
         }
         return turtleByGraph;
@@ -291,20 +304,6 @@ public class VocabularyGraphService implements SourceGraphProvider {
         }
     }
 
-    /** What this graph is, and when the copy of it was taken. */
-    private void addProvenance(Model model, Authority authority) {
-        val graph = model.getResource(authority.graph());
-        model.add(graph, RDF.type, model.getResource(VOID + "Dataset"));
-        model.add(graph, DCTerms.title, authority.title());
-        model.add(graph, DCTerms.description,
-            "Concept descriptions as published by the authority, republished unchanged; "
-                + "the catalogue asserts nothing of its own here.");
-        model.add(graph, model.getProperty(PROV + "generatedAtTime"),
-            model.createTypedLiteral(
-                Instant.now(clock).truncatedTo(ChronoUnit.SECONDS).toString(),
-                "http://www.w3.org/2001/XMLSchema#dateTime"));
-    }
-
     /**
      * Serialised by Jena rather than assembled as text, so literal escaping is
      * the parser's problem and not ours. A single unescaped backslash in one
@@ -313,8 +312,8 @@ public class VocabularyGraphService implements SourceGraphProvider {
     private static String serialise(Model model) {
         model.setNsPrefix("skos", SKOS.getURI());
         model.setNsPrefix("dcterms", DCTerms.getURI());
-        model.setNsPrefix("void", VOID);
-        model.setNsPrefix("prov", PROV);
+        model.setNsPrefix("void", SourceGraphs.VOID);
+        model.setNsPrefix("prov", SourceGraphs.PROV);
         model.setNsPrefix("xsd", "http://www.w3.org/2001/XMLSchema#");
         val writer = new StringWriter();
         RDFDataMgr.write(writer, model, Lang.TURTLE);

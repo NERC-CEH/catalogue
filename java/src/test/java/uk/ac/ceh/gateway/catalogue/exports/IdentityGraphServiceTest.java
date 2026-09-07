@@ -28,6 +28,7 @@ import java.util.Set;
 import static org.apache.jena.rdf.model.ResourceFactory.createProperty;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
@@ -51,12 +52,14 @@ class IdentityGraphServiceTest {
     private static final String UKCEH = ROR_GRAPH + "00pggkr55";
 
     @Mock private IdentityRetriever retriever;
+    private WithheldGraphLog withheldGraphLog;
     private IdentityGraphService service;
 
     @BeforeEach
     void setUp() {
-        service = new IdentityGraphService(
-            retriever, Clock.fixed(Instant.parse("2026-09-02T12:00:00Z"), ZoneOffset.UTC));
+        withheldGraphLog = new WithheldGraphLog();
+        service = new IdentityGraphService(retriever, withheldGraphLog,
+            Clock.fixed(Instant.parse("2026-09-02T12:00:00Z"), ZoneOffset.UTC));
     }
 
     /** A run that reached every entity it was asked about. */
@@ -304,6 +307,40 @@ class IdentityGraphServiceTest {
         void everyGraphHasATitle() {
             assertTrue(service.sourceGraphs().stream()
                 .noneMatch(g -> g.title() == null || g.title().isBlank()));
+        }
+
+        @Test
+        @DisplayName("the header written into the graph says what the declaration says")
+        void headerMatchesTheDeclaration() {
+            given(retriever.describe(any(), eq(IdentityRetriever.Authority.ORCID)))
+                .willReturn(complete(personNamed(CLAIRE, "Claire Wood")));
+
+            val model = parse(service.graphs(Set.of(CLAIRE)).get(ORCID_GRAPH));
+            val graph = createResource(ORCID_GRAPH);
+            val declared = service.sourceGraphs().stream()
+                .filter(candidate -> candidate.graph().equals(ORCID_GRAPH))
+                .findFirst().orElseThrow();
+
+            // The two used to be written independently, and had drifted: this
+            // header called the graph identities as published by the authority
+            // while /.well-known/void called it concept labels with a
+            // skos:prefLabel partition it does not have (dri-one #350).
+            assertThat(
+                model.listObjectsOfProperty(graph, DCTerms.description)
+                    .toList().stream().map(node -> node.asLiteral().getString()).toList(),
+                contains(declared.description())
+            );
+            assertThat(
+                model.listObjectsOfProperty(graph,
+                        createProperty("http://rdfs.org/ns/void#vocabulary"))
+                    .toList().stream().map(node -> node.asResource().getURI()).toList(),
+                containsInAnyOrder(declared.vocabularies().toArray())
+            );
+            assertThat(
+                model.listObjectsOfProperty(graph, DCTerms.license)
+                    .toList().stream().map(node -> node.asResource().getURI()).toList(),
+                contains(declared.licence())
+            );
         }
     }
 }

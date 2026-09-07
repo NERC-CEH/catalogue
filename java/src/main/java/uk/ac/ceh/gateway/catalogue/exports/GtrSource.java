@@ -16,6 +16,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.List;
 
 /**
  * The grants the records acknowledge, as Gateway to Research describes them.
@@ -66,6 +67,20 @@ class GtrSource implements ReferenceSource {
     @Override
     public String title() {
         return "Gateway to Research, UKRI's record of the projects it funded";
+    }
+
+    @Override
+    public String description() {
+        return "Funded projects as UKRI records them: title, abstract, reference, lead funder, "
+            + "status and research subjects.";
+    }
+
+    @Override
+    public List<String> vocabularies() {
+        // GtR's research subjects and topics are dcterms:subject literals rather
+        // than concept IRIs, because its ids are internal UUIDs that do not
+        // dereference -- so there is no SKOS here either.
+        return List.of(DCTerms.getURI(), RDFS.getURI());
     }
 
     @Override

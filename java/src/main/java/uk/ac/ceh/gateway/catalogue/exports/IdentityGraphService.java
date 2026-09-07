@@ -8,7 +8,6 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
-import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.SKOS;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.StringWriter;
 import java.time.Clock;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,41 +72,63 @@ import java.util.Set;
 @ToString(exclude = "identityRetriever")
 public class IdentityGraphService implements SourceGraphProvider {
 
-    private static final String VOID = "http://rdfs.org/ns/void#";
-    private static final String PROV = "http://www.w3.org/ns/prov#";
-    private static final String CC0 = "https://creativecommons.org/publicdomain/zero/1.0/";
-
-    private static final Map<IdentityRetriever.Authority, String> TITLES = Map.of(
+    /**
+     * What each of these graphs is, in the one place both descriptions of it are
+     * read from.
+     *
+     * <p>The two do not hold the same terms, which is why the vocabularies are
+     * per-authority rather than shared: an ORCID record contributes a name in
+     * FOAF and nothing else, whereas a ROR record also carries SKOS labels for
+     * its aliases, {@code owl:sameAs} links to Fundref and Wikidata, and
+     * {@code dcterms:spatial}. Advertising SKOS on the ORCID graph, as the VoID
+     * description used to, points a consumer at a query that returns nothing.
+     */
+    private static final Map<IdentityRetriever.Authority, SourceGraph> GRAPHS = Map.of(
         IdentityRetriever.Authority.ORCID,
-        "ORCID, as published by the researchers themselves",
+        new SourceGraph(
+            IdentityRetriever.Authority.ORCID.uriPrefix(),
+            "ORCID, as published by the researchers themselves",
+            "Researchers as they describe themselves in ORCID: their own name, given and family.",
+            List.of(SourceGraphs.FOAF, RDFS.getURI()),
+            SourceGraphs.CC0),
         IdentityRetriever.Authority.ROR,
-        "ROR, the Research Organization Registry"
+        new SourceGraph(
+            IdentityRetriever.Authority.ROR.uriPrefix(),
+            "ROR, the Research Organization Registry",
+            "Research organisations as ROR registers them: official name, aliases and acronym, "
+                + "country, website, and the identifiers they are known by elsewhere.",
+            List.of(SourceGraphs.FOAF, SKOS.getURI(), DCTerms.getURI(), OWL.getURI(), RDFS.getURI()),
+            SourceGraphs.CC0)
     );
 
     private final IdentityRetriever identityRetriever;
+    private final WithheldGraphLog withheldGraphLog;
     private final Clock clock;
 
     /** @see VocabularyGraphService for why this annotation is needed. */
     @Autowired
-    public IdentityGraphService(IdentityRetriever identityRetriever) {
-        this(identityRetriever, Clock.systemUTC());
+    public IdentityGraphService(
+        IdentityRetriever identityRetriever,
+        WithheldGraphLog withheldGraphLog
+    ) {
+        this(identityRetriever, withheldGraphLog, Clock.systemUTC());
     }
 
     /** Package-private, so a test can fix the clock in the provenance header. */
-    IdentityGraphService(IdentityRetriever identityRetriever, Clock clock) {
+    IdentityGraphService(
+        IdentityRetriever identityRetriever,
+        WithheldGraphLog withheldGraphLog,
+        Clock clock
+    ) {
         this.identityRetriever = identityRetriever;
+        this.withheldGraphLog = withheldGraphLog;
         this.clock = clock;
         log.info("Creating");
     }
 
     @Override
     public List<SourceGraph> sourceGraphs() {
-        return List.of(
-            new SourceGraph(IdentityRetriever.Authority.ORCID.uriPrefix(),
-                TITLES.get(IdentityRetriever.Authority.ORCID)),
-            new SourceGraph(IdentityRetriever.Authority.ROR.uriPrefix(),
-                TITLES.get(IdentityRetriever.Authority.ROR))
-        );
+        return Arrays.stream(IdentityRetriever.Authority.values()).map(GRAPHS::get).toList();
     }
 
     @Override
@@ -146,37 +166,17 @@ public class IdentityGraphService implements SourceGraphProvider {
                 // entity the authority failed to serve is just as absent from
                 // this graph as one the budget never reached, and a timeout or
                 // a rate limit is every bit as likely to succeed tomorrow.
-                log.info(
-                    "Not publishing {} yet: of {} entities, {} are still to be fetched and "
-                        + "{} could not be served, so replacing the graph would publish less "
-                        + "than it already holds",
-                    authority.uriPrefix(), wanted.size(),
-                    described.deferred(), described.transientFailures()
-                );
+                withheldGraphLog.withheld(authority.uriPrefix(), wanted.size(),
+                    described.deferred(), described.transientFailures());
                 continue;
             }
 
             val model = described.model();
-            addProvenance(model, authority);
+            SourceGraphs.addProvenance(model, GRAPHS.get(authority), clock);
             turtleByGraph.put(authority.uriPrefix(), serialise(model));
+            withheldGraphLog.published(authority.uriPrefix());
         }
         return turtleByGraph;
-    }
-
-    private void addProvenance(Model model, IdentityRetriever.Authority authority) {
-        val graph = model.getResource(authority.uriPrefix());
-        model.add(graph, RDF.type, model.getResource(VOID + "Dataset"));
-        model.add(graph, DCTerms.title, TITLES.get(authority));
-        model.add(graph, DCTerms.description,
-            "Identities as published by the authority, republished unchanged; "
-                + "the catalogue asserts nothing of its own here.");
-        // Unlike the vocabulary graphs, these terms are established: both ORCID
-        // and ROR release their public records under CC0.
-        model.add(graph, DCTerms.license, model.getResource(CC0));
-        model.add(graph, model.getProperty(PROV + "generatedAtTime"),
-            model.createTypedLiteral(
-                Instant.now(clock).truncatedTo(ChronoUnit.SECONDS).toString(),
-                "http://www.w3.org/2001/XMLSchema#dateTime"));
     }
 
     private static String serialise(Model model) {
@@ -185,8 +185,8 @@ public class IdentityGraphService implements SourceGraphProvider {
         model.setNsPrefix("owl", OWL.getURI());
         model.setNsPrefix("rdfs", RDFS.getURI());
         model.setNsPrefix("dcterms", DCTerms.getURI());
-        model.setNsPrefix("void", VOID);
-        model.setNsPrefix("prov", PROV);
+        model.setNsPrefix("void", SourceGraphs.VOID);
+        model.setNsPrefix("prov", SourceGraphs.PROV);
         model.setNsPrefix("xsd", "http://www.w3.org/2001/XMLSchema#");
         val writer = new StringWriter();
         RDFDataMgr.write(writer, model, Lang.TURTLE);

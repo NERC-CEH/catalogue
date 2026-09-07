@@ -81,6 +81,16 @@ class ReferenceRetrieverTest {
         }
 
         @Override
+        public String description() {
+            return "Whatever it is asked about, labelled.";
+        }
+
+        @Override
+        public java.util.List<String> vocabularies() {
+            return java.util.List.of(RDFS.getURI());
+        }
+
+        @Override
         public boolean describes(String iri) {
             return iri.startsWith("https://example.invalid/thing/");
         }
