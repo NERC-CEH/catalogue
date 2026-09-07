@@ -22,6 +22,7 @@ import java.io.StringReader;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -51,30 +52,33 @@ class IdentityGraphServiceTest {
     private static final String CLAIRE = ORCID_GRAPH + "0000-0002-0394-2998";
     private static final String UKCEH = ROR_GRAPH + "00pggkr55";
 
-    @Mock private IdentityRetriever retriever;
+    @Mock private AuthorityRetriever retriever;
     private WithheldGraphLog withheldGraphLog;
     private IdentityGraphService service;
+    private final OrcidSource orcidSource = new OrcidSource(500);
+    private final RorSource rorSource = new RorSource("", 200);
 
     @BeforeEach
     void setUp() {
         withheldGraphLog = new WithheldGraphLog();
-        service = new IdentityGraphService(retriever, withheldGraphLog,
+        service = new IdentityGraphService(List.of(orcidSource, rorSource),
+            retriever, withheldGraphLog,
             Clock.fixed(Instant.parse("2026-09-02T12:00:00Z"), ZoneOffset.UTC));
     }
 
     /** A run that reached every entity it was asked about. */
-    private static IdentityRetriever.Descriptions complete(Model model) {
-        return new IdentityRetriever.Descriptions(model, 0, 0);
+    private static AuthorityRetriever.Descriptions complete(Model model) {
+        return new AuthorityRetriever.Descriptions(model, 0, 0);
     }
 
     /** A run that ran out of budget with {@code deferred} entities still to fetch. */
-    private static IdentityRetriever.Descriptions stillFilling(Model model, int deferred) {
-        return new IdentityRetriever.Descriptions(model, deferred, 0);
+    private static AuthorityRetriever.Descriptions stillFilling(Model model, int deferred) {
+        return new AuthorityRetriever.Descriptions(model, deferred, 0);
     }
 
     /** A run where the authority could not serve {@code failures} of the entities. */
-    private static IdentityRetriever.Descriptions withFailures(Model model, int failures) {
-        return new IdentityRetriever.Descriptions(model, 0, failures);
+    private static AuthorityRetriever.Descriptions withFailures(Model model, int failures) {
+        return new AuthorityRetriever.Descriptions(model, 0, failures);
     }
 
     private static Model personNamed(String uri, String label) {
@@ -98,14 +102,14 @@ class IdentityGraphServiceTest {
         @Test
         @DisplayName("only entities the catalogue actually references")
         void onlyReferencedEntities() {
-            given(retriever.describe(any(), eq(IdentityRetriever.Authority.ORCID)))
+            given(retriever.describe(any(), eq(orcidSource)))
                 .willReturn(complete(personNamed(CLAIRE, "Claire Wood")));
 
             service.graphs(Set.of(CLAIRE, "https://catalogue.ceh.ac.uk/id/some-record"));
 
             verify(retriever).describe(
                 argThat(uris -> uris.size() == 1 && uris.contains(CLAIRE)),
-                eq(IdentityRetriever.Authority.ORCID));
+                eq(orcidSource));
         }
 
         @Test
@@ -117,7 +121,7 @@ class IdentityGraphServiceTest {
 
             verify(retriever).describe(
                 argThat(uris -> uris.size() == 1 && !uris.contains(CLAIRE + "#orcid-id")),
-                eq(IdentityRetriever.Authority.ORCID));
+                eq(orcidSource));
         }
 
         @Test
@@ -135,7 +139,7 @@ class IdentityGraphServiceTest {
         @Test
         @DisplayName("the researcher's own name, in ORCID's graph rather than the catalogue's")
         void namesGoInTheAuthoritysGraph() {
-            given(retriever.describe(any(), eq(IdentityRetriever.Authority.ORCID)))
+            given(retriever.describe(any(), eq(orcidSource)))
                 .willReturn(complete(personNamed(CLAIRE, "Claire Wood")));
 
             val graphs = service.graphs(Set.of(CLAIRE));
@@ -152,7 +156,7 @@ class IdentityGraphServiceTest {
         @Test
         @DisplayName("CC0 is claimed, because unlike the vocabularies these terms are known")
         void licenceIsAsserted() {
-            given(retriever.describe(any(), eq(IdentityRetriever.Authority.ORCID)))
+            given(retriever.describe(any(), eq(orcidSource)))
                 .willReturn(complete(personNamed(CLAIRE, "Claire Wood")));
 
             val model = parse(service.graphs(Set.of(CLAIRE)).get(ORCID_GRAPH));
@@ -167,7 +171,7 @@ class IdentityGraphServiceTest {
         @Test
         @DisplayName("the graph records when the copy was taken")
         void provenance() {
-            given(retriever.describe(any(), eq(IdentityRetriever.Authority.ORCID)))
+            given(retriever.describe(any(), eq(orcidSource)))
                 .willReturn(complete(personNamed(CLAIRE, "Claire Wood")));
 
             val model = parse(service.graphs(Set.of(CLAIRE)).get(ORCID_GRAPH));
@@ -183,9 +187,9 @@ class IdentityGraphServiceTest {
         @Test
         @DisplayName("people and organisations are kept in their own authorities' graphs")
         void authoritiesAreSeparate() {
-            given(retriever.describe(any(), eq(IdentityRetriever.Authority.ORCID)))
+            given(retriever.describe(any(), eq(orcidSource)))
                 .willReturn(complete(personNamed(CLAIRE, "Claire Wood")));
-            given(retriever.describe(any(), eq(IdentityRetriever.Authority.ROR)))
+            given(retriever.describe(any(), eq(rorSource)))
                 .willReturn(complete(personNamed(UKCEH, "UK Centre for Ecology & Hydrology")));
 
             val graphs = service.graphs(Set.of(CLAIRE, UKCEH));
@@ -220,9 +224,9 @@ class IdentityGraphServiceTest {
         @Test
         @DisplayName("one authority failing does not stop the other publishing")
         void oneAuthorityFailingDoesNotStopTheOther() {
-            given(retriever.describe(any(), eq(IdentityRetriever.Authority.ORCID)))
+            given(retriever.describe(any(), eq(orcidSource)))
                 .willReturn(complete(ModelFactory.createDefaultModel()));
-            given(retriever.describe(any(), eq(IdentityRetriever.Authority.ROR)))
+            given(retriever.describe(any(), eq(rorSource)))
                 .willReturn(complete(personNamed(UKCEH, "UK Centre for Ecology & Hydrology")));
 
             val graphs = service.graphs(Set.of(CLAIRE, UKCEH));
@@ -238,7 +242,7 @@ class IdentityGraphServiceTest {
         @Test
         @DisplayName("a graph is not replaced with part of itself")
         void partialRunIsNotPublished() {
-            given(retriever.describe(any(), eq(IdentityRetriever.Authority.ORCID)))
+            given(retriever.describe(any(), eq(orcidSource)))
                 .willReturn(stillFilling(personNamed(CLAIRE, "Claire Wood"), 361));
 
             assertThat(
@@ -255,7 +259,7 @@ class IdentityGraphServiceTest {
             // this run's model as ones the budget never reached, and a timeout
             // or a rate limit is every bit as likely to succeed tomorrow -- so
             // publishing now drops them from the endpoint.
-            given(retriever.describe(any(), eq(IdentityRetriever.Authority.ORCID)))
+            given(retriever.describe(any(), eq(orcidSource)))
                 .willReturn(withFailures(personNamed(CLAIRE, "Claire Wood"), 400));
 
             assertThat(
@@ -269,7 +273,7 @@ class IdentityGraphServiceTest {
             // The test is completeness of the run, not size against last time. A
             // catalogue that withdraws records legitimately references fewer
             // ORCIDs, and that reduction must be allowed to reach the endpoint.
-            given(retriever.describe(any(), eq(IdentityRetriever.Authority.ORCID)))
+            given(retriever.describe(any(), eq(orcidSource)))
                 .willReturn(complete(personNamed(CLAIRE, "Claire Wood")));
 
             assertThat(service.graphs(Set.of(CLAIRE)).keySet(), hasItem(ORCID_GRAPH));
@@ -278,9 +282,9 @@ class IdentityGraphServiceTest {
         @Test
         @DisplayName("one authority still filling does not hold back the other")
         void oneAuthorityFillingDoesNotHoldBackTheOther() {
-            given(retriever.describe(any(), eq(IdentityRetriever.Authority.ORCID)))
+            given(retriever.describe(any(), eq(orcidSource)))
                 .willReturn(stillFilling(personNamed(CLAIRE, "Claire Wood"), 500));
-            given(retriever.describe(any(), eq(IdentityRetriever.Authority.ROR)))
+            given(retriever.describe(any(), eq(rorSource)))
                 .willReturn(complete(personNamed(UKCEH, "UK Centre for Ecology & Hydrology")));
 
             assertThat(service.graphs(Set.of(CLAIRE, UKCEH)).keySet(),
@@ -312,7 +316,7 @@ class IdentityGraphServiceTest {
         @Test
         @DisplayName("the header written into the graph says what the declaration says")
         void headerMatchesTheDeclaration() {
-            given(retriever.describe(any(), eq(IdentityRetriever.Authority.ORCID)))
+            given(retriever.describe(any(), eq(orcidSource)))
                 .willReturn(complete(personNamed(CLAIRE, "Claire Wood")));
 
             val model = parse(service.graphs(Set.of(CLAIRE)).get(ORCID_GRAPH));

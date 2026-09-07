@@ -249,6 +249,32 @@ class AuthorityRetrieverTest {
         }
 
         @Test
+        @DisplayName("a body the mapper cannot read is transient, not the authority saying nothing")
+        void unreadableBodyIsTransient() {
+            // The distinction is load-bearing, and preserving it was the reason
+            // AuthorityRetriever catches from describe at all. ORCID and ROR
+            // classified an unreadable response as transient -- an error page
+            // served with a 200 is not the authority saying it holds nothing --
+            // whereas the phase 4 mappers swallow it and return empty, for
+            // records that are odd rather than absent. Both survive: throwing
+            // means transient, returning empty means definitive.
+            val source = new StubSource(10, 1) {
+                @Override
+                public Map<String, Model> describe(List<String> batch, String body) {
+                    throw new IllegalStateException("not the RDF we asked for");
+                }
+            };
+            respondWith("<html>Service Unavailable</html>");
+
+            val described = retriever.describe(List.of(THING + "a"), source);
+
+            assertThat("must hold the graph back and be tried again",
+                described.transientFailures(), is(1));
+            assertThat("and must not be remembered as a negative",
+                cache.get(THING + "a", Duration.ofDays(7)).isPresent(), is(false));
+        }
+
+        @Test
         @DisplayName("a request that cannot even be built is transient, not a crash")
         void unbuildableRequestIsTransient() {
             val source = new StubSource(10, 1) {

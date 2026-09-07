@@ -21,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Asks each authority about the entities the catalogue's records cite, and
@@ -165,7 +166,31 @@ public class AuthorityRetriever {
             val response = perform(source, batch);
 
             if (response.outcome() == Outcome.OK) {
-                val described = source.describe(batch, response.body());
+                Map<String, Model> described;
+                try {
+                    described = source.describe(batch, response.body());
+                } catch (Exception ex) {
+                    // The response was not what we asked for. Transient, and
+                    // that distinction is load-bearing: an error page served
+                    // with a 200 is not the authority saying it holds nothing,
+                    // so it must hold the graph back and be tried again rather
+                    // than being remembered as a negative.
+                    //
+                    // A source that would rather treat an unreadable body as
+                    // "nothing usable" catches it and returns an empty map --
+                    // which the phase 4 mappers do, for records that are odd
+                    // rather than absent.
+                    log.warn("{} sent a response we could not read: {}",
+                        source.graph(), ex.getMessage());
+                    for (val iri : batch) {
+                        if (addHeld(combined, iri)) {
+                            cached++;
+                        } else {
+                            transientFailures++;
+                        }
+                    }
+                    continue;
+                }
                 for (val iri : batch) {
                     val description = described.getOrDefault(iri, ModelFactory.createDefaultModel());
                     // Stored even when empty, and deliberately: it says the
