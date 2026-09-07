@@ -31,7 +31,10 @@ import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.sql.Timestamp;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.List;
 
@@ -42,6 +45,8 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -55,6 +60,23 @@ public class GitRepoServiceAgreementServiceTest {
     private static final String FOLDER = "service-agreement/";
     private static final String ID = "7c60707c-80ee-4d67-bac2-3c9a93e61557";
     private static final String VERSION = "version";
+    /**
+     * The instant the history window is measured back from.
+     *
+     * <p>Fixed, because it used not to be: the test read
+     * {@code System.currentTimeMillis()} and stubbed {@code getRevisions} with
+     * that exact second, while the service read the clock again and subtracted
+     * the same five years. Strict stubbing compares the two for equality, so any
+     * run that crossed a second boundary between the two reads failed with a
+     * stubbing mismatch one second wide -- intermittently, and only ever in CI or
+     * on someone else's machine.
+     */
+    private static final Instant NOW = Instant.parse("2026-09-07T10:00:00Z");
+
+    /** The lower bound the service must ask the repository for. */
+    private static final long HISTORY_FROM =
+        NOW.getEpochSecond() - GitRepoServiceAgreementService.HISTORY_WINDOW_SECONDS;
+
     private static final String BASE_URI = "https://catalogue.ceh.ac.uk";
     private static final String catalogueKey = "eidc";
 
@@ -86,7 +108,8 @@ public class GitRepoServiceAgreementServiceTest {
             serviceAgreementMapper,
             documentRepository,
             jiraService,
-            publicationService
+            publicationService,
+            Clock.fixed(NOW, ZoneOffset.UTC)
         );
         serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(ID);
@@ -602,9 +625,7 @@ public class GitRepoServiceAgreementServiceTest {
             new TestRevision("revision1")
         );
 
-        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-        long timeLimitInSecond = (currentTimestamp.getTime() / 1000) - 157680000;    // 5 years before
-        given(repo.getRevisions(timeLimitInSecond, "(creating|updating) service agreement " + ID))
+        given(repo.getRevisions(HISTORY_FROM, "(creating|updating) service agreement " + ID))
                 .willReturn(revisions);
 
         //When
@@ -621,16 +642,33 @@ public class GitRepoServiceAgreementServiceTest {
     @SneakyThrows
     public void cannotGetHistory() {
         //Given
-        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-        long timeLimitInSecond = (currentTimestamp.getTime() / 1000) - 157680000;    // 5 years before
-
-        given(repo.getRevisions(timeLimitInSecond, "(creating|updating) service agreement " + ID))
+        given(repo.getRevisions(HISTORY_FROM, "(creating|updating) service agreement " + ID))
                 .willThrow(new DataRepositoryException("test"));
 
         //When
         assertThrows(ServiceAgreementException.class, () ->
                 service.getHistory(ID)
         );
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("history reaches five years back from now, not some other span")
+    public void historyReachesFiveYearsBack() {
+        //Given
+        given(repo.getRevisions(anyLong(), anyString()))
+                .willReturn(List.of(new TestRevision("current version")));
+
+        //When
+        service.getHistory(ID);
+
+        //Then
+        val from = ArgumentCaptor.forClass(Long.class);
+        verify(repo).getRevisions(from.capture(), anyString());
+        // Stated in days against a pinned clock, so this checks the span rather
+        // than repeating the seconds constant the service subtracts.
+        assertThat(Instant.ofEpochSecond(from.getValue()),
+                equalTo(NOW.minus(Duration.ofDays(365 * 5))));
     }
 
     @Test
