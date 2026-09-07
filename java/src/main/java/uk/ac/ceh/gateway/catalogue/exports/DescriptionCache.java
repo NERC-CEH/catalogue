@@ -161,11 +161,20 @@ public class DescriptionCache {
     /**
      * Writes the snapshot, if anything has changed since the last time.
      *
-     * <p>Called once per authority that fetched something, not once per
-     * description — so up to five times in a run across the vocabularies and the
-     * two identity authorities, each rewriting the whole file. At a few thousand
-     * entities that is a couple of megabytes a time, which is why it is guarded
-     * by the change flag rather than called unconditionally.
+     * <p>Called once per export, by {@code FusekiExportService} after every
+     * provider has run, and deliberately not by the retrievers. Each of them used
+     * to call it whenever it had fetched anything, which was one whole-file
+     * rewrite per authority: ten of them per run once phases 4 and 5 added the
+     * four reference sources and Wikidata to the two identity authorities and
+     * three vocabularies. Every one of those wrote the entire cache — several
+     * thousand entities — to a CIFS share to record the additions of a single
+     * authority.
+     *
+     * <p>The cost of writing once is that an export dying part-way loses that
+     * run's fetches from the snapshot. It does not lose them from the cache: the
+     * store itself still holds them for the life of the pod, so only a pod
+     * recreation before the next successful export refetches, which is the case
+     * the snapshot already accepts.
      *
      * <p>Written to a sibling temporary file and moved into place, so a reader
      * sees either the previous snapshot or the new one. The move is atomic where

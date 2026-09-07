@@ -343,11 +343,6 @@ public class IdentityRetriever {
         log.info("{}: {} fetched, {} from cache, {} deferred, {} temporarily unavailable, "
                 + "{} not held by the authority",
             authority, fetched, cached, deferred, transientFailures, definitive);
-        if (fetched > 0) {
-            // The only thing that changes the cache is a fetch, so this is the
-            // only point at which the snapshot needs rewriting.
-            cache.save();
-        }
         return new Descriptions(combined, deferred, transientFailures);
     }
 

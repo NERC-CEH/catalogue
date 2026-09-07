@@ -207,9 +207,6 @@ public class SkosConceptRetriever {
                 unavailable++;
             }
         }
-        if (fetched > 0) {
-            cache.save();
-        }
         log.info("{} concept descriptions: {} fetched, {} from cache, {} stale, {} unavailable",
             usable.size(), fetched, cached, stale, unavailable);
         return combined;

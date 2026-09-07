@@ -8,7 +8,6 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.OWL;
-import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -16,8 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.StringWriter;
 import java.time.Clock;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,24 +47,31 @@ import java.util.Set;
 @ToString(exclude = "referenceRetriever")
 public class ReferenceGraphService implements SourceGraphProvider {
 
-    private static final String VOID = "http://rdfs.org/ns/void#";
-    private static final String PROV = "http://www.w3.org/ns/prov#";
     private static final String GN = "http://www.geonames.org/ontology#";
     private static final String WGS84 = "http://www.w3.org/2003/01/geo/wgs84_pos#";
     private static final String BIBO = "http://purl.org/ontology/bibo/";
 
     private final ReferenceRetriever referenceRetriever;
+    private final WithheldGraphLog withheldGraphLog;
     private final Clock clock;
 
     /** @see VocabularyGraphService for why this annotation is needed. */
     @Autowired
-    public ReferenceGraphService(ReferenceRetriever referenceRetriever) {
-        this(referenceRetriever, Clock.systemUTC());
+    public ReferenceGraphService(
+        ReferenceRetriever referenceRetriever,
+        WithheldGraphLog withheldGraphLog
+    ) {
+        this(referenceRetriever, withheldGraphLog, Clock.systemUTC());
     }
 
     /** Package-private, so a test can fix the clock in the provenance header. */
-    ReferenceGraphService(ReferenceRetriever referenceRetriever, Clock clock) {
+    ReferenceGraphService(
+        ReferenceRetriever referenceRetriever,
+        WithheldGraphLog withheldGraphLog,
+        Clock clock
+    ) {
         this.referenceRetriever = referenceRetriever;
+        this.withheldGraphLog = withheldGraphLog;
         this.clock = clock;
         log.info("Creating");
     }
@@ -75,8 +79,14 @@ public class ReferenceGraphService implements SourceGraphProvider {
     @Override
     public List<SourceGraph> sourceGraphs() {
         return referenceRetriever.sources().stream()
-            .map(source -> new SourceGraph(source.graph(), source.title()))
+            .map(ReferenceGraphService::sourceGraph)
             .toList();
+    }
+
+    /** Everything said about one authority's graph, declared by the source itself. */
+    private static SourceGraph sourceGraph(ReferenceSource source) {
+        return new SourceGraph(source.graph(), source.title(), source.description(),
+            source.vocabularies(), source.licence());
     }
 
     @Override
@@ -98,47 +108,25 @@ public class ReferenceGraphService implements SourceGraphProvider {
                 continue;
             }
             if (!described.isComplete()) {
-                log.info(
-                    "Not publishing {} yet: of {} entities, {} are still to be fetched and "
-                        + "{} could not be served",
-                    source.graph(), wanted.size(),
-                    described.deferred(), described.transientFailures()
-                );
+                withheldGraphLog.withheld(source.graph(), wanted.size(),
+                    described.deferred(), described.transientFailures());
                 continue;
             }
 
             val model = described.model();
-            addProvenance(model, source);
+            SourceGraphs.addProvenance(model, sourceGraph(source), clock);
             turtleByGraph.put(source.graph(), serialise(model));
+            withheldGraphLog.published(source.graph());
         }
         return turtleByGraph;
-    }
-
-    private void addProvenance(Model model, ReferenceSource source) {
-        val graph = model.getResource(source.graph());
-        model.add(graph, RDF.type, model.getResource(VOID + "Dataset"));
-        model.add(graph, DCTerms.title, source.title());
-        model.add(graph, DCTerms.description,
-            "Descriptions as published by the authority, republished unchanged; "
-                + "the catalogue asserts nothing of its own here.");
-        if (source.licence() != null) {
-            model.add(graph, DCTerms.license, model.getResource(source.licence()));
-            // GeoNames' licence requires attribution, and the graph is where a
-            // consumer will look for it.
-            model.add(graph, DCTerms.publisher, source.title());
-        }
-        model.add(graph, model.getProperty(PROV + "generatedAtTime"),
-            model.createTypedLiteral(
-                Instant.now(clock).truncatedTo(ChronoUnit.SECONDS).toString(),
-                "http://www.w3.org/2001/XMLSchema#dateTime"));
     }
 
     private static String serialise(Model model) {
         model.setNsPrefix("dcterms", DCTerms.getURI());
         model.setNsPrefix("rdfs", RDFS.getURI());
         model.setNsPrefix("owl", OWL.getURI());
-        model.setNsPrefix("void", VOID);
-        model.setNsPrefix("prov", PROV);
+        model.setNsPrefix("void", SourceGraphs.VOID);
+        model.setNsPrefix("prov", SourceGraphs.PROV);
         model.setNsPrefix("gn", GN);
         model.setNsPrefix("wgs84_pos", WGS84);
         model.setNsPrefix("bibo", BIBO);

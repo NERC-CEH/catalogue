@@ -7,7 +7,6 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.DCTerms;
-import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.SKOS;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.StringWriter;
 import java.time.Clock;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,33 +47,45 @@ import java.util.Set;
 @ToString(exclude = "wikidataRetriever")
 public class WikidataGraphService implements SourceGraphProvider {
 
-    private static final String VOID = "http://rdfs.org/ns/void#";
-    private static final String PROV = "http://www.w3.org/ns/prov#";
-    private static final String WDT = "http://www.wikidata.org/prop/direct/";
-    private static final String SCHEMA = "http://schema.org/";
-    private static final String CC0 = "https://creativecommons.org/publicdomain/zero/1.0/";
-
-    private static final String TITLE = "Wikidata, the free knowledge base";
+    private static final SourceGraph GRAPH = new SourceGraph(
+        WikidataRetriever.PREFIX,
+        "Wikidata, the free knowledge base",
+        "Subject concepts as Wikidata describes them: English label, aliases and description, "
+            + "what kind of thing each is, and the taxon name where it is a species.",
+        // schema:description and the wdt: properties as well as SKOS. The
+        // taxon name is wdt:P225 and is the only name a tenth of these
+        // entities have, so a consumer told to expect SKOS alone would miss it.
+        List.of(SKOS.getURI(), RDFS.getURI(), SourceGraphs.SCHEMA, SourceGraphs.WDT),
+        SourceGraphs.CC0);
 
     private final WikidataRetriever wikidataRetriever;
+    private final WithheldGraphLog withheldGraphLog;
     private final Clock clock;
 
     /** @see VocabularyGraphService for why this annotation is needed. */
     @Autowired
-    public WikidataGraphService(WikidataRetriever wikidataRetriever) {
-        this(wikidataRetriever, Clock.systemUTC());
+    public WikidataGraphService(
+        WikidataRetriever wikidataRetriever,
+        WithheldGraphLog withheldGraphLog
+    ) {
+        this(wikidataRetriever, withheldGraphLog, Clock.systemUTC());
     }
 
     /** Package-private, so a test can fix the clock in the provenance header. */
-    WikidataGraphService(WikidataRetriever wikidataRetriever, Clock clock) {
+    WikidataGraphService(
+        WikidataRetriever wikidataRetriever,
+        WithheldGraphLog withheldGraphLog,
+        Clock clock
+    ) {
         this.wikidataRetriever = wikidataRetriever;
+        this.withheldGraphLog = withheldGraphLog;
         this.clock = clock;
         log.info("Creating");
     }
 
     @Override
     public List<SourceGraph> sourceGraphs() {
-        return List.of(new SourceGraph(WikidataRetriever.PREFIX, TITLE));
+        return List.of(GRAPH);
     }
 
     @Override
@@ -95,45 +104,28 @@ public class WikidataGraphService implements SourceGraphProvider {
             return Map.of();
         }
         if (!described.isComplete()) {
-            log.info(
-                "Not publishing {} yet: of {} entities, {} are still to be fetched and "
-                    + "{} could not be served",
-                WikidataRetriever.PREFIX, wanted.size(),
-                described.deferred(), described.transientFailures()
-            );
+            withheldGraphLog.withheld(WikidataRetriever.PREFIX, wanted.size(),
+                described.deferred(), described.transientFailures());
             return Map.of();
         }
 
         val model = described.model();
-        addProvenance(model);
+        SourceGraphs.addProvenance(model, GRAPH, clock);
         val turtleByGraph = new LinkedHashMap<String, String>();
         turtleByGraph.put(WikidataRetriever.PREFIX, serialise(model));
+        withheldGraphLog.published(WikidataRetriever.PREFIX);
         return turtleByGraph;
-    }
-
-    private void addProvenance(Model model) {
-        val graph = model.getResource(WikidataRetriever.PREFIX);
-        model.add(graph, RDF.type, model.getResource(VOID + "Dataset"));
-        model.add(graph, DCTerms.title, TITLE);
-        model.add(graph, DCTerms.description,
-            "Concept descriptions as published by Wikidata, republished unchanged; "
-                + "the catalogue asserts nothing of its own here.");
-        model.add(graph, DCTerms.license, model.getResource(CC0));
-        model.add(graph, model.getProperty(PROV + "generatedAtTime"),
-            model.createTypedLiteral(
-                Instant.now(clock).truncatedTo(ChronoUnit.SECONDS).toString(),
-                "http://www.w3.org/2001/XMLSchema#dateTime"));
     }
 
     private static String serialise(Model model) {
         model.setNsPrefix("wd", WikidataRetriever.PREFIX);
-        model.setNsPrefix("wdt", WDT);
+        model.setNsPrefix("wdt", SourceGraphs.WDT);
         model.setNsPrefix("skos", SKOS.getURI());
         model.setNsPrefix("rdfs", RDFS.getURI());
-        model.setNsPrefix("schema", SCHEMA);
+        model.setNsPrefix("schema", SourceGraphs.SCHEMA);
         model.setNsPrefix("dcterms", DCTerms.getURI());
-        model.setNsPrefix("void", VOID);
-        model.setNsPrefix("prov", PROV);
+        model.setNsPrefix("void", SourceGraphs.VOID);
+        model.setNsPrefix("prov", SourceGraphs.PROV);
         model.setNsPrefix("xsd", "http://www.w3.org/2001/XMLSchema#");
         val writer = new StringWriter();
         RDFDataMgr.write(writer, model, Lang.TURTLE);

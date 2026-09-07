@@ -52,14 +52,16 @@ class ReferenceGraphServiceTest {
 
     @Mock private ReferenceRetriever retriever;
     private ReferenceGraphService service;
+    private WithheldGraphLog withheldGraphLog;
     private final DoiSource doiSource = new DoiSource();
     private final GeoNamesSource geoNamesSource = new GeoNamesSource();
 
     @BeforeEach
     void setUp() {
         given(retriever.sources()).willReturn(List.of(doiSource, geoNamesSource));
-        service = new ReferenceGraphService(
-            retriever, Clock.fixed(Instant.parse("2026-09-03T09:00:00Z"), ZoneOffset.UTC));
+        withheldGraphLog = new WithheldGraphLog();
+        service = new ReferenceGraphService(retriever, withheldGraphLog,
+            Clock.fixed(Instant.parse("2026-09-03T09:00:00Z"), ZoneOffset.UTC));
     }
 
     private static Model labelled(String uri, String label) {

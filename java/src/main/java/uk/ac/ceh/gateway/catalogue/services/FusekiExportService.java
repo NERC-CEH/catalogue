@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.exports.CatalogueExportService;
+import uk.ac.ceh.gateway.catalogue.exports.DescriptionCache;
 import uk.ac.ceh.gateway.catalogue.exports.DocumentsToTurtleService;
 import uk.ac.ceh.gateway.catalogue.exports.SourceGraphProvider;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
@@ -31,10 +32,11 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -55,6 +57,7 @@ public class FusekiExportService implements CatalogueExportService {
     private final VoidStatsService voidStatsService;
     private final MetadataListingService metadataListingService;
     private final List<SourceGraphProvider> sourceGraphProviders;
+    private final DescriptionCache descriptionCache;
     private volatile Date lastExported;
 
     public FusekiExportService(
@@ -67,7 +70,8 @@ public class FusekiExportService implements CatalogueExportService {
         @Value("${fuseki.password}") String fusekiPassword,
         VoidStatsService voidStatsService,
         MetadataListingService metadataListingService,
-        List<SourceGraphProvider> sourceGraphProviders
+        List<SourceGraphProvider> sourceGraphProviders,
+        DescriptionCache descriptionCache
     ) {
         log.info("Creating");
 
@@ -81,6 +85,7 @@ public class FusekiExportService implements CatalogueExportService {
         this.voidStatsService = voidStatsService;
         this.metadataListingService = metadataListingService;
         this.sourceGraphProviders = sourceGraphProviders;
+        this.descriptionCache = descriptionCache;
     }
 
     private record TurtleStats(long triples, Map<String, Long> classEntityCounts) {}
@@ -105,25 +110,69 @@ public class FusekiExportService implements CatalogueExportService {
         post(baseUri, String.join("\n", catalogueTtls.values()));
         log.info("Posted public metadata documents as ttl to {}", fusekiUrl);
 
-        // Parsed once and used twice: the VoID stats below, and the set of
-        // external concepts the vocabulary graphs describe. Parsing 20MB of
-        // Turtle a second time to answer the second question would be wasteful.
-        Map<String, Model> parsed = new LinkedHashMap<>();
-        catalogueTtls.forEach((id, ttl) -> parsed.put(id, parse(ttl)));
+        // One pass per catalogue. Both things the parse is needed for -- the IRIs
+        // the source graphs describe, and the VoID stats -- are taken from each
+        // model before the next is read, so it can be collected rather than held.
+        // Holding all of them across postSourceGraphs below meant every
+        // catalogue's graph stayed reachable for the length of that method's
+        // network phase, which is thousands of requests and minutes of wall
+        // clock. A Jena in-memory model runs well above the size of the Turtle
+        // it was read from, and the heap this runs on is capped at 750Mi.
+        Set<String> referencedIris = new HashSet<>();
+        Map<String, TurtleStats> statsByCatalogue = new LinkedHashMap<>();
+        List<String> unparseable = new ArrayList<>();
+        catalogueTtls.forEach((id, ttl) -> {
+            Optional<Model> parsed = parse(id, ttl);
+            if (parsed.isEmpty()) {
+                unparseable.add(id);
+                return;
+            }
+            Model model = parsed.get();
+            collectReferencedIris(model, referencedIris);
+            statsByCatalogue.put(id, turtleStats(model));
+            model.close();
+        });
 
-        postSourceGraphs(referencedIris(parsed.values()));
+        try {
+            if (unparseable.isEmpty()) {
+                postSourceGraphs(referencedIris);
+            } else {
+                // Every source graph describes only what the catalogue's graph
+                // cites, and each is written with a PUT that replaces it. A
+                // catalogue that did not parse contributes none of its IRIs, so
+                // going ahead would replace each graph with one describing fewer
+                // entities -- and no provider can notice, because the
+                // publish-whole-or-not-at-all guard measures completeness against
+                // this set, which is already the shortened one. Before the source
+                // graphs existed a parse failure here cost only the VoID stats.
+                log.warn(
+                    "Not publishing any source graph: the Turtle for {} could not be parsed, so "
+                        + "the referenced IRIs are incomplete and every graph would be replaced "
+                        + "with less than it already holds",
+                    unparseable);
+            }
+        } finally {
+            // One snapshot for the whole run. Every retriever used to write the
+            // entire cache to the share whenever it had fetched something, which
+            // is ten whole-file rewrites across the authorities of phases 2 to 5.
+            // In a finally so that a provider failing in a way postSourceGraphs
+            // does not catch still leaves the run's fetches recoverable.
+            descriptionCache.save();
+        }
 
         catalogueIds.stream()
             .filter(id -> !catalogueTtls.containsKey(id))
             .forEach(voidStatsService::remove);
-        parsed.forEach((id, model) -> {
-            TurtleStats ts = turtleStats(model);
+        // A catalogue that did not parse keeps the stats it already had. They are
+        // stale by a run; the zeroes this used to publish for it were simply
+        // wrong, and a VoID description claiming a dataset holds no triples is a
+        // worse answer than yesterday's count.
+        statsByCatalogue.forEach((id, ts) ->
             voidStatsService.update(id, new VoidStats(
                 metadataListingService.getPublicDocumentsOfCatalogue(id).size(),
                 ts.triples(),
                 ts.classEntityCounts()
-            ));
-        });
+            )));
         lastExported = new Date();
     }
 
@@ -167,31 +216,39 @@ public class FusekiExportService implements CatalogueExportService {
         return exported == null ? null : new Date(exported.getTime());
     }
 
-    private Model parse(String ttl) {
+    /**
+     * @return the parsed graph, or empty if the Turtle could not be read.
+     *         Distinguishing the two matters: this used to return an empty model
+     *         on failure, which is indistinguishable from a catalogue that holds
+     *         nothing, and the caller cannot make the right decision without
+     *         knowing which it had.
+     */
+    private Optional<Model> parse(String catalogueId, String ttl) {
         Model model = ModelFactory.createDefaultModel();
         try (InputStream is = new ByteArrayInputStream(ttl.getBytes(StandardCharsets.UTF_8))) {
             RDFDataMgr.read(model, is, Lang.TURTLE);
         } catch (Exception e) {
-            log.warn("Failed to parse exported Turtle: {}", e.getMessage());
-            return ModelFactory.createDefaultModel();
+            log.warn("Failed to parse the exported Turtle for {}: {}", catalogueId, e.getMessage());
+            return Optional.empty();
         }
-        return model;
+        return Optional.of(model);
     }
 
     /**
-     * Every IRI the catalogue's graph refers to. The vocabulary graphs describe
-     * only concepts something actually cites, so this is the input to that:
+     * Adds every IRI this catalogue's graph refers to. The source graphs describe
+     * only entities something actually cites, so this is the input to that:
      * objects rather than subjects, since a subject in this graph is one of our
      * own records or a node we minted.
+     *
+     * <p>Accumulates into the caller's set rather than returning one per model,
+     * so each model can be released as soon as it has been read.
      */
-    private static Set<String> referencedIris(Collection<Model> models) {
-        Set<String> iris = new HashSet<>();
-        models.forEach(model -> model.listObjects().forEachRemaining(object -> {
+    private static void collectReferencedIris(Model model, Set<String> into) {
+        model.listObjects().forEachRemaining(object -> {
             if (object.isURIResource()) {
-                iris.add(object.asResource().getURI());
+                into.add(object.asResource().getURI());
             }
-        }));
-        return iris;
+        });
     }
 
     private TurtleStats turtleStats(Model model) {

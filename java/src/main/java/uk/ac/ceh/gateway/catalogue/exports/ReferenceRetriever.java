@@ -151,9 +151,6 @@ public class ReferenceRetriever {
         log.info("{}: {} of {} fetched, {} from cache, {} deferred, {} temporarily unavailable, "
                 + "{} not held by the authority",
             source.graph(), fetched, iris.size(), cached, deferred, transientFailures, definitive);
-        if (fetched > 0) {
-            cache.save();
-        }
         return new Descriptions(combined, deferred, transientFailures);
     }
 

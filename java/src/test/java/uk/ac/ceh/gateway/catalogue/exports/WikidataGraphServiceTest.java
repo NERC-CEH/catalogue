@@ -47,12 +47,14 @@ class WikidataGraphServiceTest {
     private static final String SPECKLED_WOOD = GRAPH + "Q663181";
 
     @Mock private WikidataRetriever retriever;
+    private WithheldGraphLog withheldGraphLog;
     private WikidataGraphService service;
 
     @BeforeEach
     void setUp() {
-        service = new WikidataGraphService(
-            retriever, Clock.fixed(Instant.parse("2026-09-03T13:00:00Z"), ZoneOffset.UTC));
+        withheldGraphLog = new WithheldGraphLog();
+        service = new WikidataGraphService(retriever, withheldGraphLog,
+            Clock.fixed(Instant.parse("2026-09-03T13:00:00Z"), ZoneOffset.UTC));
     }
 
     private static Model labelled(String uri, String label) {

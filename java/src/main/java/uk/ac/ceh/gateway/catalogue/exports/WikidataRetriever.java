@@ -226,9 +226,6 @@ public class WikidataRetriever {
         log.info("Wikidata: {} of {} fetched in {} queries, {} from cache, {} deferred, "
                 + "{} temporarily unavailable, {} not held by Wikidata",
             fetched, iris.size(), queries, cached, deferred, transientFailures, absent);
-        if (fetched > 0) {
-            cache.save();
-        }
         return new Descriptions(combined, deferred, transientFailures);
     }
 

@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.exports;
 import org.apache.jena.rdf.model.Model;
 
 import java.time.Duration;
+import java.util.List;
 
 /**
  * One authority describing things the catalogue's records cite — a paper, a
@@ -36,6 +37,20 @@ interface ReferenceSource {
 
     /** A human-readable name, for the VoID description. */
     String title();
+
+    /** What the graph holds, in one line, for the VoID description. */
+    String description();
+
+    /**
+     * The namespaces of the terms {@link #describe} actually emits.
+     *
+     * <p>Declared by the mapper because the mapper is the only thing that knows:
+     * these four graphs share no vocabulary at all — Crossref's works are
+     * {@code dcterms} and {@code bibo}, GeoNames' places are {@code gn} and
+     * {@code wgs84_pos} — and the VoID description used to claim SKOS for every
+     * one of them.
+     */
+    List<String> vocabularies();
 
     /**
      * The licence the authority publishes under, or null where we have not
