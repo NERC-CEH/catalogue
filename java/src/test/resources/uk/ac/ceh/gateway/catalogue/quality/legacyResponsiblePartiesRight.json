@@ -1,0 +1,28 @@
+{
+  "responsibleParties": [
+    {
+      "role": "author",
+      "displayName": "Author, 0.",
+      "givenName": "0.",
+      "familyName": "Author",
+      "organisationName": "Organisation 0",
+      "email": "author0@test.ac.uk"
+    },
+    {
+      "role": "publisher",
+      "organisationName": "NERC EDS Environmental Information Data Centre",
+      "email": "info@eidc.ac.uk"
+    },
+    {
+      "role": "custodian",
+      "organisationName": "NERC EDS Environmental Information Data Centre",
+      "email": "info@eidc.ac.uk"
+    },
+    {
+      "role": "pointOfContact",
+      "displayName": "POC, 0.",
+      "organisationName": "Organisation 0",
+      "email": "poc0@test.ac.uk"
+    }
+  ]
+}

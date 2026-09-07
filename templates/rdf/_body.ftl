@@ -1,7 +1,8 @@
 :${id}
   dcterms:title <@displayLiteral title /> ;
 
-  <@identifiers resourceIdentifiers />
+  <@canonicalIdentifier resourceIdentifiers />
+  <@otherIdentifiers resourceIdentifiers />
 
   <#if datacitable?string=='true' && citation?has_content>
       <#assign citationString =  citation.authors?join(', ') + " (" + citation.year?string("0") +"). " + citation.title + ". " + citation.publisher + ". " + citation.url?trim>
@@ -23,7 +24,7 @@
     <#list boundingBoxes as extent>
      dcterms:spatial [
         a dcterms:Location ;
-        dcat:bbox "${extent.wkt}"^^geo:wktLiteral ;
+        dcat:bbox "${ttl.escape(extent.wkt)}"^^geo:wktLiteral ;
       ] ;
     </#list>
 
@@ -32,8 +33,8 @@
     </#if>
 
     <#--Points of contact-->
-    <#if pointsOfContact?has_content>
-      dcat:contactPoint <@contactList pointsOfContact "c" />  ;
+    <#if contactPoints?has_content>
+      dcat:contactPoint <@contactList contactPoints "c" />  ;
     </#if>
 
     <#--Publisher-->
@@ -42,14 +43,20 @@
     </#if>
 
     <#--Relationships-->
-    <#list jena.relationships(uri, "http://purl.org/dc/terms/isPartOf")>
+    <#-- dri-one #327: a target that is itself withdrawn/unpublished (available in the Jena
+         index, but not to the outside world) must not be linked to as if it resolved. -->
+    <#list jena.relationships(uri, "http://purl.org/dc/terms/isPartOf")?filter(item -> item.availability != "Deleted")>
       dcterms:isPartOf <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
-    <#list jena.relationships(uri, "http://purl.org/dc/terms/replaces")>
+    <#list jena.relationships(uri, "http://purl.org/dc/terms/replaces")?filter(item -> item.availability != "Deleted")>
       dcterms:replaces <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
-    <#list jena.relationships(uri, "http://purl.org/dc/terms/relation")>
+
+    <#list jena.relationships(uri, "http://purl.org/dc/terms/relation")?filter(item -> item.availability != "Deleted")>
       dcterms:relation <#items as item><${item.href}><#sep>, </#items> ;
+    </#list>
+    <#list jena.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises")?filter(item -> item.availability != "Deleted")>
+      doo:utilises <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
 
     <#--Citations-->
@@ -65,24 +72,39 @@
       sdo:variableMeasured <@opList /> ;
     </#if>
 
-    <#if funding?has_content>
+    <#if fileset?? && fileset?has_content && fileset?filter(fs -> fs.observedProperty?filter(op -> observedPropertyUri(op)?has_content)?has_content)?has_content>
+      sosa:observedProperty <@opSosaList /> ;
+    </#if>
+
+    <#if funding?filter(f -> fundingUri.hasContent(f))?has_content>
     prov:wasGeneratedBy <@fundingList /> ;
     </#if>
 
+    <#--
+      emitsRights tracks whether the type-specific include below pulls in
+      turtle/_rights.ftl, so that rightsDetail only describes a minted licence or
+      access-rights node when something actually references it. Set alongside each
+      branch rather than as a second list of type names, so the two cannot drift.
+    -->
+    <#assign emitsRights = false>
+    <#assign emitsFormats = false>
     <#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
+      <#assign emitsRights = true>
       <#include "turtle/_dataset.ftl">
     <#elseif type=='aggregate'|| type=='collection'|| type=='series'>
-      <#include "turtle/_aggregation.ftl">
+      <#include "turtle/_aggregation.ftl"> <#--no rights block-->
     <#elseif type=='service'>
+      <#assign emitsRights = true>
       <#include "turtle/_service.ftl">
     <#elseif type=='software' || type=='model'|| type=='computationalNotebook'>
+      <#assign emitsRights = true>
       <#include "turtle/_code.ftl">
     </#if>
 
     dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en> . <#-- leave here to close all the statements about the dataset -->
 
-    <#if pointsOfContact?has_content>
-      <@contactDetail pointsOfContact "c" />
+    <#if contactPoints?has_content>
+      <@contactDetail contactPoints "c" />
     </#if>
 
     <#if publishers?has_content>
@@ -109,22 +131,79 @@
       <@organisationRORs />
     </#if>
 
+    <#if emitsRights>
+      <@rightsDetail />
+    </#if>
+
+    <#if emitsFormats>
+      <@formatDetail />
+    </#if>
+
     <@fundingDetail />
   <#else>
     dcterms:description "This resource is no longer available please contact the Environmental Information Data Centre for more details" ;
     .
   </#if>
 
-  <#macro identifiers resourceIdentifiers>
-    <#list resourceIdentifiers >
-    dcterms:identifier <#t>
-      <#items as id>
-        "<#t>
-        <#if id.codeSpace?starts_with("doi")>
-          https://doi.org/<#t>
-        </#if>
-          ${id.code}"<#t>
-      <#sep>,</#sep><#t>
-      </#items> ;<#t>
-    </#list>
+  <#macro canonicalIdentifier resourceIdentifiers>
+
+    <#local domain = uri?replace(id, "")>
+    <#local canonicalId = resourceIdentifiers?filter(id -> id.code?starts_with(domain))?first!>
+
+    <#if canonicalId?has_content>
+      dcterms:identifier <${canonicalId.code}> ;
+    </#if>
+
+  </#macro>
+
+  <#macro otherIdentifiers resourceIdentifiers>
+
+    <#local domain = uri?replace(id, "")>
+    <#local dois = resourceIdentifiers?filter(id -> id.codeSpace?matches("doi"))!>
+    <#local otherIds = resourceIdentifiers?filter(id -> !id.code?starts_with(domain) && !(id.codeSpace?? && id.codeSpace?matches("doi")) )>
+
+    <#if dois?has_content>
+
+      <#list dois>
+        adms:identifier <#t>
+          <#items as id>
+            <https://doi.org/${id.code}><#t>
+          <#sep>,</#sep><#t>
+          </#items> ;<#t>
+      </#list>
+
+    </#if>
+
+    <#if otherIds?has_content>
+
+      <#list otherIds>
+        adms:identifier <#t>
+          <#items as id>
+            "<#if id.codeSpace?? && id.codeSpace?has_content && !id.codeSpace?starts_with("http")>${ttl.escape(id.codeSpace)}/</#if>${ttl.escape(id.code)}"<#t>
+          <#sep>,</#sep><#t>
+          </#items> ;<#t>
+      </#list>
+
+    </#if>
+
+  </#macro>
+
+
+  <#macro idSameAs resourceIdentifiers>
+
+    <#local domain = uri?replace(id, "")>
+    <#local otherIds = resourceIdentifiers?filter(id -> !id.code?starts_with(domain) && !(id.codeSpace?? && id.codeSpace?matches("doi")) )>
+
+    <#if otherIds?has_content>
+
+      <#list otherIds>
+        adms:identifier <#t>
+          <#items as id>
+            "<#if id.codeSpace?? && id.codeSpace?has_content && !id.codeSpace?starts_with("http")>${ttl.escape(id.codeSpace)}/</#if>${ttl.escape(id.code)}"<#t>
+          <#sep>,</#sep><#t>
+          </#items> ;<#t>
+      </#list>
+
+    </#if>
+
   </#macro>

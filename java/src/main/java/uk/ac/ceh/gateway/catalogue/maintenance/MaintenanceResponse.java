@@ -22,6 +22,8 @@ public class MaintenanceResponse {
     private int indexedMapFilesCount;
     private DataRevision<CatalogueUser> latestRevision;
     private Date lastOptimized;
+    private boolean exportsAvailable;
+    private Date lastExported;
 
     public MaintenanceResponse addMessage(String message) {
         messages.add(message);

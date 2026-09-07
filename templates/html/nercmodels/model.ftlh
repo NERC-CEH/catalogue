@@ -269,14 +269,14 @@
               </div>
             </#if>
 
-            <#if responsibleParties?? && responsibleParties?has_content>
+            <#if contacts?? && contacts?has_content>
               <div>
                 <h2>Contacts</h2>
-                  <#list responsibleParties as responsibleParty>
-                    <dt>${responsibleParty.roleDisplayName?cap_first}</dt>
+                  <#list contacts as contact>
+                    <dt>${contact.roleDisplayName?cap_first}</dt>
                     <dd>
-                      <div class="responsibleParty">
-                        <@m.displayContact responsibleParty, true />
+                      <div class="contact">
+                        <@m.displayContact contact, true />
                       </div>
                     </dd>
                     </#list>

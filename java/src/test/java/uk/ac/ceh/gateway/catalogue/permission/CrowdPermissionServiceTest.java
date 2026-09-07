@@ -12,7 +12,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.Group;
@@ -23,6 +22,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +38,7 @@ import static org.mockito.BDDMockito.*;
 @ExtendWith(MockitoExtension.class)
 public class CrowdPermissionServiceTest {
     @Mock
-    private DataRepository<CatalogueUser> repo;
+    private CachedDataRepository cachedDataRepository;
     @Mock
     private DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     @Mock
@@ -90,8 +90,8 @@ public class CrowdPermissionServiceTest {
 
     @SneakyThrows
     private void configDocumentInfoMapper(MetadataInfo info) {
-        given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
-        given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
+        given(cachedDataRepository.getLatestRevisionId()).willReturn("revision");
+        given(cachedDataRepository.readAtRevision("revision", "test.meta")).willReturn(new byte[0]);
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(info);
     }
 
@@ -158,7 +158,7 @@ public class CrowdPermissionServiceTest {
 
         //then
         assertTrue(actual);
-        verify(repo, never()).getLatestRevision();
+        verify(cachedDataRepository, never()).getLatestRevisionId();
     }
 
     @Test
@@ -215,7 +215,7 @@ public class CrowdPermissionServiceTest {
     public void anonymousCanNotAccessUnknownRecord() {
         Assertions.assertThrows(PermissionDeniedException.class, () -> {
             //Given
-            given(repo.getData("revision", "test.meta")).willThrow(DataRepositoryException.class);
+            given(cachedDataRepository.readAtRevision("revision", "test.meta")).willThrow(DataRepositoryException.class);
 
             //When
             permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "revision", "VIEW");
@@ -230,7 +230,7 @@ public class CrowdPermissionServiceTest {
     public void anonymousCanAccessPublicRecord() {
         //Given
         //given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
-        given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
+        given(cachedDataRepository.readAtRevision("revision", "test.meta")).willReturn(new byte[0]);
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(publik());
 
         //When
@@ -246,7 +246,7 @@ public class CrowdPermissionServiceTest {
         //Given
         val namedUser = populateSecurityContextHolder("named");
         //given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
-        given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
+        given(cachedDataRepository.readAtRevision("revision", "test.meta")).willReturn(new byte[0]);
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(publik());
 
         //When
@@ -260,7 +260,7 @@ public class CrowdPermissionServiceTest {
     @Test
     public void anonymousCanNotAccessDraftRecord() {
         //Given
-        given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
+        given(cachedDataRepository.readAtRevision("revision", "test.meta")).willReturn(new byte[0]);
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(draft());
 
         //When
@@ -278,7 +278,7 @@ public class CrowdPermissionServiceTest {
 
         val metadataInfo = draft();
         metadataInfo.addPermission(Permission.VIEW, "username");
-        given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
+        given(cachedDataRepository.readAtRevision("revision", "test.meta")).willReturn(new byte[0]);
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(metadataInfo);
 
         //When
@@ -295,7 +295,7 @@ public class CrowdPermissionServiceTest {
         val metadataInfo = draft();
         metadataInfo.addPermission(Permission.VIEW, "group0");
         //given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
-        given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
+        given(cachedDataRepository.readAtRevision("revision", "test.meta")).willReturn(new byte[0]);
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(metadataInfo);
         given(groupStore.getGroups(namedUser)).willReturn(Collections.singletonList(new CrowdGroup("group0")));
 
@@ -312,7 +312,7 @@ public class CrowdPermissionServiceTest {
         //Given
         val namedUser = populateSecurityContextHolder("username");
         //given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
-        given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
+        given(cachedDataRepository.readAtRevision("revision", "test.meta")).willReturn(new byte[0]);
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(draft());
         given(groupStore.getGroups(namedUser)).willReturn(Collections.emptyList());
 

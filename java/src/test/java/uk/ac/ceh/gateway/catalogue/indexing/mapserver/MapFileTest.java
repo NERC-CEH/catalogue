@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
 import static org.mockito.BDDMockito.given;
 
@@ -162,5 +163,24 @@ class MapFileTest {
         mapfile.writeTo("27700", writer);
         //then
         assertThat(writer.toString(), equalToCompressingWhiteSpace(expected));
+    }
+
+    /**
+     * Without MAXSIZE, MapServer falls back to its own default of 4096, and a handful of
+     * concurrent full-size renders exhausts the container's memory (dri-one #288).
+     */
+    @Test
+    @SneakyThrows
+    void mapFileCapsRequestedImageSize() {
+        //given
+        val mapfile = new MapFile(config, "mapfile/service.map.ftl", List.of("27700"), doc);
+        val writer = new StringWriter();
+        givenExtent(doc);
+
+        //when
+        mapfile.writeTo("27700", writer);
+
+        //then
+        assertThat(writer.toString(), containsString("MAXSIZE 2048"));
     }
 }

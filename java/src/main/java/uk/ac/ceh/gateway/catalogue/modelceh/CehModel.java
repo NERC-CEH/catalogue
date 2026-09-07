@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.http.MediaType;
 
@@ -74,7 +75,8 @@ public class CehModel extends AbstractMetadataDocument implements WellKnownText 
         periodicReview;
 
     private List<VersionHistory> versionHistories;
-    private List<ResponsibleParty> responsibleParties;
+    @JsonAlias("responsibleParties")
+    private List<ResponsibleParty> contacts;
     private List<ProjectUsage> projectUsages;
 
     @Data
@@ -122,12 +124,12 @@ public class CehModel extends AbstractMetadataDocument implements WellKnownText 
 
     @JsonIgnore
     public List<ResponsibleParty> getSRO() {
-        return  filterResponsibleParty(responsibleParties, "owner");
+        return  filterResponsibleParty(contacts, "owner");
     }
 
     @JsonIgnore
     public List<ResponsibleParty> getOtherContacts() {
-        return excludeResponsibleParty(responsibleParties, "owner");
+        return excludeResponsibleParty(contacts, "owner");
     }
 
     @JsonIgnore

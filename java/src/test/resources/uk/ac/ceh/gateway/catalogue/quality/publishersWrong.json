@@ -1,17 +1,12 @@
 {
-  "responsibleParties": [
+  "publishers": [
     {
       "organisationName": "Organisation 0",
-      "email": "publisher0@example.com",
-      "role": "publisher"
+      "email": "publisher0@example.com"
     },
     {
       "organisationName": "Organisation 1",
-      "email": "publisher1@example.com",
-      "role": "publisher"
-    },
-    {
-      "role": "distributor"
+      "email": "publisher1@example.com"
     }
   ]
 }

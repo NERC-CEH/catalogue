@@ -24,6 +24,7 @@ import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataConflictException;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.publication.State;
@@ -37,6 +38,8 @@ import java.util.List;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
+import static org.springframework.http.HttpHeaders.ETAG;
+import static org.springframework.http.HttpHeaders.IF_MATCH;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -249,15 +252,71 @@ class ServiceAgreementControllerTest extends AbstractMvcTest {
             }
             """;
 
+        givenCurrentRevision("metaRev2:rawRev2");
+
         // when
         mvc.perform(put("/service-agreement/{id}", ID)
                 .content(requestBody)
                 .contentType(HAL_JSON)
+                .header(IF_MATCH, "\"metaRev1:rawRev1\"")
             )
             .andExpect(status().isOk())
             .andExpect(content().contentType(HAL_JSON))
+            .andExpect(header().string(ETAG, "\"metaRev2:rawRev2\""))
             .andExpect(content().json("{\"id\":\"test\",\"title\":\"Test Service Agreement\"}"));
 
+        // and the revision the editor held is the one checked against
+        verify(serviceAgreementService).update(
+            any(CatalogueUser.class), eq(ID), any(ServiceAgreement.class), eq("metaRev1:rawRev1"));
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    @DisplayName("a service-agreement update without If-Match is rejected with 428, not silently applied")
+    void updateServiceAgreementWithoutPreconditionIsRejected() {
+        givenUserCanEditServiceAgreement();
+        givenMetadataRecordExists();
+
+        mvc.perform(put("/service-agreement/{id}", ID)
+                .content("{\"id\":\"123\",\"title\":\"Test Service Agreement\"}")
+                .contentType(HAL_JSON)
+            )
+            .andExpect(status().isPreconditionRequired());
+
+        verify(serviceAgreementService, never()).update(any(), any(), any(), any());
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    @DisplayName("a stale service-agreement update is rejected with 409 echoing the unsaved submission")
+    void staleServiceAgreementUpdateConflicts() {
+        givenUserCanEditServiceAgreement();
+        givenMetadataRecordExists();
+        givenUpdateConflicts();
+
+        mvc.perform(put("/service-agreement/{id}", ID)
+                .content("{\"id\":\"123\",\"title\":\"Test Service Agreement\"}")
+                .contentType(HAL_JSON)
+                .header(IF_MATCH, "\"metaRevStale:rawRevStale\"")
+            )
+            .andExpect(status().isConflict());
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    @DisplayName("a service-agreement GET carries the current revision as its ETag")
+    void getServiceAgreementEmitsETag() {
+        givenUserCanViewServiceAgreement();
+        givenServiceAgreement();
+        givenServiceAgreementModel();
+        givenCurrentRevision("metaRev1:rawRev1");
+
+        mvc.perform(get("/service-agreement/{id}", ID).accept(HAL_JSON))
+            .andExpect(status().isOk())
+            .andExpect(header().string(ETAG, "\"metaRev1:rawRev1\""));
     }
 
     @Test
@@ -523,9 +582,24 @@ class ServiceAgreementControllerTest extends AbstractMvcTest {
         given(serviceAgreementService.update(
             any(CatalogueUser.class),
             eq(ID),
-            any(ServiceAgreement.class)
+            any(ServiceAgreement.class),
+            any()
         ))
             .willReturn(serviceAgreement);
+    }
+
+    private void givenCurrentRevision(String revision) {
+        given(serviceAgreementService.getRevisionToken(ID)).willReturn(revision);
+    }
+
+    private void givenUpdateConflicts() {
+        given(serviceAgreementService.update(
+            any(CatalogueUser.class),
+            eq(ID),
+            any(ServiceAgreement.class),
+            any()
+        ))
+            .willThrow(new MetadataConflictException("stale", serviceAgreement));
     }
 
     private void givenUserIsAdmin() {

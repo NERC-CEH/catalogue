@@ -7,6 +7,7 @@ import org.apache.solr.client.solrj.request.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.params.SolrParams;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -21,7 +22,9 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class SolrSearcherTest {
@@ -77,6 +80,33 @@ class SolrSearcherTest {
         );
 
         //then
+    }
+
+
+    @Test
+    @DisplayName("An unknown sortField is rejected before the query reaches Solr (dri-one #314)")
+    void unknownSortFieldIsRejectedWithoutQueryingSolr() {
+        //given
+        givenCatalogue();
+        givenFacets();
+
+        //when
+        assertThrows(InvalidSortFieldException.class, () -> searcher.search(
+            endpoint,
+            user,
+            term,
+            bbox,
+            spatialOperation,
+            page,
+            rows,
+            facetFilters,
+            catalogueKey,
+            "lastupdate",
+            sortOrder
+        ));
+
+        //then
+        verifyNoInteractions(solrClient);
     }
 
     @SneakyThrows

@@ -34,18 +34,17 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             "nonGeographicDataset",
             "service"
     );
-    private final Set<String> allowedEmails = ImmutableSet.of(
-            "enquiries@ceh.ac.uk",
-            "info@eidc.ac.uk"
-    );
     private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<>() {};
     private final DownloadUrlProperties downloadUrlProperties;
+    private final UriChecks uriChecks;
 
     public GeminiMetadataQualityService(
             @NonNull DocumentReader documentReader,
-            @NonNull DownloadUrlProperties downloadUrlProperties
+            @NonNull DownloadUrlProperties downloadUrlProperties,
+            @NonNull UriChecks uriChecks
     ) {
         this.documentReader = documentReader;
+        this.uriChecks = uriChecks;
         this.config = Configuration.defaultConfiguration()
             .jsonProvider(new JacksonJsonProvider())
             .mappingProvider(new JacksonMappingProvider())
@@ -53,6 +52,18 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         this.downloadUrlProperties = downloadUrlProperties;
         log.info("Creating");
     }
+
+    // Entries MUST be lowercase - checkPointOfContact lowercases before matching.
+    public static final Set<String> ALLOWED_EMAILS = Set.of(
+        "enquiries@ceh.ac.uk",
+        "cosmosuk@ceh.ac.uk",
+        "ecn@ceh.ac.uk",
+        "fdri@ceh.ac.uk",
+        "nrfa@ceh.ac.uk",
+        "pbms@ceh.ac.uk",
+        "poms@ceh.ac.uk",
+        "ukbms@ceh.ac.uk"
+    );
 
     @SneakyThrows
     public Results check(String id) {
@@ -73,7 +84,8 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
                     checkPublicationDate(parsedDoc, parsedMeta).stream(),
                     checkTemporalExtents(parsedDoc).stream(),
                     checkDownloadAndOrderLinks(parsedDoc).stream(),
-                    checkEmbargo(parsedDoc).stream()
+                    checkEmbargo(parsedDoc).stream(),
+                    checkUris(parsedDoc).stream()
                 ).flatMap(s -> s).toList();
                 return new Results(checks, id);
             } else {
@@ -235,6 +247,10 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
                 new TypeRef<List<Map<String, Double>>>() {}
         );
 
+        if (boundingBoxes.size() > 1) {
+            toReturn.add(new MetadataCheck("Only one bounding box is permitted", ERROR));
+        }
+
         boundingBoxes.forEach(boundingBox -> {
             boundingBox.forEach((_, value) -> {
                 if (BigDecimal.valueOf(value).scale() > 3) {
@@ -392,11 +408,21 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         return toReturn;
     }
 
+    private static final String CONTACT_PROPERTIES = "['organisationName','givenName','familyName','displayName','email']";
+
+    // Documents saved before EMC-700 still store every contact under 'responsibleParties', keyed by role.
+    private List<Map<String, String>> readContacts(DocumentContext parsed, String field, String legacyRole) {
+        if (parsed.read("$." + field, List.class) == null) {
+            return parsed.read(
+                    format("$.responsibleParties[*][?(@.role == '%s')].%s", legacyRole, CONTACT_PROPERTIES),
+                    typeRefStringString
+            );
+        }
+        return parsed.read(format("$.%s[*].%s", field, CONTACT_PROPERTIES), typeRefStringString);
+    }
+
     List<MetadataCheck> checkPublisher(DocumentContext parsed) {
-        val publishers = parsed.read(
-                "$.responsibleParties[*][?(@.role == 'publisher')].['organisationName','email']",
-                typeRefStringString
-        );
+        val publishers = readContacts(parsed, "publishers", "publisher");
         val toReturn = new ArrayList<>(checkAddress(publishers, "Publisher"));
         if (publishers.size() > 1) {
             toReturn.add(new MetadataCheck("There should be only ONE publisher", ERROR));
@@ -418,10 +444,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     }
 
     List<MetadataCheck> checkCustodian(DocumentContext parsed) {
-        val custodians = parsed.read(
-                "$.responsibleParties[*][?(@.role == 'custodian')].['organisationName','email']",
-                typeRefStringString
-                );
+        val custodians = readContacts(parsed, "custodians", "custodian");
         val toReturn = new ArrayList<>(checkAddress(custodians, "Custodian"));
         if (custodians.size() > 1) {
             toReturn.add(new MetadataCheck("There should be only ONE custodian", ERROR));
@@ -444,10 +467,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
 
     List<MetadataCheck> checkPointOfContact(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
-        val pocs = parsed.read(
-                "$.responsibleParties[*][?(@.role == 'pointOfContact')].['organisationName','givenName','familyName','displayName','email']",
-                typeRefStringString
-        );
+        val pocs = readContacts(parsed, "contactPoints", "pointOfContact");
         if (pocs.isEmpty()) {
             toReturn.add(new MetadataCheck("Point of contact is missing", ERROR));
         }
@@ -464,11 +484,19 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             toReturn.add(new MetadataCheck("Point of contact organisation name is missing", ERROR));
         }
 
+        // Depositors type addresses in any casing, so normalise before comparing:
+        // otherwise 'Sam@CEH.ac.uk' escapes the domain guard entirely and
+        // 'CosmosUK@ceh.ac.uk' fails to match the allow list.
         pocs.stream()
             .map(poc -> poc.get("email"))
             .flatMap(Stream::ofNullable)
-            .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk"))
-            .forEach(email -> toReturn.add(new MetadataCheck(format("Point of contact's email address is %s", email), ERROR)));
+            .filter(email -> {
+                val normalised = email.toLowerCase();
+                return normalised.endsWith("@ceh.ac.uk") && !ALLOWED_EMAILS.contains(normalised);
+            })
+            .forEach(email -> toReturn.add(
+                new MetadataCheck(
+                    format("Point of contact's  email address is %s", email), ERROR)));
 
         return toReturn;
     }
@@ -583,10 +611,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
 
     List<MetadataCheck> checkAuthors(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
-        val authors = parsed.read(
-                "$.responsibleParties[*][?(@.role == 'author')].['familyName','givenName','displayName','organisationName','email']",
-                typeRefStringString
-        );
+        val authors = readContacts(parsed, "authors", "author");
         if (authors.isEmpty()) {
             toReturn.add(new MetadataCheck("There are no authors", INFO));
         }
@@ -596,14 +621,18 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {
             toReturn.add(new MetadataCheck("Author's affiliation (organisation name) is missing", ERROR));
         }
+
         authors.stream()
             .map(author -> author.get("email"))
             .flatMap(Stream::ofNullable)
-            .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk") && !email.equals("info@eidc.ac.uk"))
+            .filter(email -> {
+                val normalised = email.toLowerCase();
+                return normalised.endsWith("@ceh.ac.uk") && !ALLOWED_EMAILS.contains(normalised);
+            })
             .forEach(email -> toReturn.add(new MetadataCheck(format("Author's email address is %s", email), ERROR)));
 
         return toReturn;
-    }
+        }
 
     private boolean fieldIsMissing(Map<String, String> map, String key) {
         return map == null
@@ -711,4 +740,62 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             "])].value";
         return parsed.read(testPath, List.class).isEmpty();
     }
+
+    /**
+     * Reports URIs in the record that are not in the form the RDF templates
+     * emit, so that an editor can correct the record itself. See
+     * {@link UriChecks}.
+     */
+    List<MetadataCheck> checkUris(DocumentContext parsed) {
+        return uriChecks.check(parsed, URI_FIELDS);
+    }
+
+    /**
+     * URI-bearing fields on a Gemini record, checked so that a malformed or
+     * non-canonical value gets reported to an editor.
+     *
+     * <p>Note these are <em>not</em> all emitted as RDF: {@code topicCategories},
+     * {@code supplemental} and {@code onlineResources} in particular do not appear in
+     * the templates under {@code templates/rdf/}. They are checked because a broken
+     * URI is worth correcting wherever it is used, not because it would break the
+     * linked data.
+     */
+    private static Map<String, String> uriFields() {
+        val fields = new LinkedHashMap<String, String>();
+        Stream.of(
+            "keywordsDiscipline",
+            "keywordsInstrument",
+            "keywordsPlace",
+            "keywordsProject",
+            "keywordsTheme",
+            "keywordsOther",
+            "topicCategories"
+        ).forEach(field -> fields.put("$." + field + "[*].uri", "Keyword URI"));
+
+        Stream.of(
+            "authors",
+            "contactPoints",
+            "publishers",
+            "custodians",
+            "distributorContacts",
+            "rightsHolders",
+            "contributors",
+            "otherContacts"
+        ).forEach(field -> {
+            fields.put("$." + field + "[*].nameIdentifier", "ORCID on " + field);
+            fields.put("$." + field + "[*].organisationIdentifier", "Organisation identifier on " + field);
+        });
+
+        fields.put("$.fileset[*].observedProperty[*].uri", "Observed property URI");
+        fields.put("$.funding[*].awardURI", "Funding award URI");
+        fields.put("$.incomingCitations[*].url", "Incoming citation URL");
+        fields.put("$.supplemental[*].url", "Supplemental link URL");
+        fields.put("$.onlineResources[*].url", "Online resource URL");
+        fields.put("$.useConstraints[*].uri", "Use constraint URI");
+        fields.put("$.licences[*].uri", "Licence URI");
+        fields.put("$.accessLimitation.uri", "Access limitation URI");
+        return Collections.unmodifiableMap(fields);
+    }
+
+    private static final Map<String, String> URI_FIELDS = uriFields();
 }

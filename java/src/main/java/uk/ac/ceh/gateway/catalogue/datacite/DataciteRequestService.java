@@ -18,6 +18,16 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 public class DataciteRequestService {
+
+    // Map contributor roles to values used by DataCite
+    private static final Map<String, String> CONTRIBUTOR_ROLE_MAP = Map.of(
+        "data-curator", "DataCurator",
+        "researcher", "Researcher",
+        "project-leader", "ProjectLeader",
+        "project-manager", "ProjectManager",
+        "workpackage-leader", "WorkPackageLeader"
+    );
+
     public List<DataciteRequest.Attributes.FundingReference> fundingDetails(List<Funding> funders) {
         return funders.stream()
             .map(funder -> {
@@ -215,7 +225,7 @@ public class DataciteRequestService {
                     schemeUri = "http://inspire.ec.europa.eu/registry/";
                 } else if (uri.matches("^https?://www\\.wikidata\\.org/entity/\\S+$")) {
                     subjectScheme = "Wikidata";
-                    schemeUri = "https://www.wikidata.org/";
+                    schemeUri = "http://www.wikidata.org/";
                 } else if (uri.matches("^https?://sws\\.geonames\\.org/\\S+$")) {
                     subjectScheme = "Geonames";
                     schemeUri = "http://www.geonames.org/";
@@ -273,11 +283,12 @@ public class DataciteRequestService {
                 contacts.add(dataciteContactHelper(author, "creator", null));
             }
         } else if (contactType.equals("contributor")) {
-            if (!document.getPointsOfContact().isEmpty()
+            if (!document.getContactPoints().isEmpty()
                 || !document.getRightsHolders().isEmpty()
-                || !document.getCustodians().isEmpty()) {
+                || !document.getCustodians().isEmpty()
+                || !document.getContributors().isEmpty()) {
 
-                for (ResponsibleParty poc : document.getPointsOfContact()) {
+                for (ResponsibleParty poc : document.getContactPoints()) {
                     contacts.add(dataciteContactHelper(poc, "contributor", "ContactPerson"));
                 }
                 for (ResponsibleParty rh : document.getRightsHolders()) {
@@ -286,6 +297,18 @@ public class DataciteRequestService {
                 for (ResponsibleParty custodian : document.getCustodians()) {
                     contacts.add(dataciteContactHelper(custodian, "contributor", "HostingInstitution"));
                 }
+                for (ResponsibleParty contributor : document.getContributors()) {
+                    String role = CONTRIBUTOR_ROLE_MAP.getOrDefault(
+                        contributor.getContributorRole(),
+                        "Other"
+                    );
+
+                    contacts.add(dataciteContactHelper(
+                        contributor,
+                        "contributor",
+                        role
+                    ));
+                }                
             }
         }
         return contacts;

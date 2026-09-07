@@ -1,0 +1,74 @@
+<https://id.crossref.org/issn/0048-9697>
+        a       <http://purl.org/ontology/bibo/Journal> ;
+        <http://prismstandard.org/namespaces/basic/2.1/issn>
+                "0048-9697" ;
+        <http://purl.org/dc/terms/title>
+                "Science of The Total Environment" ;
+        <http://purl.org/ontology/bibo/issn>
+                "0048-9697" ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                "urn:issn:0048-9697" .
+
+<https://id.crossref.org/contributor/melike-nese-tezel-35fb86esh6jwt>
+        a       <http://xmlns.com/foaf/0.1/Person> ;
+        <http://xmlns.com/foaf/0.1/familyName>
+                "Tezel" ;
+        <http://xmlns.com/foaf/0.1/givenName>
+                "Melike Nese" ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Melike Nese Tezel" .
+
+<https://id.crossref.org/contributor/nesimi-ozkurt-35fb86esh6jwt>
+        a       <http://xmlns.com/foaf/0.1/Person> ;
+        <http://xmlns.com/foaf/0.1/familyName>
+                "Ozkurt" ;
+        <http://xmlns.com/foaf/0.1/givenName>
+                "Nesimi" ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Nesimi Ozkurt" .
+
+<https://id.crossref.org/contributor/s-sinan-keskin-35fb86esh6jwt>
+        a       <http://xmlns.com/foaf/0.1/Person> ;
+        <http://xmlns.com/foaf/0.1/familyName>
+                "Keskin" ;
+        <http://xmlns.com/foaf/0.1/givenName>
+                "S. Sinan" ;
+        <http://xmlns.com/foaf/0.1/name>
+                "S. Sinan Keskin" .
+
+<https://id.crossref.org/contributor/deniz-sari-35fb86esh6jwt>
+        a       <http://xmlns.com/foaf/0.1/Person> ;
+        <http://xmlns.com/foaf/0.1/familyName>
+                "Sari" ;
+        <http://xmlns.com/foaf/0.1/givenName>
+                "Deniz" ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Deniz Sari" .
+
+<http://dx.doi.org/10.1016/j.scitotenv.2019.134044>
+        <http://prismstandard.org/namespaces/basic/2.1/doi>
+                "10.1016/j.scitotenv.2019.134044" ;
+        <http://prismstandard.org/namespaces/basic/2.1/startingPage>
+                "134044" ;
+        <http://prismstandard.org/namespaces/basic/2.1/volume>
+                "696" ;
+        <http://purl.org/dc/terms/creator>
+                <https://id.crossref.org/contributor/nesimi-ozkurt-35fb86esh6jwt> , <https://id.crossref.org/contributor/deniz-sari-35fb86esh6jwt> , <https://id.crossref.org/contributor/s-sinan-keskin-35fb86esh6jwt> , <https://id.crossref.org/contributor/melike-nese-tezel-35fb86esh6jwt> ;
+        <http://purl.org/dc/terms/date>
+                "2019-12"^^<http://www.w3.org/2001/XMLSchema#gYearMonth> ;
+        <http://purl.org/dc/terms/identifier>
+                "10.1016/j.scitotenv.2019.134044" ;
+        <http://purl.org/dc/terms/isPartOf>
+                <https://id.crossref.org/issn/0048-9697> ;
+        <http://purl.org/dc/terms/publisher>
+                "Elsevier BV" ;
+        <http://purl.org/dc/terms/title>
+                "Combined NOx and noise pollution from road traffic in Trabzon, Turkey" ;
+        <http://purl.org/ontology/bibo/doi>
+                "10.1016/j.scitotenv.2019.134044" ;
+        <http://purl.org/ontology/bibo/pageStart>
+                "134044" ;
+        <http://purl.org/ontology/bibo/volume>
+                "696" ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <doi:10.1016/j.scitotenv.2019.134044> , <info:doi/10.1016/j.scitotenv.2019.134044> .

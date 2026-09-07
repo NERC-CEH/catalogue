@@ -66,15 +66,20 @@
         </#if>
 
         <#if keywords?? >
+          <#-- Blank entries deserialise to a present-but-blank object, so ?? and ?size still count
+               them; filter before listing or the row renders with no content. -->
+          <#assign populatedKeywords = keywords?filter(it -> it.value?has_content)>
+          <#if populatedKeywords?has_content>
           <#assign keywordLabel = "Keyword">
-          <#if keywords?size gte 2>
+          <#if populatedKeywords?size gte 2>
             <#assign keywordLabel = "Keywords">
           </#if>
             <@displaykey keywordLabel>
-              <#list keywords as keyword>
+              <#list populatedKeywords as keyword>
                 ${keyword.value}<#sep>, </#sep>
               </#list>
             </@displaykey>
+          </#if>
         </#if>
 
         <#if infrastructureScale?? || geometry?? >

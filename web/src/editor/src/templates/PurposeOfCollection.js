@@ -1,7 +1,7 @@
 import _ from 'underscore'
 
 export default _.template(`
-<select data-name="value" class="purposeOfCollection">
+<select data-name="value" class="form-select purposeOfCollection">
   <option value="contractual">Contractual obligation</option>
   <option value="dataCollection">Data collection</option>
   <option value="dataSeries">Data series</option>

@@ -215,10 +215,14 @@ public class RoCrateTest {
                 Keyword.builder().value("Bangor").URI("https://example.com/bangor").build()
             ));
 
-            // authors and points of contact
-            gemini.setResponsibleParties(List.of(
-                ResponsibleParty.builder().role("author").givenName("Donald").familyName("Duck").email("donald@example.com").nameIdentifier("https://orcid.org/0000-1234-5678-9101").build(),
-                ResponsibleParty.builder().role("pointOfContact").organisationName("TMSP").email("pocs@example.com").organisationIdentifier("https://example.com/TMSP").build()
+            // authors
+            gemini.setAuthors(List.of(
+                ResponsibleParty.builder().givenName("Donald").familyName("Duck").email("donald@example.com").nameIdentifier("https://orcid.org/0000-1234-5678-9101").build()
+            ));
+
+            //  points of contact
+            gemini.setContactPoints(List.of(
+                ResponsibleParty.builder().organisationName("TMSP").email("pocs@example.com").organisationIdentifier("https://example.com/TMSP").build()
             ));
 
             // incoming citations

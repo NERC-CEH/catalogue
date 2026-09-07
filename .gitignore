@@ -44,3 +44,8 @@ DevStartupController.java
 /java/.factorypath
 /.worktreeinclude
 /.playwright-mcp/
+/docs/superpowers/
+/docs/metadata-editor-optimistic-locking.md
+/docs/datastore-performance-design.md
+/docs/production-performance-diagnostics.md
+/.claude/

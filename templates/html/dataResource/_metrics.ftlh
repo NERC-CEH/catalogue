@@ -9,13 +9,14 @@
   downloadUrl = ""
 >
 
+  <#-- One call each: the previous form called both methods twice (once to test, once to assign),
+       doubling the queries against a SQLite database on a network share. An unavailable count is
+       null, so it falls back to the 0 assigned above and the usage block below is simply omitted. -->
   <#if metrics??>
-    <#if metrics.totalViews(id)??>
-        <#assign totalViews = metrics.totalViews(id)>
-    </#if>
-    <#if metrics.totalDownloads(id)??>
-      <#assign totalDownloads = metrics.totalDownloads(id)>
-    </#if>
+    <#assign
+      totalViews = metrics.totalViews(id)!0
+      totalDownloads = metrics.totalDownloads(id)!0
+    >
   </#if>
 
   <#if onlineResources?? >

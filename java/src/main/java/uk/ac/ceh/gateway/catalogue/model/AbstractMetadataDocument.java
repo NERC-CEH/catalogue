@@ -34,6 +34,8 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
     private List<Link> relRequires;
     private List<Link> relPartOf;
     private List<Link> relHasPart;
+    private List<Link> relHasOutput;
+    private List<Link> relIsOutputOf;
     private List<Link> relAll;
     private List<Link> relReplaces;
     private List<Link> relSource;
@@ -97,6 +99,15 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
             .orElseGet(Collections::emptyList);
     }
 
+    public List<Link> getRelHasOutput() {
+        return Optional.ofNullable(relHasOutput)
+            .orElseGet(Collections::emptyList);
+    }
+    public List<Link> getRelIsOutputOf() {
+        return Optional.ofNullable(relIsOutputOf)
+            .orElseGet(Collections::emptyList);
+    }
+
     public List<Link> getRelAll() {
         return Optional.ofNullable(relAll)
             .orElseGet(Collections::emptyList);
@@ -156,18 +167,18 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
         );
     }
 
-    public List<ResponsibleParty> filterResponsibleParty(List<ResponsibleParty> responsibleParties, String filterVal) {
+    public List<ResponsibleParty> filterResponsibleParty(List<ResponsibleParty> contacts, String filterVal) {
         return CollectionFilter.filterByProperty(
-            responsibleParties,
+            contacts,
             ResponsibleParty::getRole,
             filterVal,
             false
         );
     }
 
-    public List<ResponsibleParty> excludeResponsibleParty(List<ResponsibleParty> responsibleParties, String filterVal) {
+    public List<ResponsibleParty> excludeResponsibleParty(List<ResponsibleParty> contacts, String filterVal) {
         return CollectionFilter.filterByProperty(
-            responsibleParties,
+            contacts,
             ResponsibleParty::getRole,
             filterVal,
             true

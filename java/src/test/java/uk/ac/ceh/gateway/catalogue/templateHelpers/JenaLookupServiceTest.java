@@ -157,6 +157,57 @@ public class JenaLookupServiceTest {
     }
 
     @Test
+    public void inverseRelationshipGeometryNotDuplicatedByMultipleIdentifiers() {
+        //Given a facility that, like every indexed record, carries its own dcterms:identifier
+        // plus a further identifier for each resourceIdentifier
+        jenaTdb.begin(ReadWrite.WRITE);
+        Model triples = jenaTdb.getDefaultModel();
+        String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
+        triples.add(createResource("http://monitoringFacility"), DCTERMS_TITLE, "Monitoring Facility");
+        triples.add(createResource("http://monitoringFacility"), METADATA_STATUS, "published");
+        triples.add(createResource("http://monitoringFacility"), DCTERMS_ISPARTOF, createResource("http://network1"));
+        triples.add(createResource("http://monitoringFacility"), DCTERMS_TYPE, "Monitoring Facility");
+        triples.add(createResource("http://monitoringFacility"), SF_GEOMETRY, geometryString);
+        triples.add(createResource("http://monitoringFacility"), DCTERMS_IDENTIFIER, "monitoringFacility");
+        triples.add(createResource("http://monitoringFacility"), DCTERMS_IDENTIFIER, "http://vocabs#UKEOF1234");
+        jenaTdb.commit();
+
+        //When
+        List<Link> actual = service.inverseRelationships("http://network1", DCTERMS_ISPARTOF.toString());
+
+        //Then the geometry must be the single GeoJSON value, not one copy per identifier
+        assertThat("Should be 1 Link", actual.size(), equalTo(1));
+        assertThat(
+            "Geometry should not be repeated once per identifier",
+            actual.stream().findFirst().orElseThrow().getGeometry(),
+            equalTo(geometryString)
+        );
+    }
+
+    @Test
+    public void inverseRelationshipCombinedGeometriesWithMultipleIdentifiers() throws JacksonException {
+        //Given a facility with a geometry and more than one dcterms:identifier
+        jenaTdb.begin(ReadWrite.WRITE);
+        Model triples = jenaTdb.getDefaultModel();
+        String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
+        String combinedGeometry = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\",\"title\":\"Monitoring Facility\",\"link\":\"http://monitoringFacility\",\"availability\":\"\",\"locationConfidential\":false},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}]}";
+        triples.add(createResource("http://monitoringFacility"), DCTERMS_TITLE, "Monitoring Facility");
+        triples.add(createResource("http://monitoringFacility"), METADATA_STATUS, "published");
+        triples.add(createResource("http://monitoringFacility"), DCTERMS_ISPARTOF, createResource("http://network1"));
+        triples.add(createResource("http://monitoringFacility"), DCTERMS_TYPE, "Monitoring Facility");
+        triples.add(createResource("http://monitoringFacility"), SF_GEOMETRY, geometryString);
+        triples.add(createResource("http://monitoringFacility"), DCTERMS_IDENTIFIER, "monitoringFacility");
+        triples.add(createResource("http://monitoringFacility"), DCTERMS_IDENTIFIER, "http://vocabs#UKEOF1234");
+        jenaTdb.commit();
+
+        //When
+        String actual = service.inverseRelationshipCombinedGeometries("http://network1", DCTERMS_ISPARTOF.toString());
+
+        //Then
+        assertThat("Generates correct combined GeoJSON", actual, equalTo(combinedGeometry));
+    }
+
+    @Test
     public void relationshipCombinedGeometriesWithOwner() throws JacksonException {
         //Given
         jenaTdb.begin(ReadWrite.WRITE);

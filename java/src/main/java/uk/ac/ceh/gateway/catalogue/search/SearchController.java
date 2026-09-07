@@ -76,7 +76,7 @@ public class SearchController {
         description = "Returns paginated metadata records matching the given term across all catalogues.",
         responses = {
             @ApiResponse(responseCode = "200", description = "Search results"),
-            @ApiResponse(responseCode = "400", description = "Invalid parameter (e.g. unrecognised spatial operator)")
+            @ApiResponse(responseCode = "400", description = "Invalid parameter (e.g. unrecognised spatial operator, facet field or sort field)")
         }
     )
     @CrossOrigin
@@ -105,7 +105,11 @@ public class SearchController {
         @Parameter(description = "Facet filters in `field|value` format, URL-encoded. Repeatable. Example: `topic%7CHydrology`.")
         @RequestParam(value=FACET_QUERY_PARAM, defaultValue = "")
         List<FacetFilter> facetFilters,
-        @Parameter(description = "Field to sort by. Omit for relevance ranking.")
+        @Parameter(description = "Field to sort by. Omit for relevance ranking.",
+            schema = @Schema(allowableValues = {
+                "description", "incomingCitationCount", "infrastructureCapabilities", "lineage",
+                "metadataDate", "objectives", "publicationDate", "title"
+            }))
         @RequestParam(value=SORT_FIELD_PARAM, required = false)
         String sortField,
         @Parameter(description = "Sort direction.",
@@ -135,7 +139,7 @@ public class SearchController {
         description = "Returns paginated metadata records matching the given term, scoped to a single catalogue.",
         responses = {
             @ApiResponse(responseCode = "200", description = "Search results"),
-            @ApiResponse(responseCode = "400", description = "Invalid parameter (e.g. unrecognised spatial operator)")
+            @ApiResponse(responseCode = "400", description = "Invalid parameter (e.g. unrecognised spatial operator, facet field or sort field)")
         }
     )
     @CrossOrigin
@@ -167,7 +171,11 @@ public class SearchController {
         @Parameter(description = "Facet filters in `field|value` format, URL-encoded. Repeatable. Example: `topic%7CHydrology`.")
         @RequestParam(value=FACET_QUERY_PARAM, defaultValue = "")
         List<FacetFilter> facetFilters,
-        @Parameter(description = "Field to sort by. Omit for relevance ranking.")
+        @Parameter(description = "Field to sort by. Omit for relevance ranking.",
+            schema = @Schema(allowableValues = {
+                "description", "incomingCitationCount", "infrastructureCapabilities", "lineage",
+                "metadataDate", "objectives", "publicationDate", "title"
+            }))
         @RequestParam(value=SORT_FIELD_PARAM, required = false)
         String sortField,
         @Parameter(description = "Sort direction.",

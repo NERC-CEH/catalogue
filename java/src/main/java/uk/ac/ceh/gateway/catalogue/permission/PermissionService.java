@@ -46,5 +46,11 @@ public interface PermissionService {
 
     boolean userIsAdmin();
 
+    /**
+     * Whether the current user may delete any record regardless of that record's own permissions.
+     * Used to gate the admin delete form and the link to it; the form itself is also {@code @Secured}.
+     */
+    boolean userCanAdminDelete();
+
     List<Group> getGroupsForUser(CatalogueUser user);
 }

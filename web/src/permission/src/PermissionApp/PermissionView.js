@@ -1,5 +1,6 @@
 import Backbone from 'backbone'
 import _ from 'underscore'
+import Swal from 'sweetalert2'
 import template from './PermissionsTemplate'
 import { IdentityPermission, IdentityPermissionView } from '../IdentityPermission'
 
@@ -46,7 +47,24 @@ export default Backbone.View.extend({
         this.model.trigger('save:success', 'Save successful')
       },
       error: (model, response) => {
+        if (response.status === 409) {
+          this.model.trigger('save:error', 'These permissions were changed by another user since you opened this page. Your changes were not saved - reload before trying again.')
+          Swal.fire({
+            title: 'Edit conflict',
+            html: '<p>These permissions were changed by another user since you opened this page. ' +
+                  'Your changes were not saved. Reload before trying again.</p>',
+            icon: 'warning',
+            confirmButtonText: 'Close'
+          })
+          return
+        }
         this.model.trigger('save:error', `Error saving permission: ${response.status} (${response.statusText})`)
+        Swal.fire({
+          title: `Server response: ${response.status} ${response.statusText}`,
+          html: '<p>There was a problem saving these permissions.</p>',
+          icon: 'error',
+          confirmButtonText: 'Close'
+        })
       }
     }
     )

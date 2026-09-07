@@ -53,7 +53,40 @@
           <input class="btn btn-outline-secondary" type="submit" value="Rebuild">
         </form>
       </div>
+
+      <#-- Only advertised when the exports profile is active, i.e. CatalogueExportService exists. -->
+      <#if exportsAvailable>
+        <div class="my-5">
+          <p><b>Fuseki Export</b>
+            <span class="ms-5">
+              <#if lastExported??>
+                Last exported ${lastExported?datetime}
+              <#else>
+                Never exported
+              </#if>
+            </span>
+          </p>
+          <form method="POST" action="/maintenance/exports/fuseki">
+            <input class="btn btn-outline-secondary" type="submit" value="Export to Fuseki">
+          </form>
+        </div>
+      </#if>
     </div>
+
+    <#-- Only advertised to holders of ROLE_CIG_ADMIN_DELETE. The page itself is @Secured, so this is
+         about not offering a capability the user does not have. -->
+    <#if permission.userCanAdminDelete()>
+      <div class="mt-5">
+        <h2>Records</h2>
+        <div class="my-5">
+          <p>
+            Delete a record in any catalogue, ignoring its own permissions. For records orphaned by a
+            retired document type or catalogue.
+          </p>
+          <a class="btn btn-outline-danger" href="/maintenance/documents/delete">Delete a record</a>
+        </div>
+      </div>
+    </#if>
 
   </div>
 </@skeleton.master>

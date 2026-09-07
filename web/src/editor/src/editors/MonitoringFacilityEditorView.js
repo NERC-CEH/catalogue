@@ -136,7 +136,13 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'keywordsParameters',
           label: 'Parameters measured',
-          ObjectInputView: KeywordVocabularyView
+          ObjectInputView: KeywordVocabularyView,
+          vocabs: {
+            ukceh: ['envThes', 'gemet'],
+            eidc: ['envThes', 'gemet'],
+            ukeof: ['envThes', 'gemet']
+          },
+          multiline: true
         }),
 
         new ParentView({
@@ -144,6 +150,11 @@ export default EditorView.extend({
           modelAttribute: 'keywords',
           label: 'Keywords',
           ObjectInputView: KeywordVocabularyView,
+          vocabs: {
+            ukceh: ['envThes', 'gemet'],
+            eidc: ['envThes', 'gemet'],
+            ukeof: ['envThes', 'gemet']
+          },
           multiline: true
         })
       ]
@@ -155,7 +166,7 @@ export default EditorView.extend({
         new PredefinedParentView({
           model: this.model,
           ModelType: Contact,
-          modelAttribute: 'pointsOfContact',
+          modelAttribute: 'contacts',
           label: 'Point of contact',
           ObjectInputView: ContactView,
           multiline: true,
@@ -220,6 +231,7 @@ export default EditorView.extend({
           modelAttribute: 'relationships',
           label: 'Relationships',
           ObjectInputView: RelationshipView,
+          parentModel: this.model,
           multiline: true,
           options: [
             { value: 'http://purl.org/dc/terms/isPartOf', label: 'Is part of' },

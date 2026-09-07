@@ -1,0 +1,10 @@
+{
+  "contactPoints": [
+    {
+      "role": "pointOfContact",
+      "displayName": "Jones, S.",
+      "organisationName": "UK Centre for Ecology & Hydrology",
+      "email": "Sam.Jones@CEH.ac.uk"
+    }
+  ]
+}

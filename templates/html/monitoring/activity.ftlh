@@ -11,8 +11,8 @@
 
   </#if>
 
-  <@m.relationships "https://digital.ceh.ac.uk/ontology/doo/uses" "Uses these facilities/networks"/>
-  <@m.inverseRelationships  "https://digital.ceh.ac.uk/ontology/doo/triggers"  "Set up for these programmes"/>
+  <@m.relationships relUseNetworkOrFacility "Uses these facilities/networks"/>
+  <@m.inverseRelationships relSetupForProgramme "Set up for these programmes"/>
 
 </@m.base>
 

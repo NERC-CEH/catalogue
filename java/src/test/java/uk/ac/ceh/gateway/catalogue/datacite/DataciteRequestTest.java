@@ -169,7 +169,7 @@ public class DataciteRequestTest {
 
     @Test
     void testExtractSubjects() {
-        Keyword k1 = Keyword.builder().value("climate").URI("https://www.wikidata.org/entity/Q123").build();
+        Keyword k1 = Keyword.builder().value("climate").URI("http://www.wikidata.org/entity/Q123").build();
         Keyword k2 = Keyword.builder().value("").URI("https://inspire.ec.europa.eu/theme/abc").build();
         Keyword k3 = Keyword.builder().value("mountains").URI("").build();
         List<Subject> subjects = attributes.extractSubjects(List.of(k1, k2, k3));
@@ -210,11 +210,26 @@ public class DataciteRequestTest {
             .displayName("Patrick Stewart")
             .honorificPrefix(null)
             .familyName(null).build();
-        when(docMock.getPointsOfContact()).thenReturn(List.of(contact));
+        when(docMock.getContactPoints()).thenReturn(List.of(contact));
         when(docMock.getRightsHolders()).thenReturn(List.of(contact));
         when(docMock.getCustodians()).thenReturn(List.of(contact));
         List<DataciteContact> contributors = attributes.dataciteContact(docMock, "contributor");
         assertEquals(3, contributors.size());
+    }
+
+    @Test
+    void testDataciteContactContributorsField() {
+        ResponsibleParty contributor = ResponsibleParty.builder()
+            .displayName("Jean-Luc Picard")
+            .honorificPrefix(null)
+            .familyName(null)
+            .contributorRole("data-curator")
+            .build();
+        when(docMock.getContributors()).thenReturn(List.of(contributor));
+
+        List<DataciteContact> contributors = attributes.dataciteContact(docMock, "contributor");
+        assertEquals(1, contributors.size());
+        assertEquals("DataCurator", contributors.getFirst().contributorType());
     }
 
     @Test

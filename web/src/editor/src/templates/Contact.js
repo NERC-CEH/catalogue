@@ -6,7 +6,24 @@ export default _.template(`
         <label for="contacts<%= data.index %>Role">Role</label>
     </div>
     <div class="col-lg-10">
-        <select data-name='role' class="role-select" id="contacts<%= data.index %>Role"></select>
+        <select data-name='role' class="form-select role-select" id="contacts<%= data.index %>Role"></select>
+    </div>
+</div>
+<div class="contributorRole row">
+    <div class="col-lg-2">
+        <label for="contacts<%= data.index %>ContributorRole">Contributor role</label>
+    </div>
+    <div class="col-lg-10">
+        <select data-name='contributorRole' class="contributorRole-select form-select" id="contacts<%= data.index %>ContributorRole">
+          <option value="">Select a role</option>
+          <option value="data-creator">Data creator</option>
+          <option value="data-curator">Data curator</option>
+          <option value="collaborator">Collaborator</option>
+          <option value="researcher">Researcher</option>
+          <option value="technician">Technician</option>
+          <option value="project-leader">Project leader</option>
+          <option value="workpackage-leader">Workpackage leader</option>
+        </select>
     </div>
 </div>
 <div class="row organisation">
@@ -33,7 +50,7 @@ export default _.template(`
         <div class="row g-0">
           <div class="col-lg-4 pe-1">
           <div class="form-floating">
-            <select data-name="honorificPrefix" class="honorificPrefix" id="contacts<%= data.index %>honorificPrefix">
+            <select data-name="honorificPrefix" class="form-select honorificPrefix" id="contacts<%= data.index %>honorificPrefix">
               <option value="">--none--</option>
               <option value="Dr">Dr</option>
               <option value="Miss">Miss</option>

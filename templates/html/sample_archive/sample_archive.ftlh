@@ -49,7 +49,7 @@
             <#if archiveLocations?? && archiveLocations?has_content>
               <@key "Location${(archiveLocations?size > 1)?then('s', '')}">
                 <#list archiveLocations as contact>
-                  <div class="responsibleParty">
+                  <div class="contact">
                     <@func.displayContact contact, true, true />
                   </div>
                 </#list>
@@ -153,7 +153,7 @@
             <div class="col2">
               <p><strong>For further information about the ${title}, please contact</strong></p>
               <#list archiveContacts as contact>
-                <div class="responsibleParty">
+                <div class="contact">
                   <@func.displayContact contact, true, true />
                 </div>
               </#list>
@@ -169,7 +169,7 @@
           <#if metadataContacts?? && metadataContacts?has_content>
             <@key "Author of this record">
               <#list metadataContacts as contact>
-                <div class="responsibleParty">
+                <div class="contact">
                   <@func.displayContact contact, true, true />
                 </div>
               </#list>

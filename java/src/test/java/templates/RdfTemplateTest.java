@@ -25,6 +25,13 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.FormatUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.LicenceUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.KeywordUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
+import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabularySolrQueryService;
 
 import java.io.File;
 import java.io.StringReader;
@@ -93,6 +100,16 @@ public class RdfTemplateTest {
         objectMapper = JsonMapper.builder().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
         jena = mock(JenaLookupService.class);
         configuration.setSharedVariable("jena", jena);
+        val uriNormaliser = new UriNormaliser();
+        configuration.setSharedVariable("uriNormaliser", uriNormaliser);
+        configuration.setSharedVariable("contactUri", new ContactUri(uriNormaliser));
+        configuration.setSharedVariable("fundingUri", new FundingUri(uriNormaliser));
+        configuration.setSharedVariable("licenceUris", new LicenceUri());
+        configuration.setSharedVariable("formatUris", new FormatUri());
+        configuration.setSharedVariable(
+            "keywordUri",
+            new KeywordUri(uriNormaliser, mock(KeywordVocabularySolrQueryService.class))
+        );
     }
 
     @Nested
@@ -119,6 +136,10 @@ public class RdfTemplateTest {
             given(jena.relationships(geminiDocument.getUri(), "http://purl.org/dc/terms/relation")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/222212345").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/222254321").build()
+            ));
+            given(jena.relationships(geminiDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/utilises")).willReturn(List.of(
+                Link.builder().href("https://catalogue.ceh.ac.uk/id/333312345").build(),
+                Link.builder().href("https://catalogue.ceh.ac.uk/id/333354321").build()
             ));
 
             // when
@@ -149,6 +170,12 @@ public class RdfTemplateTest {
             Property varMeasured = model.createProperty("https://schema.org/variableMeasured");
             assertTrue(model.contains(subject, varMeasured, model.createResource("https://prop-a.example.com")));
             assertTrue(model.contains(subject, varMeasured, model.createResource("https://prop-b.example.com")));
+
+            // dri-one #326: sosa:observedProperty alongside sdo:variableMeasured for every
+            // observed property that already carries a uri
+            Property sosaObservedProperty = model.createProperty("http://www.w3.org/ns/sosa/observedProperty");
+            assertTrue(model.contains(subject, sosaObservedProperty, model.createResource("https://prop-a.example.com")));
+            assertTrue(model.contains(subject, sosaObservedProperty, model.createResource("https://prop-b.example.com")));
         }
 
         @Test

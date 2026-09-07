@@ -1,18 +1,17 @@
 <#if onlineResources??>
     <#assign signpostURLs = information + search>
 </#if>
-<#if distributorContacts??>
-    <#assign signpostDistributor = distributor>
+
+<#if distributors?has_content>
+    <#assign distributorName = distributors?first.organisationName >
+<#else>
+    <#assign distributorName = "a third party" >
 </#if>
+
 
 <div>
     <div>
-        This record describes NERC-funded data managed by
-        <#if signpostDistributor?has_content>
-            ${signpostDistributor?first.organisationName}
-        <#else>
-            a third party
-        </#if>
+        This record describes NERC-funded data managed by ${distributorName}
     </div>
 
     <#if signpostURLs?has_content>

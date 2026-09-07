@@ -1,6 +1,6 @@
 # Prometheus metrics
 
-The catalogue exports on the management port (8091) the endpoint
+The catalogue exports on the management port (8081) the endpoint
 `/actuator/prometheus` metrics for ingestion by a
 [Prometheus](https://prometheus.io/) service.  As well as the basic
 metrics provided by the [micrometer.io](https://micrometer.io/)

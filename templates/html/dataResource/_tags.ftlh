@@ -3,15 +3,22 @@
 </#if>
 
 <#if inspireThemes??>
+<#-- Keyword and InspireTheme apply nullToEmpty to every field, so an entry saved with nothing
+     filled in deserialises to a present-but-blank object that passes ?? and ?has_content. Filter
+     those out of the sequence rather than skipping them inside the loop, so <#sep> counts only
+     the entries that actually render. -->
+<#assign populatedThemes = inspireThemes?filter(it -> it.theme?has_content || it.uri?has_content)>
+<#if populatedThemes?has_content>
 <div class="row key-value">
-  <div class="col-sm-3 key">INSPIRE theme<#if inspireThemes?size gt 1>s</#if></div>
+  <div class="col-sm-3 key">INSPIRE theme<#if populatedThemes?size gt 1>s</#if></div>
   <div class="col-sm-9 value">
-    <#list inspireThemes?sort_by("theme") as inspireTheme>
+    <#list populatedThemes?sort_by("theme") as inspireTheme>
       <@displayLinkedKeyword inspireTheme.theme inspireTheme.uri?trim/>
       <#sep><br></#sep>
     </#list>
   </div>
 </div>
+</#if>
 </#if>
 
 <#if allKeywords?has_content>
@@ -60,22 +67,24 @@
 </#macro>
 
 <#macro keywordList list listTitle="Keywords" commaseparated=false>
+  <#local populated = list?filter(it -> it.value?has_content || it.uri?has_content)>
+  <#if populated?has_content>
   <div class="row key-value">
     <div class="col-sm-3 key">${listTitle}</div>
     <div class="col-sm-9 value">
-      <#list list?sort_by("value") as item>
-        <@displayLinkedKeyword item.value item.uri/>
-        <#sep><#if commaseparated=true>,<#else><br></#if></#sep>
+      <#list populated?sort_by("value") as item>
+        <@displayLinkedKeyword item.value item.uri/><#sep><#if commaseparated=true>,<#else><br></#if></#sep>
       </#list>
     </div>
   </div>
+  </#if>
 </#macro>
 
 <#macro displayLinkedKeyword value="" uri="">
   <#if uri?has_content>
     <span><abbr title="${uri?trim}">${value?trim}</abbr></span>
-    <a href="${uri?trim}" target="_blank" rel="noopener noreferrer"  aria-label="link to external vocabulary ${uri?trim}" class="externalVocabularyLink" title="link to external vocabulary"><sup class="fa-solid fa-xs fa-arrow-up-right-from-square"></sup></a>
+    <a href="${uri?trim}" target="_blank" rel="noopener noreferrer"  aria-label="link to external vocabulary ${uri?trim}" class="externalVocabularyLink" title="link to external vocabulary"><sup class="fa-solid fa-xs fa-arrow-up-right-from-square"></sup></a><#rt>
   <#else>
-    <span>${value?trim}</span>
+    <span>${value?trim}</span><#rt>
   </#if>
 </#macro>

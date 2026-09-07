@@ -78,7 +78,7 @@
               <#list otherContacts as otherContact>
                 <dt>${otherContact.roleDisplayName?cap_first}</dt>
                 <dd>
-                  <div class="responsibleParty">
+                  <div class="contact">
                     <@func.displayContact otherContact, true, true, false />
                   </div>
                 </dd>

@@ -8,15 +8,15 @@
       "function": "information"
     }
   ],
-  "responsibleParties": [
+  "authors": [
     {
-      "role": "author",
       "givenName": "Jane",
       "familyName": "Smith",
       "organisationName": "Test Organisation"
-    },
+    }
+  ],
+  "contactPoints": [
     {
-      "role": "pointOfContact",
       "displayName": "Test Contact",
       "organisationName": "Test Organisation",
       "email": "contact@test.ac.uk"

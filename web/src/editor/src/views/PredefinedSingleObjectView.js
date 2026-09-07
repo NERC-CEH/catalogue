@@ -22,6 +22,8 @@ export default SingleObjectView.extend({
     this.$('.editor-button').html('Set <span class="caret"></span>')
     _.chain(this.data.predefined)
       .keys()
+      .sortBy(item => item.toLowerCase())
+      .reverse()
       .each(item => this.$('ul.dropdown-menu').prepend(this.dropdownTemplate({ predefined: item })))
     return this
   },

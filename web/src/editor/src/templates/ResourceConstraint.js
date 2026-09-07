@@ -6,7 +6,7 @@ export default _.template(`
         <label for="<%= data.modelAttribute %><%= data.index %>Code">Code</label>
     </div>
     <div class="col-xl-11">
-        <select data-name="code" id="<%= data.modelAttribute %><%= data.index %>Code">
+        <select data-name="code" id="<%= data.modelAttribute %><%= data.index %>Code" class="form-select">
             <option class="option" value="" selected >- Select Type -</option>
             <option class="option" value="copyright">Copyright</option>
             <option class="option" value="intellectualPropertyRights">Intellectual Property Rights</option>

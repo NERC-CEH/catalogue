@@ -26,7 +26,7 @@ public class HybridSearcher {
             "title^5 description^2 keyword^5 lineage familyName altTitle " +
             "resourceIdentifier identifier supplementalDescription supplementalName " +
             "infrastructureCapabilities^2 keywordsParameters^5 observedPropertyTitle^10 " +
-            "observedPropertyValue^5 operatingPeriod objectives^2 responsibleParties document_text^1";
+            "observedPropertyValue^5 operatingPeriod objectives^2 contacts document_text^1";
 
     // Reciprocal Rank Fusion decay constant — maps to Solr's combiner.rrf.k
     // (org.apache.solr.common.params.CombinerParams.DEFAULT_COMBINER_RRF_K is also 60).

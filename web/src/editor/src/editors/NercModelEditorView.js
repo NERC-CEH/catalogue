@@ -74,7 +74,7 @@ export default EditorView.extend({
         new PredefinedParentView({
           model: this.model,
           ModelType: Contact,
-          modelAttribute: 'responsibleParties',
+          modelAttribute: 'contacts',
           label: 'Contacts',
           ObjectInputView: ContactView,
           multiline: true,

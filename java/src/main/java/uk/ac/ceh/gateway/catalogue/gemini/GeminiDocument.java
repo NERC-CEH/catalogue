@@ -63,7 +63,14 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<SpatialResolution> spatialResolutions;
     private List<Funding> funding;
     private List<BoundingBox> boundingBoxes;
-    private List<ResponsibleParty> distributorContacts, responsibleParties;
+    private List<ResponsibleParty> distributorContacts = new ArrayList<>();
+    private List<ResponsibleParty> contributors = new ArrayList<>();
+    private List<ResponsibleParty> authors = new ArrayList<>();
+    private List<ResponsibleParty> contactPoints = new ArrayList<>();
+    private List<ResponsibleParty> publishers = new ArrayList<>();
+    private List<ResponsibleParty> rightsHolders = new ArrayList<>();
+    private List<ResponsibleParty> custodians = new ArrayList<>();
+    private List<ResponsibleParty> otherContacts = new ArrayList<>();
     private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
@@ -88,6 +95,24 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private Boolean hasOnlineServiceAgreement;
 
 
+    // Pre-EMC-700 documents store every contact in one role-tagged list; bucket it into the typed fields above.
+    @JsonProperty("responsibleParties")
+    private void setLegacyResponsibleParties(List<ResponsibleParty> legacyResponsibleParties) {
+        Optional.ofNullable(legacyResponsibleParties)
+            .orElseGet(Collections::emptyList)
+            .forEach(party -> {
+                switch (party.getRole()) {
+                    case "author" -> authors.add(party);
+                    case "custodian" -> custodians.add(party);
+                    case "pointOfContact" -> contactPoints.add(party);
+                    case "rightsHolder" -> rightsHolders.add(party);
+                    case "publisher" -> publishers.add(party);
+                    case "contributor" -> contributors.add(party);
+                    default -> otherContacts.add(party);
+                }
+            });
+    }
+
     public void populateFromServiceAgreement(ServiceAgreement serviceAgreement) {
         this.setTitle(serviceAgreement.getTitle());
         this.setDescription(serviceAgreement.getDescription());
@@ -97,15 +122,13 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         this.lineage = serviceAgreement.getLineage();
         this.boundingBoxes = serviceAgreement.getBoundingBoxes();
         this.funding = serviceAgreement.getFunding();
-        this.responsibleParties = new ArrayList<>();
-        this.responsibleParties.add(ResponsibleParty.builder()
+        this.contactPoints.add(ResponsibleParty.builder()
             .displayName(serviceAgreement.getDepositorName())
             .email(convertEmail(serviceAgreement.getDepositorContactDetails()))
-            .role("pointOfContact")
             .build()
         );
-        this.responsibleParties.addAll(convertEmails(serviceAgreement.getAuthors()));
-        this.responsibleParties.addAll(convertEmails(serviceAgreement.getOwnersOfIpr()));
+        this.authors.addAll(convertEmails(serviceAgreement.getAuthors()));
+        this.rightsHolders.addAll(convertEmails(serviceAgreement.getOwnersOfIpr()));
         Optional.ofNullable(serviceAgreement.getAvailability())
             .ifPresent(availability -> this.datasetReferenceDate = DatasetReferenceDate.builder()
                 .releasedDate(LocalDate.parse(availability))
@@ -118,7 +141,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     public void populateFromJenaService(JenaLookupService jenaService) {
         final String uri = this.getUri();
-        var relationList = jenaService.relationships(uri, "http://purl.org/dc/terms/relation");
+        var relationList = new ArrayList<>(jenaService.relationships(uri, "http://purl.org/dc/terms/relation"));
         relationList.addAll(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/relation"));
         this.setRelRelation(relationList);
 
@@ -129,6 +152,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         this.setRelHasPart(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/isPartOf"));
         this.setRelReplaces(jenaService.replaces(uri));
         this.setRelSource(jenaService.relationships(uri, "http://purl.org/dc/terms/source"));
+        this.setRelIsOutputOf(jenaService.inverseRelationships(uri, "http://purl.org/cerif/frapo/hasOutput"));
     }
 
     @Data
@@ -139,6 +163,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @Override
+    @JsonProperty("type")
     public String getType() {
         return Optional.ofNullable(resourceType)
                 .map(Keyword::getValue)
@@ -148,7 +173,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     public String getAvailability() {
         return Optional.ofNullable(accessLimitation)
                 .map(AccessLimitation::getAvailability)
-                .filter(availability -> !availability.isEmpty())
+                .filter(code -> !code.isEmpty())
                 .orElse("Unknown");
     }
 
@@ -160,6 +185,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @Override
+    @JsonIgnore
     public GeminiDocument setType(String type) {
         super.setType(type);
         this.resourceType = Keyword.builder().value(type).build();
@@ -193,6 +219,57 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return this;
     }
 
+    @JsonIgnore
+    public List<ResponsibleParty> getContacts() {
+        return Stream.of(
+            Optional.ofNullable(otherContacts).orElseGet(Collections::emptyList),
+            Optional.ofNullable(authors)
+                        .orElseGet(Collections::emptyList)
+                        .stream()
+                        .map(contact -> contact.withRole("author"))
+                        .toList(),
+            Optional.ofNullable(contributors)
+                        .orElseGet(Collections::emptyList)
+                        .stream()
+                        .map(contact -> contact.withRole("contributor"))
+                        .toList(),
+            Optional.ofNullable(contactPoints)
+                        .orElseGet(Collections::emptyList)
+                        .stream()
+                        .map(contact -> contact.withRole("pointOfContact"))
+                        .toList(),
+            Optional.ofNullable(publishers)
+                        .orElseGet(Collections::emptyList)
+                        .stream()
+                        .map(contact -> contact.withRole("publisher"))
+                        .toList(),
+            Optional.ofNullable(rightsHolders)
+                        .orElseGet(Collections::emptyList)
+                        .stream()
+                        .map(contact -> contact.withRole("rightsHolder"))
+                        .toList(),
+            Optional.ofNullable(custodians)
+                        .orElseGet(Collections::emptyList)
+                        .stream()
+                        .map(contact -> contact.withRole("custodian"))
+                        .toList()
+        )
+            .flatMap(Collection::stream)
+            .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    @JsonIgnore
+    public List<ResponsibleParty> getAuthorPointOfContactWithRORs() {
+        Set<String> seenRORs = new HashSet<>();
+        return Stream.of(
+                Optional.ofNullable(contactPoints).orElseGet(Collections::emptyList),
+                Optional.ofNullable(authors).orElseGet(Collections::emptyList)
+            )
+            .flatMap(List::stream)
+            .filter(ResponsibleParty::isRor)
+            .filter(party -> seenRORs.add(party.getOrganisationIdentifier()))
+            .toList();
+    }
 
     @JsonProperty("citation")
     public Citation getCitation() {
@@ -212,7 +289,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     @JsonIgnore
     public List<OnlineResource> getDataAccess() {
-        Set<String> downloadRoles = Set.of("download", "order", "fileAccess");
+        Set<String> downloadRoles = Set.of("download", "order", "fileAccess", "offlineAccess");
         return getOnlineResources()
             .stream()
             .filter(onlineResource -> downloadRoles.contains(onlineResource.getFunction()))
@@ -259,8 +336,8 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public List<ResponsibleParty> getResponsibleParties() {
-        return Optional.ofNullable(responsibleParties)
+    public List<ResponsibleParty> getOtherContacts() {
+        return Optional.ofNullable(otherContacts)
             .orElseGet(ArrayList::new);
     }
 
@@ -280,61 +357,51 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return !getCroissantConformity().isEmpty();
     }
 
-    private List<ResponsibleParty> responsiblePartyByRole(String role) {
-        return getResponsibleParties()
-            .stream()
-            .filter(responsibleParty -> responsibleParty.getRole().equalsIgnoreCase(role))
-            .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    private List<ResponsibleParty> distributorContactsByRole(String role) {
-        return Optional.ofNullable(distributorContacts)
-            .orElseGet(ArrayList::new)
-            .stream()
-            .filter(responsibleParty -> responsibleParty.getRole().equalsIgnoreCase(role))
-            .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    public List<ResponsibleParty> getAuthors() { return responsiblePartyByRole("author"); }
-
-    public List<ResponsibleParty> getCustodians() { return responsiblePartyByRole("custodian"); }
-
-    public List<ResponsibleParty> getPointsOfContact() {
-        return responsiblePartyByRole("pointOfContact");
-    }
-
-    public List<ResponsibleParty> getRightsHolders() {
-        return responsiblePartyByRole("rightsHolder");
+    public List<ResponsibleParty> getAuthors() {
+        return new ArrayList<>(authors);
     }
 
     public List<ResponsibleParty> getPublishers() {
-        return responsiblePartyByRole("publisher");
+        return new ArrayList<>(publishers);
+    }
+
+    public List<ResponsibleParty> getRightsHolders() {
+        return new ArrayList<>(rightsHolders);
+    }
+
+    public List<ResponsibleParty> getCustodians() {
+        return new ArrayList<>(custodians);
+    }
+
+    public List<ResponsibleParty> getContributors() {
+        return new ArrayList<>(contributors);
+    }
+
+    @JsonIgnore
+    public List<ResponsibleParty> getDistributors() {
+        return new ArrayList<>(distributorContacts);
     }
 
     @JsonIgnore
     public List<ResponsibleParty> getDepositors() {
-        return responsiblePartyByRole("depositor");
+        return filterResponsibleParty(getOtherContacts(), "depositor");
     }
 
     @JsonIgnore
     public List<ResponsibleParty> getOriginators() {
-        return responsiblePartyByRole("originator");
+        return filterResponsibleParty(getOtherContacts(), "originator");
     }
 
     @JsonIgnore
     public List<ResponsibleParty> getOwners() {
-        return responsiblePartyByRole("owner");
+        return filterResponsibleParty(getOtherContacts(), "owner");
     }
 
     @JsonIgnore
     public List<ResponsibleParty> getResourceProviders() {
-        return responsiblePartyByRole("resourceProvider");
+        return filterResponsibleParty(getOtherContacts(), "resourceProvider");
     }
 
-    @JsonIgnore
-    public List<ResponsibleParty> getDistributor() {
-        return distributorContactsByRole("distributor");
-    }
 
     public List<DistributionInfo> getDistributionFormats() {
         return Optional.ofNullable(distributionFormats)
@@ -394,23 +461,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    @JsonIgnore
-    public List<ResponsibleParty> getAuthorPointOfContactWithRORs() {
-        val seenRORs = new HashSet<String>();
-        return getResponsibleParties()
-            .stream()
-            .filter(party -> {
-                val role = party.getRole();
-                val authorOrPOC = role.equalsIgnoreCase("author") || role.equalsIgnoreCase("pointOfContact");
-                if (!authorOrPOC || !party.isRor()) return false;
-                val ror = party.getOrganisationIdentifier();
-                if (seenRORs.contains(ror)) return false;
-                seenRORs.add(ror);
-                return true;
-            })
-            .toList();
-    }
-
     private static @NonNull String convertEmail(@NonNull String email) {
         return email.endsWith("@ceh.ac.uk") ? "enquiries@ceh.ac.uk" : email;
     }
@@ -456,15 +506,30 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @JsonIgnore
+    public List<OnlineResource> getOfflineAccess() {
+        return filterOnlineResources(getDataAccess(), "offlineAccess");
+    }
+
+    @JsonIgnore
     public List<OnlineResource> getDownloads() {
         return filterOnlineResources(getDataAccess(), "download");
     }
 
     @JsonIgnore
     public List<OnlineResource> getDistributions() {
-        return Stream.of(getOrders(), getFileAccess(), getDownloads())
+        return Stream.of(getOrders(), getFileAccess(), getOfflineAccess(), getDownloads())
                     .flatMap(List::stream)
                     .collect(Collectors.toList());
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getDistributionsInternal() {
+        return filterOnlineResourcesUrl(getDistributions(), ".+\\.ceh\\.ac\\.uk.+");
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getDistributionsExternal() {
+        return excludeOnlineResourcesUrl(getDistributions(), ".+\\.ceh\\.ac\\.uk.+");
     }
 
     @JsonIgnore

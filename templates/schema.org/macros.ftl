@@ -157,7 +157,7 @@
           <#if keyword.uri?matches("^http[s]?://inspire.ec.europa.eu/\\S+$")>
             <#assign subjectScheme="European Union INSPIRE registry" schemeURI="http://inspire.ec.europa.eu/registry/">
           <#elseif keyword.uri?matches("^http[s]?://www.wikidata.org/entity/\\S+$")>
-            <#assign subjectScheme="Wikidata" schemeURI="https://www.wikidata.org/">
+            <#assign subjectScheme="Wikidata" schemeURI="http://www.wikidata.org/">
           <#elseif keyword.uri?matches("^http[s]?://sws.geonames.org/\\S+$")>
             <#assign subjectScheme="Geonames" schemeURI="https://www.geonames.org/">
           <#elseif keyword.uri?matches("^http[s]?://www.eionet.europa.eu/gemet/concept/\\S+$")>
@@ -352,7 +352,6 @@
       "name": "${contact.fullName}"
       <#if contact.familyName?has_content>, "familyName": "${contact.familyName}"</#if>
       <#if contact.givenName?has_content>, "givenName": "${contact. givenName}"</#if>
-      <#if contact.email?has_content>,"email": "${contact.email}"</#if>
       <#if contact.organisationName?has_content>
         ,"affiliation":{
         <#if contact.organisationIdentifier?matches("^https://ror\\.org/\\w{8,10}$")>
@@ -369,7 +368,6 @@
     <#else>
       "@type":"Organization"
       <#if contact.organisationName?has_content>,"name": "${contact.organisationName}"</#if>
-      <#if contact.email?has_content>,"email": "${contact.email}"</#if>
       <#if contact.organisationIdentifier?has_content>,"identifier":"${contact.organisationIdentifier}"</#if>
     </#if>
     }<#sep>,

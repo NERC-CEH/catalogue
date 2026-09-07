@@ -22,7 +22,7 @@ export default _.template(`
         <label for="supplemental<%= data.index %>Type">Type</label>
     </div>
     <div class="col-lg-11 col-sm-10">
-        <select data-name='type' id="supplemental<%= data.index %>Type">
+        <select data-name='type' id="supplemental<%= data.index %>Type" class="form-select">
             <option value="academic">Academic</option>
             <option value="policy">Policy</option>
         </select>

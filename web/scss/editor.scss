@@ -8,6 +8,8 @@
 @import "select2/dist/css/select2.min.css";
 @import "select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css";
 
+:root {--bs-border-color: rgb(140 140 140);}
+
 .edit-mode {
 
     a#atlwdg-trigger,
@@ -66,12 +68,6 @@
 
 #deposit-request {
 
-    input,
-    select,
-    textarea {
-        border-color: #999;
-    }
-
     select {
         option {
             &:checked {
@@ -123,6 +119,7 @@
 #search {
     .editor {
         --_requiredIndicator: rgb(207, 104, 7);
+
         display: flex;
         flex-direction: column;
         min-height: 100dvh;
@@ -181,7 +178,10 @@
                 }
             }
 
-            select:not(#input-accessLimitation) {
+            /* Opt-out rather than opt-in: selects are added by ~30 templates and a
+               new one should be styled by default. .styledSelect opts into the
+               appearance: base-select treatment further down instead. */
+            select:not(.styledSelect) {
                 @extend .form-select !optional;
                 @extend .form-select-sm !optional;
             }
@@ -380,7 +380,7 @@
                 .component {
                     border-style: solid;
                     border-width: 1px;
-                    border-color: color.adjust($gray-light, $lightness: 15%, $space: hsl);
+                    border-color: var(--bs-border-color-light);
                     border-radius: 5px;
                     padding: 0.5em;
                     margin-block-end: 1.25em;
@@ -478,7 +478,7 @@
             .multiline .existing>.row {
                 border-style: solid;
                 border-width: 1px;
-                border-color: color.adjust($gray-light, $lightness: 15%, $space: hsl);
+                border-color: var(--bs-border-color-light);
                 border-radius: 5px;
                 padding: 4px;
                 margin: 0.5rem 0;
@@ -516,36 +516,61 @@
                 }
             }
 
-            #input-accessLimitation,
-            #input-accessLimitation::picker(select) {
+            /*-- Modern css select elements rich styles -- */
+            /*-- browsers that don't support appearance: base-select; will ignore these --  */
+            select.styledSelect,
+            select.styledSelect::picker(select) {
                 appearance: base-select;
-                font-size: 0.8rem;
-                width: 100%;
             }
 
-            #input-accessLimitation {
+            select.styledSelect {
+                --bs-form-select-bg-img: url(data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e);
+                width: 100%;
+                padding: 0.25rem 2.25rem 0.25rem 0.5rem;
+                font-size: 0.875rem;
+                font-weight: 400;
+                line-height: 1.5;
+                color: #828c7f;
+                background-color: #fff;
+                border: var(--bs-border-width) solid var(--bs-border-color);
+                border-radius: var(--bs-border-radius-sm);
+                transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+                &::picker(select) {  
+                    inline-size:  anchor-size(width);
+                }
+                
                 &::picker-icon {
                     color: #999999;
                     transition: 0.4s rotate;
                 }
 
-                border-color: #AAA;
-
-                span {
-                    display: block;
-                    color: #888;
-                    font-size: 0.7rem;
+                selectedcontent {
+                    span {
+                        display: none;
+                    }
                 }
 
                 option {
-                    padding-left: 1.35em;
+                    display: grid;
+                    grid-template-columns: 3ch auto;
+                    grid-template-rows: auto auto;
+                    border: 1px solid #dddddd;
+                    gap: 0;
+                    padding: .65rem;
+                    transition: 0.2s;
+
+                    span {
+                        color: #888;
+                    }
 
                     &:checked {
-                        background-color: var(--ukceh-colour-data);
+                        background-color: var(--ukceh-colour-data-50);
                     }
 
                     &::checkmark {
-                        margin-left: -0.7em;
+                    grid-column: 1 / 2;
+                    grid-row: 1 / 3;
                     }
                 }
             }
@@ -666,6 +691,26 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 0.5rem;
+        }
+    }
+}
+
+.relationship-autocomplete {
+    border-color: transparent;
+
+    div.ui-menu-item-wrapper {
+        border-block-end: 1px solid lightgray;
+
+        &:hover,
+        &:focus-visible {
+            background-color: var(--ukceh-colour-data);
+            color: black;
+        }
+
+        span {
+            display: block;
+            color: gray;
+            font-size: .9rem;
         }
     }
 }

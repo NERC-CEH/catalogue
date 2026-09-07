@@ -1,12 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.Relationship;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +18,9 @@ import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
+import static org.mockito.Mockito.when;
 
 @Slf4j
 public class GeminiDocumentTest {
@@ -24,6 +29,71 @@ public class GeminiDocumentTest {
     private final String doc1 = "https://example.com/doc/1";
     private final String doc2 = "https://example.com/doc/2";
     private final String doc3 = "https://example.com/doc/3";
+
+    @Test
+    void deserializesLegacyResponsiblePartiesIntoTypedFields() throws Exception {
+        //given
+        val json = """
+            {
+              "responsibleParties": [
+                {"role": "author", "displayName": "Author, 0."},
+                {"role": "publisher", "organisationName": "Publisher Org"},
+                {"role": "custodian", "organisationName": "Custodian Org"},
+                {"role": "pointOfContact", "displayName": "POC, 0."},
+                {"role": "rightsHolder", "organisationName": "Rights Org"},
+                {"role": "depositor", "displayName": "Depositor, 0."}
+              ]
+            }
+            """;
+
+        //when
+        val gemini = new ObjectMapper().readValue(json, GeminiDocument.class);
+
+        //then
+        assertThat(gemini.getAuthors().size(), equalTo(1));
+        assertThat(gemini.getPublishers().size(), equalTo(1));
+        assertThat(gemini.getCustodians().size(), equalTo(1));
+        assertThat(gemini.getContactPoints().size(), equalTo(1));
+        assertThat(gemini.getRightsHolders().size(), equalTo(1));
+        assertThat(gemini.getDepositors().size(), equalTo(1));
+    }
+
+    @Test
+    void resourceTypeSurvivesWhenTypeFieldArrivesAfterItInJson() throws Exception {
+        //given a payload where the stale "type" key (as sent by the editor, which never
+        //updates it) appears after the user's edited "resourceType"
+        val json = """
+            {
+              "type": "dataset",
+              "resourceType": {"value": "nonGeographicDataset"}
+            }
+            """;
+
+        //when
+        val gemini = new ObjectMapper().readValue(json, GeminiDocument.class);
+
+        //then the explicit resourceType edit must not be clobbered by the stale type
+        assertThat(gemini.getResourceType().getValue(), equalTo("nonGeographicDataset"));
+        assertThat(gemini.getType(), equalTo("nonGeographicDataset"));
+    }
+
+    @Test
+    void resourceTypeSurvivesWhenTypeFieldArrivesBeforeIt() throws Exception {
+        //given the opposite key order, which must agree with the other order too
+        val json = """
+            {
+              "resourceType": {"value": "nonGeographicDataset"},
+              "type": "dataset"
+            }
+            """;
+
+        //when
+        val gemini = new ObjectMapper().readValue(json, GeminiDocument.class);
+
+        //then
+        assertThat(gemini.getResourceType().getValue(), equalTo("nonGeographicDataset"));
+        assertThat(gemini.getType(), equalTo("nonGeographicDataset"));
+    }
 
     @Test
     void getDistributions() {
@@ -41,6 +111,43 @@ public class GeminiDocumentTest {
 
         //then
         assertThat(actual.size(), equalTo(3));
+    }
+
+    @Test
+    void getOfflineAccessReturnsOnlyOfflineAccessResources() {
+        //given
+        val offlineAccess = OnlineResource.builder().function("offlineAccess").build();
+        val gemini = new GeminiDocument();
+        gemini.setOnlineResources(List.of(
+            OnlineResource.builder().function("download").build(),
+            offlineAccess,
+            OnlineResource.builder().function("somethingElse").build()
+        ));
+
+        //when
+        val actual = gemini.getOfflineAccess();
+
+        //then
+        assertThat(actual, contains(offlineAccess));
+    }
+
+    @Test
+    void getDistributionsIncludesOfflineAccess() {
+        //given
+        val gemini = new GeminiDocument();
+        gemini.setOnlineResources(List.of(
+            OnlineResource.builder().function("download").build(),
+            OnlineResource.builder().function("order").build(),
+            OnlineResource.builder().function("fileAccess").build(),
+            OnlineResource.builder().function("offlineAccess").build(),
+            OnlineResource.builder().function("somethingElse").build()
+        ));
+
+        //when
+        val actual = gemini.getDistributions();
+
+        //then
+        assertThat(actual.size(), equalTo(4));
     }
 
     @Test
@@ -240,12 +347,11 @@ public class GeminiDocumentTest {
         ));
 
         // three authors
-        String role = "author";
-        document.setResponsibleParties(
+        document.setAuthors(
             Arrays.asList(
-                ResponsibleParty.builder().role(role).build(),
-                ResponsibleParty.builder().role(role).build(),
-                ResponsibleParty.builder().role(role).build()
+                ResponsibleParty.builder().build(),
+                ResponsibleParty.builder().build(),
+                ResponsibleParty.builder().build()
             )
         );
 
@@ -255,7 +361,7 @@ public class GeminiDocumentTest {
         List<ResponsibleParty> actualAuthors = document.getAuthors();
         actualCoupledResources.add("foo");
         actualTopics.add("foo");
-        actualAuthors.add(ResponsibleParty.builder().role(role).build());
+        actualAuthors.add(ResponsibleParty.builder().build());
 
         // then
         assertThat(actualCoupledResources.size(), equalTo(2));
@@ -273,13 +379,11 @@ public class GeminiDocumentTest {
         List<ResponsibleParty> actualAuthors = document.getAuthors();
         List<Keyword> actualKeywords = document.getAllKeywords();
         List<OnlineResource> actualOnlineResources = document.getOnlineResources();
-        List<ResponsibleParty> actualResponsibleParties = document.getResponsibleParties();
         actualCoupledResources.add("foo");
         actualTopics.add("foo");
-        actualAuthors.add(ResponsibleParty.builder().role("author").build());
+        actualAuthors.add(ResponsibleParty.builder().build());
         actualKeywords.add(Keyword.builder().value("foo").URI("https://foo.com").build());
         actualOnlineResources.add(OnlineResource.builder().url("foo").build());
-        actualResponsibleParties.add(ResponsibleParty.builder().build());
 
 
         // then
@@ -288,6 +392,46 @@ public class GeminiDocumentTest {
         assertThat(actualAuthors.size(), equalTo(1));
         assertThat(actualKeywords.size(), equalTo(1));
         assertThat(actualOnlineResources.size(), equalTo(1));
-        assertThat(actualResponsibleParties.size(), equalTo(1));
+    }
+
+    @Test
+    void populateFromJenaService() {
+        //given
+        val document = new GeminiDocument();
+        String uri = "https://example.com/doc/test";
+        document.setUri(uri);
+        val jenaService = org.mockito.Mockito.mock(JenaLookupService.class);
+
+        when(jenaService.relationships(uri, "http://purl.org/dc/terms/relation"))
+            .thenReturn(List.of(Link.builder().href("https://example.com/rel/1").build()));
+        when(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/relation"))
+            .thenReturn(List.of(Link.builder().href("https://example.com/rel/2").build()));
+        when(jenaService.allRelatedRecords(uri))
+            .thenReturn(List.of(Link.builder().href("https://example.com/all/1").build()));
+        when(jenaService.relationships(uri, "http://purl.org/dc/terms/requires"))
+            .thenReturn(List.of(Link.builder().href("https://example.com/requires/1").build()));
+        when(jenaService.relationships(uri, "http://purl.org/dc/terms/isPartOf"))
+            .thenReturn(List.of(Link.builder().href("https://example.com/partof/1").build()));
+        when(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/requires"))
+            .thenReturn(List.of(Link.builder().href("https://example.com/requiredby/1").build()));
+        when(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/isPartOf"))
+            .thenReturn(List.of(Link.builder().href("https://example.com/haspart/1").build()));
+        when(jenaService.replaces(uri))
+            .thenReturn(List.of(Link.builder().href("https://example.com/replaces/1").build()));
+        when(jenaService.relationships(uri, "http://purl.org/dc/terms/source"))
+            .thenReturn(List.of(Link.builder().href("https://example.com/source/1").build()));
+
+        //when
+        document.populateFromJenaService(jenaService);
+
+        //then
+        assertThat(document.getRelRelation().size(), equalTo(2));
+        assertThat(document.getRelAll().size(), equalTo(1));
+        assertThat(document.getRelRequires().size(), equalTo(1));
+        assertThat(document.getRelPartOf().size(), equalTo(1));
+        assertThat(document.getRelIsRequiredBy().size(), equalTo(1));
+        assertThat(document.getRelHasPart().size(), equalTo(1));
+        assertThat(document.getRelReplaces().size(), equalTo(1));
+        assertThat(document.getRelSource().size(), equalTo(1));
     }
 }

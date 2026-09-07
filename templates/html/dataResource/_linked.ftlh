@@ -1,5 +1,5 @@
 <#assign isEidc = false>
-<#if publishers?first.organisationName?matches("(.+?)?Environmental Information Data Centre(.+?)?", "i")>
+<#if publishers?has_content && publishers?first.organisationName?matches("(.+?)?Environmental Information Data Centre(.+?)?", "i")>
   <#assign isEidc = true>
 </#if>
 

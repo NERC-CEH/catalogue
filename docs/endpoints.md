@@ -7,7 +7,7 @@ Proxy server endpoint management is wider than just catalogue endpoints, it mana
 
 Goes to `:7102` the datastore Apache vhost on proxy server.
 
-### {catalogue}/robots.txt, {catalogue}/**/sitemap.txt
+### {catalogue}/robots.txt, {catalogue}/**/sitemap.xml
 
 Goes to `cig-prod:7100` (this catalogue), for search indexing
 
@@ -27,7 +27,7 @@ Goes to `cig-prod:7100` (this catalogue), view older versions of metadata record
 
 Goes to `cig-prod:7100` (this catalogue), search page of each catalogue
 
-### {catalogue}/documents/** 
+### {catalogue}/documents/**
 
 Goes to `cig-prod:7100` (this catalogue), metadata record
 

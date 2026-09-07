@@ -14,41 +14,41 @@
     </gmd:distributionFormat>
     </#list>
     </#if>
-    <#if distributorContacts?has_content>
-    <#list distributorContacts as distributorContact>
+    <#if distributors?has_content>
+    <#list distributors as distributor>
     <gmd:distributor>
       <gmd:MD_Distributor>
       <gmd:distributorContact>
       <gmd:CI_ResponsibleParty>
-        <#if distributorContact.fullName?has_content >
-        <gmd:individualName><gco:CharacterString>${distributorContact.fullName}</gco:CharacterString></gmd:individualName>
+        <#if distributor.fullName?has_content >
+        <gmd:individualName><gco:CharacterString>${distributor.fullName}</gco:CharacterString></gmd:individualName>
         </#if>
-        <#if distributorContact.organisationName?has_content>
-        <gmd:organisationName><gco:CharacterString>${distributorContact.organisationName}</gco:CharacterString></gmd:organisationName>
+        <#if distributor.organisationName?has_content>
+        <gmd:organisationName><gco:CharacterString>${distributor.organisationName}</gco:CharacterString></gmd:organisationName>
         </#if>
         <gmd:contactInfo>
           <gmd:CI_Contact>
             <gmd:address>
               <gmd:CI_Address>
-                <#if distributorContact.address?has_content>
-                <#if distributorContact.address.deliveryPoint?has_content>
-                <gmd:deliveryPoint><gco:CharacterString>${distributorContact.address.deliveryPoint}</gco:CharacterString></gmd:deliveryPoint>
+                <#if distributor.address?has_content>
+                <#if distributor.address.deliveryPoint?has_content>
+                <gmd:deliveryPoint><gco:CharacterString>${distributor.address.deliveryPoint}</gco:CharacterString></gmd:deliveryPoint>
                 </#if>
-                <#if distributorContact.address.city?has_content>
-                <gmd:city><gco:CharacterString>${distributorContact.address.city}</gco:CharacterString></gmd:city>
+                <#if distributor.address.city?has_content>
+                <gmd:city><gco:CharacterString>${distributor.address.city}</gco:CharacterString></gmd:city>
                 </#if>
-                <#if distributorContact.address.administrativeArea?has_content>
-                <gmd:administrativeArea><gco:CharacterString>${distributorContact.address.administrativeArea}</gco:CharacterString></gmd:administrativeArea>
+                <#if distributor.address.administrativeArea?has_content>
+                <gmd:administrativeArea><gco:CharacterString>${distributor.address.administrativeArea}</gco:CharacterString></gmd:administrativeArea>
                 </#if>
-                <#if distributorContact.address.postalCode?has_content>
-                <gmd:postalCode><gco:CharacterString>${distributorContact.address.postalCode}</gco:CharacterString></gmd:postalCode>
+                <#if distributor.address.postalCode?has_content>
+                <gmd:postalCode><gco:CharacterString>${distributor.address.postalCode}</gco:CharacterString></gmd:postalCode>
                 </#if>
-                <#if distributorContact.address.country?has_content>
-                <gmd:country><gco:CharacterString>${distributorContact.address.country}</gco:CharacterString></gmd:country>
+                <#if distributor.address.country?has_content>
+                <gmd:country><gco:CharacterString>${distributor.address.country}</gco:CharacterString></gmd:country>
                 </#if>
                 </#if>
-                <#if distributorContact.email?has_content>
-                <gmd:electronicMailAddress><gco:CharacterString>${distributorContact.email}</gco:CharacterString></gmd:electronicMailAddress>
+                <#if distributor.email?has_content>
+                <gmd:electronicMailAddress><gco:CharacterString>${distributor.email}</gco:CharacterString></gmd:electronicMailAddress>
                 </#if>
               </gmd:CI_Address>
             </gmd:address>

@@ -45,7 +45,7 @@ class EnhancedSolrSearcherTest {
     private final int rows = 20;
     private final List<FacetFilter> facetFilters = List.of(new FacetFilter("facet1|test"));
     private final String catalogueKey = "green";
-    private final String sortField = "publishedDate";
+    private final String sortField = "publicationDate";
     private final ORDER sortOrder = ORDER.desc;
 
     @BeforeEach

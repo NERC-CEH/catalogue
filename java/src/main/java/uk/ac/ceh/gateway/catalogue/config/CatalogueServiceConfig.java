@@ -24,6 +24,10 @@ public class CatalogueServiceConfig {
         .facetKey("topic")
         .facetKey("licence")
         .facetKey("recordType")
+        .facetKey("fdriCatchment")
+        .facetKey("fdriCategory")
+        .facetKey("fdriSpatialScale")
+        .facetKey("fdriTimeseriesData")
         .fileUpload(false)
         .build();
 
@@ -91,10 +95,13 @@ public class CatalogueServiceConfig {
                 .facetKey("ukcehService")
                 .facetKey("recordType")
                 .facetKey("publicationState")
+                .facetKey("parametersMeasured")
+                .facetKey("environmentalDomains")
                 .documentType(GEMINI_TYPE)
                 .documentType(MONITORING_FACILITY_TYPE)
                 .documentType(MONITORING_NETWORK_TYPE)
                 .documentType(MONITORING_PROGRAMME_TYPE)
+                .documentType(RESEARCHACTIVITY_TYPE)
                 .fileUpload(false)
                 .build(),
 
@@ -113,6 +120,7 @@ public class CatalogueServiceConfig {
                 .facetKey("grant")
                 .facetKey("publicationState")
                 .documentType(GEMINI_TYPE)
+                .documentType(RESEARCHACTIVITY_TYPE)
                 .fileUpload(false)
                 .build(),
 

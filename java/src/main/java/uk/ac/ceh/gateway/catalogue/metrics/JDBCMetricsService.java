@@ -1,7 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.metrics;
 
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.jspecify.annotations.Nullable;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -41,11 +45,38 @@ public class JDBCMetricsService implements MetricsService {
             record_type text NOT NULL
         )
         """;
+    /**
+     * Every count read filters on {@code document}, and the table carried no index for its entire
+     * lifetime, so each read was a full scan. In production that meant scanning a 1.1 GB SQLite file
+     * across a CIFS mount — about 7 seconds per scan, twice per record page render, which is what left
+     * 135 of 139 request threads sitting in {@code NativeDB.step}.
+     *
+     * <p>{@code amount} is in the index as well as {@code document}, making it a covering index for
+     * {@link #TOTAL_STATEMENT}: the sum is computed from a contiguous index range without touching the
+     * table at all. With {@code document} alone the row for each match still has to be fetched, and at
+     * roughly a row per document per hour that is thousands of random reads across the network per
+     * count.</p>
+     *
+     * <p>Creating this on an existing database is a one-off cost at startup, proportional to the table
+     * size; the timing is logged. It is deliberately {@code IF NOT EXISTS} so restarts are free.</p>
+     */
+    private static final String INDEX_STATEMENT =
+        "CREATE INDEX IF NOT EXISTS idx_%1$s_document_amount ON %1$s (document, amount)";
     private static final String TOTAL_STATEMENT = "SELECT coalesce(sum(amount), 0) FROM %s WHERE document = ?";
     private static final String UPDATE_STATEMENT = "UPDATE %s SET doc_title = ?, record_type = ? WHERE document = ?";
     private static final String DISTINCT_DOCS_QUERY = "SELECT DISTINCT document FROM %s";
+    private static final String COUNT_STATEMENT = "SELECT count(*) FROM %s WHERE document = ?";
+    private static final String DELETE_STATEMENT = "DELETE FROM %s WHERE document = ?";
     private static final String VIEW_TABLE = "views";
     private static final String DOWNLOAD_TABLE = "downloads";
+
+    /**
+     * Separate caches per count, not one shared cache: {@link #totalViews} and {@link #totalDownloads}
+     * take the same single {@code String} argument, so under the default key generator a shared cache
+     * would give them the same key and one would serve the other's number.
+     */
+    public static final String VIEW_TOTALS_CACHE = "metrics-view-totals";
+    public static final String DOWNLOAD_TOTALS_CACHE = "metrics-download-totals";
 
     public JDBCMetricsService(@NonNull DataSource dataSource,
                               DocumentRepository documentRepository) {
@@ -57,7 +88,12 @@ public class JDBCMetricsService implements MetricsService {
         this.viewed = Collections.synchronizedMap(new HashMap<>());
         this.downloaded = Collections.synchronizedMap(new HashMap<>());
 
-        List.of(VIEW_TABLE, DOWNLOAD_TABLE).forEach(table -> jdbcTemplate.execute(CREATE_STATEMENT.formatted(table)));
+        List.of(VIEW_TABLE, DOWNLOAD_TABLE).forEach(table -> {
+            jdbcTemplate.execute(CREATE_STATEMENT.formatted(table));
+            val startedAt = System.currentTimeMillis();
+            jdbcTemplate.execute(INDEX_STATEMENT.formatted(table));
+            log.info("Ensured index on {}(document, amount) in {}ms", table, System.currentTimeMillis() - startedAt);
+        });
     }
 
     @Override
@@ -74,14 +110,52 @@ public class JDBCMetricsService implements MetricsService {
         }
     }
 
+    /**
+     * Cached because this is called while a record page renders, so an uncached read puts a query
+     * against a SQLite database on a network share directly on the render critical path.
+     *
+     * <p>{@code unless} keeps an unavailable count out of the cache: {@link #totalAmount} returns
+     * {@code null} when the database cannot be read, and Spring's cache manager stores nulls by
+     * default, so without this a momentary failure would suppress the counter for the whole TTL
+     * instead of recovering on the next request.</p>
+     *
+     * <p>Invalidation is by TTL alone, which is sound here in a way it would not be for record content:
+     * {@link #syncDB} only writes hourly, so a total cannot change more often than that, and a slightly
+     * stale view count on a page has no correctness consequence.</p>
+     */
     @Override
-    public int totalViews(@NonNull String uuid) {
+    @Cacheable(cacheNames = VIEW_TOTALS_CACHE, unless = "#result == null")
+    public @Nullable Integer totalViews(@NonNull String uuid) {
         return totalAmount(VIEW_TABLE, uuid);
     }
 
+    /** Cached on the same terms as {@link #totalViews}, in its own cache to keep the keys apart. */
     @Override
-    public int totalDownloads(@NonNull String uuid) {
+    @Cacheable(cacheNames = DOWNLOAD_TOTALS_CACHE, unless = "#result == null")
+    public @Nullable Integer totalDownloads(@NonNull String uuid) {
         return totalAmount(DOWNLOAD_TABLE, uuid);
+    }
+
+    @Override
+    public boolean hasMetricsFor(@NonNull String uuid) {
+        return count(VIEW_TABLE, uuid) > 0 || count(DOWNLOAD_TABLE, uuid) > 0;
+    }
+
+    /**
+     * Deletes by {@code document} from both tables independently: a record can have views without
+     * downloads or vice versa, and the caller only wants to know whether anything was removed, not from
+     * which table.
+     */
+    @Override
+    public boolean deleteMetricsFor(@NonNull String uuid) {
+        int viewsDeleted = jdbcTemplate.update(DELETE_STATEMENT.formatted(VIEW_TABLE), uuid);
+        int downloadsDeleted = jdbcTemplate.update(DELETE_STATEMENT.formatted(DOWNLOAD_TABLE), uuid);
+        return viewsDeleted > 0 || downloadsDeleted > 0;
+    }
+
+    private int count(String table, String uuid) {
+        Integer count = jdbcTemplate.queryForObject(COUNT_STATEMENT.formatted(table), Integer.class, uuid);
+        return count == null ? 0 : count;
     }
 
     @Scheduled(initialDelay=TimeConstants.ONE_HOUR, fixedDelay=TimeConstants.ONE_HOUR)
@@ -109,8 +183,18 @@ public class JDBCMetricsService implements MetricsService {
         map.computeIfAbsent(uuid, k -> new HashSet<>()).add(addr);
     }
 
-    private int totalAmount(@NonNull String table, @NonNull String uuid) {
-        return jdbcTemplate.queryForObject(TOTAL_STATEMENT.formatted(table), Integer.class, uuid);
+    /**
+     * Returns {@code null} rather than propagating, so a metrics outage costs a counter instead of the
+     * whole record page. The database is SQLite on a network share, and a read that overlaps the hourly
+     * sync's writes can still exhaust its busy timeout and fail with {@code SQLITE_BUSY}.
+     */
+    private @Nullable Integer totalAmount(@NonNull String table, @NonNull String uuid) {
+        try {
+            return jdbcTemplate.queryForObject(TOTAL_STATEMENT.formatted(table), Integer.class, uuid);
+        } catch (DataAccessException ex) {
+            log.warn("Could not read {} total for {}: {}", table, uuid, ex.getMessage());
+            return null;
+        }
     }
 
     private void updateDBHelper(String table) {

@@ -20,12 +20,6 @@
       "eastBoundLongitude": 119.3,
       "southBoundLatitude": -23.4,
       "northBoundLatitude": 56.2
-    },
-    {
-      "westBoundLongitude": 1.023,
-      "eastBoundLongitude": 2.183,
-      "southBoundLatitude": 56.789,
-      "northBoundLatitude": 57.836
     }
   ],
   "spatialRepresentationTypes": [

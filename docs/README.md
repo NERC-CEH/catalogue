@@ -16,5 +16,6 @@ Catalogue.
 - [Authentication & Authorization](auth.md)
 - [New Catalogue](./new-catalogue.md)
 - [New Document Type](./newDocumentType.md)
+- [Scheduled Tasks](./scheduled-tasks.md)
 - [Server Profiles](./profiles.md)
 

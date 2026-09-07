@@ -3,6 +3,7 @@
 EXTENT    ${extent.minX?c} ${extent.minY?c} ${extent.maxX?c} ${extent.maxY?c}
 IMAGETYPE PNG
 SIZE      2048 2048
+MAXSIZE   2048
 SHAPEPATH "/data/"
 NAME      "WMS"
 STATUS    ON

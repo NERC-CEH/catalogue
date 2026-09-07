@@ -1,12 +1,12 @@
 <#ftl output_format="plainText">
+<#import "../_turtle.ftl" as ttl>
 
  <#if resourceIdentifiers?? && resourceIdentifiers?has_content && resourceIdentifiers?filter(ri -> ri.codeSpace?has_content)?has_content>
   <#assign localIDs = resourceIdentifiers?filter(ri -> ri.codeSpace?has_content)?filter(ri -> !ri.codeSpace?starts_with("doi")) >
  </#if>
 
 <#macro displayLiteral string>
-  <#--Ensure literals do not contain " characters-->
-  <#t>"${string?trim?replace("\"","'")?replace("\n"," ")}"
+  <#t>"${ttl.escape(string?trim)}"
 </#macro>
 
 <#function displayNamespace text>
@@ -37,7 +37,7 @@
 
   :${id}
     a ${rdftype} ;
-    dcterms:title "${title}" ;
+    dcterms:title "${ttl.escape(title)}" ;
 
     <#if localIDs?has_content>
         adms:identifier <@idList localIDs/> ;
@@ -105,7 +105,7 @@
   <#list ids as id>
   <#if id.codeSpace?has_content && !id.codeSpace?starts_with("doi")>
   :${docId}_id${id?index} a adms:Identifier ;
-      skos:notation "${id.code}" ;
+      skos:notation "${ttl.escape(id.code)}" ;
       adms:schemaAgency <https://ror.org/00pggkr55> ;
       dcterms:conformsTo "UKCEH" ;
       .

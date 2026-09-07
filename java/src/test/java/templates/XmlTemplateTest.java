@@ -69,15 +69,14 @@ public class XmlTemplateTest {
         gemini.setDescription("Example description.");
         Keyword resourceType = Keyword.builder().value("dataset").URI("example_uri").build();
         gemini.setResourceType(resourceType);
-        ResponsibleParty contact = ResponsibleParty.builder()
+        ResponsibleParty contacts = ResponsibleParty.builder()
             .givenName("John")
             .familyName("Doe")
             .organisationName("Example Research Institute")
             .email("contact@example.org")
-            .role("pointOfContact")
             .organisationIdentifier("https://ror.org/00000")
             .build();
-        gemini.setResponsibleParties(List.of(contact));
+        gemini.setContactPoints(List.of(contacts));
 
         model = new HashMap<>();
     }
@@ -90,7 +89,7 @@ public class XmlTemplateTest {
         model.put("metadataDateTime", "2024-08-05");
         model.put("resourceType", gemini.getResourceType());
         model.put("type", gemini.getType());
-        model.put("responsibleParties", gemini.getResponsibleParties());
+        model.put("contacts", gemini.getContacts());
     }
 
     @SneakyThrows
@@ -123,12 +122,11 @@ public class XmlTemplateTest {
             .familyName("Doe")
             .organisationName("Example Research Institute")
             .email("contact@example.org")
-            .role("distributor")
             .build();
         gemini.setDistributorContacts(List.of(distributor));
 
         model.put("distributionFormats", gemini.getDistributionFormats());
-        model.put("distributorContacts", gemini.getDistributorContacts());
+        model.put("distributors", gemini.getDistributors());
 
         // When
         String actual = template("xml/gemini.ftlx");

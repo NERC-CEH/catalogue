@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import com.google.common.eventbus.EventBus;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
@@ -33,20 +32,45 @@ public class FacilityEventService {
         this.eventBus = eventBus;
     }
 
-    @SneakyThrows
+    /**
+     * Asked by {@link uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper#delete} <em>before</em> it removes
+     * anything, so this must not fail for a document that cannot be read — otherwise such a document cannot be
+     * deleted at all, which is precisely the situation the administrative delete exists to clear up
+     * (NERC-CEH/dri-one#239).
+     *
+     * <p>Any failure to read therefore answers "not a facility" rather than propagating. Enumerating the
+     * failures it should tolerate has been tried twice and been wrong twice: first an unregistered
+     * {@code documentType} throwing {@link IllegalArgumentException}, then a record written before
+     * {@code SupportingDoc.content} became a {@code List<String>} throwing
+     * {@code HttpMessageNotReadableException}. There is no reason to expect that list to be complete, and
+     * the cost of it being incomplete is an undeletable record.</p>
+     *
+     * <p>Answering "not a facility" is safe here, not merely tolerant. The answer decides one thing only —
+     * whether a {@link FacilityBelongToRemovedEvent} fires — and a document that cannot be deserialised
+     * cannot be a {@link MonitoringFacility}, so it cannot have had relationships that were ever indexed.
+     * A genuinely broken datastore is not hidden either: the caller's {@code deleteData().commit()} runs
+     * immediately afterwards and fails loudly. Only the read is guarded, so a fault in building the event
+     * from a facility that <em>did</em> read still propagates.</p>
+     */
     public Optional<FacilityBelongToRemovedEvent> getFacilityDeletedEvent(String facilityId) {
-        MetadataDocument document = bundledReader.readBundle(facilityId);
-        if(document instanceof MonitoringFacility facility) {
-            List<String> belongToIds = getBelongToIds(facility);
-            if(belongToIds.size() > 0){
-                return Optional.of(new FacilityBelongToRemovedEvent(facilityId, belongToIds));
-            }
+        Optional<MonitoringFacility> facility;
+        try {
+            facility = getMonitoringFacility(facilityId);
+        } catch (RuntimeException unreadable) {
+            log.warn(
+                "Could not read {} to determine whether it is a monitoring facility, so no facility event " +
+                    "will be raised for its deletion: {}",
+                facilityId, unreadable.toString());
+            return Optional.empty();
         }
-        return Optional.empty();
+        return facility
+            .map(this::getBelongToIds)
+            .filter(belongToIds -> !belongToIds.isEmpty())
+            .map(belongToIds -> new FacilityBelongToRemovedEvent(facilityId, belongToIds));
     }
 
     public Optional<MonitoringFacility> getMonitoringFacility(String id) {
-        return toMonitoringFacility(() -> bundledReader.readBundle(id));
+        return toMonitoringFacility(id, () -> bundledReader.readBundle(id));
     }
 
     /**
@@ -55,10 +79,10 @@ public class FacilityEventService {
      * pre-commit revision and would return stale (or, for a new document, missing) content.
      */
     public Optional<MonitoringFacility> getMonitoringFacility(String id, String revision) {
-        return toMonitoringFacility(() -> bundledReader.readBundle(id, revision));
+        return toMonitoringFacility(id, () -> bundledReader.readBundle(id, revision));
     }
 
-    private Optional<MonitoringFacility> toMonitoringFacility(BundleReader reader) {
+    private Optional<MonitoringFacility> toMonitoringFacility(String id, BundleReader reader) {
         MetadataDocument document = null;
         try {
             document = reader.read();
@@ -70,6 +94,14 @@ public class FacilityEventService {
             }
         } catch (PostProcessingException e) {
             throw new RuntimeException(e);
+        } catch (IllegalArgumentException e) {
+            // The document's stored documentType has no registered class, so it cannot be deserialised. That
+            // also settles the only question asked here: MonitoringFacility *is* a registered type, so a
+            // document whose type does not resolve cannot be one. Answering "not a facility" is therefore
+            // correct rather than merely tolerant, and it lets callers carry on — without it, deleting such a
+            // document was impossible, because the delete path asks this before removing anything.
+            // Retired document types leave records like this behind; see NERC-CEH/dri-one#239.
+            log.warn("Could not read {} to determine whether it is a monitoring facility: {}", id, e.getMessage());
         }
         if(document instanceof MonitoringFacility facility) {
             return Optional.of(facility);

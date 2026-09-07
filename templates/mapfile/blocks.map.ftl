@@ -7,6 +7,7 @@
 --]
 [#macro layer data name title]
   [#assign prefProj=mapServerDetails.getFavouredProjection(data, epsgCode)]
+  [#assign isLine=(data.type?upper_case == "LINE")]
   LAYER
     PROJECTION "init=epsg:${prefProj.epsgCode}" END
     PROCESSING "POLYLINE_NO_CLIP=True"
@@ -14,6 +15,8 @@
     TYPE ${data.type}
     TEMPLATE "dummy"
     STATUS ON
+    [#-- Sets the map scale the line width starts to change from --]
+    [#if isLine]SYMBOLSCALEDENOM 25000[/#if]
     METADATA
       "wms_title" "${title}"
       "wms_style" "inspire_common:DEFAULT"
@@ -77,12 +80,12 @@
 [#--
   Generate a list of class blocks for the supplied buckets
 --]
-[#macro buckets attr buckets]
+[#macro buckets attr buckets lineMode=false]
   [#list buckets as bucket]
     CLASS
       NAME "${bucket.label}"
       EXPRESSION [@bucketExpr attr bucket/]
-      [@style bucket.style /]
+      [@style bucket.style lineMode/]
     END
   [/#list]
 [/#macro]
@@ -90,25 +93,34 @@
 [#--
   Generate a list of class blocks for the supplied value settings
 --]
-[#macro values attr type values]
+[#macro values attr type values lineMode=false]
   [#list values as value]
     CLASS
       NAME "${value.label}"
       EXPRESSION [@valueExpr attr type value/]
-      [@style value.style /]
+      [@style value.style lineMode/]
     END
   [/#list]
 [/#macro]
 
 [#--
-  Generate a style block for the current colour data
+  Generate a style block for the current colour data.
+  LineMode will be true when data type Line is selected in the editor, min/max size controls the width of the lines
+  so they don't scale too big or small. Width is the base value to scale from
 --]
-[#macro style data]
+[#macro style data lineMode=false]
   STYLE
     COLOR "${data.colour}"
     [#if data.symbol?has_content]
       SYMBOL "${data.symbol}"
       SIZE 6
+    [/#if]
+    [#if lineMode]
+      WIDTH 1.0
+      MINWIDTH 1
+      MAXWIDTH 6
+      LINECAP butt
+      LINEJOIN bevel
     [/#if]
   END
 [/#macro]

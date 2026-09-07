@@ -4,15 +4,18 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static com.google.common.base.Strings.emptyToNull;
+import static java.lang.String.format;
 import static org.apache.jena.rdf.model.ResourceFactory.*;
 import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 
@@ -72,6 +75,17 @@ public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                     createStatement(me, METADATA_STATUS, createPlainLiteral(t)))
                 );
 
+            Optional.ofNullable(document.getResourceIdentifiers())
+                .orElse(Collections.emptyList())
+                .forEach(r -> {
+                    String codeSpace = r.getCodeSpace();
+                    String code = r.getCode();
+                    String identifier = (codeSpace.isEmpty() || code.isEmpty()) ?
+                        format("%s%s", codeSpace, code) : format("%s#%s", codeSpace, code);
+                    if (!identifier.isEmpty()) {
+                        toReturn.add(createStatement(me, DCTERMS_IDENTIFIER, createPlainLiteral(identifier)));
+                    }
+                });
         }
         return toReturn;
     }

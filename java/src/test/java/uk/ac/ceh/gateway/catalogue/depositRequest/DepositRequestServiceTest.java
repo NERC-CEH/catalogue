@@ -40,7 +40,7 @@ class DepositRequestServiceTest {
     @DisplayName("Submits request with resolved 'Other' fields")
     void testSubmissionWithOtherFields() {
         DepositRequestModel form = new DepositRequestModel(
-            "Alice Smith", "alice@example.com", "UKCEH", true, true, true, true,
+            "Alice Smith", "alice@example.com", "UKCEH", "External", true, true, true, true,
             "Other", "NERC", "NE123 NE456", "Yes", "Model",
             true, true, false, false,
             List.of(new DataResourceModel(
@@ -64,7 +64,7 @@ class DepositRequestServiceTest {
     @DisplayName("Submits request with normal funder and single ref")
     void testSubmissionWithNormalFields() {
         DepositRequestModel form = new DepositRequestModel(
-            "Bob Jones", "bob@example.com", "CEH", false, false, false, false,
+            "Bob Jones", "bob@example.com", "CEH", "External", false, false, false, false,
             "NERC", "", "NE789", "No", "Omics",
             false, false, false, false,
             List.of(new DataResourceModel(
@@ -87,7 +87,7 @@ class DepositRequestServiceTest {
     @DisplayName("Get Jira Component Name Ingestion Management")
     void testGetJiraComponentNameIngestionManagement() {
         DepositRequestModel form = new DepositRequestModel(
-            "Bob Jones", "bob@example.com", "CEH", false, false, false, false,
+            "Bob Jones", "bob@ceh.ac.uk", "CEH", "2025_Biodiversity and Land Use", false, false, false, false,
             "NERC", "", "NE789", "Yes", "No",
             true, true, false, false,
             List.of(
@@ -116,7 +116,7 @@ class DepositRequestServiceTest {
     @DisplayName("Get Jira Component Name Deposit Request")
     void testGetJiraComponentNameDepositRequest() {
         DepositRequestModel form = new DepositRequestModel(
-            "Bob Jones", "bob@example.com", "CEH", false, false, false, false,
+            "Bob Jones", "bob@ceh.ac.uk", "CEH", "2025_Biodiversity and Land Use", false, false, false, false,
             "STFC", "", "NE789", "No", "Yes",
             false, false, true, false,
             List.of(

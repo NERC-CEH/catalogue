@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.solr.client.solrj.RemoteSolrException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueException;
 import uk.ac.ceh.gateway.catalogue.search.InvalidFacetException;
+import uk.ac.ceh.gateway.catalogue.search.InvalidSortFieldException;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.model.*;
@@ -27,12 +29,17 @@ import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URISyntaxException;
+import java.util.regex.Pattern;
 
 import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @ControllerAdvice
 public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
+    // "Error from server at http://solr:8983/solr/documents/select: org.apache.solr...Exception: "
+    private static final Pattern SOLR_REMOTE_ERROR_PREFIX =
+        Pattern.compile("^Error from server at \\S+:\\s*(?:[\\w.]*Exception:\\s*)?");
+
     private final Environment env;
 
     public ExceptionControllerHandler(Environment env) {
@@ -55,6 +62,12 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         if (ex instanceof PermissionDeniedException) {
             logger.warn("Permission denied: " + ex.getMessage());
         } else if (NOT_FOUND.equals(statusCode)) {
+            logger.warn(message);
+        } else if (PRECONDITION_REQUIRED.equals(statusCode)) {
+            logger.warn(message);
+        } else if (BAD_REQUEST.equals(statusCode)) {
+            // A malformed request is the caller's fault, not a server failure. Logging it at ERROR
+            // meant a crawler walking stale sort/facet links filled the log with false alarms.
             logger.warn(message);
         } else {
             if (showStackTrace) {
@@ -83,6 +96,11 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         String[] parts = request.getServletPath().split("/");
         String catalogue = parts.length >= 3 ? parts[1] : "all";
         log.warn("Invalid facet in catalogue [{}] for URL [{}]: {}", catalogue, fullUrl, ex.getMessage());
+        return handleExceptionInternal(ex, ex.getMessage(), BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidSortFieldException.class)
+    public ResponseEntity<Object> handleInvalidSortFieldException(InvalidSortFieldException ex) {
         return handleExceptionInternal(ex, ex.getMessage(), BAD_REQUEST);
     }
 
@@ -135,6 +153,35 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, "Solr did not respond as expected", INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * Solr answers a malformed query - an unknown sort field, an unparseable sort spec - with its own
+     * 4xx, which SolrJ surfaces as {@link RemoteSolrException}. That extends {@link RuntimeException},
+     * not {@link SolrServerException}, so before dri-one #314 it matched no handler at all and every
+     * such request became a 500 with a full stack trace in the application log. Map the caller's fault
+     * back to a 400 and keep 500 for a Solr that genuinely failed.
+     */
+    @ExceptionHandler(RemoteSolrException.class)
+    public ResponseEntity<Object> handleRemoteSolrException(RemoteSolrException ex) {
+        if (ex.code() >= 400 && ex.code() < 500) {
+            log.warn("Solr rejected the query: {}", ex.getMessage());
+            return handleExceptionInternal(ex, "Invalid search query: " + solrErrorDetail(ex), BAD_REQUEST);
+        }
+        return handleExceptionInternal(ex, "Solr did not respond as expected", INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * SolrJ prefixes the remote message with the Solr base URL and the server-side exception class.
+     * Neither belongs in a response body on a public endpoint, so strip them and return just Solr's
+     * own explanation; the untrimmed message is still logged above.
+     */
+    private static String solrErrorDetail(RemoteSolrException ex) {
+        String message = ex.getMessage();
+        if (message == null) {
+            return "the search backend rejected this request";
+        }
+        return SOLR_REMOTE_ERROR_PREFIX.matcher(message).replaceFirst("");
+    }
+
     @SuppressWarnings("SpringMVCViewInspection")
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
@@ -153,6 +200,33 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ResourceIdentifierExistsException.class)
     public ResponseEntity<Object> handleResourceIdentifierAlreadyExists(ResourceIdentifierExistsException ex) {
         return handleExceptionInternal(ex, ex.getMessage(), CONFLICT);
+    }
+
+    @ExceptionHandler(MojibakeTextException.class)
+    public ResponseEntity<Object> handleMojibakeText(MojibakeTextException ex) {
+        log.warn("Rejected save: {}", ex.getMessage());
+        return handleExceptionInternal(ex, ex.getMessage(), BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MetadataConflictException.class)
+    public ResponseEntity<MetadataDocument> handleMetadataConflict(MetadataConflictException ex) {
+        // 409 with the submitted-but-unsaved document so the caller can preserve the user's edits.
+        //
+        // The content type is pinned rather than negotiated. When an @ExceptionHandler returns a body no
+        // converter can write for the request's Accept, Spring abandons the handler and rethrows the
+        // ORIGINAL exception - the caller gets a 500 and loses the echoed submission, which is the one
+        // thing this response exists to protect. Accept: */* (curl's default, and what docs/api.md's
+        // script sends) hits exactly that case. Setting a concrete type makes Spring write with that
+        // converter directly and skip negotiation, so the 409 contract holds for every client.
+        log.warn("Metadata save conflict: {}", ex.getMessage());
+        return ResponseEntity.status(CONFLICT)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(ex.getSubmittedDocument());
+    }
+
+    @ExceptionHandler(MetadataPreconditionRequiredException.class)
+    public ResponseEntity<Object> handleMetadataPreconditionRequired(MetadataPreconditionRequiredException ex) {
+        return handleExceptionInternal(ex, ex.getMessage(), HttpStatus.PRECONDITION_REQUIRED);
     }
 
     @ExceptionHandler(ExternalResourceFailureException.class)

@@ -1,5 +1,4 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
-
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,7 @@ import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
-
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,20 +53,26 @@ public class SitemapController {
         return new ModelAndView("sitemap/robots.txt", model);
     }
 
-    @GetMapping("{catalogue}/sitemap.txt")
+    @GetMapping("{catalogue}/sitemap.xml")
     public ModelAndView sitemap(
         @PathVariable String catalogue,
         HttpServletResponse response
     ) {
-        response.setContentType(MediaType.TEXT_PLAIN_VALUE);
+        response.setContentType(MediaType.APPLICATION_XML_VALUE);
         if (catalogueService.retrieve(catalogue) == null) {
             throw new ResourceNotFoundException(catalogue + " is not a catalogue");
         }
-        List<String> urls = listingService.getPublicDocumentsOfCatalogue(catalogue)
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+        List<Map<String, String>> urlEntries = listingService.getLatestPublicDocumentsOfCatalogue(catalogue)
             .stream()
-            .map(identifierService::generateUri)
+            .map(doc -> {
+                Map<String, String> entry = new HashMap<>();
+                entry.put("url", identifierService.generateUri(doc.getId()));
+                entry.put("lastmod", doc.getMetadataDate() != null ? doc.getMetadataDate().format(formatter) : "");
+                return entry;
+            })
             .collect(Collectors.toList());
-        return new ModelAndView("sitemap/sitemap.txt", "urls", urls);
+        return new ModelAndView("sitemap/sitemap.xml", "urls", urlEntries);
     }
 
 }

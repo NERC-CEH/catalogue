@@ -28,6 +28,10 @@ public class SolrIndex {
     private @Field String description;
     private @Field("temporal_extent_text") String temporalExtentText;
     private @Field String documentType;
+    private @Field List<String> fdriCatchment;
+    private @Field List<String> fdriCategory;
+    private @Field String fdriSpatialScale;
+    private @Field String fdriTimeseriesData;
     private @Field List<String> funder;
     private @Field List<String> grant;
     private @Field String identifier;
@@ -71,7 +75,7 @@ public class SolrIndex {
     private @Field String objectives;
     private @Field List<String> pointOfContact;
     private @Field String operationalStatus;
-    private @Field List<String> responsibleParties;
+    private @Field List<String> contacts;
     private @Field List<String> rightsHolder;
     private @Field List<String> ror;
     private @Field List<String> saPhysicalState;

@@ -41,7 +41,7 @@ public class SolrIndexMonitoringFacilityGenerator implements IndexGenerator<Moni
             .setKeywordsParameters(grab(document.getKeywordsParameters(), Keyword::getValue))
             .setOrganisation(
                 Stream.concat(
-                    grab(document.getPointsOfContact(), ResponsibleParty::getOrganisationName).stream(),
+                    grab(document.getContacts(), ResponsibleParty::getOrganisationName).stream(),
                     grab(document.getPartners(), ResponsibleParty::getOrganisationName).stream()
                 ).collect(Collectors.toList())
             )

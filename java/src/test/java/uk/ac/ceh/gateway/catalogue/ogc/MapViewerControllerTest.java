@@ -257,4 +257,139 @@ class MapViewerControllerTest extends AbstractMvcTest {
         //then
         verifyNoInteractions(rest);
     }
+
+    @Test
+    @DisplayName("rejects a GetMap larger than the maximum image size")
+    @SneakyThrows
+    void rejectsGetMapExceedingMaximumImageSize() {
+        //when
+        mvc.perform(
+                get("/maps/{file}", file)
+                .queryParam("SERVICE", "WMS")
+                .queryParam("VERSION", "1.3.0")
+                .queryParam("REQUEST", "GetMap")
+                .queryParam("LAYERS", "layer0")
+                .queryParam("CRS", "EPSG:27700")
+                .queryParam("BBOX", "-145.15,21.73,-57.15,58.96")
+                .queryParam("WIDTH", "4096")
+                .queryParam("HEIGHT", "4096")
+                .queryParam("FORMAT", "image/png")
+                )
+            .andExpect(status().isBadRequest());
+
+        //then
+        verifyNoInteractions(rest);
+        verifyNoInteractions(proxyRequestFactory);
+    }
+
+    @Test
+    @DisplayName("rejects an oversized GetMap given lowercase parameters")
+    @SneakyThrows
+    void rejectsGetMapExceedingMaximumImageSizeLowercase() {
+        //when
+        mvc.perform(
+                get("/maps/{file}", file)
+                .queryParam("service", "WMS")
+                .queryParam("version", "1.3.0")
+                .queryParam("request", "GetMap")
+                .queryParam("layers", "layer0")
+                .queryParam("crs", "EPSG:27700")
+                .queryParam("bbox", "-145.15,21.73,-57.15,58.96")
+                .queryParam("width", "4096")
+                .queryParam("height", "4096")
+                .queryParam("format", "image/png")
+                )
+            .andExpect(status().isBadRequest());
+
+        //then
+        verifyNoInteractions(rest);
+        verifyNoInteractions(proxyRequestFactory);
+    }
+
+    @Test
+    @DisplayName("rejects a GetMap when only one dimension is oversized")
+    @SneakyThrows
+    void rejectsGetMapWithSingleOversizedDimension() {
+        //when
+        mvc.perform(
+                get("/maps/{file}", file)
+                .queryParam("SERVICE", "WMS")
+                .queryParam("REQUEST", "GetMap")
+                .queryParam("LAYERS", "layer0")
+                .queryParam("WIDTH", "256")
+                .queryParam("HEIGHT", "2049")
+                .queryParam("FORMAT", "image/png")
+                )
+            .andExpect(status().isBadRequest());
+
+        //then
+        verifyNoInteractions(proxyRequestFactory);
+    }
+
+    @Test
+    @DisplayName("allows a GetMap at exactly the maximum image size")
+    @SneakyThrows
+    void allowsGetMapAtMaximumImageSize() {
+        //given
+        givenGetMapResponse();
+
+        //when
+        mvc.perform(
+                get("/maps/{file}", file)
+                .queryParam("SERVICE", "WMS")
+                .queryParam("VERSION", "1.3.0")
+                .queryParam("REQUEST", "GetMap")
+                .queryParam("LAYERS", "layer0")
+                .queryParam("CRS", "EPSG:27700")
+                .queryParam("BBOX", "-145.15,21.73,-57.15,58.96")
+                .queryParam("WIDTH", "2048")
+                .queryParam("HEIGHT", "2048")
+                .queryParam("FORMAT", "image/png")
+                )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.IMAGE_PNG));
+    }
+
+    @Test
+    @DisplayName("rejects a GetFeatureInfo larger than the maximum image size")
+    @SneakyThrows
+    void rejectsGetFeatureInfoExceedingMaximumImageSize() {
+        //when
+        mvc.perform(
+                get("/maps/{file}", file)
+                .queryParam("SERVICE", "WMS")
+                .queryParam("REQUEST", "GetFeatureInfo")
+                .queryParam("LAYERS", "layer0")
+                .queryParam("QUERY_LAYERS", "layer0")
+                .queryParam("WIDTH", "4096")
+                .queryParam("HEIGHT", "4096")
+                .queryParam("I", "10")
+                .queryParam("J", "20")
+                .queryParam(INFO_FORMAT, "text/xml")
+                )
+            .andExpect(status().isBadRequest());
+
+        //then
+        verifyNoInteractions(rest);
+    }
+
+    @Test
+    @DisplayName("ignores a non-numeric image dimension rather than failing the request")
+    @SneakyThrows
+    void ignoresNonNumericImageDimension() {
+        //given
+        givenGetMapResponse();
+
+        //when
+        mvc.perform(
+                get("/maps/{file}", file)
+                .queryParam("SERVICE", "WMS")
+                .queryParam("REQUEST", "GetMap")
+                .queryParam("LAYERS", "layer0")
+                .queryParam("WIDTH", "not-a-number")
+                .queryParam("HEIGHT", "250")
+                .queryParam("FORMAT", "image/png")
+                )
+            .andExpect(status().isOk());
+    }
 }

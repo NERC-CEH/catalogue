@@ -1,12 +1,13 @@
 <#ftl output_format="plainText">
 <#compress>
+<#import "_turtle.ftl" as ttl>
 <#include "_prefixes.ftl">
 BASE <${baseUri}/>
 PREFIX : <${baseUri}/id/>
 
 <${catalogue}/documents>
    a dcat:Catalog ;
-  dcterms:title "${title} digital asset register"@en ;
+  dcterms:title "${ttl.escape(title)} digital asset register"@en ;
   foaf:homepage <https://catalogue.ceh.ac.uk/${catalogue}/documents> ;
 
   <#list records>
