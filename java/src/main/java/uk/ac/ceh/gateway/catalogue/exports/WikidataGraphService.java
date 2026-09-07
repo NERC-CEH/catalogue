@@ -44,81 +44,80 @@ import java.util.Set;
 @Slf4j
 @Profile("exports")
 @Service
-@ToString(exclude = "wikidataRetriever")
+@ToString(exclude = {"source", "retriever"})
 public class WikidataGraphService implements SourceGraphProvider {
 
-    private static final SourceGraph GRAPH = new SourceGraph(
-        WikidataRetriever.PREFIX,
-        "Wikidata, the free knowledge base",
-        "Subject concepts as Wikidata describes them: English label, aliases and description, "
-            + "what kind of thing each is, and the taxon name where it is a species.",
-        // schema:description and the wdt: properties as well as SKOS. The
-        // taxon name is wdt:P225 and is the only name a tenth of these
-        // entities have, so a consumer told to expect SKOS alone would miss it.
-        List.of(SKOS.getURI(), RDFS.getURI(), SourceGraphs.SCHEMA, SourceGraphs.WDT),
-        SourceGraphs.CC0);
-
-    private final WikidataRetriever wikidataRetriever;
+    private final WikidataSource source;
+    private final AuthorityRetriever retriever;
     private final WithheldGraphLog withheldGraphLog;
     private final Clock clock;
 
     /** @see VocabularyGraphService for why this annotation is needed. */
     @Autowired
     public WikidataGraphService(
-        WikidataRetriever wikidataRetriever,
+        WikidataSource source,
+        AuthorityRetriever retriever,
         WithheldGraphLog withheldGraphLog
     ) {
-        this(wikidataRetriever, withheldGraphLog, Clock.systemUTC());
+        this(source, retriever, withheldGraphLog, Clock.systemUTC());
     }
 
     /** Package-private, so a test can fix the clock in the provenance header. */
     WikidataGraphService(
-        WikidataRetriever wikidataRetriever,
+        WikidataSource source,
+        AuthorityRetriever retriever,
         WithheldGraphLog withheldGraphLog,
         Clock clock
     ) {
-        this.wikidataRetriever = wikidataRetriever;
+        this.source = source;
+        this.retriever = retriever;
         this.withheldGraphLog = withheldGraphLog;
         this.clock = clock;
         log.info("Creating");
     }
 
+    /** Everything said about the graph, declared by the source itself. */
+    private SourceGraph sourceGraph() {
+        return new SourceGraph(source.graph(), source.title(), source.description(),
+            source.vocabularies(), source.licence());
+    }
+
     @Override
     public List<SourceGraph> sourceGraphs() {
-        return List.of(GRAPH);
+        return List.of(sourceGraph());
     }
 
     @Override
     public Map<String, String> graphs(Set<String> referencedIris) {
         val wanted = referencedIris.stream()
-            .filter(WikidataRetriever::describes)
+            .filter(source::describes)
             .sorted()
             .toList();
         if (wanted.isEmpty()) {
             return Map.of();
         }
 
-        val described = wikidataRetriever.describe(wanted);
+        val described = retriever.describe(wanted, source);
         if (described.isEmpty()) {
             log.warn("Nothing retrieved from Wikidata, leaving its graph as it is");
             return Map.of();
         }
         if (!described.isComplete()) {
-            withheldGraphLog.withheld(WikidataRetriever.PREFIX, wanted.size(),
+            withheldGraphLog.withheld(WikidataSource.PREFIX, wanted.size(),
                 described.deferred(), described.transientFailures());
             return Map.of();
         }
 
         val model = described.model();
-        SourceGraphs.addProvenance(model, GRAPH, clock);
+        SourceGraphs.addProvenance(model, sourceGraph(), clock);
         val turtleByGraph = new LinkedHashMap<String, String>();
-        turtleByGraph.put(WikidataRetriever.PREFIX, serialise(model));
-        withheldGraphLog.published(WikidataRetriever.PREFIX);
+        turtleByGraph.put(WikidataSource.PREFIX, serialise(model));
+        withheldGraphLog.published(WikidataSource.PREFIX);
         return turtleByGraph;
     }
 
     private static String serialise(Model model) {
-        model.setNsPrefix("wd", WikidataRetriever.PREFIX);
+        model.setNsPrefix("wd", WikidataSource.PREFIX);
         model.setNsPrefix("wdt", SourceGraphs.WDT);
         model.setNsPrefix("skos", SKOS.getURI());
         model.setNsPrefix("rdfs", RDFS.getURI());
