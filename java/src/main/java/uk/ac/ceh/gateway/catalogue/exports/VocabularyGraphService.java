@@ -75,21 +75,30 @@ import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
  *       that returned nothing. The graph is held back, since labels are the bulk
  *       of what most of these graphs hold.</li>
  *   <li><b>Retrieval failed entirely</b> — held back, as before.</li>
- *   <li><b>Retrieval partly failed</b> — not degrading, because
- *       {@link AuthorityRetriever} falls back to a cached copy of any age per
- *       concept. What is missing from its result is what no run could get.</li>
+ *   <li><b>Retrieval partly failed</b> — held back too, now that
+ *       {@link AuthorityRetriever.Descriptions#isComplete()} exists to say so.
+ *       These graphs were the last that did not consult it, which was the gap
+ *       this javadoc recorded as knowingly open: a run starting with an empty
+ *       cache and meeting a partly-unavailable authority published a thin graph.
+ *       Note the retriever has already fallen back to a cached copy of any age
+ *       per concept before reporting, so an incomplete run means some concept
+ *       has no description at all rather than merely a stale one.</li>
  * </ul>
  *
- * <p>One gap remains, and is left open knowingly: a run that starts with an
- * empty cache and meets a partly-unavailable authority still publishes a thin
- * graph. The retriever now <em>reports</em> that — every source returns
- * {@link AuthorityRetriever.Descriptions#isComplete()}, which these graphs alone
- * do not consult — so closing it is a one-line change rather than the missing
- * machinery it used to be. It is left for its own review because adopting the
- * guard means a vocabulary graph starts being held back where today it is
- * published, and because a completeness threshold would freeze a graph the first
- * time a concept was permanently withdrawn. The cache's snapshot makes an empty
- * cache rare, which is the cheaper half of the problem to attack.
+ * <p>Only a concept the authority <em>definitively</em> does not hold is
+ * excused, which is what makes this the right shape. A completeness
+ * <em>threshold</em> — publish once some proportion is described — would freeze
+ * a graph the first time a concept was permanently withdrawn, because the
+ * withdrawal would count against the proportion for ever. A 404 counts against
+ * nothing.
+ *
+ * <p>Which graphs this reaches is narrower than it sounds. Only three of the
+ * seven authorities fetch at all: NVS and AGROVOC, which dereference one concept
+ * at a time and so genuinely can be partly complete, and CAST, which asks for
+ * every concept in one query and therefore either succeeds or fails whole. The
+ * other four are label-only, and a harvest cannot be incomplete — it is read
+ * from Solr in a single paged sweep or not at all, which the branch above
+ * already handles.
  */
 @Slf4j
 @Profile("exports")
@@ -158,6 +167,7 @@ public class VocabularyGraphService implements SourceGraphProvider {
     private final UriNormaliser uriNormaliser;
     private final List<VocabularySource> sources;
     private final AuthorityRetriever retriever;
+    private final WithheldGraphLog withheldGraphLog;
     private final Clock clock;
 
     /**
@@ -170,9 +180,10 @@ public class VocabularyGraphService implements SourceGraphProvider {
         SolrClient solrClient,
         UriNormaliser uriNormaliser,
         List<VocabularySource> sources,
-        AuthorityRetriever retriever
+        AuthorityRetriever retriever,
+        WithheldGraphLog withheldGraphLog
     ) {
-        this(solrClient, uriNormaliser, sources, retriever, Clock.systemUTC());
+        this(solrClient, uriNormaliser, sources, retriever, withheldGraphLog, Clock.systemUTC());
     }
 
     /** Package-private, so a test can fix the clock in the provenance header. */
@@ -181,12 +192,14 @@ public class VocabularyGraphService implements SourceGraphProvider {
         UriNormaliser uriNormaliser,
         List<VocabularySource> sources,
         AuthorityRetriever retriever,
+        WithheldGraphLog withheldGraphLog,
         Clock clock
     ) {
         this.solrClient = solrClient;
         this.uriNormaliser = uriNormaliser;
         this.sources = List.copyOf(sources);
         this.retriever = retriever;
+        this.withheldGraphLog = withheldGraphLog;
         this.clock = clock;
         log.info("Creating with {} fetching vocabularies", this.sources.size());
     }
@@ -279,12 +292,23 @@ public class VocabularyGraphService implements SourceGraphProvider {
                             authority.graph());
                         continue;
                     }
-                    // isComplete() is deliberately not consulted. These graphs
-                    // now report it, unlike before, but adopting it would begin
-                    // holding a vocabulary graph back when a run is incomplete
-                    // -- the behaviour the identity, reference and Wikidata
-                    // graphs already have, and a change worth reviewing on its
-                    // own rather than smuggling in with this one.
+                    if (!described.isComplete()) {
+                        // The gap this class recorded as knowingly open until
+                        // the retrievers were unified. A run that reached only
+                        // some of the concepts, or met a failure a later run may
+                        // not, would replace the graph with less than it holds
+                        // -- and since the export's PUT replaces rather than
+                        // adds, the endpoint would visibly lose and regain
+                        // definitions over the following days.
+                        //
+                        // Only a concept the authority definitively does not
+                        // hold is excused, so a withdrawn concept cannot freeze
+                        // the graph, which is what made a completeness
+                        // *threshold* the wrong answer here.
+                        withheldGraphLog.withheld(authority.graph(), wanted.size(),
+                            described.deferred(), described.transientFailures());
+                        continue;
+                    }
                     model.add(described.model());
                 }
             }
@@ -294,6 +318,7 @@ public class VocabularyGraphService implements SourceGraphProvider {
             }
             SourceGraphs.addProvenance(model, sourceGraph(authority), clock);
             turtleByGraph.put(authority.graph(), SourceGraphs.serialise(model, sourceGraph(authority)));
+            withheldGraphLog.published(authority.graph());
         }
         return turtleByGraph;
     }

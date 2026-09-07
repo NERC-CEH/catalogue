@@ -66,17 +66,20 @@ class VocabularyGraphServiceTest {
     @Mock private SolrClient solrClient;
     @Mock private AuthorityRetriever retriever;
     private VocabularyGraphService service;
+    private WithheldGraphLog withheldGraphLog;
     private final NvsSource nvsSource = new NvsSource();
     private final CastSource castSource = new CastSource("https://vocabs.ceh.ac.uk/sparql");
     private final AgrovocSource agrovocSource = new AgrovocSource();
 
     @BeforeEach
     void setUp() {
+        withheldGraphLog = new WithheldGraphLog();
         service = new VocabularyGraphService(
             solrClient,
             new UriNormaliser(),
             List.of(nvsSource, castSource, agrovocSource),
             retriever,
+            withheldGraphLog,
             Clock.fixed(Instant.parse("2026-09-02T12:00:00Z"), ZoneOffset.UTC)
         );
     }
@@ -218,19 +221,64 @@ class VocabularyGraphServiceTest {
         }
 
         @Test
-        @DisplayName("a partial retrieval still publishes, since what is missing is what no run could get")
-        void partialRetrievalStillPublishes() {
-            // This was once a compromise -- "some description beats none" -- and
-            // is now simply correct: the retriever falls back to a stored copy
-            // per concept, so a concept still absent from its result is one that
-            // has never been retrieved and that a later run cannot help either.
-            // Holding the graph back for it would hold it back for good.
+        @DisplayName("a complete run publishes even where a concept ended up undescribed")
+        void completeRunPublishesEvenIfSmaller() {
+            // The name this test used to carry said "partial retrieval", but it
+            // stubs a complete one -- deferred and transientFailures both zero --
+            // which is a different thing and the distinction the guard below
+            // turns on. A concept absent from a complete run is one the
+            // authority definitively does not hold, and no later run can help
+            // it, so holding the graph back for it would hold it back for good.
             givenHarvestedLabels(List.of());
             givenRetrieverReturns(skosFor(NVS_CONCEPT, "sea water temperature", "A measurement.", NVS + "x"));
 
             val graphs = service.graphs(Set.of(NVS_CONCEPT, NVS + "collection/P07/current/MISSING/"));
 
             assertThat(graphs.keySet(), hasItem(NVS));
+        }
+
+        @Test
+        @DisplayName("a run that did not reach every concept holds the graph back")
+        void incompleteRunIsWithheld() {
+            // The behaviour change. These graphs were the last that published
+            // regardless of completeness. The retriever has already fallen back
+            // to a stored copy of any age per concept before reporting, so a
+            // non-zero count means some concept has no description at all -- and
+            // publishing then replaces the graph with less than it holds.
+            givenHarvestedLabels(List.of());
+            given(retriever.describe(any(), any())).willReturn(new AuthorityRetriever.Descriptions(
+                skosFor(NVS_CONCEPT, "sea water temperature", "A measurement.", NVS + "x"), 12, 0));
+
+            assertThat(service.graphs(Set.of(NVS_CONCEPT)).keySet(), not(hasItem(NVS)));
+        }
+
+        @Test
+        @DisplayName("so does one where the authority could not serve some of them")
+        void transientFailuresAreWithheldToo() {
+            // The second count, and the one originally missed elsewhere: a
+            // concept the authority failed to serve is just as absent as one the
+            // budget never reached, and a timeout is every bit as likely to
+            // succeed tomorrow.
+            givenHarvestedLabels(List.of());
+            given(retriever.describe(any(), any())).willReturn(new AuthorityRetriever.Descriptions(
+                skosFor(NVS_CONCEPT, "sea water temperature", "A measurement.", NVS + "x"), 0, 3));
+
+            assertThat(service.graphs(Set.of(NVS_CONCEPT)).keySet(), not(hasItem(NVS)));
+        }
+
+        @Test
+        @DisplayName("a label-only vocabulary is untouched by the guard, having nothing to fetch")
+        void labelOnlyVocabulariesAreUnaffected() {
+            // Four of the seven authorities have no source at all -- GEMET,
+            // EnvThes, research activities and FDRI -- so completeness never
+            // applies to them. A harvest is read from Solr whole or not at all,
+            // which the branch above already handles.
+            givenHarvestedLabels(List.of(new Keyword("acid rain", "gemet", GEMET + "concept/1")));
+            given(retriever.describe(any(), any())).willReturn(new AuthorityRetriever.Descriptions(
+                ModelFactory.createDefaultModel(), 99, 99));
+
+            assertThat("its graph is built from the harvest, not from a retrieval",
+                service.graphs(Set.of()).keySet(), hasItem(GEMET));
         }
 
         @Test
