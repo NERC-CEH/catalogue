@@ -95,7 +95,7 @@ public class ServicesConfig {
      * has none, so a single authority that accepts a connection and then stops
      * answering would hold the export's scheduler thread open until the socket
      * gave up on its own. Bounding the number of requests per run, which
-     * {@link uk.ac.ceh.gateway.catalogue.exports.IdentityRetriever} does, bounds
+     * {@link uk.ac.ceh.gateway.catalogue.exports.AuthorityRetriever} does, bounds
      * nothing if any one of them can last forever.
      */
     @Bean

@@ -58,7 +58,7 @@ import java.util.Set;
  * with a third of one, and the endpoint would then lose and regain descriptions
  * every time the pod was recreated. So a graph is left alone unless the run
  * behind it is complete — see
- * {@link IdentityRetriever.Descriptions#isComplete()}.
+ * {@link AuthorityRetriever.Descriptions#isComplete()}.
  *
  * <p>"Complete" counts both entities the run never reached and entities the
  * authority could not serve. Only an entity the authority <em>definitively</em>
