@@ -5,8 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.SKOS;
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
 import uk.ac.ceh.gateway.catalogue.vocabularies.Keyword;
 
-import java.io.StringWriter;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -296,7 +293,7 @@ public class VocabularyGraphService implements SourceGraphProvider {
                 continue;
             }
             SourceGraphs.addProvenance(model, sourceGraph(authority), clock);
-            turtleByGraph.put(authority.graph(), serialise(model));
+            turtleByGraph.put(authority.graph(), SourceGraphs.serialise(model, sourceGraph(authority)));
         }
         return turtleByGraph;
     }
@@ -320,22 +317,6 @@ public class VocabularyGraphService implements SourceGraphProvider {
             model.add(concept, RDF.type, SKOS.Concept);
             model.add(concept, SKOS.prefLabel, keyword.getLabel());
         }
-    }
-
-    /**
-     * Serialised by Jena rather than assembled as text, so literal escaping is
-     * the parser's problem and not ours. A single unescaped backslash in one
-     * hand-built literal took down every export for a week (dri-one #344).
-     */
-    private static String serialise(Model model) {
-        model.setNsPrefix("skos", SKOS.getURI());
-        model.setNsPrefix("dcterms", DCTerms.getURI());
-        model.setNsPrefix("void", SourceGraphs.VOID);
-        model.setNsPrefix("prov", SourceGraphs.PROV);
-        model.setNsPrefix("xsd", "http://www.w3.org/2001/XMLSchema#");
-        val writer = new StringWriter();
-        RDFDataMgr.write(writer, model, Lang.TURTLE);
-        return writer.toString();
     }
 
     private Map<String, List<Keyword>> readLocalLabels() {

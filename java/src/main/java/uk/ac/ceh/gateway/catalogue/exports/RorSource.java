@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
 @Slf4j
 @Profile("exports")
 @Component
-class RorSource implements IdentitySource {
+class RorSource implements AuthoritySource {
 
     private static final String PREFIX = "https://ror.org/";
     private static final String FOAF = SourceGraphs.FOAF;

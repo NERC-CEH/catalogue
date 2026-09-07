@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
 @Slf4j
 @Profile("exports")
 @Component
-class DeimsSource implements ReferenceSource {
+class DeimsSource implements AuthoritySource {
 
     private static final String PREFIX = "https://deims.org/";
     private static final String API = PREFIX + "api/sites/";
