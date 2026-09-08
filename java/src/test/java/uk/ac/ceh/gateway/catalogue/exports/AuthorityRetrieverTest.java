@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+import uk.ac.ceh.gateway.catalogue.exports.AuthorityRetriever.Descriptions;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -30,6 +31,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -58,12 +60,14 @@ class AuthorityRetrieverTest {
     private DescriptionCache cache;
     private MockRestServiceServer server;
     private AuthorityRetriever retriever;
+    /** A field, so a test can start a fresh expectation set for a second run. */
+    private RestTemplate restTemplate;
 
     @BeforeEach
     void setUp() {
         dataset = DatasetFactory.create();
         cache = new DescriptionCache(dataset, Clock.fixed(NOW, ZoneOffset.UTC));
-        val restTemplate = new RestTemplate();
+        restTemplate = new RestTemplate();
         server = MockRestServiceServer.createServer(restTemplate);
         retriever = new AuthorityRetriever(restTemplate, cache);
     }
@@ -444,5 +448,164 @@ class AuthorityRetrieverTest {
 
         assertThat(source.asked, contains(List.of(THING + "a")));
         assertThat(described.isComplete(), is(true));
+    }
+
+    @Nested
+    @DisplayName("When one entity fails run after run")
+    class PersistentlyFailing {
+
+        /**
+         * The shape of the ORCID case: pub.orcid.org returns a deterministic 500
+         * for a well-formed identifier whose record is otherwise fine. Classified
+         * transient, so before this it withheld the whole graph for ever.
+         */
+        private Descriptions runWith(HttpStatus status, StubSource source, String... iris) {
+            server = MockRestServiceServer.createServer(restTemplate);
+            for (int i = 0; i < iris.length; i++) {
+                respondWith(status);
+            }
+            return retriever.describe(List.of(iris), source);
+        }
+
+        @Test
+        @DisplayName("it holds the graph back at first, because a later run may well do better")
+        void holdsBackWhileItMightRecover() {
+            val source = new StubSource(10, 1);
+
+            val first = runWith(HttpStatus.INTERNAL_SERVER_ERROR, source, THING + "a");
+
+            assertThat(first.transientFailures(), is(1));
+            assertThat("a graph must not publish while an entity might still arrive",
+                first.isComplete(), is(false));
+        }
+
+        @Test
+        @DisplayName("once the failure is persistent it stops holding the graph back")
+        void excusedOnceItIsClearlyNotComing() {
+            val source = new StubSource(10, 1);
+
+            Descriptions last = null;
+            for (var run = 0; run < AuthorityRetriever.DEFAULT_EXCUSE_AFTER_FAILURES; run++) {
+                last = runWith(HttpStatus.INTERNAL_SERVER_ERROR, source, THING + "a");
+            }
+
+            assertThat("the fifth consecutive failure is the one that gives up on it",
+                last.transientFailures(), is(0));
+            assertThat("2,124 other researchers must not be kept out by one broken record",
+                last.isComplete(), is(true));
+        }
+
+        @Test
+        @DisplayName("the other entities in the graph are described as normal throughout")
+        void doesNotCostTheRestOfTheGraph() {
+            val source = new StubSource(10, 1);
+            for (var run = 0; run < AuthorityRetriever.DEFAULT_EXCUSE_AFTER_FAILURES - 1; run++) {
+                runWith(HttpStatus.INTERNAL_SERVER_ERROR, source, THING + "a");
+            }
+
+            server = MockRestServiceServer.createServer(restTemplate);
+            respondWith(HttpStatus.INTERNAL_SERVER_ERROR);
+            respondWith("Ada");
+            val descriptions = retriever.describe(List.of(THING + "a", THING + "b"), source);
+
+            assertThat(descriptions.isComplete(), is(true));
+            assertThat(labelOf(descriptions.model(), THING + "b"), is("Ada"));
+            assertThat("nothing may be invented for the entity that failed",
+                labelOf(descriptions.model(), THING + "a"), is(nullValue()));
+        }
+
+        @Test
+        @DisplayName("it is still asked for once excused, so it can come back on its own")
+        void keepsAsking() {
+            val source = new StubSource(10, 1);
+            for (var run = 0; run < AuthorityRetriever.DEFAULT_EXCUSE_AFTER_FAILURES; run++) {
+                runWith(HttpStatus.INTERNAL_SERVER_ERROR, source, THING + "a");
+            }
+            val askedWhileFailing = source.asked.size();
+
+            server = MockRestServiceServer.createServer(restTemplate);
+            respondWith("Grace");
+            val recovered = retriever.describe(List.of(THING + "a"), source);
+
+            assertThat("an excused entity that is never asked about can never recover",
+                source.asked.size(), is(askedWhileFailing + 1));
+            assertThat(labelOf(recovered.model(), THING + "a"), is("Grace"));
+        }
+
+        @Test
+        @DisplayName("a success clears the count, so consecutive really means consecutive")
+        void successResetsTheCount() {
+            // Belt and braces rather than the only guard: an entity that has
+            // succeeded even once is cached, and addHeld then rescues it from
+            // every later failure regardless of any count -- see
+            // aHeldCopyIsUsedBeforeAnyOfThisApplies. The reset matters for the
+            // diagnostic being truthful, and so that a flaky entity cannot creep
+            // towards a threshold across runs it actually succeeded on.
+            val source = new StubSource(10, 1);
+            for (var run = 0; run < AuthorityRetriever.DEFAULT_EXCUSE_AFTER_FAILURES - 1; run++) {
+                runWith(HttpStatus.INTERNAL_SERVER_ERROR, source, THING + "a");
+            }
+            assertThat(cache.failures(THING + "a"),
+                is(AuthorityRetriever.DEFAULT_EXCUSE_AFTER_FAILURES - 1));
+
+            server = MockRestServiceServer.createServer(restTemplate);
+            respondWith("Grace");
+            retriever.describe(List.of(THING + "a"), source);
+
+            assertThat("four failures then a success is a clean slate, not four of five",
+                cache.failures(THING + "a"), is(0));
+        }
+
+        @Test
+        @DisplayName("being rate limited is not counted against the entity")
+        void rateLimitingIsNotTheEntitysFault() {
+            // 429 says the authority is busy, not that this entity is broken. If it
+            // counted, a fortnight of rate limiting would excuse the whole graph.
+            val source = new StubSource(10, 1);
+
+            for (var run = 0; run < AuthorityRetriever.DEFAULT_EXCUSE_AFTER_FAILURES + 2; run++) {
+                runWith(HttpStatus.TOO_MANY_REQUESTS, source, THING + "a");
+            }
+
+            assertThat(cache.failures(THING + "a"), is(0));
+            val last = runWith(HttpStatus.TOO_MANY_REQUESTS, source, THING + "a");
+            assertThat("a rate limited run must still hold the graph back",
+                last.isComplete(), is(false));
+        }
+
+        @Test
+        @DisplayName("an entity never asked about is not counted against either")
+        void budgetExhaustionIsNotTheEntitysFault() {
+            // Deferred, not failed: the budget ran out before its turn. Counting it
+            // would excuse the tail of any list longer than the per-run budget.
+            val source = new StubSource(1, 1);
+
+            for (var run = 0; run < AuthorityRetriever.DEFAULT_EXCUSE_AFTER_FAILURES + 2; run++) {
+                server = MockRestServiceServer.createServer(restTemplate);
+                respondWith("Ada");
+                retriever.describe(List.of(THING + "a", THING + "b"), source);
+            }
+
+            assertThat("the entity beyond the budget was never asked about",
+                cache.failures(THING + "b"), is(0));
+        }
+
+        @Test
+        @DisplayName("a stale copy is used instead, so an entity with history is never excused")
+        void aHeldCopyIsUsedBeforeAnyOfThisApplies() {
+            val source = new StubSource(10, 1);
+            server = MockRestServiceServer.createServer(restTemplate);
+            respondWith("Ada");
+            retriever.describe(List.of(THING + "a"), source);
+
+            for (var run = 0; run < AuthorityRetriever.DEFAULT_EXCUSE_AFTER_FAILURES + 2; run++) {
+                runWith(HttpStatus.INTERNAL_SERVER_ERROR, source, THING + "a");
+            }
+
+            val descriptions = runWith(HttpStatus.INTERNAL_SERVER_ERROR, source, THING + "a");
+            assertThat("a name from a fortnight ago beats dropping the person",
+                labelOf(descriptions.model(), THING + "a"), is("Ada"));
+            assertThat(descriptions.isComplete(), is(true));
+        }
     }
 }
