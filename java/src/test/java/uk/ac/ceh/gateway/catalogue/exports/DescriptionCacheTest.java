@@ -137,6 +137,98 @@ class DescriptionCacheTest {
     }
 
     @Nested
+    @DisplayName("Flushing before the pod goes away (dri-one #371)")
+    class ShutdownFlush {
+
+        @TempDir
+        Path directory;
+
+        @Test
+        @DisplayName("an export's fetches reach the share even though the run never finished")
+        void unfinishedRunIsStillSaved() {
+            // save() is called once per export. Before this, a pod that went away
+            // part-way through discarded the whole run -- over 1,500 requests
+            // across the authorities of phases 2 to 5.
+            val file = directory.resolve("cache.nq");
+            val live = new DescriptionCache(dataset, Clock.fixed(now, ZoneOffset.UTC), file.toString());
+            live.put(ORCID, description("Claire Wood"));
+
+            live.flushBeforeShutdown();
+
+            val recovered = new DescriptionCache(
+                TDB2Factory.createDataset(), Clock.fixed(now, ZoneOffset.UTC), file.toString());
+            assertTrue(
+                recovered.get(ORCID, Duration.ofDays(14))
+                    .map(held -> held.contains(createResource(ORCID), RDFS.label, "Claire Wood"))
+                    .orElse(false),
+                "the point of the flush is that a recreated pod starts with this run's work"
+            );
+        }
+
+        @Test
+        @DisplayName("a pod that fetched nothing writes nothing")
+        void cleanCacheWritesNothing() throws Exception {
+            val file = directory.resolve("cache.nq");
+            val live = new DescriptionCache(dataset, Clock.fixed(now, ZoneOffset.UTC), file.toString());
+            live.put(ORCID, description("Claire Wood"));
+            live.save();
+            val firstWrite = java.nio.file.Files.getLastModifiedTime(file);
+
+            live.flushBeforeShutdown();
+
+            // The file count cannot show this: a redundant rewrite leaves one
+            // file called cache.nq either way. Only the timestamp distinguishes
+            // "skipped" from "written again", and every restart of a pod that
+            // fetched nothing would otherwise push several megabytes to a CIFS
+            // share for no reason.
+            assertThat(
+                java.nio.file.Files.getLastModifiedTime(file), is(firstWrite)
+            );
+            assertTrue(java.util.Arrays.asList(directory.toFile().list()).contains("cache.nq"),
+                "and no leftover .part file");
+        }
+
+        @Test
+        @DisplayName("no snapshot configured is not an error at shutdown")
+        void noSnapshotIsSurvivable() {
+            val live = new DescriptionCache(dataset, Clock.fixed(now, ZoneOffset.UTC), "");
+            live.put(ORCID, description("Claire Wood"));
+
+            live.flushBeforeShutdown();
+
+            assertThat(directory.toFile().list().length, is(0));
+        }
+
+        @Test
+        @DisplayName("Spring actually calls it when the context closes")
+        void springHonoursTheAnnotation() {
+            // The assertion that matters, and the one a direct call cannot make:
+            // whether the lifecycle wiring works. #371's "done when" asks for a
+            // real pod termination, which this does not replace -- but an
+            // annotation that Spring never invokes would look exactly like a
+            // working fix in every other test here.
+            val file = directory.resolve("cache.nq");
+            val context = new org.springframework.context.annotation.AnnotationConfigApplicationContext();
+            // The bean is @Profile("exports"), so a bare context registers
+            // nothing at all -- which is worth knowing, since it is also what
+            // keeps this cache out of unrelated test contexts.
+            context.getEnvironment().setActiveProfiles("exports");
+            context.registerBean(Dataset.class, TDB2Factory::createDataset);
+            context.registerBean(DescriptionCache.class, () ->
+                new DescriptionCache(context.getBean(Dataset.class),
+                    Clock.fixed(now, ZoneOffset.UTC), file.toString()));
+            context.refresh();
+            context.getBean(DescriptionCache.class).put(ORCID, description("Claire Wood"));
+            assertThat("nothing written yet", file.toFile().exists(), is(false));
+
+            context.close();
+
+            assertTrue(file.toFile().exists(),
+                "@PreDestroy must be honoured, or the flush never runs in production");
+        }
+    }
+
+    @Nested
     @DisplayName("Surviving pod recreation via a snapshot on the share")
     class Snapshot {
 
