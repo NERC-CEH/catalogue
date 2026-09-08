@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,11 @@ import uk.ac.ceh.gateway.catalogue.CatalogueWebTest;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.PendingEmbeddingService;
 import uk.ac.ceh.gateway.catalogue.metrics.JDBCMetricsService;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
+import uk.ac.ceh.gateway.catalogue.search.HybridSearcher;
+import uk.ac.ceh.gateway.catalogue.search.SemanticSearcher;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.*;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
@@ -67,6 +71,21 @@ class EidcApplicationContextTest {
         Assertions.assertThrows(NoSuchBeanDefinitionException.class, () ->
             applicationContext.getBean(uk.ac.ceh.gateway.catalogue.upload.simple.UploadController.class)
         );
+    }
+
+    @Test
+    @DisplayName("No embedding beans without the vector-search profile")
+    void embeddingBeansAbsent() {
+        // This context does not activate "vector-search", so neither the embedding model nor the
+        // three services that need it should exist — a deployment that does not use embeddings
+        // should not be building an AWS Bedrock client. The vector-search side of this gate is
+        // asserted by VectorSearchContextTest.
+        for (Class<?> absent : new Class<?>[]{
+            EmbeddingModel.class, SemanticSearcher.class, HybridSearcher.class, PendingEmbeddingService.class
+        }) {
+            Assertions.assertThrows(NoSuchBeanDefinitionException.class,
+                () -> applicationContext.getBean(absent), absent.getSimpleName());
+        }
     }
 
     @Test

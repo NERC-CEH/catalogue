@@ -7,7 +7,7 @@ Two independent additions to the catalogue:
 1. **Dense vector search** — semantic KNN search via Solr's `DenseVectorField`, complementing the existing BM25 full-text search
 2. **MCP server** — exposes catalogue search to external LLMs (Claude, etc.) using the Spring AI MCP starter, activated via a Spring profile
 
-Both features use **Spring AI 2.0** (requires Spring Boot 4.0) and **Amazon Bedrock** for embeddings.
+Both features use **Spring AI 2.0** (built against Spring Boot 4.1) and **Amazon Bedrock** for embeddings.
 
 ---
 
@@ -40,7 +40,7 @@ documents remain searchable via BM25.
 
 **`gradle/libs.versions.toml`:**
 ```toml
-spring-ai = "2.0.0-M8"
+spring-ai = "2.0.1"
 
 spring-ai-bom     = { module = "org.springframework.ai:spring-ai-bom",                        version.ref = "spring-ai" }
 spring-ai-bedrock = { module = "org.springframework.ai:spring-ai-starter-model-bedrock" }
@@ -56,9 +56,12 @@ implementation libs.spring.ai.mcp
 implementation libs.spring.ai.tika    // PDF/Word/RTF supporting document extraction
 ```
 
-> **Note:** Spring AI 2.0.0-M8 is a milestone release. `java/build.gradle` includes
-> `repo.spring.io/milestone` in repositories. Before any production release, check whether
-> Spring AI 2.0 GA is available on Maven Central and remove the milestone repository.
+> **Note:** Spring AI 2.0.1 is a GA release on Maven Central, so no milestone repository is
+> required. It brings MCP SDK 2.0.0 (up from 2.0.0-M3 under 2.0.0-M8). Spring AI 2.0.x is built
+> against Spring Boot 4.1.x, and this project tracks that with Boot 4.1.1 — the version the
+> Spring AI 2.0.1 starters declare. Keep the two lines in step on future upgrades: Boot's
+> `io.spring.dependency-management` import wins over Spring AI's transitive Boot request, so a
+> mismatch is silent rather than a build failure.
 
 ---
 
@@ -121,6 +124,26 @@ Embedding is **decoupled from the main indexing path** to avoid calling Bedrock 
 
 Multiple rapid saves of the same document result in one Bedrock call (the pending map overwrites the previous entry).
 
+### When embedding fails
+
+A missing vector is invisible from the outside — the document stays keyword-searchable via BM25 and
+semantic search simply never returns it — so failures are classified rather than uniformly retried:
+
+| Failure | Behaviour |
+|---|---|
+| Solr answers 4xx (schema/field problem with this document) | Abandoned at once — the same request would fail identically. Logged at **ERROR** |
+| Solr or Bedrock unreachable | Re-queued indefinitely, **without** consuming the document's attempts. Repeated commit failures escalate to **ERROR** |
+| Anything else (e.g. Bedrock throttling or a rejected payload) | Re-queued, up to `catalogue.embedding.max-attempts` consecutive failures, then abandoned and logged at **ERROR** |
+| `commit` fails after documents were added | Those documents are re-queued for the next flush; they are in Solr's transaction log but not yet searchable |
+
+An abandoned document keeps its BM25 entry and has no vector. Saving it again, or rebuilding the
+index, re-queues it. `PendingEmbeddingService.abandonedEmbeddings()` lists what has been given up on
+and why, so the state outlives the log line.
+
+The distinction between the second and third rows is the important one: the attempt budget exists to
+stop a permanently broken document cycling forever, and spending it on an outage instead would turn
+a temporary problem into permanent data loss.
+
 ### Full reindex (server restart / empty index)
 
 `SolrScheduledReindexService` detects an empty index and rebuilds it. All document IDs are marked pending during the rebuild. When the flush fires, the base documents already exist in Solr (committed during rebuild), so partial atomic updates succeed. The flush processes IDs in configurable batches to avoid Bedrock rate limits.
@@ -130,6 +153,7 @@ Multiple rapid saves of the same document result in one Bedrock call (the pendin
 catalogue.embedding.flush-delay=PT5M
 catalogue.embedding.batch-size=50
 catalogue.embedding.inter-batch-pause-ms=1000
+catalogue.embedding.max-attempts=5
 ```
 
 ---
@@ -275,10 +299,12 @@ Add `mcp-server` to `SPRING_PROFILES_ACTIVE`:
 SPRING_PROFILES_ACTIVE=development,server-eidc,search-basic,cache,service-agreement,upload-simple,mcp-server
 ```
 
-### Transport (SSE, WebMVC)
+### Transport (Streamable HTTP, WebMVC)
 
-- `GET  /mcp/sse`      — SSE event stream
-- `POST /mcp/messages` — client-to-server messages
+- `/mcp` — Streamable HTTP transport, served by `spring-ai-starter-mcp-server-webmvc`
+
+`spring.ai.mcp.server.protocol` defaults to `streamable`; the older SSE transport
+(`/sse` + `/mcp/message`) is deprecated in Spring AI 2.0.
 
 ### Available tools
 
@@ -365,6 +391,7 @@ no additional configuration.
 | `catalogue.embedding.flush-delay` | `PT5M` | How often to flush pending embeddings (ISO-8601) |
 | `catalogue.embedding.batch-size` | `50` | Documents per Bedrock batch call |
 | `catalogue.embedding.inter-batch-pause-ms` | `1000` | Pause between batches (ms) |
+| `catalogue.embedding.max-attempts` | `5` | Consecutive failures before a document's embedding is abandoned (logged at ERROR). Unreachable-backend failures are not counted against it |
 | `catalogue.embedding.doc-max-chars` | `4000` | Max characters extracted per supporting document |
 | `catalogue.embedding.doc-max-files` | `5` | Max supporting documents processed per record |
 | `catalogue.semantic.group` | *(empty)* | Crowd group required for `?semantic=true`; empty = unrestricted |

@@ -1,24 +1,30 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.request.SolrQuery;
 import org.springframework.ai.embedding.EmbeddingModel;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
+import java.io.IOException;
 import java.util.Collections;
 
 import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
 
 @Slf4j
 @Service
-@ConditionalOnBean(EmbeddingModel.class)
+// Gated on the profile rather than @ConditionalOnBean(EmbeddingModel.class): that annotation is
+// only reliable on auto-configuration classes. On a component-scanned @Service it is evaluated
+// while scanning, before Spring AI registers the embedding model, so it never matched and this
+// bean never loaded — silently, because every consumer injects it as an Optional.
+@Profile("vector-search")
 public class HybridSearcher {
 
     // Same field weights as SearchQuery.build() — keeps BM25 sub-query consistent with direct search
@@ -56,7 +62,6 @@ public class HybridSearcher {
         log.info("Creating HybridSearcher");
     }
 
-    @SneakyThrows
     public SearchResults search(
             String endpoint,
             CatalogueUser user,
@@ -67,7 +72,7 @@ public class HybridSearcher {
     ) {
         val catalogue = catalogueService.retrieve(catalogueKey);
 
-        float[] vec = embeddingModel.embed(term);
+        float[] vec = embedQuery(term, endpoint, catalogueKey);
         String vectorStr = buildVectorString(vec);
 
         // topK must exceed rows so the KNN side supplies enough distinct candidates for fusion
@@ -95,13 +100,16 @@ public class HybridSearcher {
         query.setRows(rows);
 
         SolrVisibilityFilter.apply(query, user, groupStore, catalogue.getId(), catalogueKey);
-        if (!CatalogueService.ALL_CATALOGUES_ID.equals(catalogueKey)) {
-            query.addFilterQuery("{!term f=catalogue}" + catalogueKey);
-        }
+        SolrVisibilityFilter.applyCatalogueScope(query, catalogue.getId());
 
         log.debug("Hybrid RRF query: {}", query);
 
-        val response = solrClient.query("documents", query, POST);
+        QueryResponse response;
+        try {
+            response = solrClient.query("documents", query, POST);
+        } catch (SolrServerException | IOException e) {
+            throw SearchBackendFailure.unavailable("hybrid search", endpoint, catalogueKey, e);
+        }
 
         // Minimal SearchQuery used only for SearchResults pagination URL generation
         val searchQuery = new SearchQuery(
@@ -114,6 +122,23 @@ public class HybridSearcher {
         );
         return new SearchResults(response, searchQuery, Collections.emptyList());
     }
+
+    /**
+     * The embedding call reaches Amazon Bedrock, whose failures — throttling, expired credentials,
+     * a rejected payload — all arrive as unchecked AWS SDK exceptions. Spring AI 2.0 no longer
+     * offers a common wrapper for them (its {@code TransientAiException} went with the 1.x retry
+     * module), so the catch is deliberately wide: anything from this call is an upstream problem,
+     * and letting it escape produced a bare 500 with a stack trace and no indication of which
+     * search or catalogue failed.
+     */
+    private float[] embedQuery(String term, String endpoint, String catalogueKey) {
+        try {
+            return embeddingModel.embed(term);
+        } catch (RuntimeException e) {
+            throw SearchBackendFailure.unavailable("embedding for hybrid search", endpoint, catalogueKey, e);
+        }
+    }
+
 
     private String buildVectorString(float[] vec) {
         StringBuilder sb = new StringBuilder("[");

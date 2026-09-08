@@ -1,8 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.indexing.solr;
 
+import org.apache.solr.client.solrj.RemoteSolrException;
 import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -10,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.embedding.EmbeddingModel;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,9 +32,12 @@ class PendingEmbeddingServiceTest {
 
     private PendingEmbeddingService service;
 
+    private static final int MAX_ATTEMPTS = 3;
+
     @BeforeEach
     void setup() {
-        service = new PendingEmbeddingService(embeddingModel, solrClient, Optional.empty(), 50, 0);
+        service = new PendingEmbeddingService(
+            embeddingModel, solrClient, Optional.empty(), 50, 0, MAX_ATTEMPTS);
     }
 
     @Test
@@ -173,7 +180,7 @@ class PendingEmbeddingServiceTest {
         SupportingDocumentExtractor extractor = mock(SupportingDocumentExtractor.class);
         given(extractor.extractText("doc-id")).willReturn("peat bog carbon flux methodology");
         PendingEmbeddingService serviceWithExtractor = new PendingEmbeddingService(
-                embeddingModel, solrClient, Optional.of(extractor), 50, 0);
+                embeddingModel, solrClient, Optional.of(extractor), 50, 0, MAX_ATTEMPTS);
 
         SolrIndex idx = new SolrIndex().setTitle("Peat study");
         given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
@@ -193,7 +200,7 @@ class PendingEmbeddingServiceTest {
         SupportingDocumentExtractor extractor = mock(SupportingDocumentExtractor.class);
         given(extractor.extractText("doc-id")).willReturn("carbon flux methodology");
         PendingEmbeddingService serviceWithExtractor = new PendingEmbeddingService(
-                embeddingModel, solrClient, Optional.of(extractor), 50, 0);
+                embeddingModel, solrClient, Optional.of(extractor), 50, 0, MAX_ATTEMPTS);
 
         SolrIndex idx = new SolrIndex().setIdentifier("doc-id").setTitle("Peat study");
         given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
@@ -236,5 +243,123 @@ class PendingEmbeddingServiceTest {
 
         //Then — embedding called with metadata-only text, no extractor interactions
         verify(embeddingModel).embed(any(String.class));
+    }
+
+    // --- Failure handling: nothing silent, nothing endless, nothing dropped ---
+
+    @Test
+    @DisplayName("A document that always fails is abandoned instead of retried forever")
+    void permanentFailureIsAbandonedAfterMaxAttempts() throws Exception {
+        given(embeddingModel.embed(any(String.class))).willThrow(new RuntimeException("unembeddable"));
+
+        service.mark("doc-1", new SolrIndex().setIdentifier("doc-1").setTitle("Test"));
+        for (int i = 0; i < MAX_ATTEMPTS + 3; i++) {
+            service.flush();
+        }
+
+        // Tried exactly the budget, then stopped — previously every flush for the life of the
+        // process spent another embedding call on it.
+        verify(embeddingModel, times(MAX_ATTEMPTS)).embed(any(String.class));
+        assertThat(service.abandonedEmbeddings()).containsKey("doc-1");
+        assertThat(service.abandonedEmbeddings().get("doc-1")).contains("unembeddable");
+    }
+
+    @Test
+    @DisplayName("A document Solr rejects with 4xx is abandoned without retrying")
+    void solrRejectionIsNotRetried() throws Exception {
+        given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
+        given(solrClient.add(eq("documents"), any(SolrInputDocument.class)))
+            .willThrow(new RemoteSolrException("http://solr:8983/solr", 400, "unknown field", null));
+
+        service.mark("doc-1", new SolrIndex().setIdentifier("doc-1").setTitle("Test"));
+        service.flush();
+        service.flush();
+
+        // A 400 is deterministic, so the retry budget would only repeat it.
+        verify(embeddingModel, times(1)).embed(any(String.class));
+        assertThat(service.abandonedEmbeddings()).containsKey("doc-1");
+    }
+
+    @Test
+    @DisplayName("An unreachable backend keeps retrying rather than spending the document's budget")
+    void outageDoesNotConsumeAttempts() throws Exception {
+        given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
+        given(solrClient.add(eq("documents"), any(SolrInputDocument.class)))
+            .willThrow(new SolrServerException("connection refused"));
+
+        service.mark("doc-1", new SolrIndex().setIdentifier("doc-1").setTitle("Test"));
+        int flushes = MAX_ATTEMPTS + 3;
+        for (int i = 0; i < flushes; i++) {
+            service.flush();
+        }
+
+        // Still queued well past the budget: an outage must not be mistaken for a bad document, or
+        // downtime longer than maxAttempts flushes would silently discard every pending embedding.
+        verify(embeddingModel, times(flushes)).embed(any(String.class));
+        assertThat(service.abandonedEmbeddings()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("A failed commit re-queues the documents it did not make searchable")
+    void failedCommitReQueuesTheBatch() throws Exception {
+        given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
+        given(solrClient.commit("documents")).willThrow(new SolrServerException("commit failed"));
+
+        service.mark("doc-1", new SolrIndex().setIdentifier("doc-1").setTitle("Test"));
+        service.flush();
+        service.flush();
+
+        // The adds had succeeded but were not searchable, and the flush had already removed them
+        // from the pending map, so without re-queuing the embedding was lost behind one warning.
+        verify(embeddingModel, times(2)).embed(any(String.class));
+        verify(solrClient, times(2)).commit("documents");
+    }
+
+    @Test
+    @DisplayName("Nothing is committed when every document in the flush failed")
+    void noCommitWhenNothingWasAdded() throws Exception {
+        given(embeddingModel.embed(any(String.class))).willThrow(new RuntimeException("unembeddable"));
+
+        service.mark("doc-1", new SolrIndex().setIdentifier("doc-1").setTitle("Test"));
+        service.flush();
+
+        verify(solrClient, never()).commit("documents");
+    }
+
+    @Test
+    @DisplayName("A success clears the failure count so earlier failures do not accumulate")
+    void successResetsTheAttemptCount() throws Exception {
+        given(embeddingModel.embed(any(String.class)))
+            .willThrow(new RuntimeException("transient"))
+            .willReturn(new float[]{0.1f})
+            .willThrow(new RuntimeException("transient"))
+            .willThrow(new RuntimeException("transient"));
+
+        service.mark("doc-1", new SolrIndex().setIdentifier("doc-1").setTitle("Test"));
+        for (int i = 0; i < 4; i++) {
+            service.flush();
+        }
+
+        // Four flushes, three failures, but never three *consecutive* ones, so it is still in play.
+        assertThat(service.abandonedEmbeddings()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("An abandoned document returns to normal service once it succeeds again")
+    void abandonedDocumentClearsOnLaterSuccess() throws Exception {
+        given(embeddingModel.embed(any(String.class))).willThrow(new RuntimeException("unembeddable"));
+
+        service.mark("doc-1", new SolrIndex().setIdentifier("doc-1").setTitle("Test"));
+        for (int i = 0; i < MAX_ATTEMPTS; i++) {
+            service.flush();
+        }
+        assertThat(service.abandonedEmbeddings()).containsKey("doc-1");
+
+        reset(embeddingModel);
+        given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
+        service.mark("doc-1", new SolrIndex().setIdentifier("doc-1").setTitle("Test"));
+        service.flush();
+
+        assertThat(service.abandonedEmbeddings()).isEmpty();
     }
 }

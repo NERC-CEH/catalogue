@@ -9,7 +9,7 @@ import uk.ac.ceh.gateway.catalogue.mcp.CatalogueMcpTools;
 
 /**
  * Activates the Spring AI MCP server when the "mcp-server" profile is active.
- * Spring AI's WebMVC auto-configuration wires SSE transport at /mcp/sse and /mcp/messages.
+ * Spring AI's WebMVC auto-configuration wires the Streamable HTTP transport at /mcp.
  * Properties in application-mcp-server.properties set the server name and version.
  */
 @Configuration

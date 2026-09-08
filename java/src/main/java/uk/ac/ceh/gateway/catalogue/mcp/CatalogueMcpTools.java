@@ -1,22 +1,33 @@
 package uk.ac.ceh.gateway.catalogue.mcp;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.ObjectMapper;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.search.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Search tools exposed to external LLMs over MCP.
+ * <p>
+ * Tool methods declare no checked exceptions on purpose. Spring AI converts a
+ * {@code RuntimeException} thrown by a tool into an error result the calling model can see, while a
+ * checked exception bubbles out as a hard failure the model never learns about. So conditions a model
+ * can provoke — an unknown identifier, an unconfigured searcher — are answered with an error payload,
+ * and genuine faults are left to propagate unchecked. Serialisation needs no handling of its own:
+ * Jackson 3's {@code JacksonException} is already unchecked.
+ */
 @Slf4j
 @Component
 @Profile("mcp-server")
@@ -47,7 +58,6 @@ public class CatalogueMcpTools {
     }
 
     @Tool(description = "Full-text faceted search across UKCEH catalogue metadata records")
-    @SneakyThrows
     public String searchCatalogue(
             @ToolParam(description = "Search term, e.g. 'nitrogen deposition'") String term,
             @ToolParam(description = "Catalogue key to scope search, e.g. 'eidc'. Omit to search all catalogues.") String catalogue,
@@ -66,7 +76,6 @@ public class CatalogueMcpTools {
     }
 
     @Tool(description = "Semantic similarity search using vector embeddings — finds conceptually related records even when keywords don't match")
-    @SneakyThrows
     public String semanticSearch(
             @ToolParam(description = "Natural language query, e.g. 'freshwater monitoring in upland areas'") String query,
             @ToolParam(description = "Catalogue key to scope search, e.g. 'eidc'. Omit to search all catalogues.") String catalogue
@@ -84,7 +93,6 @@ public class CatalogueMcpTools {
     }
 
     @Tool(description = "Hybrid search combining keyword (BM25) and semantic (vector) ranking via Reciprocal Rank Fusion — balances exact-match precision with conceptual recall")
-    @SneakyThrows
     public String hybridSearch(
             @ToolParam(description = "Search term, e.g. 'upland river water quality'") String term,
             @ToolParam(description = "Catalogue key to scope search, e.g. 'eidc'. Omit to search all catalogues.") String catalogue,
@@ -103,11 +111,21 @@ public class CatalogueMcpTools {
     }
 
     @Tool(description = "Retrieve a single metadata record by its identifier")
-    @SneakyThrows
     public String getDocument(
             @ToolParam(description = "Document identifier (UUID or short ID)") String id
     ) {
-        var document = documentRepository.read(id);
+        MetadataDocument document;
+        try {
+            document = documentRepository.read(id);
+        } catch (DocumentRepositoryException ex) {
+            // A bad identifier is an ordinary outcome of a tool call, so answer the model rather than
+            // failing the call — and log the cause, which previously propagated undeclared, unlogged.
+            log.warn("MCP getDocument could not read '{}'", id, ex);
+            return "{\"error\": \"cannot read document\"}";
+        }
+        if (document == null) {
+            return "{\"error\": \"not found\"}";
+        }
         MetadataInfo info = document.getMetadata();
         boolean published = info != null && "published".equalsIgnoreCase(info.getState());
         boolean publiclyVisible = info != null && info.getIdentities(Permission.VIEW).contains("public");
@@ -123,7 +141,6 @@ public class CatalogueMcpTools {
     }
 
     @Tool(description = "List available catalogues and their identifiers")
-    @SneakyThrows
     public String listCatalogues() {
         List<Map<String, String>> catalogues = catalogueService.retrieveAll().stream()
                 .map(c -> {

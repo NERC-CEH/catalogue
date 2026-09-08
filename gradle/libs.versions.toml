@@ -2,7 +2,7 @@
 jena = "5.6.0"
 ukceh = "2.0.0"
 caffeine = "3.2.3"
-spring-ai = "2.0.0-M8"
+spring-ai = "2.0.1"
 
 [libraries]
 jena-libs = { module = "org.apache.jena:apache-jena-libs", version.ref = "jena" }

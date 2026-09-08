@@ -2,24 +2,30 @@ package uk.ac.ceh.gateway.catalogue.search;
 
 import lombok.SneakyThrows;
 import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.SolrParams;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.ai.embedding.EmbeddingModel;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -194,5 +200,54 @@ class HybridSearcherTest {
         verify(solrClient).query(eq("documents"), captor.capture(), any());
 
         assertThat(captor.getValue().getInt("start", -1)).isEqualTo(10);
+    }
+
+    // --- Catalogue scope and upstream failures ---
+
+    @Test
+    @DisplayName("Records shared into a catalogue are in scope via catalogue_view")
+    @SneakyThrows
+    void catalogueViewIsIncludedInTheScopeFilter() {
+        given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
+        given(catalogueService.retrieve("eidc")).willReturn(eidc);
+
+        searcher.search("http://example.com", CatalogueUser.PUBLIC_USER, "river flow", 1, 20, "eidc");
+
+        ArgumentCaptor<SolrParams> captor = ArgumentCaptor.forClass(SolrParams.class);
+        verify(solrClient).query(eq("documents"), captor.capture(), any());
+        assertThat(captor.getValue().getParams("fq"))
+            .anyMatch(fq -> fq.contains("catalogue:eidc") && fq.contains("catalogue_view:eidc"));
+    }
+
+    @Test
+    @DisplayName("An unreachable Solr becomes a 502-mapped failure, not a leaked stack trace")
+    @SneakyThrows
+    @MockitoSettings(strictness = Strictness.LENIENT)  // the shared Solr stubbing is not reached
+    void solrFailureIsReportedAsUpstreamFailure() {
+        given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
+        given(catalogueService.retrieve("eidc")).willReturn(eidc);
+        given(solrClient.query(eq("documents"), any(SolrParams.class), any()))
+            .willThrow(new SolrServerException("http://solr:8983/solr refused the connection"));
+
+        assertThatThrownBy(() ->
+            searcher.search("http://example.com", CatalogueUser.PUBLIC_USER, "river flow", 1, 20, "eidc"))
+            .isInstanceOf(ExternalResourceFailureException.class)
+            .hasMessageNotContaining("solr:8983")
+            .hasCauseInstanceOf(SolrServerException.class);
+    }
+
+    @Test
+    @DisplayName("A Bedrock failure becomes the same upstream failure rather than a bare 500")
+    @SneakyThrows
+    @MockitoSettings(strictness = Strictness.LENIENT)  // the shared Solr stubbing is not reached
+    void embeddingFailureIsReportedAsUpstreamFailure() {
+        given(catalogueService.retrieve("eidc")).willReturn(eidc);
+        given(embeddingModel.embed(any(String.class)))
+            .willThrow(new RuntimeException("ThrottlingException: rate exceeded, requestId=abc123"));
+
+        assertThatThrownBy(() ->
+            searcher.search("http://example.com", CatalogueUser.PUBLIC_USER, "river flow", 1, 20, "eidc"))
+            .isInstanceOf(ExternalResourceFailureException.class)
+            .hasMessageNotContaining("requestId");
     }
 }

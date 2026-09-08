@@ -11,8 +11,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Package-private utility — applies Solr record-visibility filter queries for a given user.
- * Shared by SemanticSearcher and HybridSearcher to avoid duplicating the publisher/group logic.
+ * Package-private utility — applies the Solr filter queries that scope a search: record visibility
+ * for a given user, and the catalogue being searched. Shared by SolrSearcher, SemanticSearcher and
+ * HybridSearcher so the publisher/group logic and the catalogue expression exist in one place.
  */
 final class SolrVisibilityFilter {
 
@@ -40,6 +41,28 @@ final class SolrVisibilityFilter {
                 query.addFilterQuery(buildUserVisibilityFilter(user, groups));
             }
         }
+    }
+
+    /**
+     * Restricts results to a single catalogue.
+     * <p>
+     * A record shared into a catalogue carries that catalogue in {@code catalogue_view} rather than
+     * {@code catalogue}, so filtering on {@code catalogue} alone hides exactly those records: they
+     * appear in ordinary search and silently vanish from semantic and hybrid search. Both fields
+     * have to be considered, and {@link SearchQuery} delegates here so the three search paths cannot
+     * drift apart again — a duplicated {@code qf} string has already broken that way once.
+     * <p>
+     * The id is expected to come from a resolved {@code Catalogue} rather than straight off the
+     * request: it is interpolated into a parsed query, so it must be a configured key and not
+     * arbitrary text. {@code CatalogueService.retrieve} rejects anything else.
+     */
+    static void applyCatalogueScope(SolrQuery query, String catalogueId) {
+        if (CatalogueService.ALL_CATALOGUES_ID.equals(catalogueId)) {
+            return;
+        }
+        query.addFilterQuery(
+                String.format("(catalogue:%s OR catalogue_view:%s)", catalogueId, catalogueId)
+        );
     }
 
     private static boolean isPublisher(List<String> groups, String catalogueId, String catalogueKey) {

@@ -114,9 +114,8 @@ Add `mcp-server` to `SPRING_PROFILES_ACTIVE`:
 SPRING_PROFILES_ACTIVE=development,server-eidc,search-basic,cache,service-agreement,upload-simple,mcp-server
 ```
 
-Available endpoints:
-- `GET  /mcp/sse`      — SSE event stream
-- `POST /mcp/messages` — client-to-server messages
+Available endpoint:
+- `/mcp` — Streamable HTTP transport (the default since Spring AI 2.0; SSE is deprecated)
 
 Available tools: `searchCatalogue`, `semanticSearch` (requires `vector-search` profile),
 `getDocument`, `listCatalogues`.

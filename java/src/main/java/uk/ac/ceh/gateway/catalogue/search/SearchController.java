@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -80,7 +79,6 @@ public class SearchController {
         }
     )
     @CrossOrigin
-    @SneakyThrows
     @ResponseBody
     @GetMapping("documents")
     public SearchResults searchAllCatalogues(
@@ -143,7 +141,6 @@ public class SearchController {
         }
     )
     @CrossOrigin
-    @SneakyThrows
     @ResponseBody
     @GetMapping("{catalogue}/documents")
     public SearchResults search(
