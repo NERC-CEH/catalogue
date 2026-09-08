@@ -4,6 +4,34 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.233.0] - 2026-09-07
+
+The catalogue now publishes what the outside world already knows about the things our records refer to. Where a record names a person, an organisation, a keyword, a cited paper, a grant, a place or a monitoring site, the catalogue collects the authoritative description of that thing from the body responsible for it — ORCID for researchers, ROR for institutions, Wikidata for subjects, and the environmental vocabulary services for keywords — and publishes it alongside our own data as a clearly labelled, separately citable set (GH dri-one#350). Each set is advertised in the catalogue's machine-readable description and listed in the query interface, so an external user can see what is on offer and where it came from. Contact email addresses are no longer published in the machine-readable output, and our own record text is no longer attached to researcher identifiers that belong to the people themselves (GH dri-one#348).
+
+Because that collected material is refreshed on a schedule, care has been taken to make sure a bad refresh cannot degrade what is published: a set is held back entirely rather than published half-finished, and a set that has unexpectedly shrunk is rejected. Addresses supplied by external services are checked and corrected to the form each service actually publishes, covering the ENVTHES, eLTER and GeoNames vocabularies (GH dri-one#343, GH dri-one#353). Background housekeeping tasks now have their own capacity and are allowed to finish cleanly when the application shuts down (GH dri-one#345), and no longer run during automated testing (GH dri-one#356). The record quality check now accepts an email address recorded against an author.
+
+## [3.232.0] - 2026-09-02
+
+A rebuild of the search index could previously empty it. The rebuild cleared the index before reading the records, so if reading the store failed the catalogue was left with nothing to search — the cause of a recent production outage. The records are now read first, and the index is only replaced once there is something to replace it with.
+
+Two smaller corrections to the machine-readable output: text containing a backslash no longer breaks the published data file, which had previously frozen the whole export, and Wikidata references are now written in the address form Wikidata itself uses (GH dri-one#343).
+
+## [3.231.0] - 2026-08-28
+
+Research activities can now be catalogued in their own right. A new record type describes a programme or project — its contact point, the awards that fund it, the outputs it produced and the datasets and facilities it relates to — with a dedicated editing form and a page that presents awards and outputs to visitors (DRI-ONE-284). Research activities also appear correctly in the machine-readable output, and records that relate to them show the relationship from both directions.
+
+Alongside this, searching for records to relate to one another now includes datasets that have no geographic coverage, which had been silently excluded. Contributor roles written with hyphens are displayed as readable labels, funders derived from award information are no longer written into the record and keep the order they were entered in, and styling lost in an earlier editor change has been restored. The record quality check now also reports on the number of geographic bounding boxes a record carries.
+
+## [3.230.0] - 2026-08-26
+
+The machine-readable version of the catalogue now describes people, funding and equipment far more usefully. A person referred to on several records is published as a single identity rather than a separate anonymous entry each time, and the same is true of keywords and other repeated items, which means an external tool can now tell that two records share a contributor (GH dri-one#319, GH dri-one#320, GH dri-one#334). Grant and funder information entered on a record is published as a recognisable award (GH dri-one#324), the role each contributor played is now included (GH dri-one#323), and datasets state which monitoring facilities they made use of (GH dri-one#325) and which environmental properties they measured (GH dri-one#326). A keyword typed as plain text is matched to the controlled term of the same name where one exists (GH dri-one#321).
+
+Several problems in that output have been fixed at the same time. Empty funding entries are no longer published (GH dri-one#322), licence references have been consolidated onto a single address each and links to withdrawn records have been removed (GH dri-one#327), and addresses supplied from outside are written in a consistent form (GH dri-one#318). Text saved with characters that had been mis-encoded twice — showing as unwanted symbols in place of accents and quotation marks — is now corrected as the record is saved (GH dri-one#328). Administrators can also trigger a refresh of the published data on demand rather than waiting for the next scheduled run (GH dri-one#330).
+
+## [3.229.0] - 2026-08-24
+
+Asking search to sort by something it does not recognise now produces a clear rejection rather than a server error, and the underlying search service's own error messages are no longer passed back to the user (GH dri-one#314). Diagnostic noise from the search service's monitoring library has been silenced so that its logs remain readable when something does go wrong (GH dri-one#315).
+
 ## [3.228.0] - 2026-08-20
 
 Several long-standing annoyances in the record editor have been fixed. Adding a row to a list field such as keywords no longer writes an empty entry into the record before anything has been typed; those blank entries were being saved and then appeared on the published record as a stray comma in front of the first real keyword, or as a labelled row with no value at all (GH dri-one#297). Records that already carry such an entry now render correctly without needing to be re-edited.
