@@ -450,6 +450,23 @@ class AuthorityRetrieverTest {
         assertThat(described.isComplete(), is(true));
     }
 
+    @Test
+    @DisplayName("the configured threshold matches the one the tests and the @Value default use")
+    void configuredThresholdAgreesWithTheDefault() throws Exception {
+        // Two places state this number: the @Value inline default, which is the
+        // one a context without the properties file gets, and application.properties,
+        // which is where an operator looks and changes it. They can drift silently --
+        // every test here would still pass on the constant while production ran on
+        // something else.
+        val properties = new java.util.Properties();
+        try (val in = getClass().getResourceAsStream("/application.properties")) {
+            properties.load(in);
+        }
+
+        assertThat(properties.getProperty("authorities.excuseAfterFailures"),
+            is(String.valueOf(AuthorityRetriever.DEFAULT_EXCUSE_AFTER_FAILURES)));
+    }
+
     @Nested
     @DisplayName("When one entity fails run after run")
     class PersistentlyFailing {
