@@ -73,6 +73,54 @@
       </#if>
     </div>
 
+    <#-- Only populated under the exports profile: without it there are no SourceGraphProviders
+         to declare a graph, so the whole section stays off the page.
+
+         row.graph() not row.graph: GraphProgress is a record, so its accessors do not follow the
+         getX() convention and FreeMarker exposes them as methods. Same as templates/rdf/void.ftl. -->
+    <#if sourceGraphProgress?has_content>
+      <div class="mt-5">
+        <h2>Source graphs</h2>
+        <p>
+          How far each authority's graph has got towards being published. A graph is written whole
+          or not at all, so one that is still filling publishes nothing until it is complete &mdash;
+          that is normal for a first fill, and a fault only once it stops improving.
+        </p>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Authority</th>
+              <th scope="col" class="text-end">Described</th>
+              <th scope="col" class="text-end">Outstanding</th>
+              <th scope="col">State</th>
+            </tr>
+          </thead>
+          <tbody>
+            <#list sourceGraphProgress as row>
+              <tr>
+                <th scope="row" class="fw-normal">
+                  <span title="${row.graph()}">${row.title()}</span>
+                </th>
+                <#if row.hasCounts()>
+                  <td class="text-end">${row.described()} / ${row.entities()}</td>
+                  <td class="text-end">${row.outstanding()}</td>
+                <#else>
+                  <td class="text-end text-muted">&mdash;</td>
+                  <td class="text-end text-muted">&mdash;</td>
+                </#if>
+                <td<#if row.warning()> class="text-danger"</#if>>${row.state()}</td>
+              </tr>
+            </#list>
+          </tbody>
+        </table>
+        <p class="text-muted">
+          Counts are held in memory and are cleared when the application restarts, so every graph
+          reads as not yet run until the next export. They describe the last run to reach each
+          graph, not what the endpoint currently serves.
+        </p>
+      </div>
+    </#if>
+
     <#-- Only advertised to holders of ROLE_CIG_ADMIN_DELETE. The page itself is @Secured, so this is
          about not offering a capability the user does not have. -->
     <#if permission.userCanAdminDelete()>
