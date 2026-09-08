@@ -90,6 +90,16 @@ public class DescriptionCache {
     private static final String METADATA_GRAPH = "urn:x-catalogue:description-cache";
     private static final String RETRIEVED_AT = "urn:x-catalogue:retrievedAt";
 
+    /**
+     * How many consecutive attempts to obtain an entity have failed.
+     *
+     * <p>Kept in the metadata graph beside the retrieval times, so it goes into
+     * the snapshot and survives the pod. A counter held only in memory would
+     * never reach a threshold on a deployment that rolls out every few days --
+     * which is exactly the situation a threshold is for.
+     */
+    private static final String CONSECUTIVE_FAILURES = "urn:x-catalogue:consecutiveFailures";
+
     private final Dataset dataset;
     private final Clock clock;
     private final Path snapshot;
@@ -343,6 +353,10 @@ public class DescriptionCache {
             metadata.removeAll(entity, property, null);
             metadata.add(entity, property, metadata.createTypedLiteral(
                 Instant.now(clock).toString(), "http://www.w3.org/2001/XMLSchema#dateTime"));
+            // The authority answered, so whatever run of failures preceded this
+            // is over. Consecutive means consecutive: an entity that fails four
+            // times, succeeds, then fails once is on one failure, not five.
+            metadata.removeAll(entity, metadata.getProperty(CONSECUTIVE_FAILURES), null);
             dataset.commit();
             changed = true;
         } catch (Exception ex) {
@@ -351,6 +365,82 @@ public class DescriptionCache {
             log.warn("Could not cache the description of {}: {}", uri, ex.getMessage());
         } finally {
             dataset.end();
+        }
+    }
+
+    /**
+     * Records that an attempt to obtain this entity failed, and reports how many
+     * consecutive attempts have now done so.
+     *
+     * <p>Only the caller knows which failures are the entity's own: being rate
+     * limited, or never being asked because the budget ran out, says nothing
+     * about the entity and must not be counted here.
+     *
+     * @return the new count, or zero if it could not be recorded. Zero is the
+     *         safe answer on failure: it reads as "not yet persistent", so a
+     *         cache that cannot be written leaves the existing hold-the-graph-back
+     *         behaviour exactly as it was.
+     */
+    public int recordFailure(String uri) {
+        try {
+            dataset.begin(ReadWrite.WRITE);
+        } catch (Exception ex) {
+            log.warn("Could not open the description cache for writing: {}", ex.getMessage());
+            return 0;
+        }
+        try {
+            val next = heldFailures(uri) + 1;
+            val metadata = dataset.getNamedModel(METADATA_GRAPH);
+            val entity = metadata.getResource(uri);
+            val property = metadata.getProperty(CONSECUTIVE_FAILURES);
+            metadata.removeAll(entity, property, null);
+            metadata.add(entity, property, metadata.createTypedLiteral(next));
+            dataset.commit();
+            changed = true;
+            return next;
+        } catch (Exception ex) {
+            dataset.abort();
+            log.warn("Could not record a failed attempt for {}: {}", uri, ex.getMessage());
+            return 0;
+        } finally {
+            dataset.end();
+        }
+    }
+
+    /** How many consecutive attempts to obtain this entity have failed. */
+    public int failures(String uri) {
+        try {
+            dataset.begin(ReadWrite.READ);
+        } catch (Exception ex) {
+            log.warn("Could not read the description cache: {}", ex.getMessage());
+            return 0;
+        }
+        try {
+            return heldFailures(uri);
+        } catch (Exception ex) {
+            log.warn("Could not read the failure count for {}: {}", uri, ex.getMessage());
+            return 0;
+        } finally {
+            dataset.end();
+        }
+    }
+
+    /** Must be called inside a transaction. */
+    private int heldFailures(String uri) {
+        if (!dataset.containsNamedModel(METADATA_GRAPH)) {
+            return 0;
+        }
+        val metadata = dataset.getNamedModel(METADATA_GRAPH);
+        val statements = metadata.listStatements(
+            metadata.getResource(uri), metadata.getProperty(CONSECUTIVE_FAILURES), (RDFNode) null);
+        if (!statements.hasNext()) {
+            return 0;
+        }
+        try {
+            return statements.next().getObject().asLiteral().getInt();
+        } catch (Exception ex) {
+            log.debug("Unreadable failure count for {}, treating as none", uri);
+            return 0;
         }
     }
 
