@@ -146,7 +146,7 @@ export default Backbone.View.extend({
           content = content + '<p class="text-body-tertiary">(INACTIVE)</p>'
         }
 
-        layer.bindPopup(content,{offset: [0, -5]})
+        layer.bindPopup(content,{ offset: [0, -5] })
 
         const geomType = feature.geometry.type.toLowerCase()
 

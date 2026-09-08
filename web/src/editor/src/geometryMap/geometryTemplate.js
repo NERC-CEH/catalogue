@@ -21,5 +21,3 @@ export default _.template(`
     </label>
 </div>
 `)
-
-

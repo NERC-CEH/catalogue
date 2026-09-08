@@ -199,7 +199,7 @@ export default ObjectInputView.extend({
 
         if (isLocationConfidential) {
           if (geometry.type === 'Point') {
-            const bufferDistance = Number(1)  //Distance (in km) for the buffer
+            const bufferDistance = Number(2) // Distance (in km) for the buffer
             const [lng, lat] = geometry.coordinates
 
             // Round coordinates to 2 decimal places
@@ -209,17 +209,17 @@ export default ObjectInputView.extend({
             const center = turf.point([roundedLng, roundedLat])
 
             // Calculate points 500m N, S, E and W of the rounded centre
-            const north = turf.destination(center, (bufferDistance/2), 0)
-            const south = turf.destination(center, (bufferDistance/2), 180)
-            const east = turf.destination(center, (bufferDistance/2), 90)
-            const west = turf.destination(center, (bufferDistance/2), 270)
+            const north = turf.destination(center, (bufferDistance / 2), 0)
+            const south = turf.destination(center, (bufferDistance / 2), 180)
+            const east = turf.destination(center, (bufferDistance / 2), 90)
+            const west = turf.destination(center, (bufferDistance / 2), 270)
 
             const square = turf.polygon([[
               [west.geometry.coordinates[0], south.geometry.coordinates[1]], // SW
               [east.geometry.coordinates[0], south.geometry.coordinates[1]], // SE
               [east.geometry.coordinates[0], north.geometry.coordinates[1]], // NE
               [west.geometry.coordinates[0], north.geometry.coordinates[1]], // NW
-              [west.geometry.coordinates[0], south.geometry.coordinates[1]]  // Close polygon
+              [west.geometry.coordinates[0], south.geometry.coordinates[1]] // Close polygon
             ]])
 
             square.properties.isConfidentialSquare = true
