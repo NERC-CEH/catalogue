@@ -167,7 +167,7 @@ public class VocabularyGraphService implements SourceGraphProvider {
     private final UriNormaliser uriNormaliser;
     private final List<VocabularySource> sources;
     private final AuthorityRetriever retriever;
-    private final WithheldGraphLog withheldGraphLog;
+    private final SourceGraphProgress progress;
     private final Clock clock;
 
     /**
@@ -181,9 +181,9 @@ public class VocabularyGraphService implements SourceGraphProvider {
         UriNormaliser uriNormaliser,
         List<VocabularySource> sources,
         AuthorityRetriever retriever,
-        WithheldGraphLog withheldGraphLog
+        SourceGraphProgress progress
     ) {
-        this(solrClient, uriNormaliser, sources, retriever, withheldGraphLog, Clock.systemUTC());
+        this(solrClient, uriNormaliser, sources, retriever, progress, Clock.systemUTC());
     }
 
     /** Package-private, so a test can fix the clock in the provenance header. */
@@ -192,14 +192,14 @@ public class VocabularyGraphService implements SourceGraphProvider {
         UriNormaliser uriNormaliser,
         List<VocabularySource> sources,
         AuthorityRetriever retriever,
-        WithheldGraphLog withheldGraphLog,
+        SourceGraphProgress progress,
         Clock clock
     ) {
         this.solrClient = solrClient;
         this.uriNormaliser = uriNormaliser;
         this.sources = List.copyOf(sources);
         this.retriever = retriever;
-        this.withheldGraphLog = withheldGraphLog;
+        this.progress = progress;
         this.clock = clock;
         log.info("Creating with {} fetching vocabularies", this.sources.size());
     }
@@ -271,6 +271,10 @@ public class VocabularyGraphService implements SourceGraphProvider {
                     // publish the fault. Leaving the previous graph in place
                     // loses a day's freshness and nothing else.
                     log.warn("No harvested labels for {}, leaving its graph as it is", authority.graph());
+                    // How many labels there should have been is exactly what the
+                    // failed harvest did not tell us, so the count is left at
+                    // zero and the state carries the message on its own.
+                    progress.nothingRetrieved(authority.graph(), 0);
                     continue;
                 }
                 addLocalLabels(model, harvested);
@@ -290,6 +294,7 @@ public class VocabularyGraphService implements SourceGraphProvider {
                         // previous version in place instead.
                         log.warn("No concept descriptions retrieved for {}, leaving its graph as it is",
                             authority.graph());
+                        progress.nothingRetrieved(authority.graph(), wanted.size());
                         continue;
                     }
                     if (!described.isComplete()) {
@@ -305,7 +310,7 @@ public class VocabularyGraphService implements SourceGraphProvider {
                         // hold is excused, so a withdrawn concept cannot freeze
                         // the graph, which is what made a completeness
                         // *threshold* the wrong answer here.
-                        withheldGraphLog.withheld(authority.graph(), wanted.size(),
+                        progress.withheld(authority.graph(), wanted.size(),
                             described.deferred(), described.transientFailures());
                         continue;
                     }
@@ -314,11 +319,19 @@ public class VocabularyGraphService implements SourceGraphProvider {
             }
 
             if (model.isEmpty()) {
+                // No labels harvested for it and nothing citing its concepts, so
+                // there was never anything to publish. Recorded so the
+                // maintenance page does not show it as a graph nobody has
+                // reached, which is a different and worrying thing.
+                progress.nothingReferenced(authority.graph());
                 continue;
             }
+            // Counted before the provenance header goes in, which adds the
+            // graph's own void:Dataset as a subject of its own.
+            val entities = SourceGraphs.entities(model);
             SourceGraphs.addProvenance(model, sourceGraph(authority), clock);
             turtleByGraph.put(authority.graph(), SourceGraphs.serialise(model, sourceGraph(authority)));
-            withheldGraphLog.published(authority.graph());
+            progress.published(authority.graph(), entities);
         }
         return turtleByGraph;
     }

@@ -66,20 +66,20 @@ class VocabularyGraphServiceTest {
     @Mock private SolrClient solrClient;
     @Mock private AuthorityRetriever retriever;
     private VocabularyGraphService service;
-    private WithheldGraphLog withheldGraphLog;
+    private SourceGraphProgress graphProgress;
     private final NvsSource nvsSource = new NvsSource();
     private final CastSource castSource = new CastSource("https://vocabs.ceh.ac.uk/sparql");
     private final AgrovocSource agrovocSource = new AgrovocSource();
 
     @BeforeEach
     void setUp() {
-        withheldGraphLog = new WithheldGraphLog();
+        graphProgress = new SourceGraphProgress();
         service = new VocabularyGraphService(
             solrClient,
             new UriNormaliser(),
             List.of(nvsSource, castSource, agrovocSource),
             retriever,
-            withheldGraphLog,
+            graphProgress,
             Clock.fixed(Instant.parse("2026-09-02T12:00:00Z"), ZoneOffset.UTC)
         );
     }
