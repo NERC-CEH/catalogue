@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.exports;
 
+import jakarta.annotation.PreDestroy;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -170,11 +171,12 @@ public class DescriptionCache {
      * thousand entities — to a CIFS share to record the additions of a single
      * authority.
      *
-     * <p>The cost of writing once is that an export dying part-way loses that
-     * run's fetches from the snapshot. It does not lose them from the cache: the
-     * store itself still holds them for the life of the pod, so only a pod
-     * recreation before the next successful export refetches, which is the case
-     * the snapshot already accepts.
+     * <p>Writing once used to mean that an export dying part-way lost that run's
+     * fetches from the snapshot — over 1,500 requests across the authorities of
+     * phases 2 to 5, on a deployment that rolls out every few days
+     * (dri-one #371). {@link #flushBeforeShutdown()} closes that: the store
+     * itself holds the run's fetches for the life of the pod, so all the
+     * snapshot needs is one more write before the pod goes away.
      *
      * <p>Written to a sibling temporary file and moved into place, so a reader
      * sees either the previous snapshot or the new one. The move is atomic where
@@ -213,6 +215,57 @@ public class DescriptionCache {
         } finally {
             dataset.end();
         }
+    }
+
+    /**
+     * Writes the snapshot one last time as the context closes.
+     *
+     * <p>Without this, a pod that goes away part-way through an export discards
+     * every fetch that run made, because {@link #save()} is called once per run
+     * and the run never reaches it. The store is pod-local, so nothing else
+     * carries them (dri-one #371).
+     *
+     * <p>{@code spring.task.scheduling.shutdown.await-termination} does not
+     * cover this on its own. Its period is 20 seconds and the source-graph phase
+     * of an export takes about eleven minutes in production, so the grace always
+     * expires mid-run; raising it past the export's duration would make every
+     * deploy wait minutes and force the pod's termination grace period up with
+     * it.
+     *
+     * <h2>Ordering, and why it does not need to be exact</h2>
+     *
+     * <p>{@code @PreDestroy} runs during {@code destroyBeans()}, the same phase
+     * in which Spring shuts the task scheduler down, and the order between two
+     * beans with no dependency between them is not defined. Both orders are
+     * acceptable, which is why this does not reach for a
+     * {@code SmartLifecycle} phase to pin it:
+     *
+     * <ul>
+     *   <li>scheduler first — the export is interrupted, and this writes
+     *       everything it managed;</li>
+     *   <li>this first — it writes everything up to now, and only the fetches of
+     *       the final few seconds are lost.</li>
+     * </ul>
+     *
+     * <p>A {@code ContextClosedEvent} listener or {@code SmartLifecycle.stop()}
+     * would be strictly worse: both run <em>before</em> {@code destroyBeans()},
+     * so the export would still be fetching for its whole remaining grace period
+     * after the snapshot had been written.
+     *
+     * <p>Nothing here can help under {@code SIGKILL} — an OOM kill or a node
+     * preemption skips the shutdown path entirely. The only lever for that case
+     * is the write granularity, and going back to one write per authority costs
+     * ten whole-file writes to a CIFS share per run.
+     */
+    @PreDestroy
+    public void flushBeforeShutdown() {
+        if (snapshot == null || !changed) {
+            // Nothing fetched since the last write, so there is nothing to save
+            // and a restarting pod loses nothing.
+            return;
+        }
+        log.info("Flushing the description cache snapshot before shutdown");
+        save();
     }
 
     private static void move(Path from, Path to) throws Exception {
