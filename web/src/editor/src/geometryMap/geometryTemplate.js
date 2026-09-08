@@ -14,5 +14,12 @@ export default _.template(`
         <br>
     </div>
 </div>
-<br>
+<div class="row">
+    <label>
+        <input type="checkbox" id="locationConfidential" <% if(data.locationConfidential === true) { %> checked <% } %> >
+        Confidential
+    </label>
+</div>
 `)
+
+

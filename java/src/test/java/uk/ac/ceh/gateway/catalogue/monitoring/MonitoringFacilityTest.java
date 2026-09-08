@@ -73,7 +73,6 @@ class MonitoringFacilityTest {
         val facility = new MonitoringFacility();
         String uri = "https://example.com/facility/test";
         facility.setUri(uri);
-        facility.setLocationConfidential(false);
         val jenaService = org.mockito.Mockito.mock(JenaLookupService.class);
 
         when(jenaService.relationshipCombinedGeometriesWithOwner(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility", false))

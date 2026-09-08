@@ -7,7 +7,8 @@ import template from './geometryTemplate'
 export default ObjectInputView.extend({
 
   events: {
-    'change #box': 'handleInput'
+    'change #box': 'handleInput',
+    'change #locationConfidential': 'handleLocationConfidentialCheckbox'
   },
 
   initialize (options) {
@@ -20,13 +21,9 @@ export default ObjectInputView.extend({
       this.$('#box').val(value)
     })
 
-    if (this.parentModel) {
-      this.listenTo(this.parentModel, 'change:locationConfidential', () => {
-        this.handleLocationConfidentialChange()
-      })
-    } else {
-      console.warn('No parentModel found - locationConfidential changes will not trigger geometry conversion')
-    }
+    this.listenTo(this.model, 'change:locationConfidential', () => {
+      this.handleLocationConfidentialChange()
+    })
   },
 
   getGeometry () {
@@ -40,6 +37,13 @@ export default ObjectInputView.extend({
     // Redraw shape
     this.drawnItems.clearLayers()
     this.drawnItems.addLayer(this.getGeometry())
+  },
+
+  handleLocationConfidentialCheckbox () {
+    this.model.set(
+      'locationConfidential',
+      this.$('#locationConfidential').is(':checked')
+    )
   },
 
   createMap () {
@@ -136,7 +140,7 @@ export default ObjectInputView.extend({
   createToolbar () {
     this.deleteButton = this.drawButtons !== true
 
-    const isLocationConfidential = this.parentModel?.get('locationConfidential') || false
+    const isLocationConfidential = this.model?.get('locationConfidential') === true
     const toolbar = new L.Control.Draw({
       position: 'topleft',
       edit: {
@@ -179,41 +183,70 @@ export default ObjectInputView.extend({
       return
     }
 
-    const isLocationConfidential = this.parentModel?.get('locationConfidential') || false
+    const isLocationConfidential = this.model?.get('locationConfidential') === true
     const rounding = (key, val) => {
       return typeof val === 'number' ? Number(val.toFixed(5)) : val
     }
 
     const hasGeometry = this.model.getGeometry?.()
+
     if (hasGeometry) {
       try {
         const currentGeometry = JSON.parse(this.model.get('geometryString'))
-        const geometry = currentGeometry.type === 'Feature' ? currentGeometry.geometry : currentGeometry
+        const geometry = currentGeometry.type === 'Feature'
+          ? currentGeometry.geometry
+          : currentGeometry
 
         if (isLocationConfidential) {
           if (geometry.type === 'Point') {
-            const coords = geometry.coordinates
-            const point = turf.point(coords)
-            const buffered = turf.buffer(point, 2, { units: 'kilometers' })
-            buffered.properties.isTurfCircle = true
+            const bufferDistance = Number(1)  //Distance (in km) for the buffer
+            const [lng, lat] = geometry.coordinates
 
-            this.model.setGeometry(JSON.stringify(buffered, rounding))
+            // Round coordinates to 2 decimal places
+            const roundedLng = Number(lng.toFixed(2))
+            const roundedLat = Number(lat.toFixed(2))
+
+            const center = turf.point([roundedLng, roundedLat])
+
+            // Calculate points 500m N, S, E and W of the rounded centre
+            const north = turf.destination(center, (bufferDistance/2), 0)
+            const south = turf.destination(center, (bufferDistance/2), 180)
+            const east = turf.destination(center, (bufferDistance/2), 90)
+            const west = turf.destination(center, (bufferDistance/2), 270)
+
+            const square = turf.polygon([[
+              [west.geometry.coordinates[0], south.geometry.coordinates[1]], // SW
+              [east.geometry.coordinates[0], south.geometry.coordinates[1]], // SE
+              [east.geometry.coordinates[0], north.geometry.coordinates[1]], // NE
+              [west.geometry.coordinates[0], north.geometry.coordinates[1]], // NW
+              [west.geometry.coordinates[0], south.geometry.coordinates[1]]  // Close polygon
+            ]])
+
+            square.properties.isConfidentialSquare = true
+
+            this.model.setGeometry(JSON.stringify(square, rounding))
+
             this.drawnItems.clearLayers()
-            const layer = L.geoJson(buffered)
+            const layer = L.geoJson(square)
             this.drawnItems.addLayer(layer)
             this.map.fitBounds(this.drawnItems.getBounds())
           } else {
-            console.log('Geometry is not a Marker, no conversion needed')
+            console.log('Geometry is not a Point, no conversion needed')
           }
         } else {
-          if (geometry.type === 'Polygon' && this.isCircleGeometry(currentGeometry)) {
+          if (
+            geometry.type === 'Polygon' &&
+            currentGeometry.properties?.isConfidentialSquare
+          ) {
             const center = turf.centroid(currentGeometry)
+
             this.model.setGeometry(JSON.stringify(center, rounding))
+
             this.drawnItems.clearLayers()
             const layer = L.geoJson(center)
             this.drawnItems.addLayer(layer)
           } else {
-            console.log('Geometry is not a circle, no conversion needed')
+            console.log('Geometry is not a confidential square, no conversion needed')
           }
         }
       } catch (e) {

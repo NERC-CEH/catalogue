@@ -40,3 +40,12 @@
     <#if resourceType.value == 'nercSignpost'><#include "_nercSignpost.ftlh"></#if>
   </div>
 </#if>
+
+<#macro eidcCheckmark>
+  <#--requires fontawesome v7-->
+    <span class="fa-layers fa-fw">
+      <i class="fa-solid fa-database"></i>
+      <i class="fa-solid fa-circle fa-inverse" data-fa-transform="shrink-6 right-6 down-6"></i>
+      <i class="fa-solid fa-circle-check" data-fa-transform="shrink-8 right-6 down-6"></i>
+    </span>
+</#macro>

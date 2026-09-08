@@ -4,10 +4,8 @@
 <#import "../_turtle.ftl" as ttl>
 <@c.common rdftype="sosa:Platform, doo:EnvironmentalMonitoringFacility" prefixed=prefixed!true>
 
-  <#if !locationConfidential>
-    <#if geometry?has_content>
-      dcterms:geometry "${ttl.escape(geometry.wkt?replace('Optional[','')?replace(']$','','r'))}"^^geo:wktLiteral ;
-    </#if>
+  <#if geometry?has_content>
+    dcterms:geometry "${ttl.escape(geometry.wkt?replace('Optional[','')?replace(']$','','r'))}"^^geo:wktLiteral ;
   </#if>
 
   <#if environmentalDomain??>
