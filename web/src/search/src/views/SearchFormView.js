@@ -1,4 +1,3 @@
-import _ from 'underscore'
 import Backbone from 'backbone'
 
 export default Backbone.View.extend({
@@ -15,59 +14,153 @@ export default Backbone.View.extend({
   initialize () {
     this.listenTo(this.model, 'change:term', this.updateDisplayedTerm)
     this.listenTo(this.model, 'change:semantic', this.updateSemanticCheckbox)
+    this.listenTo(this.model, 'change:semantic', this.updateTermControl)
+
+    // The model may already carry state read out of the query string, so bring the
+    // form into line with it before the user touches anything
+    this.updateSemanticCheckbox()
+    this.updateTermControl()
   },
 
   /*
-     * Event listener for changed input in the search term box. This will instantly
-     * clear the results (as these will now be dirty). After input has stopped, the
-     * term will be set on the model
+     * Is the search in semantic (natural language) mode rather than keyword mode?
+     */
+  isSemantic () {
+    return this.model.get('semantic') === true
+  },
+
+  /*
+     * Event listener for changed input in the search term box.
+     *
+     * In keyword mode this instantly clears the results (as these will now be
+     * dirty) and sets the term on the model, which starts a (debounced) search.
+     *
+     * In semantic mode the term is deliberately NOT put on the model: every search
+     * costs a Bedrock call to embed the query, so we hold the term back until the
+     * user presses the search button. The results already on the page are left
+     * alone (blanking them would leave nothing to look at until the button is
+     * pressed) and the form is flagged as pending instead.
      */
   handleTyping () {
     if (this.getDisplayedTerm() !== this.model.get('term')) {
-      this.model.clearResults()
-      _.debounce(this.updateTermOnModel(), 500)
+      if (this.isSemantic()) {
+        this.setTermPending(true)
+      } else {
+        this.model.clearResults()
+        this.updateTermOnModel()
+      }
+    } else {
+      this.setTermPending(false)
     }
   },
 
   /*
-     * The search form has been submitted.
-     * We thought we could update the search term right away, but that caused the search to retun nothing
-     * So instead, we just prevent the form being submitted and let the handleTyping() debounce handle it a few moments later
+     * The search form has been submitted, either by pressing the search button or
+     * by pressing enter in the keyword box. Stop the browser navigating and commit
+     * the displayed term to the model instead, which is what actually starts a
+     * search. In keyword mode handleTyping() will already have committed the same
+     * term, so this is a no-op there; in semantic mode this is the only way a
+     * search is ever started.
      */
   handleSubmit (e) {
     e.preventDefault()
+    this.updateTermOnModel()
   },
 
   /*
      * Reads the current term from the search box and sets it onto the model
      */
   updateTermOnModel () {
+    this.setTermPending(false)
     this.model.set('term', this.getDisplayedTerm())
+  },
+
+  /*
+     * The term control which is currently in use. Both the keyword input and the
+     * semantic textarea are in the markup; the one which is not in use is disabled
+     * so that it is neither focusable nor serialized into the query string.
+     */
+  activeTermControl () {
+    return this.$("[name='term']").not(':disabled')
   },
 
   /*
      * Obtains the current term from the search box
      */
   getDisplayedTerm () {
-    return this.$("[name='term']").val()
+    return this.activeTermControl().val()
   },
 
   /*
-     * Update the term box based upon the content in the model
+     * Update the term boxes based upon the content in the model. Both controls are
+     * written to, so whichever one is shown next is already up to date.
      */
   updateDisplayedTerm () {
-    const term = this.model.get('term')
-    const displayed = this.$("[name='term']")
-    if (term !== displayed) {
-      this.$("[name='term']")
-    }
+    this.setDisplayedTerm(this.model.get('term') || '')
+    this.setTermPending(false)
   },
 
+  /*
+     * Only write to a control whose value has actually changed. Assigning to the
+     * value of a focused input moves the caret to the end, which would fight the
+     * user as they type in keyword mode (where every keystroke round trips through
+     * the model and back).
+     */
+  setDisplayedTerm (term) {
+    this.$("[name='term']").each((i, control) => {
+      if (control.value !== term) { control.value = term }
+    })
+  },
+
+  /*
+     * Move focus to whichever term control is currently in use
+     */
+  focusTerm () {
+    this.activeTermControl().trigger('focus')
+  },
+
+  /*
+     * A semantic query is a sentence rather than a handful of keywords, so swap the
+     * single line input for a multi row textarea (and back again). The term typed
+     * so far is carried across so that toggling the checkbox never loses it.
+     */
+  updateTermControl () {
+    const semantic = this.isSemantic()
+    const term = this.getDisplayedTerm() || ''
+
+    this.toggleTermControl(this.$("input[name='term']"), !semantic)
+    this.toggleTermControl(this.$("textarea[name='term']"), semantic)
+    this.setDisplayedTerm(term)
+
+    this.$el.toggleClass('semantic-mode', semantic)
+    if (!semantic) { this.setTermPending(false) }
+  },
+
+  toggleTermControl ($control, active) {
+    $control.prop('disabled', !active).toggleClass('d-none', !active)
+  },
+
+  /*
+     * Flag that the displayed term has not been searched for yet, so that the
+     * search button can be highlighted as the thing to press next
+     */
+  setTermPending (pending) {
+    this.$el.toggleClass('term-pending', pending)
+  },
+
+  /*
+     * The semantic checkbox has been toggled. Commit the displayed term at the same
+     * time so that a semantic query which was typed but never submitted is not
+     * silently dropped when the user switches back to keyword search.
+     */
   handleSemanticToggle () {
-    this.model.set('semantic', this.$("[name='semantic']").is(':checked'))
+    this.model.set({
+      semantic: this.$("[name='semantic']").is(':checked'),
+      term: this.getDisplayedTerm()
+    })
   },
 
   updateSemanticCheckbox () {
-    this.$("[name='semantic']").prop('checked', this.model.get('semantic') === true)
+    this.$("[name='semantic']").prop('checked', this.isSemantic())
   }
 })

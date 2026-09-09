@@ -105,6 +105,47 @@ main {
                         border-color: transparent;
                     }
                 }
+
+                // Selectors here deliberately target the element and its name
+                // rather than .form-control / .btn: those two classes are @extend-ed
+                // by the editor styles, so using them fans a single rule out across
+                // a dozen unrelated selectors in the compiled CSS.
+                textarea[name='term'] {
+                    // The form is position: sticky, so a user-dragged textarea
+                    // could grow tall enough to push the results out of view.
+                    resize: none;
+                }
+            }
+
+            // The button label only appears in semantic mode, where the button is
+            // the only way to start a search (the term is deliberately not sent on
+            // each keystroke, as every semantic query costs an embedding call).
+            .search-button-label {
+                display: none;
+            }
+
+            &.semantic-mode {
+                .search-button-label {
+                    display: inline;
+                    margin-inline-start: 0.4em;
+                }
+
+                // Bootstrap strips the leading corner radius from every input group
+                // child except :first-child, which is still the (hidden) keyword
+                // input. Put it back on the textarea now that it leads the group.
+                .input-group textarea[name='term'] {
+                    border-start-start-radius: 4px;
+                    border-end-start-radius: 4px;
+                }
+            }
+
+            // The displayed term has been edited but not searched for yet, so draw
+            // attention to the button the user now has to press.
+            // outline-offset draws the ring inside the button, so it neither shifts
+            // the layout nor collides with the input group's own box-shadow rules.
+            &.term-pending .input-group button[type='submit'] {
+                outline: 2px solid $brand-primary;
+                outline-offset: -2px;
             }
 
         }
