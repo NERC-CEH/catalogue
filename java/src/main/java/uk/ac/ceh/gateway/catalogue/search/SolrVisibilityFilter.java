@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 
 /**
  * Package-private utility — applies the Solr filter queries that scope a search: record visibility
- * for a given user, and the catalogue being searched. Shared by SolrSearcher, SemanticSearcher and
- * HybridSearcher so the publisher/group logic and the catalogue expression exist in one place.
+ * for a given user, and the catalogue being searched. Shared by SolrSearcher and SemanticSearcher
+ * so the publisher/group logic and the catalogue expression exist in one place.
  */
 final class SolrVisibilityFilter {
 
@@ -48,9 +48,9 @@ final class SolrVisibilityFilter {
      * <p>
      * A record shared into a catalogue carries that catalogue in {@code catalogue_view} rather than
      * {@code catalogue}, so filtering on {@code catalogue} alone hides exactly those records: they
-     * appear in ordinary search and silently vanish from semantic and hybrid search. Both fields
-     * have to be considered, and {@link SearchQuery} delegates here so the three search paths cannot
-     * drift apart again — a duplicated {@code qf} string has already broken that way once.
+     * appear in ordinary search and silently vanish from semantic search. Both fields have to be
+     * considered, and {@link SearchQuery} delegates here so the two search paths cannot drift apart
+     * again — a duplicated {@code qf} string has already broken that way once.
      * <p>
      * The id is expected to come from a resolved {@code Catalogue} rather than straight off the
      * request: it is interpolated into a parsed query, so it must be a configured key and not

@@ -312,42 +312,57 @@ SPRING_PROFILES_ACTIVE=development,server-eidc,search-basic,cache,service-agreem
 |------|-------------|
 | `searchCatalogue` | Full-text BM25 search |
 | `semanticSearch` | Vector similarity search (requires `vector-search` profile) |
-| `hybridSearch` | RRF fusion of BM25 + KNN (requires `vector-search` profile) |
 | `getDocument` | Retrieve a record by ID |
 | `listCatalogues` | List available catalogues |
 
 Permission filtering is applied automatically — all MCP searches run as the public user and only return published records.
 
-### Hybrid search — Reciprocal Rank Fusion
+### Hybrid search — removed, pending Solr support
 
-`hybridSearch` combines BM25 keyword ranking and KNN vector ranking in a **single Solr request**
-using Solr's native **combiner** feature (the "combining queries" support from SOLR-17319).
-There is no `{!rrf}` query parser — RRF is a request-param combiner over a JSON `queries` map:
+There is no hybrid tool. `HybridSearcher` existed on this branch and was removed: BM25 and KNN
+are offered as the two separate paths above, which is all the current Solr can do.
+
+It delegated the rank fusion to Solr's **combiner** feature (SOLR-17319 "combining queries") —
+there is no `{!rrf}` query parser; RRF is a set of request params over a JSON `queries` map:
 
 ```
-json.queries.bm25q={!edismax qf="title^5 description^2 ..."}search term
-json.queries.knnq={!knn f=vector topK=100}[0.1,0.2,...]
+json.queries.bm25q="{!edismax qf=\"title^5 description^2 ...\"}search term"
+json.queries.knnq="{!knn f=vector topK=100}[0.1,0.2,...]"
 combiner=true
 combiner.algorithm=rrf
 combiner.query=bm25q&combiner.query=knnq
 combiner.rrf.k=60
 ```
 
-RRF score: `Σ 1 / (k + rank_i)` across sub-queries, where `k=60` (RRF paper default,
-`CombinerParams.DEFAULT_COMBINER_RRF_K`).
+**Why it was removed rather than left in place.** Tested against a real `solr:10.0.0` (the image
+this repo builds) with documents indexed, it failed two ways:
 
-> **Version requirement:** the combiner ships in **Solr 10.1 / 9.11** (`CombinerParams`);
-> it is **not** in the pinned `solr-solrj:10.0.0`, and no 10.1/9.11 GA is released yet.
-> The hybrid path therefore cannot execute until both the SolrJ client and the Solr server
-> are upgraded to ≥10.1 — gate it behind a version/feature check until then.
+1. **A hard 400 on every query, on any Solr version.** Solr JSON-parses the *value* of a `json.*`
+   param, and `{!edismax ...}` opens with `{`, so the parser reads it as a JSON object and fails on
+   the `!`: `JSONParser$ParseException: JSON Parse Error: char=!,position=1 AFTER='{!'`. A
+   local-params string must be passed as a JSON *string* — note the quoting above. Not a version
+   gap; 10.1 rejects it identically.
+2. **Quoted, Solr 10.0.0 answers HTTP 200 with zero results, silently.** The `combiner.*` params
+   are ordinary request params that nothing reads before 10.1, so they are ignored rather than
+   rejected; the named sub-queries go unconsumed; and no `q` is ever set, because the fusion was
+   meant to *be* the query.
 
-**Why hybrid over pure semantic?**
+Neither showed up in tests, which asserted the outgoing params against a mocked `SolrClient` and
+so could only confirm we sent what we meant to send.
+
+**Version requirement when revisiting:** the combiner ships in **Solr 10.1 / 9.11**
+(`org.apache.solr.common.params.CombinerParams`). As of 2026-09-09 neither is released — Solr's
+downloads page lists 10.0.0 as current and calls 9.10.1 "the last release in the 9.x series", so
+9.11 is not coming and only 10.1 can deliver it. Restore hybrid search after upgrading **both** the
+SolrJ client and the Solr server to ≥10.1, and fix the quoting. Fusing in Java over two ordinary
+queries is the alternative that would work on 10.0.0 today.
+
+**What hybrid would buy, for whoever picks this up:**
 - BM25 is precise for exact dataset names, accession numbers, and rare technical terms
 - KNN has better recall for concept queries where keywords don't appear verbatim
-- RRF fusion rewards documents that rank well on both axes without requiring calibrated scores
-
-**topK multiplier**: the KNN sub-query uses `topK = min(rows × 5, 200)` so the vector side
-supplies enough candidates for fusion. At the default 20 results this gives `topK=100`.
+- RRF rewards documents ranking well on both axes without needing calibrated scores
+- The KNN sub-query wants `topK = min(rows × 5, 200)` so the vector side supplies enough
+  candidates to fuse; at the default 20 results that is `topK=100`
 
 ### Upgrade path
 
@@ -373,9 +388,9 @@ SearchController                           ← adds semanticEnabled flag → Fre
 search.ftlh                                ← shown only to users with catalogue.semantic.group access
 
 McpServerConfig + CatalogueMcpTools        ← behind mcp-server profile
-  ↓ delegates to existing Searcher beans
-  ↓ + HybridSearcher (RRF fusion, requires vector-search)
-  exposed via SSE to Claude / other LLMs
+  ↓ delegates to existing Searcher beans (BM25 Searcher, and SemanticSearcher
+     when the vector-search profile is active)
+  exposed over Streamable HTTP to Claude / other LLMs
 ```
 
 No new Docker Compose services are required. Amazon Bedrock replaces Ollama as the embedding

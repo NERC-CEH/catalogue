@@ -26,7 +26,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.PendingEmbeddingService;
 import uk.ac.ceh.gateway.catalogue.metrics.JDBCMetricsService;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
-import uk.ac.ceh.gateway.catalogue.search.HybridSearcher;
 import uk.ac.ceh.gateway.catalogue.search.SemanticSearcher;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.*;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController;
@@ -77,11 +76,11 @@ class EidcApplicationContextTest {
     @DisplayName("No embedding beans without the vector-search profile")
     void embeddingBeansAbsent() {
         // This context does not activate "vector-search", so neither the embedding model nor the
-        // three services that need it should exist — a deployment that does not use embeddings
+        // services that need it should exist — a deployment that does not use embeddings
         // should not be building an AWS Bedrock client. The vector-search side of this gate is
         // asserted by VectorSearchContextTest.
         for (Class<?> absent : new Class<?>[]{
-            EmbeddingModel.class, SemanticSearcher.class, HybridSearcher.class, PendingEmbeddingService.class
+            EmbeddingModel.class, SemanticSearcher.class, PendingEmbeddingService.class
         }) {
             Assertions.assertThrows(NoSuchBeanDefinitionException.class,
                 () -> applicationContext.getBean(absent), absent.getSimpleName());
