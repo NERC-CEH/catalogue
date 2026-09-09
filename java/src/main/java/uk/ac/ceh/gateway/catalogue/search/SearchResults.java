@@ -23,7 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * A search results object for documents
  */
 @ConvertUsing({
-        @Template(called = "/html/search.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
+    @Template(called = "/html/search.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
 @Value
 @Slf4j
@@ -46,6 +46,7 @@ public class SearchResults {
     List<Link> relatedSearches;
     String sortField;
     String order;
+    boolean semanticEnabled;
 
     public SearchResults(QueryResponse response, SearchQuery query, List<Link> relatedSearches) {
         checkNotNull(response);
@@ -66,13 +67,34 @@ public class SearchResults {
         this.relatedSearches = relatedSearches;
         this.sortField = query.getSortField();
         this.order = query.getSortOrder().name();
+        this.semanticEnabled = false;
         log.debug("Creating: {}", this);
+    }
+
+    public SearchResults(SearchResults other, boolean semanticEnabled) {
+        this.numFound = other.numFound;
+        this.term = other.term;
+        this.page = other.page;
+        this.rows = other.rows;
+        this.url = other.url;
+        this.withoutBbox = other.withoutBbox;
+        this.intersectingBbox = other.intersectingBbox;
+        this.withinBbox = other.withinBbox;
+        this.prevPage = other.prevPage;
+        this.nextPage = other.nextPage;
+        this.results = other.results;
+        this.facets = other.facets;
+        this.catalogue = other.catalogue;
+        this.relatedSearches = other.relatedSearches;
+        this.sortField = other.sortField;
+        this.order = other.order;
+        this.semanticEnabled = semanticEnabled;
     }
 
     public SearchResults(SearchResults searchResults, List<Link> relatedSearches) {
         this.numFound = searchResults.numFound;
         this.term = searchResults.term;
-        this. page = searchResults.page;
+        this.page = searchResults.page;
         this.rows = searchResults.rows;
         this.url = searchResults.url;
         this.withoutBbox = searchResults.withoutBbox;
@@ -86,26 +108,28 @@ public class SearchResults {
         this.relatedSearches = relatedSearches;
         this.sortField = searchResults.sortField;
         this.order = searchResults.order;
+        this.semanticEnabled = searchResults.semanticEnabled;
     }
 
     SearchResults(
-            int numFound,
-            String term,
-            int page,
-            int rows,
-            String url,
-            String withoutBbox,
-            String intersectingBbox,
-            String withinBbox,
-            String prevPage,
-            String nextPage,
-            List<SolrIndex> results,
-            List<Facet> facets,
-            Catalogue catalogue,
-            List<Link> relatedSearches,
-            String sortField,
-            String order
-            ) {
+        int numFound,
+        String term,
+        int page,
+        int rows,
+        String url,
+        String withoutBbox,
+        String intersectingBbox,
+        String withinBbox,
+        String prevPage,
+        String nextPage,
+        List<SolrIndex> results,
+        List<Facet> facets,
+        Catalogue catalogue,
+        List<Link> relatedSearches,
+        String sortField,
+        String order,
+        boolean semanticEnabled
+    ) {
         this.numFound = numFound;
         this.term = term;
         this.page = page;
@@ -122,8 +146,9 @@ public class SearchResults {
         this.relatedSearches = relatedSearches;
         this.sortField = sortField;
         this.order = order;
+        this.semanticEnabled = semanticEnabled;
         log.debug("Creating: {}", this);
-            }
+    }
 
     private long populateNumFound(QueryResponse response) {
         return Optional.ofNullable(response.getResults())
@@ -134,26 +159,26 @@ public class SearchResults {
     /**
      * Return a link to the previous page as long as we are not currently on the
      * first page.
+     *
      * @return url to the previous page or null.
      */
     private String populatePrevPage(SearchQuery query) {
-        if(page != 1) {
+        if (page != 1) {
             return query.withPage(getPage() - 1).toUrl();
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     /**
      * Return a link to the next page as long as there is a page to go to.
+     *
      * @return A link to the next page if there is one to go to.
      */
     private String populateNextPage(SearchQuery query) {
-        if(numFound > (long) page * rows) {
+        if (numFound > (long) page * rows) {
             return query.withPage(getPage() + 1).toUrl();
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -161,36 +186,34 @@ public class SearchResults {
     /**
      * Return a link to a search which is not applying the applied bounding box
      * filter
+     *
      * @return url to a search without the bbox component
      */
     private String populateWithoutBbox(SearchQuery query) {
-        if(query.getBbox() != null) {
+        if (query.getBbox() != null) {
             return query.withBbox(null).toUrl();
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     private String populateIntersectingBbox(SearchQuery query) {
-        if(query.getBbox() != null && query.getSpatialOperation() != SpatialOperation.INTERSECTS) {
+        if (query.getBbox() != null && query.getSpatialOperation() != SpatialOperation.INTERSECTS) {
             return query.withSpatialOperation(SpatialOperation.INTERSECTS).toUrl();
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     private String populateWithinBbox(SearchQuery query) {
-        if(query.getBbox() != null && query.getSpatialOperation() != SpatialOperation.ISWITHIN) {
+        if (query.getBbox() != null && query.getSpatialOperation() != SpatialOperation.ISWITHIN) {
             return query.withSpatialOperation(SpatialOperation.ISWITHIN).toUrl();
-        }
-        else {
+        } else {
             return null;
         }
     }
 
-    private List<Facet> populateFacets(QueryResponse response, SearchQuery query){
+    private List<Facet> populateFacets(QueryResponse response, SearchQuery query) {
         List<Facet> newFacets = query.getFacets();
 
         newFacets.forEach((facet) -> {
@@ -220,7 +243,7 @@ public class SearchResults {
                     .url(((active) ? query.withoutFacetFilter(filter) : query.withFacetFilter(filter)).toUrl())
                     .build();
             })
-        .collect(Collectors.toList());
+            .collect(Collectors.toList());
     }
 
     private List<FacetResult> getHierarchicalFacetResults(SearchQuery query, FacetField facetField, String prefix) {

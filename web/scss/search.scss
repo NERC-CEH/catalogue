@@ -74,8 +74,14 @@ main {
             .input-group {
 
                 .input-group-btn {
+                    // display: flex so the button can fill the wrapper, which the input group
+                    // already stretches. Without it the button keeps its own 40px height and
+                    // leaves a bare strip down the right of the four row semantic textarea.
+                    display: flex;
+
                     button {
                         border-radius: 0 4px 4px 0;
+                        height: 100%;
                     }
                 }
 
@@ -105,6 +111,66 @@ main {
                         border-color: transparent;
                     }
                 }
+
+                // Selectors here deliberately target the element and its name
+                // rather than .form-control / .btn: those two classes are @extend-ed
+                // by the editor styles, so using them fans a single rule out across
+                // a dozen unrelated selectors in the compiled CSS.
+                textarea[name='term'] {
+                    // The form is position: sticky, so a user-dragged textarea
+                    // could grow tall enough to push the results out of view.
+                    resize: none;
+                }
+            }
+
+            // The button label only appears in semantic mode, where the button is
+            // the only way to start a search (the term is deliberately not sent on
+            // each keystroke, as every semantic query costs an embedding call).
+            .search-button-label {
+                display: none;
+            }
+
+            &.semantic-mode {
+                // Stack the magnifying glass above the label and centre both, rather than
+                // sitting them side by side. Side by side, the pair is centred as a unit but
+                // the words are pushed off centre by the width of the icon, which is obvious
+                // on a button this tall. Stacking puts the label on the button's centre line
+                // and reads as deliberate at this height.
+                .input-group-btn button {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 0.35em;
+                }
+
+                .search-button-label {
+                    display: block;
+                }
+
+                // Bootstrap strips the leading corner radius from every input group child
+                // except :first-child, which is still the (hidden) keyword input, so the
+                // textarea renders with square left corners. Put it back now that it leads
+                // the group.
+                //
+                // !important because this cannot be won on specificity: Bootstrap's selector
+                // is .input-group > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip)
+                // ... and every :not() counts as a class, putting it at (0,7,0) against the
+                // (0,5,2) of the selector below. Physical properties rather than the logical
+                // border-start-start-radius for the same reason -- the logical ones lost too.
+                .input-group textarea[name='term'] {
+                    border-top-left-radius: 4px !important;
+                    border-bottom-left-radius: 4px !important;
+                }
+            }
+
+            // The displayed term has been edited but not searched for yet, so draw
+            // attention to the button the user now has to press.
+            // outline-offset draws the ring inside the button, so it neither shifts
+            // the layout nor collides with the input group's own box-shadow rules.
+            &.term-pending .input-group button[type='submit'] {
+                outline: 2px solid $brand-primary;
+                outline-offset: -2px;
             }
 
         }

@@ -27,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
+import uk.ac.ceh.gateway.catalogue.search.SemanticSearcher;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,6 +45,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UNPRIVILEGED_USERNAME;
@@ -64,6 +67,7 @@ class SearchControllerTest extends AbstractMvcTest {
     @MockitoBean(name="permission") private PermissionService permissionService;
     @MockitoBean private ProfileService profileService;
     @MockitoBean private Searcher searcher;
+    @MockitoBean private SemanticSearcher semanticSearcher;
     @Autowired Configuration configuration;
 
     private final String catalogueKey = "eidc";
@@ -117,7 +121,8 @@ class SearchControllerTest extends AbstractMvcTest {
             allCatalogues,
             Collections.emptyList(),
             null,
-            "asc"
+            "asc",
+            false
         );
         given(searcher.search(
             any(), any(), any(), any(), any(), anyInt(), anyInt(), any(),
@@ -166,7 +171,8 @@ class SearchControllerTest extends AbstractMvcTest {
             eidc,
             relatedSearches,
             "publicationDate",
-            "desc"
+            "desc",
+            false
         );
         given(searcher.search(
             any(),
@@ -359,6 +365,70 @@ class SearchControllerTest extends AbstractMvcTest {
                 .param("facet", "badField|someValue")
         )
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("GET /{catalogue}/documents?semantic=true routes to SemanticSearcher")
+    @SneakyThrows
+    void semanticSearchRoutesToSemanticSearcher() {
+        //given
+        givenCatalogue();
+        val searchResults = new SearchResults(
+            5, "river", 1, 20, "http://localhost/eidc/documents",
+            null, null, null, null, null,
+            Collections.emptyList(), Collections.emptyList(), eidc, Collections.emptyList(), null, "asc", false
+        );
+        given(semanticSearcher.search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any()))
+            .willReturn(searchResults);
+
+        //when/then
+        mvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .accept(MediaType.APPLICATION_JSON)
+                .param("term", "river")
+                .param("semantic", "true")
+        )
+            .andExpect(status().isOk());
+
+        verify(semanticSearcher).search(any(), any(), eq("river"), any(), any(), anyInt(), anyInt(), eq(catalogueKey));
+        verify(searcher, never()).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("GET /{catalogue}/documents?semantic=false falls back to BM25 searcher")
+    @SneakyThrows
+    void semanticFalseUsesRegularSearcher() {
+        //given
+        givenSearchResults();
+        givenCatalogue();
+
+        //when/then
+        mvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .accept(MediaType.APPLICATION_JSON)
+                .param("semantic", "false")
+        )
+            .andExpect(status().isOk());
+
+        verify(searcher).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any(), any());
+        verify(semanticSearcher, never()).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    @DisplayName("semanticEnabled=true in JSON when SemanticSearcher bean is present")
+    @SneakyThrows
+    void semanticEnabledTrueWhenSemanticSearcherPresent() {
+        //given
+        givenSearchResults();
+        givenCatalogue();
+
+        //when/then
+        mvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.semanticEnabled", is(true)));
     }
 
     @Test

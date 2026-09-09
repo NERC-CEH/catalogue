@@ -1,8 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.request.SolrQuery;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,7 +37,6 @@ public class SolrSearcher implements Searcher {
         this.facetFactory = facetFactory;
     }
 
-    @SneakyThrows
     @Override
     public SearchResults search(
         String endpoint,
@@ -67,11 +68,16 @@ public class SolrSearcher implements Searcher {
             sortField,
             sortOrder
         );
-        val response = solrClient.query(
-            "documents",
-            searchQuery.build(),
-            POST
-        );
+        QueryResponse response;
+        try {
+            response = solrClient.query(
+                "documents",
+                searchQuery.build(),
+                POST
+            );
+        } catch (SolrServerException | IOException e) {
+            throw SearchBackendFailure.unavailable("basic search", endpoint, catalogueKey, e);
+        }
         return new SearchResults(response, searchQuery, Collections.emptyList());
     }
 }

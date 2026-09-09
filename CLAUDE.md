@@ -87,7 +87,7 @@ docker compose --profile fuseki  up --build  # include Fuseki SPARQL
 
 This is a **multi-catalogue metadata management system** for environmental/scientific datasets (UKCEH). A single Spring Boot application serves multiple catalogues (EIDC, ASSIST, etc.), each with their own document types and permission rules.
 
-### Backend (Java/Spring Boot 4.0.5)
+### Backend (Java/Spring Boot 4.1.1)
 
 **Layers:**
 - **Controllers** → **Services** → **Repository** (strict separation; services are tested independently of HTTP)
@@ -136,7 +136,7 @@ CSS is compiled from LESS source via `npm run build-css*`.
 - **PostgreSQL** — only needed with Hubbub profile
 
 ### Key libraries
-- **Server:** Spring Boot 4.0.5, Spring Security, Freemarker, Apache Solr 9 (SolrJ), Apache Jena 5, Lombok, Jackson, Hibernate Validator, EHCache, CEH Components (Git datastore + Crowd auth)
+- **Server:** Spring Boot 4.1.1, Spring Security, Freemarker, Apache Solr 9 (SolrJ), Apache Jena 5, Lombok, Jackson, Hibernate Validator, EHCache, CEH Components (Git datastore + Crowd auth)
 - **Client:** Backbone.js, jQuery 3, Bootstrap 5, Leaflet 1.9, Select2, DataTables, SweetAlert2
 
 ## IntelliJ setup

@@ -76,9 +76,11 @@ export default Backbone.View.extend({
       el: this.$('.mapsearch')
     })
 
-    // Pass initial state e.g. (search term) so they render correctly on page load
-    const current = (this.model.getState().term || '')
-    this.$("input[name='term']").val(current).focus()
+    // Pass initial state e.g. (search term) so they render correctly on page load.
+    // The form view owns both term controls (keyword input and semantic textarea),
+    // so let it decide which one to fill and focus.
+    this.searchFormView.updateDisplayedTerm()
+    this.searchFormView.focusTerm()
     return this
   }
 })

@@ -546,6 +546,21 @@ header {
 .search-form .btn {
     background-color: var(--header-background-colour);
     color: white;
+    transition: background-color 0.15s ease-in-out;
+
+    // In semantic mode this button is the only way to run a search -- the term is
+    // deliberately not sent while typing -- so it needs to read as pressable.
+    //
+    // Derived from the button's own background rather than reusing
+    // --header-link-hover-background-colour: EIDC sets that to plain white, which is fine
+    // for a header link but would erase this button's white label. Darkening also raises
+    // the label's contrast (4.75:1 -> 6.61:1 on EIDC) instead of lowering it, and still
+    // gives a visible change on the catalogues whose header is white.
+    &:hover,
+    &:focus-visible {
+        background-color: color-mix(in hsl, var(--header-background-colour), black 15%);
+        color: white;
+    }
 }
 
 i.fa-solid,
