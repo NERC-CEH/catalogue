@@ -74,8 +74,14 @@ main {
             .input-group {
 
                 .input-group-btn {
+                    // display: flex so the button can fill the wrapper, which the input group
+                    // already stretches. Without it the button keeps its own 40px height and
+                    // leaves a bare strip down the right of the four row semantic textarea.
+                    display: flex;
+
                     button {
                         border-radius: 0 4px 4px 0;
+                        height: 100%;
                     }
                 }
 
@@ -125,17 +131,36 @@ main {
             }
 
             &.semantic-mode {
-                .search-button-label {
-                    display: inline;
-                    margin-inline-start: 0.4em;
+                // Stack the magnifying glass above the label and centre both, rather than
+                // sitting them side by side. Side by side, the pair is centred as a unit but
+                // the words are pushed off centre by the width of the icon, which is obvious
+                // on a button this tall. Stacking puts the label on the button's centre line
+                // and reads as deliberate at this height.
+                .input-group-btn button {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 0.35em;
                 }
 
-                // Bootstrap strips the leading corner radius from every input group
-                // child except :first-child, which is still the (hidden) keyword
-                // input. Put it back on the textarea now that it leads the group.
+                .search-button-label {
+                    display: block;
+                }
+
+                // Bootstrap strips the leading corner radius from every input group child
+                // except :first-child, which is still the (hidden) keyword input, so the
+                // textarea renders with square left corners. Put it back now that it leads
+                // the group.
+                //
+                // !important because this cannot be won on specificity: Bootstrap's selector
+                // is .input-group > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip)
+                // ... and every :not() counts as a class, putting it at (0,7,0) against the
+                // (0,5,2) of the selector below. Physical properties rather than the logical
+                // border-start-start-radius for the same reason -- the logical ones lost too.
                 .input-group textarea[name='term'] {
-                    border-start-start-radius: 4px;
-                    border-end-start-radius: 4px;
+                    border-top-left-radius: 4px !important;
+                    border-bottom-left-radius: 4px !important;
                 }
             }
 
