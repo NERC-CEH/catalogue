@@ -10,7 +10,8 @@ export default Backbone.View.extend({
   },
 
   createMap: function () {
-    const studyArea = JSON.parse(this.getStudyArea()[0])
+    const geoJsonString = this.$('[dataType="geoJson"]').first().attr('content')
+    const studyArea = JSON.parse(geoJsonString)
     const feature = L.geoJson(studyArea)
 
     const map = new L.Map($('#studyarea-map')[0], {
@@ -58,18 +59,6 @@ export default Backbone.View.extend({
       default:
         console.log('Unknown geoJSON type.')
     }
-  },
-
-  getStudyArea () {
-    const studyArea = this.$('[dataType="geoJson"]')
-
-    const geoJsonStrings = _.map(studyArea, el => $(el).attr('content'))
-
-    return _.map(geoJsonStrings, geoJsonStr => {
-      const geoJson = JSON.parse(geoJsonStr)
-
-      return geoJsonStr
-    })
   },
 
   getPointStyle (feature) {
