@@ -121,6 +121,55 @@
       </div>
     </#if>
 
+    <#-- Only populated under the vector-search profile, and dropped if the counts could not be
+         read at all, so the page never claims a coverage it does not know. Accessors need their
+         parentheses: EmbeddingProgress is a record, so FreeMarker exposes them as methods.
+
+         ?c prints the numbers without grouping separators, which keeps the output the same
+         whatever locale the JVM happens to be running under. -->
+    <#if embeddingProgress??>
+      <div class="mt-5">
+        <h2>Semantic search</h2>
+        <p>
+          Semantic search matches records by meaning rather than by keyword, which needs each record
+          to carry a vector embedding. A record without one is still found by keyword search, but
+          can never be returned by a semantic one.
+        </p>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Records embedded</th>
+              <th scope="col" class="text-end">Queued</th>
+              <th scope="col">State</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row" class="fw-normal">
+                ${embeddingProgress.embedded()?c} / ${embeddingProgress.total()?c}
+                (${embeddingProgress.percentage()?c}%)
+              </th>
+              <td class="text-end">${embeddingProgress.pending()?c}</td>
+              <td<#if embeddingProgress.warning()> class="text-danger"</#if>>${embeddingProgress.state()}</td>
+            </tr>
+          </tbody>
+        </table>
+        <#if embeddingProgress.abandoned() gt 0>
+          <p class="text-danger">
+            These have been given up on after repeated failures and will not be retried on their
+            own. They stay keyword-searchable but have no vector &mdash; save them again, or rebuild
+            the index, to retry.
+          </p>
+        <#else>
+          <p class="text-muted">
+            Queued records are embedded a batch at a time on a timer, so a count that is still
+            filling after a reindex is normal. Counts come from the search index, so they survive a
+            restart.
+          </p>
+        </#if>
+      </div>
+    </#if>
+
     <#-- Only advertised to holders of ROLE_CIG_ADMIN_DELETE. The page itself is @Secured, so this is
          about not offering a capability the user does not have. -->
     <#if permission.userCanAdminDelete()>

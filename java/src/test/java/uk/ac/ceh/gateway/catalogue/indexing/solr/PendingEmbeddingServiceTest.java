@@ -362,4 +362,64 @@ class PendingEmbeddingServiceTest {
 
         assertThat(service.abandonedEmbeddings()).isEmpty();
     }
+
+    // ------------------------------------------------------- coverage for the maintenance page
+
+    private void givenSolrCounts(long total, long embedded) throws Exception {
+        given(solrClient.query(eq("documents"), any(org.apache.solr.client.solrj.request.SolrQuery.class)))
+            .willAnswer(invocation -> {
+                String q = invocation.getArgument(1, org.apache.solr.client.solrj.request.SolrQuery.class).getQuery();
+                var results = new org.apache.solr.common.SolrDocumentList();
+                results.setNumFound("*:*".equals(q) ? total : embedded);
+                var response = mock(org.apache.solr.client.solrj.response.QueryResponse.class);
+                given(response.getResults()).willReturn(results);
+                return response;
+            });
+    }
+
+    @Test
+    @DisplayName("Coverage reports how many records carry a vector")
+    void coverageCountsEmbeddedRecords() throws Exception {
+        givenSolrCounts(1991, 1847);
+
+        var coverage = service.coverage();
+
+        assertThat(coverage.total()).isEqualTo(1991);
+        assertThat(coverage.embedded()).isEqualTo(1847);
+    }
+
+    @Test
+    @DisplayName("Coverage reports what is still queued and what has been given up on")
+    void coverageReportsQueueAndAbandoned() throws Exception {
+        givenSolrCounts(3, 1);
+        given(embeddingModel.embed(any(String.class))).willThrow(new RuntimeException("unembeddable"));
+        service.mark("doc-1", new SolrIndex().setIdentifier("doc-1").setTitle("Test"));
+        for (int i = 0; i < MAX_ATTEMPTS; i++) {
+            service.flush();
+        }
+        service.mark("doc-2", new SolrIndex().setIdentifier("doc-2").setTitle("Queued"));
+
+        var coverage = service.coverage();
+
+        assertThat(coverage.pending()).isEqualTo(1);
+        assertThat(coverage.abandoned()).isEqualTo(1);
+    }
+
+    /**
+     * The vector field is a DenseVectorField, which Solr will not accept a wildcard or range query
+     * against, so embedding_text stands in for it -- the two are written by the same atomic update.
+     */
+    @Test
+    @DisplayName("Coverage counts embedding_text, which Solr can query, not the vector field")
+    void coverageQueriesEmbeddingTextNotTheVectorField() throws Exception {
+        givenSolrCounts(10, 5);
+
+        service.coverage();
+
+        ArgumentCaptor<org.apache.solr.client.solrj.request.SolrQuery> queries =
+            ArgumentCaptor.forClass(org.apache.solr.client.solrj.request.SolrQuery.class);
+        verify(solrClient, times(2)).query(eq("documents"), queries.capture());
+        assertThat(queries.getAllValues()).extracting(org.apache.solr.client.solrj.request.SolrQuery::getQuery)
+            .containsExactlyInAnyOrder("*:*", "embedding_text:[* TO *]");
+    }
 }

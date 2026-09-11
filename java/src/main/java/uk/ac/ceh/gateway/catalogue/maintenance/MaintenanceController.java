@@ -23,6 +23,7 @@ import uk.ac.ceh.gateway.catalogue.exports.SourceGraphProvider.SourceGraph;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.mapserver.MapServerIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.PendingEmbeddingService;
 import uk.ac.ceh.gateway.catalogue.maintenance.MaintenanceResponse.GraphProgress;
 
 import java.util.Arrays;
@@ -43,6 +44,8 @@ public class MaintenanceController {
     private final Optional<CatalogueExportService> catalogueExportService;
     private final List<SourceGraphProvider> sourceGraphProviders;
     private final Optional<SourceGraphProgress> sourceGraphProgress;
+    /** Absent without the "vector-search" profile, which keeps the panel off the page. */
+    private final Optional<PendingEmbeddingService> embeddingService;
 
     /** What a graph that no run has reached since startup is shown as. */
     static final String NOT_RUN = "Not run yet";
@@ -62,10 +65,11 @@ public class MaintenanceController {
         @Qualifier("mapserver-index") DocumentIndexingService mapserverService,
         Optional<CatalogueExportService> catalogueExportService,
         ObjectProvider<SourceGraphProvider> sourceGraphProviders,
-        Optional<SourceGraphProgress> sourceGraphProgress
+        Optional<SourceGraphProgress> sourceGraphProgress,
+        Optional<PendingEmbeddingService> embeddingService
     ) {
         this(repoService, solrIndex, linkingService, mapserverService, catalogueExportService,
-            sourceGraphProviders.orderedStream().toList(), sourceGraphProgress);
+            sourceGraphProviders.orderedStream().toList(), sourceGraphProgress, embeddingService);
     }
 
     /**
@@ -83,7 +87,8 @@ public class MaintenanceController {
         DocumentIndexingService mapserverService,
         Optional<CatalogueExportService> catalogueExportService,
         List<SourceGraphProvider> sourceGraphProviders,
-        Optional<SourceGraphProgress> sourceGraphProgress
+        Optional<SourceGraphProgress> sourceGraphProgress,
+        Optional<PendingEmbeddingService> embeddingService
     ) {
         this.repoService = repoService;
         this.solrIndex = solrIndex;
@@ -92,6 +97,7 @@ public class MaintenanceController {
         this.catalogueExportService = catalogueExportService;
         this.sourceGraphProviders = List.copyOf(sourceGraphProviders);
         this.sourceGraphProgress = sourceGraphProgress;
+        this.embeddingService = embeddingService;
         log.info("Creating");
     }
 
@@ -124,6 +130,17 @@ public class MaintenanceController {
         toReturn.setExportsAvailable(catalogueExportService.isPresent());
         catalogueExportService.ifPresent(service -> toReturn.setLastExported(service.getLastExported()));
         toReturn.setSourceGraphProgress(graphProgress());
+        // Solr being unreachable is reported the same way the indexing checks above report it,
+        // rather than taking the whole maintenance page down with it.
+        embeddingService.ifPresent(service -> {
+            try {
+                val coverage = service.coverage();
+                toReturn.setEmbeddingProgress(MaintenanceResponse.EmbeddingProgress.from(
+                    coverage.embedded(), coverage.total(), coverage.pending(), coverage.abandoned()));
+            } catch (Exception e) {
+                toReturn.addMessage(e.getMessage());
+            }
+        });
         return toReturn;
     }
 
