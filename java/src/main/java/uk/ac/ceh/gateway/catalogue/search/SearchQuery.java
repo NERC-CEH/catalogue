@@ -88,6 +88,7 @@ public class SearchQuery {
     List<Facet> facets;
     String sortField;
     SolrQuery.ORDER sortOrder;
+    boolean semantic;
 
     public SearchQuery(
             String endpoint,
@@ -104,6 +105,35 @@ public class SearchQuery {
             String sortField,
             SolrQuery.ORDER sortOrder
     ) {
+        this(endpoint, user, term, bbox, spatialOperation, page, rows, facetFilters,
+                groupStore, catalogue, facets, sortField, sortOrder, false);
+    }
+
+    /**
+     * @param semantic whether the search is running in semantic (KNN) mode. It takes no part in
+     * {@link #build()} -- SemanticSearcher issues its own Solr query -- but {@link #toUrl()} has to
+     * carry it, because SemanticSearcher builds a SearchQuery solely to render the next and
+     * previous page links. Without it those links drop the user back into keyword search, and a
+     * page offset valid for the KNN candidate set can land past the end of the far smaller keyword
+     * result set, returning an empty page and no error.
+     */
+    public SearchQuery(
+            String endpoint,
+            CatalogueUser user,
+            String term,
+            String bbox,
+            SpatialOperation spatialOperation,
+            int page,
+            int rows,
+            List<FacetFilter> facetFilters,
+            GroupStore<CatalogueUser> groupStore,
+            Catalogue catalogue,
+            List<Facet> facets,
+            String sortField,
+            SolrQuery.ORDER sortOrder,
+            boolean semantic
+    ) {
+        this.semantic = semantic;
         this.endpoint = endpoint;
         this.user = user;
         this.term = term;
@@ -160,7 +190,8 @@ public class SearchQuery {
                 catalogue,
                 facets,
                 sortField,
-                sortOrder
+                sortOrder,
+                semantic
             );
         }
         else {
@@ -189,7 +220,8 @@ public class SearchQuery {
                 catalogue,
                 facets,
                 sortField,
-                sortOrder
+                sortOrder,
+                semantic
             );
         }
         else {
@@ -219,7 +251,8 @@ public class SearchQuery {
                 catalogue,
                 facets,
                 sortField,
-                sortOrder
+                sortOrder,
+                semantic
             );
         }
         else {
@@ -255,7 +288,8 @@ public class SearchQuery {
                 catalogue,
                 facets,
                 sortField,
-                sortOrder
+                sortOrder,
+                semantic
             );
         }
         else {
@@ -288,7 +322,8 @@ public class SearchQuery {
                 catalogue,
                 facets,
                 sortField,
-                sortOrder
+                sortOrder,
+                semantic
             );
         }
         else {
@@ -348,6 +383,10 @@ public class SearchQuery {
             if (sortOrder != null) {
                 builder.queryParam(SORT_ORDER_PARAM, sortOrder);
             }
+        }
+
+        if(semantic) {
+            builder.queryParam(SEMANTIC_QUERY_PARAM, true);
         }
 
         return builder.build().encode().toUriString();

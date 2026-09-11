@@ -104,7 +104,8 @@ public class SemanticSearcher {
                 Collections.emptyList(),
                 groupStore, catalogue,
                 Collections.emptyList(),
-                null, SolrQuery.ORDER.asc
+                null, SolrQuery.ORDER.asc,
+                true
         );
         return new SearchResults(response, searchQuery, Collections.emptyList());
     }

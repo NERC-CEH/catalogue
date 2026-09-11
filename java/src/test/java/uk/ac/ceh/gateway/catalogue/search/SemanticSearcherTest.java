@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
 import lombok.SneakyThrows;
+import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -279,5 +280,43 @@ class SemanticSearcherTest {
             .isInstanceOf(ExternalResourceFailureException.class)
             .hasMessageNotContaining("requestId")
             .hasRootCauseMessage("ThrottlingException: rate exceeded, requestId=abc123");
+    }
+
+    /**
+     * SemanticSearcher builds a SearchQuery purely so SearchResults can render the next/prev
+     * page links. SearchQuery had no notion of semantic mode, so toUrl() could not emit it and
+     * every pagination link silently dropped semantic=true. Following one put the user on a BM25
+     * page 2: for a term where keyword search matched far fewer records than the KNN candidate
+     * set, the requested offset was past the end and the page came back empty. On staging that
+     * showed up as "semantic search returns zero results" with no error anywhere.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("The next page link keeps the search in semantic mode")
+    void nextPageLinkStaysSemantic() {
+        given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
+        given(catalogueService.retrieve("eidc")).willReturn(eidc);
+        solrResults.setNumFound(84);
+
+        val results = searcher.search("http://example.com/eidc/documents", CatalogueUser.PUBLIC_USER,
+            "nitrogen deposition", null, SpatialOperation.ISWITHIN, 1, 20, "eidc");
+
+        assertThat(results.getNextPage())
+            .as("page 2 reverts to keyword search without this, and can come back empty")
+            .contains("semantic=true");
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("The previous page link keeps the search in semantic mode")
+    void prevPageLinkStaysSemantic() {
+        given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
+        given(catalogueService.retrieve("eidc")).willReturn(eidc);
+        solrResults.setNumFound(84);
+
+        val results = searcher.search("http://example.com/eidc/documents", CatalogueUser.PUBLIC_USER,
+            "nitrogen deposition", null, SpatialOperation.ISWITHIN, 2, 20, "eidc");
+
+        assertThat(results.getPrevPage()).contains("semantic=true");
     }
 }
