@@ -233,4 +233,45 @@ describe('Test SearchFormView', () => {
       expect(document.activeElement).toBe(textarea()[0])
     })
   })
+
+  /*
+   * In keyword mode typing already commits the term, so the button is decorative and nobody
+   * noticed that submitting a term the model already holds does nothing: Backbone fires no
+   * change event when set() is given an identical value, and a search only ever starts from a
+   * change event. In semantic mode the term is withheld until submit, so the button is the only
+   * trigger there -- and pressing it a second time, or pressing it after the semantic checkbox
+   * had already committed the displayed term, silently sent no request at all.
+   */
+  describe('search button when the term has not changed', () => {
+    const submit = () => view.handleSubmit(jasmine.createSpyObj('event', ['preventDefault']))
+
+    it('starts a search even though the model term is unchanged', () => {
+      model.set({ semantic: true, term: 'rivers' })
+      spyOn(model, 'searchNow')
+
+      submit()
+
+      expect(model.searchNow).toHaveBeenCalled()
+    })
+
+    it('leaves a genuinely new term to start its own search, so the request is not doubled', () => {
+      model.set({ semantic: true, term: 'lakes' })
+      textarea().val('rivers') // typed but withheld, as semantic mode does
+      spyOn(model, 'searchNow')
+
+      submit()
+
+      expect(model.get('term')).toBe('rivers')
+      expect(model.searchNow).not.toHaveBeenCalled()
+    })
+
+    it('also re-runs a keyword search when the button is pressed again', () => {
+      model.set('term', 'rivers')
+      spyOn(model, 'searchNow')
+
+      submit()
+
+      expect(model.searchNow).toHaveBeenCalled()
+    })
+  })
 })
