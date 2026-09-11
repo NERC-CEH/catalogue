@@ -68,16 +68,6 @@ export default Backbone.View.extend({
     return _.map(geoJsonStrings, geoJsonStr => {
       const geoJson = JSON.parse(geoJsonStr)
 
-      let feature
-
-      if (geoJson.type === 'FeatureCollection') {
-        feature = geoJson.features?.[0]
-      } else if (geoJson.type === 'Feature') {
-        feature = geoJson
-      } else {
-        return geoJsonStr
-      }
-
       return geoJsonStr
     })
   },
