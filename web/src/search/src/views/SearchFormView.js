@@ -57,14 +57,21 @@ export default Backbone.View.extend({
   /*
      * The search form has been submitted, either by pressing the search button or
      * by pressing enter in the keyword box. Stop the browser navigating and commit
-     * the displayed term to the model instead, which is what actually starts a
-     * search. In keyword mode handleTyping() will already have committed the same
-     * term, so this is a no-op there; in semantic mode this is the only way a
-     * search is ever started.
+     * the displayed term to the model, which normally starts a search by way of the
+     * change event.
+     *
+     * When the model already holds the submitted term, Backbone fires no change event
+     * and nothing would happen at all, so the search is started explicitly instead.
+     * That is not an edge case in semantic mode: the term is withheld until submit, so
+     * the button is the only trigger there, and it is dead whenever the term was already
+     * committed -- by a previous press, or by the semantic checkbox, which commits the
+     * displayed term as it toggles.
      */
   handleSubmit (e) {
     e.preventDefault()
+    const alreadyCommitted = this.getDisplayedTerm() === this.model.get('term')
     this.updateTermOnModel()
+    if (alreadyCommitted) { this.model.searchNow() }
   },
 
   /*

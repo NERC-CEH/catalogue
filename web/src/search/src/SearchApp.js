@@ -69,11 +69,21 @@ export default Backbone.Model.extend({
      */
   performSearch (evt) {
     if (!_.chain(evt.changed).pick(this.searchFields).isEmpty().value()) {
-      if (!this.isSearchable()) { return }
-      this.clearResults() // Make sure that the results have been cleared
-      this.createSearchPage() // Redefine a new search page
-      this.results.fetch({ cache: false, traditional: true, data: this.getState() })
+      this.searchNow()
     }
+  },
+
+  /*
+     * Run a search for the state the model is in right now, without waiting for a change
+     * event to ask for one. The search button needs this: it commits the displayed term,
+     * and when that term is the one the model already holds, Backbone fires no change event
+     * and nothing would otherwise happen.
+     */
+  searchNow () {
+    if (!this.isSearchable()) { return }
+    this.clearResults() // Make sure that the results have been cleared
+    this.createSearchPage() // Redefine a new search page
+    this.results.fetch({ cache: false, traditional: true, data: this.getState() })
   },
 
   /*
