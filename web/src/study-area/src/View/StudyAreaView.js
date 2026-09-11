@@ -1,4 +1,3 @@
-import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import L from 'leaflet'
