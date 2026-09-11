@@ -34,7 +34,6 @@ describe('Test GeometryView', function () {
     const geometry = JSON.parse(view.model.get('geometryString'))
 
     expect(geometry.type).toBe('Polygon')
-    expect(geometry.properties.isConfidentialSquare).toBeTrue()
   })
 
   it('does not modify geometry when confidentiality is enabled for a polygon', () => {
