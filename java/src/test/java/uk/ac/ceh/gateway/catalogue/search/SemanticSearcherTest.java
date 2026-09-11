@@ -39,11 +39,14 @@ class SemanticSearcherTest {
     @Mock private GroupStore<CatalogueUser> groupStore;
     @Mock private CatalogueService catalogueService;
     @Mock private QueryResponse queryResponse;
+    @Mock private FacetFactory facetFactory;
 
     private SemanticSearcher searcher;
 
     private final Catalogue eidc = Catalogue.builder()
-        .id("eidc").title("EIDC").url("").contactUrl("").logo("").build();
+        .id("eidc").title("EIDC").url("").contactUrl("").logo("").facetKey("topic").build();
+    private final Facet topicFacet = Facet.builder()
+        .fieldName("topic").displayName("Topic").build();
     private final Catalogue all = Catalogue.builder()
         .id("all").title("All").url("").contactUrl("").logo("").build();
 
@@ -52,7 +55,8 @@ class SemanticSearcherTest {
     @BeforeEach
     @SneakyThrows
     void setup() {
-        searcher = new SemanticSearcher(embeddingModel, solrClient, groupStore, catalogueService);
+        searcher = new SemanticSearcher(embeddingModel, solrClient, groupStore, catalogueService, facetFactory);
+        given(facetFactory.newInstances(any())).willReturn(List.of(topicFacet));
         given(queryResponse.getResults()).willReturn(solrResults);
         given(queryResponse.getBeans(any())).willReturn(List.of());
         given(solrClient.query(eq("documents"), any(SolrParams.class), any())).willReturn(queryResponse);
@@ -65,7 +69,7 @@ class SemanticSearcherTest {
         given(catalogueService.retrieve("eidc")).willReturn(eidc);
 
         searcher.search("http://example.com", CatalogueUser.PUBLIC_USER,
-            "river flow", null, SpatialOperation.ISWITHIN, 1, 20, "eidc");
+            "river flow", null, SpatialOperation.ISWITHIN, 1, 20, List.of(), "eidc");
 
         ArgumentCaptor<SolrParams> paramsCaptor = ArgumentCaptor.forClass(SolrParams.class);
         org.mockito.Mockito.verify(solrClient).query(eq("documents"), paramsCaptor.capture(), any());
@@ -82,7 +86,7 @@ class SemanticSearcherTest {
         given(catalogueService.retrieve("eidc")).willReturn(eidc);
 
         searcher.search("http://example.com", CatalogueUser.PUBLIC_USER,
-            "nitrogen", "-5.0,2.0,60.0,50.0", SpatialOperation.ISWITHIN, 1, 20, "eidc");
+            "nitrogen", "-5.0,2.0,60.0,50.0", SpatialOperation.ISWITHIN, 1, 20, List.of(), "eidc");
 
         ArgumentCaptor<SolrParams> paramsCaptor = ArgumentCaptor.forClass(SolrParams.class);
         org.mockito.Mockito.verify(solrClient).query(eq("documents"), paramsCaptor.capture(), any());
@@ -98,7 +102,7 @@ class SemanticSearcherTest {
         given(catalogueService.retrieve("eidc")).willReturn(eidc);
 
         searcher.search("http://example.com", CatalogueUser.PUBLIC_USER,
-            "nitrogen", null, SpatialOperation.ISWITHIN, 1, 20, "eidc");
+            "nitrogen", null, SpatialOperation.ISWITHIN, 1, 20, List.of(), "eidc");
 
         ArgumentCaptor<SolrParams> paramsCaptor = ArgumentCaptor.forClass(SolrParams.class);
         org.mockito.Mockito.verify(solrClient).query(eq("documents"), paramsCaptor.capture(), any());
@@ -116,7 +120,7 @@ class SemanticSearcherTest {
         given(catalogueService.retrieve("eidc")).willReturn(eidc);
 
         searcher.search("http://example.com", CatalogueUser.PUBLIC_USER,
-            "flood", null, SpatialOperation.ISWITHIN, 1, 20, "eidc");
+            "flood", null, SpatialOperation.ISWITHIN, 1, 20, List.of(), "eidc");
 
         ArgumentCaptor<SolrParams> paramsCaptor = ArgumentCaptor.forClass(SolrParams.class);
         org.mockito.Mockito.verify(solrClient).query(eq("documents"), paramsCaptor.capture(), any());
@@ -132,7 +136,7 @@ class SemanticSearcherTest {
         given(catalogueService.retrieve(CatalogueService.ALL_CATALOGUES_ID)).willReturn(all);
 
         searcher.search("http://example.com", CatalogueUser.PUBLIC_USER,
-            "flood", null, SpatialOperation.ISWITHIN, 1, 20, CatalogueService.ALL_CATALOGUES_ID);
+            "flood", null, SpatialOperation.ISWITHIN, 1, 20, List.of(), CatalogueService.ALL_CATALOGUES_ID);
 
         ArgumentCaptor<SolrParams> paramsCaptor = ArgumentCaptor.forClass(SolrParams.class);
         org.mockito.Mockito.verify(solrClient).query(eq("documents"), paramsCaptor.capture(), any());
@@ -150,7 +154,7 @@ class SemanticSearcherTest {
         given(catalogueService.retrieve("eidc")).willReturn(eidc);
 
         searcher.search("http://example.com", CatalogueUser.PUBLIC_USER,
-            "flood", null, SpatialOperation.ISWITHIN, 1, 20, "eidc");
+            "flood", null, SpatialOperation.ISWITHIN, 1, 20, List.of(), "eidc");
 
         ArgumentCaptor<SolrParams> paramsCaptor = ArgumentCaptor.forClass(SolrParams.class);
         org.mockito.Mockito.verify(solrClient).query(eq("documents"), paramsCaptor.capture(), any());
@@ -170,7 +174,7 @@ class SemanticSearcherTest {
         given(catalogueService.retrieve("eidc")).willReturn(eidc);
 
         searcher.search("http://example.com", CatalogueUser.PUBLIC_USER,
-            "river flow", null, SpatialOperation.ISWITHIN, 1, 20, "eidc");
+            "river flow", null, SpatialOperation.ISWITHIN, 1, 20, List.of(), "eidc");
 
         assertThat(capturedParams().get("q"))
             .startsWith("{!knn f=vector topK=" + SemanticSearcher.KNN_CANDIDATE_LIMIT + "}[");
@@ -184,7 +188,7 @@ class SemanticSearcherTest {
         given(catalogueService.retrieve("eidc")).willReturn(eidc);
 
         searcher.search("http://example.com", CatalogueUser.PUBLIC_USER,
-            "river flow", null, SpatialOperation.ISWITHIN, 3, 20, "eidc");
+            "river flow", null, SpatialOperation.ISWITHIN, 3, 20, List.of(), "eidc");
 
         SolrParams params = capturedParams();
         assertThat(params.getInt("start")).isEqualTo(40);
@@ -205,7 +209,7 @@ class SemanticSearcherTest {
         given(catalogueService.retrieve("eidc")).willReturn(eidc);
 
         SearchResults results = searcher.search("http://example.com", CatalogueUser.PUBLIC_USER,
-            "river flow", null, SpatialOperation.ISWITHIN, 1, 20, "eidc");
+            "river flow", null, SpatialOperation.ISWITHIN, 1, 20, List.of(), "eidc");
 
         assertThat(results.getNumFound()).isEqualTo(75);
         // Covers the consequence rather than the cause: Solr is mocked here, so numFound is stubbed
@@ -238,7 +242,7 @@ class SemanticSearcherTest {
         given(catalogueService.retrieve("eidc")).willReturn(eidc);
 
         searcher.search("http://example.com", CatalogueUser.PUBLIC_USER,
-            "river flow", null, SpatialOperation.ISWITHIN, 1, 20, "eidc");
+            "river flow", null, SpatialOperation.ISWITHIN, 1, 20, List.of(), "eidc");
 
         // A record shared into a catalogue carries it in catalogue_view, not catalogue. Filtering on
         // catalogue alone hid exactly those records from semantic search while ordinary search
@@ -258,7 +262,7 @@ class SemanticSearcherTest {
             .willThrow(new SolrServerException("http://solr:8983/solr refused the connection"));
 
         assertThatThrownBy(() -> searcher.search("http://example.com", CatalogueUser.PUBLIC_USER,
-            "river flow", null, SpatialOperation.ISWITHIN, 1, 20, "eidc"))
+            "river flow", null, SpatialOperation.ISWITHIN, 1, 20, List.of(), "eidc"))
             .isInstanceOf(ExternalResourceFailureException.class)
             // The message reaches the response body, so it must not carry SolrJ's own text — that
             // includes the Solr base URL, on an endpoint reachable anonymously.
@@ -276,7 +280,7 @@ class SemanticSearcherTest {
             .willThrow(new RuntimeException("ThrottlingException: rate exceeded, requestId=abc123"));
 
         assertThatThrownBy(() -> searcher.search("http://example.com", CatalogueUser.PUBLIC_USER,
-            "river flow", null, SpatialOperation.ISWITHIN, 1, 20, "eidc"))
+            "river flow", null, SpatialOperation.ISWITHIN, 1, 20, List.of(), "eidc"))
             .isInstanceOf(ExternalResourceFailureException.class)
             .hasMessageNotContaining("requestId")
             .hasRootCauseMessage("ThrottlingException: rate exceeded, requestId=abc123");
@@ -299,7 +303,7 @@ class SemanticSearcherTest {
         solrResults.setNumFound(84);
 
         val results = searcher.search("http://example.com/eidc/documents", CatalogueUser.PUBLIC_USER,
-            "nitrogen deposition", null, SpatialOperation.ISWITHIN, 1, 20, "eidc");
+            "nitrogen deposition", null, SpatialOperation.ISWITHIN, 1, 20, List.of(), "eidc");
 
         assertThat(results.getNextPage())
             .as("page 2 reverts to keyword search without this, and can come back empty")
@@ -315,8 +319,121 @@ class SemanticSearcherTest {
         solrResults.setNumFound(84);
 
         val results = searcher.search("http://example.com/eidc/documents", CatalogueUser.PUBLIC_USER,
-            "nitrogen deposition", null, SpatialOperation.ISWITHIN, 2, 20, "eidc");
+            "nitrogen deposition", null, SpatialOperation.ISWITHIN, 2, 20, List.of(), "eidc");
 
         assertThat(results.getPrevPage()).contains("semantic=true");
+    }
+
+    // ------------------------------------------------------------------ facets
+
+    /**
+     * Facet filters were dropped entirely: SemanticSearcher took no facetFilters argument, so
+     * clicking a facet in semantic mode changed nothing at all (84 results with and without
+     * facet=topic|Hydrology on staging).
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("A facet filter is applied, tagged so it can be excluded from its own count")
+    void facetFilterIsAppliedAsATaggedFilterQuery() {
+        given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
+        given(catalogueService.retrieve("eidc")).willReturn(eidc);
+
+        searcher.search("http://example.com", CatalogueUser.PUBLIC_USER,
+            "nitrogen", null, SpatialOperation.ISWITHIN, 1, 20,
+            List.of(new FacetFilter("topic", "Hydrology")), "eidc");
+
+        val params = capturedParams();
+        assertThat(params.getParams("fq"))
+            .anyMatch(fq -> fq.equals("{!tag=topic}topic:\"Hydrology\""));
+    }
+
+    /**
+     * Solr uses fq as an implicit pre-filter when knn is the main query, which would select the
+     * top-K from within the faceted subset. That gives better results but collapses the facet
+     * counts -- every candidate already matches the chosen value, so the alternatives fall to zero
+     * and facet.mincount=1 drops them, leaving the panel a dead end after one click. Excluding the
+     * facet tags keeps the panel behaving as it does in keyword search.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("Facet tags are excluded from the KNN pre-filter, so they filter the top-K instead")
+    void knnExcludesFacetTagsFromPreFiltering() {
+        given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
+        given(catalogueService.retrieve("eidc")).willReturn(eidc);
+
+        searcher.search("http://example.com", CatalogueUser.PUBLIC_USER,
+            "nitrogen", null, SpatialOperation.ISWITHIN, 1, 20,
+            List.of(new FacetFilter("topic", "Hydrology")), "eidc");
+
+        assertThat(capturedParams().get("q")).contains("excludeTags=topic");
+    }
+
+    /**
+     * Visibility and catalogue scope must stay implicit pre-filters: excluding them would spend
+     * the KNN candidate budget on records the user cannot see and then discard them. Only the
+     * facet filters are tagged, so only they are excluded.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("Visibility filters stay untagged, so they keep pre-filtering the KNN search")
+    void visibilityFiltersStayUntagged() {
+        given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
+        given(catalogueService.retrieve("eidc")).willReturn(eidc);
+
+        searcher.search("http://example.com", CatalogueUser.PUBLIC_USER,
+            "nitrogen", null, SpatialOperation.ISWITHIN, 1, 20, List.of(), "eidc");
+
+        assertThat(capturedParams().getParams("fq"))
+            .isNotEmpty()
+            .allMatch(fq -> !fq.startsWith("{!tag="));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("Facet fields are requested so the facet panel populates")
+    void facetFieldsAreRequested() {
+        given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
+        given(catalogueService.retrieve("eidc")).willReturn(eidc);
+
+        searcher.search("http://example.com", CatalogueUser.PUBLIC_USER,
+            "nitrogen", null, SpatialOperation.ISWITHIN, 1, 20, List.of(), "eidc");
+
+        val params = capturedParams();
+        assertThat(params.get("facet")).isEqualTo("true");
+        assertThat(params.getParams("facet.field")).contains("{!ex=topic}topic");
+    }
+
+    @Test
+    @SneakyThrows
+    @MockitoSettings(strictness = Strictness.LENIENT)  // the shared Solr stubbing is not reached
+    @DisplayName("An unknown facet field is still rejected rather than handed to Solr")
+    void unknownFacetFieldIsRejected() {
+        given(catalogueService.retrieve("eidc")).willReturn(eidc);
+
+        assertThatThrownBy(() -> searcher.search("http://example.com", CatalogueUser.PUBLIC_USER,
+            "nitrogen", null, SpatialOperation.ISWITHIN, 1, 20,
+            List.of(new FacetFilter("nonsense", "x")), "eidc"))
+            .isInstanceOf(InvalidFacetException.class);
+
+        // Rejected before the query is embedded, so a malformed request costs no Bedrock call
+        org.mockito.Mockito.verify(embeddingModel, org.mockito.Mockito.never()).embed(any(String.class));
+    }
+
+    /**
+     * The facet panel builds its links with withFacetFilter/withoutFacetFilter, which serialise
+     * through SearchQuery.toUrl(). They have to keep semantic=true or clicking a facet would drop
+     * the user back into keyword search.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("Facet links keep the search in semantic mode")
+    void facetLinksStaySemantic() {
+        given(embeddingModel.embed(any(String.class))).willReturn(new float[]{0.1f});
+        given(catalogueService.retrieve("eidc")).willReturn(eidc);
+
+        val results = searcher.search("http://example.com/eidc/documents", CatalogueUser.PUBLIC_USER,
+            "nitrogen", null, SpatialOperation.ISWITHIN, 1, 20, List.of(), "eidc");
+
+        assertThat(results.getFacets()).isNotEmpty();
     }
 }

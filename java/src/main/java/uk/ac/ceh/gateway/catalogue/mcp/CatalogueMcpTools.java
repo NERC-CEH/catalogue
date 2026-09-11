@@ -84,7 +84,7 @@ public class CatalogueMcpTools {
         SearchResults results = semanticSearcher.get().search(
                 "mcp", CatalogueUser.PUBLIC_USER, query,
                 null, SpatialOperation.ISWITHIN,
-                1, 20, catalogueKey
+                1, 20, java.util.List.of(), catalogueKey
         );
         return objectMapper.writeValueAsString(toSummary(results));
     }
