@@ -133,7 +133,7 @@ public class SearchController {
         val spatialOp = SpatialOperation.valueOf(op.toUpperCase());
         val canUseSemantic = semanticSearcher.isPresent() && userCanUseSemantic(user);
         if (semantic && canUseSemantic) {
-            return new SearchResults(semanticSearcher.get().search(endpoint, user, term, bbox, spatialOp, page, rows, CatalogueService.ALL_CATALOGUES_ID), true);
+            return new SearchResults(semanticSearcher.get().search(endpoint, user, term, bbox, spatialOp, page, rows, facetFilters, CatalogueService.ALL_CATALOGUES_ID), true);
         }
         return new SearchResults(searcher.search(endpoint, user, term, bbox, spatialOp, page, rows, facetFilters, CatalogueService.ALL_CATALOGUES_ID, sortField,
             "desc".equals(sortOrder) ? SolrQuery.ORDER.desc : SolrQuery.ORDER.asc), canUseSemantic);
@@ -198,7 +198,7 @@ public class SearchController {
         val spatialOp = SpatialOperation.valueOf(op.toUpperCase());
         val canUseSemantic = semanticSearcher.isPresent() && userCanUseSemantic(user);
         if (semantic && canUseSemantic) {
-            return new SearchResults(semanticSearcher.get().search(endpoint, user, term, bbox, spatialOp, page, rows, catalogueKey), true);
+            return new SearchResults(semanticSearcher.get().search(endpoint, user, term, bbox, spatialOp, page, rows, facetFilters, catalogueKey), true);
         }
         return new SearchResults(searcher.search(endpoint, user, term, bbox, spatialOp, page, rows, facetFilters, catalogueKey, sortField,
             "desc".equals(sortOrder) ? SolrQuery.ORDER.desc : SolrQuery.ORDER.asc), canUseSemantic);

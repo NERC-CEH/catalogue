@@ -484,21 +484,41 @@ public class SearchQuery {
     }
 
     private void setFacetFields(SolrQuery query){
+        if (facets.isEmpty()) {
+            return;
+        }
         query.setFacet(true);
         query.setFacetLimit(-1);
         query.setFacetSort("index");
         query.setFacetMinCount(1);
 
         // Exclude other facets from affecting facet counts
-        facets.forEach(currentFacet -> {
-            String fieldName = currentFacet.getFieldName();
+        String excludeTags = facetTags();
+        facets.forEach(currentFacet ->
+            query.addFacetField(String.format("{!ex=%s}%s", excludeTags, currentFacet.getFieldName())));
+    }
 
-            String excludeTags = facets.stream()
-                .map(Facet::getFieldName)
-                .collect(Collectors.joining(","));
+    /**
+     * Apply this query's facet filters and facet fields to a Solr query that {@link #build()} did
+     * not construct. SemanticSearcher issues its own KNN query but needs identical facet
+     * behaviour, and the unknown-field validation, the multi-value OR combining and the
+     * {@code {!tag}}/{@code {!ex}} pairing all live here -- so it borrows them rather than
+     * growing a second copy that can drift.
+     */
+    public void applyFacets(SolrQuery query) {
+        setFacetFilters(query);
+        setFacetFields(query);
+    }
 
-            query.addFacetField(String.format("{!ex=%s}%s", excludeTags, fieldName));
-        });
+    /**
+     * The comma-joined facet field names. These double as the local-param tags that
+     * {@link #setFacetFilters} puts on each facet filter query, so the same string serves
+     * {@code {!ex=...}} facet counting and the knn parser's {@code excludeTags}.
+     */
+    public String facetTags() {
+        return facets.stream()
+            .map(Facet::getFieldName)
+            .collect(Collectors.joining(","));
     }
 
     private void setCatalogueFilter(SolrQuery query) {

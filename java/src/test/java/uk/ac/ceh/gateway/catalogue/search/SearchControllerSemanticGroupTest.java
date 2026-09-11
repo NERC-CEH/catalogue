@@ -89,7 +89,7 @@ class SearchControllerSemanticGroupTest {
         search(CatalogueUser.PUBLIC_USER, true);
 
         verify(groupStore, never()).getGroups(any());
-        verify(semanticSearcher, never()).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any());
+        verify(semanticSearcher, never()).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any());
     }
 
     @Test
@@ -97,12 +97,12 @@ class SearchControllerSemanticGroupTest {
     void memberOfTheGroupStillGetsSemanticSearch() {
         val user = new CatalogueUser("rjsc", "rjsc@ceh.ac.uk");
         given(groupStore.getGroups(user)).willReturn(List.of(new CatalogueGroup(SEMANTIC_GROUP)));
-        given(semanticSearcher.search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any()))
+        given(semanticSearcher.search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any()))
             .willReturn(searchResults());
 
         val results = search(user, true);
 
-        verify(semanticSearcher).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any());
+        verify(semanticSearcher).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any());
         assertThat(results.isSemanticEnabled()).isTrue();
     }
 }

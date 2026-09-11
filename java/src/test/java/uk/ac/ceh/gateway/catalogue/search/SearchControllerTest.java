@@ -8,6 +8,7 @@ import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -34,6 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.tuple;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -378,7 +380,7 @@ class SearchControllerTest extends AbstractMvcTest {
             null, null, null, null, null,
             Collections.emptyList(), Collections.emptyList(), eidc, Collections.emptyList(), null, "asc", false
         );
-        given(semanticSearcher.search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any()))
+        given(semanticSearcher.search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any()))
             .willReturn(searchResults);
 
         //when/then
@@ -390,8 +392,41 @@ class SearchControllerTest extends AbstractMvcTest {
         )
             .andExpect(status().isOk());
 
-        verify(semanticSearcher).search(any(), any(), eq("river"), any(), any(), anyInt(), anyInt(), eq(catalogueKey));
+        verify(semanticSearcher).search(any(), any(), eq("river"), any(), any(), anyInt(), anyInt(), any(), eq(catalogueKey));
         verify(searcher, never()).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("GET /{catalogue}/documents?semantic=true passes facet filters to SemanticSearcher")
+    @SneakyThrows
+    void semanticSearchPassesFacetFilters() {
+        //given
+        givenCatalogue();
+        val searchResults = new SearchResults(
+            5, "river", 1, 20, "http://localhost/eidc/documents",
+            null, null, null, null, null,
+            Collections.emptyList(), Collections.emptyList(), eidc, Collections.emptyList(), null, "asc", false
+        );
+        given(semanticSearcher.search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any()))
+            .willReturn(searchResults);
+
+        //when
+        mvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .accept(MediaType.APPLICATION_JSON)
+                .param("term", "river")
+                .param("semantic", "true")
+                .param("facet", "topic|Hydrology")
+        )
+            .andExpect(status().isOk());
+
+        //then the controller used to drop these, so a facet click changed nothing in semantic mode
+        ArgumentCaptor<List<FacetFilter>> filters = ArgumentCaptor.forClass(List.class);
+        verify(semanticSearcher).search(any(), any(), eq("river"), any(), any(), anyInt(), anyInt(),
+            filters.capture(), eq(catalogueKey));
+        org.assertj.core.api.Assertions.assertThat(filters.getValue())
+            .extracting(FacetFilter::getField, FacetFilter::getValue)
+            .containsExactly(tuple("topic", "Hydrology"));
     }
 
     @Test
@@ -411,7 +446,7 @@ class SearchControllerTest extends AbstractMvcTest {
             .andExpect(status().isOk());
 
         verify(searcher).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any(), any());
-        verify(semanticSearcher, never()).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any());
+        verify(semanticSearcher, never()).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any());
     }
 
     @Test

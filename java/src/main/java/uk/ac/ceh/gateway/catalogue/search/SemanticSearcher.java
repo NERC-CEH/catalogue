@@ -15,6 +15,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
 
@@ -46,17 +47,20 @@ public class SemanticSearcher {
     private final SolrClient solrClient;
     private final GroupStore<CatalogueUser> groupStore;
     private final CatalogueService catalogueService;
+    private final FacetFactory facetFactory;
 
     public SemanticSearcher(
             EmbeddingModel embeddingModel,
             SolrClient solrClient,
             GroupStore<CatalogueUser> groupStore,
-            CatalogueService catalogueService
+            CatalogueService catalogueService,
+            FacetFactory facetFactory
     ) {
         this.embeddingModel = embeddingModel;
         this.solrClient = solrClient;
         this.groupStore = groupStore;
         this.catalogueService = catalogueService;
+        this.facetFactory = facetFactory;
         log.info("Creating");
     }
 
@@ -68,18 +72,26 @@ public class SemanticSearcher {
             SpatialOperation spatialOperation,
             int page,
             int rows,
+            List<FacetFilter> facetFilters,
             String catalogueKey
     ) {
         val catalogue = catalogueService.retrieve(catalogueKey);
+        val facets = facetFactory.newInstances(catalogue.getFacetKeys());
 
-        float[] vec = embedQuery(term, endpoint, catalogueKey);
-        String vectorStr = buildVectorString(vec);
+        // Built before the embedding call so that an unknown facet field is rejected without
+        // first paying Bedrock to embed a query that is going to 400 anyway.
+        val searchQuery = new SearchQuery(
+                endpoint, user, term, bbox, spatialOperation,
+                page, rows,
+                facetFilters,
+                groupStore, catalogue,
+                facets,
+                null, SolrQuery.ORDER.asc,
+                true
+        );
 
-        int knnTopK = Math.max(rows, KNN_CANDIDATE_LIMIT);
-
-        SolrQuery query = new SolrQuery("{!knn f=vector topK=" + knnTopK + "}" + vectorStr)
-                .setStart((page - 1) * rows)
-                .setRows(rows);
+        SolrQuery query = new SolrQuery();
+        searchQuery.applyFacets(query);
 
         if (bbox != null) {
             query.addFilterQuery(String.format("locations:\"%s(ENVELOPE(%s))\"",
@@ -87,6 +99,14 @@ public class SemanticSearcher {
         }
         applyVisibilityFilters(query, user, catalogue.getId(), catalogueKey);
         SolrVisibilityFilter.applyCatalogueScope(query, catalogue.getId());
+
+        float[] vec = embedQuery(term, endpoint, catalogueKey);
+
+        int knnTopK = Math.max(rows, KNN_CANDIDATE_LIMIT);
+        String facetTags = facetFilters.isEmpty() ? "" : searchQuery.facetTags();
+        query.setQuery(knnParser(knnTopK, facetTags) + buildVectorString(vec))
+                .setStart((page - 1) * rows)
+                .setRows(rows);
 
         log.debug("Semantic query: {}", query);
 
@@ -97,16 +117,6 @@ public class SemanticSearcher {
             throw SearchBackendFailure.unavailable("semantic search", endpoint, catalogueKey, e);
         }
 
-        // Construct a minimal SearchQuery for SearchResults pagination URLs
-        val searchQuery = new SearchQuery(
-                endpoint, user, term, bbox, spatialOperation,
-                page, rows,
-                Collections.emptyList(),
-                groupStore, catalogue,
-                Collections.emptyList(),
-                null, SolrQuery.ORDER.asc,
-                true
-        );
         return new SearchResults(response, searchQuery, Collections.emptyList());
     }
 
@@ -130,6 +140,25 @@ public class SemanticSearcher {
         }
     }
 
+
+    /**
+     * Solr treats every {@code fq} as an implicit pre-filter when knn is the main query, so the
+     * candidate list would be the top-K drawn from within the faceted subset. That yields better
+     * matches but collapses the facet counts: every candidate already carries the selected value,
+     * the alternatives count zero and {@code facet.mincount=1} drops them, so the panel dead-ends
+     * after a single click. Excluding the facet tags leaves them as ordinary filters over the
+     * top-K, which is how keyword search behaves and what {@code {!ex=...}} counting expects.
+     * <p>
+     * Only the facet filters are tagged. Visibility and catalogue scope stay untagged, and so stay
+     * pre-filters -- otherwise the candidate budget would be spent on records the user cannot see
+     * and then thrown away.
+     */
+    private String knnParser(int topK, String facetTags) {
+        // No facet filter means no tagged fq to exclude, so the parameter is left off entirely
+        // rather than naming tags that are not present.
+        String excludeTags = facetTags.isBlank() ? "" : " excludeTags=" + facetTags;
+        return "{!knn f=vector topK=" + topK + excludeTags + "}";
+    }
 
     private String buildVectorString(float[] vec) {
         StringBuilder sb = new StringBuilder("[");
