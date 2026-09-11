@@ -65,6 +65,13 @@ public class SearchController {
 
     private boolean userCanUseSemantic(CatalogueUser user) {
         if (semanticGroup.isBlank()) return true;
+        // An anonymous visitor belongs to no group, so the answer is already known -- and asking
+        // anyway is not merely wasteful: CrowdGroupStore.getGroups is @Cacheable(key="#user.username")
+        // and PUBLIC_USER's username is null, which makes Spring's cache interceptor throw
+        // "Null key returned for cache operation". Because this flag is computed on every search to
+        // populate semanticEnabled, that turned into a 500 for every anonymous search, keyword ones
+        // included. SolrVisibilityFilter and SearchQuery.setRecordVisibility guard the same way.
+        if (user.isPublic()) return false;
         return groupStore.getGroups(user).stream()
             .map(Group::getName)
             .anyMatch(semanticGroup::equalsIgnoreCase);
