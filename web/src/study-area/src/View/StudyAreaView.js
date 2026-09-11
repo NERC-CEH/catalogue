@@ -74,8 +74,6 @@ export default Backbone.View.extend({
 
       if (geoJson.type === 'FeatureCollection') {
         feature = geoJson.features?.[0]
-        geom = feature?.geometry
-        isConfidential = feature?.properties?.locationConfidential === true
       } else if (geoJson.type === 'Feature') {
         feature = geoJson
       } else {
