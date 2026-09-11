@@ -4,6 +4,18 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.235.0] - 2026-09-11
+
+Visitors can now search the catalogue by meaning rather than by exact wording. A new search mode finds records whose subject matter matches what was asked for, even where none of the words typed appear in the record itself, using a language service hosted by Amazon to interpret both the question and the catalogue's contents (EMC-865). The usual filters work alongside it, so results can still be narrowed by topic, date or record type, and paging through them keeps the mode in place. Text held in supporting documents attached to a record is now read in as well, so a search can reach a dataset through the content of its accompanying documentation and not only through its summary.
+
+A panel on the maintenance page reports how much of the catalogue has been prepared for this kind of search, giving administrators a way to confirm the work has completed. Several faults found while the feature was being finished have also been corrected: a search made by a visitor who is not signed in no longer fails, the search button now responds when the term has not been changed, and a search is no longer run when nothing has been entered.
+
+## [3.234.0] - 2026-09-08
+
+A single unreachable external record no longer holds back a whole set of collected descriptions. Previously one entity that consistently failed to respond kept everything gathered from that source from being published; such an entity is now set aside after repeated attempts so the rest of the set goes out as normal (GH dri-one#372). The maintenance page now shows how far each set has got and whether it has stopped making progress, which is the only practical way to see this without reading server logs.
+
+Record descriptions held in memory to speed up page loads are now written out before the application shuts down, so a restart no longer discards them (GH dri-one#371).
+
 ## [3.233.0] - 2026-09-07
 
 The catalogue now publishes what the outside world already knows about the things our records refer to. Where a record names a person, an organisation, a keyword, a cited paper, a grant, a place or a monitoring site, the catalogue collects the authoritative description of that thing from the body responsible for it — ORCID for researchers, ROR for institutions, Wikidata for subjects, and the environmental vocabulary services for keywords — and publishes it alongside our own data as a clearly labelled, separately citable set (GH dri-one#350). Each set is advertised in the catalogue's machine-readable description and listed in the query interface, so an external user can see what is on offer and where it came from. Contact email addresses are no longer published in the machine-readable output, and our own record text is no longer attached to researcher identifiers that belong to the people themselves (GH dri-one#348).
