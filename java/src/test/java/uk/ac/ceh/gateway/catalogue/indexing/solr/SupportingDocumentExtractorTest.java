@@ -43,7 +43,7 @@ class SupportingDocumentExtractorTest {
         Path docDir = baseDir.resolve("doc-id");
         Files.createDirectory(docDir);
         Files.writeString(docDir.resolve("data.nc"), "netcdf-binary");
-        Files.writeString(docDir.resolve("readme.txt"), "should be ignored");
+        Files.writeString(docDir.resolve("style.qml"), "<qgis>styling, not prose</qgis>");
 
         assertThat(extractor.extractText("doc-id")).isEmpty();
     }
@@ -103,12 +103,44 @@ class SupportingDocumentExtractorTest {
         assertThat(extractor.extractText("   ")).isEmpty();
     }
 
+    /**
+     * Plain text was not in the supported set, which on production leaves 63 records with no
+     * embeddable supporting text at all despite having a readme sitting next to them, and a
+     * further 38 records missing text they could have had. Tika reads it natively.
+     */
     @Test
-    void supportsAllFourExtensions() {
-        // Test that all four extensions match the supported set
-        var extensions = java.util.Set.of(".pdf", ".doc", ".docx", ".rtf");
-        for (String ext : extensions) {
-            assertThat(ext).isIn(".pdf", ".doc", ".docx", ".rtf");
-        }
+    void extractsPlainTextFiles() throws IOException {
+        Path docDir = baseDir.resolve("txt-id");
+        Files.createDirectory(docDir);
+        Files.writeString(docDir.resolve("readme.txt"), "Soil moisture measurements from upland peat");
+
+        assertThat(extractor.extractText("txt-id")).contains("Soil moisture measurements from upland peat");
+    }
+
+    @Test
+    void extractsPlainTextWhileStillIgnoringUnsupportedNeighbours() throws IOException {
+        Path docDir = baseDir.resolve("mixed-id");
+        Files.createDirectory(docDir);
+        Files.writeString(docDir.resolve("readme.txt"), "river flow gauging station");
+        Files.writeString(docDir.resolve("style.qml"), "<qgis>styling, not prose</qgis>");
+        Files.writeString(docDir.resolve("layers.lyr"), "binary-ish layer file");
+
+        String extracted = extractor.extractText("mixed-id");
+
+        assertThat(extracted).contains("river flow gauging station");
+        assertThat(extracted).doesNotContain("qgis").doesNotContain("layer file");
+    }
+
+    @Test
+    void truncatesAnOverlongTextFileToTheConfiguredLimit() throws IOException {
+        SupportingDocumentExtractor smallLimit = new SupportingDocumentExtractor(baseDir.toString(), 50, 8);
+        Path docDir = baseDir.resolve("long-id");
+        Files.createDirectory(docDir);
+        Files.writeString(docDir.resolve("long.txt"), "x".repeat(500));
+
+        // not just "short": an empty result would satisfy a size bound on its own
+        assertThat(smallLimit.extractText("long-id"))
+            .isNotEmpty()
+            .hasSizeLessThanOrEqualTo(50);
     }
 }

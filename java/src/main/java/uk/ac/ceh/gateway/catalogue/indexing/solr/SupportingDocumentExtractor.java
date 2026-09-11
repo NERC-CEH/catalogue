@@ -16,7 +16,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Extracts plain text from PDF, Word, and RTF supporting documents for a given catalogue record.
+ * Extracts plain text from PDF, Word, RTF and plain text supporting documents for a given
+ * catalogue record.
  * Only active when {@code catalogue.supporting-documents.location} is configured.
  */
 @Slf4j
@@ -24,7 +25,13 @@ import java.util.stream.Stream;
 @ConditionalOnProperty("catalogue.supporting-documents.location")
 public class SupportingDocumentExtractor {
 
-    private static final Set<String> SUPPORTED_EXTENSIONS = Set.of(".pdf", ".doc", ".docx", ".rtf");
+    // Plain text earns its place: on production 63 record directories hold a readme or similar and
+    // nothing else Tika can read, so they contributed no supporting text at all, and another 38 sit
+    // next to a PDF or Word file and were losing the extra. Deliberately excluded are the formats
+    // that are not prose -- .csv (rows of numbers that dilute the vector, and only 12 records have
+    // one with no other document), the GIS styling XML (.qml, .lyr, .sld, .clr), source code and
+    // archives.
+    private static final Set<String> SUPPORTED_EXTENSIONS = Set.of(".pdf", ".doc", ".docx", ".rtf", ".txt");
 
     private final Path basePath;
     private final int maxCharsPerFile;
@@ -33,7 +40,7 @@ public class SupportingDocumentExtractor {
     public SupportingDocumentExtractor(
             @Value("${catalogue.supporting-documents.location}") String location,
             @Value("${catalogue.embedding.doc-max-chars:4000}") int maxCharsPerFile,
-            @Value("${catalogue.embedding.doc-max-files:5}") int maxFiles
+            @Value("${catalogue.embedding.doc-max-files:8}") int maxFiles
     ) {
         this.basePath = Path.of(location);
         this.maxCharsPerFile = maxCharsPerFile;
