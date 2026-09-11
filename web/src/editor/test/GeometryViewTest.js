@@ -49,7 +49,7 @@ describe('Test GeometryView', function () {
     view.handleLocationConfidentialChange()
 
     expect(view.model.get('geometryString')).toBe(originalGeometry)
-  }) 
+  })
 
   it('shows a confirmation when enabling confidentiality for a point', () => {
     spyOn(window, 'confirm').and.returnValue(true)
@@ -127,5 +127,4 @@ describe('Test GeometryView', function () {
     expect(window.confirm).not.toHaveBeenCalled()
     expect(view.model.get('locationConfidential')).toBeTrue()
   })
-
 })

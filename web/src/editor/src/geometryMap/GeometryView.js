@@ -54,8 +54,8 @@ export default ObjectInputView.extend({
 
           if (geometry?.type === 'Point') {
             const confirmed = window.confirm(
-            'Marking a location as confidential will replace a point with an approximate location .\n\n' +
-            'Do you want to continue?'
+              'Marking a location as confidential will replace a point with an approximate location .\n\n' +
+              'Do you want to continue?'
             )
 
             if (!confirmed) {
@@ -124,7 +124,6 @@ export default ObjectInputView.extend({
 
       const point = turf.point([e.latlng.lng, e.latlng.lat])
       const buffered = turf.buffer(point, 2, { units: 'kilometers' })
-      //buffered.properties.isTurfCircle = true
 
       this.drawnItems.clearLayers()
       const layer = L.geoJson(buffered)

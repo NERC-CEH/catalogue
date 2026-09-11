@@ -3,7 +3,6 @@ import $ from 'jquery'
 import Backbone from 'backbone'
 import L from 'leaflet'
 import 'leaflet.markercluster/dist/leaflet.markercluster.js'
-import * as turf from '@turf/turf'
 
 export default Backbone.View.extend({
   initialize () {
@@ -79,8 +78,6 @@ export default Backbone.View.extend({
         isConfidential = feature?.properties?.locationConfidential === true
       } else if (geoJson.type === 'Feature') {
         feature = geoJson
-        geom = geoJson.geometry
-        isConfidential = geoJson.properties?.locationConfidential === true
       } else {
         return geoJsonStr
       }
