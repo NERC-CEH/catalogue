@@ -75,7 +75,7 @@ export default ObjectInputView.extend({
             `${encodedTerm}&facet=recordType%7C(Model%20OR%20Dataset%20OR%20Map%20(web%20service)%20OR%20Software)`,
 
           'https://digital.ceh.ac.uk/ontology/doo/utilises': () =>
-            'resourceType%3A("Monitoring%20network"%20OR%20"Monitoring%20facility")%20AND%20' + encodedTerm ,
+            `resourceType%3A("Monitoring%20network"%20OR%20"Monitoring%20facility")%20AND%20${encodedTerm}`,
 
           'http://purl.org/dc/terms/isPartOf': () => {
             if (currentResourceType === 'dataset') {
