@@ -30,6 +30,8 @@ import uk.ac.ceh.gateway.catalogue.exports.SourceGraphProvider.SourceGraph;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.jena.JenaIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.mapserver.MapServerIndexingService;
+import org.apache.solr.client.solrj.SolrServerException;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.PendingEmbeddingService;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
@@ -80,16 +82,26 @@ class MaintenanceControllerTest extends AbstractMvcTest {
      */
     @MockitoBean SourceGraphProvider sourceGraphProvider;
     @MockitoBean SourceGraphProgress sourceGraphProgressBean;
+    /**
+     * Registered although the "vector-search" profile is off, so the rendered page can be driven
+     * from real counts. Spring injects it as a present Optional, which is the profile-on case.
+     */
+    @MockitoBean PendingEmbeddingService embeddingService;
     @Autowired private Configuration configuration;
 
     private MaintenanceController controller;
     private final String catalogueKey = "eidc";
 
     @BeforeEach
+    @SneakyThrows
     public void createMaintenanceController() {
         // No CatalogueExportService bean under these profiles ("exports" is not active) - Optional.empty()
         // mirrors what Spring itself injects here.
         controller = controllerWith(Optional.empty(), List.of(), Optional.empty());
+        // The Spring-wired controller behind the render tests is handed this bean, so give it
+        // counts rather than a null, as a bean under "vector-search" would return.
+        given(embeddingService.coverage())
+            .willReturn(new PendingEmbeddingService.Coverage(1991, 1991, 0, 0));
     }
 
     private MaintenanceController controllerWith(
@@ -97,8 +109,18 @@ class MaintenanceControllerTest extends AbstractMvcTest {
         List<SourceGraphProvider> providers,
         Optional<SourceGraphProgress> progress
     ) {
+        return controllerWith(exportService, providers, progress, Optional.empty());
+    }
+
+    private MaintenanceController controllerWith(
+        Optional<CatalogueExportService> exportService,
+        List<SourceGraphProvider> providers,
+        Optional<SourceGraphProgress> progress,
+        Optional<PendingEmbeddingService> embeddings
+    ) {
         return new MaintenanceController(
-            repoService, indexService, linkingService, mapserverService, exportService, providers, progress);
+            repoService, indexService, linkingService, mapserverService, exportService, providers, progress,
+            embeddings);
     }
 
     /** A provider that declares graphs but publishes nothing, which is all the page reads it for. */
@@ -514,5 +536,104 @@ class MaintenanceControllerTest extends AbstractMvcTest {
         mvc.perform(get("/maintenance").header("remote-user", ADMIN).accept(MediaType.TEXT_HTML))
             .andExpect(status().isOk())
             .andExpect(content().string(not(containsString("Source graphs"))));
+    }
+
+    // ------------------------------------------------------------ embedding coverage panel
+
+    /**
+     * Without the "vector-search" profile there is no PendingEmbeddingService at all, and the page
+     * must not advertise a semantic search that is not wired up. A required constructor dependency
+     * would additionally have stopped every other context from starting.
+     */
+    @Test
+    @DisplayName("nothing is reported when the vector-search profile is not active")
+    void noEmbeddingProgressWithoutTheProfile() {
+        MaintenanceResponse response = controller.loadMaintenancePage();
+
+        assertThat(response.getEmbeddingProgress(), is(nullValue()));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("coverage is reported when the profile is active")
+    void reportsEmbeddingCoverage() {
+        given(embeddingService.coverage())
+            .willReturn(new PendingEmbeddingService.Coverage(1847, 1991, 144, 0));
+        MaintenanceController withEmbeddings =
+            controllerWith(Optional.empty(), List.of(), Optional.empty(), Optional.of(embeddingService));
+
+        MaintenanceResponse.EmbeddingProgress progress =
+            withEmbeddings.loadMaintenancePage().getEmbeddingProgress();
+
+        assertThat(progress.embedded(), is(1847L));
+        assertThat(progress.total(), is(1991L));
+        assertThat(progress.state(), is("Filling"));
+    }
+
+    /**
+     * Solr being unreachable is reported the same way the indexing checks above report it — as a
+     * message, not an exception that takes the whole maintenance page down with it.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("a Solr failure is reported as a message, leaving the rest of the page intact")
+    void solrFailureBecomesAMessage() {
+        given(embeddingService.coverage()).willThrow(new SolrServerException("solr down"));
+        MaintenanceController withEmbeddings =
+            controllerWith(Optional.empty(), List.of(), Optional.empty(), Optional.of(embeddingService));
+
+        MaintenanceResponse response = withEmbeddings.loadMaintenancePage();
+
+        assertThat(response.getEmbeddingProgress(), is(nullValue()));
+        assertThat(response.getMessages(), hasItem(containsString("solr down")));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("the panel renders the coverage and its state")
+    void rendersTheEmbeddingPanel() {
+        givenDefaultCatalogue();
+        givenFreemarkerConfiguration();
+        given(embeddingService.coverage())
+            .willReturn(new PendingEmbeddingService.Coverage(1847, 1991, 144, 0));
+
+        String page = mvc.perform(get("/maintenance").header("remote-user", ADMIN).accept(MediaType.TEXT_HTML))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        assertThat(page, containsString("Semantic search"));
+        assertThat(page, containsString("1847"));
+        assertThat(page, containsString("1991"));
+        assertThat(page, containsString("Filling"));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("abandoned records are rendered as a warning")
+    void rendersAbandonedRecordsAsAWarning() {
+        givenDefaultCatalogue();
+        givenFreemarkerConfiguration();
+        given(embeddingService.coverage())
+            .willReturn(new PendingEmbeddingService.Coverage(1988, 1991, 0, 3));
+
+        String page = mvc.perform(get("/maintenance").header("remote-user", ADMIN).accept(MediaType.TEXT_HTML))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        assertThat(page, containsString("3 records abandoned"));
+        assertThat(page, containsString("text-danger"));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("the panel is absent when the coverage cannot be read")
+    void hidesTheEmbeddingPanelWhenCoverageIsUnavailable() {
+        givenDefaultCatalogue();
+        givenFreemarkerConfiguration();
+        given(embeddingService.coverage()).willThrow(new SolrServerException("solr down"));
+
+        mvc.perform(get("/maintenance").header("remote-user", ADMIN).accept(MediaType.TEXT_HTML))
+            .andExpect(status().isOk())
+            .andExpect(content().string(not(containsString("Semantic search"))));
     }
 }

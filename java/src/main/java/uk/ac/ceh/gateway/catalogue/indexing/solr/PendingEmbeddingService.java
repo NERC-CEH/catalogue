@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.RemoteSolrException;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.beans.factory.annotation.Value;
@@ -86,6 +87,29 @@ public class PendingEmbeddingService {
      */
     public Map<String, String> abandonedEmbeddings() {
         return Map.copyOf(abandoned);
+    }
+
+    /**
+     * The vector field is a {@code DenseVectorField}, and Solr rejects a wildcard or range query
+     * against one, so this counts {@code embedding_text} instead. The two are written by the same
+     * atomic update in {@link #processChunk}, so a record has both or neither. Do not "fix" this
+     * to {@code vector:*} -- Solr answers that with a 400.
+     */
+    private static final String EMBEDDED_QUERY = "embedding_text:[* TO *]";
+
+    /**
+     * How much of the index carries a vector, and what is still outstanding, for the maintenance
+     * page. {@code pending} clears itself on the next flush; {@code abandoned} does not, and is the
+     * only part an operator has to act on.
+     */
+    public record Coverage(long embedded, long total, int pending, int abandoned) {}
+
+    public Coverage coverage() throws SolrServerException, IOException {
+        return new Coverage(count(EMBEDDED_QUERY), count("*:*"), pending.size(), abandoned.size());
+    }
+
+    private long count(String query) throws SolrServerException, IOException {
+        return solrClient.query("documents", new SolrQuery(query).setRows(0)).getResults().getNumFound();
     }
 
     /**
