@@ -85,18 +85,6 @@ export default Backbone.View.extend({
         return geoJsonStr
       }
 
-      if (isConfidential && geom?.type === 'Point') {
-        const point = turf.point(geom.coordinates)
-        const buffered = turf.buffer(point, 2, { units: 'kilometers' })
-
-        buffered.properties = {
-          ...feature.properties,
-          isTurfCircle: true
-        }
-
-        return JSON.stringify(buffered)
-      }
-
       return geoJsonStr
     })
   },

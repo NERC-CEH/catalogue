@@ -71,9 +71,8 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
 
     public void populateFromJenaService(JenaLookupService jenaService) {
 
-        boolean locationConfidential = geometry != null && Boolean.TRUE.equals(geometry.getLocationConfidential());
         final String uri = this.getUri();
-        this.setRelCombinedGeometry(jenaService.relationshipCombinedGeometriesWithOwner(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility", locationConfidential));
+        this.setRelCombinedGeometry(jenaService.relationshipCombinedGeometriesWithOwner(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility"));
         this.setRelBelongsToNetwork(jenaService.relationships(uri, "http://purl.org/dc/terms/isPartOf"));
         this.setRelUsedBy(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/uses"));
         this.setRelUtilisedBy(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"));

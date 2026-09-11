@@ -13,7 +13,6 @@ export default ObjectInputView.extend({
 
   initialize (options) {
     this.template = template
-    this.parentModel = options?.parentModel || this.options?.parentModel
     ObjectInputView.prototype.initialize.apply(this, arguments)
     this.render()
     this.viewMap()
@@ -40,10 +39,37 @@ export default ObjectInputView.extend({
   },
 
   handleLocationConfidentialCheckbox () {
-    this.model.set(
-      'locationConfidential',
-      this.$('#locationConfidential').is(':checked')
-    )
+    const isChecked = this.$('#locationConfidential').is(':checked')
+
+    if (isChecked) {
+      const geometryString = this.model.get('geometryString')
+
+      if (geometryString) {
+        try {
+          const geoJson = JSON.parse(geometryString)
+
+          const geometry = geoJson.type === 'Feature'
+            ? geoJson.geometry
+            : geoJson
+
+          if (geometry?.type === 'Point') {
+            const confirmed = window.confirm(
+            'Marking a location as confidential will replace a point with an approximate location .\n\n' +
+            'Do you want to continue?'
+            )
+
+            if (!confirmed) {
+              this.$('#locationConfidential').prop('checked', false)
+              return
+            }
+          }
+        } catch (e) {
+          console.error('Unable to parse geometry', e)
+        }
+      }
+    }
+
+    this.model.set('locationConfidential', isChecked)
   },
 
   createMap () {
@@ -98,7 +124,7 @@ export default ObjectInputView.extend({
 
       const point = turf.point([e.latlng.lng, e.latlng.lat])
       const buffered = turf.buffer(point, 2, { units: 'kilometers' })
-      buffered.properties.isTurfCircle = true
+      //buffered.properties.isTurfCircle = true
 
       this.drawnItems.clearLayers()
       const layer = L.geoJson(buffered)
@@ -168,13 +194,6 @@ export default ObjectInputView.extend({
     }
 
     return toolbar
-  },
-
-  isCircleGeometry (geojson) {
-    const feature = geojson.type === 'Feature' ? geojson : { type: 'Feature', geometry: geojson, properties: {} }
-    if (feature.properties && feature.properties.isTurfCircle) {
-      return true
-    }
   },
 
   handleLocationConfidentialChange () {
