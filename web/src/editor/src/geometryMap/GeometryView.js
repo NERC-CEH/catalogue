@@ -240,7 +240,7 @@ export default ObjectInputView.extend({
               [west.geometry.coordinates[0], south.geometry.coordinates[1]] // Close polygon
             ]])
 
-            square.properties.isConfidentialSquare = true
+            square.properties.isConfidential = true
 
             this.model.setGeometry(JSON.stringify(square, rounding))
 
@@ -254,7 +254,7 @@ export default ObjectInputView.extend({
         } else {
           if (
             geometry.type === 'Polygon' &&
-            currentGeometry.properties?.isConfidentialSquare
+            currentGeometry.properties?.isConfidential
           ) {
             const center = turf.centroid(currentGeometry)
 

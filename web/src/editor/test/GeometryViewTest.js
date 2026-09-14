@@ -22,7 +22,7 @@ describe('Test GeometryView', function () {
     setTimeout(expect(view).toBeDefined(), 5000)
   })
 
-  it('converts a point into a square when confidential is enabled', () => {
+  it('converts a point into a polygon when confidential is enabled', () => {
     view.model.set('locationConfidential', true)
     view.model.set('geometryString', JSON.stringify({
       type: 'Point',
