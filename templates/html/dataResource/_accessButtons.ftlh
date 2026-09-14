@@ -94,22 +94,8 @@
         <div>
           ${constraints?no_esc}
 
-          <#if otherConstraints?has_content>
-            <#list otherConstraints as oc>
+          <@display_otherConstraints />
 
-              <#assign otherConstraintText = oc.value >
-
-              <#if recordType?? && recordType?has_content>
-                <#assign otherConstraintText = otherConstraintText?replace("resource",recordType) >
-              </#if>
-
-              <#if oc.uri?has_content>
-                <#assign otherConstraintText = "<a href='${oc.uri}'>"+ otherConstraintText + '</a>'>
-              </#if>
-
-              <p class="constraints">${otherConstraintText}</p>
-            </#list>
-          </#if>
         </div>
 
         <#include "_licence.ftlh">
@@ -121,6 +107,7 @@
             <@wmsButton/>
           </div>
 
+          <@display_downloadInstructions />
           <@fileAccessInstructions />
 
         </#if>
@@ -131,6 +118,39 @@
 
     </div>
   </div>
+</#macro>
+
+<#macro display_otherConstraints>
+  <#local constraints = otherConstraints?filter(o -> o.code !='downloadInstructions') >
+  
+  <#if constraints?has_content>
+    <#list constraints as con>
+
+      <#assign otherConstraintText = con.value >
+
+      <#if recordType?? && recordType?has_content>
+        <#assign otherConstraintText = otherConstraintText?replace("resource",recordType) >
+      </#if>
+
+      <#if con.uri?has_content>
+        <#assign otherConstraintText = "<a href='${con.uri}'>"+ otherConstraintText + '</a>'>
+      </#if>
+
+      <p class="constraints">${otherConstraintText}</p>
+    </#list>
+  </#if>
+</#macro>
+
+<#macro display_downloadInstructions>
+    <#local downloadInstructions = otherConstraints?filter(o -> o.code=='downloadInstructions') >
+
+    <#if downloadInstructions?has_content>
+      <div class="card downloadInstructions mx-3 border-dark rounded-1"><div class="card-body">
+        <#list downloadInstructions as di>
+          <p class="card-text"><@blocks.linebreaksAndLinks di.value?trim!"" /></p>
+        </#list>
+      </div></div>
+    </#if>
 </#macro>
 
 <#macro downloadOptions resources>
@@ -223,14 +243,19 @@
 
 <#macro fileAccessInstructions>
   <#if dataAccess?? && dataAccess.dataAddressable && dataAccess?string?matches(".+http(|s)://catalogue.ceh.ac.uk/datastore/.+")>
-    <div class="py-3">
+    <div>
       <hr class="my-5 ">
       <h5 class="my-3">Bulk download options</h5>
-      <p>You can use WGET to download data. For example<br>
-        <code>
-          wget https://catalogue.ceh.ac.uk/datastore/eidchub/${id}
-          --user=YOUR_USERNAME --password=YOUR_PASSWORD --auth-no-challenge
-        <#t></code>
+      <p>You can access the data using scripting tools such as wget or curl. For example<br>
+        <div class="my-4"><code>
+          wget https://catalogue.ceh.ac.uk/datastore/eidchub/${id}/<i>_filename</i>
+          --header="Authorization: Bearer <i>YOUR_PERSONAL_ACCESS_TOKEN</i>"
+        </code></div>
+        
+        <div class="my-4"><code>
+          curl "https://catalogue.ceh.ac.uk/datastore/eidchub/${id}/<i>_filename</i>"
+           -L -O -H "Authorization: Bearer <i>YOUR_PERSONAL_ACCESS_TOKEN</i>"
+        </code></div>
       </p>
       <p><a href="https://eidc.ac.uk/help/getdata/downloadData#programmaticAccess" rel="nofollow noreferrer" target="_blank">Further information and help &raquo;</a></p>
     </div>
@@ -252,6 +277,3 @@
 
     <#return sizeLabel>
 </#function>
-
-
-
