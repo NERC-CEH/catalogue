@@ -551,8 +551,8 @@ body {
             --_ukcehcard-padding: 0.35em;
             --_ukcehcard-icon-width: 50px;
             --_ukcehcard-minsize: 290px;
-            line-height:1.35;
-            gap:0.5em;
+            line-height: 1.35;
+            gap: 0.5em;
         }
 
     }
@@ -996,5 +996,70 @@ body {
                 flex: 0 1 40%;
             }
         }
+    }
+}
+
+/********** Sample records *************/
+.metadata-sample {
+    .metadata-grid {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0;
+
+        >* {
+            --_spacing: 1rem;
+            border-block-end: 1px solid lightgray;
+            margin-block-end: var(--_spacing);
+            padding-block-end: var(--_spacing);
+            padding-inline: var(--_spacing);
+        }
+
+        .key {
+            text-align: right;
+        }
+
+        .value {
+            >div {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                gap: .25rem 1rem;
+            }
+        }
+    }
+
+    .print-header {
+
+        .logo-ukceh {
+            text-align: center;
+
+            img {
+                filter: invert(100%);
+                max-height: 70px;
+            }
+        }
+
+        #qrcode {
+            img {
+                width: 100px;
+                margin: auto;
+            }
+        }
+    }
+
+    @media print {
+
+        @page {
+            size: 210mm 297mm;
+            margin: 25mm 16mm;
+        }
+
+        .container {
+          max-width:210mm ;
+        }
+
+        .section-grey {
+            background-color: white;
+        }
+
     }
 }

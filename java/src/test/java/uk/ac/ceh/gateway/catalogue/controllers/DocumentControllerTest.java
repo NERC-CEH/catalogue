@@ -38,6 +38,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
+import uk.ac.ceh.gateway.catalogue.samples.Sample;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
@@ -77,6 +78,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -282,6 +285,8 @@ class DocumentControllerTest extends AbstractMvcTest {
             Arguments.of(new InfrastructureRecord(), APPLICATION_JSON, JSON, null),
             Arguments.of(new ResearchActivity(), TEXT_HTML, HTML, null),
             Arguments.of(new ResearchActivity(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new Sample(), TEXT_HTML, HTML, null),
+            Arguments.of(new Sample(), APPLICATION_JSON, JSON, null),
             Arguments.of(gemini, TEXT_HTML, HTML, null),
             Arguments.of(gemini, APPLICATION_JSON, JSON, "gemini.json"),
             Arguments.of(gemini, GEMINI_XML, GEMINI_XML_SHORT,  "gemini.xml"),

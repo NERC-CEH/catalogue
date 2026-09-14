@@ -24,6 +24,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
+import uk.ac.ceh.gateway.catalogue.samples.Sample;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
@@ -318,6 +319,41 @@ public class DocumentController extends AbstractDocumentController {
             ifMatch
         );
     }
+
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @RequestMapping (value = "documents",
+        method = RequestMethod.POST,
+        consumes = SAMPLE_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newSample(
+        @ActiveUser CatalogueUser user,
+        @RequestBody Sample document,
+        @RequestParam("catalogue") String catalogue
+    ) throws DocumentRepositoryException, IOException {
+        return saveNewMetadataDocument(
+            user,
+            document,
+            catalogue,
+            "new Sample"
+        );
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping(value = "documents/{file}",
+        method = RequestMethod.PUT,
+        consumes = SAMPLE_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateSample(
+        @ActiveUser CatalogueUser user,
+        @PathVariable String file,
+        @RequestBody Sample document,
+        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
+    ) throws DocumentRepositoryException, IOException {
+        return saveMetadataDocument(
+            user,
+            file,
+            document,
+            ifMatch
+        );
+    }    
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
     method = RequestMethod.POST,
@@ -466,6 +502,7 @@ public class DocumentController extends AbstractDocumentController {
             case MonitoringNetwork doc -> doc.populateFromJenaService(jenaService);
             case MonitoringProgramme doc -> doc.populateFromJenaService(jenaService);
             case ResearchActivity doc -> doc.populateFromJenaService(jenaService);
+            case Sample doc -> doc.populateFromJenaService(jenaService);
             default -> {}
         }
         return document;

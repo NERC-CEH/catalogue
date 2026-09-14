@@ -38,6 +38,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
+import uk.ac.ceh.gateway.catalogue.samples.Sample;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
@@ -148,6 +149,7 @@ public class IndexingServicesConfig {
             .register(MonitoringNetwork.class, new SolrIndexMonitoringNetworkGenerator(metadataDocumentGenerator))
             .register(MonitoringProgramme.class, new SolrIndexMonitoringProgrammeGenerator(metadataDocumentGenerator))
             .register(ResearchActivity.class, new SolrIndexResearchActivityGenerator(metadataDocumentGenerator))
+            .register(Sample.class, new SolrIndexSampleGenerator(metadataDocumentGenerator))
             .register(LinkDocument.class, linkDocumentGenerator)
             .register(MetadataDocument.class, metadataDocumentGenerator);
 

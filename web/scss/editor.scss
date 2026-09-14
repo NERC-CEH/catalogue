@@ -202,7 +202,7 @@
                 @extend .form-control-sm !optional;
                 color: #000;
                 field-sizing: content;
-                min-height: var(--textarea-height, 0);
+                min-height: var(--textarea-height, 5rem);
 
                 &#input-description,
                 &#input-lineage {

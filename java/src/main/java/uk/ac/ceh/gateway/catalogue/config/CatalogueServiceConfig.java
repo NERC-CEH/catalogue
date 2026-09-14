@@ -102,6 +102,7 @@ public class CatalogueServiceConfig {
                 .documentType(MONITORING_NETWORK_TYPE)
                 .documentType(MONITORING_PROGRAMME_TYPE)
                 .documentType(RESEARCHACTIVITY_TYPE)
+                .documentType(SAMPLE_TYPE)
                 .fileUpload(false)
                 .build(),
 

@@ -1,0 +1,21 @@
+<#compress>
+    PREFIX : <${uri?replace(id,"")}>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    PREFIX dcterms: <http://purl.org/dc/terms/>
+    PREFIX dcat: <http://www.w3.org/ns/dcat#>
+    PREFIX frapo: <http://purl.org/cerif/frapo/>
+    PREFIX scoro: <http://purl.org/spar/scoro/>
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    PREFIX prov: <http://www.w3.org/ns/prov#>
+    PREFIX org: <http://www.w3.org/ns/org#>
+    PREFIX schema: <http://schema.org/>
+
+    :${id} a ex:Sample ;
+        dcterms:title  <@displayLiteral title />  ;
+
+        <#-- UKCEH object -->
+        <https://ror.org/00pggkr55> a org:Organization ;
+            foaf:name  "UK Centre for Ecology & Hydrology" ;
+            schema:url <https://www.ceh.ac.uk> ;
+            schema:email <mailto:enquiries@ceh.ac.uk>  .
+</#compress>

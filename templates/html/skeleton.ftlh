@@ -48,7 +48,7 @@
     </head>
     <body data-edit-restricted="${can_edit_restricted?then('','disabled')}">
       <div id="header-sentinel" aria-hidden="true"></div>
-      <header>
+      <header class="d-print-none">
         <div class="${containerClass}">
           <div class="toolbar">
             <div class="nav-toggle">
@@ -136,7 +136,7 @@
         <div id="message-panel"></div>
       </main>
       <#if footer>
-        <footer>
+        <footer class="d-print-none">
 
           <#if metadataDateTime?has_content>
             <div class="footer-subsection">

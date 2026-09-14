@@ -6,7 +6,6 @@ import static com.google.common.base.Strings.nullToEmpty;
 import com.google.common.base.Strings;
 import lombok.Builder;
 import lombok.Value;
-
 import java.time.LocalDate;
 
 @Value

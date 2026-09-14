@@ -2,6 +2,8 @@ package uk.ac.ceh.gateway.catalogue;
 
 import static uk.ac.ceh.gateway.catalogue.catalogue.Catalogue.DocumentType;
 
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue.DocumentType;
+
 public class DocumentTypes {
 
     public static final String CEH_MODEL = "CEH_MODEL";
@@ -38,6 +40,12 @@ public class DocumentTypes {
     public static DocumentType RESEARCHACTIVITY_TYPE = DocumentType.builder()
         .title("Research activity")
         .type(RESEARCHACTIVITY)
+        .build();
+
+    public static final String SAMPLE = "sample";
+    public static DocumentType SAMPLE_TYPE = DocumentType.builder()
+        .title("Sample")
+        .type(SAMPLE)
         .build();
 
     public static final String GEMINI = "GEMINI_DOCUMENT";
