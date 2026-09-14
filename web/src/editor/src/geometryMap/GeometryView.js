@@ -112,7 +112,7 @@ export default ObjectInputView.extend({
     baseMaps.Map.addTo(this.map)
 
     const rounding = function (key, val) {
-      if (typeof val === 'number') { return Number(val.toFixed(5)) }
+      if (typeof val === 'number') { return Number(val.toFixed(4)) }
       return val
     }
 
@@ -203,7 +203,7 @@ export default ObjectInputView.extend({
 
     const isLocationConfidential = this.model?.get('locationConfidential') === true
     const rounding = (key, val) => {
-      return typeof val === 'number' ? Number(val.toFixed(5)) : val
+      return typeof val === 'number' ? Number(val.toFixed(2)) : val
     }
 
     const hasGeometry = this.model.getGeometry?.()
@@ -226,7 +226,7 @@ export default ObjectInputView.extend({
 
             const center = turf.point([roundedLng, roundedLat])
 
-            // Calculate points 500m N, S, E and W of the rounded centre
+            // Calculate points N, S, E and W of the centre
             const north = turf.destination(center, (bufferDistance / 2), 0)
             const south = turf.destination(center, (bufferDistance / 2), 180)
             const east = turf.destination(center, (bufferDistance / 2), 90)
@@ -248,9 +248,7 @@ export default ObjectInputView.extend({
             const layer = L.geoJson(square)
             this.drawnItems.addLayer(layer)
             this.map.fitBounds(this.drawnItems.getBounds())
-          } else {
-            console.log('Geometry is not a Point, no conversion needed')
-          }
+          } 
         } else {
           if (
             geometry.type === 'Polygon' &&
@@ -263,9 +261,7 @@ export default ObjectInputView.extend({
             this.drawnItems.clearLayers()
             const layer = L.geoJson(center)
             this.drawnItems.addLayer(layer)
-          } else {
-            console.log('Geometry is not a confidential square, no conversion needed')
-          }
+          } 
         }
       } catch (e) {
         console.error('Error converting geometry:', e)

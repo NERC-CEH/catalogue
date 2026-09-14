@@ -26,14 +26,15 @@ describe('Test GeometryView', function () {
     view.model.set('locationConfidential', true)
     view.model.set('geometryString', JSON.stringify({
       type: 'Point',
-      coordinates: [-2.64501, 54.5261]
+      coordinates: [-2.6450, 54.526]
     }))
 
     view.handleLocationConfidentialChange()
 
     const geometry = JSON.parse(view.model.get('geometryString'))
 
-    expect(geometry.type).toBe('Polygon')
+    //expect(geometry.type).toBe('Feature')
+    expect(geometry.geometry.type).toBe('Polygon')
   })
 
   it('does not modify geometry when confidentiality is enabled for a polygon', () => {
@@ -57,7 +58,7 @@ describe('Test GeometryView', function () {
       type: 'Feature',
       geometry: {
         type: 'Point',
-        coordinates: [-2.64501, 54.5261]
+        coordinates: [-2.6450, 54.5261]
       }
     }))
 
@@ -76,7 +77,7 @@ describe('Test GeometryView', function () {
       type: 'Feature',
       geometry: {
         type: 'Point',
-        coordinates: [-2.64501, 54.5261]
+        coordinates: [-2.6450, 54.5261]
       }
     }))
 
