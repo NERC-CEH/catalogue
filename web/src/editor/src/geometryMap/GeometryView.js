@@ -248,7 +248,7 @@ export default ObjectInputView.extend({
             const layer = L.geoJson(square)
             this.drawnItems.addLayer(layer)
             this.map.fitBounds(this.drawnItems.getBounds())
-          } 
+          }
         } else {
           if (
             geometry.type === 'Polygon' &&
@@ -261,7 +261,7 @@ export default ObjectInputView.extend({
             this.drawnItems.clearLayers()
             const layer = L.geoJson(center)
             this.drawnItems.addLayer(layer)
-          } 
+          }
         }
       } catch (e) {
         console.error('Error converting geometry:', e)

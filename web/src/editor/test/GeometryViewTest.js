@@ -33,7 +33,7 @@ describe('Test GeometryView', function () {
 
     const geometry = JSON.parse(view.model.get('geometryString'))
 
-    //expect(geometry.type).toBe('Feature')
+    // expect(geometry.type).toBe('Feature')
     expect(geometry.geometry.type).toBe('Polygon')
   })
 
