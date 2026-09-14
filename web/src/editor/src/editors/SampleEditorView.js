@@ -13,6 +13,11 @@ import {
 import {
   Contact
 } from '../models'
+import {
+  Geometry,
+  GeometryView
+} from '../geometryMap'
+
 export default EditorView.extend({
 
   initialize () {
@@ -32,7 +37,7 @@ export default EditorView.extend({
         new TextareaView({
           model: this.model,
           modelAttribute: 'description',
-          label: 'Contents'
+          label: 'Description'
         }),
 
         new SingleObjectView({
@@ -40,6 +45,15 @@ export default EditorView.extend({
           modelAttribute: 'storageLocation',
           label: 'Storage location',
           ObjectInputView: SampleStorageLocationView
+        }),
+
+        new SingleObjectView({
+          model: this.model,
+          modelAttribute: 'sampleLocation',
+          ModelType: Geometry,
+          label: 'Sample location',
+          ObjectInputView: GeometryView,
+          parentModel: this.model
         }),
 
         new InputView({

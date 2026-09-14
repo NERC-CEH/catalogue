@@ -47,7 +47,15 @@
             <@keyvalue "Contents"><@b.linebreaksAndLinks description/></@keyvalue>
           </#if>
 
-          <@display_location />
+          <@display_archiveLocation />
+
+          <#if sampleLocation??>
+            <@keyvalue "Sample location" false>
+                <div id="studyarea-map" class="studyarea-map">
+                  <span content="${sampleLocation.geometryString}" dataType="geoJson"/>
+                </div>
+            </@keyvalue> 
+          </#if>
 
           <#if keywords??>
             <@keyvalue "Keywords">
@@ -77,7 +85,7 @@
                 </#list>
             </@keyvalue>
           </#if>
-        
+          
         </div><#--end grid -->
       </div>
     </section>
@@ -148,10 +156,10 @@
   </@keyvalue>
 </#macro>
 
-<#macro display_location>
+<#macro display_archiveLocation>
     <#if storageLocation??>
-      <@keyvalue "Location">
-        <div class="location">
+      <@keyvalue "Archive location">
+        <div class="archiveLocation">
           <#if storageLocation.archive??>
               <@keyvalue "Archive">${storageLocation.archive}</@keyvalue>
           </#if>

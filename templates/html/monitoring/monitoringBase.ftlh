@@ -390,7 +390,7 @@ Symmetrical relationships
   <div id="studyarea-map" class="studyarea-map">
     <span content="${mapData}" dataType="geoJson"/>
   </div>
-</#macro>
+</#macro>/
 
 <#macro inverseRelationshipCombinedGeometries relation>
   <#local combinedGeometry=relation />
