@@ -14,13 +14,14 @@ export default Backbone.Model.extend({
     page: 1,
     rows: undefined,
     sortField: null,
-    order: null
+    order: null,
+    semantic: false
   },
 
   /*
      * Define the set of fields which contribute to searching
      */
-  searchFields: ['term', 'page', 'rows', 'facet', 'bbox', 'op', 'sortField', 'order'],
+  searchFields: ['term', 'page', 'rows', 'facet', 'bbox', 'op', 'sortField', 'order', 'semantic'],
 
   initialize () {
     this.createSearchPage() // Create initial search page
@@ -68,10 +69,38 @@ export default Backbone.Model.extend({
      */
   performSearch (evt) {
     if (!_.chain(evt.changed).pick(this.searchFields).isEmpty().value()) {
-      this.clearResults() // Make sure that the results have been cleared
-      this.createSearchPage() // Redefine a new search page
-      this.results.fetch({ cache: false, traditional: true, data: this.getState() })
+      this.searchNow()
     }
+  },
+
+  /*
+     * Run a search for the state the model is in right now, without waiting for a change
+     * event to ask for one. The search button needs this: it commits the displayed term,
+     * and when that term is the one the model already holds, Backbone fires no change event
+     * and nothing would otherwise happen.
+     */
+  searchNow () {
+    if (!this.isSearchable()) { return }
+    this.clearResults() // Make sure that the results have been cleared
+    this.createSearchPage() // Redefine a new search page
+    this.results.fetch({ cache: false, traditional: true, data: this.getState() })
+  },
+
+  /*
+     * Is there actually a search to run? A keyword search with no term is meaningful --
+     * the server reads it as "*" and matches everything -- but a semantic search embeds
+     * the term through Bedrock, and KNN has no equivalent of "match everything": it would
+     * embed the literal string "*" and return whatever happens to sit nearest that
+     * arbitrary point.
+     *
+     * This matters because `semantic` is itself a search field, so ticking the checkbox
+     * starts a search of its own, before the user has typed anything. SearchFormView holds
+     * the term back while typing precisely so that each keystroke does not cost a Bedrock
+     * call, and commits it on submit -- the search button is meant to be the only way to
+     * start a semantic search.
+     */
+  isSearchable () {
+    return !this.get('semantic') || Boolean(this.get('term'))
   },
 
   /*

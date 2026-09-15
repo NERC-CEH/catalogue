@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
@@ -72,7 +71,11 @@ public class EnhancedSolrSearcher extends SolrSearcher {
         return new SearchResults(basicResults, relatedSearches);
     }
 
-    @SneakyThrows
+    /**
+     * Related searches are a nicety, so every failure here degrades to none rather than failing the
+     * search — hence the catch-all, which is also what makes the Solr call's checked exceptions
+     * handled without any need to declare them.
+     */
     private List<Link> relatedSearches(String endpoint, String term) {
         log.debug("related searches - endpoint: {}, term: {}", endpoint, term);
         if (term.equals(DEFAULT_SEARCH_TERM)) {

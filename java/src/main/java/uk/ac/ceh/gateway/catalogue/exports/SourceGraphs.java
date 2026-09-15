@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.exports;
 
 import lombok.val;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.DCTerms;
@@ -81,6 +82,24 @@ final class SourceGraphs {
         DCTerms.getURI(), VOID, PROV, XSD, RDFS.getURI());
 
     private SourceGraphs() {
+    }
+
+    /**
+     * How many distinct entities a graph describes.
+     *
+     * <p>Counted from the graph rather than taken from the number of IRIs the
+     * run asked about, because the two differ: an entity the authority
+     * definitively does not hold is excused from the completeness check, so a
+     * complete run can legitimately describe fewer entities than it set out to.
+     * Reporting the number asked about would quietly overstate what was
+     * published.
+     *
+     * <p>Must be called before {@link #addProvenance}, which adds the graph's
+     * own {@code void:Dataset} as a subject. Blank nodes are not counted: they
+     * are structure within an entity's description, not entities of their own.
+     */
+    static int entities(Model model) {
+        return model.listSubjects().filterKeep(Resource::isURIResource).toSet().size();
     }
 
     /**

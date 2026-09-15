@@ -41,12 +41,30 @@
       <form class="search-form" action="/${docroot}" method="get">
         <div class="input-group">
           <input placeholder="Search…" name="term" type="text" autocomplete="off" aria-autocomplete="none" class="form-control">
+          <#if semanticEnabled>
+          <#--
+            Semantic search takes a sentence rather than keywords, so it gets a
+            multi row textarea instead of the single line input. Both controls are
+            rendered and SearchFormView swaps between them, disabling the one which
+            is not in use so that only one 'term' is ever submitted.
+          -->
+          <textarea placeholder="Describe what you are looking for, in your own words…" name="term" rows="4" autocomplete="off" aria-label="Search" class="form-control d-none" disabled></textarea>
+          </#if>
           <div class="input-group-btn">
-            <button tabindex="-1" class="btn" type="button" aria-label="Search">
+            <button class="btn" type="submit" aria-label="Search">
               <span class="fa-solid fa-magnifying-glass"></span>
+              <#if semanticEnabled><span class="search-button-label">Search</span></#if>
             </button>
           </div>
         </div>
+        <#if semanticEnabled>
+        <div class="mt-2">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="semanticSearch" name="semantic" value="true">
+            <label class="form-check-label" for="semanticSearch">Semantic search</label>
+          </div>
+        </div>
+        </#if>
       </form>
 
       <div class="results">

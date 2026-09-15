@@ -69,14 +69,14 @@ class SourceGraphServiceTest {
     private final DoiSource doi = new DoiSource();
     private final CastSource vocabulary = new CastSource("https://vocabs.ceh.ac.uk/sparql");
 
-    private WithheldGraphLog withheldGraphLog;
+    private SourceGraphProgress graphProgress;
     private SourceGraphService service;
 
     @BeforeEach
     void setUp() {
-        withheldGraphLog = new WithheldGraphLog();
+        graphProgress = new SourceGraphProgress();
         service = new SourceGraphService(List.of(orcid, doi, vocabulary), retriever,
-            withheldGraphLog, Clock.fixed(Instant.parse("2026-09-07T12:00:00Z"), ZoneOffset.UTC));
+            graphProgress, Clock.fixed(Instant.parse("2026-09-07T12:00:00Z"), ZoneOffset.UTC));
     }
 
     private static AuthorityRetriever.Descriptions complete(Model model) {
