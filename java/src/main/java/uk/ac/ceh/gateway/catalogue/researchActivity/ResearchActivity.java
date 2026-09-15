@@ -31,7 +31,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RDF_TTL_VALUE;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called = "html/researchactivity/researchactivity.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE),
+    @Template(called = "html/researchactivity/researchactivity.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE),  //
     @Template(called = "html/researchactivity/researchactivity.ttl", whenRequestedAs = RDF_TTL_VALUE)
 })
 public class ResearchActivity extends AbstractMetadataDocument {

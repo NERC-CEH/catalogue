@@ -234,6 +234,16 @@ public class CatalogueServiceConfig {
                 .documentType(MONITORING_NETWORK_TYPE)
                 .documentType(MONITORING_PROGRAMME_TYPE)
                 .fileUpload(false)
+                .build(),
+ 
+            Catalogue.builder()
+                .id("samples")
+                .title("Samples")
+                .url("https://www.ceh.ac.uk")
+                .contactUrl("https://www.ceh.ac.uk/contact-us")
+                .logo("ukceh.png")
+                .documentType(SAMPLE_TYPE)
+                .fileUpload(false)
                 .build()
         );
     }

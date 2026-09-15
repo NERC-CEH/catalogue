@@ -10,6 +10,5 @@ export default ObjectInputView.extend({
     this.$('#input-archive').val(this.model.get('archive'))
     this.$('#input-locale').val(this.model.get('locale'))
     this.$('#input-shelf').val(this.model.get('shelf'))
-   
   }
 })

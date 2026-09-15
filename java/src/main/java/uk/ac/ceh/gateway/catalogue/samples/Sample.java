@@ -19,7 +19,6 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RDF_TTL_VALUE;
 
@@ -35,7 +34,7 @@ public class Sample extends AbstractMetadataDocument implements WellKnownText {
 
     private StorageLocation storageLocation ;
     private String restrictions ;
-    private final LocalDate archiveDate, reviewDate;
+    private LocalDate archiveDate, reviewDate;
     
     private List<ResponsibleParty> contactPoints = new ArrayList<>();
     private List<ResponsibleParty> contributors = new ArrayList<>();
