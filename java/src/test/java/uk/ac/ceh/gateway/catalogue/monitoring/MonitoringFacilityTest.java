@@ -71,14 +71,9 @@ class MonitoringFacilityTest {
     void populateFromJenaService() {
         //given
         val facility = new MonitoringFacility();
-        val geometry = Geometry
-            .builder()
-            .geometryString("{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Point\",\"coordinates\":[-1.53,53.25]}}")
-            .locationConfidential(false)
-            .build();
         String uri = "https://example.com/facility/test";
         facility.setUri(uri);
-    
+
         val jenaService = org.mockito.Mockito.mock(JenaLookupService.class);
 
         when(jenaService.relationshipCombinedGeometriesWithOwner(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility"))
