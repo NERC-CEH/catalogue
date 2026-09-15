@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.search;
 import lombok.SneakyThrows;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrRequest;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.request.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.params.SolrParams;
@@ -16,9 +17,11 @@ import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -141,4 +144,23 @@ class SolrSearcherTest {
             );
     }
 
+    @Test
+    @DisplayName("An unreachable Solr becomes a 502-mapped failure without leaking SolrJ's message")
+    @SneakyThrows
+    void solrFailureIsReportedAsUpstreamFailure() {
+        //given
+        givenCatalogue();
+        givenFacets();
+        given(solrClient.query(any(String.class), any(SolrParams.class), any(SolrRequest.METHOD.class)))
+            .willThrow(new SolrServerException("http://solr:8983/solr refused the connection"));
+
+        //when / then — this used to leave the method via @SneakyThrows as a bare
+        // SolrServerException, giving a 500 with no indication of which search had failed.
+        assertThatThrownBy(() -> searcher.search(
+            endpoint, user, term, bbox, spatialOperation, page, rows,
+            facetFilters, catalogueKey, sortField, sortOrder))
+            .isInstanceOf(ExternalResourceFailureException.class)
+            .hasMessageNotContaining("solr:8983")
+            .hasCauseInstanceOf(SolrServerException.class);
+    }
 }

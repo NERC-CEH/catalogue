@@ -88,6 +88,7 @@ public class SearchQuery {
     List<Facet> facets;
     String sortField;
     SolrQuery.ORDER sortOrder;
+    boolean semantic;
 
     public SearchQuery(
             String endpoint,
@@ -104,6 +105,35 @@ public class SearchQuery {
             String sortField,
             SolrQuery.ORDER sortOrder
     ) {
+        this(endpoint, user, term, bbox, spatialOperation, page, rows, facetFilters,
+                groupStore, catalogue, facets, sortField, sortOrder, false);
+    }
+
+    /**
+     * @param semantic whether the search is running in semantic (KNN) mode. It takes no part in
+     * {@link #build()} -- SemanticSearcher issues its own Solr query -- but {@link #toUrl()} has to
+     * carry it, because SemanticSearcher builds a SearchQuery solely to render the next and
+     * previous page links. Without it those links drop the user back into keyword search, and a
+     * page offset valid for the KNN candidate set can land past the end of the far smaller keyword
+     * result set, returning an empty page and no error.
+     */
+    public SearchQuery(
+            String endpoint,
+            CatalogueUser user,
+            String term,
+            String bbox,
+            SpatialOperation spatialOperation,
+            int page,
+            int rows,
+            List<FacetFilter> facetFilters,
+            GroupStore<CatalogueUser> groupStore,
+            Catalogue catalogue,
+            List<Facet> facets,
+            String sortField,
+            SolrQuery.ORDER sortOrder,
+            boolean semantic
+    ) {
+        this.semantic = semantic;
         this.endpoint = endpoint;
         this.user = user;
         this.term = term;
@@ -124,7 +154,7 @@ public class SearchQuery {
                 .setQuery(term)
                 .setParam("defType", "edismax")
                 .setParam("mm", "1<1 3<-1 6<-2 9<75%")
-                .setParam("qf", "title^5 description^2 keyword^5 lineage familyName altTitle resourceIdentifier identifier supplementalDescription supplementalName infrastructureCapabilities^2 keywordsParameters^5 observedPropertyTitle^10 observedPropertyValue^5 operatingPeriod objectives^2 contacts")
+                .setParam("qf", "title^5 description^2 keyword^5 lineage familyName altTitle resourceIdentifier identifier supplementalDescription supplementalName infrastructureCapabilities^2 keywordsParameters^5 observedPropertyTitle^10 observedPropertyValue^5 operatingPeriod objectives^2 contacts document_text^1")
                 .setParam("bq", "resourceType:Aggregation^5, availability:Available^10, availability:Controlled^10, availability:Embargoed^5, availability:Restricted^5, availability:Superseded^1")
                 .setParam("bf", "version")
                 .setParam("ps", "5")
@@ -160,7 +190,8 @@ public class SearchQuery {
                 catalogue,
                 facets,
                 sortField,
-                sortOrder
+                sortOrder,
+                semantic
             );
         }
         else {
@@ -189,7 +220,8 @@ public class SearchQuery {
                 catalogue,
                 facets,
                 sortField,
-                sortOrder
+                sortOrder,
+                semantic
             );
         }
         else {
@@ -219,7 +251,8 @@ public class SearchQuery {
                 catalogue,
                 facets,
                 sortField,
-                sortOrder
+                sortOrder,
+                semantic
             );
         }
         else {
@@ -255,7 +288,8 @@ public class SearchQuery {
                 catalogue,
                 facets,
                 sortField,
-                sortOrder
+                sortOrder,
+                semantic
             );
         }
         else {
@@ -288,7 +322,8 @@ public class SearchQuery {
                 catalogue,
                 facets,
                 sortField,
-                sortOrder
+                sortOrder,
+                semantic
             );
         }
         else {
@@ -348,6 +383,10 @@ public class SearchQuery {
             if (sortOrder != null) {
                 builder.queryParam(SORT_ORDER_PARAM, sortOrder);
             }
+        }
+
+        if(semantic) {
+            builder.queryParam(SEMANTIC_QUERY_PARAM, true);
         }
 
         return builder.build().encode().toUriString();
@@ -445,30 +484,45 @@ public class SearchQuery {
     }
 
     private void setFacetFields(SolrQuery query){
+        if (facets.isEmpty()) {
+            return;
+        }
         query.setFacet(true);
         query.setFacetLimit(-1);
         query.setFacetSort("index");
         query.setFacetMinCount(1);
 
         // Exclude other facets from affecting facet counts
-        facets.forEach(currentFacet -> {
-            String fieldName = currentFacet.getFieldName();
+        String excludeTags = facetTags();
+        facets.forEach(currentFacet ->
+            query.addFacetField(String.format("{!ex=%s}%s", excludeTags, currentFacet.getFieldName())));
+    }
 
-            String excludeTags = facets.stream()
-                .map(Facet::getFieldName)
-                .collect(Collectors.joining(","));
+    /**
+     * Apply this query's facet filters and facet fields to a Solr query that {@link #build()} did
+     * not construct. SemanticSearcher issues its own KNN query but needs identical facet
+     * behaviour, and the unknown-field validation, the multi-value OR combining and the
+     * {@code {!tag}}/{@code {!ex}} pairing all live here -- so it borrows them rather than
+     * growing a second copy that can drift.
+     */
+    public void applyFacets(SolrQuery query) {
+        setFacetFilters(query);
+        setFacetFields(query);
+    }
 
-            query.addFacetField(String.format("{!ex=%s}%s", excludeTags, fieldName));
-        });
+    /**
+     * The comma-joined facet field names. These double as the local-param tags that
+     * {@link #setFacetFilters} puts on each facet filter query, so the same string serves
+     * {@code {!ex=...}} facet counting and the knn parser's {@code excludeTags}.
+     */
+    public String facetTags() {
+        return facets.stream()
+            .map(Facet::getFieldName)
+            .collect(Collectors.joining(","));
     }
 
     private void setCatalogueFilter(SolrQuery query) {
-        if (!CatalogueService.ALL_CATALOGUES_ID.equals(catalogue.getId())) {
-            String id = catalogue.getId();
-            query.addFilterQuery(
-                String.format("(catalogue:%s OR catalogue_view:%s)", id, id)
-            );
-        }
+        SolrVisibilityFilter.applyCatalogueScope(query, catalogue.getId());
     }
 
     private void setSortOrder(SolrQuery query) {

@@ -67,7 +67,9 @@ export default Backbone.View.extend({
       radius: 10,
       color: '#000000',
       fillColor: inactive ? '#999999' : '#0000DD',
-      weight: inactive ? 2 : null,
+      // A number, not null: null overwrites Leaflet's Path default rather than
+      // falling back to it, and the renderer then emits stroke-width="null".
+      weight: inactive ? 2 : 3,
       opacity: 1,
       fillOpacity: inactive ? 0.75 : 1
     }
@@ -244,6 +246,9 @@ export default Backbone.View.extend({
 
     return {
       type: 'Feature',
+      // Carried through so the centroid styles like the polygon it stands for;
+      // without them an inactive facility renders as active at low zoom.
+      properties: polygon.feature?.properties ?? {},
       geometry: {
         type: 'Point',
         coordinates: [

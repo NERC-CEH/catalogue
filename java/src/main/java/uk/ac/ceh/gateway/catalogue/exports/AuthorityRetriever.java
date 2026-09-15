@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -94,16 +96,34 @@ public class AuthorityRetriever {
     /** The age limit for the fallback: any copy at all, however old. */
     private static final Duration FOREVER = ChronoUnit.FOREVER.getDuration();
 
+    /**
+     * How many consecutive runs must fail on one entity before it stops holding
+     * its graph back. Five, against a daily export, is five days: long enough
+     * that an authority having a bad week recovers on its own, short enough that
+     * a permanently broken record does not cost a graph a month.
+     */
+    static final int DEFAULT_EXCUSE_AFTER_FAILURES = 5;
+
     private final RestTemplate restTemplate;
     private final DescriptionCache cache;
+    private final int excuseAfterFailures;
 
+    /** Annotated because there are two constructors and Spring will not choose. */
+    @Autowired
     public AuthorityRetriever(
         @Qualifier("authorities") RestTemplate restTemplate,
-        DescriptionCache cache
+        DescriptionCache cache,
+        @Value("${authorities.excuseAfterFailures:5}") int excuseAfterFailures
     ) {
         this.restTemplate = restTemplate;
         this.cache = cache;
-        log.info("Creating");
+        this.excuseAfterFailures = excuseAfterFailures;
+        log.info("Creating (excusing an entity after {} consecutive failures)", excuseAfterFailures);
+    }
+
+    /** Package-private, so a test need not restate the default. */
+    AuthorityRetriever(RestTemplate restTemplate, DescriptionCache cache) {
+        this(restTemplate, cache, DEFAULT_EXCUSE_AFTER_FAILURES);
     }
 
     /**
@@ -118,6 +138,7 @@ public class AuthorityRetriever {
         var deferred = 0;
         var transientFailures = 0;
         var definitive = 0;
+        var excused = 0;
         var requests = 0;
         var stopped = false;
 
@@ -185,8 +206,10 @@ public class AuthorityRetriever {
                     for (val iri : batch) {
                         if (addHeld(combined, iri)) {
                             cached++;
-                        } else {
+                        } else if (holdsBackTheGraph(iri, source)) {
                             transientFailures++;
+                        } else {
+                            excused++;
                         }
                     }
                     continue;
@@ -221,17 +244,58 @@ public class AuthorityRetriever {
                     cached++;
                 } else if (response.outcome() == Outcome.DEFINITIVE) {
                     definitive++;
-                } else {
+                } else if (response.outcome() == Outcome.RATE_LIMITED
+                    || holdsBackTheGraph(iri, source)) {
+                    // Being rate limited says nothing about the entity, so it is
+                    // not counted against it -- short-circuited before the
+                    // recording call rather than filtered after it.
                     transientFailures++;
+                } else {
+                    excused++;
                 }
             }
         }
 
         log.info("{}: {} of {} fetched in {} requests, {} from cache, {} deferred, "
-                + "{} temporarily unavailable, {} not held by the authority",
+                + "{} temporarily unavailable, {} not held by the authority, {} excused",
             source.graph(), fetched, usable.size(), requests, cached, deferred,
-            transientFailures, definitive);
+            transientFailures, definitive, excused);
         return new Descriptions(combined, deferred, transientFailures);
+    }
+
+    /**
+     * Whether one entity the run asked about and did not get must go on holding
+     * its graph back.
+     *
+     * <p>"Transient" is a claim that a later run could do better, and for almost
+     * everything it is true. It is not always: ORCID's RDF endpoint returns a
+     * deterministic 500 for at least one well-formed identifier whose record is
+     * otherwise fine, and a 401 from a misconfiguration is the same shape. Since
+     * a graph publishes only when nothing is outstanding, one such entity
+     * withholds every other entity in that graph indefinitely -- 2,124 ORCID
+     * researchers kept out of the endpoint by one.
+     *
+     * <p>So a failure that has repeated {@code excuseAfterFailures} times stops
+     * being treated as a claim about tomorrow. The entity is excused from the
+     * completeness check and the graph publishes without it.
+     *
+     * <p>Excused is not abandoned. It is still asked for on every run -- one
+     * request, which is not worth optimising away -- and the first success
+     * clears the counter in {@link DescriptionCache#put}, so it rejoins the
+     * graph the same run the authority starts serving it again.
+     */
+    private boolean holdsBackTheGraph(String iri, AuthoritySource source) {
+        val failures = cache.recordFailure(iri);
+        if (failures < excuseAfterFailures) {
+            return true;
+        }
+        log.warn(
+            "{}: excusing {} after {} consecutive failed attempts, so the graph can publish "
+                + "without it. It is still asked for every run and rejoins the graph as soon as "
+                + "the authority serves it. If this persists, the entity is either wrong in the "
+                + "records that cite it or broken at the authority",
+            source.graph(), iri, failures);
+        return false;
     }
 
     /**

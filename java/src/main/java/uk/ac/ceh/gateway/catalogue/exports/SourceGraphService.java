@@ -53,7 +53,7 @@ public class SourceGraphService implements SourceGraphProvider {
 
     private final List<AuthoritySource> sources;
     private final AuthorityRetriever retriever;
-    private final WithheldGraphLog withheldGraphLog;
+    private final SourceGraphProgress progress;
     private final Clock clock;
 
     /** @see VocabularyGraphService for why this annotation is needed. */
@@ -61,16 +61,16 @@ public class SourceGraphService implements SourceGraphProvider {
     public SourceGraphService(
         List<AuthoritySource> sources,
         AuthorityRetriever retriever,
-        WithheldGraphLog withheldGraphLog
+        SourceGraphProgress progress
     ) {
-        this(sources, retriever, withheldGraphLog, Clock.systemUTC());
+        this(sources, retriever, progress, Clock.systemUTC());
     }
 
     /** Package-private, so a test can fix the clock in the provenance header. */
     SourceGraphService(
         List<AuthoritySource> sources,
         AuthorityRetriever retriever,
-        WithheldGraphLog withheldGraphLog,
+        SourceGraphProgress progress,
         Clock clock
     ) {
         // The vocabularies are assembled by VocabularyGraphService instead, and
@@ -83,7 +83,7 @@ public class SourceGraphService implements SourceGraphProvider {
             .filter(source -> !(source instanceof VocabularySource))
             .toList();
         this.retriever = retriever;
-        this.withheldGraphLog = withheldGraphLog;
+        this.progress = progress;
         this.clock = clock;
         log.info("Creating with {} sources", this.sources.size());
     }
@@ -109,6 +109,10 @@ public class SourceGraphService implements SourceGraphProvider {
                 .sorted()
                 .toList();
             if (wanted.isEmpty()) {
+                // Nothing cites this authority, which is a graph working
+                // correctly rather than one nobody has got to yet. Recorded so
+                // the maintenance page can tell those two apart.
+                progress.nothingReferenced(source.graph());
                 continue;
             }
 
@@ -117,22 +121,26 @@ public class SourceGraphService implements SourceGraphProvider {
                 // Nothing at all, from the authority or the cache. Publishing an
                 // empty graph would replace whatever is already there with less.
                 log.warn("Nothing retrieved for {}, leaving its graph as it is", source.graph());
+                progress.nothingRetrieved(source.graph(), wanted.size());
                 continue;
             }
             if (!described.isComplete()) {
                 // This run holds only part of what the authority has to say, and
                 // a later run will do better. Leaving the graph alone costs a
                 // run's freshness and nothing else.
-                withheldGraphLog.withheld(source.graph(), wanted.size(),
+                progress.withheld(source.graph(), wanted.size(),
                     described.deferred(), described.transientFailures());
                 continue;
             }
 
             val declared = sourceGraph(source);
             val model = described.model();
+            // Counted before the provenance header goes in, which adds the
+            // graph's own void:Dataset as a subject of its own.
+            val entities = SourceGraphs.entities(model);
             SourceGraphs.addProvenance(model, declared, clock);
             turtleByGraph.put(source.graph(), SourceGraphs.serialise(model, declared));
-            withheldGraphLog.published(source.graph());
+            progress.published(source.graph(), entities);
         }
         return turtleByGraph;
     }

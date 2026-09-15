@@ -191,4 +191,17 @@
     <field name="keywordsParametersFacet" type="string" indexed="true" multiValued="true"/>
     <copyField source="keywordsParameters" dest="keywordsParametersFacet"/>
     <dynamicField name="random*" type="random"/>
+
+    <!--
+        Dense vector field for semantic/KNN search via Amazon Bedrock Titan Embed Text v2.
+        Dimensions must match the model output (1024 for titan-embed-text-v2:0).
+        A full Solr reindex is required after changing this schema.
+    -->
+    <fieldType name="knn_vector_1024" class="solr.DenseVectorField"
+               vectorDimension="1024" similarityFunction="cosine"
+               knnAlgorithm="hnsw"/>
+    <field name="vector"               type="knn_vector_1024" indexed="true"  stored="false"/>
+    <field name="embedding_text"       type="string"          indexed="false" stored="true"/>
+    <field name="temporal_extent_text" type="string"          indexed="false" stored="true"/>
+    <field name="document_text"        type="text_general"    indexed="true"  stored="false"/>
 </schema>
