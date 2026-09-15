@@ -1,6 +1,5 @@
 import L from 'leaflet'
 import 'leaflet-draw'
-import * as turf from '@turf/turf'
 import { ObjectInputView } from '../views'
 import template from './geometryTemplate'
 
@@ -19,10 +18,6 @@ export default ObjectInputView.extend({
     this.listenTo(this.model, 'change:geometryString', function (model, value) {
       this.$('#box').val(value)
     })
-
-    this.listenTo(this.model, 'change:locationConfidential', () => {
-      this.handleLocationConfidentialChange()
-    })
   },
 
   getGeometry () {
@@ -38,34 +33,23 @@ export default ObjectInputView.extend({
     this.drawnItems.addLayer(this.getGeometry())
   },
 
+  // Records the editor's intent and nothing else. The geometry is reduced to a
+  // grid cell server-side, on save, by LocationObfuscationService - doing it here
+  // meant the raw-JSON field below the map, a direct API PUT, and every geometry
+  // type except Point all saved the precise location.
   handleLocationConfidentialCheckbox () {
     const isChecked = this.$('#locationConfidential').is(':checked')
 
     if (isChecked) {
-      const geometryString = this.model.get('geometryString')
+      const confirmed = window.confirm(
+        'The saved location will be reduced to an approximate area of about ' +
+        '11 km by 7 km, and the precise location will not be kept.\n\n' +
+        'Do you want to continue?'
+      )
 
-      if (geometryString) {
-        try {
-          const geoJson = JSON.parse(geometryString)
-
-          const geometry = geoJson.type === 'Feature'
-            ? geoJson.geometry
-            : geoJson
-
-          if (geometry?.type === 'Point') {
-            const confirmed = window.confirm(
-              'Marking a location as confidential will replace a point with an approximate location .\n\n' +
-              'Do you want to continue?'
-            )
-
-            if (!confirmed) {
-              this.$('#locationConfidential').prop('checked', false)
-              return
-            }
-          }
-        } catch (e) {
-          console.error('Unable to parse geometry', e)
-        }
+      if (!confirmed) {
+        this.$('#locationConfidential').prop('checked', false)
+        return
       }
     }
 
@@ -111,36 +95,11 @@ export default ObjectInputView.extend({
     this.map.addControl(this.drawControl)
     baseMaps.Map.addTo(this.map)
 
+    // Five decimal places is roughly half a metre; four would be about six.
     const rounding = function (key, val) {
-      if (typeof val === 'number') { return Number(val.toFixed(4)) }
+      if (typeof val === 'number') { return Number(val.toFixed(5)) }
       return val
     }
-
-    this.currentTool = null
-    this.circleDrawingEnabled = false
-
-    this.circleClickHandler = (e) => {
-      if (!this.circleDrawingEnabled) return
-
-      const point = turf.point([e.latlng.lng, e.latlng.lat])
-      const buffered = turf.buffer(point, 2, { units: 'kilometers' })
-
-      this.drawnItems.clearLayers()
-      const layer = L.geoJson(buffered)
-      this.drawnItems.addLayer(layer)
-      this.model.setGeometry(JSON.stringify(buffered, rounding))
-
-      this.circleDrawingEnabled = false
-      this.currentTool = null
-      this.drawButtons = false
-
-      this.map.removeControl(this.drawControl)
-      this.drawControl = this.createToolbar()
-      this.map.addControl(this.drawControl)
-      this.map._container.style.cursor = ''
-    }
-
-    this.map.on('click', this.circleClickHandler)
 
     this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
       const layer = event.layer
@@ -165,8 +124,7 @@ export default ObjectInputView.extend({
   createToolbar () {
     this.deleteButton = this.drawButtons !== true
 
-    const isLocationConfidential = this.model?.get('locationConfidential') === true
-    const toolbar = new L.Control.Draw({
+    return new L.Control.Draw({
       position: 'topleft',
       edit: {
         featureGroup: this.drawnItems,
@@ -177,132 +135,9 @@ export default ObjectInputView.extend({
         rectangle: false,
         polygon: this.drawButtons,
         polyline: false,
-        marker: this.drawButtons && !isLocationConfidential,
+        marker: this.drawButtons,
         circle: false,
         circlemarker: false
-      }
-    })
-
-    const originalOnAdd = toolbar.onAdd.bind(toolbar)
-    toolbar.onAdd = (map) => {
-      const container = originalOnAdd(map)
-      if (this.drawButtons && isLocationConfidential) {
-        this.addCircleButton(container)
-      }
-      return container
-    }
-
-    return toolbar
-  },
-
-  handleLocationConfidentialChange () {
-    if (!this.map || !this.drawControl) {
-      console.log('No map or drawControl, exiting')
-      return
-    }
-
-    const isLocationConfidential = this.model?.get('locationConfidential') === true
-    const rounding = (key, val) => {
-      return typeof val === 'number' ? Number(val.toFixed(2)) : val
-    }
-
-    const hasGeometry = this.model.getGeometry?.()
-
-    if (hasGeometry) {
-      try {
-        const currentGeometry = JSON.parse(this.model.get('geometryString'))
-        const geometry = currentGeometry.type === 'Feature'
-          ? currentGeometry.geometry
-          : currentGeometry
-
-        if (isLocationConfidential) {
-          if (geometry.type === 'Point') {
-            const bufferDistance = Number(2) // Distance (in km) for the buffer
-            const [lng, lat] = geometry.coordinates
-
-            // Round coordinates to 2 decimal places
-            const roundedLng = Number(lng.toFixed(2))
-            const roundedLat = Number(lat.toFixed(2))
-
-            const center = turf.point([roundedLng, roundedLat])
-
-            // Calculate points N, S, E and W of the centre
-            const north = turf.destination(center, (bufferDistance / 2), 0)
-            const south = turf.destination(center, (bufferDistance / 2), 180)
-            const east = turf.destination(center, (bufferDistance / 2), 90)
-            const west = turf.destination(center, (bufferDistance / 2), 270)
-
-            const square = turf.polygon([[
-              [west.geometry.coordinates[0], south.geometry.coordinates[1]], // SW
-              [east.geometry.coordinates[0], south.geometry.coordinates[1]], // SE
-              [east.geometry.coordinates[0], north.geometry.coordinates[1]], // NE
-              [west.geometry.coordinates[0], north.geometry.coordinates[1]], // NW
-              [west.geometry.coordinates[0], south.geometry.coordinates[1]] // Close polygon
-            ]])
-
-            square.properties.isConfidential = true
-
-            this.model.setGeometry(JSON.stringify(square, rounding))
-
-            this.drawnItems.clearLayers()
-            const layer = L.geoJson(square)
-            this.drawnItems.addLayer(layer)
-            this.map.fitBounds(this.drawnItems.getBounds())
-          }
-        } else {
-          if (
-            geometry.type === 'Polygon' &&
-            currentGeometry.properties?.isConfidential
-          ) {
-            const center = turf.centroid(currentGeometry)
-
-            this.model.setGeometry(JSON.stringify(center, rounding))
-
-            this.drawnItems.clearLayers()
-            const layer = L.geoJson(center)
-            this.drawnItems.addLayer(layer)
-          }
-        }
-      } catch (e) {
-        console.error('Error converting geometry:', e)
-      }
-    } else {
-      console.log('No existing geometry to convert')
-    }
-
-    this.map.removeControl(this.drawControl)
-    this.drawControl = this.createToolbar()
-    this.map.addControl(this.drawControl)
-  },
-
-  addCircleButton (container) {
-    const drawToolbar = container.querySelector('.leaflet-draw-draw-polygon')?.parentElement
-
-    if (!drawToolbar) return
-
-    const circleButton = L.DomUtil.create('a', 'leaflet-draw-draw-circle', drawToolbar)
-    circleButton.href = '#'
-    circleButton.title = 'Draw a 2km circle'
-
-    L.DomEvent.on(circleButton, 'click', (e) => {
-      L.DomEvent.preventDefault(e)
-      L.DomEvent.stopPropagation(e)
-
-      if (this.circleDrawingEnabled) {
-        this.circleDrawingEnabled = false
-        this.currentTool = null
-        circleButton.classList.remove('leaflet-draw-toolbar-button-enabled')
-        this.map._container.style.cursor = ''
-      } else {
-        this.circleDrawingEnabled = true
-        this.currentTool = 'turf-circle'
-        circleButton.classList.add('leaflet-draw-toolbar-button-enabled')
-        this.map._container.style.cursor = 'crosshair'
-
-        const polygonButton = drawToolbar.querySelector('.leaflet-draw-draw-polygon')
-        if (polygonButton) {
-          polygonButton.classList.remove('leaflet-draw-toolbar-button-enabled')
-        }
       }
     })
   },

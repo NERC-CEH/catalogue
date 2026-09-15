@@ -87,7 +87,7 @@ export default EditorView.extend({
           ModelType: Geometry,
           label: 'Geometry',
           ObjectInputView: GeometryView,
-          parentModel: this.model,
+          showConfidentialCheckbox: true,
           helpText: `
 <p>Geometry of Monitoring Facility</p>
 `

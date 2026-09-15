@@ -14,10 +14,16 @@ export default _.template(`
         <br>
     </div>
 </div>
+<% if (data.showConfidentialCheckbox === true) { %>
 <div class="row">
     <label>
         <input type="checkbox" id="locationConfidential" <% if(data.locationConfidential === true) { %> checked <% } %> >
-        Confidential
+        Location is confidential
     </label>
+    <p class="form-text">
+        The saved location will be reduced to an approximate area of about 11 km by 7 km.
+        The precise location is not kept, and unticking this box will not restore it.
+    </p>
 </div>
+<% } %>
 `)

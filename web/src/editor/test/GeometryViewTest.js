@@ -4,127 +4,138 @@ describe('Test GeometryView', function () {
   let model = null
   let view = null
 
+  const POINT = JSON.stringify({
+    type: 'Feature',
+    properties: {},
+    geometry: { type: 'Point', coordinates: [1.71792, 52.65757] }
+  })
+
+  const POLYGON = JSON.stringify({
+    type: 'Feature',
+    properties: {},
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[[1.61, 52.61], [1.83, 52.61], [1.83, 52.69], [1.61, 52.69], [1.61, 52.61]]]
+    }
+  })
+
+  const confidentialView = geometryString =>
+    new GeometryView({
+      model: new Geometry({ geometryString }),
+      showConfidentialCheckbox: true
+    })
+
   beforeEach(function () {
     model = new Geometry({ title: 'some text' })
     view = new GeometryView({ model })
   })
 
-  it('test map is rendered', () => {
+  it('renders the map container', () => {
     // when
     view.render()
     view.createMap()
     // then
-    expect(view.$('.map')).toBeDefined()
+    expect(view.$('.map').length).toBe(1)
   })
 
-  it('when view is constructing should exist', () => {
-    // then
-    setTimeout(expect(view).toBeDefined(), 5000)
+  it('constructs without a geometry', () => {
+    expect(view.model.get('geometryString')).toBeUndefined()
   })
 
-  it('converts a point into a polygon when confidential is enabled', () => {
-    view.model.set('locationConfidential', true)
-    view.model.set('geometryString', JSON.stringify({
-      type: 'Point',
-      coordinates: [-2.6450, 54.526]
-    }))
-
-    view.handleLocationConfidentialChange()
-
-    const geometry = JSON.parse(view.model.get('geometryString'))
-
-    // expect(geometry.type).toBe('Feature')
-    expect(geometry.geometry.type).toBe('Polygon')
+  // The checkbox is opt-in because GeometryView is also mounted by the
+  // Infrastructure record editor, which has no confidentiality concept and no
+  // template that honours the flag.
+  it('hides the confidential checkbox unless it is asked for', () => {
+    expect(view.$('#locationConfidential').length).toBe(0)
   })
 
-  it('does not modify geometry when confidentiality is enabled for a polygon', () => {
-    const originalGeometry = JSON.stringify({
-      type: 'Polygon',
-      coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]
-    })
-
-    view.model.set('locationConfidential', true)
-    view.model.set('geometryString', originalGeometry)
-
-    view.handleLocationConfidentialChange()
-
-    expect(view.model.get('geometryString')).toBe(originalGeometry)
+  it('shows the confidential checkbox when it is enabled', () => {
+    expect(confidentialView(POINT).$('#locationConfidential').length).toBe(1)
   })
 
-  it('shows a confirmation when enabling confidentiality for a point', () => {
+  // Obfuscation is the server's job now. The editor records intent and nothing
+  // else - it must not rewrite the geometry, because doing so in the browser is
+  // what let the raw-JSON field and the circle tool publish precise locations.
+  it('records the flag without touching a point geometry', () => {
+    // given
+    const confidential = confidentialView(POINT)
     spyOn(window, 'confirm').and.returnValue(true)
 
-    view.model.set('geometryString', JSON.stringify({
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [-2.6450, 54.5261]
-      }
-    }))
+    // when
+    confidential.$('#locationConfidential').prop('checked', true)
+    confidential.handleLocationConfidentialCheckbox()
 
-    view.$('#locationConfidential').prop('checked', true)
-
-    view.handleLocationConfidentialCheckbox()
-
-    expect(window.confirm).toHaveBeenCalled()
-    expect(view.model.get('locationConfidential')).toBeTrue()
+    // then
+    expect(confidential.model.get('locationConfidential')).toBeTrue()
+    expect(confidential.model.get('geometryString')).toBe(POINT)
   })
 
-  it('does not enable confidentiality if confirmation is cancelled', () => {
+  it('records the flag without touching a polygon geometry', () => {
+    // given
+    const confidential = confidentialView(POLYGON)
+    spyOn(window, 'confirm').and.returnValue(true)
+
+    // when
+    confidential.$('#locationConfidential').prop('checked', true)
+    confidential.handleLocationConfidentialCheckbox()
+
+    // then
+    expect(confidential.model.get('locationConfidential')).toBeTrue()
+    expect(confidential.model.get('geometryString')).toBe(POLYGON)
+  })
+
+  // The warning applies to every geometry type, not just points, because the
+  // server reduces every type to a cell.
+  it('warns before enabling confidentiality on a polygon', () => {
+    // given
+    const confidential = confidentialView(POLYGON)
+    spyOn(window, 'confirm').and.returnValue(true)
+
+    // when
+    confidential.$('#locationConfidential').prop('checked', true)
+    confidential.handleLocationConfidentialCheckbox()
+
+    // then
+    expect(window.confirm).toHaveBeenCalled()
+  })
+
+  it('does not enable confidentiality if the confirmation is cancelled', () => {
+    // given
+    const confidential = confidentialView(POINT)
     spyOn(window, 'confirm').and.returnValue(false)
 
-    view.model.set('geometryString', JSON.stringify({
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [-2.6450, 54.5261]
-      }
-    }))
+    // when
+    confidential.$('#locationConfidential').prop('checked', true)
+    confidential.handleLocationConfidentialCheckbox()
 
-    view.$('#locationConfidential').prop('checked', true)
-
-    view.handleLocationConfidentialCheckbox()
-
-    expect(window.confirm).toHaveBeenCalled()
-    expect(view.model.get('locationConfidential')).not.toBeTrue()
-    expect(view.$('#locationConfidential').is(':checked')).toBeFalse()
+    // then
+    expect(confidential.model.get('locationConfidential')).not.toBeTrue()
+    expect(confidential.$('#locationConfidential').is(':checked')).toBeFalse()
   })
 
-  it('does not show confirmation when enabling confidentiality for a polygon', () => {
+  it('clears the flag without confirmation when unticked', () => {
+    // given
+    const confidential = confidentialView(POINT)
+    confidential.model.set('locationConfidential', true)
     spyOn(window, 'confirm')
 
-    view.model.set('geometryString', JSON.stringify({
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [[
-          [0, 0],
-          [1, 0],
-          [1, 1],
-          [0, 1],
-          [0, 0]
-        ]]
-      }
-    }))
+    // when
+    confidential.$('#locationConfidential').prop('checked', false)
+    confidential.handleLocationConfidentialCheckbox()
 
-    view.$('#locationConfidential').prop('checked', true)
-
-    view.handleLocationConfidentialCheckbox()
-
+    // then
     expect(window.confirm).not.toHaveBeenCalled()
-    expect(view.model.get('locationConfidential')).toBeTrue()
+    expect(confidential.model.get('locationConfidential')).toBeFalse()
   })
 
-  it('does not show confirmation when enabling confidentiality if no geometry exists', () => {
-    spyOn(window, 'confirm')
+  it('restores the ticked state from a saved record', () => {
+    // given, when
+    const saved = new GeometryView({
+      model: new Geometry({ geometryString: POINT, locationConfidential: true }),
+      showConfidentialCheckbox: true
+    })
 
-    view.model.set('geometryString', null)
-
-    view.$('#locationConfidential').prop('checked', true)
-
-    view.handleLocationConfidentialCheckbox()
-
-    expect(window.confirm).not.toHaveBeenCalled()
-    expect(view.model.get('locationConfidential')).toBeTrue()
+    // then
+    expect(saved.$('#locationConfidential').is(':checked')).toBeTrue()
   })
 })
