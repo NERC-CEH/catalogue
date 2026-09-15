@@ -1,22 +1,20 @@
+import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import L from 'leaflet'
 import 'leaflet.markercluster/dist/leaflet.markercluster.js'
+import * as turf from '@turf/turf'
 
 export default Backbone.View.extend({
+
   initialize () {
     this.render()
   },
 
   createMap: function () {
-    const geoJsonString = this.$('[dataType="geoJson"]').first().attr('content')
-    const studyArea = JSON.parse(geoJsonString)
+    const studyArea = JSON.parse(this.getStudyArea()[0])
     const feature = L.geoJson(studyArea)
-
-    const map = new L.Map($('#studyarea-map')[0], {
-      center: feature.getBounds().getCenter()
-    })
-
+    const map = new L.Map($('#studyarea-map')[0], { center: feature.getBounds().getCenter() })
     const baseMaps = {
       Map: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
@@ -26,20 +24,13 @@ export default Backbone.View.extend({
         attribution: 'google'
       })
     }
-
-    L.control.layers(baseMaps, {}, {
-      position: 'topright',
-      collapsed: false
-    }).addTo(map)
-
+    L.control.layers(baseMaps, {}, { position: 'topright', collapsed: false }).addTo(map)
     map.fitBounds(feature.getBounds())
 
     switch (studyArea.type.toLowerCase()) {
       case 'feature': {
         feature.addTo(map)
-
         const geometryType = studyArea.geometry.type.toLowerCase()
-
         if (geometryType === 'point') {
           this.pointDisplay(feature, studyArea, map)
         } else if (geometryType === 'polygon') {
@@ -47,34 +38,43 @@ export default Backbone.View.extend({
         } else if (geometryType === 'multipolygon') {
           this.multiPolygonDisplay(feature, studyArea, map)
         }
-
         break
       }
-
       case 'featurecollection':
         this.featureCollectionDisplay(feature, studyArea, map)
         break
-
       default:
         console.log('Unknown geoJSON type.')
     }
   },
 
-  getPointStyle (feature) {
-    const inactive = feature.properties?.availability === 'Inactive'
+  getStudyArea () {
+    const studyArea = this.$('[dataType="geoJson"]')
+    const geoJsonStrings = _.map(studyArea, el => $(el).attr('content'))
 
-    return {
-      radius: 10,
-      color: '#000000',
-      fillColor: inactive ? '#999999' : '#0000DD',
-      weight: inactive ? 2 : null,
-      opacity: 1,
-      fillOpacity: inactive ? 0.75 : 1
-    }
-  },
+    return _.map(geoJsonStrings, geoJsonStr => {
+      const geoJson = JSON.parse(geoJsonStr)
+      let feature, geom, isConfidential
+      if (geoJson.type === 'FeatureCollection') {
+        feature = geoJson.features?.[0]
+        geom = feature?.geometry
+        isConfidential = feature?.properties?.locationConfidential === true
+      } else if (geoJson.type === 'Feature') {
+        feature = geoJson
+        geom = geoJson.geometry
+        isConfidential = geoJson.properties?.locationConfidential === true
+      } else {
+        return geoJsonStr
+      }
 
-  createCircleMarker (feature, latlng) {
-    return L.circleMarker(latlng, this.getPointStyle(feature))
+      if (isConfidential && geom?.type === 'Point') {
+        const point = turf.point(geom.coordinates)
+        const buffered = turf.buffer(point, 2, { units: 'kilometers' })
+        buffered.properties = { ...feature.properties, isTurfCircle: true }
+        return JSON.stringify(buffered)
+      }
+      return geoJsonStr
+    })
   },
 
   pointDisplay (feature, studyArea, map) {
@@ -86,40 +86,36 @@ export default Backbone.View.extend({
 
     const layer = L.geoJson(features, {
       style,
-
       pointToLayer: (feature, latlng) => {
-        return this.createCircleMarker(feature, latlng)
+        const marker = L.marker(latlng)
+        if (feature.properties.availability === 'Inactive') {
+          marker.on('add', (e) => {
+            e.target.getElement().classList.add('location-inactive')
+          })
+        }
+        return marker
       },
-
       onEachFeature: (feature, layer) => {
         const title = feature.properties.title
         const availability = feature.properties.availability
-
         let content = `<p>${title}</p>`
         if (typeof feature.properties.link !== 'undefined') {
           const link = feature.properties.link
           content = `<p><a href=${link}>${title}</a></p>`
         }
-
         if (availability === 'Inactive') {
           content = content + '<p class="text-body-tertiary">(INACTIVE)</p>'
         }
 
-        layer.bindPopup(content, { offset: [0, -5] })
+        layer.bindPopup(content)
 
         const geomType = feature.geometry.type.toLowerCase()
-
         if (enableZoomThreshold && ['polygon', 'multipolygon'].includes(geomType)) {
-          const centroidLayer = L.geoJSON(this.centerPointOfPolygon(layer), {
-            pointToLayer: (feature, latlng) =>
-              this.createCircleMarker(feature, latlng)
-          })
-
+          const centroidLayer = L.geoJSON(this.centerPointOfPolygon(layer))
           centroidLayer.bindPopup(content)
 
           let zoomThreshold = map.getBoundsZoom(layer.getBounds()) - 3
           zoomThreshold = zoomThreshold < 0 ? 0 : zoomThreshold
-
           const updateHandler = () => {
             if (map.getZoom() < zoomThreshold) {
               if (map.hasLayer(layer)) map.removeLayer(layer)
@@ -129,7 +125,6 @@ export default Backbone.View.extend({
               if (map.hasLayer(centroidLayer)) map.removeLayer(centroidLayer)
             }
           }
-
           updateHandler()
           map.on('zoomend', updateHandler)
         }
@@ -137,23 +132,21 @@ export default Backbone.View.extend({
     })
 
     const markers = L.markerClusterGroup()
-
     markers.addLayer(layer)
     map.addLayer(markers)
-
     if (numberOfLayers === 1) {
       this.pointDisplay(featureLayer, studyArea, map)
     }
   },
 
+  // If this is a polygon, then set a zoom threshold whereby, zooming-out will show
+  // the polygon's centroid as a point marker, and zooming-in will show the actual
+  // polygon.  This zoom threshold is '3 map zoom-outs' beyond the feature's bounding
+  // box zoom level.
   polygonDisplay (feature, studyArea, map) {
     let zoomThreshold = map.getBoundsZoom(feature.getBounds()) - 3
     zoomThreshold = zoomThreshold < 0 ? 0 : zoomThreshold
-
-    const centroid = L.geoJson(this.centerPointOfPolygon(feature), {
-      pointToLayer: (feature, latlng) =>
-        this.createCircleMarker(feature, latlng)
-    })
+    const centroid = L.geoJson(this.centerPointOfPolygon(feature))
 
     map.on('zoomend', function () {
       if (map.getZoom() < zoomThreshold) {
@@ -171,11 +164,7 @@ export default Backbone.View.extend({
 
     let zoomThreshold = map.getBoundsZoom(feature.getBounds()) - 3
     zoomThreshold = zoomThreshold < 0 ? 0 : zoomThreshold
-
-    const centroid = L.geoJson(this.centerPointOfPolygon(feature), {
-      pointToLayer: (feature, latlng) =>
-        this.createCircleMarker(feature, latlng)
-    })
+    const centroid = L.geoJson(this.centerPointOfPolygon(feature))
 
     map.on('zoomend', function () {
       if (map.getZoom() < zoomThreshold) {
@@ -193,13 +182,8 @@ export default Backbone.View.extend({
   featureCollectionDisplay (feature, studyArea, map) {
     const parentFeatures = []
     const childFeatures = []
-
     studyArea.features.forEach(feature => {
-      if (
-        (feature.geometry.type === 'Polygon' ||
-          feature.geometry.type === 'MultiPolygon') &&
-        feature.properties.showPolygon
-      ) {
+      if ((feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') && feature.properties.showPolygon) {
         parentFeatures.push(feature)
       } else {
         childFeatures.push(feature)
@@ -207,49 +191,21 @@ export default Backbone.View.extend({
     })
 
     if (childFeatures.length > 0) {
-      this.addFeatureToMap(
-        feature,
-        parentFeatures,
-        studyArea,
-        map,
-        { interactive: false },
-        false
-      )
-
-      this.addFeatureToMap(
-        feature,
-        childFeatures,
-        studyArea,
-        map,
-        {
-          interactive: true,
-          color: '#89A1FA'
-        },
-        true
-      )
+      this.addFeatureToMap(feature, parentFeatures, studyArea, map, { interactive: false }, false)
+      this.addFeatureToMap(feature, childFeatures, studyArea, map, { interactive: true, color: '#89A1FA' }, true)
     } else {
-      this.addFeatureToMap(
-        feature,
-        parentFeatures,
-        studyArea,
-        map,
-        { interactive: false },
-        true
-      )
+      this.addFeatureToMap(feature, parentFeatures, studyArea, map, { interactive: false }, true)
     }
   },
 
+  // TODO: Consider returning centroid of polygon within the polygon itself
   centerPointOfPolygon (polygon) {
     const centroidCoords = L.marker(polygon.getBounds().getCenter())
-
     return {
       type: 'Feature',
       geometry: {
         type: 'Point',
-        coordinates: [
-          centroidCoords._latlng.lng,
-          centroidCoords._latlng.lat
-        ]
+        coordinates: [centroidCoords._latlng.lng, centroidCoords._latlng.lat]
       }
     }
   },
