@@ -73,10 +73,10 @@ class MonitoringFacilityTest {
         val facility = new MonitoringFacility();
         String uri = "https://example.com/facility/test";
         facility.setUri(uri);
-        facility.setLocationConfidential(false);
+
         val jenaService = org.mockito.Mockito.mock(JenaLookupService.class);
 
-        when(jenaService.relationshipCombinedGeometriesWithOwner(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility", false))
+        when(jenaService.relationshipCombinedGeometriesWithOwner(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility"))
             .thenReturn("combined-geometry-wkt");
         when(jenaService.relationships(uri, "http://purl.org/dc/terms/isPartOf"))
             .thenReturn(List.of(Link.builder().href("https://example.com/network/1").build()));

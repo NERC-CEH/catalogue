@@ -19,6 +19,7 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.monitoring.LocationObfuscationService;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
@@ -63,18 +64,21 @@ public class DocumentController extends AbstractDocumentController {
     private final MetricsService metricsService;
     private final List<String> metricsExcludedUsers;
     private final JenaLookupService jenaService;
+    private final LocationObfuscationService locationObfuscationService;
 
     public DocumentController(
         @Nullable MetricsService metricsService,
         @Value("#{'${metrics.users.excluded}'.split(',')}") List<String> metricExcludedUsers,
         DocumentRepository documentRepository,
         JenaLookupService jenaService,
-        CachedDataRepository cachedDataRepository
+        CachedDataRepository cachedDataRepository,
+        LocationObfuscationService locationObfuscationService
     ) {
         super(documentRepository, cachedDataRepository);
         this.metricsService = metricsService;
         this.metricsExcludedUsers = metricExcludedUsers;
         this.jenaService = jenaService;
+        this.locationObfuscationService = locationObfuscationService;
         log.info("Creating");
     }
 
@@ -191,7 +195,7 @@ public class DocumentController extends AbstractDocumentController {
     ) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(
             user,
-            document,
+            locationObfuscationService.obfuscate(document),
             catalogue,
             "new Monitoring facility"
         );
@@ -210,7 +214,7 @@ public class DocumentController extends AbstractDocumentController {
         return saveMetadataDocument(
             user,
             file,
-            document,
+            locationObfuscationService.obfuscate(document),
             ifMatch
         );
     }

@@ -36,6 +36,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
 import uk.ac.ceh.gateway.catalogue.samples.Sample;
@@ -43,6 +44,7 @@ import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
+import uk.ac.ceh.gateway.catalogue.monitoring.LocationObfuscationService;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
@@ -135,7 +137,7 @@ class DocumentControllerTest extends AbstractMvcTest {
 
     @BeforeEach
     void setup() {
-        controller = new DocumentController(metricsService, metricsExcludedUsers, documentRepository, jenaService, cachedDataRepository);
+        controller = new DocumentController(metricsService, metricsExcludedUsers, documentRepository, jenaService, cachedDataRepository, new LocationObfuscationService());
         DownloadUrlProperties downloadUrlProperties = mock(DownloadUrlProperties.class);
         when(downloadUrlProperties.getRegexOrder()).thenReturn("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*");
         when(downloadUrlProperties.getRegexPackage()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/.*");
@@ -1079,5 +1081,71 @@ class DocumentControllerTest extends AbstractMvcTest {
 
         // null expected-revision is what tells the repository to skip the compare-then-commit check
         verify(documentRepository).save(any(), any(), eq(id), anyString(), eq(null));
+    }
+
+    /**
+     * A confidential location must be reduced to a graticule cell by the time it
+     * reaches the repository, not by the browser that submitted it. The editor is
+     * only one of the ways a document arrives here - the raw-JSON geometry field and
+     * a direct API PUT both bypass it entirely - so the guarantee has to live on the
+     * save path.
+     */
+    private static final String PRECISE_POINT =
+        "{\"type\":\"Feature\",\"properties\":{},\"geometry\":"
+            + "{\"type\":\"Point\",\"coordinates\":[1.71792,52.65757]}}";
+
+    private MonitoringFacility confidentialFacility() {
+        val facility = new MonitoringFacility();
+        facility.setUri("https://catalogue.ceh.ac.uk/id/123-test");
+        facility.setGeometry(Geometry.builder()
+            .geometryString(PRECISE_POINT)
+            .locationConfidential(true)
+            .build());
+        return facility;
+    }
+
+    @Test
+    @DisplayName("creating a confidential facility stores a graticule cell, not the point")
+    public void confidentialFacilityIsObfuscatedOnCreate() throws Exception {
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        given(documentRepository.saveNew(any(), any(MonitoringFacility.class), anyString(), anyString()))
+            .willAnswer(invocation -> invocation.getArgument(1));
+
+        //When
+        controller.newMonitoringFacility(user, confidentialFacility(), "catalogue");
+
+        //Then
+        val captor = ArgumentCaptor.forClass(MonitoringFacility.class);
+        verify(documentRepository).saveNew(eq(user), captor.capture(), eq("catalogue"), anyString());
+
+        val stored = captor.getValue().getGeometry().getGeometryString();
+        assertThat(stored, containsString("[1.7,52.6]"));
+        assertThat(stored, containsString("[1.8,52.7]"));
+        assertThat(stored, not(containsString("1.71792")));
+        assertThat(stored, not(containsString("52.65757")));
+    }
+
+    @Test
+    @DisplayName("updating a confidential facility stores a graticule cell, not the point")
+    public void confidentialFacilityIsObfuscatedOnUpdate() throws Exception {
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        val existing = new MonitoringFacility();
+        existing.setMetadata(MetadataInfo.builder().catalogue(catalogueKey).build());
+        given(documentRepository.read(id)).willReturn(existing);
+        given(documentRepository.save(any(), any(MonitoringFacility.class), eq(id), anyString(), any()))
+            .willAnswer(invocation -> invocation.getArgument(1));
+
+        //When
+        controller.updateMonitoringFacility(user, id, confidentialFacility(), "*");
+
+        //Then
+        val captor = ArgumentCaptor.forClass(MonitoringFacility.class);
+        verify(documentRepository).save(eq(user), captor.capture(), eq(id), anyString(), any());
+
+        val stored = captor.getValue().getGeometry().getGeometryString();
+        assertThat(stored, containsString("[1.7,52.6]"));
+        assertThat(stored, not(containsString("1.71792")));
     }
 }

@@ -16,7 +16,6 @@ import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
-import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.filter.UrlHandlerFilter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
@@ -198,11 +197,6 @@ public class WebConfig implements WebMvcConfigurer {
             = new FilterRegistrationBean<>(filter);
         registrationBean.setOrder(SecurityFilterProperties.DEFAULT_FILTER_ORDER - 1);
         return registrationBean;
-    }
-
-    @Bean
-    public ForwardedHeaderFilter forwardedHeaderFilter() {
-        return new ForwardedHeaderFilter();
     }
 
     @Bean

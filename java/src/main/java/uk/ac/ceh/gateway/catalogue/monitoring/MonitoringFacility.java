@@ -35,7 +35,7 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
     private List<String> alternateTitles;
     private Keyword facilityType;
     private Geometry geometry;
-    private boolean geometryRepresentative, locationConfidential, mobile;
+    private boolean geometryRepresentative, mobile;
     @JsonAlias("pointsOfContact")
     private List<ResponsibleParty> contacts;
     private List<ResponsibleParty> partners;
@@ -70,8 +70,9 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
     }
 
     public void populateFromJenaService(JenaLookupService jenaService) {
+
         final String uri = this.getUri();
-        this.setRelCombinedGeometry(jenaService.relationshipCombinedGeometriesWithOwner(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility", locationConfidential));
+        this.setRelCombinedGeometry(jenaService.relationshipCombinedGeometriesWithOwner(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility"));
         this.setRelBelongsToNetwork(jenaService.relationships(uri, "http://purl.org/dc/terms/isPartOf"));
         this.setRelUsedBy(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/uses"));
         this.setRelUtilisedBy(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"));

@@ -74,6 +74,9 @@ export default ObjectInputView.extend({
           'http://purl.org/cerif/frapo/hasOutput': () =>
             `${encodedTerm}&facet=recordType%7C(Model%20OR%20Dataset%20OR%20Map%20(web%20service)%20OR%20Software)`,
 
+          'https://digital.ceh.ac.uk/ontology/doo/utilises': () =>
+            `resourceType%3A(%22Monitoring%20network%22%20OR%20%22Monitoring%20facility%22)%20AND%20${encodedTerm}`,
+
           'http://purl.org/dc/terms/isPartOf': () => {
             if (currentResourceType === 'dataset') {
               return `resourceType%3AAggregation%20AND%20${encodedTerm}`
