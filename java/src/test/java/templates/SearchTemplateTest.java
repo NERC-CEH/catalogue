@@ -64,8 +64,9 @@ class SearchTemplateTest {
         // FreeMarker's default handler writes the error into the output instead, which
         // would let a broken template still satisfy a "contains" assertion.
         configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-        // Also from application.properties. functions.ftlh's temporaryBlock macro parses
-        // its expiry with ?date, which needs this; without it the whole page throws.
+        // Also from application.properties, so that any template relying on the default
+        // date format renders here as it does in production. The expiringBanner macro
+        // states its own format and no longer needs this.
         configuration.setDateFormat("yyyy-MM-dd");
         configuration.setSharedVariable("catalogues", catalogues());
         configuration.setSharedVariable("codes", mock(CodeLookupService.class));
@@ -125,6 +126,20 @@ class SearchTemplateTest {
         Matcher matcher = Pattern.compile("<" + element + "\\b[^>]*>").matcher(html);
         assertThat(matcher.find()).as("no <%s> in the rendered page", element).isTrue();
         return matcher.group();
+    }
+
+    /**
+     * The markup of the search form alone. The page also carries whatever notice
+     * {@code expiringBanner} is publishing at the time, and a dismissible alert's close
+     * button precedes the form - so a page-wide search for the first {@code <button>} finds
+     * the alert's rather than the search button's.
+     */
+    private String searchForm(String html) {
+        int start = html.indexOf("<form class=\"search-form\"");
+        assertThat(start).as("no search form in the rendered page").isNotNegative();
+        int end = html.indexOf("</form>", start);
+        assertThat(end).as("unterminated search form in the rendered page").isNotNegative();
+        return html.substring(start, end);
     }
 
     private int occurrences(String html, String needle) {
@@ -235,7 +250,7 @@ class SearchTemplateTest {
             val actual = render(semanticEnabled);
 
             //then
-            val button = openingTag(actual, "button");
+            val button = openingTag(searchForm(actual), "button");
             assertThat(button).as("semanticEnabled=%s", semanticEnabled)
                 .contains("type=\"submit\"")
                 .doesNotContain("tabindex=\"-1\"");
