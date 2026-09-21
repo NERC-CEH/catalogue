@@ -132,13 +132,27 @@
 </#macro>
 
 <#--
-Temporary element which only displays if the expiry date is in the future
--->
-<#macro temporaryBlock expiry=.now>
-  <#local todaysDate = .now?date>
-  <#local expiryDate = expiry?date >
+Dismissible site notice, carrying its own alert markup so that a call site is only ever
+the message. Displays up to and including its expiry date, and is gone the day after.
 
-  <#if expiryDate gte todaysDate>
-    <#nested>
+  expiry      "yyyy-MM-dd", the last day the banner is shown.
+  catalogueId the catalogue being rendered, normally catalogue.id.
+  shownOn     catalogue ids to restrict the banner to; empty shows it on all of them.
+
+Both sides of the date comparison are parsed with an explicit format so that both sit at
+midnight. A bare ?date on .now would only re-tag the date-time as a date without dropping
+the time of day, which would leave today ahead of an expiry of today and so hide the
+banner a day early, for all but the first millisecond of its last day.
+-->
+<#macro expiringBanner expiry catalogueId="" shownOn=[]>
+  <#local todaysDate = .now?string("yyyy-MM-dd")?date("yyyy-MM-dd")>
+  <#local expiryDate = expiry?date("yyyy-MM-dd")>
+  <#local forThisCatalogue = !shownOn?has_content || shownOn?seq_contains(catalogueId)>
+
+  <#if expiryDate gte todaysDate && forThisCatalogue>
+    <div class="m-3 alert alert-warning alert-dismissible fade show" role="alert">
+      <#nested>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
   </#if>
 </#macro>
