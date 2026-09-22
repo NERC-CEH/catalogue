@@ -1,9 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.monitoring;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.val;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
@@ -42,14 +45,32 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
     private List<TimePeriod> operatingPeriod;
     private List<Keyword> environmentalDomain, keywordsParameters;
     private List<AdditionalInfo> additionalInfo;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private String relCombinedGeometry;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relBelongsToNetwork;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relUsedBy;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relUtilisedBy;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relSupersedes;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relSupersededBy;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relChildFacility;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relParentFacility;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relRelated;
 
     @Data
@@ -86,45 +107,54 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
         this.setRelRelated(relationList);
     }
 
+    @JsonProperty("relCombinedGeometry")
     public String getRelCombinedGeometry() {
         return relCombinedGeometry == null ? "" : relCombinedGeometry;
     }
 
+    @JsonProperty("relBelongsToNetwork")
     public List<Link> getRelBelongsToNetwork() {
         return Optional.ofNullable(relBelongsToNetwork)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonProperty("relUsedBy")
     public List<Link> getRelUsedBy() {
         return Optional.ofNullable(relUsedBy)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonProperty("relUtilisedBy")
     public List<Link> getRelUtilisedBy() {
         return Optional.ofNullable(relUtilisedBy)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonProperty("relSupersedes")
     public List<Link> getRelSupersedes() {
         return Optional.ofNullable(relSupersedes)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonProperty("relSupersededBy")
     public List<Link> getRelSupersededBy() {
         return Optional.ofNullable(relSupersededBy)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonProperty("relChildFacility")
     public List<Link> getRelChildFacility() {
         return Optional.ofNullable(relChildFacility)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonProperty("relParentFacility")
     public List<Link> getRelParentFacility() {
         return Optional.ofNullable(relParentFacility)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonProperty("relRelated")
     public List<Link> getRelRelated() {
         return Optional.ofNullable(relRelated)
             .orElseGet(Collections::emptyList);

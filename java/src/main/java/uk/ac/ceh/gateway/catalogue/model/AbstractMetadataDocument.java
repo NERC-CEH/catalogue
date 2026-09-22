@@ -1,9 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
@@ -29,15 +31,35 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
     private MetadataInfo metadata;
     private Set<Relationship> relationships;
     private List<Keyword> keywords;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relRelation;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relIsRequiredBy;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relRequires;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relPartOf;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relHasPart;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relHasOutput;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relIsOutputOf;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relAll;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relReplaces;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relSource;
 
     public Set<Relationship> getRelationships() {
@@ -74,50 +96,61 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
         return keywords;
     }
 
+    @JsonProperty("relRelation")
     public List<Link> getRelRelation() {
         return Optional.ofNullable(relRelation)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonProperty("relIsRequiredBy")
     public List<Link> getRelIsRequiredBy() {
         return Optional.ofNullable(relIsRequiredBy)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonProperty("relRequires")
     public List<Link> getRelRequires() {
         return Optional.ofNullable(relRequires)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonProperty("relPartOf")
     public List<Link> getRelPartOf() {
         return Optional.ofNullable(relPartOf)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonProperty("relHasPart")
     public List<Link> getRelHasPart() {
         return Optional.ofNullable(relHasPart)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonProperty("relHasOutput")
     public List<Link> getRelHasOutput() {
         return Optional.ofNullable(relHasOutput)
             .orElseGet(Collections::emptyList);
     }
+
+    @JsonProperty("relIsOutputOf")
     public List<Link> getRelIsOutputOf() {
         return Optional.ofNullable(relIsOutputOf)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonProperty("relAll")
     public List<Link> getRelAll() {
         return Optional.ofNullable(relAll)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonProperty("relReplaces")
     public List<Link> getRelReplaces() {
         return Optional.ofNullable(relReplaces)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonProperty("relSource")
     public List<Link> getRelSource() {
         return Optional.ofNullable(relSource)
             .orElseGet(Collections::emptyList);
