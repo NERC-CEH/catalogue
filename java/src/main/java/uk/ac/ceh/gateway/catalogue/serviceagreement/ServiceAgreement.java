@@ -54,6 +54,13 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     @JsonIgnore
     private boolean historical;
 
+    private Boolean titleContainsLocation;
+    private String titleLocationExplanation;
+    private Boolean titleContainsDate;
+    private String titleDateExplanation;
+    private Boolean titleContainsAcronym;
+    private String titleAcronymExplanation;
+
     @Override
     @JsonIgnore
     public List<Keyword> getAllKeywords() {

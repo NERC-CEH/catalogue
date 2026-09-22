@@ -28,7 +28,9 @@ import java.util.stream.StreamSupport;
 @JsonIgnoreProperties(value = {"historical", "transitions", "stateTitle"})
 public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementModel> {
 
-    private String id, title, depositReference, depositorName, depositorContactDetails, eidcName, eidcContactDetails, otherPoliciesOrLegislation, fileNumber,transferMethod, fileNamingConvention, policyExceptions, availability, useConstraints, supersededData, relatedDataHoldings, otherInfo, description, lineage;
+    private String id, title, depositReference, depositorName, depositorContactDetails, eidcName, eidcContactDetails, otherPoliciesOrLegislation, fileNumber,transferMethod, fileNamingConvention, policyExceptions, availability, useConstraints, supersededData, relatedDataHoldings, otherInfo, description, lineage, titleLocationExplanation, titleDateExplanation, titleAcronymExplanation;
+
+    private Boolean titleContainsLocation, titleContainsDate, titleContainsAcronym;
 
     private List<ResponsibleParty> authors;
 
@@ -94,6 +96,12 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.boundingBoxes = serviceAgreement.getBoundingBoxes();
         this.historical = serviceAgreement.isHistorical();
         this.state = serviceAgreement.getState();
+        this.titleContainsLocation = serviceAgreement.getTitleContainsLocation();
+        this.titleLocationExplanation = serviceAgreement.getTitleLocationExplanation();
+        this.titleContainsDate = serviceAgreement.getTitleContainsDate();
+        this.titleDateExplanation = serviceAgreement.getTitleDateExplanation();
+        this.titleContainsAcronym = serviceAgreement.getTitleContainsAcronym();
+        this.titleAcronymExplanation = serviceAgreement.getTitleAcronymExplanation();
         StateResource currentStateResource = serviceAgreement.getCurrentStateResource();
         if (currentStateResource == null) {
             this.stateTitle = serviceAgreement.getState();

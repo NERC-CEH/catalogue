@@ -130,6 +130,71 @@
               </div>
               <h4 class="my-4">Title of data resource: ${title}</h4>
 
+              <div class="my-4">
+                  <div class="key">Does your title contain the location of the data resource?</div>
+                  <div class="value">
+                      <#if titleContainsLocation??>
+                          ${titleContainsLocation?string('Yes', 'No')}
+                      <#else>
+                          <span class="text-danger">NOT PROVIDED</span>
+                      </#if>
+                  </div>
+              </div>
+
+              <#if titleLocationExplanation?? && titleLocationExplanation!=''>
+                  <div class="row key-value">
+                      <div class="key">If title does NOT contain location, state why.</div>
+                      <div class="value">
+                          <#list titleLocationExplanation?split("\n") as line>
+                              ${line}<#sep><br></#sep>
+                          </#list>
+                      </div>
+                  </div>
+              </#if>
+
+              <div class="my-4">
+                <div class="key">Does your title contain the date(s) of the data resource?</div>
+                <div class="value">
+                    <#if titleContainsDate??>
+                        ${titleContainsDate?string('Yes', 'No')}
+                    <#else>
+                         <span class="text-danger">NOT PROVIDED</span>
+                    </#if>
+                </div>
+              </div>
+
+              <#if titleDateExplanation?? && titleDateExplanation!=''>
+                  <div class="row key-value">
+                      <div class="key">If title does NOT contain dates, state why.</div>
+                      <div class="value">
+                          <#list titleDateExplanation?split("\n") as line>
+                              ${line}<#sep><br></#sep>
+                          </#list>
+                      </div>
+                  </div>
+              </#if>
+
+              <div class="my-4">
+                <div class="key">Does your title contain any unexplained acronyms?</div>
+                <div class="value">
+                    <#if titleContainsAcronym??>
+                        ${titleContainsAcronym?string('Yes', 'No')}
+                    <#else>
+                         <span class="text-danger">NOT PROVIDED</span>
+                    </#if>
+                </div>
+              </div>
+
+              <#if titleAcronymExplanation?? && titleAcronymExplanation!=''>
+                  <div class="row key-value">
+                      <div class="key">If title contains unexplained acronyms, state why.</div>
+                      <div class="value">
+                          <#list titleAcronymExplanation?split("\n") as line>
+                              ${line}<#sep><br></#sep>
+                          </#list>
+                      </div>
+                  </div>
+              </#if>
               <div class="authors mt-4">
                   <h3>Authors</h3>
                   <p>This information will be used in discovery metadata for this dataset (the catalogue record).  <a href="https://eidc.ac.uk/policies/retentionPersonalData">See our policy on retention and use of personal data</a>.</p>

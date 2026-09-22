@@ -5,7 +5,7 @@ import {
   FileView, FundingView, KeywordThemeView, KeywordVocabularyView,
   ParentView,
   PredefinedParentView, RightsHolderView,
-  SingleObjectView, SupportingDocView,
+  RadioView, SingleObjectView, SupportingDocView,
   TextareaView,
   TextOnlyView, TopicCategoryView
 } from '../views'
@@ -78,6 +78,78 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'title',
           required: true
+        }),
+
+        new TextOnlyView({
+          model: this.model,
+          label: 'Title location',
+          text: 'Does your title contain the location of the data resource?',
+          required: true
+        }),
+
+        new RadioView({
+          model: this.model,
+          modelAttribute: 'titleContainsLocation',
+          required: true
+        }),
+
+        new TextOnlyView({
+          model: this.model,
+          label: 'Lcation explanation',
+          text: 'If title does NOT contain location, state why'
+        }),
+
+        new TextareaView({
+          model: this.model,
+          modelAttribute: 'titleLocationExplanation'
+        }),
+
+        new TextOnlyView({
+          model: this.model,
+          label: 'Title Date',
+          text: 'Does your title contain the Date of the data resource?',
+          required: true
+        }),
+
+        new RadioView({
+          model: this.model,
+          modelAttribute: 'titleContainsDate',
+          required: true
+        }),
+
+        new TextOnlyView({
+          model: this.model,
+          label: 'Date explanation',
+          text: 'If title does NOT contain dates, state why'
+        }),
+
+        new TextareaView({
+          model: this.model,
+          modelAttribute: 'titleDateExplanation'
+        }),
+
+        new TextOnlyView({
+          model: this.model,
+          label: 'Title Acronym',
+          text: 'Does your title contain any unexplained acronyms?',
+          required: true
+        }),
+
+        new RadioView({
+          model: this.model,
+          modelAttribute: 'titleContainsAcronym',
+          required: true
+        }),
+
+        new TextOnlyView({
+          model: this.model,
+          label: 'Acronyms explanation',
+          text: 'If title does NOT contain unexplained acronyms, state why'
+        }),
+
+        new TextareaView({
+          model: this.model,
+          modelAttribute: 'titleAcronymExplanation'
         }),
 
         new TextOnlyView({
