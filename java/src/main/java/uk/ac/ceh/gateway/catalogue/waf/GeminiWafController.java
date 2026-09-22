@@ -26,7 +26,7 @@ public class GeminiWafController {
         log.info("Creating");
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ModelAndView getWaf() {
         return new ModelAndView("/html/waf", "files", geminiWafService.getWafFiles());
     }

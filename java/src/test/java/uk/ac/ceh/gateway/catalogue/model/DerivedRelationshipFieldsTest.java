@@ -12,6 +12,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
+import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -49,7 +50,8 @@ class DerivedRelationshipFieldsTest {
         MonitoringActivity.class,
         MonitoringFacility.class,
         MonitoringNetwork.class,
-        MonitoringProgramme.class
+        MonitoringProgramme.class,
+        ResearchActivity.class
     })
     void areNotWritableFromJson(Class<? extends AbstractMetadataDocument> documentType) throws Exception {
         //given
@@ -84,7 +86,8 @@ class DerivedRelationshipFieldsTest {
         MonitoringActivity.class,
         MonitoringFacility.class,
         MonitoringNetwork.class,
-        MonitoringProgramme.class
+        MonitoringProgramme.class,
+        ResearchActivity.class
     })
     void areStillReadableAsJson(Class<? extends AbstractMetadataDocument> documentType) throws Exception {
         //given

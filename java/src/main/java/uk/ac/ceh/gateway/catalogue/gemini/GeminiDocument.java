@@ -152,6 +152,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         this.setRelHasPart(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/isPartOf"));
         this.setRelReplaces(jenaService.replaces(uri));
         this.setRelSource(jenaService.relationships(uri, "http://purl.org/dc/terms/source"));
+        this.setRelIsOutputOf(jenaService.inverseRelationships(uri, "http://purl.org/cerif/frapo/hasOutput"));
     }
 
     @Data
@@ -162,6 +163,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @Override
+    @JsonProperty("type")
     public String getType() {
         return Optional.ofNullable(resourceType)
                 .map(Keyword::getValue)
@@ -183,6 +185,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @Override
+    @JsonIgnore
     public GeminiDocument setType(String type) {
         super.setType(type);
         this.resourceType = Keyword.builder().value(type).build();
@@ -286,7 +289,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     @JsonIgnore
     public List<OnlineResource> getDataAccess() {
-        Set<String> downloadRoles = Set.of("download", "order", "fileAccess");
+        Set<String> downloadRoles = Set.of("download", "order", "fileAccess", "offlineAccess");
         return getOnlineResources()
             .stream()
             .filter(onlineResource -> downloadRoles.contains(onlineResource.getFunction()))
@@ -503,13 +506,18 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @JsonIgnore
+    public List<OnlineResource> getOfflineAccess() {
+        return filterOnlineResources(getDataAccess(), "offlineAccess");
+    }
+
+    @JsonIgnore
     public List<OnlineResource> getDownloads() {
         return filterOnlineResources(getDataAccess(), "download");
     }
 
     @JsonIgnore
     public List<OnlineResource> getDistributions() {
-        return Stream.of(getOrders(), getFileAccess(), getDownloads())
+        return Stream.of(getOrders(), getFileAccess(), getOfflineAccess(), getDownloads())
                     .flatMap(List::stream)
                     .collect(Collectors.toList());
     }

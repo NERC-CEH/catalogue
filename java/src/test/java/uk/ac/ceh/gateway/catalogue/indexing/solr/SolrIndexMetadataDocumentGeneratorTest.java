@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
+import org.junit.jupiter.api.DisplayName;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
@@ -22,6 +23,7 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,14 +34,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SolrIndexMetadataDocumentGeneratorTest {
 
+    private static final String FDRI_VOCAB = "https://digital.ceh.ac.uk/vocab/fdri/";
+
     @Mock CodeLookupService codeLookupService;
     @Mock DocumentIdentifierService documentIdentifierService;
     @Mock VocabularyService vocabularyService;
+    @Mock PendingEmbeddingService pendingEmbeddingService;
     private SolrIndexMetadataDocumentGenerator generator;
 
     @BeforeEach
@@ -49,6 +55,38 @@ class SolrIndexMetadataDocumentGeneratorTest {
             documentIdentifierService,
             vocabularyService
         );
+    }
+
+    @Test
+    void pendingEmbeddingServiceMarkedWhenPresent() {
+        //Given
+        generator = new SolrIndexMetadataDocumentGenerator(
+            codeLookupService,
+            documentIdentifierService,
+            vocabularyService,
+            Optional.of(pendingEmbeddingService)
+        );
+        GeminiDocument document = new GeminiDocument();
+        document.setId("test-doc-id");
+        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+
+        //When
+        generator.generateIndex(document);
+
+        //Then
+        verify(pendingEmbeddingService).mark(eq("test-doc-id"), any(SolrIndex.class));
+    }
+
+    @Test
+    void generateIndexSucceedsWithoutPendingEmbeddingService() {
+        //Given — generator created without embedding service (the @BeforeEach default)
+        GeminiDocument document = new GeminiDocument();
+        document.setTitle("No embedding needed");
+        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+
+        //When / Then — must not throw
+        SolrIndex index = generator.generateIndex(document);
+        assertThat(index.getTitle(), equalTo("No embedding needed"));
     }
 
     @Test
@@ -306,6 +344,98 @@ class SolrIndexMetadataDocumentGeneratorTest {
 
         //Then
         assertThat(index.getResourceIdentifier(), empty());
+    }
+
+    @Test
+    void fdriCatchmentAddedFromVocabularyKeywords() {
+        //Given
+        GeminiDocument document = new GeminiDocument();
+        document.setKeywordsTheme(Arrays.asList(
+            Keyword.builder().URI(FDRI_VOCAB + "chess").value("Chess").build(),
+            Keyword.builder().URI(FDRI_VOCAB + "upper-severn").value("Upper Severn").build(),
+            Keyword.builder().URI("http://vocabs.ceh.ac.uk/ukscape/water").value("Water").build()
+        ));
+        given(vocabularyService.isMember(anyString(), anyString())).willReturn(false);
+        given(vocabularyService.isMember("catchment", FDRI_VOCAB + "chess")).willReturn(true);
+        given(vocabularyService.isMember("catchment", FDRI_VOCAB + "upper-severn")).willReturn(true);
+
+        //When
+        SolrIndex index = generator.generateIndex(document);
+
+        //Then
+        assertThat(index.getFdriCatchment(), containsInAnyOrder("Chess", "Upper Severn"));
+    }
+
+    @Test
+    void fdriCategoryAddedFromVocabularyKeywords() {
+        //Given
+        GeminiDocument document = new GeminiDocument();
+        document.setKeywordsTheme(Arrays.asList(
+            Keyword.builder().URI(FDRI_VOCAB + "hydrology").value("Hydrology").build(),
+            Keyword.builder().URI(FDRI_VOCAB + "geology-and-soils").value("Geology and soils").build()
+        ));
+        given(vocabularyService.isMember(anyString(), anyString())).willReturn(false);
+        given(vocabularyService.isMember("category", FDRI_VOCAB + "hydrology")).willReturn(true);
+        given(vocabularyService.isMember("category", FDRI_VOCAB + "geology-and-soils")).willReturn(true);
+
+        //When
+        SolrIndex index = generator.generateIndex(document);
+
+        //Then
+        assertThat(index.getFdriCategory(), containsInAnyOrder("Hydrology", "Geology and soils"));
+    }
+
+    @Test
+    void fdriSpatialScaleAddedFromVocabularyKeyword() {
+        //Given
+        GeminiDocument document = new GeminiDocument();
+        document.setKeywordsTheme(List.of(
+            Keyword.builder().URI(FDRI_VOCAB + "national").value("National").build()
+        ));
+        given(vocabularyService.isMember(anyString(), anyString())).willReturn(false);
+        given(vocabularyService.isMember("spatial-scale", FDRI_VOCAB + "national")).willReturn(true);
+
+        //When
+        SolrIndex index = generator.generateIndex(document);
+
+        //Then
+        assertThat(index.getFdriSpatialScale(), equalTo("National"));
+    }
+
+    @Test
+    void fdriTimeseriesDataAddedFromVocabularyKeyword() {
+        //Given
+        GeminiDocument document = new GeminiDocument();
+        document.setKeywordsTheme(List.of(
+            Keyword.builder().URI(FDRI_VOCAB + "timeseries-yes").value("Yes").build()
+        ));
+        given(vocabularyService.isMember(anyString(), anyString())).willReturn(false);
+        given(vocabularyService.isMember("timeseries", FDRI_VOCAB + "timeseries-yes")).willReturn(true);
+
+        //When
+        SolrIndex index = generator.generateIndex(document);
+
+        //Then
+        assertThat(index.getFdriTimeseriesData(), equalTo("Yes"));
+    }
+
+    @Test
+    void untaggedDocumentHasNoFdriFacetValues() {
+        //Given
+        GeminiDocument document = new GeminiDocument();
+        document.setKeywordsTheme(List.of(
+            Keyword.builder().URI("http://vocabs.ceh.ac.uk/ukscape/water").value("Water").build()
+        ));
+        given(vocabularyService.isMember(anyString(), anyString())).willReturn(false);
+
+        //When
+        SolrIndex index = generator.generateIndex(document);
+
+        //Then
+        assertThat(index.getFdriCatchment(), empty());
+        assertThat(index.getFdriCategory(), empty());
+        assertThat(index.getFdriSpatialScale(), nullValue());
+        assertThat(index.getFdriTimeseriesData(), nullValue());
     }
 
 }

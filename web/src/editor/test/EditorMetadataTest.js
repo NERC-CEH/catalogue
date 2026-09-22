@@ -1,4 +1,6 @@
 import { EditorMetadata } from '../src'
+import { ServiceAgreement } from '../src/models'
+import Backbone from 'backbone'
 
 describe('EditorMetadata', () => {
   describe('validation', () => {
@@ -14,6 +16,132 @@ describe('EditorMetadata', () => {
       const editor = new EditorMetadata()
       const errors = editor.validate(editor.attributes)
       expect(errors).toHaveSize(1)
+    })
+  })
+
+  describe('optimistic locking', () => {
+    let syncArgs
+
+    beforeEach(() => {
+      spyOn(Backbone, 'sync').and.callFake((method, model, options) => {
+        syncArgs = { method, options }
+        return { done: () => {} }
+      })
+    })
+
+    it('sends If-Match header on update when a revision is set', () => {
+      const model = new EditorMetadata({ id: 'doc1', title: 'this is a title' })
+      model.setRevision('rev1')
+      model.set('id', 'doc1')
+      model.save()
+      expect(syncArgs.method).toBe('update')
+      expect(syncArgs.options.headers['If-Match']).toBe('rev1')
+    })
+
+    it('does not send If-Match when no revision is set (create)', () => {
+      const model = new EditorMetadata({ title: 'this is a title' })
+      model.save()
+      const headers = syncArgs.options.headers || {}
+      expect(headers['If-Match']).toBeUndefined()
+    })
+  })
+
+  describe('revision refresh from ETag', () => {
+    let doneCallback
+
+    beforeEach(() => {
+      spyOn(Backbone, 'sync').and.callFake(() => {
+        return {
+          done: (cb) => { doneCallback = cb }
+        }
+      })
+    })
+
+    it('stores the de-quoted response ETag as the new revision after save', () => {
+      const model = new EditorMetadata({ id: 'doc1', title: 'this is a title' })
+      model.setRevision('rev1')
+      model.save()
+
+      const jqXHR = {
+        getResponseHeader: (name) => (name === 'ETag' ? '"rev2"' : null)
+      }
+      doneCallback({}, 'success', jqXHR)
+
+      expect(model.getRevision()).toBe('rev2')
+    })
+
+    // The editor keeps one model for the whole session: a new record is created with a POST and then
+    // edited on with PUTs, never re-read in between. So the create response's ETag is the only thing
+    // that can arm the next save's precondition - without it that save goes out bare and is rejected
+    // with a 428 the user can only escape by leaving the editor and coming back.
+    it('captures the revision from a create so the next save carries an If-Match', () => {
+      const model = new EditorMetadata({ title: 'this is a title' })
+      expect(model.isNew()).toBe(true)
+      model.save()
+
+      const jqXHR = {
+        getResponseHeader: (name) => (name === 'ETag' ? '"metaRev1:rawRev1"' : null)
+      }
+      doneCallback({ id: 'doc1' }, 'success', jqXHR)
+
+      expect(model.getRevision()).toBe('metaRev1:rawRev1')
+    })
+  })
+
+  // The full journey reported from the data centre: create a record, save, carry on editing in the
+  // same open editor and save again. The second save must be an update carrying the revision the
+  // create returned.
+  describe('create then save again without re-reading the record', () => {
+    it('sends the create ETag as If-Match on the following save', () => {
+      let syncArgs
+      let doneCallback
+      spyOn(Backbone, 'sync').and.callFake((method, model, options) => {
+        syncArgs = { method, options }
+        return { done: (cb) => { doneCallback = cb } }
+      })
+
+      const model = new EditorMetadata({ title: 'this is a title' })
+      model.save()
+      expect(syncArgs.method).toBe('create')
+
+      doneCallback({ id: 'doc1' }, 'success', {
+        getResponseHeader: (name) => (name === 'ETag' ? '"metaRev1:rawRev1"' : null)
+      })
+      model.set('id', 'doc1')
+
+      model.save()
+
+      expect(syncArgs.method).toBe('update')
+      expect(syncArgs.options.headers['If-Match']).toBe('metaRev1:rawRev1')
+    })
+  })
+
+  // ServiceAgreement calls EditorMetadata.prototype.initialize with no arguments, so it is worth
+  // pinning that it still picks up the revision plumbing - the service-agreement editor is a long-lived
+  // depositor session and relies entirely on inheriting this.
+  describe('ServiceAgreement inherits the optimistic locking behaviour', () => {
+    let syncArgs
+
+    beforeEach(() => {
+      spyOn(Backbone, 'sync').and.callFake((method, model, options) => {
+        syncArgs = { method, options }
+        return { done: () => {} }
+      })
+    })
+
+    it('sends If-Match on update when a revision is set', () => {
+      const model = new ServiceAgreement({ id: 'sa1', title: 'this is a title', depositorContactDetails: 'a@b.com' }, { id: 'sa1' })
+      model.setRevision('metaRev1:rawRev1')
+      model.save()
+      expect(syncArgs.method).toBe('update')
+      expect(syncArgs.options.headers['If-Match']).toBe('metaRev1:rawRev1')
+    })
+
+    it('does not send If-Match before a revision has been captured', () => {
+      const model = new ServiceAgreement({ id: 'sa1', title: 'this is a title', depositorContactDetails: 'a@b.com' }, { id: 'sa1' })
+      model.save()
+      const headers = syncArgs.options.headers || {}
+      expect(headers['If-Match']).toBeUndefined()
     })
   })
 })

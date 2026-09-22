@@ -6,17 +6,21 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.solr.client.solrj.request.SolrQuery;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import uk.ac.ceh.components.userstore.Group;
+import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @ToString
@@ -35,17 +39,42 @@ public class SearchController {
     public static final String FACET_QUERY_PARAM = "facet";
     public static final String SORT_FIELD_PARAM = "sortField";
     public static final String SORT_ORDER_PARAM = "order";
+    public static final String SEMANTIC_QUERY_PARAM = "semantic";
 
     public static final int PAGE_DEFAULT = Integer.parseInt(PAGE_DEFAULT_STRING);
     public static final int ROWS_DEFAULT = Integer.parseInt(ROWS_DEFAULT_STRING);
 
     private final Searcher searcher;
+    private final Optional<SemanticSearcher> semanticSearcher;
+    private final GroupStore<CatalogueUser> groupStore;
+    private final String semanticGroup;
 
     public SearchController(
-        Searcher searcher
+        Searcher searcher,
+        Optional<SemanticSearcher> semanticSearcher,
+        GroupStore<CatalogueUser> groupStore,
+        @Value("${catalogue.semantic.group:}") String semanticGroup
     ) {
         this.searcher = searcher;
-        log.info("Creating");
+        this.semanticSearcher = semanticSearcher;
+        this.groupStore = groupStore;
+        this.semanticGroup = semanticGroup;
+        log.info("Creating — semantic group restriction: '{}'",
+            semanticGroup.isBlank() ? "none" : semanticGroup);
+    }
+
+    private boolean userCanUseSemantic(CatalogueUser user) {
+        if (semanticGroup.isBlank()) return true;
+        // An anonymous visitor belongs to no group, so the answer is already known -- and asking
+        // anyway is not merely wasteful: CrowdGroupStore.getGroups is @Cacheable(key="#user.username")
+        // and PUBLIC_USER's username is null, which makes Spring's cache interceptor throw
+        // "Null key returned for cache operation". Because this flag is computed on every search to
+        // populate semanticEnabled, that turned into a 500 for every anonymous search, keyword ones
+        // included. SolrVisibilityFilter and SearchQuery.setRecordVisibility guard the same way.
+        if (user.isPublic()) return false;
+        return groupStore.getGroups(user).stream()
+            .map(Group::getName)
+            .anyMatch(semanticGroup::equalsIgnoreCase);
     }
 
     @Operation(
@@ -53,11 +82,10 @@ public class SearchController {
         description = "Returns paginated metadata records matching the given term across all catalogues.",
         responses = {
             @ApiResponse(responseCode = "200", description = "Search results"),
-            @ApiResponse(responseCode = "400", description = "Invalid parameter (e.g. unrecognised spatial operator)")
+            @ApiResponse(responseCode = "400", description = "Invalid parameter (e.g. unrecognised spatial operator, facet field or sort field)")
         }
     )
     @CrossOrigin
-    @SneakyThrows
     @ResponseBody
     @GetMapping("documents")
     public SearchResults searchAllCatalogues(
@@ -82,28 +110,33 @@ public class SearchController {
         @Parameter(description = "Facet filters in `field|value` format, URL-encoded. Repeatable. Example: `topic%7CHydrology`.")
         @RequestParam(value=FACET_QUERY_PARAM, defaultValue = "")
         List<FacetFilter> facetFilters,
-        @Parameter(description = "Field to sort by. Omit for relevance ranking.")
+        @Parameter(description = "Field to sort by. Omit for relevance ranking.",
+            schema = @Schema(allowableValues = {
+                "description", "incomingCitationCount", "infrastructureCapabilities", "lineage",
+                "metadataDate", "objectives", "publicationDate", "title"
+            }))
         @RequestParam(value=SORT_FIELD_PARAM, required = false)
         String sortField,
         @Parameter(description = "Sort direction.",
             schema = @Schema(allowableValues = {"asc", "desc"}, defaultValue = "asc"))
         @RequestParam(value=SORT_ORDER_PARAM, defaultValue = "asc")
         String sortOrder,
+        @Parameter(description = "Use semantic (KNN vector) search powered by Amazon Bedrock instead of BM25 full-text search. " +
+            "Requires the `vector-search` Spring profile and AWS Bedrock credentials. " +
+            "Access may be restricted to a specific Crowd group via `catalogue.semantic.group`. " +
+            "Falls back to BM25 silently if embeddings are not configured or the user lacks access.")
+        @RequestParam(value=SEMANTIC_QUERY_PARAM, defaultValue = "false")
+        boolean semantic,
         HttpServletRequest request
     ) {
-        return searcher.search(
-            request.getRequestURL().toString(),
-            user,
-            term,
-            bbox,
-            SpatialOperation.valueOf(op.toUpperCase()),
-            page,
-            rows,
-            facetFilters,
-            CatalogueService.ALL_CATALOGUES_ID,
-            sortField,
-            "desc".equals(sortOrder) ? SolrQuery.ORDER.desc : SolrQuery.ORDER.asc
-        );
+        val endpoint = request.getRequestURL().toString();
+        val spatialOp = SpatialOperation.valueOf(op.toUpperCase());
+        val canUseSemantic = semanticSearcher.isPresent() && userCanUseSemantic(user);
+        if (semantic && canUseSemantic) {
+            return new SearchResults(semanticSearcher.get().search(endpoint, user, term, bbox, spatialOp, page, rows, facetFilters, CatalogueService.ALL_CATALOGUES_ID), true);
+        }
+        return new SearchResults(searcher.search(endpoint, user, term, bbox, spatialOp, page, rows, facetFilters, CatalogueService.ALL_CATALOGUES_ID, sortField,
+            "desc".equals(sortOrder) ? SolrQuery.ORDER.desc : SolrQuery.ORDER.asc), canUseSemantic);
     }
 
     @Operation(
@@ -111,11 +144,10 @@ public class SearchController {
         description = "Returns paginated metadata records matching the given term, scoped to a single catalogue.",
         responses = {
             @ApiResponse(responseCode = "200", description = "Search results"),
-            @ApiResponse(responseCode = "400", description = "Invalid parameter (e.g. unrecognised spatial operator)")
+            @ApiResponse(responseCode = "400", description = "Invalid parameter (e.g. unrecognised spatial operator, facet field or sort field)")
         }
     )
     @CrossOrigin
-    @SneakyThrows
     @ResponseBody
     @GetMapping("{catalogue}/documents")
     public SearchResults search(
@@ -143,27 +175,32 @@ public class SearchController {
         @Parameter(description = "Facet filters in `field|value` format, URL-encoded. Repeatable. Example: `topic%7CHydrology`.")
         @RequestParam(value=FACET_QUERY_PARAM, defaultValue = "")
         List<FacetFilter> facetFilters,
-        @Parameter(description = "Field to sort by. Omit for relevance ranking.")
+        @Parameter(description = "Field to sort by. Omit for relevance ranking.",
+            schema = @Schema(allowableValues = {
+                "description", "incomingCitationCount", "infrastructureCapabilities", "lineage",
+                "metadataDate", "objectives", "publicationDate", "title"
+            }))
         @RequestParam(value=SORT_FIELD_PARAM, required = false)
         String sortField,
         @Parameter(description = "Sort direction.",
             schema = @Schema(allowableValues = {"asc", "desc"}, defaultValue = "asc"))
         @RequestParam(value=SORT_ORDER_PARAM, defaultValue = "asc")
         String sortOrder,
+        @Parameter(description = "Use semantic (KNN vector) search powered by Amazon Bedrock instead of BM25 full-text search. " +
+            "Requires the `vector-search` Spring profile and AWS Bedrock credentials. " +
+            "Access may be restricted to a specific Crowd group via `catalogue.semantic.group`. " +
+            "Falls back to BM25 silently if embeddings are not configured or the user lacks access.")
+        @RequestParam(value=SEMANTIC_QUERY_PARAM, defaultValue = "false")
+        boolean semantic,
         HttpServletRequest request
     ) {
-        return searcher.search(
-            request.getRequestURL().toString(),
-            user,
-            term,
-            bbox,
-            SpatialOperation.valueOf(op.toUpperCase()),
-            page,
-            rows,
-            facetFilters,
-            catalogueKey,
-            sortField,
-            "desc".equals(sortOrder) ? SolrQuery.ORDER.desc : SolrQuery.ORDER.asc
-        );
+        val endpoint = request.getRequestURL().toString();
+        val spatialOp = SpatialOperation.valueOf(op.toUpperCase());
+        val canUseSemantic = semanticSearcher.isPresent() && userCanUseSemantic(user);
+        if (semantic && canUseSemantic) {
+            return new SearchResults(semanticSearcher.get().search(endpoint, user, term, bbox, spatialOp, page, rows, facetFilters, catalogueKey), true);
+        }
+        return new SearchResults(searcher.search(endpoint, user, term, bbox, spatialOp, page, rows, facetFilters, catalogueKey, sortField,
+            "desc".equals(sortOrder) ? SolrQuery.ORDER.desc : SolrQuery.ORDER.asc), canUseSemantic);
     }
 }

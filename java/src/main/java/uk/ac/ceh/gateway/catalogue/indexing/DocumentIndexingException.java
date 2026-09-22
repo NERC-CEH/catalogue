@@ -24,7 +24,7 @@ public class DocumentIndexingException extends Exception {
         super(mess, cause);
     }
 
-    public void addSuppressed(String document, Exception exception) {
+    public void addSuppressed(String document, Throwable exception) {
         super.addSuppressed(exception);
         suppressedDocuments.add(document);
     }

@@ -157,9 +157,14 @@ public class JenaLookupService {
     }
 
     public List<Link> inverseRelationships(String uri, String relation) {
-        String sparql = PREFIXES + " SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?publicationDate (GROUP_CONCAT(?geo; separator=', ') AS ?geom) (GROUP_CONCAT(?code; separator='|') AS ?codes) " +
+        // ?geom is projected and grouped as a plain variable, not GROUP_CONCAT-ed. A record carries at
+        // most one sf:Geometry, but it carries one dcterms:identifier per resource identifier, and the
+        // two OPTIONALs cross-product: aggregating ?geom would emit the same GeoJSON once per
+        // identifier, producing a string that is not parseable JSON. Grouping keeps it single while
+        // ?code -- genuinely multi-valued -- is still aggregated.
+        String sparql = PREFIXES + " SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?publicationDate ?geom (GROUP_CONCAT(?code; separator='|') AS ?codes) " +
             "WHERE {?node ?rel ?me; ?relation ?me. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type. " +
-            "OPTIONAL {?node <http://www.opengis.net/ont/sf#Geometry> ?geo} " +
+            "OPTIONAL {?node <http://www.opengis.net/ont/sf#Geometry> ?geom} " +
             "OPTIONAL {?node dcterms:available ?publicationDate} " +
             "OPTIONAL {?node eidc:availability ?availability} " +
             "OPTIONAL {?node doo:operationalStatus ?availability} " +
@@ -242,15 +247,15 @@ public class JenaLookupService {
      */
     public String inverseRelationshipCombinedGeometries(String uri, String relation) throws JacksonException {
         List<Link> links = inverseRelationships(uri, relation);
-        return getCombinedGeometriesString(links, uri, false);
+        return getCombinedGeometriesString(links, uri);
     }
 
-    public String relationshipCombinedGeometriesWithOwner(String uri, String relation, boolean locationConfidential) throws JacksonException {
+    public String relationshipCombinedGeometriesWithOwner(String uri, String relation) throws JacksonException {
         List<Link> links = relationshipsWithOwner(uri, relation);
-        return getCombinedGeometriesString(links, uri, locationConfidential);
+        return getCombinedGeometriesString(links, uri);
     }
 
-    private String getCombinedGeometriesString(List<Link> links, String uri, boolean locationConfidential) throws JacksonException {
+    private String getCombinedGeometriesString(List<Link> links, String uri) throws JacksonException {
         // Return if no links found
         if (links.isEmpty()) {
             return "";
@@ -276,7 +281,6 @@ public class JenaLookupService {
                     propertiesNode.put("link", link.getHref());
                 }
                 propertiesNode.put("availability", link.getAvailability());
-                propertiesNode.put("locationConfidential", locationConfidential);
                 features.add(jsonNode);
             }
         }

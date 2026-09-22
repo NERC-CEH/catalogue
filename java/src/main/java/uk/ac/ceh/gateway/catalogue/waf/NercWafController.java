@@ -52,7 +52,7 @@ public class NercWafController {
         log.info("Creating");
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ModelAndView getWaf() throws IOException, PostProcessingException {
         val possibleLatestRevision = Optional.ofNullable(repo.getLatestRevision());
         List<String> files = (possibleLatestRevision.isEmpty()) ? Collections.emptyList() : listing

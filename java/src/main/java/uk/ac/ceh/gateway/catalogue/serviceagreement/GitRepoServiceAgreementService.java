@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
@@ -17,13 +18,14 @@ import uk.ac.ceh.gateway.catalogue.config.ServiceAgreementPublicationConfig;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataConflictException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
-import java.sql.Timestamp;
+import java.time.Clock;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -42,6 +44,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
     private final ServiceAgreementPublicationService publicationService;
+    private final Clock clock;
     public static final String PUBLISHED = "published";
     public static final String FOLDER = "service-agreement/";
     public static final String DRAFT = "draft";
@@ -49,6 +52,21 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private static final String PENDING_PUBLICATION = "pending publication";
     private static final String CEH_DOMAIN = "@ceh.ac.uk";
 
+    /**
+     * How far back {@link #getHistory} looks: five years, in seconds.
+     *
+     * <p>Named rather than inline because the test used to restate the whole
+     * expression, which made its assertion a restatement of the code under test
+     * rather than a check on it.
+     */
+    static final long HISTORY_WINDOW_SECONDS = 157_680_000L;
+
+    /**
+     * Annotated because there are two constructors and Spring will not choose
+     * between them: without it the context fails to start with "no default
+     * constructor found", which the production-context tests catch.
+     */
+    @Autowired
     public GitRepoServiceAgreementService(
             @Value("${documents.baseUri}") String baseUri,
             DataRepository<CatalogueUser> repo,
@@ -58,6 +76,21 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             DocumentRepository documentRepository,
             JiraService jiraService,
             @Lazy ServiceAgreementPublicationService publicationService) {
+        this(baseUri, repo, cachedDataRepository, metadataInfoMapper, serviceAgreementMapper,
+                documentRepository, jiraService, publicationService, Clock.systemUTC());
+    }
+
+    /** Package-private, so a test can fix the instant the history window is measured back from. */
+    GitRepoServiceAgreementService(
+            String baseUri,
+            DataRepository<CatalogueUser> repo,
+            CachedDataRepository cachedDataRepository,
+            DocumentInfoMapper<MetadataInfo> metadataInfoMapper,
+            DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper,
+            DocumentRepository documentRepository,
+            JiraService jiraService,
+            ServiceAgreementPublicationService publicationService,
+            Clock clock) {
         this.baseUri = baseUri;
         this.repo = repo;
         this.cachedDataRepository = cachedDataRepository;
@@ -66,6 +99,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         this.documentRepository = documentRepository;
         this.jiraService = jiraService;
         this.publicationService = publicationService;
+        this.clock = clock;
         log.info("Creating");
     }
 
@@ -138,13 +172,24 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @SneakyThrows
     @Override
     public ServiceAgreement update(CatalogueUser user, String id, ServiceAgreement serviceAgreement) {
+        return update(user, id, serviceAgreement, null);
+    }
+
+    @SneakyThrows
+    @Override
+    public ServiceAgreement update(CatalogueUser user, String id, ServiceAgreement serviceAgreement, String expectedRevision) {
         serviceAgreement.setId(id);
-        val fromDatastore = repo.getData(FOLDER + id + ".meta");
-        val metadataInfo = metadataInfoMapper.readInfo(fromDatastore.getInputStream());
-        repo
-            .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
-            .submitData(FOLDER + id + ".raw", o -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
-            .commit(user, "updating service agreement " + id);
+        // Guard read-check-write as one unit, as GitRepoWrapper.save does for metadata documents: two
+        // concurrent saves must not both pass the check before either commits.
+        synchronized (this) {
+            checkRevision(id, expectedRevision, serviceAgreement);
+            val fromDatastore = repo.getData(FOLDER + id + ".meta");
+            val metadataInfo = metadataInfoMapper.readInfo(fromDatastore.getInputStream());
+            repo
+                .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
+                .submitData(FOLDER + id + ".raw", o -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
+                .commit(user, "updating service agreement " + id);
+        }
         cachedDataRepository.evictAfterDirectWrite(FOLDER + id);
         return get(user, id);
     }
@@ -152,10 +197,43 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @SneakyThrows
     @Override
     public void updateMetadata(CatalogueUser user, String id, MetadataInfo metadataInfo) {
-        repo
-            .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
-            .commit(user, "updating service agreement metadata " + id);
+        updateMetadata(user, id, metadataInfo, null);
+    }
+
+    @SneakyThrows
+    @Override
+    public void updateMetadata(CatalogueUser user, String id, MetadataInfo metadataInfo, String expectedRevision) {
+        synchronized (this) {
+            checkRevision(id, expectedRevision, null);
+            repo
+                .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
+                .commit(user, "updating service agreement metadata " + id);
+        }
         cachedDataRepository.evictAfterDirectWrite(FOLDER + id);
+    }
+
+    @SneakyThrows
+    @Override
+    public String getRevisionToken(String id) {
+        return cachedDataRepository.getDocumentRevisionToken(FOLDER + id);
+    }
+
+    /**
+     * Compare-then-commit half of the optimistic lock. Reads the token fresh from the datastore rather
+     * than via {@link CachedDataRepository#getDocumentRevisionToken} — checking against a cached value
+     * would be no check at all. Must be called inside the {@code synchronized} block that also performs
+     * the commit.
+     */
+    private void checkRevision(String id, String expectedRevision, ServiceAgreement submittedForEcho)
+        throws DataRepositoryException {
+        if (expectedRevision == null) {
+            return;
+        }
+        val current = CachedDataRepository.revisionToken(repo, FOLDER + id);
+        if (!expectedRevision.equals(current)) {
+            throw new MetadataConflictException(
+                "This service agreement, %s, was changed by another user since you opened it.".formatted(id), submittedForEcho);
+        }
     }
 
     @SneakyThrows
@@ -307,8 +385,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @SneakyThrows
     public History getHistory(String id) {
         try {
-            Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-            long timeLimitInSecond = (currentTimestamp.getTime() / 1000) - 157680000;    // 5 years before
+            val timeLimitInSecond = clock.instant().getEpochSecond() - HISTORY_WINDOW_SECONDS;
             val dataRevisions = repo.getRevisions(timeLimitInSecond, "(creating|updating) service agreement " + id);
             return new History(baseUri, id, dataRevisions);
         } catch (DataRepositoryException ex) {

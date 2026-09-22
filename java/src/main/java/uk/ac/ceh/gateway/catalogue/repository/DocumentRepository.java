@@ -14,6 +14,19 @@ public interface DocumentRepository {
         String id
     ) throws DocumentRepositoryException;
 
+    /**
+     * Delete with an explicit commit message, so an administrative deletion is distinguishable from an
+     * ordinary one in the datastore's history.
+     *
+     * @param id the file id without extension, which may include a folder prefix
+     *           (e.g. {@code service-agreement/abc-123})
+     */
+    DataRevision<CatalogueUser> delete(
+        CatalogueUser user,
+        String id,
+        String message
+    ) throws DocumentRepositoryException;
+
     MetadataDocument read(
         String file
     ) throws DocumentRepositoryException;
@@ -37,6 +50,14 @@ public interface DocumentRepository {
         MetadataDocument document,
         String id,
         String message
+    ) throws DocumentRepositoryException;
+
+    MetadataDocument save(
+        CatalogueUser user,
+        MetadataDocument document,
+        String id,
+        String message,
+        String expectedRevision
     ) throws DocumentRepositoryException;
 
     MetadataDocument save(

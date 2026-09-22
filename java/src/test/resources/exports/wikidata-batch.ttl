@@ -1,0 +1,70 @@
+@prefix wdt: <http://www.wikidata.org/prop/direct/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix schema: <http://schema.org/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sesame: <http://www.openrdf.org/schema/sesame#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix fn: <http://www.w3.org/2005/xpath-functions#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix hint: <http://www.bigdata.com/queryHints#> .
+@prefix bd: <http://www.bigdata.com/rdf#> .
+@prefix bds: <http://www.bigdata.com/rdf/search#> .
+@prefix psn: <http://www.wikidata.org/prop/statement/value-normalized/> .
+@prefix pqn: <http://www.wikidata.org/prop/qualifier/value-normalized/> .
+@prefix prn: <http://www.wikidata.org/prop/reference/value-normalized/> .
+@prefix mwapi: <https://www.mediawiki.org/ontology#API/> .
+@prefix gas: <http://www.bigdata.com/rdf/gas#> .
+@prefix wdsubgraph: <https://query.wikidata.org/subgraph/> .
+@prefix wdtn: <http://www.wikidata.org/prop/direct-normalized/> .
+@prefix psv: <http://www.wikidata.org/prop/statement/value/> .
+@prefix ps: <http://www.wikidata.org/prop/statement/> .
+@prefix pqv: <http://www.wikidata.org/prop/qualifier/value/> .
+@prefix pq: <http://www.wikidata.org/prop/qualifier/> .
+@prefix prv: <http://www.wikidata.org/prop/reference/value/> .
+@prefix pr: <http://www.wikidata.org/prop/reference/> .
+@prefix wdno: <http://www.wikidata.org/prop/novalue/> .
+@prefix p: <http://www.wikidata.org/prop/> .
+@prefix wikibase: <http://wikiba.se/ontology#> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+@prefix wdata: <http://www.wikidata.org/wiki/Special:EntityData/> .
+@prefix wds: <http://www.wikidata.org/entity/statement/> .
+@prefix wdv: <http://www.wikidata.org/value/> .
+@prefix wdref: <http://www.wikidata.org/reference/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix geo: <http://www.opengis.net/ont/geosparql#> .
+@prefix geof: <http://www.opengis.net/def/geosparql/function/> .
+@prefix mediawiki: <https://www.mediawiki.org/ontology#> .
+@prefix ontolex: <http://www.w3.org/ns/lemon/ontolex#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix wikibaseqs: <http://wikiba.se/queryService#> .
+
+wd:Q1358 skos:altLabel "arachnid"@en ;
+	schema:description "class of arthropods"@en ;
+	wdt:P31 wd:Q16521 ;
+	wdt:P225 "Arachnida" .
+
+wd:Q16521 rdfs:label "taxon"@en .
+
+wd:Q1358 skos:altLabel "arachnids"@en .
+
+wd:Q21062 rdfs:label "Common Murre"@en ;
+	skos:prefLabel "Common Murre"@en ;
+	skos:altLabel "Uria aalge"@en ;
+	schema:description "species of bird, auk"@en ;
+	wdt:P31 wd:Q16521 ;
+	wdt:P225 "Uria aalge" ;
+	skos:altLabel "Common Guillemot"@en .
+
+wd:Q1358 skos:altLabel "Arachnid"@en .
+
+wd:Q21062 skos:altLabel "Guillemot"@en .
+
+wd:Q663181 rdfs:label "Speckled Wood"@en ;
+	skos:prefLabel "Speckled Wood"@en ;
+	skos:altLabel "Pararge aegeria"@en ;
+	schema:description "species of insect"@en ;
+	wdt:P31 wd:Q16521 ;
+	wdt:P225 "Pararge aegeria" .

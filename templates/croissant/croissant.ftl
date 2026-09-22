@@ -259,7 +259,6 @@
               "name": "${contact.fullName}"
               <#if contact.familyName?has_content>,"familyName": "${contact.familyName}"</#if>
               <#if contact.givenName?has_content>,"givenName": "${contact.givenName}"</#if>
-              <#if contact.email?has_content>,"email": "${contact.email}"</#if>
               <#if contact.organisationName?trim?has_content>
                 ,"affiliation":{
                   "@type":"Organization",
@@ -270,7 +269,6 @@
             <#else>
               "@type":"Organization"
               <#if contact.organisationName?has_content>,"name": "${contact.organisationName}"</#if>
-              <#if contact.email?has_content>,"email": "${contact.email}"</#if>
               <#if contact.organisationIdentifier?has_content>,"identifier":"${contact.organisationIdentifier}"</#if>
             </#if>
             }<#sep>,

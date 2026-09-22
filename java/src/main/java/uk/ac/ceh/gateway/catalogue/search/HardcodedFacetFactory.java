@@ -28,6 +28,26 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Document Type")
                     .hierarchical(false)
                     .build();
+            case "fdriCatchment" -> Facet.builder()
+                .fieldName("fdriCatchment")
+                    .displayName("FDRI catchment")
+                    .hierarchical(false)
+                    .build();
+            case "fdriCategory" -> Facet.builder()
+                .fieldName("fdriCategory")
+                    .displayName("FDRI category")
+                    .hierarchical(false)
+                    .build();
+            case "fdriSpatialScale" -> Facet.builder()
+                .fieldName("fdriSpatialScale")
+                    .displayName("Spatial scale")
+                    .hierarchical(false)
+                    .build();
+            case "fdriTimeseriesData" -> Facet.builder()
+                .fieldName("fdriTimeseriesData")
+                    .displayName("Timeseries data")
+                    .hierarchical(false)
+                    .build();
             case "funder" -> Facet.builder()
                 .fieldName("funder")
                     .displayName("Funder")
@@ -96,6 +116,11 @@ public class HardcodedFacetFactory implements FacetFactory {
             case "dataLevel" -> Facet.builder()
                 .fieldName("dataLevel")
                     .displayName("Data level")
+                    .hierarchical(false)
+                    .build();
+            case "parametersMeasured" -> Facet.builder()
+                .fieldName("keywordsParametersFacet")
+                    .displayName("Parameters measured")
                     .hierarchical(false)
                     .build();
             case "resourceType" -> Facet.builder()

@@ -1,0 +1,122 @@
+{
+ "totalSize": 158712,
+ "project": [
+  {
+   "ext": null,
+   "id": "08DC2362-B8F7-4E0B-B1FC-001FB7AF5B94",
+   "outcomeid": null,
+   "href": "http://gtr.ukri.org/gtr/api/projects/08DC2362-B8F7-4E0B-B1FC-001FB7AF5B94",
+   "created": 1787751370000,
+   "updated": null,
+   "identifiers": {
+    "identifier": [
+     {
+      "value": "AH/V01241X/1",
+      "type": "RCUK"
+     }
+    ]
+   },
+   "title": "ENGLISH HERITAGE TRUST CONSERVATION AND HERITAGE SCIENCE FACILITY - RANGER'S HOUSE, GREENWICH, LONDON",
+   "status": "Closed",
+   "grantCategory": "Research Grant",
+   "leadFunder": "Infrastructure Fund",
+   "leadOrganisationDepartment": null,
+   "abstractText": "The English Heritage Trust (EHT) cares for the National Heritage Collection of 400 historic sites and 3/4 million associated artefacts. \n\nThe Facility \nThe heritage science and conservation facility at Ranger's House acts as a central hub for core research and conservation activities carried out by EHT. The facility itself comprises five rooms in the apartment adjacent to the publicly accessible house (home to the Wernher Collection), the fine art conservation studio, and an outbuilding used as a store. The facility has grown organically and has reached a point where the scale of work outstrips the capacity of the facility - both due to space and the quality of equipment within. \n\nThe Beneficiaries - People and Collections\nThe English Heritage Conservation Science team has been leading the way in research on the environmental response of objects in historic environments. This work has been critical in allowing for the safe display and storage of the collection in historic buildings. Its novelty lies in the combination of close object/ building examination and analysis, with an epidemiological approach. \n\nWe have been able to develop this novel approach because we look after similar objects that are exposed to a range of very different environments. The practical methods we have devised as a result of our research have enabled us to reduce the carbon footprint of conservation activities by 40%. The sector's interest in this work is demonstrated by an impressive 70 publications in competitive forums, the oversubscription to a series of 8 international courses covering management of showcases and an invitation to the 2018 Gordon conference on Scientific Methods in Cultural Heritage Research. We have also supported six PhDs - looking at response of lined canvas paintings, archaeological bone, archaeological glass and outdoor artillery - through the CPD scheme, SEAHA doctoral training scheme, AHRC Collaborative Doctoral Program and the Science and Heritage Programme. This research would not be possible without the Ranger's facility and its equipment, but it has been severely restrained by lack of space and outdated equipment - with constant failures or issues with software compatibility.\n\nThe conservation studio at Ranger's House, often guided by scientific advice from the conservation science team, carries out practical treatments and technical analysis of the English Heritage collection of over 1500 easel paintings, many of international significance, and their associated frames. Technical examination advances our understanding of an artist's materials and methodology. Over the last five years our work has resulted in the reattribution of several paintings, notably to Botticelli and Titian, and much associated publicity for English Heritage has followed. Art historical findings relating to paintings by Rembrandt, Titian, Weenix and Beuckelaer have been presented at several national and international conferences and published in postprints and journals. To allow this treatment and research to continue, we need to update equipment in line with technological advances and remedy issues with the studio space, previously adapted from an old coach house\n\nThe Project\nThe amount of research needed, both within the EHT strategy and to support the sector, is not possible within the confines of the existing facility, nor with equipment more than 10 years old and suffering constant failures (and not supported by the manufacturers due to its age).\nWe will redevelop the interiors of the facility and upgrade the store into a workshop in order to house equipment, and provide space for sample preparation and wood working for fine art conservation. We will also replace the most outdated pieces of equipment, to significantly improve the efficiency for research undertaken in the facility.",
+   "techAbstractText": null,
+   "potentialImpact": null,
+   "healthCategories": {
+    "healthCategory": []
+   },
+   "researchActivities": {
+    "researchActivity": []
+   },
+   "researchSubjects": {
+    "researchSubject": []
+   },
+   "researchTopics": {
+    "researchTopic": [
+     {
+      "id": "6CFA1E1F-F25C-4C23-8FE1-C47AE53E333E",
+      "text": "Unclassified",
+      "percentage": null
+     }
+    ]
+   },
+   "rcukProgrammes": {
+    "rcukProgramme": []
+   },
+   "start": null,
+   "end": null,
+   "participantValues": null
+  },
+  {
+   "ext": null,
+   "id": "0A9C4768-C996-4303-91F1-020F34284F78",
+   "outcomeid": null,
+   "href": "http://gtr.ukri.org/gtr/api/projects/0A9C4768-C996-4303-91F1-020F34284F78",
+   "created": 1787751370000,
+   "updated": null,
+   "identifiers": {
+    "identifier": [
+     {
+      "value": "NE/P000061/1",
+      "type": "RCUK"
+     }
+    ]
+   },
+   "title": "Characterising hydrothermal alteration across the Atlantis Massif: IODP Expedition 357",
+   "status": "Closed",
+   "grantCategory": "Research Grant",
+   "leadFunder": "NERC",
+   "leadOrganisationDepartment": "School of Geog Earth and Environ Sciences",
+   "abstractText": "The oceans covers approximately two thirds of the Earth's surface yet the oldest ocean floor is less than 200 million years old because it is continuously created and destroyed through the plate tectonic cycle. The ocean floor is made of volcanic rocks that form at mid ocean ridges, a global chain of under-water volcanoes that stretch for ~60,000km around the oceans, where two tectonic plates are moving away from each other. The rate at which the two tectonic plates move away from each other varies across the oceans. Currently 50% of the global mid ocean ridge system is spreading at slow spreading rates (&lt;40 mm/yr, e.g Mid Atlantic Ridge). From dredging and scientific drilling of the ocean crust and studying ophiolites, pieces of ocean crust that have been emplaced onto the continents, the overall structure of the ocean crust has determined. 'Typical' ocean crust has a layered stratigraphy with erupted lavas overlying intrusive feeder channels and frozen magma chambers (gabbros). However along slow spreading ridges this typical stratigraphy is not always present, and ~ 50% is formed by tectonic extension along detachment faults that bring gabbros and mantle rocks to the seafloor.\n\nOnce new ocean crust is formed cold seawater penetrates downwards into the crust along fractures, becomes heated and reacts with the volcanic rocks until the hot hydrothermal fluids becomes buoyant and exit the crust at the seafloor . These reactions modify the chemistry of both the rocks by the formation of new hydrothermal minerals and the hydrothermal fluids, and are therefore an important process to quantify in order to understand global chemical exchange. The new minerals that form are strongly dependent on the initial rock and the temperature of the reacting hydrothermal fluids. At slow spreading ridges, the exposure of gabbroic and mantle rocks at the seafloor results in different chemical reactions, and mantle rocks in particular undergo extensive alteration to serpentinites. Serpentinisation reactions are accompanied by the formation of calcium carbonate minerals in fractures. The formation of calcium carbonate by fluid/rock reactions is currently being investigated as a potential long-term store of carbon dioxide. Understanding hydrothermal circulation in these environments is critical for understanding this process and ultimately exploiting it for the industrial storage of carbon dioxide.\n\nThe Atlantis Massif is located on the Mid Atlantic Ridge and is an example of where tectonic extension has exposed gabbroic and mantle rocks at the seafloor. A hydrothermal vent system called the Lost City Hydrothermal Field is present on the southern end of the massif and is driven by serpentinisation reactions. Low temperature (&lt;100degC), high pH hydrothermal fluids vent diffusively at Lost City through carbonate-brucite structures. It is one of only five hydrothermal vents that are known to be hosted on mantle rocks.\n\nIn this study, new samples recovered by scientific ocean drilling of the Atlantis Massif during IODP Expedition 357 will be used to investigate the role of hydrothermal circulation in the formation of ocean crust along these long-lived detachment faults. For the first time an age transect of samples across the massif has been recovered allowing insight into how the detachment changes and evolves as it progressively ages. By studying the new hydrothermal minerals that have formed during fluid/rock reaction, and documenting their distribution within the different rock types, the pathways for the hydrothermal fluids can be deciphered. This information will be combined with geochemical analyses of the rocks and hydrothermal minerals to quantify the chemical changes that have occurred during hydrothermal circulation across the Atlantis Massif. This combined approach will allow the contribution of hydrothermal circulation along detachment faults to the broader hydrothermal budget of global geochemical cycles to be determined.",
+   "techAbstractText": null,
+   "potentialImpact": "This project will make significant scientific advances towards our understanding of the role of hydrothermal circulation during the formation and evolution of the ocean crust. It will expand upon our current knowledge of this key Earth process through the variable slow spreading rate crust that represents much of the modern mid ocean ridge network. This project will primarily benefit the extensive ocean crust community, both those working on modern ocean crust and ophiolites, as outlined in the Academic Beneficiaries section. \n\nBenefits to: IODP\nThe proposed research will contribute to addressing two of the proposed challenges in the 2013-2023 IODP Science Plan; challenge 9 'how are seafloor spreading and mantle melting linked to ocean crustal architecture' and challenge 10 'what are the mechanisms, magnitude, and history of chemical exchanges between the oceanic crust and seawater?'. This research will contribute to these by characterising and quantifying hydrothermal circulation through the detachment surface of the Atlantis Massif and its contribution to global geochemical cycles. Publication of this research in internationally recognised peer-reviewed journals will highlight the on-going importance of IODP as a world leader in scientific collaboration and high impact science.\n\nBenefits to: Public\nThis research will contribute to topical global questions about the response of the Earth system to perturbations (global geochemical cycles) and the limits of life. Through the integration of this study with companion studies addressing the mechanisms of serpentinisation because of the intimate link between the two studies, this research will contribute to the topical debate about the long term storage options for atmospheric carbon dioxide. Involvement with University open days and public engagement activities (e.g. Girls into Geoscience) and the publication of the results in journals accessible to the public will ensure this research is exposed to the public. \n\nBenefits to: RA\nThe research assistant will benefit from training and experience in laboratory procedures in addition to being involved with active research. It will provide an opportunity to extend their skill set and develop their future career prospects. \n\nBenefits to: Industry\nThe long term storage of carbon in solid mineral form is one of the options available for reducing atmospheric carbon dioxide and is currently an area of research of high interest in both academic (e.g. IODP Expedition 357, ICDP Oman Drilling Project) and industrial (e.g CarbFIX) contexts. A necessary step towards the potential industrialisation of this process is understanding the natural system in a range of environments. This research is intimately linked to serpentinisation across the Atlantis Massif and will therefore help inform our understanding of the formation of calcium carbonate minerals in lower crustal and mantle rocks. This research will add to the growing body of research in this field and in the long term will be of use to carbon capture and storage industries. \n\nHow does the proposed research generate impact?\nThis research will inform our understanding of the variation in processes that form the ocean crust. The recent recognition of the extent of the detachment mode of seafloor spreading represents a major step in our understanding of how the Earth surface forms. The results of this study will provide crucial evidence for the interaction of hydrothermal fluids and tectonic processes and quantify for the first time the contribution of focused hydrothermal fluids on global hydrothermal budgets. The intimate link between hydrothermal circulation in the gabbroic and mantle rocks will inform our understanding of the natural storage of carbon in ocean crust, a crucial step in knowledge necessary for the potential industrialisation of this process.",
+   "healthCategories": {
+    "healthCategory": []
+   },
+   "researchActivities": {
+    "researchActivity": []
+   },
+   "researchSubjects": {
+    "researchSubject": [
+     {
+      "id": "346611FD-47F5-46D6-9813-D4707F62253B",
+      "text": "Geosciences",
+      "percentage": 100
+     }
+    ]
+   },
+   "researchTopics": {
+    "researchTopic": [
+     {
+      "id": "7F1C4565-EFD3-4BE7-8A4A-B5F39FFD36F3",
+      "text": "Volcanic Processes",
+      "percentage": 30
+     },
+     {
+      "id": "F52704F6-1035-4307-9FA9-45BC878F1F1A",
+      "text": "Tectonic Processes",
+      "percentage": 10
+     },
+     {
+      "id": "2334C846-D357-4EF1-B929-0EC4EC1854CB",
+      "text": "Hydrogeology",
+      "percentage": 40
+     },
+     {
+      "id": "A646062E-6497-4533-8274-47644A7B369C",
+      "text": "Earth Resources",
+      "percentage": 20
+     }
+    ]
+   },
+   "rcukProgrammes": {
+    "rcukProgramme": []
+   },
+   "start": null,
+   "end": null,
+   "participantValues": null
+  }
+ ]
+}

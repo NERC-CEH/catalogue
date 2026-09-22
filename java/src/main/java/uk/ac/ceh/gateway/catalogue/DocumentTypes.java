@@ -34,6 +34,12 @@ public class DocumentTypes {
             .type(INFRASTRUCTURERECORD)
             .build();
 
+    public static final String RESEARCHACTIVITY = "researchactivity";
+    public static DocumentType RESEARCHACTIVITY_TYPE = DocumentType.builder()
+        .title("Research activity")
+        .type(RESEARCHACTIVITY)
+        .build();
+
     public static final String GEMINI = "GEMINI_DOCUMENT";
     public static DocumentType GEMINI_TYPE = DocumentType.builder()
         .title("Data resource")

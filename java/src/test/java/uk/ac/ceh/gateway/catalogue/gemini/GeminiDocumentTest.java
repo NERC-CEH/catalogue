@@ -18,6 +18,7 @@ import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.mockito.Mockito.when;
 
@@ -58,6 +59,43 @@ public class GeminiDocumentTest {
     }
 
     @Test
+    void resourceTypeSurvivesWhenTypeFieldArrivesAfterItInJson() throws Exception {
+        //given a payload where the stale "type" key (as sent by the editor, which never
+        //updates it) appears after the user's edited "resourceType"
+        val json = """
+            {
+              "type": "dataset",
+              "resourceType": {"value": "nonGeographicDataset"}
+            }
+            """;
+
+        //when
+        val gemini = new ObjectMapper().readValue(json, GeminiDocument.class);
+
+        //then the explicit resourceType edit must not be clobbered by the stale type
+        assertThat(gemini.getResourceType().getValue(), equalTo("nonGeographicDataset"));
+        assertThat(gemini.getType(), equalTo("nonGeographicDataset"));
+    }
+
+    @Test
+    void resourceTypeSurvivesWhenTypeFieldArrivesBeforeIt() throws Exception {
+        //given the opposite key order, which must agree with the other order too
+        val json = """
+            {
+              "resourceType": {"value": "nonGeographicDataset"},
+              "type": "dataset"
+            }
+            """;
+
+        //when
+        val gemini = new ObjectMapper().readValue(json, GeminiDocument.class);
+
+        //then
+        assertThat(gemini.getResourceType().getValue(), equalTo("nonGeographicDataset"));
+        assertThat(gemini.getType(), equalTo("nonGeographicDataset"));
+    }
+
+    @Test
     void getDistributions() {
         //given
         val gemini = new GeminiDocument();
@@ -73,6 +111,43 @@ public class GeminiDocumentTest {
 
         //then
         assertThat(actual.size(), equalTo(3));
+    }
+
+    @Test
+    void getOfflineAccessReturnsOnlyOfflineAccessResources() {
+        //given
+        val offlineAccess = OnlineResource.builder().function("offlineAccess").build();
+        val gemini = new GeminiDocument();
+        gemini.setOnlineResources(List.of(
+            OnlineResource.builder().function("download").build(),
+            offlineAccess,
+            OnlineResource.builder().function("somethingElse").build()
+        ));
+
+        //when
+        val actual = gemini.getOfflineAccess();
+
+        //then
+        assertThat(actual, contains(offlineAccess));
+    }
+
+    @Test
+    void getDistributionsIncludesOfflineAccess() {
+        //given
+        val gemini = new GeminiDocument();
+        gemini.setOnlineResources(List.of(
+            OnlineResource.builder().function("download").build(),
+            OnlineResource.builder().function("order").build(),
+            OnlineResource.builder().function("fileAccess").build(),
+            OnlineResource.builder().function("offlineAccess").build(),
+            OnlineResource.builder().function("somethingElse").build()
+        ));
+
+        //when
+        val actual = gemini.getDistributions();
+
+        //then
+        assertThat(actual.size(), equalTo(4));
     }
 
     @Test

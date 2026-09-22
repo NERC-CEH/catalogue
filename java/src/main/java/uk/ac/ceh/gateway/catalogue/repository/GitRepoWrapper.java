@@ -10,6 +10,8 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.datastore.DataWriter;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataConflictException;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
@@ -36,32 +38,91 @@ public class GitRepoWrapper {
         log.info("Creating");
     }
 
+    // Note: this delegates via a self-invocation ("this.save(...)") to the 7-arg overload below. Spring's
+    // proxy-based AOP does not intercept self-invocations, so the 7-arg method's own @CacheEvict would NOT
+    // fire when reached this way. This 5-arg method therefore carries its own identical @Caching(evict=...)
+    // block so external callers (e.g. GitDocumentRepository) going through the proxy still get the eviction.
     @Caching(evict = {
         @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.meta'"),
         @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.raw'"),
+        @CacheEvict(value = CachedDataRepository.DOC_REVISION_CACHE, key = "#id"),
         @CacheEvict(value = CachedDataRepository.REVISION_ID_CACHE, allEntries = true)
     })
     public void save(CatalogueUser user, String id, String message, MetadataInfo metadataInfo, DataWriter dataWriter) throws DataRepositoryException {
-        Optional<MonitoringFacility> preUpdateFacility = facilityEventService.getMonitoringFacility(id);
-        DataRevision<CatalogueUser> revision = repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataInfo, o))
-            .submitData(String.format("%s.raw", id), dataWriter)
-            .commit(user, message);
-        // Read the post-update facility at the commit's own revision: this method's @CacheEvict has not yet run,
-        // so the cached "latest" still points at the pre-commit revision and would return stale (or missing) content.
-        Optional<MonitoringFacility> postUpdateFacility = facilityEventService.getMonitoringFacility(id, revision.getRevisionID());
-        facilityEventService.postRemovedEvent(preUpdateFacility, postUpdateFacility);
+        save(user, id, message, metadataInfo, dataWriter, null, null);
     }
 
     @Caching(evict = {
         @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.meta'"),
         @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.raw'"),
+        @CacheEvict(value = CachedDataRepository.DOC_REVISION_CACHE, key = "#id"),
+        @CacheEvict(value = CachedDataRepository.REVISION_ID_CACHE, allEntries = true)
+    })
+    public void save(CatalogueUser user, String id, String message, MetadataInfo metadataInfo,
+                     DataWriter dataWriter, String expectedRevision, MetadataDocument submittedForEcho) throws DataRepositoryException {
+        // Guard read-check-write as one unit: two concurrent saves must not both pass the check before
+        // either commits. The check reads the revision fresh (uncached) so it is always authoritative.
+        synchronized (this) {
+            if (expectedRevision != null) {
+                String current = currentDocumentRevision(id);
+                if (!expectedRevision.equals(current)) {
+                    throw new MetadataConflictException(
+                        "This record, %s, was changed by another user since you opened it.".formatted(id), submittedForEcho);
+                }
+            }
+            Optional<MonitoringFacility> preUpdateFacility = facilityEventService.getMonitoringFacility(id);
+            DataRevision<CatalogueUser> revision = repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataInfo, o))
+                .submitData(String.format("%s.raw", id), dataWriter)
+                .commit(user, message);
+            // Read the post-update facility at the commit's own revision: this method's @CacheEvict has not yet run,
+            // so the cached "latest" still points at the pre-commit revision and would return stale (or missing) content.
+            Optional<MonitoringFacility> postUpdateFacility = facilityEventService.getMonitoringFacility(id, revision.getRevisionID());
+            facilityEventService.postRemovedEvent(preUpdateFacility, postUpdateFacility);
+        }
+    }
+
+    /**
+     * The authoritative current token for {@code id}, read fresh from the datastore. Deliberately not
+     * routed through {@link CachedDataRepository#getDocumentRevisionToken} — a compare-then-commit check
+     * against a cached value would be no check at all.
+     */
+    private String currentDocumentRevision(String id) throws DataRepositoryException {
+        return CachedDataRepository.revisionToken(repo, id);
+    }
+
+    // Note: this delegates via a self-invocation ("this.delete(...)") to the 3-arg overload below. Spring's
+    // proxy-based AOP does not intercept self-invocations, so the 3-arg method's own @CacheEvict would NOT
+    // fire when reached this way. This 2-arg method therefore carries its own identical @Caching(evict=...)
+    // block so external callers (e.g. GitDocumentRepository) going through the proxy still get the eviction.
+    @Caching(evict = {
+        @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.meta'"),
+        @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.raw'"),
+        @CacheEvict(value = CachedDataRepository.DOC_REVISION_CACHE, key = "#id"),
         @CacheEvict(value = CachedDataRepository.REVISION_ID_CACHE, allEntries = true)
     })
     public DataRevision<CatalogueUser> delete(CatalogueUser user, String id) throws DataRepositoryException {
+        return delete(user, id, String.format("delete document: %s", id));
+    }
+
+    /**
+     * Delete with an explicit commit message, so an administrative deletion can be told apart from an
+     * ordinary one in the datastore's history — the Git log is the audit trail for deletions.
+     *
+     * @param id the file id without extension, which may include a folder prefix
+     *           (e.g. {@code abc-123} or {@code service-agreement/abc-123}); the cache keys below
+     *           compose correctly either way
+     */
+    @Caching(evict = {
+        @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.meta'"),
+        @CacheEvict(value = CachedDataRepository.LATEST_CACHE, key = "#id + '.raw'"),
+        @CacheEvict(value = CachedDataRepository.DOC_REVISION_CACHE, key = "#id"),
+        @CacheEvict(value = CachedDataRepository.REVISION_ID_CACHE, allEntries = true)
+    })
+    public DataRevision<CatalogueUser> delete(CatalogueUser user, String id, String message) throws DataRepositoryException {
         Optional<FacilityBelongToRemovedEvent> facilityDeletedEvent = facilityEventService.getFacilityDeletedEvent(id);
         DataRevision<CatalogueUser> revision = repo.deleteData(id + ".meta")
                 .deleteData(id + ".raw")
-                .commit(user, String.format("delete document: %s", id));
+                .commit(user, message);
         facilityEventService.postDeletedEvent(facilityDeletedEvent);
         return revision;
     }

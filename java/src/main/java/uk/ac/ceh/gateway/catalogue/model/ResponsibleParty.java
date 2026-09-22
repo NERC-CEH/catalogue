@@ -52,14 +52,29 @@ public class ResponsibleParty {
         return nameIdentifier.matches("^https?://orcid\\.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$");
     }
 
+    /**
+     * An ISNI is as good a persistent identifier for a person as an ORCID, and
+     * is used as one when emitting RDF. {@code http} is accepted for the same
+     * reason as in {@link #isOrcid()}: a record that supplies the plain-scheme
+     * form still means the person, and canonicalisation upgrades it.
+     */
     @JsonIgnore
     public boolean isIsni() {
-        return nameIdentifier.matches("^https://isni\\.org/isni/\\d{15}(X|\\d)$");
+        return nameIdentifier.matches("^https?://isni\\.org/isni/\\d{15}(X|\\d)$");
     }
 
     @JsonIgnore
     public boolean isRor() {
         return organisationIdentifier.matches("^https://ror\\.org/\\w{8,10}$");
+    }
+
+    @JsonIgnore
+    public String getOrcid() {
+        if (!isOrcid()) {
+            return "";
+        }
+
+        return nameIdentifier.replaceFirst("^https?://orcid\\.org/", "");
     }
 
     public String getFullName() {
@@ -96,13 +111,18 @@ public class ResponsibleParty {
     private String toTitlecase(String camelCase) {
         StringBuilder result = new StringBuilder();
 
+        // Contributor roles are SCoRO terms, which are hyphenated rather than camel
+        // case (data-creator, workpackage-leader), so treat a separator as a word
+        // break too or the hyphen survives into the rendered label.
+        String words = camelCase.replace('-', ' ').replace('_', ' ');
+
         // Pretend space before first character
         char prevChar = ' ';
 
         // insert space before capitals
-        for(int i = 0; i < camelCase.length(); i++)
+        for(int i = 0; i < words.length(); i++)
         {
-            char c = camelCase.charAt(i);
+            char c = words.charAt(i);
             if( prevChar == ' ')
             {
                 result.append(Character.toLowerCase(c));

@@ -19,12 +19,21 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.model.Link;
+import uk.ac.ceh.gateway.catalogue.monitoring.LocationObfuscationService;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.FormatUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.LicenceUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.KeywordUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
+import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabularySolrQueryService;
 
 import java.io.File;
 import java.io.StringReader;
@@ -33,7 +42,9 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -93,6 +104,16 @@ public class RdfTemplateTest {
         objectMapper = JsonMapper.builder().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
         jena = mock(JenaLookupService.class);
         configuration.setSharedVariable("jena", jena);
+        val uriNormaliser = new UriNormaliser();
+        configuration.setSharedVariable("uriNormaliser", uriNormaliser);
+        configuration.setSharedVariable("contactUri", new ContactUri(uriNormaliser));
+        configuration.setSharedVariable("fundingUri", new FundingUri(uriNormaliser));
+        configuration.setSharedVariable("licenceUris", new LicenceUri());
+        configuration.setSharedVariable("formatUris", new FormatUri());
+        configuration.setSharedVariable(
+            "keywordUri",
+            new KeywordUri(uriNormaliser, mock(KeywordVocabularySolrQueryService.class))
+        );
     }
 
     @Nested
@@ -119,6 +140,10 @@ public class RdfTemplateTest {
             given(jena.relationships(geminiDocument.getUri(), "http://purl.org/dc/terms/relation")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/222212345").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/222254321").build()
+            ));
+            given(jena.relationships(geminiDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/utilises")).willReturn(List.of(
+                Link.builder().href("https://catalogue.ceh.ac.uk/id/333312345").build(),
+                Link.builder().href("https://catalogue.ceh.ac.uk/id/333354321").build()
             ));
 
             // when
@@ -149,6 +174,12 @@ public class RdfTemplateTest {
             Property varMeasured = model.createProperty("https://schema.org/variableMeasured");
             assertTrue(model.contains(subject, varMeasured, model.createResource("https://prop-a.example.com")));
             assertTrue(model.contains(subject, varMeasured, model.createResource("https://prop-b.example.com")));
+
+            // dri-one #326: sosa:observedProperty alongside sdo:variableMeasured for every
+            // observed property that already carries a uri
+            Property sosaObservedProperty = model.createProperty("http://www.w3.org/ns/sosa/observedProperty");
+            assertTrue(model.contains(subject, sosaObservedProperty, model.createResource("https://prop-a.example.com")));
+            assertTrue(model.contains(subject, sosaObservedProperty, model.createResource("https://prop-b.example.com")));
         }
 
         @Test
@@ -205,6 +236,44 @@ public class RdfTemplateTest {
 
             //then
             compare(expected, actual, false);
+        }
+
+        /**
+         * The privacy contract, across the save/render boundary: a facility marked
+         * confidential must publish the graticule cell and nothing finer.
+         * <p>
+         * develop guarded this at render time with {@code <#if !locationConfidential>},
+         * which withheld the geometry entirely. That guard is gone, because the stored
+         * geometry is now already the cell - LocationObfuscationService replaces it on
+         * save. This test exercises that pairing rather than the template alone: the
+         * template publishing {@code dcterms:geometry} unconditionally is only correct
+         * so long as what reaches it has been through the service.
+         */
+        @Test
+        @SneakyThrows
+        @DisplayName("a confidential facility publishes its graticule cell, not the precise location")
+        void confidentialFacility() {
+            //given
+            val facilityDocument = objectMapper.readValue(
+                expected("rdf/datastore/monitoring-facility.raw"), MonitoringFacility.class);
+
+            facilityDocument.setGeometry(Geometry.builder()
+                .geometryString("{\"type\":\"Feature\",\"properties\":{},\"geometry\":"
+                    + "{\"type\":\"Point\",\"coordinates\":[1.71792,52.65757]}}")
+                .locationConfidential(true)
+                .build());
+
+            new LocationObfuscationService().obfuscate(facilityDocument);
+
+            //when
+            val actual = template("rdf/monitoring/facility.ftl", facilityDocument);
+
+            //then
+            assertThat(actual, containsString("dcterms:geometry"));
+            assertThat(actual, containsString("POLYGON"));
+            assertThat(actual, containsString("1.7 52.6"));
+            assertThat(actual, not(containsString("1.71792")));
+            assertThat(actual, not(containsString("52.65757")));
         }
 
         @Test

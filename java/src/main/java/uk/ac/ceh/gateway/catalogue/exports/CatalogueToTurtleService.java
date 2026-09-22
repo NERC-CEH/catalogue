@@ -104,6 +104,16 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
         }
     }
 
+    /**
+     * Forces the prefetched catalogues (e.g. eidc) to be rebuilt from the current documents, rather than
+     * served from whatever {@link #fetchCatalogues()} last put in the cache - up to a day old. Called by
+     * a manual export trigger so it publishes current data rather than the stale prefetch.
+     */
+    @Override
+    public void refresh() {
+        fetchCatalogues();
+    }
+
     @SneakyThrows
     private String generateCatalogueTtl(Map<String, Object> model) {
         val freemarkerTemplate = configuration.getTemplate("rdf/catalogue.ttl.ftl");

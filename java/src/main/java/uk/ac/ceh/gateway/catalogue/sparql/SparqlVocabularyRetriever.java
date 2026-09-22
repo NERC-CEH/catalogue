@@ -23,6 +23,8 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
      * can be used in the SolrIndexMetadataDocumentGenerator in place of
      * getInmsScaleKeywords
      */
+    static final String FDRI_VOCABULARY = "<https://digital.ceh.ac.uk/vocab/fdri/>";
+
     private final RestTemplate template;
     private final String sparqlEndpoint;
 
@@ -84,6 +86,24 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
         );
     }
 
+    /*
+     * Selects the concepts directly beneath a broader concept.
+     *
+     * queryBuilderOther asks the same question the other way round, via
+     * skos:narrower. SKOS does not materialise the inverse of a relation, so a
+     * vocabulary that only asserts skos:broader is invisible to that query.
+     */
+    private URI queryBuilderBroader(String sparqlEndpoint, String facet, String vocab){
+        return URI.create(sparqlEndpoint +
+            "?query=" +
+            URLEncoder.encode("PREFIX skos:<http://www.w3.org/2004/02/skos/core#> ", StandardCharsets.UTF_8) +
+            URLEncoder.encode(String.format("PREFIX vocab: %s ", vocab), StandardCharsets.UTF_8) +
+            URLEncoder.encode("SELECT DISTINCT ?uri FROM vocab: ", StandardCharsets.UTF_8) +
+            URLEncoder.encode(String.format("WHERE {?uri skos:broader vocab:%s.}", facet), StandardCharsets.UTF_8) +
+            "&format=json"
+        );
+    }
+
     private URI queryBuilderOther(String sparqlEndpoint, String facet, String vocab){
         String narrow;
         switch (facet) {
@@ -115,9 +135,10 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
         String facet = vocabularyFacet.getFacetName();
 
         return switch (vocabularyFacet) {
-            case WATER_POLLUTANT, TOPIC                              -> queryBuilderUnion(sparqlEndpoint, facet);
-            case INMS_DEMONSTRATION_REGION, INMS_PROJECT, MODEL_TYPE -> queryBuilderInms(sparqlEndpoint, facet, vocab);
-            default                                                  -> queryBuilderOther(sparqlEndpoint, facet, vocab);
+            case WATER_POLLUTANT, TOPIC                                              -> queryBuilderUnion(sparqlEndpoint, facet);
+            case INMS_DEMONSTRATION_REGION, INMS_PROJECT, MODEL_TYPE                 -> queryBuilderInms(sparqlEndpoint, facet, vocab);
+            case FDRI_CATCHMENT, FDRI_CATEGORY, FDRI_SPATIAL_SCALE, FDRI_TIMESERIES  -> queryBuilderBroader(sparqlEndpoint, facet, vocab);
+            default                                                                  -> queryBuilderOther(sparqlEndpoint, facet, vocab);
         };
     }
 
@@ -126,6 +147,7 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
             case ASSIST_RESEARCH_THEMES, ASSIST_TOPICS                                                -> "<http://onto.nerc.ac.uk/CEHMD/>";
             case UKCEH_RESEARCH_THEME, UKCEH_RESEARCH_PROJECT, UKCEH_SCIENCE_CHALLENGE, UKCEH_SERVICE -> "<http://vocabs.ceh.ac.uk/ukscape/>";
             case INMS_DEMONSTRATION_REGION, INMS_PROJECT, MODEL_TYPE                                  -> "<http://vocabs.ceh.ac.uk/inms/>";
+            case FDRI_CATCHMENT, FDRI_CATEGORY, FDRI_SPATIAL_SCALE, FDRI_TIMESERIES                   -> FDRI_VOCABULARY;
             default -> ""; // No vocab needed for others
         };
     }

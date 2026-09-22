@@ -21,7 +21,7 @@ export default _.template(`
         <label for="<%= data.modelAttribute %><%= data.index %>Function">Purpose</label>
     </div>
     <div class="col-sm-10">
-        <select data-name="function" id="<%= data.modelAttribute %><%= data.index %>Function" class="function">
+        <select data-name="function" id="<%= data.modelAttribute %><%= data.index %>Function" class="function form-select">
             <option value="" selected>  </option>
             <option value="code">Code</option>
             <option value="document">Document</option>

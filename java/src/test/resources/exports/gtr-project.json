@@ -1,0 +1,89 @@
+{
+ "totalSize": 1,
+ "project": [
+  {
+   "ext": null,
+   "id": "71A76C82-6336-4BB0-847C-6AEAACB08175",
+   "outcomeid": null,
+   "href": "http://gtr.ukri.org/gtr/api/projects/71A76C82-6336-4BB0-847C-6AEAACB08175",
+   "created": 1787751370000,
+   "updated": null,
+   "identifiers": {
+    "identifier": [
+     {
+      "value": "NE/R016429/1",
+      "type": "RCUK"
+     }
+    ]
+   },
+   "title": "UK Status, Change and Projections of the Environment (UK-SCaPE)",
+   "status": "Closed",
+   "grantCategory": "Research Grant",
+   "leadFunder": "NERC",
+   "leadOrganisationDepartment": null,
+   "abstractText": "The UK faces significant challenges in the 21st century due to mounting pressure on air and soil quality, water and food security, and the conservation of biodiversity. To provide effective solutions to these problems a paradigm shift is required that moves the current focus from isolated local issues towards a landscape scale, integrated delivery which provides multiple benefits for people, the economy and the environment. To enable the development of such integrated systems understanding we will direct our national capability to deliver two work packages:\n\nWP1: Through observation and analysis of key metrics across land, water, soil, air and biodiversity, we will seek to understand what controls the status and dynamics of environmental assets. In partnership we will deliver a fully integrated National Scale Assessment of the UK environment. We will undertake long term large scale surveys and draw on partner data (providing data through portals to the community) to produce the evidence base needed to answer the following questions:\nLand: Which land cover classes are changing in spatial extent, condition or connectivity?\nBiodiversity: What is the current status and pattern of change in UK biodiversity, ecosystem services and their drivers?\nSoil: What is the direction and magnitude of change in soil condition and function across the UK and how do multiple pressures interact to create the spatial and temporal patterns observed? \nAir: What drives the fluxes of pollutants and greenhouse gases?\nWater: What are the environmental determinants of water flows and soil moisture? \nTogether, these national scale datasets provide the capacity to answer cross cutting questions. These data are also critical for model parameterisation and development in WP2 and across our national capability portfolio (LTS Multiple centre and ODA activities). Engaging further with the user community through fora such as the UK Earth Observation Framework, Learned Societies and key stakeholders will enable the community to continually challenge and prioritise what we collectively are monitoring in the natural environment; the why and how.\n\nWP2: The empirical evidence on links between environmental assets such as water, biodiversity, ecosystems, soil and the benefits they deliver such as clean air, wildlife and food, is fragmented and incomplete. We will develop evidence chains (which link data from WP1 and elsewhere, and the latest process understanding encapsulated in improved models) to explore how environmental assets combine to influence benefits to humans. We have focused on four priorities:\nAir: How can we protect human and ecosystem health by improving our understanding of interactions between air pollution, vegetation and climate?\nWater: How will future climate influence water availability and quality?\nBiodiversity: How can we resolve conflicts to protect biodiversity and commitments to sustainable energy generation?\nLand &amp; soil: How will future land management affect soils and biodiversity, whilst enabling efficient and resilient production? \n\nThese underpinning activities also support two research programmes addressing defined knowledge gaps. \n\nRP1: SPEED: The UK lacks co-ordinated projections of environmental drivers that are linked to ongoing international research. CEH will provide spatially explicit projections of climate change, land use change and a specified set of pollutants that are derived from the Shared Socio-economic Pathways developed under the IPCC. This will provide the research community and other users with a coherent framework for assessing environmental change impacts.\nRP2: SOC-D: Recent research initiatives have concluded that biological and structural factors, over chemical factors, influence the dynamics of Soil Organic Carbon (SOC) more than previously thought. This new understanding will be explored experimentally and captured in a new process-based SOC model, which will be open access.",
+   "techAbstractText": null,
+   "potentialImpact": "UK SCAPE beneficiaries can be divided the following categories based on stakeholder and sphere of influence analyses:\n\nPolicy stakeholders: including Defra, BEIS, the devolved governments, Natural England (NE), Environment Agency (EA), JNCC, Scottish Natural Heritage (SNH), Scottish Environment Protection Agency (SEPA), DAERA, Forestry Commission, Climate Change Committee, Climate Change Adaptation Sub-Committee, Flood Forecasting Centre, Met Office, Natural Capital Committee, Natural Hazards Partnership, Office for National Statistics, public health authorities (e.g. Public Health England), local government, European and international agencies (e.g. European Environment Agency (EEA), European Food Safety Authority (EFSA), International Panel on Biodiversity and Ecosystem Services (IPBES), United Nations Framework Convention on Climate Change (UNFCC)). CEH has strong working relationships with the evidence and policy teams within Defra and the devolved governments, and staff are members of many of their committees and working groups.\n\nThird sector: including landowning NGOs such as RSPB, PlantLife and National Trust; NGOs involved in biodiversity monitoring, e.g. Butterfly Conservation, Buglife, British Trust for Ornithology (BTO); and the National Biodiversity Network (NBN) and the specialist biological recording societies and schemes. CEH has long-standing collaborative relationships with these organisations and many other major environmental NGOs.\n\nLand management community: including farmers, agribusiness (e.g. Agrii, Syngenta, Bayer, Unilever) and their representative bodies, e.g. National Farmers Union (NFU), and knowledge exchange brokers (e.g. ADHB, LEAF). CEH has strong links with these groups through previous and current projects (e.g. ASSIST).\n\nEnergy industry: CEH has delivered projects and consultancy work for the offshore renewable energy industry and their representative bodies, e.g. Forth and Tay Offshore Wind Developers Group (FTOWDG), and has undertaken research on bioenergy for the Energy Technologies Institute (ETI).\nWater industry: CEH has strong links via previous projects and consultancy work for many of the\nUK water companies including Anglian Water, United Utilities, Scottish Water, Thames Water and Welsh Water.\n\nResearch organisations: particularly those co-delivering LTSM National Capability, Higher Education Institutes, and other Government funded research institutes such as Scotland's Main\nResearch Providers.\n\nProfessional bodies and learned societies: British Ecological Society, British Hydrological Society, Royal Society.",
+   "healthCategories": {
+    "healthCategory": []
+   },
+   "researchActivities": {
+    "researchActivity": []
+   },
+   "researchSubjects": {
+    "researchSubject": [
+     {
+      "id": "B0467C75-496C-47DC-8E4E-DA3298D03B30",
+      "text": "Terrest. & freshwater environ.",
+      "percentage": 60
+     },
+     {
+      "id": "14AB3A4E-B700-4A41-AC03-924EB4EBD196",
+      "text": "Ecol, biodivers. & systematics",
+      "percentage": 25
+     },
+     {
+      "id": "D40CEE2F-998D-4171-BA8C-DBFE87EDD73A",
+      "text": "Pollution, waste & resources",
+      "percentage": 15
+     }
+    ]
+   },
+   "researchTopics": {
+    "researchTopic": [
+     {
+      "id": "EAA99485-F7C8-450C-BC5B-B8221103F2EF",
+      "text": "Community Ecology",
+      "percentage": 25
+     },
+     {
+      "id": "71A8EA33-09DF-4E02-85BA-A9545564F72D",
+      "text": "Water Quality",
+      "percentage": 15
+     },
+     {
+      "id": "9B5E68DA-E81C-476D-959E-2DDD956903B7",
+      "text": "Ecotoxicology",
+      "percentage": 15
+     },
+     {
+      "id": "E6DEF4EE-2C3F-4381-89D0-925B01B9CF27",
+      "text": "Soil science",
+      "percentage": 25
+     },
+     {
+      "id": "5C78E96A-AFE4-483A-9A61-7334E3D1A81B",
+      "text": "Land - Atmosphere Interactions",
+      "percentage": 20
+     }
+    ]
+   },
+   "rcukProgrammes": {
+    "rcukProgramme": []
+   },
+   "start": null,
+   "end": null,
+   "participantValues": null
+  }
+ ]
+}

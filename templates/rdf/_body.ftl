@@ -24,7 +24,7 @@
     <#list boundingBoxes as extent>
      dcterms:spatial [
         a dcterms:Location ;
-        dcat:bbox "${extent.wkt}"^^geo:wktLiteral ;
+        dcat:bbox "${ttl.escape(extent.wkt)}"^^geo:wktLiteral ;
       ] ;
     </#list>
 
@@ -43,15 +43,20 @@
     </#if>
 
     <#--Relationships-->
-    <#list jena.relationships(uri, "http://purl.org/dc/terms/isPartOf")>
+    <#-- dri-one #327: a target that is itself withdrawn/unpublished (available in the Jena
+         index, but not to the outside world) must not be linked to as if it resolved. -->
+    <#list jena.relationships(uri, "http://purl.org/dc/terms/isPartOf")?filter(item -> item.availability != "Deleted")>
       dcterms:isPartOf <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
-    <#list jena.relationships(uri, "http://purl.org/dc/terms/replaces")>
+    <#list jena.relationships(uri, "http://purl.org/dc/terms/replaces")?filter(item -> item.availability != "Deleted")>
       dcterms:replaces <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
 
-    <#list jena.relationships(uri, "http://purl.org/dc/terms/relation")>
+    <#list jena.relationships(uri, "http://purl.org/dc/terms/relation")?filter(item -> item.availability != "Deleted")>
       dcterms:relation <#items as item><${item.href}><#sep>, </#items> ;
+    </#list>
+    <#list jena.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises")?filter(item -> item.availability != "Deleted")>
+      doo:utilises <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
 
     <#--Citations-->
@@ -67,17 +72,32 @@
       sdo:variableMeasured <@opList /> ;
     </#if>
 
-    <#if funding?has_content>
+    <#if fileset?? && fileset?has_content && fileset?filter(fs -> fs.observedProperty?filter(op -> observedPropertyUri(op)?has_content)?has_content)?has_content>
+      sosa:observedProperty <@opSosaList /> ;
+    </#if>
+
+    <#if funding?filter(f -> fundingUri.hasContent(f))?has_content>
     prov:wasGeneratedBy <@fundingList /> ;
     </#if>
 
+    <#--
+      emitsRights tracks whether the type-specific include below pulls in
+      turtle/_rights.ftl, so that rightsDetail only describes a minted licence or
+      access-rights node when something actually references it. Set alongside each
+      branch rather than as a second list of type names, so the two cannot drift.
+    -->
+    <#assign emitsRights = false>
+    <#assign emitsFormats = false>
     <#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
+      <#assign emitsRights = true>
       <#include "turtle/_dataset.ftl">
     <#elseif type=='aggregate'|| type=='collection'|| type=='series'>
-      <#include "turtle/_aggregation.ftl">
+      <#include "turtle/_aggregation.ftl"> <#--no rights block-->
     <#elseif type=='service'>
+      <#assign emitsRights = true>
       <#include "turtle/_service.ftl">
     <#elseif type=='software' || type=='model'|| type=='computationalNotebook'>
+      <#assign emitsRights = true>
       <#include "turtle/_code.ftl">
     </#if>
 
@@ -109,6 +129,14 @@
 
     <#if authorPointOfContactWithRORs?has_content>
       <@organisationRORs />
+    </#if>
+
+    <#if emitsRights>
+      <@rightsDetail />
+    </#if>
+
+    <#if emitsFormats>
+      <@formatDetail />
     </#if>
 
     <@fundingDetail />
@@ -151,7 +179,7 @@
       <#list otherIds>
         adms:identifier <#t>
           <#items as id>
-            "<#if id.codeSpace?? && id.codeSpace?has_content && !id.codeSpace?starts_with("http")>${id.codeSpace}/</#if>${id.code}"<#t>
+            "<#if id.codeSpace?? && id.codeSpace?has_content && !id.codeSpace?starts_with("http")>${ttl.escape(id.codeSpace)}/</#if>${ttl.escape(id.code)}"<#t>
           <#sep>,</#sep><#t>
           </#items> ;<#t>
       </#list>
@@ -171,7 +199,7 @@
       <#list otherIds>
         adms:identifier <#t>
           <#items as id>
-            "<#if id.codeSpace?? && id.codeSpace?has_content && !id.codeSpace?starts_with("http")>${id.codeSpace}/</#if>${id.code}"<#t>
+            "<#if id.codeSpace?? && id.codeSpace?has_content && !id.codeSpace?starts_with("http")>${ttl.escape(id.codeSpace)}/</#if>${ttl.escape(id.code)}"<#t>
           <#sep>,</#sep><#t>
           </#items> ;<#t>
       </#list>

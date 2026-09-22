@@ -5,8 +5,8 @@ export default _.template(`
     <div class="col-sm-11 dataentry">
         <select data-index="<%= data.index %>">
             <option value="">- Select Spatial Representation Type -</option>
-            <option value="grid">Raster (grid)</option>
-            <option value="textTable">Tabular data (e.g. a spreadsheet)</option>
+            <option value="grid">Grid (e.g. tifs and other image formats)</option>
+            <option value="textTable">Tabular data (e.g. csv/spreadsheet)</option>
             <option value="tin">Triangulated Irregular Network</option>
             <option value="vector">Vector (e.g. Shape file)</option>
             <option value="video">Video</option>

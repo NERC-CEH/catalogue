@@ -5,12 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
+import uk.ac.ceh.gateway.catalogue.controllers.IfMatchRevision;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
@@ -61,19 +63,22 @@ public class ServiceAgreementController {
 
     @PreAuthorize("@permission.userCanEditServiceAgreement(#id)")
     @PutMapping("{id}")
-    public ServiceAgreementModel update(
+    public ResponseEntity<ServiceAgreementModel> update(
         @ActiveUser CatalogueUser user,
         @PathVariable String id,
-        @RequestBody ServiceAgreement serviceAgreement
+        @RequestBody ServiceAgreement serviceAgreement,
+        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
     ) {
         if (serviceAgreementService.metadataRecordExists(id)) {
             log.info("updating service agreement {}", id);
+            val expectedRevision = IfMatchRevision.require(ifMatch);
             val newlyUpdated = serviceAgreementService.update(
                 user,
                 id,
-                serviceAgreement
+                serviceAgreement,
+                expectedRevision
             );
-            return serviceAgreementModelAssembler.toModel(newlyUpdated);
+            return withETag(id).body(serviceAgreementModelAssembler.toModel(newlyUpdated));
         } else {
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
@@ -81,13 +86,27 @@ public class ServiceAgreementController {
 
     @PreAuthorize("@permission.userCanViewServiceAgreement(#id)")
     @GetMapping("{id}")
-    public ServiceAgreementModel get(
+    public ResponseEntity<ServiceAgreementModel> get(
         @ActiveUser CatalogueUser user,
         @PathVariable String id
     ) {
         log.info("GET {}", id);
         val serviceAgreement = serviceAgreementService.get(user, id);
-        return serviceAgreementModelAssembler.toModel(serviceAgreement);
+        return withETag(id).body(serviceAgreementModelAssembler.toModel(serviceAgreement));
+    }
+
+    /**
+     * Response builder carrying the service agreement's current revision as its {@code ETag}, so the
+     * editor can send it back as {@code If-Match} on the next save. Emits no header when the record has
+     * no history yet — the PUT then fails closed with 428 rather than silently overwriting.
+     */
+    private ResponseEntity.BodyBuilder withETag(String id) {
+        val revision = serviceAgreementService.getRevisionToken(id);
+        val builder = ResponseEntity.ok();
+        if (revision != null) {
+            builder.eTag(revision); // Spring quotes this into a strong ETag: "revision"
+        }
+        return builder;
     }
 
     @PreAuthorize("@permission.userCanDeleteServiceAgreement(#id)")
@@ -187,7 +206,7 @@ public class ServiceAgreementController {
         @PathVariable String id
     ) {
         log.info("GETTING SERVICE AGREEMENT PERMISSIONS");
-        return ResponseEntity.ok(
+        return withETag(id).body(
             new ServiceAgreementPermissionResource(
                 serviceAgreementService.get(user, id)
             )
@@ -200,13 +219,15 @@ public class ServiceAgreementController {
     public HttpEntity<ServiceAgreementPermissionResource> updatePermission(
         @ActiveUser CatalogueUser user,
         @PathVariable String id,
-        @RequestBody ServiceAgreementPermissionResource permissionResource
+        @RequestBody ServiceAgreementPermissionResource permissionResource,
+        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
     ) {
         log.info("UPDATING SERVICE AGREEMENT PERMISSIONS");
+        val expectedRevision = IfMatchRevision.require(ifMatch);
         MetadataInfo original = serviceAgreementService.get(user, id).getMetadata();
         MetadataInfo updated = permissionResource.updatePermissions(original);
-        serviceAgreementService.updateMetadata(user, id, updated);
-        return ResponseEntity.ok(
+        serviceAgreementService.updateMetadata(user, id, updated, expectedRevision);
+        return withETag(id).body(
             new ServiceAgreementPermissionResource(
                 serviceAgreementService.get(user, id)
             )

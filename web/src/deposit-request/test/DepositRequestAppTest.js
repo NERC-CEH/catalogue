@@ -7,6 +7,7 @@ describe('DepositRequestApp.validate', () => {
     name: 'Ada Lovelace',
     email: 'ada@example.com',
     affiliation: 'UKCEH',
+    scienceArea: 'External',
     checklist1: true,
     checklist2: true,
     checklist3: true,

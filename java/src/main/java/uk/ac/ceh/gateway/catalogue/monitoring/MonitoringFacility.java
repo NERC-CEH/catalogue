@@ -3,7 +3,11 @@ package uk.ac.ceh.gateway.catalogue.monitoring;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.val;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
@@ -15,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +38,7 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
     private List<String> alternateTitles;
     private Keyword facilityType;
     private Geometry geometry;
-    private boolean geometryRepresentative, locationConfidential, mobile;
+    private boolean geometryRepresentative, mobile;
     @JsonAlias("pointsOfContact")
     private List<ResponsibleParty> contacts;
     private List<ResponsibleParty> partners;
@@ -86,8 +91,9 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
     }
 
     public void populateFromJenaService(JenaLookupService jenaService) {
+
         final String uri = this.getUri();
-        this.setRelCombinedGeometry(jenaService.relationshipCombinedGeometriesWithOwner(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility", locationConfidential));
+        this.setRelCombinedGeometry(jenaService.relationshipCombinedGeometriesWithOwner(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility"));
         this.setRelBelongsToNetwork(jenaService.relationships(uri, "http://purl.org/dc/terms/isPartOf"));
         this.setRelUsedBy(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/uses"));
         this.setRelUtilisedBy(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"));

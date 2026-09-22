@@ -100,7 +100,6 @@
             "@id": "https://ror.org/04xw4m193",
             "@type": "Organization",
             "name": "NERC EDS Environmental Information Data Centre",
-            "email": "info@eidc.ac.uk",
             "identifier": "https://ror.org/04xw4m193"
         }
     ]

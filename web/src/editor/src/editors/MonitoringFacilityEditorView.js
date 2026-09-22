@@ -81,22 +81,13 @@ export default EditorView.extend({
           ]
         }),
 
-        new CheckboxView({
-          model: this.model,
-          modelAttribute: 'locationConfidential',
-          label: 'Location is confidential',
-          helpText: `
-<p>If the location is confidential, add a point location that is representative of the location.  This might be (for example) a lat/long to only 2 decimal places of precision</p>
-`
-        }),
-
         new SingleObjectView({
           model: this.model,
           modelAttribute: 'geometry',
           ModelType: Geometry,
           label: 'Geometry',
           ObjectInputView: GeometryView,
-          parentModel: this.model,
+          showConfidentialCheckbox: true,
           helpText: `
 <p>Geometry of Monitoring Facility</p>
 `
@@ -136,7 +127,13 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'keywordsParameters',
           label: 'Parameters measured',
-          ObjectInputView: KeywordVocabularyView
+          ObjectInputView: KeywordVocabularyView,
+          vocabs: {
+            ukceh: ['envThes', 'gemet'],
+            eidc: ['envThes', 'gemet'],
+            ukeof: ['envThes', 'gemet']
+          },
+          multiline: true
         }),
 
         new ParentView({
@@ -144,6 +141,11 @@ export default EditorView.extend({
           modelAttribute: 'keywords',
           label: 'Keywords',
           ObjectInputView: KeywordVocabularyView,
+          vocabs: {
+            ukceh: ['envThes', 'gemet'],
+            eidc: ['envThes', 'gemet'],
+            ukeof: ['envThes', 'gemet']
+          },
           multiline: true
         })
       ]
@@ -220,6 +222,7 @@ export default EditorView.extend({
           modelAttribute: 'relationships',
           label: 'Relationships',
           ObjectInputView: RelationshipView,
+          parentModel: this.model,
           multiline: true,
           options: [
             { value: 'http://purl.org/dc/terms/isPartOf', label: 'Is part of' },

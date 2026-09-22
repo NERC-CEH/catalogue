@@ -10,7 +10,7 @@ export default Backbone.Model.extend({
   uris: {
     noLimitations: 'http://vocab.nerc.ac.uk/collection/N07/current/UNRS/',
     registrationRequired: 'http://vocab.nerc.ac.uk/collection/N07/current/RACC/',
-    controlled: 'hhttp://vocab.nerc.ac.uk/collection/N07/current/RAUT/',
+    controlled: 'http://vocab.nerc.ac.uk/collection/N07/current/RAUT/',
     embargoed: 'http://vocab.nerc.ac.uk/collection/N07/current/EMBG/',
     superseded: 'http://vocab.nerc.ac.uk/collection/N07/current/RAUT/',
     withdrawn: 'http://vocab.nerc.ac.uk/collection/N07/current/RAUT/',

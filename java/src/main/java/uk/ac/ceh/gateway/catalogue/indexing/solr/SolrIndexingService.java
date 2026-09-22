@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.indexing.solr;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -36,6 +37,7 @@ public class SolrIndexingService extends AbstractIndexingService<MetadataDocumen
     private final JenaLookupService lookupService;
     private final DocumentIdentifierService identifierService;
     public static final String DOCUMENTS = "documents";
+    static final int COMMIT_BATCH_SIZE = 500;
 
     private static final Set<String> UNINDEXED_RESOURCE_STATUS = Set.of("Deleted");
 
@@ -55,24 +57,62 @@ public class SolrIndexingService extends AbstractIndexingService<MetadataDocumen
         log.info("Creating");
     }
 
-    @SneakyThrows
     @Override
     public boolean isIndexEmpty() throws DocumentIndexingException {
         try {
             return solrClient.query(DOCUMENTS, new SolrQuery("*:*")).getResults().isEmpty();
         }
-        catch(SolrServerException ex) {
+        catch(IOException | SolrServerException ex) {
+            // An unreachable Solr arrives as an IOException, so catching only SolrServerException
+            // let it escape unwrapped through @SneakyThrows
             throw new DocumentIndexingException(ex);
         }
     }
 
     @Override
     public void indexDocuments(List<String> documents, String revision) throws DocumentIndexingException {
+        val failures = new DocumentIndexingException("Failed to index one or more documents");
         try {
-            super.indexDocuments(documents, revision);
-            super.indexDocuments(linkedDocuments(documents), revision); // reindex LinkDocuments
+            indexInBatches(documents, revision, failures);
+            indexInBatches(linkedDocuments(documents), revision, failures); // reindex LinkDocuments
         } finally {
             commit();
+        }
+        if (failures.getSuppressed().length != 0) {
+            throw failures;
+        }
+    }
+
+    /**
+     * Commit as each batch fills up, so that a rebuild of the whole catalogue becomes searchable
+     * progressively instead of only when its final document has been added. A failing batch does not
+     * stop the ones after it; the failures are gathered up and thrown once everything has been tried.
+     */
+    private void indexInBatches(
+        List<String> documents,
+        String revision,
+        DocumentIndexingException failures
+    ) throws DocumentIndexingException {
+        val total = documents.size();
+        for (int indexed = 0; indexed < total; indexed += COMMIT_BATCH_SIZE) {
+            val batchEnd = Math.min(indexed + COMMIT_BATCH_SIZE, total);
+            try {
+                super.indexDocuments(documents.subList(indexed, batchEnd), revision);
+            } catch (DocumentIndexingException ex) {
+                collectFailures(ex, failures);
+            }
+            if (batchEnd < total) {
+                commit();
+                log.info("Indexed {} of {} documents", batchEnd, total);
+            }
+        }
+    }
+
+    private void collectFailures(DocumentIndexingException batch, DocumentIndexingException failures) {
+        val documents = batch.getSupressedDocuments();
+        val suppressed = batch.getSuppressed();
+        for (int i = 0; i < suppressed.length; i++) {
+            failures.addSuppressed(documents.get(i), suppressed[i]);
         }
     }
 

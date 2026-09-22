@@ -102,20 +102,17 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
             .orElseGet(Collections::emptyList);
     }
 
-
     @JsonProperty("relSupersedes")
     public List<Link> getRelSupersedes() {
         return Optional.ofNullable(relSupersedes)
             .orElseGet(Collections::emptyList);
     }
 
-
     @JsonProperty("relSupersededBy")
     public List<Link> getRelSupersededBy() {
         return Optional.ofNullable(relSupersededBy)
             .orElseGet(Collections::emptyList);
     }
-
 
     @JsonProperty("relActivities")
     public List<Link> getRelActivities() {
@@ -140,5 +137,4 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
         return Optional.ofNullable(relRelated)
             .orElseGet(Collections::emptyList);
     }
-
 }

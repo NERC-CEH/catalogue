@@ -12,7 +12,8 @@
       </#if>
 
         <#if licence.uri?has_content><a rel="license" href="${licence.uri}"></#if>
-          ${licenceText}
+          <hr  class="border opacity-50" >
+          <@blocks.linebreaks licenceText />
         <#if licence.uri?has_content></a></#if>
       </p>
 

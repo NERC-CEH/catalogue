@@ -225,6 +225,11 @@ public class CrowdPermissionService implements PermissionService {
     }
 
     @Override
+    public boolean userCanAdminDelete() {
+        return userInGroup(DocumentController.ADMIN_DELETE_ROLE);
+    }
+
+    @Override
     public List<Group> getGroupsForUser(CatalogueUser user) {
         return (user.isPublic())
             ? Collections.emptyList()

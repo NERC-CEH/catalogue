@@ -1,3 +1,4 @@
+<#import "../macro-card.ftlh" as card>
 <#assign
 	otherSupplemental = nonRelatedDatasets
 	apps = browsingApps
@@ -45,13 +46,13 @@
                 <#assign type=item.associationType icon="" >
               </#if>
 
-              <@card item.href item.publicationStatus item.availability type item.title icon/>
+              <@card.card item.href item.publicationStatus item.availability type item.title icon/>
             </#items>
         </#list>
 
         <#if apps?has_content && apps?size gt 0>
           <#list apps as app>
-            <@card app.url '' '' 'Application' app.name 'fa-solar-panel'/>
+            <@card.card app.url '' '' 'Application' app.name 'fa-solar-panel'/>
           </#list>
         </#if>
       </div>
@@ -84,13 +85,13 @@
               <#assign type=item.associationType  >
             </#if>
 
-            <@card item.href item.publicationStatus item.availability type item.title icon/>
+            <@card.card item.href item.publicationStatus item.availability type item.title icon/>
           </#items>
         </#list>
 
         <#list otherSupplemental>
           <#items as item>
-            <@card item.url "published" "available" "Website" item.name "fa-globe" true />
+            <@card.card item.url "published" "available" "Website" item.name "fa-globe" true />
           </#items>
         </#list>
 
@@ -102,44 +103,9 @@
     <h2>This ${recordType} is included in the following collection<#if relPartOf?size gt 1>s</#if></h2>
     <div class="ukcehcards">
       <#list relPartOf?sort_by("title") as item>
-        <@card item.href item.publicationStatus item.availability 'Data collection' item.title/>
+        <@card.card item.href item.publicationStatus item.availability 'Data collection' item.title/>
       </#list>
     </div>
   </#if>
 
 </div>
-
-<#macro card address publicationStatus availability type title icon='fa-globe' external=false >
-  <#assign target = "">
-  <#if external=true>
-			<#assign target="target='_blank' rel='noopener noreferrer'">
-	</#if>
-
-  <#assign cardClass = " ukcehcard-" + publicationStatus?lower_case >
-  <#if availability?has_content && availability != "Unknown">
-   <#assign cardClass += " ukcehcard-" + availability?lower_case>
-	</#if>
-
-  <#assign visible = false>
-  <#if publicationStatus=="published" || permission.userCanEdit(id)>
-     <#assign visible = true>
-  </#if>
-
-  <#if visible>
-    <#if address?has_content && address?matches("^http(|s)://.+")>
-      <a class="ukcehcard ${cardClass}" href="${address}" ${target}>
-
-        <div class="ukcehcard-icon">
-          <span class="fa-stack fa-xl">
-            <i class="fa-solid fa-circle fa-stack-2x"></i>
-            <i class="fa-solid ${icon} fa-stack-1x fa-inverse"></i>
-          </span>
-        </div>
-        <div class="ukcehcard-content">
-          <div class="ukcehcard-type"><span>${publicationStatus}</span>${type}</div>
-          <div class="ukcehcard-title">${title}</div>
-        </div>
-      </a>
-    </#if>
-  </#if>
-</#macro>

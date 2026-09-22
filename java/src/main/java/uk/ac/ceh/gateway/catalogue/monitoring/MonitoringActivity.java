@@ -18,10 +18,12 @@ import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RDF_TTL_VALUE;
 
 @Data
@@ -61,13 +63,11 @@ public class MonitoringActivity extends AbstractMetadataDocument implements Well
         this.setRelSetupForProgramme(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/triggers"));
     }
 
-
     @JsonProperty("relUseNetworkOrFacility")
     public List<Link> getRelUseNetworkOrFacility() {
         return Optional.ofNullable(relUseNetworkOrFacility)
             .orElseGet(Collections::emptyList);
     }
-
 
     @JsonProperty("relSetupForProgramme")
     public List<Link> getRelSetupForProgramme() {

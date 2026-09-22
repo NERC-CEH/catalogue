@@ -37,6 +37,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
@@ -45,6 +46,8 @@ import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.PendingEmbeddingService;
 
 @Slf4j
 @Configuration
@@ -124,12 +127,14 @@ public class IndexingServicesConfig {
             DocumentRepository documentRepository,
             JenaLookupService jenaLookupService,
             SolrClient solrClient,
-            VocabularyService vocabularyService
+            VocabularyService vocabularyService,
+            Optional<PendingEmbeddingService> pendingEmbeddingService
             ) {
         val metadataDocumentGenerator = new SolrIndexMetadataDocumentGenerator(
                 codeLookupService,
                 documentIdentifierService,
-                vocabularyService
+                vocabularyService,
+                pendingEmbeddingService
                 );
         val linkDocumentGenerator = new SolrIndexLinkDocumentGenerator();
         linkDocumentGenerator.setRepository(documentRepository);
@@ -142,6 +147,7 @@ public class IndexingServicesConfig {
             .register(MonitoringActivity.class, new SolrIndexMonitoringActivityGenerator(metadataDocumentGenerator))
             .register(MonitoringNetwork.class, new SolrIndexMonitoringNetworkGenerator(metadataDocumentGenerator))
             .register(MonitoringProgramme.class, new SolrIndexMonitoringProgrammeGenerator(metadataDocumentGenerator))
+            .register(ResearchActivity.class, new SolrIndexResearchActivityGenerator(metadataDocumentGenerator))
             .register(LinkDocument.class, linkDocumentGenerator)
             .register(MetadataDocument.class, metadataDocumentGenerator);
 

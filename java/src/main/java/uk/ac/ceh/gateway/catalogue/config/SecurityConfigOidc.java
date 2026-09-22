@@ -8,7 +8,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import uk.ac.ceh.components.userstore.springsecurity.AnonymousUserAuthenticationFilter;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.CatalogueUserOidcUserService;
@@ -49,7 +48,9 @@ public class SecurityConfigOidc {
                         .oidcUserService(new CatalogueUserOidcUserService()) // Set OIDC user service for OAuth2 login
                 )
             )
-            .csrf(AbstractHttpConfigurer::disable) // Disable Cross-Site Request Forgery (CSRF) protection
+            // See AdminDeleteCsrfCustomizer: CSRF stays off everywhere except the admin delete route,
+            // shared with SecurityConfig/SecurityConfigCognito so the filter chains cannot drift apart.
+            .csrf(AdminDeleteCsrfCustomizer::configure)
             .build();
     }
 

@@ -117,10 +117,10 @@
     [/#if]
     [#if lineMode]
       WIDTH 1.0
-      MINSIZE 1
-      MAXSIZE 6
-      LINECAP "round"
-      LINEJOIN "round"
+      MINWIDTH 1
+      MAXWIDTH 6
+      LINECAP butt
+      LINEJOIN bevel
     [/#if]
   END
 [/#macro]

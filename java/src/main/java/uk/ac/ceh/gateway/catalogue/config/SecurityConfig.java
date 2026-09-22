@@ -11,7 +11,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import uk.ac.ceh.components.userstore.springsecurity.AnonymousUserAuthenticationFilter;
@@ -47,7 +46,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated()
                 .anyRequest().permitAll()
             )
-            .csrf(AbstractHttpConfigurer::disable)
+            // See AdminDeleteCsrfCustomizer: CSRF stays off everywhere except the admin delete route,
+            // and this same customiser is shared with SecurityConfigOidc/SecurityConfigCognito so the
+            // three filter chains cannot drift out of sync again.
+            .csrf(AdminDeleteCsrfCustomizer::configure)
             .build();
     }
 }

@@ -31,6 +31,7 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -209,6 +210,52 @@ class SolrIndexingServiceTest {
     }
 
     @Test
+    @DisplayName("commits part way through a large rebuild rather than only at the end")
+    @SneakyThrows
+    void commitsInBatchesForLargeRebuilds() {
+        //Given
+        val revId = "Latest";
+        val documents = documentNames(SolrIndexingService.COMMIT_BATCH_SIZE + 1);
+        val doc = new GeminiDocument();
+        given(reader.readBundle(anyString(), eq(revId))).willReturn(doc);
+        given(indexGenerator.generateIndex(doc)).willReturn(new SolrIndex());
+
+        //When
+        service.indexDocuments(documents, revId);
+
+        //Then
+        verify(solrClient, times(2)).commit(COLLECTION);
+    }
+
+    @Test
+    @DisplayName("continues indexing later batches when an earlier batch has a failure")
+    @SneakyThrows
+    void continuesIndexingAfterAFailedBatch() {
+        //Given
+        val revId = "Latest";
+        val documents = documentNames(SolrIndexingService.COMMIT_BATCH_SIZE + 2);
+        val doc = new GeminiDocument();
+        given(reader.readBundle(anyString(), eq(revId))).willReturn(doc);
+        given(reader.readBundle("doc1", revId)).willThrow(new IllegalArgumentException("broken"));
+        given(indexGenerator.generateIndex(doc)).willReturn(new SolrIndex());
+
+        //When
+        assertThrows(DocumentIndexingException.class, () ->
+            service.indexDocuments(documents, revId)
+        );
+
+        //Then
+        verify(solrClient, times(SolrIndexingService.COMMIT_BATCH_SIZE + 1))
+            .addBean(eq(COLLECTION), any(SolrIndex.class));
+    }
+
+    private List<String> documentNames(int count) {
+        return IntStream.rangeClosed(1, count)
+            .mapToObj(i -> "doc" + i)
+            .toList();
+    }
+
+    @Test
     public void checkThatCanRemoveIndexForSpecificDocuments() throws DocumentIndexingException, SolrServerException, IOException, UnknownContentTypeException {
         //Given
         List<String> documents = Arrays.asList("doc1", "doc2", "doc3");
@@ -249,6 +296,18 @@ class SolrIndexingServiceTest {
 
         //Then
         assertFalse(isEmpty);
+    }
+
+    @Test
+    @DisplayName("an unreachable Solr surfaces as an indexing exception")
+    @SneakyThrows
+    void unreachableSolrThrowsDocumentIndexingException() {
+        //Given
+        given(solrClient.query(eq(COLLECTION), any(SolrQuery.class)))
+            .willThrow(new IOException("Connection refused"));
+
+        //When, Then
+        assertThrows(DocumentIndexingException.class, () -> service.isIndexEmpty());
     }
 
     @Test

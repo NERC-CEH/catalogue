@@ -165,8 +165,7 @@
             "@type": "Person",
             "name": "Duck, D.",
             "familyName": "Duck",
-            "givenName": "Donald",
-            "email": "donald@example.com"
+            "givenName": "Donald"
         },
         {
             "@id": "https://example.com/citations/0",

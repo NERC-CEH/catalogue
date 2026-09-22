@@ -68,7 +68,7 @@ class NercWafControllerTest extends AbstractMvcTest {
         givenPublicDocuments();
 
         //when
-        mvc.perform(get("/documents/nerc/waf/"))
+        mvc.perform(get("/documents/nerc/waf"))
             .andExpect(status().isOk())
             .andExpect(view().name("/html/waf"))
             .andExpect(model().attribute("files", List.of("a.xml", "b.xml", "c.xml")));

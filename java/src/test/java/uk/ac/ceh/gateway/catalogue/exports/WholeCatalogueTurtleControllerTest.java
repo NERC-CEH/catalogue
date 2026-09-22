@@ -38,7 +38,7 @@ class WholeCatalogueTurtleControllerTest extends AbstractMvcTest {
         mvc.perform(get("/{catalogueKey}/catalogue.ttl", catalogueKey))
             .andExpectAll(
                 status().isOk(),
-                content().contentType("text/turtle")
+                content().contentType("text/turtle;charset=UTF-8")
             );
     }
 
@@ -53,7 +53,7 @@ class WholeCatalogueTurtleControllerTest extends AbstractMvcTest {
         mvc.perform(get("/catalogue.ttl"))
             .andExpectAll(
                 status().isOk(),
-                content().contentType("text/turtle")
+                content().contentType("text/turtle;charset=UTF-8")
             );
     }
 

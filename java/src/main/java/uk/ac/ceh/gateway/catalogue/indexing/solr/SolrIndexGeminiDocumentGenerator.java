@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexMetadataDocumentGenerator.grab;
 
@@ -55,7 +57,7 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setAuthorGivenName(grab(document.getAuthors(), ResponsibleParty::getGivenName))
             .setAuthorFamilyName(grab(document.getAuthors(), ResponsibleParty::getFamilyName))
             .setAuthorFullName(grab(document.getAuthors(), ResponsibleParty::getFullName))
-            .setAuthorOrcid(grab(document.getAuthors(), ResponsibleParty::getNameIdentifier))
+            .setAuthorOrcid(grab(document.getAuthors(), ResponsibleParty::getOrcid))
             .setAuthorRor(grab(document.getAuthors(), ResponsibleParty::getOrganisationIdentifier))
             .setKeywordsInstrument(grab(document.getKeywordsInstrument(), Keyword::getValue))
             .setObservedPropertyValue(grab(getObservedProperty(document), ObservedProperty::getValue))
@@ -70,7 +72,7 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setGivenName(grab(document.getContacts(), ResponsibleParty::getGivenName))
             .setFamilyName(grab(document.getContacts(), ResponsibleParty::getFamilyName))
             .setFullName(grab(document.getContacts(), ResponsibleParty::getFullName))
-            .setOrcid(grab(document.getContacts(), ResponsibleParty::getNameIdentifier))
+            .setOrcid(grab(document.getContacts(), ResponsibleParty::getOrcid))
             .setOrganisation(grab(document.getContacts(), ResponsibleParty::getOrganisationName))
             .setRor(grab(document.getContacts(), ResponsibleParty::getOrganisationIdentifier))
             .setLicence(getLicence(document))
@@ -82,6 +84,7 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setTopic(topicIndexer.index(document))
             .setVersion(document.getVersion())
             .setDataFormat(grab(document.getDistributionFormats(), DistributionInfo::getName))
+            .setTemporalExtentText(formatTemporalExtents(document.getTemporalExtents()))
             ;
     }
 
@@ -98,6 +101,24 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 String uri = k.getUri();
                 return uri.matches(OGL_PATTERN1) || uri.matches(OGL_PATTERN2);
             });
+    }
+
+    String formatTemporalExtents(List<TimePeriod> extents) {
+        if (extents == null || extents.isEmpty()) return null;
+        return extents.stream()
+                .map(this::formatPeriod)
+                .filter(s -> s != null)
+                .collect(Collectors.joining("; "));
+    }
+
+    private String formatPeriod(TimePeriod p) {
+        if (p.getBegin() != null && p.getEnd() != null)
+            return "Data collected from " + p.getBegin().getYear() + " to " + p.getEnd().getYear();
+        if (p.getBegin() != null)
+            return "Data collection started in " + p.getBegin().getYear();
+        if (p.getEnd() != null)
+            return "Data available up to " + p.getEnd().getYear();
+        return null;
     }
 
     private List<ObservedProperty> getObservedProperty(GeminiDocument document) {

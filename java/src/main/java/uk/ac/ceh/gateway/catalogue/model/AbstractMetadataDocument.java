@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
@@ -31,20 +32,34 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
     private Set<Relationship> relationships;
     private List<Keyword> keywords;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relRelation;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relIsRequiredBy;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relRequires;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relPartOf;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relHasPart;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
+    private List<Link> relHasOutput;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
+    private List<Link> relIsOutputOf;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relAll;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relReplaces;
     @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relSource;
 
     public Set<Relationship> getRelationships() {
@@ -87,20 +102,10 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelRelation(List<Link> relRelation) {
-        this.relRelation = relRelation;
-    }
-
     @JsonProperty("relIsRequiredBy")
     public List<Link> getRelIsRequiredBy() {
         return Optional.ofNullable(relIsRequiredBy)
             .orElseGet(Collections::emptyList);
-    }
-
-    @JsonIgnore
-    public void setRelIsRequiredBy(List<Link> relIsRequiredBy) {
-        this.relIsRequiredBy = relIsRequiredBy;
     }
 
     @JsonProperty("relRequires")
@@ -109,20 +114,10 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelRequires(List<Link> relRequires) {
-        this.relRequires = relRequires;
-    }
-
     @JsonProperty("relPartOf")
     public List<Link> getRelPartOf() {
         return Optional.ofNullable(relPartOf)
             .orElseGet(Collections::emptyList);
-    }
-
-    @JsonIgnore
-    public void setRelPartOf(List<Link> relPartOf) {
-        this.relPartOf = relPartOf;
     }
 
     @JsonProperty("relHasPart")
@@ -131,9 +126,16 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelHasPart(List<Link> relHasPart) {
-        this.relHasPart = relHasPart;
+    @JsonProperty("relHasOutput")
+    public List<Link> getRelHasOutput() {
+        return Optional.ofNullable(relHasOutput)
+            .orElseGet(Collections::emptyList);
+    }
+
+    @JsonProperty("relIsOutputOf")
+    public List<Link> getRelIsOutputOf() {
+        return Optional.ofNullable(relIsOutputOf)
+            .orElseGet(Collections::emptyList);
     }
 
     @JsonProperty("relAll")
@@ -142,31 +144,16 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelAll(List<Link> relAll) {
-        this.relAll = relAll;
-    }
-
     @JsonProperty("relReplaces")
     public List<Link> getRelReplaces() {
         return Optional.ofNullable(relReplaces)
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonIgnore
-    public void setRelReplaces(List<Link> relReplaces) {
-        this.relReplaces = relReplaces;
-    }
-
     @JsonProperty("relSource")
     public List<Link> getRelSource() {
         return Optional.ofNullable(relSource)
             .orElseGet(Collections::emptyList);
-    }
-
-    @JsonIgnore
-    public void setRelSource(List<Link> relSource) {
-        this.relSource = relSource;
     }
 
     @Override

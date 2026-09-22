@@ -37,17 +37,32 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
     private final VocabularyService vocabularyService;
+    private final Optional<PendingEmbeddingService> pendingEmbeddingService;
+
+    // Convenience constructor for callers with no embedding pipeline (tests and
+    // non-vector-search contexts). @RequiredArgsConstructor generates the 4-arg form
+    // used when a PendingEmbeddingService bean is available (vector-search profile).
+    public SolrIndexMetadataDocumentGenerator(
+            CodeLookupService codeLookupService,
+            DocumentIdentifierService identifierService,
+            VocabularyService vocabularyService) {
+        this(codeLookupService, identifierService, vocabularyService, Optional.empty());
+    }
 
     @Override
     public SolrIndex generateIndex(MetadataDocument document) {
         log.debug("{} is a {}, {}", document.getId(), codeLookupService.lookup("metadata.resourceType", document.getType()), codeLookupService.lookup("metadata.recordType", document.getType()));
-        return new SolrIndex()
+        SolrIndex index = new SolrIndex()
             .setAssistResearchThemes(grab(getKeywordsByVocabulary(document, VocabularyFacet.ASSIST_RESEARCH_THEMES.getFacetName()), Keyword::getValue))
             .setAssistTopics(grab(getKeywordsByVocabulary(document, VocabularyFacet.ASSIST_TOPICS.getFacetName()), Keyword::getValue))
             .setCatalogue(document.getCatalogue())
             .setCatalogueView(getCatalogueView(document))
             .setDescription(document.getDescription())
             .setDocumentType(getDocumentType(document))
+            .setFdriCatchment(grab(getKeywordsByVocabulary(document, VocabularyFacet.FDRI_CATCHMENT.getFacetName()), Keyword::getValue))
+            .setFdriCategory(grab(getKeywordsByVocabulary(document, VocabularyFacet.FDRI_CATEGORY.getFacetName()), Keyword::getValue))
+            .setFdriSpatialScale(first(getKeywordsByVocabulary(document, VocabularyFacet.FDRI_SPATIAL_SCALE.getFacetName()), Keyword::getValue))
+            .setFdriTimeseriesData(first(getKeywordsByVocabulary(document, VocabularyFacet.FDRI_TIMESERIES.getFacetName()), Keyword::getValue))
             .setIdentifier(identifierService.generateFileId(document.getId()))
             .setInmsScale(inmsScale(document))
             .setInmsTopic(grab(getKeywordsByVocabulary(document, VocabularyFacet.TOPIC.getFacetName()), Keyword::getValue))
@@ -74,6 +89,12 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                     .orElse(Date.from(Instant.EPOCH))
             )
             ;
+
+        // Enqueue for asynchronous embedding. Subtype generators (Gemini, etc.) chain
+        // further setters onto this same SolrIndex instance after we return, and flush()
+        // runs later, so the queued reference sees the fully-enriched document.
+        pendingEmbeddingService.ifPresent(service -> service.mark(document.getId(), index));
+        return index;
     }
 
     private String getRecordType(MetadataDocument document) {
@@ -134,6 +155,16 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
 
     public static <T> List<String> grab(T item, Function<? super T, String> mapper ) {
         return grab(Collections.singletonList(item), mapper);
+    }
+
+    // Solr fields declared multiValued="false" can hold only one value. Where a
+    // record has been tagged with several terms from a single-valued vocabulary,
+    // index the first and discard the rest rather than failing the whole document.
+    private static <T> String first(Collection<T> list, Function<? super T, String> mapper) {
+        return grab(list, mapper)
+            .stream()
+            .findFirst()
+            .orElse(null);
     }
 
     private List<Keyword> getInmsScaleKeywords(MetadataDocument document) {

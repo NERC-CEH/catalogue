@@ -1,12 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
 import freemarker.template.Configuration;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -14,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.bind.annotation.RequestParam;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -25,18 +28,27 @@ import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
+import uk.ac.ceh.gateway.catalogue.search.SemanticSearcher;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
+import static org.assertj.core.api.Assertions.tuple;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UNPRIVILEGED_USERNAME;
@@ -57,6 +69,7 @@ class SearchControllerTest extends AbstractMvcTest {
     @MockitoBean(name="permission") private PermissionService permissionService;
     @MockitoBean private ProfileService profileService;
     @MockitoBean private Searcher searcher;
+    @MockitoBean private SemanticSearcher semanticSearcher;
     @Autowired Configuration configuration;
 
     private final String catalogueKey = "eidc";
@@ -110,7 +123,8 @@ class SearchControllerTest extends AbstractMvcTest {
             allCatalogues,
             Collections.emptyList(),
             null,
-            "asc"
+            "asc",
+            false
         );
         given(searcher.search(
             any(), any(), any(), any(), any(), anyInt(), anyInt(), any(),
@@ -159,7 +173,8 @@ class SearchControllerTest extends AbstractMvcTest {
             eidc,
             relatedSearches,
             "publicationDate",
-            "desc"
+            "desc",
+            false
         );
         given(searcher.search(
             any(),
@@ -218,6 +233,46 @@ class SearchControllerTest extends AbstractMvcTest {
         )
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    /**
+     * The regression test for dri-one #260. Everything the search API publishes - facet URLs, the
+     * prev/next links, the related searches - is built on {@code request.getRequestURL()}, so the
+     * forwarded headers the proxy sends decide whether those links work. When the scheme said
+     * {@code http} while the port said {@code 443}, every facet URL came back as
+     * {@code http://catalogue.ceh.ac.uk:443/...} and answered 400: a plaintext request to the TLS port.
+     *
+     * <p>Nothing in this repo can be asserted about the proxy, but this can: given the headers a
+     * correct proxy sends, the base URL must come out as https on the default port, with no port in it.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("GET /{catalogue}/documents builds published URLs from the forwarded headers")
+    void searchUrlsHonourForwardedHeaders() {
+        //given
+        givenSearchResults();
+
+        //when the request arrives as the proxy forwards it, TLS having been terminated at the ingress
+        mvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .queryParam("term", "carbon")
+                .header("X-Forwarded-Proto", "https")
+                .header("X-Forwarded-Port", "443")
+                .header("X-Forwarded-Host", "catalogue.ceh.ac.uk")
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk());
+
+        //then
+        val endpoint = ArgumentCaptor.forClass(String.class);
+        verify(searcher).search(
+            endpoint.capture(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any(), any()
+        );
+        assertThat(
+            "published URLs must be https with no port, or every facet link is a 400",
+            endpoint.getValue(),
+            equalTo("https://catalogue.ceh.ac.uk/eidc/documents")
+        );
     }
 
     @Test
@@ -354,4 +409,132 @@ class SearchControllerTest extends AbstractMvcTest {
             .andExpect(status().isBadRequest());
     }
 
+    @Test
+    @DisplayName("GET /{catalogue}/documents?semantic=true routes to SemanticSearcher")
+    @SneakyThrows
+    void semanticSearchRoutesToSemanticSearcher() {
+        //given
+        givenCatalogue();
+        val searchResults = new SearchResults(
+            5, "river", 1, 20, "http://localhost/eidc/documents",
+            null, null, null, null, null,
+            Collections.emptyList(), Collections.emptyList(), eidc, Collections.emptyList(), null, "asc", false
+        );
+        given(semanticSearcher.search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any()))
+            .willReturn(searchResults);
+
+        //when/then
+        mvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .accept(MediaType.APPLICATION_JSON)
+                .param("term", "river")
+                .param("semantic", "true")
+        )
+            .andExpect(status().isOk());
+
+        verify(semanticSearcher).search(any(), any(), eq("river"), any(), any(), anyInt(), anyInt(), any(), eq(catalogueKey));
+        verify(searcher, never()).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("GET /{catalogue}/documents?semantic=true passes facet filters to SemanticSearcher")
+    @SneakyThrows
+    void semanticSearchPassesFacetFilters() {
+        //given
+        givenCatalogue();
+        val searchResults = new SearchResults(
+            5, "river", 1, 20, "http://localhost/eidc/documents",
+            null, null, null, null, null,
+            Collections.emptyList(), Collections.emptyList(), eidc, Collections.emptyList(), null, "asc", false
+        );
+        given(semanticSearcher.search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any()))
+            .willReturn(searchResults);
+
+        //when
+        mvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .accept(MediaType.APPLICATION_JSON)
+                .param("term", "river")
+                .param("semantic", "true")
+                .param("facet", "topic|Hydrology")
+        )
+            .andExpect(status().isOk());
+
+        //then the controller used to drop these, so a facet click changed nothing in semantic mode
+        ArgumentCaptor<List<FacetFilter>> filters = ArgumentCaptor.forClass(List.class);
+        verify(semanticSearcher).search(any(), any(), eq("river"), any(), any(), anyInt(), anyInt(),
+            filters.capture(), eq(catalogueKey));
+        org.assertj.core.api.Assertions.assertThat(filters.getValue())
+            .extracting(FacetFilter::getField, FacetFilter::getValue)
+            .containsExactly(tuple("topic", "Hydrology"));
+    }
+
+    @Test
+    @DisplayName("GET /{catalogue}/documents?semantic=false falls back to BM25 searcher")
+    @SneakyThrows
+    void semanticFalseUsesRegularSearcher() {
+        //given
+        givenSearchResults();
+        givenCatalogue();
+
+        //when/then
+        mvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .accept(MediaType.APPLICATION_JSON)
+                .param("semantic", "false")
+        )
+            .andExpect(status().isOk());
+
+        verify(searcher).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any(), any());
+        verify(semanticSearcher, never()).search(any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any());
+    }
+
+    @Test
+    @DisplayName("semanticEnabled=true in JSON when SemanticSearcher bean is present")
+    @SneakyThrows
+    void semanticEnabledTrueWhenSemanticSearcherPresent() {
+        //given
+        givenSearchResults();
+        givenCatalogue();
+
+        //when/then
+        mvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.semanticEnabled", is(true)));
+    }
+
+    @Test
+    @DisplayName("The sortField OpenAPI allowableValues match the set the query actually accepts")
+    void openApiSortFieldValuesMatchTheAllowList() {
+        int checked = 0;
+        for (val method : SearchController.class.getDeclaredMethods()) {
+            for (val parameter : method.getParameters()) {
+                val requestParam = parameter.getAnnotation(RequestParam.class);
+                if (requestParam == null || !SearchController.SORT_FIELD_PARAM.equals(requestParam.value())) {
+                    continue;
+                }
+                val documented = parameter.getAnnotation(Parameter.class);
+                assertThat(
+                    "sortField on " + method.getName() + " should document its allowed values",
+                    documented,
+                    is(notNullValue())
+                );
+                assertThat(
+                    "OpenAPI allowableValues on " + method.getName()
+                        + " have drifted from SearchQuery.SORTABLE_FIELDS",
+                    Set.of(documented.schema().allowableValues()),
+                    equalTo(SearchQuery.SORTABLE_FIELDS)
+                );
+                checked++;
+            }
+        }
+        assertThat(
+            "both search endpoints should expose a documented sortField parameter",
+            checked,
+            equalTo(2)
+        );
+    }
 }

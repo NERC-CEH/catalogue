@@ -42,7 +42,7 @@ export default _.template(`
     </div>
 
     <div class="col-lg-2">
-        <select data-name='type' <%= data.disabled%>>
+        <select class="form-select" data-name='type' <%= data.disabled%>>
         <% _.each(data.types, function(d) {%>
         <option value="<%=d.value%>" <%= _.isString(data.type) && d.value===data.type.toUpperCase() ? 'selected="selected"': '' %>><%=d.name%></option>
         <%});%>

@@ -36,7 +36,7 @@ export default _.template(`
         <label for="metadataStandard<%= data.index %>Conformity">Conformity</label>
     </div>
     <div class="col-lg-10">
-        <select data-name="conformity" id="metadataStandard<%= data.index %>Conformity" >
+        <select data-name="conformity" id="metadataStandard<%= data.index %>Conformity" class="form-select">
             <option value="" selected >- Select -</option>
             <option value="conformant">Conformant</option>
             <option value="nonconformant">Not conformant</option>

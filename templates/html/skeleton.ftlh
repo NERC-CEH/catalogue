@@ -29,6 +29,9 @@
         <meta name="og.description" content="${description?replace("\n", " ")}">
       </#if>
       <title>${title}<#if catalogue?has_content> - ${catalogue.title}</#if></title>
+      <#-- The proxy serves /favicon.ico in front of every environment, so point at it rather than at
+           a catalogue logo; locally the same path is served by the compose nginx. -->
+      <link rel="icon" href="/favicon.ico">
       <link rel="stylesheet" type="text/css" href="/static/css/style-<#if catalogue?has_content>${catalogue.id}<#else>${catalogues.defaultCatalogue().id}</#if>.css">
 
       <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>

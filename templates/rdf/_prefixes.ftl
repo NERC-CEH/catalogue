@@ -8,7 +8,6 @@ PREFIX dcat: <http://www.w3.org/ns/dcat#>
 PREFIX dcmitype: <http://purl.org/dc/dcmitype/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-PREFIX vcard: <http://www.w3.org/2006/vcard/ns#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX odrs: <http://schema.theodi.org/odrs#>
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
@@ -16,3 +15,6 @@ PREFIX sdo: <https://schema.org/>
 PREFIX ef: <http://www.w3.org/2015/03/inspire/ef/>
 PREFIX doo: <https://digital.ceh.ac.uk/ontology/doo/>
 PREFIX adms: <http://www.w3.org/ns/adms#>
+PREFIX frapo: <http://purl.org/cerif/frapo/>
+PREFIX pro: <http://purl.org/spar/pro/>
+PREFIX scoro: <http://purl.org/spar/scoro/>

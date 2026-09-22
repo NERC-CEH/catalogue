@@ -53,6 +53,73 @@ Local environment overrides can be placed in `override.env`.
 ## Enabling different features
 [Configure profiles](docs/profiles.md)
 
+## Semantic (vector) search
+
+Semantic search uses vector embeddings via Amazon Bedrock to find conceptually related records,
+even when search terms don't match document keywords exactly.
+
+Activate with the `vector-search` Spring profile and AWS Bedrock credentials:
+
+```bash
+# override.env
+SPRING_PROFILES_ACTIVE=development,server-eidc,search-basic,cache,service-agreement,upload-simple,vector-search
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+AWS_REGION=eu-west-2
+```
+
+Once active, users with access see a **Semantic search** toggle below the search box. Alternatively,
+add `?semantic=true` directly to any search URL:
+
+```
+GET /eidc/documents?term=freshwater+invertebrate+monitoring&semantic=true
+```
+
+**Access control:** restrict the toggle to a specific Crowd group by setting
+`catalogue.semantic.group=GROUP_NAME` in `override.env`. Leave empty (default) to allow
+all users.
+
+**Embedding enrichment:** to include text from supporting PDF/Word/RTF documents in the
+embedding, mount them into the container and set the location property:
+
+```yaml
+# docker-compose.yml catalogue service
+volumes:
+  - /host/path/supporting-docs:/var/ceh-catalogue/supporting-documents:ro
+environment:
+  CATALOGUE_SUPPORTING_DOCUMENTS_LOCATION: /var/ceh-catalogue/supporting-documents
+```
+
+Supporting documents are expected at `{location}/{documentId}/` (one subdirectory per record).
+Up to 5 documents (4 000 chars each) are extracted per record. If the property is absent,
+extraction is disabled and embeddings use metadata fields only.
+
+Documents without embeddings (e.g. newly indexed before the first flush) are excluded from
+semantic results but remain fully searchable via BM25. Embeddings are generated asynchronously
+every 5 minutes (configurable via `catalogue.embedding.flush-delay`).
+
+After changing `solr/documents/conf/managed-schema`, trigger a full reindex via the admin
+`/index` endpoint so all documents receive vector embeddings.
+
+See `docs/vector-search-mcp.md` for full technical details.
+
+## MCP server
+
+The MCP server exposes catalogue search to external LLMs (Claude Desktop, etc.) using the
+Model Context Protocol over SSE.
+
+Add `mcp-server` to `SPRING_PROFILES_ACTIVE`:
+
+```bash
+SPRING_PROFILES_ACTIVE=development,server-eidc,search-basic,cache,service-agreement,upload-simple,mcp-server
+```
+
+Available endpoint:
+- `/mcp` — Streamable HTTP transport (the default since Spring AI 2.0; SSE is deprecated)
+
+Available tools: `searchCatalogue`, `semanticSearch` (requires `vector-search` profile),
+`getDocument`, `listCatalogues`.
+
 ## Usernames and Passwords
 
 You will need to create a `secrets.env` file with the following. Ask one of the dev team for access to Keypass to retrieve the values. `JIRA_TOKEN` is a JIRA Personal Access Token generated for the `eidc_ingest` account (Profile → Personal Access Tokens in JIRA).

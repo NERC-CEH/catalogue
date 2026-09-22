@@ -38,7 +38,7 @@ class GeminiWafControllerTest extends AbstractMvcTest {
 
         //When
         mvc.perform(
-            get("/documents/gemini/waf/")
+            get("/documents/gemini/waf")
         )
             .andExpect(status().isOk())
             .andExpect(view().name("/html/waf"))

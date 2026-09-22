@@ -27,15 +27,18 @@ import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.*;
 public class MonitoringQualityService implements MetadataQualityService {
     private final DocumentReader documentReader;
     private final Configuration config;
+    private final UriChecks uriChecks;
 
     private static final TypeRef<Map<String, String>> typeRefStringString = new TypeRef<>() {};
     private static final TypeRef<List<Map<String, String>>> typeRefListStringString = new TypeRef<>() {};
     private static final DateFormat operatingPeriodFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public MonitoringQualityService(
-            @NonNull DocumentReader documentReader
+            @NonNull DocumentReader documentReader,
+            @NonNull UriChecks uriChecks
     ) {
         this.documentReader = documentReader;
+        this.uriChecks = uriChecks;
         this.config = Configuration.defaultConfiguration()
             .jsonProvider(new JacksonJsonProvider())
             .mappingProvider(new JacksonMappingProvider())
@@ -52,6 +55,7 @@ public class MonitoringQualityService implements MetadataQualityService {
             val parsedMeta = JsonPath.parse(documentReader.read(id, "meta"), config);
 
             val checks = checkKeywords(parsedDoc).collect(Collectors.toCollection(ArrayList::new));
+            checks.addAll(uriChecks.check(parsedDoc, URI_FIELDS));
 
             val docType = parsedMeta.read("$.documentType", String.class);
 
@@ -196,4 +200,30 @@ public class MonitoringQualityService implements MetadataQualityService {
             }
         });
     }
+
+    /**
+     * URI-bearing fields on a monitoring record, checked so that a malformed or
+     * non-canonical value gets reported to an editor. See {@link UriChecks}.
+     *
+     * <p>Note these are <em>not</em> all emitted as RDF: of the fields below only
+     * {@code environmentalDomain[*].uri} reaches the templates under
+     * {@code templates/rdf/monitoring/} (as {@code ef:mediaMonitored}). The rest are
+     * checked because a broken URI is worth correcting wherever it is used, not
+     * because it would break the linked data.
+     */
+    private static Map<String, String> uriFields() {
+        val fields = new LinkedHashMap<String, String>();
+        fields.put("$.keywords[*].uri", "Keyword URI");
+        fields.put("$.keywordsParameters[*].uri", "Parameter keyword URI");
+        fields.put("$.environmentalDomain[*].uri", "Environmental domain URI");
+        fields.put("$.purposeOfCollection[*].uri", "Purpose of collection URI");
+        fields.put("$.facilityType.uri", "Facility type URI");
+        fields.put("$.responsibleParties[*].nameIdentifier", "ORCID on responsibleParties");
+        fields.put("$.responsibleParties[*].organisationIdentifier", "Organisation identifier on responsibleParties");
+        fields.put("$.linksData[*].url", "Data link URL");
+        fields.put("$.linksOther[*].url", "Other link URL");
+        return Collections.unmodifiableMap(fields);
+    }
+
+    private static final Map<String, String> URI_FIELDS = uriFields();
 }

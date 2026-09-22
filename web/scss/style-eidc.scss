@@ -159,7 +159,6 @@ a#atlwdg-trigger {
     }
 }
 
-
 /*
 Everything below this point is to temporarily redefine styles
 When UKCEH brand colours are approved for EIDC, they can be deleted
@@ -178,4 +177,17 @@ When UKCEH brand colours are approved for EIDC, they can be deleted
     --bs-btn-bg: var(--eidc-blue);
     --bs-btn-hover-bg: var(--eidc-orange);
     --bs-btn-hover-color: white;
+}
+
+.metadata {
+    .ukcehcards {
+        --_ukcehcard-border-colour: var(--eidc-blue);
+        --_ukcehcard-icon-background-colour: var(--eidc-blue);
+
+        a.ukcehcard:hover {
+            --_ukcehcard-background-colour:var(--eidc-blue);
+            --_ukcehcard-icon-colour: var(--eidc-blue);
+            --_ukcehcard-icon-background-colour: white;
+        }
+    }
 }

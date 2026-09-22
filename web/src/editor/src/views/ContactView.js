@@ -54,6 +54,7 @@ export default ObjectInputView.extend({
     }
 
     this.$('select.role-select').val(this.model.get('role'))
+    this.$('select.contributorRole-select').val(this.model.get('contributorRole'))
     this.$('select.honorificPrefix').val(this.model.get('honorificPrefix'))
 
     return this
