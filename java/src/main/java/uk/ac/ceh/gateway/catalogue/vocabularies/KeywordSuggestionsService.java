@@ -35,10 +35,11 @@ public class KeywordSuggestionsService {
     public KeywordSuggestionsService(
         @Qualifier("normal") RestTemplate template,
         @Value("${legilo.url}") String legiloUrl,
-        @Value("${legilo.user}") String legiloUser,
-        @Value("${legilo.password}") String legiloPassword
+        @Value("${legilo.token}") String legiloToken
     ) {
-        val authHeaders = Headers.withBasicAuth(legiloUser, legiloPassword);
+        // Legilo is reached through the SSO proxy, which authenticates programmatic
+        // callers with a personal access token (dri-one #399).
+        val authHeaders = Headers.withBearerToken(legiloToken);
         this.restClient = RestClient.builder(template)
             .baseUrl(legiloUrl)
             .defaultHeaders(headers -> headers.addAll(authHeaders))

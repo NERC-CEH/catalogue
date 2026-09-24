@@ -30,8 +30,7 @@ public class KeywordSuggestionsServiceTest {
     private MockRestServiceServer mockServer;
 
     private static final String LEGILO_URL = "http://legilo.invalid/";
-    private static final String LEGILO_USERNAME = "username";
-    private static final String LEGILO_PASSWORD = "password";
+    private static final String LEGILO_TOKEN = "legilo-token";
     private static final String FILE_ID = "360ffb95-97c9-4f76-8859-eb1a83543270";
 
     @BeforeEach
@@ -42,9 +41,14 @@ public class KeywordSuggestionsServiceTest {
         service = new KeywordSuggestionsService(
             restTemplate,
             LEGILO_URL,
-            LEGILO_USERNAME,
-            LEGILO_PASSWORD
+            LEGILO_TOKEN
         );
+    }
+
+    @Test
+    void refusesToStartWithoutAToken() {
+        assertThrows(IllegalArgumentException.class,
+            () -> new KeywordSuggestionsService(new RestTemplate(), LEGILO_URL, ""));
     }
 
     @Test
@@ -55,7 +59,7 @@ public class KeywordSuggestionsServiceTest {
         mockServer
             .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/keywords?location=eidc")))
             .andExpect(method(HttpMethod.GET))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer legilo-token"))
             .andRespond(withSuccess(keywordsResponse, MediaType.APPLICATION_JSON));
 
         //when
@@ -77,7 +81,7 @@ public class KeywordSuggestionsServiceTest {
         mockServer
             .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/keywords?location=eidc")))
             .andExpect(method(HttpMethod.GET))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer legilo-token"))
             .andRespond(withStatus(HttpStatus.UNPROCESSABLE_CONTENT));
 
         //when
@@ -95,7 +99,7 @@ public class KeywordSuggestionsServiceTest {
         mockServer
             .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/variables?use_llm=true")))
             .andExpect(method(HttpMethod.GET))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer legilo-token"))
             .andRespond(withSuccess(variablesResponse, MediaType.APPLICATION_JSON));
 
         //when
@@ -117,7 +121,7 @@ public class KeywordSuggestionsServiceTest {
         mockServer
             .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/variables?use_llm=true")))
             .andExpect(method(HttpMethod.GET))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer legilo-token"))
             .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
         //when
