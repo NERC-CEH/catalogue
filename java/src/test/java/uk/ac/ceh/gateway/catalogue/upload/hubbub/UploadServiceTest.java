@@ -54,8 +54,7 @@ class UploadServiceTest {
         service = new UploadService(
             restTemplate,
             "https://example.com/v7",
-            "hubbub",
-            "password01234",
+            "hubbub-token",
             directory.getPath()
         );
         success = IOUtils.toByteArray(
@@ -66,6 +65,12 @@ class UploadServiceTest {
     }
 
     @Test
+    void refusesToStartWithoutAToken() {
+        assertThrows(IllegalArgumentException.class,
+            () -> new UploadService(new RestTemplate(), "https://example.com/v7", " ", directory.getPath()));
+    }
+
+    @Test
     void accept() {
         //given
         mockServer
@@ -73,7 +78,7 @@ class UploadServiceTest {
             .andExpect(method(POST))
             .andExpect(queryParam("path", path))
             .andExpect(queryParam("username", username))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer hubbub-token"))
             .andRespond(withNoContent());
 
         //when
@@ -91,7 +96,7 @@ class UploadServiceTest {
             .andExpect(method(POST))
             .andExpect(queryParam("path", path))
             .andExpect(queryParam("username", username))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer hubbub-token"))
             .andRespond(withNoContent());
 
         //when
@@ -109,7 +114,7 @@ class UploadServiceTest {
             .andExpect(method(GET))
             .andExpect(queryParam("page", "1"))
             .andExpect(queryParam("size", String.valueOf(UploadService.PAGE_SIZE)))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer hubbub-token"))
             .andRespond(withSuccess(success, MediaType.APPLICATION_JSON));
 
         //when
@@ -130,7 +135,7 @@ class UploadServiceTest {
             .andExpect(method(DELETE))
             .andExpect(queryParam("path", path))
             .andExpect(queryParam("username", username))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer hubbub-token"))
             .andRespond(withNoContent());
 
         //when
@@ -148,7 +153,7 @@ class UploadServiceTest {
             .andExpect(method(GET))
             .andExpect(queryParam("page", "1"))
             .andExpect(queryParam("size", "20"))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer hubbub-token"))
             .andRespond(withSuccess(success, MediaType.APPLICATION_JSON));
 
         //when
@@ -165,7 +170,7 @@ class UploadServiceTest {
             .expect(requestTo(startsWith("https://example.com/v7/c5db2755-bdbb-470f-987b-da71d9489fd0/dropbox")))
             .andExpect(method(GET))
             .andExpect(queryParam("path", path))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer hubbub-token"))
             .andRespond(withSuccess(success, MediaType.APPLICATION_JSON));
 
         //when
@@ -182,7 +187,7 @@ class UploadServiceTest {
             .expect(requestTo(startsWith("https://example.com/v7/hash/c5db2755-bdbb-470f-987b-da71d9489fd0")))
             .andExpect(method(HttpMethod.POST))
             .andExpect(queryParam("username", username))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer hubbub-token"))
             .andRespond(withNoContent());
 
         //when
@@ -201,7 +206,7 @@ class UploadServiceTest {
             .andExpect(queryParam("path", path))
             .andExpect(queryParam("username", username))
             .andExpect(queryParam("to", DATASTORE))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer hubbub-token"))
             .andRespond(withNoContent());
 
         //when
@@ -219,7 +224,7 @@ class UploadServiceTest {
             .andExpect(method(HttpMethod.POST))
             .andExpect(queryParam("username", username))
             .andExpect(queryParam("to", DATASTORE))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer hubbub-token"))
             .andRespond(withNoContent());
 
         //when
@@ -238,7 +243,7 @@ class UploadServiceTest {
             .andExpect(queryParam("path", path))
             .andExpect(queryParam("username", username))
             .andExpect(queryParam("size", "17"))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer hubbub-token"))
             .andRespond(withNoContent());
 
         val multipartFile = new MockMultipartFile(
@@ -268,7 +273,7 @@ class UploadServiceTest {
             .andExpect(queryParam("path", "data/sub-folder1/data2.txt"))
             .andExpect(queryParam("username", username))
             .andExpect(queryParam("size", "22"))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer hubbub-token"))
             .andRespond(withNoContent());
         mockServer
             .expect(requestTo(startsWith("https://example.com/v7/register/c5db2755-bdbb-470f-987b-da71d9489fd0")))
@@ -276,7 +281,7 @@ class UploadServiceTest {
             .andExpect(queryParam("path", "data/data1.txt"))
             .andExpect(queryParam("username", username))
             .andExpect(queryParam("size", "10"))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer hubbub-token"))
             .andRespond(withNoContent());
 
         val multipartFile = new MockMultipartFile(
@@ -329,7 +334,7 @@ class UploadServiceTest {
             .andExpect(queryParam("path", expectedFilename))
             .andExpect(queryParam("username", username))
             .andExpect(queryParam("size", "17"))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer hubbub-token"))
             .andRespond(withNoContent());
         val multipartFile = new MockMultipartFile(
             "file",
@@ -354,7 +359,7 @@ class UploadServiceTest {
             .expect(requestTo(startsWith("https://example.com/v7/register/c5db2755-bdbb-470f-987b-da71d9489fd0")))
             .andExpect(method(HttpMethod.POST))
             .andExpect(queryParam("username", username))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer hubbub-token"))
             .andRespond(withNoContent());
 
         // when
@@ -372,7 +377,7 @@ class UploadServiceTest {
             .andExpect(method(HttpMethod.POST))
             .andExpect(queryParam("path", path))
             .andExpect(queryParam("username", username))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer hubbub-token"))
             .andRespond(withNoContent());
 
         //when
@@ -390,7 +395,7 @@ class UploadServiceTest {
             .andExpect(method(HttpMethod.POST))
             .andExpect(queryParam("path", path))
             .andExpect(queryParam("username", username))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer hubbub-token"))
             .andRespond(withNoContent());
 
         //when
@@ -407,7 +412,7 @@ class UploadServiceTest {
             .expect(requestTo(startsWith("https://example.com/v7/validate/c5db2755-bdbb-470f-987b-da71d9489fd0/dropbox")))
             .andExpect(method(HttpMethod.POST))
             .andExpect(queryParam("username", username))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer hubbub-token"))
             .andRespond(withNoContent());
 
         //when
