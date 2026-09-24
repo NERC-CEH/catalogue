@@ -22,26 +22,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-### Java (Gradle)
-```bash
-./gradlew :java:build          # build
-./gradlew :java:test           # all tests
-./gradlew :java:test --tests uk.ac.ceh.gateway.catalogue.search.SearchControllerTest        # single class
-./gradlew :java:test --tests uk.ac.ceh.gateway.catalogue.search.SearchControllerTest.myTest # single method
-./gradlew :java:compileJava    # compile only
-```
-
-### JavaScript (web/)
-```bash
-cd web && npm install
-npm run build-dev && npm run build-css-dev  # dev build
-npm run standard                             # lint (StandardJS)
-npm run test                                 # Karma/Jasmine tests (single run)
-npm run test-server                          # tests in watch mode
-npm run watch                                # rebuild JS on changes
-npm run watch-css                            # rebuild CSS on changes
-```
-
 ### Run the full application
 
 The primary development workflow uses Docker Compose — a single command starts all services
@@ -97,12 +77,6 @@ This is a **multi-catalogue metadata management system** for environmental/scien
 
 **Search:** Metadata is indexed into **Solr** for faceted full-text search, and into **Apache Jena** for RDF/SPARQL and linked data endpoints. Both indexes are rebuilt from the Git store. Any change to `solr/documents/conf/managed-schema` requires a full Solr reindex to take effect.
 
-**Document types** all extend `AbstractMetadataDocument`. Key types:
-- `GeminiDocument` — INSPIRE/ISO 19115 metadata (most common)
-- `CEHModel`, `CEHModelApplication` — software/model records
-- `MonitoringFacility`, `MonitoringNetwork` — EF Monitoring
-- Many others in `sa/`, `modelnerc/`, `upload/` packages
-
 **Adding a new document type** requires changes in 4 places (per README): the model class, a Freemarker template, catalogue config, and the Solr indexer.
 
 **Spring profiles** control optional features:
@@ -112,33 +86,3 @@ This is a **multi-catalogue metadata management system** for environmental/scien
 - `service-agreement`, `metrics`, etc.
 
 **Authentication** uses a `Remote-User` HTTP header (set by the nginx reverse proxy). In development, a "Dev Bar" in the UI allows masquerading as any user.
-
-### Frontend (JavaScript/Backbone + Webpack)
-
-All JS source lives in `web/src/`. Each subdirectory is a **self-contained Backbone.js micro-app** (Models, Views, Routers) bundled separately by Webpack:
-- `search/` — faceted search UI
-- `editor/` — metadata record editor (different editor views per document type)
-- `catalogue/` — browse/view records
-- `permission/` — user permission management
-- `hubbub/`, `simple-upload/` — file upload
-- `study-area/` — geographic/map-based search
-
-JavaScript tests are in `web/src/*/test/` and run with Karma + Jasmine.
-
-CSS is compiled from LESS source via `npm run build-css*`.
-
-### Container stack
-- **nginx** — reverse proxy, sets `Remote-User` header
-- **catalogue** — Spring Boot application (`dev-run` image; bind-mounts project source for live editing)
-- **web** — webpack + gulp watchers for live JS/CSS rebuilds
-- **Solr** — search index
-- **MapServer** — WMS for geospatial layers
-- **PostgreSQL** — only needed with Hubbub profile
-
-### Key libraries
-- **Server:** Spring Boot 4.1.1, Spring Security, Freemarker, Apache Solr 9 (SolrJ), Apache Jena 5, Lombok, Jackson, Hibernate Validator, EHCache, CEH Components (Git datastore + Crowd auth)
-- **Client:** Backbone.js, jQuery 3, Bootstrap 5, Leaflet 1.9, Select2, DataTables, SweetAlert2
-
-## IntelliJ setup
-
-Enable **Lombok plugin** and turn on **annotation processing** (`Settings > Build > Compiler > Annotation Processors`). Without this, the project will not compile in the IDE.
