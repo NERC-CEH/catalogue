@@ -76,7 +76,7 @@
         name.
 
         Not asserted where the contact IS the organisation. contactName and
-        organisationName are then the same string, so foaf:member would make the
+        organisationName are then the same string, so org:memberOf would make the
         organisation a member of a second node bearing its own name — 24 such
         statements in production before dri-one #334.
       -->
@@ -98,7 +98,7 @@
         one foaf:name, including one researcher's ORCID asserting a different
         person's name (dri-one #348).
 
-        foaf:member stays on both. It is not a claim about who the person is,
+        org:memberOf stays on both. It is not a claim about who the person is,
         but about what this record says of them, so it belongs with
         pro:holdsRoleInTime rather than with the name. An email address is
         asserted on neither — see the note below.
@@ -110,9 +110,9 @@
           <#if contact.givenName?has_content >foaf:givenName "${ttl.escape(contact.givenName?trim)}" ;</#if>
         </#if>
         <#if memberRor?has_content>
-          foaf:member <${memberRor}> ;
+          org:memberOf <${memberRor}> ;
         <#elseif memberOrg?has_content>
-          foaf:member ${memberOrg} ;
+          org:memberOf ${memberOrg} ;
         </#if>
       .
 

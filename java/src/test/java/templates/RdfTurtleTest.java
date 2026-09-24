@@ -1861,7 +1861,7 @@ public class RdfTurtleTest {
 
             private static final String FORMAT = "http://purl.org/dc/terms/format";
             private static final String RIGHTS = "http://purl.org/dc/terms/rights";
-            private static final String MEMBER = "http://xmlns.com/foaf/0.1/member";
+            private static final String MEMBER_OF = "http://www.w3.org/ns/org#memberOf";
             private static final String HOLDS_ROLE = "http://purl.org/spar/pro/holdsRoleInTime";
             private static final String COPYRIGHT_NOTICE = "http://schema.theodi.org/odrs#copyrightNotice";
             private static final String FOAF_NAME = "http://xmlns.com/foaf/0.1/name";
@@ -1949,7 +1949,7 @@ public class RdfTurtleTest {
 
                 template("rdf/ttl.ftl", document);
 
-                for (val property : List.of(FORMAT, RIGHTS, MEMBER, HOLDS_ROLE)) {
+                for (val property : List.of(FORMAT, RIGHTS, MEMBER_OF, HOLDS_ROLE)) {
                     val objects = allObjectsOf(property);
                     assertFalse(objects.isEmpty(), () -> property + " emitted nothing to assert about");
                     objects.forEach(object -> assertFalse(
@@ -2083,7 +2083,7 @@ public class RdfTurtleTest {
                 template("rdf/ttl.ftl", withAffiliation("orgA", "Wood", "Claire", "University of Exeter", ""));
                 template("rdf/ttl.ftl", withAffiliation("orgB", "Dodd", "Ben", "University of Exeter", ""));
 
-                val organisations = allObjectsOf(MEMBER);
+                val organisations = allObjectsOf(MEMBER_OF);
                 assertThat(
                     "one organisation named on two records is one node",
                     organisations.stream().distinct().toList().size(), equalTo(1)
@@ -2102,7 +2102,7 @@ public class RdfTurtleTest {
                     withAffiliation("orgror", "Wood", "Claire", "UK Centre for Ecology & Hydrology", "https://ror.org/00pggkr55"));
 
                 assertThat(
-                    allObjectsOf(MEMBER),
+                    allObjectsOf(MEMBER_OF),
                     equalTo(List.<RDFNode>of(createResource("https://ror.org/00pggkr55")))
                 );
                 assertFalse(
@@ -2125,8 +2125,8 @@ public class RdfTurtleTest {
                 template("rdf/ttl.ftl", document);
 
                 assertTrue(
-                    allObjectsOf(MEMBER).isEmpty(),
-                    "the contact is the organisation, so foaf:member would assert membership of a "
+                    allObjectsOf(MEMBER_OF).isEmpty(),
+                    "the contact is the organisation, so org:memberOf would assert membership of a "
                         + "second node carrying its own name"
                 );
             }
@@ -2139,7 +2139,7 @@ public class RdfTurtleTest {
 
                 assertThat(
                     "minting makes the variants visible and joinable; reconciling them is data cleanup",
-                    allObjectsOf(MEMBER).stream().distinct().toList().size(), equalTo(2)
+                    allObjectsOf(MEMBER_OF).stream().distinct().toList().size(), equalTo(2)
                 );
             }
 
@@ -2403,7 +2403,7 @@ public class RdfTurtleTest {
         private static final String FOAF_NAME = "http://xmlns.com/foaf/0.1/name";
         private static final String FAMILY_NAME = "http://xmlns.com/foaf/0.1/familyName";
         private static final String GIVEN_NAME = "http://xmlns.com/foaf/0.1/givenName";
-        private static final String MEMBER = "http://xmlns.com/foaf/0.1/member";
+        private static final String MEMBER_OF = "http://www.w3.org/ns/org#memberOf";
         private static final String HAS_EMAIL = "http://www.w3.org/2006/vcard/ns#hasEmail";
         private static final String HOLDS_ROLE = "http://purl.org/spar/pro/holdsRoleInTime";
 
@@ -2475,7 +2475,7 @@ public class RdfTurtleTest {
                 "writing record text onto a shared external identifier is what dri-one #320 "
                     + "forbids, and what accumulated 281 conflicting names in production",
                 predicatesOf(ORCID),
-                equalTo(List.of(HOLDS_ROLE, RDF_TYPE, MEMBER))
+                equalTo(List.of(HOLDS_ROLE, RDF_TYPE, MEMBER_OF))
             );
         }
 
@@ -2484,7 +2484,7 @@ public class RdfTurtleTest {
         void isniCarriesNoRecordText() {
             template("rdf/ttl.ftl", withAuthor("isni", person().nameIdentifier(ISNI).build()));
 
-            assertThat(predicatesOf(ISNI), equalTo(List.of(HOLDS_ROLE, RDF_TYPE, MEMBER)));
+            assertThat(predicatesOf(ISNI), equalTo(List.of(HOLDS_ROLE, RDF_TYPE, MEMBER_OF)));
         }
 
         @Test
@@ -2493,7 +2493,7 @@ public class RdfTurtleTest {
             template("rdf/ttl.ftl", withAuthor("orcidaff", person().nameIdentifier(ORCID).build()));
 
             val organisations = model.listObjectsOfProperty(
-                createResource(ORCID), createProperty(MEMBER)
+                createResource(ORCID), createProperty(MEMBER_OF)
             ).toList();
             assertThat(organisations.size(), equalTo(1));
 
@@ -2514,8 +2514,26 @@ public class RdfTurtleTest {
                 person().nameIdentifier(ORCID).organisationIdentifier(ROR).build()));
 
             assertThat(
-                model.listObjectsOfProperty(createResource(ORCID), createProperty(MEMBER)).toList(),
+                model.listObjectsOfProperty(createResource(ORCID), createProperty(MEMBER_OF)).toList(),
                 equalTo(List.<RDFNode>of(createResource(ROR)))
+            );
+        }
+
+        @Test
+        @DisplayName("an affiliation runs from the person to the organisation, never as foaf:member (dri-one #401)")
+        void affiliationPointsFromPersonToOrganisation() {
+            template("rdf/ttl.ftl", withAuthor("direction",
+                person().nameIdentifier(ORCID).organisationIdentifier(ROR).build()));
+
+            assertTrue(
+                model.contains(createResource(ORCID), createProperty(MEMBER_OF), createResource(ROR)),
+                "org:memberOf reads member → organisation, with the person as subject"
+            );
+            assertTrue(
+                model.listStatements(null, createProperty("http://xmlns.com/foaf/0.1/member"), (RDFNode) null)
+                    .toList().isEmpty(),
+                "foaf:member reads group → member, so person foaf:member organisation made "
+                    + "every organisation a member of its own staff"
             );
         }
 
