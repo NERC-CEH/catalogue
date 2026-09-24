@@ -7,6 +7,7 @@ PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
 PREFIX dcmitype: <http://purl.org/dc/dcmitype/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX org: <http://www.w3.org/ns/org#>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX odrs: <http://schema.theodi.org/odrs#>
