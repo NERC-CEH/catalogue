@@ -122,13 +122,13 @@ Available tools: `searchCatalogue`, `semanticSearch` (requires `vector-search` p
 
 ## Usernames and Passwords
 
-You will need to create a `secrets.env` file with the following. Ask one of the dev team for access to Keypass to retrieve the values. `JIRA_TOKEN` is a JIRA Personal Access Token generated for the `eidc_ingest` account (Profile → Personal Access Tokens in JIRA).
+You will need to create a `secrets.env` file with the following. Ask one of the dev team for access to Keypass to retrieve the values. `JIRA_TOKEN` is a JIRA Personal Access Token generated for the `eidc_ingest` account (Profile → Personal Access Tokens in JIRA). `HUBBUB_TOKEN` is a proxy personal access token for the `eidc_hubbub` account (log in to hubbub as `eidc_hubbub`, then `/sso/tokens`); against a local hubbub container any non-blank value will do.
 
 ```
 JIRA_TOKEN=
 CROWD_PASSWORD=
 DOI_PASSWORD=
-HUBBUB_PASSWORD=
+HUBBUB_TOKEN=
 FUSEKI_PASSWORD=
 ```
 
