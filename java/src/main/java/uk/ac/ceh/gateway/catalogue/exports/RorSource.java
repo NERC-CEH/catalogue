@@ -49,6 +49,28 @@ class RorSource implements AuthoritySource {
     private static final String FOAF = SourceGraphs.FOAF;
 
     /**
+     * The W3C Organization Ontology, at http rather than https: its namespace
+     * predates the https move, and a term under the wrong scheme resolves to
+     * nothing -- the trap {@code org:alternateName} fell into here once.
+     */
+    private static final String ORG = "http://www.w3.org/ns/org#";
+
+    /**
+     * How ROR's relationship types map onto published terms, always with the
+     * described organisation as subject. "predecessor" means this organisation
+     * took over from the other, so it replaces it. Types not listed here are left
+     * out rather than mapped to something close: ROR may add types, and a guess
+     * would publish a claim nobody made.
+     */
+    private static final Map<String, Property> RELATIONSHIPS = Map.of(
+        "parent", ResourceFactory.createProperty(ORG + "subOrganizationOf"),
+        "child", ResourceFactory.createProperty(ORG + "hasSubOrganization"),
+        "related", ResourceFactory.createProperty(ORG + "linkedTo"),
+        "predecessor", DCTerms.replaces,
+        "successor", DCTerms.isReplacedBy
+    );
+
+    /**
      * ROR's API, pinned to v2 explicitly. The unversioned path currently serves
      * the v2 schema, but the mapping below reads {@code names}, {@code locations}
      * and {@code external_ids} — all v2 shapes — so relying on the default would
@@ -111,7 +133,7 @@ class RorSource implements AuthoritySource {
     public List<String> vocabularies() {
         // More than ORCID's: a ROR record carries SKOS labels for its aliases,
         // owl:sameAs links to Fundref and Wikidata, and dcterms:spatial.
-        return List.of(FOAF, SKOS.getURI(), DCTerms.getURI(), OWL.getURI(), RDFS.getURI());
+        return List.of(FOAF, SKOS.getURI(), DCTerms.getURI(), OWL.getURI(), RDFS.getURI(), ORG);
     }
 
     @Override
@@ -260,6 +282,19 @@ class RorSource implements AuthoritySource {
                     "http://publications.europa.eu/resource/authority/country/" + countryCode,
                     iri);
                 break;
+            }
+        }
+
+        // Which organisations this one belongs to, and which belong to it
+        // (dri-one #413): what lets a consumer see that BBSRC and NERC are both
+        // part of UKRI. Only the link is written. ROR's label for the relative
+        // is not, because this graph describes what the catalogue cites and every
+        // IRI subject counts as described: a relative the catalogue cites has its
+        // own full description, and one it doesn't stays a bare ROR IRI.
+        for (val relationship : json.path("relationships")) {
+            val predicate = RELATIONSHIPS.get(relationship.path("type").asString());
+            if (predicate != null) {
+                addIfPublishable(description, organisation, predicate, relationship.path("id").asString(), iri);
             }
         }
 
