@@ -25,6 +25,7 @@ class SkosSourceTest {
     private static final String CAST = "http://onto.nerc.ac.uk/CAST/";
     private static final String CONCEPT = NVS + "collection/P07/current/CFSN0381/";
     private static final String NEIGHBOUR = NVS + "collection/P07/current/CFSN0382/";
+    private static final String AGROVOC_CONCEPT = "http://aims.fao.org/aos/agrovoc/c_31298";
 
     private final NvsSource nvs = new NvsSource();
     private final AgrovocSource agrovoc = new AgrovocSource();
@@ -132,12 +133,51 @@ class SkosSourceTest {
     class Transport {
 
         @Test
-        @DisplayName("NVS and AGROVOC are dereferenced, one concept per request")
+        @DisplayName("NVS is dereferenced, one concept per request")
         void dereferenced() {
             assertThat(nvs.request(List.of(CONCEPT)).uri().toString(), is(CONCEPT));
             assertThat(nvs.request(List.of(CONCEPT)).accept(), is("text/turtle"));
             assertThat(nvs.batchSize(), is(1));
             assertThat(agrovoc.batchSize(), is(1));
+        }
+
+        @Test
+        @DisplayName("AGROVOC is asked through its REST API, which answers in one hop (dri-one #414)")
+        void agrovocIsAskedThroughItsApi() {
+            val request = agrovoc.request(List.of(AGROVOC_CONCEPT));
+
+            // Dereferencing the concept IRI goes http -> https -> http .ttl ->
+            // https .ttl, and the authorities client rightly refuses the
+            // https -> http step, so every concept came back empty.
+            assertThat(request.uri().getScheme(), is("https"));
+            assertThat(request.uri().getHost(), is("agrovoc.fao.org"));
+            assertThat(request.uri().getPath(), is("/browse/rest/v1/agrovoc/data"));
+            assertThat("encoded by the source, as every query parameter is",
+                request.uri().getRawQuery(),
+                is("uri=http%3A%2F%2Faims.fao.org%2Faos%2Fagrovoc%2Fc_31298&format=text%2Fturtle"));
+            assertThat(request.accept(), is("text/turtle"));
+        }
+
+        @Test
+        @DisplayName("an AGROVOC API response is narrowed to the concept, labels intact")
+        void agrovocResponseKeepsTheConcept() {
+            // Shaped like the API's answer: the concept, and its broader concept
+            // alongside. Labels in scripts the .ttl route double-encoded.
+            val body = """
+                @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+                @prefix agrovoc: <http://aims.fao.org/aos/agrovoc/> .
+                agrovoc:c_31298 a skos:Concept ;
+                    skos:prefLabel "carboxin"@en, "карбоксин"@ru, "萎锈灵"@zh, "كربوكسين"@ar ;
+                    skos:broader agrovoc:c_338 .
+                agrovoc:c_338 a skos:Concept ;
+                    skos:prefLabel "fungicides"@en .
+                """;
+            val model = agrovoc.describe(List.of(AGROVOC_CONCEPT), body).get(AGROVOC_CONCEPT);
+
+            assertTrue(model.contains(createResource(AGROVOC_CONCEPT), SKOS.prefLabel, "карбоксин", "ru"));
+            assertTrue(model.contains(createResource(AGROVOC_CONCEPT), SKOS.prefLabel, "萎锈灵", "zh"));
+            assertFalse(model.contains(createResource("http://aims.fao.org/aos/agrovoc/c_338"), SKOS.prefLabel, "fungicides", "en"),
+                "the broader concept's own labels are not this concept's description");
         }
 
         @Test
