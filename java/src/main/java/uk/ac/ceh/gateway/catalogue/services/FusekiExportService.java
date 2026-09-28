@@ -237,16 +237,28 @@ public class FusekiExportService implements CatalogueExportService {
     /**
      * Adds every IRI this catalogue's graph refers to. The source graphs describe
      * only entities something actually cites, so this is the input to that:
-     * objects rather than subjects, since a subject in this graph is one of our
-     * own records or a node we minted.
+     * every object, and every subject outside our own namespace.
+     *
+     * <p>Subjects are mostly our own records and the nodes we mint, which no
+     * authority describes, so those stay out. A funder is the exception: the
+     * fundingDetail macro writes it only as the subject of frapo:awards, with no
+     * name of its own because the name is meant to come from ROR. Collecting
+     * objects alone meant ROR was never asked, and 43 of the catalogue's 61
+     * funders went without a name (dri-one #412).
      *
      * <p>Accumulates into the caller's set rather than returning one per model,
      * so each model can be released as soon as it has been read.
      */
-    private static void collectReferencedIris(Model model, Set<String> into) {
+    private void collectReferencedIris(Model model, Set<String> into) {
         model.listObjects().forEachRemaining(object -> {
             if (object.isURIResource()) {
                 into.add(object.asResource().getURI());
+            }
+        });
+        String ownNamespace = baseUri.endsWith("/") ? baseUri : baseUri + "/";
+        model.listSubjects().forEachRemaining(subject -> {
+            if (subject.isURIResource() && !subject.getURI().startsWith(ownNamespace)) {
+                into.add(subject.getURI());
             }
         });
     }
