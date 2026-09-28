@@ -153,7 +153,9 @@
               </#if>
 
               <div class="my-4">
-                <div class="key">Does your title contain the date(s) of the data resource?</div>
+                <div class="key">Does your title contain the date(s) of the data resource?
+                  <p>Dates are important where observations are date/time/seasonally-dependent or where observations are known to change over time (e.g. climate data, soil chemistry, spp occurrence, river flow). They may not always necessary in lab/experimental data (e.g. animal behaviour experiments)</p>
+                </div>
                 <div class="value">
                     <#if titleContainsDate??>
                         ${titleContainsDate?string('Yes', 'No')}

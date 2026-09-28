@@ -26,7 +26,9 @@ import java.util.stream.Stream;
 
 public class ServiceAgreement extends AbstractMetadataDocument {
 
-    private String depositReference, depositorName, depositorContactDetails, eidcName, eidcContactDetails, otherPoliciesOrLegislation, fileNumber, transferMethod, fileNamingConvention, policyExceptions, availability, useConstraints, supersededData, relatedDataHoldings, otherInfo, description, lineage;
+    private String depositReference, depositorName, depositorContactDetails, eidcName, eidcContactDetails, otherPoliciesOrLegislation, fileNumber, transferMethod, fileNamingConvention, policyExceptions, availability, useConstraints, supersededData, relatedDataHoldings, otherInfo, description, lineage, titleLocationExplanation, titleDateExplanation, titleAcronymExplanation;
+
+    private Boolean titleContainsLocation, titleContainsDate, titleContainsAcronym;
 
     private List<ResponsibleParty> authors;
 
@@ -53,13 +55,6 @@ public class ServiceAgreement extends AbstractMetadataDocument {
      */
     @JsonIgnore
     private boolean historical;
-
-    private Boolean titleContainsLocation;
-    private String titleLocationExplanation;
-    private Boolean titleContainsDate;
-    private String titleDateExplanation;
-    private Boolean titleContainsAcronym;
-    private String titleAcronymExplanation;
 
     @Override
     @JsonIgnore
