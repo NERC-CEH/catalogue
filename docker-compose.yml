@@ -150,7 +150,7 @@ services:
       # METRICS_DATABASE_URL was inert. It is in EIDC's SPRING_PROFILES_ACTIVE in production, so this
       # also brings local dev closer to what actually runs. Left on unconditionally: under the default
       # sqlite engine it needs nothing external, exactly as before this change.
-      SPRING_PROFILES_ACTIVE: development,server-eidc,search-basic,service-agreement,upload-simple,metrics
+      SPRING_PROFILES_ACTIVE: development,server-eidc,search-basic,service-agreement,upload-simple
     env_file:
       - path: secrets.env
         required: false
