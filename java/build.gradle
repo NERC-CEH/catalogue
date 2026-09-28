@@ -43,7 +43,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework:spring-jdbc'
+    // Replaces bare spring-jdbc: brings HikariCP and DataSourceAutoConfiguration, so the pool is built
+    // and tuned from spring.datasource.* rather than by hand. That auto-configuration applies to every
+    // profile, which does not suit a datasource that only exists under "metrics", so it is excluded on
+    // CatalogueApplication and re-imported by MetricsDatabaseConfig. Do not drop that gating without
+    // reading the comment there -- ungated, the non-metrics contexts fail at startup.
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
     // Spring Security
     implementation 'org.springframework.security:spring-security-oauth2-jose'
@@ -74,8 +79,14 @@ dependencies {
     implementation 'com.vividsolutions:jts:1.13'
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'org.hibernate.validator:hibernate-validator'
+    // Retained only for the metrics.database.engine=sqlite rollback path. Drop it, together with
+    // MetricsDatabaseConfig.SqliteMetricsDatabase and metrics.database.busy-timeout-millis, once the
+    // PostgreSQL migration (#236) has been verified in production and the rollback window closes.
     implementation 'org.xerial:sqlite-jdbc'
     implementation 'org.yaml:snakeyaml'
+
+    // Driver only — no compile-time dependency on it anywhere. Version managed by the Boot BOM.
+    runtimeOnly 'org.postgresql:postgresql'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 

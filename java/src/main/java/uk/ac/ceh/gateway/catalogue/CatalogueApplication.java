@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.scheduling.annotation.EnableAsync;
 
@@ -19,7 +20,15 @@ import org.springframework.scheduling.annotation.EnableAsync;
 // @EnableScheduling is deliberately not here: it lives on SchedulingConfig.SchedulingEnabled, behind
 // catalogue.scheduling.enabled, so the test suite can stop @Scheduled methods being registered at
 // all. On this class it applied to every @SpringBootTest in the repository. See dri-one #356.
-@SpringBootApplication
+//
+// DataSourceAutoConfiguration is excluded here and re-imported by MetricsDatabaseConfig, which is
+// @Profile("metrics"). spring-boot-starter-jdbc puts it on the auto-configuration candidate list for
+// every profile, but the only datasource in this application is the metrics one. Left enabled, the
+// contexts without that profile (DataLabs, NonEidc, most tests) would have the PostgreSQL driver on
+// the classpath, no spring.datasource.url and no embedded database to fall back on, and would fail to
+// start with "Failed to determine a suitable driver class". Excluding globally and importing inside
+// the profile keeps the datasource where it belongs; see MetricsDatabaseConfig for the detail.
+@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 public class CatalogueApplication {
 
     public static void main(String[] args) {

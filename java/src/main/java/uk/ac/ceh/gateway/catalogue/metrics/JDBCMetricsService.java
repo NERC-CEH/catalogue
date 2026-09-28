@@ -158,18 +158,46 @@ public class JDBCMetricsService implements MetricsService {
         return count == null ? 0 : count;
     }
 
+    /**
+     * Drains the in-memory counts under the lock and writes them outside it.
+     *
+     * <p>Previously the repository read and the insert-per-document in {@link #syncDBHelper} ran
+     * while holding the same monitor as {@link #recordView} and {@link #recordDownload}. Against a
+     * local SQLite file that was brief enough not to matter. Against a networked PostgreSQL it is a
+     * site-wide stall mode: a slow or unreachable database — or simply a wait for a pooled connection
+     * — holds the monitor for as long as the I/O takes, and every incoming view or download request
+     * thread blocks behind it. The read-path guard added in #232 does not cover this; it only covers
+     * reads.
+     *
+     * <p>So the critical section is now just a copy and a clear, which is bounded by the size of the
+     * map. A caller recording a view during the write lands in the now-empty map and is picked up by
+     * the next run, rather than waiting.
+     *
+     * <p>Counts are dropped from memory at drain time, before the write is attempted, so a failed
+     * insert loses that hour's counts for the affected document. That is the existing behaviour —
+     * {@link #syncDBHelper} already swallowed per-document failures and the map was cleared
+     * regardless — and it is the right trade here: retaining them would mean the map grows without
+     * bound for as long as the database is unavailable.
+     */
     @Scheduled(initialDelay=TimeConstants.ONE_HOUR, fixedDelay=TimeConstants.ONE_HOUR)
     public void syncDB() {
         log.info("Exporting metric counts");
-        synchronized (viewed) {
-            syncDBHelper(viewed, viewInserter);
-            viewed.clear();
-        }
-        synchronized (downloaded) {
-            syncDBHelper(downloaded, downloadInserter);
-            downloaded.clear();
-        }
+        val windowStart = lastRun;
         lastRun = Instant.now().getEpochSecond();
+        syncTable(viewed, viewInserter, windowStart);
+        syncTable(downloaded, downloadInserter, windowStart);
+    }
+
+    private void syncTable(Map<String, Set<String>> tableMap, SimpleJdbcInsert inserter, long windowStart) {
+        Map<String, Integer> drained = new HashMap<>();
+        synchronized (tableMap) {
+            tableMap.forEach((doc, addrs) -> drained.put(doc, addrs.size()));
+            tableMap.clear();
+        }
+        if (drained.isEmpty()) {
+            return;
+        }
+        syncDBHelper(drained, inserter, windowStart);
     }
 
     @Scheduled(cron = "0 0 1 * * *")
@@ -185,8 +213,10 @@ public class JDBCMetricsService implements MetricsService {
 
     /**
      * Returns {@code null} rather than propagating, so a metrics outage costs a counter instead of the
-     * whole record page. The database is SQLite on a network share, and a read that overlaps the hourly
-     * sync's writes can still exhaust its busy timeout and fail with {@code SQLITE_BUSY}.
+     * whole record page. Not engine-specific: this covered {@code SQLITE_BUSY} when the database was
+     * SQLite on a network share, and it covers an unreachable PostgreSQL, a connection-timeout on an
+     * exhausted pool, or a failover now that the database is remote. A record page must not 500
+     * because a metrics query failed, whatever the engine.
      */
     private @Nullable Integer totalAmount(@NonNull String table, @NonNull String uuid) {
         try {
@@ -211,15 +241,16 @@ public class JDBCMetricsService implements MetricsService {
         });
     }
 
-    private void syncDBHelper(Map<String, Set<String>> tableMap, SimpleJdbcInsert inserter) {
-        tableMap.forEach((doc, viewers) -> {
+    /** Runs outside the monitor — see {@link #syncDB}. */
+    private void syncDBHelper(Map<String, Integer> drained, SimpleJdbcInsert inserter, long windowStart) {
+        drained.forEach((doc, amount) -> {
             MetadataDocument document;
             try {
                 document = documentRepository.read(doc);
                 inserter.execute(Map.of(
-                    "start_timestamp", lastRun,
+                    "start_timestamp", windowStart,
                     "end_timestamp", Instant.now().getEpochSecond(),
-                    "amount", viewers.size(),
+                    "amount", amount,
                     "document", doc,
                     "doc_title", document.getTitle(),
                     "record_type", document.getType()
