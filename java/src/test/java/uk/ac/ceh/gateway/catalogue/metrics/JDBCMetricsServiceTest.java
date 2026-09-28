@@ -4,11 +4,12 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.AbstractDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -16,6 +17,10 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Instant;
@@ -31,22 +36,29 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class JDBCMetricsServiceTest {
     private EmbeddedDatabase db;
+    private SeverableDataSource dataSource;
     private JDBCMetricsService service;
 
     private static final String TEST_DOCUMENT = "123e4567-e89b-12d3-a456-426614174000";
     private static final String TEST_IP1 = "192.0.2.1";
     private static final String TEST_IP2 = "192.0.2.2";
     @Mock private DocumentRepository documentRepository;
-    @Mock private JdbcTemplate jdbcTemplate;
     private final MetadataDocument doc = new GeminiDocument();
 
+    /**
+     * The service is given a datasource that can be severed after construction rather than the embedded
+     * database directly, so that the unavailable-database case can be reproduced honestly — see
+     * {@link #totalsAreAbsentRatherThanThrowingWhenTheDatabaseIsUnavailable}. Every other test is
+     * unaffected: until it is severed the wrapper is a pass-through.
+     */
     @BeforeEach
     void setup() {
         db = new EmbeddedDatabaseBuilder()
             .setType(EmbeddedDatabaseType.H2)
             .generateUniqueName(true)
             .build();
-        service = new JDBCMetricsService(db, documentRepository);
+        dataSource = new SeverableDataSource(db);
+        service = new JDBCMetricsService(dataSource, documentRepository);
         doc.setTitle("default Test Title");
         doc.setType("default dataset");
     }
@@ -63,10 +75,14 @@ class JDBCMetricsServiceTest {
         //when
 
         //then
-        val rs = db.getConnection().getMetaData().getTables(null, null, "%", null);
         val tables = new ArrayList<String>();
-        while (rs.next()) {
-            tables.add(rs.getString(3));
+        try (Connection connection = db.getConnection()) {
+            DatabaseMetaData metaData = connection.getMetaData();
+            try (ResultSet rs = metaData.getTables(null, null, "%", null)) {
+                while (rs.next()) {
+                    tables.add(rs.getString(3));
+                }
+            }
         }
 
         assertThat(tables, hasItems(equalToIgnoringCase("views"), equalToIgnoringCase("downloads")));
@@ -95,11 +111,14 @@ class JDBCMetricsServiceTest {
     }
 
     private List<String> indexedColumnsOf(String table) throws SQLException {
-        val rs = db.getConnection().getMetaData()
-            .getIndexInfo(null, null, table.toUpperCase(Locale.ROOT), false, false);
         val columns = new ArrayList<String>();
-        while (rs.next()) {
-            columns.add(rs.getString("COLUMN_NAME"));
+        try (Connection connection = db.getConnection()) {
+            DatabaseMetaData metaData = connection.getMetaData();
+            try (ResultSet rs = metaData.getIndexInfo(null, null, table.toUpperCase(Locale.ROOT), false, false)) {
+                while (rs.next()) {
+                    columns.add(rs.getString("COLUMN_NAME"));
+                }
+            }
         }
         return columns;
     }
@@ -177,13 +196,21 @@ class JDBCMetricsServiceTest {
     /**
      * A view counter is decorative, but it is read while rendering a record page, so a failure here
      * used to propagate out through FreeMarker and 500 the whole page. In production that happened
-     * whenever a read met the hourly sync's lock on the SQLite file (SQLITE_BUSY). The count must come
-     * back absent instead, leaving the page to render without it.
+     * whenever a read met the hourly sync's lock on the SQLite file (SQLITE_BUSY); now the database is
+     * remote it will happen on an unreachable host, an exhausted pool or a failover instead. The count
+     * must come back absent either way, leaving the page to render without it.
+     *
+     * <p>The connection is severed rather than the embedded database shut down.
+     * {@code EmbeddedDatabaseBuilder} sets {@code DB_CLOSE_DELAY=-1}, so after a shutdown the next
+     * connection succeeds against a fresh, empty database: that exercises a missing-table
+     * {@code BadSqlGrammarException}, not the unreachable-database path this test is named for. Both are
+     * {@code DataAccessException}s, so the test passed regardless of whether the catch actually covered
+     * the case that matters.</p>
      */
     @Test
     void totalsAreAbsentRatherThanThrowingWhenTheDatabaseIsUnavailable() {
         //given the database cannot be reached
-        db.shutdown();
+        dataSource.sever();
 
         //when/then no exception escapes, and the counts report themselves as unavailable
         assertThat(service.totalViews(TEST_DOCUMENT), is(nullValue()));
@@ -232,38 +259,44 @@ class JDBCMetricsServiceTest {
         assertThat(postRows, contains(contains(doc.getTitle(), doc.getType())));
     }
 
+    /**
+     * A repository failure for one document must not abort the nightly title refresh or escape the
+     * scheduler; the row simply keeps the title it already had until the next run.
+     *
+     * <p>Asserted against the table rather than against a mocked {@code JdbcTemplate}. The service builds
+     * its own template from the {@code DataSource}, so a mock of that type is never reached by anything
+     * the service does and {@code verify(..., times(0))} on it holds no matter how the code behaves.</p>
+     */
     @SneakyThrows
     @Test
     void testUpdateViewThrows() {
-        //given
+        //given the second repository read fails
         given(documentRepository.read(anyString())).willReturn(doc).willThrow(new RuntimeException("Oops"));
-
-        //when
         service.recordView(TEST_DOCUMENT, TEST_IP1);
         service.syncDB();
+
+        //when
         service.updateDB();
 
-        //then
+        //then the failure is swallowed and the existing row is left untouched
         verify(documentRepository, times(2)).read(anyString());
-        verify(jdbcTemplate, times(0)).update(anyString(), anyString(), anyString(), anyString());
-
+        assertThat(getTitleAndType("views"), contains(contains("default Test Title", "default dataset")));
     }
 
     @SneakyThrows
     @Test
     void testUpdateDownloadThrows() {
-        //given
-        given(documentRepository.read(anyString())).willReturn(doc);
-
-        //when
+        //given the second repository read fails
+        given(documentRepository.read(anyString())).willReturn(doc).willThrow(new RuntimeException("Oops"));
         service.recordDownload(TEST_DOCUMENT, TEST_IP1);
         service.syncDB();
+
+        //when
         service.updateDB();
 
-        //then
+        //then the failure is swallowed and the existing row is left untouched
         verify(documentRepository, times(2)).read(anyString());
-        verify(jdbcTemplate, times(0)).update(anyString(), anyString(), anyString(), anyString());
-
+        assertThat(getTitleAndType("downloads"), contains(contains("default Test Title", "default dataset")));
     }
 
     @Test
@@ -333,26 +366,30 @@ class JDBCMetricsServiceTest {
     }
 
     List<List<Object>> getDocumentsAndAmounts(String table) throws SQLException {
-        val stmt = db.getConnection().createStatement();
-        val rs = stmt.executeQuery("SELECT document, amount FROM " + table);
         val rows = new ArrayList<List<Object>>();
-        while (rs.next()) {
-            rows.add(List.of(rs.getString(1), rs.getInt(2)));
+        try (Connection connection = db.getConnection();
+             Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT document, amount FROM " + table)) {
+            while (rs.next()) {
+                rows.add(List.of(rs.getString(1), rs.getInt(2)));
+            }
         }
         return rows;
     }
 
     @Test
     void testGetMetricsReport() throws Exception {
-        Statement statement = db.getConnection().createStatement();
         String sql = "insert into %s (start_timestamp, end_timestamp, document, amount, doc_title, record_type) values ('%s', '%s', '%s', %d, '%s', '%s')";
-        statement.executeUpdate(String.format(sql, "views", "1721952000", "1722038399", "abcd1", 1, "test1", "a")); // 26July2024 timestsmp
-        statement.executeUpdate(String.format(sql, "views", "1722038400", "1722124799", "abcd2", 2, "test2", "b")); // 27July2024 timestsmp
-        statement.executeUpdate(String.format(sql, "views", "1722124800", "1722211199", "abcd3", 3, "test3", "c")); // 28July2024 timestsmp
+        try (Connection connection = db.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate(String.format(sql, "views", "1721952000", "1722038399", "abcd1", 1, "test1", "a")); // 26July2024 timestsmp
+            statement.executeUpdate(String.format(sql, "views", "1722038400", "1722124799", "abcd2", 2, "test2", "b")); // 27July2024 timestsmp
+            statement.executeUpdate(String.format(sql, "views", "1722124800", "1722211199", "abcd3", 3, "test3", "c")); // 28July2024 timestsmp
 
-        statement.executeUpdate(String.format(sql, "downloads", "1721952000", "1722038399", "abcd2", 1, "test2", "b")); // 26July2024 timestsmp
-        statement.executeUpdate(String.format(sql, "downloads", "1722038400", "1722124799", "abcd3", 2, "test3", "c")); // 27July2024 timestsmp
-        statement.executeUpdate(String.format(sql, "downloads", "1722124800", "1722211199", "abcd4", 3, "test4", "d")); // 28July2024 timestsmp
+            statement.executeUpdate(String.format(sql, "downloads", "1721952000", "1722038399", "abcd2", 1, "test2", "b")); // 26July2024 timestsmp
+            statement.executeUpdate(String.format(sql, "downloads", "1722038400", "1722124799", "abcd3", 2, "test3", "c")); // 27July2024 timestsmp
+            statement.executeUpdate(String.format(sql, "downloads", "1722124800", "1722211199", "abcd4", 3, "test4", "d")); // 28July2024 timestsmp
+        }
 
         List<String> recordType = Arrays.asList("a", "c");
         String orderBy = "views";
@@ -415,13 +452,77 @@ class JDBCMetricsServiceTest {
 
     }
 
+    /**
+     * NOT YET A TEST OF POSTGRESQL. Disabled deliberately rather than deleted, to keep the gap visible.
+     *
+     * <p>The suite runs entirely on H2, so the report query has never met the engine it is being migrated
+     * to (#236). Two things are known to differ and neither is covered:</p>
+     *
+     * <ul>
+     *   <li>{@code getMetricsReport} binds every parameter with {@code setString}, including
+     *       {@code start_timestamp} and {@code end_timestamp}, which are {@code integer} columns. H2
+     *       coerces; PostgreSQL rejects {@code integer >= varchar} with "operator does not exist"
+     *       (SQLSTATE 42883). If that is confirmed, the fix belongs in the service — bind the timestamps
+     *       as {@code long} — not in the test.</li>
+     *   <li>{@code SimpleJdbcInsert} reads column metadata from the driver, and identifier casing and
+     *       metadata behaviour differ between the two engines.</li>
+     * </ul>
+     *
+     * <p>H2's {@code MODE=PostgreSQL} would not settle either question — it does not reproduce the type
+     * resolution rules these depend on, and {@code EmbeddedDatabaseBuilder} cannot set the mode in any
+     * case. This needs Testcontainers against the same {@code postgres:14.1-alpine} image as the
+     * {@code metrics-db} compose service; enable this test as part of that work.</p>
+     */
+    @Disabled("Needs Testcontainers against postgres:14.1-alpine - H2 cannot answer this. See #236.")
+    @Test
+    void reportQueryRunsAgainstRealPostgres() {
+        throw new UnsupportedOperationException("Pending Testcontainers support for the metrics database");
+    }
+
     List<List<Object>> getTitleAndType(String table) throws SQLException {
-        val stmt = db.getConnection().createStatement();
-        val rs = stmt.executeQuery("SELECT doc_title, record_type FROM " + table);
         val rows = new ArrayList<List<Object>>();
-        while (rs.next()) {
-            rows.add(List.of(rs.getString(1), rs.getString(2)));
+        try (Connection connection = db.getConnection();
+             Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT doc_title, record_type FROM " + table)) {
+            while (rs.next()) {
+                rows.add(List.of(rs.getString(1), rs.getString(2)));
+            }
         }
         return rows;
+    }
+
+    /**
+     * Pass-through to the embedded database until {@link #sever()} is called, after which every
+     * connection attempt fails as it would against an unreachable host or an exhausted pool. This is what
+     * lets the read-path guard be tested on the failure it actually exists for, without the connection
+     * simply being re-established against an empty database.
+     */
+    private static class SeverableDataSource extends AbstractDataSource {
+        private final DataSource delegate;
+        private boolean severed;
+
+        SeverableDataSource(DataSource delegate) {
+            this.delegate = delegate;
+        }
+
+        void sever() {
+            this.severed = true;
+        }
+
+        @Override
+        public Connection getConnection() throws SQLException {
+            if (severed) {
+                throw new SQLException("Connection to metrics database refused");
+            }
+            return delegate.getConnection();
+        }
+
+        @Override
+        public Connection getConnection(String username, String password) throws SQLException {
+            if (severed) {
+                throw new SQLException("Connection to metrics database refused");
+            }
+            return delegate.getConnection(username, password);
+        }
     }
 }

@@ -232,7 +232,8 @@ Enables SPARQL/RDF export endpoints; requires Fuseki (enabled with the `-f` flag
 ##### cache
 Enables EHCache-based response caching. Active by default in development.
 ##### metrics
-Creates the embedded sqlite database for the metric reporting.
+Creates the database for metric reporting.
+Currently it supports two databases, SQLite (default and will be removed when PostgreSQL is tested thoroughly) and PostgreSQL (enabled by setting the property `metrics.database.engine=postgres`).
 
 ### Developing LESS
 In the web directory run
