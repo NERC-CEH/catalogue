@@ -6,7 +6,7 @@ describe('Test RadioView', function () {
   let view = null
 
   beforeEach(function () {
-    model = new EditorMetadata({ title: 'some text' })
+    model = new EditorMetadata({ title: 'Title' })
   })
 
   it('when view is constructing should exist', () => {
