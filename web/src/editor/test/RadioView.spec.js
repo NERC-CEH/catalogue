@@ -6,7 +6,7 @@ describe('RadioView', function () {
   let view = null
 
   beforeEach(function () {
-    model = new EditorMetadata({ title: 'Title' })
+    model = new EditorMetadata({ title: 'Title ' })
   })
 
   describe('construction', () => {
