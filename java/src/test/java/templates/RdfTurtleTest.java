@@ -7,6 +7,7 @@ import lombok.val;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
@@ -1228,26 +1231,40 @@ public class RdfTurtleTest {
                     .setTitle("Contributor role");
             }
 
-            @Test
-            @DisplayName("a contributorRole of dataCurator produces a pro:RoleInTime node with scoro:data-curator")
-            void contributorRoleDataCurator() {
+            private static final String CONTRIBUTOR = "http://purl.org/dc/terms/contributor";
+            private static final String SCORO = "http://purl.org/spar/scoro/";
+            private static final String FOAF_FAMILY_NAME = "http://xmlns.com/foaf/0.1/familyName";
+
+            private ResponsibleParty contributor(String contributorRole) {
+                // As the editor saves it: the Contributors list, role "contributor", and a
+                // hyphenated SCoRO local name (dri-one #405).
+                return ResponsibleParty.builder()
+                    .familyName("Wood")
+                    .givenName("Claire")
+                    .role("contributor")
+                    .contributorRole(contributorRole)
+                    .build();
+            }
+
+            private Resource roleOf(Resource person) {
+                assertTrue(model.contains(person, createProperty(HOLDS_ROLE_IN_TIME)));
+                return model.listObjectsOfProperty(person, createProperty(HOLDS_ROLE_IN_TIME))
+                    .next().asResource();
+            }
+
+            @ParameterizedTest(name = "{0}")
+            @ValueSource(strings = {"data-creator", "data-curator", "collaborator", "researcher",
+                "technician", "project-leader", "workpackage-leader"})
+            @DisplayName("a contributor's contributorRole produces a pro:RoleInTime with the matching scoro: role")
+            void contributorRoleReachesRdf(String contributorRole) {
                 val document = dataset("roletest");
-                document.setContactPoints(List.of(
-                    ResponsibleParty.builder()
-                        .familyName("Wood")
-                        .givenName("Claire")
-                        .contributorRole("dataCurator")
-                        .build()
-                ));
+                document.setContributors(List.of(contributor(contributorRole)));
 
                 template("rdf/ttl.ftl", document);
 
                 val record = createResource("https://example.com/id/roletest");
-                val person = model.listObjectsOfProperty(record, createProperty(CONTACT_POINT)).next().asResource();
-
-                assertTrue(model.contains(person, createProperty(HOLDS_ROLE_IN_TIME)));
-                val roleInTime = model.listObjectsOfProperty(person, createProperty(HOLDS_ROLE_IN_TIME))
-                    .next().asResource();
+                val person = model.listObjectsOfProperty(record, createProperty(CONTRIBUTOR)).next().asResource();
+                val roleInTime = roleOf(person);
                 assertTrue(model.contains(
                     roleInTime,
                     createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
@@ -1256,9 +1273,82 @@ public class RdfTurtleTest {
                 assertTrue(model.contains(
                     roleInTime,
                     createProperty(WITH_ROLE),
-                    createResource("http://purl.org/spar/scoro/data-curator")
+                    createResource(SCORO + contributorRole)
                 ));
                 assertTrue(model.contains(roleInTime, createProperty(RELATES_TO_ENTITY), record));
+            }
+
+            @Test
+            @DisplayName("a legacy camelCase contributorRole saved before 18 August still maps")
+            void legacyCamelCaseContributorRole() {
+                val document = dataset("rolelegacy");
+                document.setContributors(List.of(contributor("projectLeader")));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/rolelegacy");
+                val person = model.listObjectsOfProperty(record, createProperty(CONTRIBUTOR)).next().asResource();
+                assertTrue(model.contains(
+                    roleOf(person),
+                    createProperty(WITH_ROLE),
+                    createResource(SCORO + "project-leader")
+                ));
+            }
+
+            @Test
+            @DisplayName("an unrecognised contributorRole is left unmapped, but the contributor is still linked")
+            void unknownContributorRoleIsNotMapped() {
+                val document = dataset("roleunknown");
+                document.setContributors(List.of(contributor("chief tea maker")));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/roleunknown");
+                assertTrue(model.contains(record, createProperty(CONTRIBUTOR)));
+                assertFalse(model.contains(null, createProperty(HOLDS_ROLE_IN_TIME)));
+            }
+
+            @Test
+            @DisplayName("a principal investigator in Other contacts produces scoro:principal-investigator")
+            void principalInvestigatorFromOtherContacts() {
+                val document = dataset("rolepi");
+                document.setOtherContacts(List.of(
+                    ResponsibleParty.builder()
+                        .familyName("Wood")
+                        .givenName("Claire")
+                        .role("principalInvestigator")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/rolepi");
+                val roleInTime = model.listSubjectsWithProperty(createProperty(RELATES_TO_ENTITY), record)
+                    .next();
+                assertTrue(model.contains(
+                    roleInTime,
+                    createProperty(WITH_ROLE),
+                    createResource(SCORO + "principal-investigator")
+                ));
+                assertTrue(model.contains(null, createProperty(HOLDS_ROLE_IN_TIME), roleInTime));
+            }
+
+            @Test
+            @DisplayName("an Other contact whose role has no DOO equivalent is not described at all")
+            void unmappedOtherContactIsNotDescribed() {
+                val document = dataset("rolestakeholder");
+                document.setOtherContacts(List.of(
+                    ResponsibleParty.builder()
+                        .familyName("Stakeholder")
+                        .givenName("Sam")
+                        .role("stakeholder")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                assertFalse(model.contains(null, createProperty(FOAF_FAMILY_NAME), "Stakeholder"));
+                assertFalse(model.contains(null, createProperty(HOLDS_ROLE_IN_TIME)));
             }
 
             @Test
