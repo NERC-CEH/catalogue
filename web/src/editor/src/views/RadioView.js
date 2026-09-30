@@ -31,7 +31,9 @@ export default SingleView.extend({
     this.$('.dataentry').append(template({ data: this.data }))
     if (value === true) {
       this.$(`#${this.data.modelAttribute}-yes`).prop('checked', true)
-    } else if (value === false) {
+      this.$(`#${this.data.modelAttribute}-no`).prop('checked', false)
+    } else {
+      this.$(`#${this.data.modelAttribute}-yes`).prop('checked', false)
       this.$(`#${this.data.modelAttribute}-no`).prop('checked', true)
     }
     if (this.data.readonly) {

@@ -65,8 +65,8 @@ describe('Test RadioView', function () {
       modelAttribute: 'testBoolean'
     })
     view.render()
-    expect(view.$('#testBoolean-yes').prop('checked')).toBe(true)
-    expect(view.$('#testBoolean-no').prop('checked')).toBe(false)
+    expect(view.$('#testBoolean-yes').prop('checked')).toBe(false)
+    expect(view.$('#testBoolean-no').prop('checked')).toBe(true)
   })
 
   it('sets model to true when Yes radio is clicked', () => {
@@ -109,7 +109,7 @@ describe('Test RadioView', function () {
     })
     view.render()
     view.$('#testBoolean-no').prop('checked', true).trigger('change')
-    expect(model.get('testBoolean')).not.toBe('true')
-    expect(model.get('testBoolean')).toBe(true)
+    expect(model.get('testBoolean')).not.toBe('false')
+    expect(model.get('testBoolean')).toBe(false)
   })
 })
