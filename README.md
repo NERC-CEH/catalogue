@@ -132,6 +132,27 @@ HUBBUB_TOKEN=
 FUSEKI_PASSWORD=
 ```
 
+### Service tokens in staging and production
+
+The catalogue reaches hubbub and legilo through their SSO proxies, and authenticates with personal
+access tokens (PATs) for the `eidc_hubbub` account, sent as `Authorization: Bearer`. There is one
+token for each service, so that either can be revoked on its own. A PAT lasts at most 364 days,
+so both have to be replaced every year.
+
+| Environment | Tokens from | Kubernetes secret / keys | Env vars | Expires |
+|---|---|---|---|---|
+| staging | `https://catalogue.staging.ceh.ac.uk/sso/tokens` | `eidc/client-tokens` / `hubbub`, `legilo` | `HUBBUB_TOKEN`, `LEGILO_TOKEN` | **1 October 2027** |
+| production | `https://catalogue.ceh.ac.uk/sso/tokens` | `eidc/client-tokens` / `hubbub`, `legilo` | `HUBBUB_TOKEN`, `LEGILO_TOKEN` | **1 October 2027** |
+
+When a token expires, that proxy answers with `401`: uploads fail (hubbub) or keyword suggestions
+fail (legilo). A missing or blank token stops the catalogue from starting.
+
+**Rotate them by 1 September 2027.** In outline: log in as `eidc_hubbub`, create two new 364-day
+tokens, seal them into `client-tokens.yaml`, restart `deployment/catalogue`, check each token's
+**Last used** column, then revoke the old ones. The exact commands are in the cluster READMEs:
+[staging](https://gitlab.ceh.ac.uk/infrastructure/k8s-clusters/k8s-eds-staging/-/blob/master/workloads/eidc/README.md#service-tokens) and
+[production](https://gitlab.ceh.ac.uk/infrastructure/k8s-clusters/k8s-eds-prod/-/blob/main/workloads/eidc/README.md#service-tokens).
+
 ## Getting started
 
 The catalogue requires a few tools:
