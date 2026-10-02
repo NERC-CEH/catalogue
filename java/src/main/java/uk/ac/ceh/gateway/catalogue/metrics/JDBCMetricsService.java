@@ -3,7 +3,9 @@ package uk.ac.ceh.gateway.catalogue.metrics;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.jspecify.annotations.Nullable;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,7 +27,7 @@ import java.sql.SQLException;
 @Profile("metrics")
 @Slf4j
 @Service
-public class JDBCMetricsService implements MetricsService {
+public class JDBCMetricsService implements MetricsService, ApplicationListener<ApplicationReadyEvent> {
     @NonNull private final Map<String, Set<String>> viewed;
     @NonNull private final Map<String, Set<String>> downloaded;
     @NonNull private final SimpleJdbcInsert viewInserter;
@@ -33,6 +35,14 @@ public class JDBCMetricsService implements MetricsService {
     @NonNull private final JdbcTemplate jdbcTemplate;
     private long lastRun;
     private final DocumentRepository documentRepository;
+
+    /**
+     * Set once the tables and indexes are known to exist. {@code volatile} so the fast path in
+     * {@link #ensureSchema} needs no lock; the slow path takes {@link #schemaLock} so two callers racing
+     * after a recovery do not both run the DDL.
+     */
+    private volatile boolean schemaReady;
+    private final Object schemaLock = new Object();
 
     // SQLite has no built-in datetime type, so we store dates as Unix timestamps (seconds since 1 Jan 1970)
     private static final String CREATE_STATEMENT = """
@@ -57,8 +67,9 @@ public class JDBCMetricsService implements MetricsService {
      * roughly a row per document per hour that is thousands of random reads across the network per
      * count.</p>
      *
-     * <p>Creating this on an existing database is a one-off cost at startup, proportional to the table
-     * size; the timing is logged. It is deliberately {@code IF NOT EXISTS} so restarts are free.</p>
+     * <p>Creating this on an existing database is a one-off cost, proportional to the table size, paid
+     * by {@link #ensureSchema}; the timing is logged. It is deliberately {@code IF NOT EXISTS} so restarts
+     * are free.</p>
      */
     private static final String INDEX_STATEMENT =
         "CREATE INDEX IF NOT EXISTS idx_%1$s_document_amount ON %1$s (document, amount)";
@@ -78,6 +89,12 @@ public class JDBCMetricsService implements MetricsService {
     public static final String VIEW_TOTALS_CACHE = "metrics-view-totals";
     public static final String DOWNLOAD_TOTALS_CACHE = "metrics-download-totals";
 
+    /**
+     * Deliberately does no I/O. The schema used to be created here, which meant an unreachable metrics
+     * database failed bean creation and took the whole context down with it — Hikari's
+     * {@code initialization-fail-timeout=-1} only makes building the pool lazy, it cannot help a
+     * consumer that runs SQL while the context is starting. The DDL now runs from {@link #ensureSchema}.
+     */
     public JDBCMetricsService(@NonNull DataSource dataSource,
                               DocumentRepository documentRepository) {
         log.info("Creating");
@@ -87,13 +104,65 @@ public class JDBCMetricsService implements MetricsService {
         this.downloadInserter = new SimpleJdbcInsert(dataSource).withTableName(DOWNLOAD_TABLE);
         this.viewed = Collections.synchronizedMap(new HashMap<>());
         this.downloaded = Collections.synchronizedMap(new HashMap<>());
+    }
 
-        List.of(VIEW_TABLE, DOWNLOAD_TABLE).forEach(table -> {
-            jdbcTemplate.execute(CREATE_STATEMENT.formatted(table));
-            val startedAt = System.currentTimeMillis();
-            jdbcTemplate.execute(INDEX_STATEMENT.formatted(table));
-            log.info("Ensured index on {}(document, amount) in {}ms", table, System.currentTimeMillis() - startedAt);
-        });
+    /**
+     * First attempt at the schema, once the context is up. {@code ApplicationReadyEvent} is published
+     * before Spring Boot flips readiness to {@code ACCEPTING_TRAFFIC}, so on a healthy database the
+     * tables and indexes exist before Kubernetes routes any traffic to the pod.
+     *
+     * <p>{@link ApplicationListener} rather than {@code @EventListener}: this bean is proxied for
+     * {@code @Cacheable}, and under JDK interface proxies (as in {@code MetricsCountCachingTest}) an
+     * annotated method that is not on an interface cannot be invoked through the proxy, so the context
+     * fails to start. Implementing the interface puts {@code onApplicationEvent} on the proxy whichever
+     * proxy type is in use.</p>
+     */
+    @Override
+    public void onApplicationEvent(@NonNull ApplicationReadyEvent event) {
+        initialiseSchemaOnStartup();
+    }
+
+    /** Also called directly by tests, which have no {@code ApplicationReadyEvent}. */
+    public void initialiseSchemaOnStartup() {
+        ensureSchema();
+    }
+
+    /**
+     * Creates the tables and indexes if they are not already known to exist, and reports whether they
+     * now do. Never throws for a database problem: an unreachable database is logged and left for the
+     * next caller to retry, which is what lets the catalogue start while the metrics database is down —
+     * the startup-failure policy stated in {@code application-metrics.properties}.
+     *
+     * <p>Called on startup and then lazily from every path that is not on the record-page render path
+     * ({@link #syncDB}, {@link #updateDB}, the report and the admin checks), so a database that was down
+     * at startup gets its schema as soon as it comes back, at the latest on the next hourly sync. The
+     * totals reads are deliberately left out: they already return {@code null} on any
+     * {@link DataAccessException}, including a missing table, and a second connection attempt per render
+     * against a database that is down would only double the time the page waits.</p>
+     *
+     * <p>Once it has succeeded this is a single volatile read.</p>
+     */
+    public boolean ensureSchema() {
+        if (schemaReady) {
+            return true;
+        }
+        synchronized (schemaLock) {
+            if (schemaReady) {
+                return true;
+            }
+            try {
+                List.of(VIEW_TABLE, DOWNLOAD_TABLE).forEach(table -> {
+                    jdbcTemplate.execute(CREATE_STATEMENT.formatted(table));
+                    val startedAt = System.currentTimeMillis();
+                    jdbcTemplate.execute(INDEX_STATEMENT.formatted(table));
+                    log.info("Ensured index on {}(document, amount) in {}ms", table, System.currentTimeMillis() - startedAt);
+                });
+                schemaReady = true;
+            } catch (DataAccessException ex) {
+                log.warn("Metrics database schema could not be ensured, will retry on next use: {}", ex.getMessage());
+            }
+            return schemaReady;
+        }
     }
 
     @Override
@@ -138,6 +207,7 @@ public class JDBCMetricsService implements MetricsService {
 
     @Override
     public boolean hasMetricsFor(@NonNull String uuid) {
+        ensureSchema();
         return count(VIEW_TABLE, uuid) > 0 || count(DOWNLOAD_TABLE, uuid) > 0;
     }
 
@@ -148,6 +218,7 @@ public class JDBCMetricsService implements MetricsService {
      */
     @Override
     public boolean deleteMetricsFor(@NonNull String uuid) {
+        ensureSchema();
         int viewsDeleted = jdbcTemplate.update(DELETE_STATEMENT.formatted(VIEW_TABLE), uuid);
         int downloadsDeleted = jdbcTemplate.update(DELETE_STATEMENT.formatted(DOWNLOAD_TABLE), uuid);
         return viewsDeleted > 0 || downloadsDeleted > 0;
@@ -182,6 +253,7 @@ public class JDBCMetricsService implements MetricsService {
     @Scheduled(initialDelay=TimeConstants.ONE_HOUR, fixedDelay=TimeConstants.ONE_HOUR)
     public void syncDB() {
         log.info("Exporting metric counts");
+        ensureSchema();
         val windowStart = lastRun;
         lastRun = Instant.now().getEpochSecond();
         syncTable(viewed, viewInserter, windowStart);
@@ -203,6 +275,7 @@ public class JDBCMetricsService implements MetricsService {
     @Scheduled(cron = "0 0 1 * * *")
     public void updateDB() {
         log.info("Updating document titles and record types");
+        ensureSchema();
         updateDBHelper(VIEW_TABLE);
         updateDBHelper(DOWNLOAD_TABLE);
     }
@@ -261,6 +334,13 @@ public class JDBCMetricsService implements MetricsService {
         });
     }
 
+    /**
+     * Parameters are collected as {@code Object}s and bound with {@code setObject}, so each keeps its
+     * Java type. They used to be bound with {@code setString} throughout, which pgjdbc sends as
+     * {@code varchar}; PostgreSQL has no {@code integer >= varchar} operator, so any date filter failed
+     * with "operator does not exist" (SQLSTATE 42883). H2 and SQLite coerce the string silently, which is
+     * why only a real PostgreSQL shows it — see {@code JDBCMetricsServicePostgresTest}.
+     */
     public List<Map<String,String>> getMetricsReport(Instant startDate, Instant endDate, String orderBy, String ordering, List<String> recordType, String docId, Integer noOfRecords) {
         String sql = """
             SELECT t.document, coalesce(t.doc_title, '') AS doc_title, coalesce(t.record_type, '') AS record_type, sum(t.views) AS views, sum(t.downloads) AS downloads
@@ -272,16 +352,16 @@ public class JDBCMetricsService implements MetricsService {
             GROUP BY document, doc_title, record_type
         """;
 
-        ArrayList<String> whereVal = new ArrayList<>();
+        ensureSchema();
+
+        List<Object> whereVal = new ArrayList<>();
         StringBuilder where = new StringBuilder("1=1");
         if (startDate != null) {
-            String start = Long.toString(startDate.getEpochSecond());
-            whereVal.add(start);
+            whereVal.add(startDate.getEpochSecond());
             where.append(" AND start_timestamp >= ?");
         }
         if (endDate != null) {
-            String end = Long.toString(endDate.getEpochSecond());
-            whereVal.add(end);
+            whereVal.add(endDate.getEpochSecond());
             where.append(" AND end_timestamp <= ?");
         }
         if (docId != null && !docId.isBlank()) {
@@ -318,9 +398,9 @@ public class JDBCMetricsService implements MetricsService {
             sqlBuilder.toString(), preparedStatement -> {
                 int index = 1;
                 int valSize = whereVal.size();
-                for (String val : whereVal) {
-                    preparedStatement.setString(index, val);
-                    preparedStatement.setString(valSize + index, val);
+                for (Object val : whereVal) {
+                    preparedStatement.setObject(index, val);
+                    preparedStatement.setObject(valSize + index, val);
                     index++;
                 }
             },

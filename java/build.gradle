@@ -43,11 +43,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    // Replaces bare spring-jdbc: brings HikariCP and DataSourceAutoConfiguration, so the pool is built
-    // and tuned from spring.datasource.* rather than by hand. That auto-configuration applies to every
-    // profile, which does not suit a datasource that only exists under "metrics", so it is excluded on
-    // CatalogueApplication and re-imported by MetricsDatabaseConfig. Do not drop that gating without
-    // reading the comment there -- ungated, the non-metrics contexts fail at startup.
+    // Replaces bare spring-jdbc: brings HikariCP, plus the DataSourceProperties and DataSourceBuilder
+    // that bind spring.datasource.* and spring.datasource.hikari.*. It also brings
+    // DataSourceAutoConfiguration, which applies to every profile and does not suit a datasource that
+    // only exists under "metrics", so it is excluded on CatalogueApplication and NOT re-imported
+    // anywhere -- re-importing it inside a profile does not bring it back. MetricsDatabaseConfig builds
+    // the pool by hand instead, through the same binding. Do not drop that exclusion without reading
+    // the javadoc there -- without it, the non-metrics contexts fail at startup.
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
     // Spring Security
@@ -96,6 +98,12 @@ dependencies {
     testImplementation 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    // JDBCMetricsServicePostgresTest: the metrics service against a real postgres:14.1-alpine, since H2
+    // silently accepts type mismatches PostgreSQL rejects. Testcontainers 2.x artifact names (the
+    // "testcontainers-" prefix; PostgreSQLContainer lives in org.testcontainers.postgresql). Versions
+    // managed by the Boot BOM. The test skips itself when Docker is not available.
+    testImplementation 'org.testcontainers:testcontainers-postgresql'
+    testImplementation 'org.testcontainers:testcontainers'
     testImplementation 'org.xmlunit:xmlunit-core'
     testImplementation 'org.xmlunit:xmlunit-matchers'
 }

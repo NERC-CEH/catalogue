@@ -127,6 +127,8 @@ class MetricsDatabaseConfigPostgresTest {
      * the catalogue: the default (1ms) would fail the context instead, turning a routine PostgreSQL
      * patch window into a crash-looping pod. It is asserted here because nothing else in the suite would
      * notice its removal — the pool builds happily either way against a database that is not there.
+     * It is necessary but not sufficient: the other half is {@code JDBCMetricsService} running no SQL
+     * during context startup, which {@code JDBCMetricsServiceTest} covers.
      *
      * <p>The short {@code connection-timeout} is the read-path half of the same policy: a caller waiting
      * on an exhausted pool has to give up quickly enough for {@code JDBCMetricsService.totalAmount} to

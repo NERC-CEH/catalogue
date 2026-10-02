@@ -103,7 +103,8 @@ public class MetricsDatabaseConfig {
      * they stay alongside the connection settings in {@code application-metrics.properties} and can be
      * tuned per environment without a rebuild. That includes the startup-failure policy
      * ({@code initialization-fail-timeout=-1}, the catalogue starts when the metrics database is
-     * down), the pool size, and the deliberately short {@code connection-timeout}; the reasoning for
+     * down — which also relies on {@code JDBCMetricsService} keeping its DDL out of its constructor),
+     * the pool size, and the deliberately short {@code connection-timeout}; the reasoning for
      * each is recorded next to the values.
      */
     @ConditionalOnProperty(name = "metrics.database.engine", havingValue = "postgres")

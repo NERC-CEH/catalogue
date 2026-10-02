@@ -125,12 +125,13 @@ services:
       #     METRICS_DATABASE_ENGINE=postgres
       #
       # or, one-off:  METRICS_DATABASE_ENGINE=postgres docker compose --profile metrics up
-      METRICS_DATABASE_ENGINE: postgres
+      METRICS_DATABASE_ENGINE: ${METRICS_DATABASE_ENGINE:-sqlite}
       # Both engines' settings are present at once, on separate variables, so switching between them
-      # is a one-value change. METRICS_DATABASE_URL is the sqlite path (was the only setting here
-      # before); METRICS_DATASOURCE_* feeds spring.datasource.* on the postgres path, over the compose
-      # network, so the container port applies rather than the 5434 published to the host. Credentials
-      # come from the same anchors the service is defined with, as hubbub does.
+      # is a one-value change. The sqlite path uses the application default,
+      # /var/ceh-catalogue/metrics-db/metrics.db, on the metrics-db named volume (ownership repaired
+      # in docker/entrypoint-dev.sh). METRICS_DATASOURCE_* feeds spring.datasource.* on the postgres
+      # path, over the compose network, so the container port applies rather than the 5434 published
+      # to the host. Credentials come from the same anchors the service is defined with, as hubbub does.
       METRICS_DATASOURCE_URL: jdbc:postgresql://metrics-db:5432/metrics
       METRICS_DATASOURCE_USERNAME: *metrics_db_user
       METRICS_DATASOURCE_PASSWORD: *metrics_db_password
@@ -145,11 +146,12 @@ services:
       LEGILO_PASSWORD: password
       FUSEKI_SPARQL_ENDPOINT: http://fuseki:3030/ds/sparql
       FUSEKI_DATASET_URL: http://fuseki:3030/ds
-      # "metrics" (Spring profile, unrelated to the compose profile above) added: it was not active
-      # locally, so MetricsDatabaseConfig and JDBCMetricsService were never built here and
-      # METRICS_DATABASE_URL was inert. It is in EIDC's SPRING_PROFILES_ACTIVE in production, so this
-      # also brings local dev closer to what actually runs. Left on unconditionally: under the default
-      # sqlite engine it needs nothing external, exactly as before this change.
+      # "metrics" (Spring profile, unrelated to the compose profile above) is active: without it
+      # MetricsDatabaseConfig and JDBCMetricsService are never built locally and none of the engine
+      # settings above are read. It is in EIDC's SPRING_PROFILES_ACTIVE in production, so this also
+      # brings local dev closer to what actually runs. Left on unconditionally: under the default
+      # sqlite engine it needs nothing external, and under postgres the catalogue still starts if
+      # metrics-db is not running (see the depends_on comment below).
       SPRING_PROFILES_ACTIVE: development,server-eidc,search-basic,service-agreement,upload-simple
     env_file:
       - path: secrets.env
@@ -169,10 +171,11 @@ services:
       # behaviour under the default sqlite engine.
       #
       # Start ordering only when it IS active, as hubbub has on hubbub-db -- not a readiness gate.
-      # Safe because on the postgres path the catalogue is configured to start with the metrics
-      # database unavailable (spring.datasource.hikari.initialization-fail-timeout=-1); it connects
-      # when the database accepts connections. If PostgreSQL is still initialising, the first record
-      # page renders without counts rather than failing.
+      # Safe because on the postgres path the catalogue starts with the metrics database unavailable:
+      # the pool is lazy (spring.datasource.hikari.initialization-fail-timeout=-1) and JDBCMetricsService
+      # runs no SQL in its constructor, only a schema attempt on ApplicationReadyEvent that logs and
+      # retries on next use if it fails. If PostgreSQL is still initialising, record pages render
+      # without counts until it accepts connections, and the schema is created then.
       metrics-db:
         condition: service_started
         required: false

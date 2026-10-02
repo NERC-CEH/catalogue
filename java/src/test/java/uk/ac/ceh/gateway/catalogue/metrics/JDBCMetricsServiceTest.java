@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -18,8 +17,11 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -50,6 +52,9 @@ class JDBCMetricsServiceTest {
      * database directly, so that the unavailable-database case can be reproduced honestly — see
      * {@link #totalsAreAbsentRatherThanThrowingWhenTheDatabaseIsUnavailable}. Every other test is
      * unaffected: until it is severed the wrapper is a pass-through.
+     *
+     * <p>The schema is ensured explicitly because the constructor no longer touches the database; in the
+     * application that is done by the service's {@code ApplicationReadyEvent} listener.</p>
      */
     @BeforeEach
     void setup() {
@@ -59,6 +64,7 @@ class JDBCMetricsServiceTest {
             .build();
         dataSource = new SeverableDataSource(db);
         service = new JDBCMetricsService(dataSource, documentRepository);
+        assertThat(service.ensureSchema(), is(true));
         doc.setTitle("default Test Title");
         doc.setType("default dataset");
     }
@@ -215,6 +221,65 @@ class JDBCMetricsServiceTest {
         //when/then no exception escapes, and the counts report themselves as unavailable
         assertThat(service.totalViews(TEST_DOCUMENT), is(nullValue()));
         assertThat(service.totalDownloads(TEST_DOCUMENT), is(nullValue()));
+    }
+
+    /**
+     * The startup-failure policy: the catalogue must start when the metrics database is down. The schema
+     * used to be created in the constructor, so an unreachable database failed bean creation and the
+     * whole context with it, whatever Hikari's {@code initialization-fail-timeout} said. Constructing the
+     * service and running its startup hook against a severed datasource must therefore neither throw nor
+     * — for the constructor — even try to connect.
+     */
+    @Test
+    void serviceStartsWhenTheDatabaseIsUnreachable() {
+        //given a database that is down before the service is created
+        val freshDb = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).generateUniqueName(true).build();
+        try {
+            val severed = new SeverableDataSource(freshDb);
+            severed.sever();
+
+            //when the service is constructed and the startup hook runs
+            val startingService = new JDBCMetricsService(severed, documentRepository);
+            val attemptsDuringConstruction = severed.connectionAttempts();
+            startingService.initialiseSchemaOnStartup();
+
+            //then neither threw, the constructor did no I/O, and the schema is reported as not ready
+            assertThat(attemptsDuringConstruction, is(0));
+            assertThat(startingService.ensureSchema(), is(false));
+            assertThat(startingService.totalViews(TEST_DOCUMENT), is(nullValue()));
+        } finally {
+            freshDb.shutdown();
+        }
+    }
+
+    /**
+     * A database that was down at startup must get its schema once it is back, without a restart. The
+     * hourly sync is the path guaranteed to run, so recovery is asserted through it: the view is recorded
+     * while the database is down, and written once it returns.
+     */
+    @SneakyThrows
+    @Test
+    void schemaIsCreatedOnFirstUseAfterTheDatabaseComesBack() {
+        //given the service started while the database was down
+        val freshDb = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).generateUniqueName(true).build();
+        try {
+            val severed = new SeverableDataSource(freshDb);
+            severed.sever();
+            val recoveringService = new JDBCMetricsService(severed, documentRepository);
+            recoveringService.initialiseSchemaOnStartup();
+            given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
+            recoveringService.recordView(TEST_DOCUMENT, TEST_IP1);
+
+            //when the database comes back and the hourly sync runs
+            severed.restore();
+            recoveringService.syncDB();
+
+            //then the schema now exists and the count was written
+            assertThat(recoveringService.ensureSchema(), is(true));
+            assertThat(recoveringService.totalViews(TEST_DOCUMENT), equalTo(1));
+        } finally {
+            freshDb.shutdown();
+        }
     }
 
     @SneakyThrows
@@ -453,30 +518,30 @@ class JDBCMetricsServiceTest {
     }
 
     /**
-     * NOT YET A TEST OF POSTGRESQL. Disabled deliberately rather than deleted, to keep the gap visible.
-     *
-     * <p>The suite runs entirely on H2, so the report query has never met the engine it is being migrated
-     * to (#236). Two things are known to differ and neither is covered:</p>
-     *
-     * <ul>
-     *   <li>{@code getMetricsReport} binds every parameter with {@code setString}, including
-     *       {@code start_timestamp} and {@code end_timestamp}, which are {@code integer} columns. H2
-     *       coerces; PostgreSQL rejects {@code integer >= varchar} with "operator does not exist"
-     *       (SQLSTATE 42883). If that is confirmed, the fix belongs in the service — bind the timestamps
-     *       as {@code long} — not in the test.</li>
-     *   <li>{@code SimpleJdbcInsert} reads column metadata from the driver, and identifier casing and
-     *       metadata behaviour differ between the two engines.</li>
-     * </ul>
-     *
-     * <p>H2's {@code MODE=PostgreSQL} would not settle either question — it does not reproduce the type
-     * resolution rules these depend on, and {@code EmbeddedDatabaseBuilder} cannot set the mode in any
-     * case. This needs Testcontainers against the same {@code postgres:14.1-alpine} image as the
-     * {@code metrics-db} compose service; enable this test as part of that work.</p>
+     * PostgreSQL has no {@code integer >= varchar} operator, and pgjdbc sends {@code setString} values as
+     * {@code varchar}, so binding the epoch-second filters as strings fails there with "operator does not
+     * exist" (SQLSTATE 42883). H2 coerces them silently, so running the report on H2 cannot catch it; this
+     * asserts the bound types directly instead. The report is also run against a real PostgreSQL in
+     * {@code JDBCMetricsServicePostgresTest}, which needs Docker — this test is what guards it when
+     * Docker is not available.
      */
-    @Disabled("Needs Testcontainers against postgres:14.1-alpine - H2 cannot answer this. See #236.")
     @Test
-    void reportQueryRunsAgainstRealPostgres() {
-        throw new UnsupportedOperationException("Pending Testcontainers support for the metrics database");
+    void reportBindsTimestampFiltersAsNumbersNotStrings() {
+        //given a service whose statements record how their parameters were bound
+        val recording = new BindRecordingDataSource(db);
+        val reportService = new JDBCMetricsService(recording, documentRepository);
+        reportService.ensureSchema();
+        val start = Instant.parse("2024-07-26T00:00:00Z");
+        val end = Instant.parse("2024-07-27T23:59:59Z");
+
+        //when the report is filtered by both dates
+        reportService.getMetricsReport(start, end, null, null, null, null, null);
+
+        //then every timestamp parameter, in both halves of the UNION, went over as a Long
+        val expected = List.<Object>of(start.getEpochSecond(), end.getEpochSecond(),
+            start.getEpochSecond(), end.getEpochSecond());
+        assertThat(recording.boundValues(), equalTo(expected));
+        assertThat(recording.stringBinds(), is(0));
     }
 
     List<List<Object>> getTitleAndType(String table) throws SQLException {
@@ -500,6 +565,7 @@ class JDBCMetricsServiceTest {
     private static class SeverableDataSource extends AbstractDataSource {
         private final DataSource delegate;
         private boolean severed;
+        private int connectionAttempts;
 
         SeverableDataSource(DataSource delegate) {
             this.delegate = delegate;
@@ -509,8 +575,17 @@ class JDBCMetricsServiceTest {
             this.severed = true;
         }
 
+        void restore() {
+            this.severed = false;
+        }
+
+        int connectionAttempts() {
+            return connectionAttempts;
+        }
+
         @Override
         public Connection getConnection() throws SQLException {
+            connectionAttempts++;
             if (severed) {
                 throw new SQLException("Connection to metrics database refused");
             }
@@ -519,10 +594,75 @@ class JDBCMetricsServiceTest {
 
         @Override
         public Connection getConnection(String username, String password) throws SQLException {
+            connectionAttempts++;
             if (severed) {
                 throw new SQLException("Connection to metrics database refused");
             }
             return delegate.getConnection(username, password);
+        }
+    }
+
+    /**
+     * Pass-through to the embedded database that records, for every {@link PreparedStatement}, the values
+     * bound with {@code setObject}/{@code setLong} and counts any {@code setString} calls — the bind type
+     * is what PostgreSQL resolves operators against, and H2 hides it.
+     */
+    private static class BindRecordingDataSource extends AbstractDataSource {
+        private final DataSource delegate;
+        private final SortedMap<Integer, Object> boundValues = new TreeMap<>();
+        private int stringBinds;
+
+        BindRecordingDataSource(DataSource delegate) {
+            this.delegate = delegate;
+        }
+
+        /** In parameter-index order, regardless of the order they were set in. */
+        List<Object> boundValues() {
+            return new ArrayList<>(boundValues.values());
+        }
+
+        int stringBinds() {
+            return stringBinds;
+        }
+
+        @Override
+        public Connection getConnection() throws SQLException {
+            return recording(delegate.getConnection());
+        }
+
+        @Override
+        public Connection getConnection(String username, String password) throws SQLException {
+            return recording(delegate.getConnection(username, password));
+        }
+
+        private Connection recording(Connection connection) {
+            return proxy(Connection.class, connection, (method, args, result) ->
+                method.getName().equals("prepareStatement")
+                    ? proxy(PreparedStatement.class, (PreparedStatement) result, (psMethod, psArgs, psResult) -> {
+                    switch (psMethod.getName()) {
+                        case "setObject", "setLong", "setInt" -> boundValues.put((Integer) psArgs[0], psArgs[1]);
+                        case "setString" -> stringBinds++;
+                        default -> { }
+                    }
+                    return psResult;
+                })
+                    : result);
+        }
+
+        @FunctionalInterface
+        private interface AfterCall {
+            Object apply(java.lang.reflect.Method method, Object[] args, Object result);
+        }
+
+        @SuppressWarnings("unchecked")
+        private static <T> T proxy(Class<T> type, T target, AfterCall afterCall) {
+            return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, (p, method, args) -> {
+                try {
+                    return afterCall.apply(method, args, method.invoke(target, args));
+                } catch (InvocationTargetException e) {
+                    throw e.getCause();
+                }
+            });
         }
     }
 }
