@@ -282,6 +282,83 @@ class JDBCMetricsServiceTest {
         }
     }
 
+    /**
+     * A sync that runs before the schema could ever be created — the database has been down since
+     * startup — must keep the hour's counts rather than drain them: nothing can be written, and draining
+     * would throw every count away after a connection timeout per document. It also must not touch the
+     * inserters, which on PostgreSQL would resolve the missing {@code views} table to
+     * {@code information_schema.views} and stay bound to it. The counts are written by the next sync once
+     * the database is back, as a single longer window.
+     */
+    @SneakyThrows
+    @Test
+    void syncKeepsCountsInMemoryUntilTheSchemaCanBeCreated() {
+        //given a service that started while the database was down, and has recorded a view and a download
+        val freshDb = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).generateUniqueName(true).build();
+        try {
+            val severed = new SeverableDataSource(freshDb);
+            severed.sever();
+            val startingService = new JDBCMetricsService(severed, documentRepository);
+            startingService.initialiseSchemaOnStartup();
+            startingService.recordView(TEST_DOCUMENT, TEST_IP1);
+            startingService.recordDownload(TEST_DOCUMENT, TEST_IP1);
+
+            //when the hourly sync runs with the database still down
+            val attemptsBefore = severed.connectionAttempts();
+            startingService.syncDB();
+
+            //then it gave up after the schema attempt alone, without reading any documents
+            assertThat(severed.connectionAttempts() - attemptsBefore, is(1));
+            verifyNoInteractions(documentRepository);
+
+            //when the database comes back and the next sync runs
+            given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
+            severed.restore();
+            startingService.syncDB();
+
+            //then the counts recorded during the outage were written
+            assertThat(startingService.totalViews(TEST_DOCUMENT), equalTo(1));
+            assertThat(startingService.totalDownloads(TEST_DOCUMENT), equalTo(1));
+        } finally {
+            freshDb.shutdown();
+        }
+    }
+
+    /**
+     * Epoch seconds pass 2^31 on 19 January 2038. The timestamp columns used to be {@code integer},
+     * which is 64-bit on SQLite but 32-bit on PostgreSQL, where pgjdbc narrows the bound long and the
+     * row is stored with a wrapped, negative timestamp and no error. H2's {@code integer} is 32-bit too,
+     * so it rejects the value outright, which is what lets this run without PostgreSQL.
+     */
+    @SneakyThrows
+    @Test
+    void timestampsAfter2038AreStoredIntact() {
+        //given a window in 2040
+        val start = Instant.parse("2040-01-01T00:00:00Z").getEpochSecond();
+        val end = Instant.parse("2040-01-01T01:00:00Z").getEpochSecond();
+
+        //when a row is written with those timestamps
+        try (Connection connection = db.getConnection();
+             PreparedStatement insert = connection.prepareStatement(
+                 "INSERT INTO views (start_timestamp, end_timestamp, amount, document, doc_title, record_type) VALUES (?, ?, 1, ?, 't', 'r')")) {
+            insert.setLong(1, start);
+            insert.setLong(2, end);
+            insert.setString(3, TEST_DOCUMENT);
+            insert.executeUpdate();
+        }
+
+        //then it reads back unchanged, and the report's date filters still find it
+        try (Connection connection = db.getConnection();
+             Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT start_timestamp, end_timestamp FROM views")) {
+            assertThat(rs.next(), is(true));
+            assertThat(rs.getLong(1), equalTo(start));
+            assertThat(rs.getLong(2), equalTo(end));
+        }
+        assertThat(service.getMetricsReport(Instant.ofEpochSecond(start), Instant.ofEpochSecond(end),
+            null, null, null, null, null), hasSize(1));
+    }
+
     @SneakyThrows
     @Test
     void testUpdateView() {
@@ -544,6 +621,52 @@ class JDBCMetricsServiceTest {
         assertThat(recording.stringBinds(), is(0));
     }
 
+    /**
+     * SQLite's {@code LIKE} ignores ASCII case and PostgreSQL's does not, so a document ID pasted in upper
+     * case used to match on SQLite and would find nothing on PostgreSQL. H2's {@code LIKE} is
+     * case-sensitive, like PostgreSQL's.
+     */
+    @SneakyThrows
+    @Test
+    void reportDocumentFilterIgnoresCase() {
+        //given a view of a lower-case document ID
+        try (Connection connection = db.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate("INSERT INTO views (start_timestamp, end_timestamp, amount, document, doc_title, record_type) "
+                + "VALUES (1721952000, 1722038399, 1, 'abcd1', 'test1', 'a')");
+        }
+
+        //when the report is filtered on part of the ID in upper case
+        val result = service.getMetricsReport(null, null, null, null, null, "ABCD", null);
+
+        //then the document is still found
+        assertThat(result.toString(), equalTo("[{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}]"));
+    }
+
+    /**
+     * The report always has a {@code LIMIT}, so it must always be ordered, or which rows come back is up
+     * to the engine. SQLite's (and H2's) grouping happens to come out in document order; PostgreSQL's
+     * does not. So with no {@code orderBy} it orders by document, and an ordering on a count is broken by
+     * document so that ties at the limit are decided the same way every time. Asserted on the SQL,
+     * because H2's stable grouping order would hide the difference in the results.
+     */
+    @Test
+    void reportIsAlwaysOrderedEndingOnDocument() {
+        //given a service whose statements are recorded
+        val recording = new BindRecordingDataSource(db);
+        val reportService = new JDBCMetricsService(recording, documentRepository);
+        reportService.ensureSchema();
+
+        //when the report is run without an order, then ordered by a count
+        reportService.getMetricsReport(null, null, null, null, null, null, null);
+        reportService.getMetricsReport(null, null, "views", "descending", null, null, null);
+
+        //then both are ordered, the count ordering with document as the tie-break
+        assertThat(recording.preparedSql(), contains(
+            org.hamcrest.Matchers.endsWith("ORDER BY document LIMIT 100"),
+            org.hamcrest.Matchers.endsWith("ORDER BY views DESC, document LIMIT 100")));
+    }
+
     List<List<Object>> getTitleAndType(String table) throws SQLException {
         val rows = new ArrayList<List<Object>>();
         try (Connection connection = db.getConnection();
@@ -610,6 +733,7 @@ class JDBCMetricsServiceTest {
     private static class BindRecordingDataSource extends AbstractDataSource {
         private final DataSource delegate;
         private final SortedMap<Integer, Object> boundValues = new TreeMap<>();
+        private final List<String> preparedSql = new ArrayList<>();
         private int stringBinds;
 
         BindRecordingDataSource(DataSource delegate) {
@@ -625,6 +749,11 @@ class JDBCMetricsServiceTest {
             return stringBinds;
         }
 
+        /** The SQL of every statement prepared, in order. */
+        List<String> preparedSql() {
+            return preparedSql;
+        }
+
         @Override
         public Connection getConnection() throws SQLException {
             return recording(delegate.getConnection());
@@ -636,17 +765,20 @@ class JDBCMetricsServiceTest {
         }
 
         private Connection recording(Connection connection) {
-            return proxy(Connection.class, connection, (method, args, result) ->
-                method.getName().equals("prepareStatement")
-                    ? proxy(PreparedStatement.class, (PreparedStatement) result, (psMethod, psArgs, psResult) -> {
+            return proxy(Connection.class, connection, (method, args, result) -> {
+                if (!method.getName().equals("prepareStatement")) {
+                    return result;
+                }
+                preparedSql.add(((String) args[0]).strip());
+                return proxy(PreparedStatement.class, (PreparedStatement) result, (psMethod, psArgs, psResult) -> {
                     switch (psMethod.getName()) {
                         case "setObject", "setLong", "setInt" -> boundValues.put((Integer) psArgs[0], psArgs[1]);
                         case "setString" -> stringBinds++;
                         default -> { }
                     }
                     return psResult;
-                })
-                    : result);
+                });
+            });
         }
 
         @FunctionalInterface

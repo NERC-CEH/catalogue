@@ -101,11 +101,11 @@ public class MetricsDatabaseConfig {
      *
      * <p>Pool settings are bound from {@code spring.datasource.hikari.*} rather than set in code, so
      * they stay alongside the connection settings in {@code application-metrics.properties} and can be
-     * tuned per environment without a rebuild. That includes the startup-failure policy
-     * ({@code initialization-fail-timeout=-1}, the catalogue starts when the metrics database is
-     * down — which also relies on {@code JDBCMetricsService} keeping its DDL out of its constructor),
-     * the pool size, and the deliberately short {@code connection-timeout}; the reasoning for
-     * each is recorded next to the values.
+     * tuned per environment without a rebuild: the pool size, the deliberately short
+     * {@code connection-timeout} and the driver's {@code socketTimeout}; the reasoning for each is
+     * recorded next to the values. The startup-failure policy (the catalogue starts when the metrics
+     * database is down) is noted there too, but is enforced by {@code JDBCMetricsService} doing no SQL
+     * while the context starts, not by any pool setting.
      */
     @ConditionalOnProperty(name = "metrics.database.engine", havingValue = "postgres")
     static class PostgresMetricsDatabase {

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.postgresql.PostgreSQLContainer;
@@ -19,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -33,13 +35,14 @@ import static org.mockito.BDDMockito.given;
  * rejected with "operator does not exist: integer >= character varying". H2's {@code MODE=PostgreSQL}
  * does not reproduce PostgreSQL's type resolution either, so only the real engine can answer this.</p>
  *
- * <p>Same image as the {@code metrics-db} compose service. Skipped, not failed, when Docker is not
- * available; {@code JDBCMetricsServiceTest.reportBindsTimestampFiltersAsNumbersNotStrings} still guards
- * the bind types in that case.</p>
+ * <p>Same image as staging's {@code metrics-db} and the compose service. Skipped when Docker is not
+ * available locally, but never in CI (where {@code CI} is set): there a missing Docker fails the test
+ * instead, because a skip shows as a green pipeline and this is the only place the SQL meets the real
+ * engine. {@code JDBCMetricsServiceTest} still guards the bind types and the schema on H2.</p>
  */
 @ExtendWith(MockitoExtension.class)
 class JDBCMetricsServicePostgresTest {
-    private static final String IMAGE = "postgres:14.1-alpine";
+    private static final String IMAGE = "postgres:14.24-alpine";
     private static final String TEST_DOCUMENT = "123e4567-e89b-12d3-a456-426614174000";
 
     private static PostgreSQLContainer postgres;
@@ -51,7 +54,9 @@ class JDBCMetricsServicePostgresTest {
 
     @BeforeAll
     static void startPostgres() {
-        assumeTrue(DockerClientFactory.instance().isDockerAvailable(), "Docker is not available");
+        if (System.getenv("CI") == null) {
+            assumeTrue(DockerClientFactory.instance().isDockerAvailable(), "Docker is not available");
+        }
         postgres = new PostgreSQLContainer(IMAGE)
             .withDatabaseName("metrics")
             .withUsername("metrics")
@@ -136,6 +141,30 @@ class JDBCMetricsServicePostgresTest {
         //then
         assertThat(service.totalViews(TEST_DOCUMENT), equalTo(2));
         assertThat(service.totalDownloads(TEST_DOCUMENT), equalTo(1));
+    }
+
+    /**
+     * PostgreSQL's {@code integer} is 32-bit, and pgjdbc narrows a bound long to fit it without an error,
+     * so with {@code integer} timestamp columns a window after January 2038 was stored as a negative
+     * number and the report's date filters stopped finding it. Written with {@code SimpleJdbcInsert}, as
+     * {@code syncDB} writes, because it binds by the column metadata: that is what made the narrowing
+     * silent, where a plain {@code setObject(Long)} would have failed with "integer out of range".
+     */
+    @Test
+    void timestampsAfter2038SurviveARoundTrip() {
+        //given a window in 2040
+        val start = Instant.parse("2040-01-01T00:00:00Z").getEpochSecond();
+        val end = Instant.parse("2040-01-01T01:00:00Z").getEpochSecond();
+
+        //when it is written
+        new SimpleJdbcInsert(dataSource).withTableName("views").execute(Map.of(
+            "start_timestamp", start, "end_timestamp", end, "amount", 1,
+            "document", "abcd1", "doc_title", "test1", "record_type", "a"));
+
+        //then it reads back unchanged, and the date filters still find it
+        assertThat(jdbc.queryForObject("SELECT start_timestamp FROM views", Long.class), equalTo(start));
+        assertThat(service.getMetricsReport(Instant.ofEpochSecond(start), Instant.ofEpochSecond(end), null, null, null, null, null).toString(),
+            equalTo("[{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}]"));
     }
 
     private void insert(String table, long start, long end, String document, int amount, String title, String type) {

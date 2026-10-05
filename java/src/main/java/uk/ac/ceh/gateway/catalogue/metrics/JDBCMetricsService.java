@@ -44,11 +44,14 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
     private volatile boolean schemaReady;
     private final Object schemaLock = new Object();
 
-    // SQLite has no built-in datetime type, so we store dates as Unix timestamps (seconds since 1 Jan 1970)
+    // SQLite has no built-in datetime type, so we store dates as Unix timestamps (seconds since 1 Jan 1970).
+    // bigint, not integer: SQLite's integer is 64-bit, but PostgreSQL's is 32-bit and would overflow in
+    // January 2038 -- silently, since pgjdbc narrows the bound long to an int. bigint is still INTEGER
+    // affinity on SQLite, and IF NOT EXISTS leaves the existing SQLite tables as they are.
     private static final String CREATE_STATEMENT = """
         CREATE TABLE IF NOT EXISTS %s (
-            start_timestamp integer NOT NULL,
-            end_timestamp integer NOT NULL,
+            start_timestamp bigint NOT NULL,
+            end_timestamp bigint NOT NULL,
             amount integer NOT NULL,
             document text NOT NULL,
             doc_title text NOT NULL,
@@ -247,13 +250,26 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
      * <p>Counts are dropped from memory at drain time, before the write is attempted, so a failed
      * insert loses that hour's counts for the affected document. That is the existing behaviour —
      * {@link #syncDBHelper} already swallowed per-document failures and the map was cleared
-     * regardless — and it is the right trade here: retaining them would mean the map grows without
-     * bound for as long as the database is unavailable.
+     * regardless.
+     *
+     * <p>The sync is skipped outright, before anything is drained, while the schema has never been
+     * created — the database has been unreachable since startup: the counts stay in memory,
+     * {@code lastRun} stays where it is, and the next run writes them as one longer window. Draining
+     * anyway would lose every count against a database already known to be down, at the price of a
+     * connection timeout per document. It also matters for correctness on PostgreSQL:
+     * {@code SimpleJdbcInsert} resolves its table once and keeps it, and with no {@code public.views} the
+     * driver's metadata offers {@code information_schema.views} instead, so a view inserter first used
+     * before the table exists stays bound to that system view until restart. Once the schema exists this
+     * check is a volatile read, so an outage after that is handled as above, by losing that hour's
+     * counts.
      */
     @Scheduled(initialDelay=TimeConstants.ONE_HOUR, fixedDelay=TimeConstants.ONE_HOUR)
     public void syncDB() {
         log.info("Exporting metric counts");
-        ensureSchema();
+        if (!ensureSchema()) {
+            log.warn("Metrics database unavailable, keeping counts in memory until the next sync");
+            return;
+        }
         val windowStart = lastRun;
         lastRun = Instant.now().getEpochSecond();
         syncTable(viewed, viewInserter, windowStart);
@@ -340,6 +356,12 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
      * {@code varchar}; PostgreSQL has no {@code integer >= varchar} operator, so any date filter failed
      * with "operator does not exist" (SQLSTATE 42883). H2 and SQLite coerce the string silently, which is
      * why only a real PostgreSQL shows it — see {@code JDBCMetricsServicePostgresTest}.
+     *
+     * <p>Two more differences from SQLite are handled here. The document filter lower-cases both sides,
+     * because SQLite's {@code LIKE} ignores ASCII case and PostgreSQL's does not. And the result is always
+     * ordered, ending on {@code document}: the query always has a {@code LIMIT}, SQLite's grouping happens
+     * to come out in key order, and PostgreSQL's does not, so without it the rows returned — and which
+     * ones a tie at the limit keeps — would be arbitrary.</p>
      */
     public List<Map<String,String>> getMetricsReport(Instant startDate, Instant endDate, String orderBy, String ordering, List<String> recordType, String docId, Integer noOfRecords) {
         String sql = """
@@ -366,7 +388,7 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         }
         if (docId != null && !docId.isBlank()) {
             whereVal.add("%" + docId + "%");
-            where.append(" AND document LIKE ?");
+            where.append(" AND lower(document) LIKE lower(?)");
         }
         if (recordType != null && !recordType.isEmpty()) {
             where.append(" AND record_type IN (");
@@ -378,8 +400,8 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         }
 
         StringBuilder sqlBuilder = new StringBuilder(sql.formatted(where, where));
+        sqlBuilder.append(" ORDER BY ");
         if (orderBy != null && !orderBy.isBlank()) {
-            sqlBuilder.append(" ORDER BY ");
             sqlBuilder.append(switch (orderBy) {
                 case "views", "downloads" -> orderBy;
                 default -> "document";
@@ -387,7 +409,9 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
             if (ordering != null && ordering.equals("descending")) {
                 sqlBuilder.append(" DESC");
             }
+            sqlBuilder.append(", ");
         }
+        sqlBuilder.append("document");
 
         sqlBuilder.append(" LIMIT ");
         sqlBuilder.append(noOfRecords != null && noOfRecords >= 0 ? noOfRecords : 100);

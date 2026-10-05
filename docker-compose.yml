@@ -33,8 +33,10 @@ services:
     ports:
       - "5432:5432"
     profiles: [hubbub]
-  # Copied from hubbub-db above rather than invented: same image and tag, same localtime mount, same
-  # shape, and behind a compose profile in the same way.
+  # Copied from hubbub-db above rather than invented: same image, same localtime mount, same shape,
+  # and behind a compose profile in the same way. The tag is 14.24, not hubbub-db's 14.1, to match the
+  # metrics-db that staging runs (k8s-eds-staging workloads/eidc/metrics-db.yaml) and the image
+  # JDBCMetricsServicePostgresTest uses.
   #
   # Host port 5434, not 5432: hubbub-db takes 5432, and although that one is also profiled,
   # `docker compose --profile hubbub --profile metrics up` has to be able to run both. The container
@@ -44,7 +46,7 @@ services:
   # does. That is the pattern here, and the metrics tables are recreated at startup today. Revisit
   # once Flyway owns the schema (#235) if a persistent local database turns out to be useful.
   metrics-db:
-    image: postgres:14.1-alpine
+    image: postgres:14.24-alpine
     environment:
       POSTGRES_PASSWORD: &metrics_db_password metrics
       POSTGRES_USER: &metrics_db_user metrics
@@ -152,7 +154,7 @@ services:
       # brings local dev closer to what actually runs. Left on unconditionally: under the default
       # sqlite engine it needs nothing external, and under postgres the catalogue still starts if
       # metrics-db is not running (see the depends_on comment below).
-      SPRING_PROFILES_ACTIVE: development,server-eidc,search-basic,service-agreement,upload-simple
+      SPRING_PROFILES_ACTIVE: development,server-eidc,search-basic,service-agreement,upload-simple,metrics
     env_file:
       - path: secrets.env
         required: false

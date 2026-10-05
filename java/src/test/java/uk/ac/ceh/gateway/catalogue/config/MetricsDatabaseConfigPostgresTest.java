@@ -25,8 +25,12 @@ import static org.hamcrest.Matchers.startsWith;
  * that bean is the behaviour under test — it is the most likely thing to break, since the pool is
  * hand-built here rather than auto-configured — and a {@code @Primary} stand-in holding hard-coded
  * connection details would satisfy every assertion below without the binding ever running. The
- * properties on this class are therefore the only source of connection and pool settings, and the
- * assertions read them back off the built pool.
+ * assertions therefore read the settings back off the built pool.
+ *
+ * <p>Only the engine and the connection details are set here. The pool settings deliberately come from
+ * the shipped {@code application-metrics.properties}, which the {@code metrics} profile loads: setting
+ * them here as well would outrank that file, and the assertions would only be reading back this
+ * annotation, passing even with a value deleted from the file.</p>
  */
 @SpringBootTest(classes = {
     MetricsDatabaseConfigPostgresTest.EnableBinding.class,
@@ -37,12 +41,7 @@ import static org.hamcrest.Matchers.startsWith;
     "metrics.database.engine=postgres",
     "spring.datasource.url=jdbc:postgresql://localhost:5432/metrics",
     "spring.datasource.username=metrics",
-    "spring.datasource.password=metrics",
-    "spring.datasource.hikari.pool-name=metrics-pool",
-    "spring.datasource.hikari.maximum-pool-size=8",
-    "spring.datasource.hikari.minimum-idle=2",
-    "spring.datasource.hikari.initialization-fail-timeout=-1",
-    "spring.datasource.hikari.connection-timeout=2000"
+    "spring.datasource.password=metrics"
 })
 class MetricsDatabaseConfigPostgresTest {
 
@@ -59,8 +58,8 @@ class MetricsDatabaseConfigPostgresTest {
      * be mistaken for a working PostgreSQL pool.
      *
      * <p>This contributes no beans and stubs no values — the connection and pool settings still come from
-     * {@code @TestPropertySource} through the same binding production uses, which is the point of the
-     * assertions below.
+     * {@code @TestPropertySource} and {@code application-metrics.properties} through the same binding
+     * production uses, which is the point of the assertions below.
      */
     @Configuration(proxyBeanMethods = false)
     @EnableConfigurationProperties
@@ -121,26 +120,26 @@ class MetricsDatabaseConfigPostgresTest {
     }
 
     /**
-     * The startup-failure policy, which is the reason these values are stated in properties rather than
-     * left to Hikari's defaults. {@code initialization-fail-timeout=-1} tells Hikari not to open a
-     * connection while building the pool, so an unreachable metrics database costs the counters and not
-     * the catalogue: the default (1ms) would fail the context instead, turning a routine PostgreSQL
-     * patch window into a crash-looping pod. It is asserted here because nothing else in the suite would
-     * notice its removal — the pool builds happily either way against a database that is not there.
-     * It is necessary but not sufficient: the other half is {@code JDBCMetricsService} running no SQL
-     * during context startup, which {@code JDBCMetricsServiceTest} covers.
+     * The timeouts that keep a metrics outage off the record page. A render reads two counts, and
+     * {@code JDBCMetricsService.totalAmount} returns null on any {@code DataAccessException} so the page
+     * renders without them — but only once the read gives up. {@code connection-timeout} bounds the wait
+     * for a pooled connection; the driver's {@code socketTimeout} bounds a query on a connection whose
+     * peer has vanished without a reset, which pgjdbc otherwise waits on forever. Hikari's and pgjdbc's
+     * defaults are 30s and unbounded, so these are asserted because nothing else in the suite would
+     * notice their removal from the properties file.
      *
-     * <p>The short {@code connection-timeout} is the read-path half of the same policy: a caller waiting
-     * on an exhausted pool has to give up quickly enough for {@code JDBCMetricsService.totalAmount} to
-     * return null and let the record page render without a count.</p>
+     * <p>{@code initialization-fail-timeout=-1} is asserted too, as the stated setting, although it is not
+     * what keeps the catalogue starting with the database down: that is {@code JDBCMetricsService} running
+     * no SQL while the context starts, covered by {@code JDBCMetricsServiceTest}.</p>
      */
     @Test
-    void startupAndConnectionTimeoutsKeepTheCatalogueUpWhenTheDatabaseIsDown() {
+    void timeoutsLetARecordPageGiveUpOnAnUnavailableDatabase() {
         //given/when the pool is built
         HikariDataSource pool = (HikariDataSource) dataSource;
 
-        //then the pool does not probe the database at startup, and gives up quickly at read time
-        assertThat(pool.getInitializationFailTimeout(), is(-1L));
+        //then reads give up quickly, whether waiting for a connection or on a dead one
         assertThat(pool.getConnectionTimeout(), is(2000L));
+        assertThat(pool.getDataSourceProperties().getProperty("socketTimeout"), is("10"));
+        assertThat(pool.getInitializationFailTimeout(), is(-1L));
     }
 }

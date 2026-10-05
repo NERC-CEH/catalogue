@@ -98,7 +98,7 @@ dependencies {
     testImplementation 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    // JDBCMetricsServicePostgresTest: the metrics service against a real postgres:14.1-alpine, since H2
+    // JDBCMetricsServicePostgresTest: the metrics service against a real postgres:14.24-alpine, since H2
     // silently accepts type mismatches PostgreSQL rejects. Testcontainers 2.x artifact names (the
     // "testcontainers-" prefix; PostgreSQLContainer lives in org.testcontainers.postgresql). Versions
     // managed by the Boot BOM. The test skips itself when Docker is not available.
