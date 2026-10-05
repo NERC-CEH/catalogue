@@ -24,6 +24,8 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.BDDMockito.given;
 
@@ -35,10 +37,20 @@ import static org.mockito.BDDMockito.given;
  * rejected with "operator does not exist: integer >= character varying". H2's {@code MODE=PostgreSQL}
  * does not reproduce PostgreSQL's type resolution either, so only the real engine can answer this.</p>
  *
- * <p>Same image as staging's {@code metrics-db} and the compose service. Skipped when Docker is not
- * available locally, but never in CI (where {@code CI} is set): there a missing Docker fails the test
- * instead, because a skip shows as a green pipeline and this is the only place the SQL meets the real
- * engine. {@code JDBCMetricsServiceTest} still guards the bind types and the schema on H2.</p>
+ * <p>Where the database comes from:</p>
+ * <ul>
+ *   <li>{@code METRICS_TEST_POSTGRES_URL} set: that database, with the {@code metrics}/{@code metrics}
+ *   credentials. This is how CI runs it, against a {@code services:} PostgreSQL on the
+ *   {@code test_java} job. Testcontainers cannot be used there: the runner shares the host's Docker
+ *   daemon, but the job container cannot reach the ports Docker maps on the host, so even Ryuk fails
+ *   to connect.</li>
+ *   <li>Otherwise, locally: a Testcontainers PostgreSQL, skipped when Docker is not available.</li>
+ *   <li>Otherwise, in CI ({@code CI} set): a failure, not a skip. A skip shows as a green pipeline, and
+ *   this is the only place the SQL meets the real engine; it went unnoticed that way before.</li>
+ * </ul>
+ *
+ * <p>Same image as staging's {@code metrics-db}, the compose service and the CI service.
+ * {@code JDBCMetricsServiceTest} still guards the bind types and the schema on H2.</p>
  */
 @ExtendWith(MockitoExtension.class)
 class JDBCMetricsServicePostgresTest {
@@ -54,9 +66,14 @@ class JDBCMetricsServicePostgresTest {
 
     @BeforeAll
     static void startPostgres() {
-        if (System.getenv("CI") == null) {
-            assumeTrue(DockerClientFactory.instance().isDockerAvailable(), "Docker is not available");
+        val externalUrl = System.getenv("METRICS_TEST_POSTGRES_URL");
+        if (externalUrl != null) {
+            dataSource = new DriverManagerDataSource(externalUrl, "metrics", "metrics");
+            return;
         }
+        assertThat("METRICS_TEST_POSTGRES_URL must be set in CI; see the class javadoc",
+            System.getenv("CI"), is(nullValue()));
+        assumeTrue(DockerClientFactory.instance().isDockerAvailable(), "Docker is not available");
         postgres = new PostgreSQLContainer(IMAGE)
             .withDatabaseName("metrics")
             .withUsername("metrics")
