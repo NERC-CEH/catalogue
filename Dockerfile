@@ -49,6 +49,12 @@ COPY --chown=spring:spring --from=build-web /web/css /opt/ceh-catalogue/static/c
 COPY --chown=spring:spring --from=build-web /web/node_modules/leaflet-draw/dist/images /opt/ceh-catalogue/static/css/images
 COPY --chown=spring:spring --from=build-web /web/node_modules/@fortawesome/fontawesome-free/webfonts /opt/ceh-catalogue/static/webfonts
 RUN chown spring:spring -R /var/ceh-catalogue && chown spring:spring -R /var/upload
+# /var/ceh-catalogue/metrics-db (above and below) holds the SQLite metrics database and is the mount
+# point for the CIFS share in the deployed environments. It exists now only for the
+# metrics.database.engine=sqlite rollback path: on PostgreSQL nothing reads or writes it. Remove the
+# mkdir and the VOLUME here, and the corresponding volume and volumeMount from the deployment
+# manifests, in the post-#236 cleanup that drops sqlite-jdbc -- not before the rollback window closes,
+# or rolling back means rebuilding the image.
 VOLUME /var/ceh-catalogue/datastore \
        /var/ceh-catalogue/dropbox \
        /var/ceh-catalogue/mapfiles \
@@ -81,7 +87,8 @@ USER root
 RUN apk --no-cache upgrade && apk --no-cache add su-exec
 COPY --from=datastore /datastore /var/ceh-catalogue/datastore
 RUN chown -R gradle:gradle /var/ceh-catalogue/datastore
-RUN mkdir -p /var/ceh-catalogue/jena && chown -R gradle:gradle /var/ceh-catalogue/jena
+RUN mkdir -p /var/ceh-catalogue/jena /var/ceh-catalogue/metrics-db \
+    && chown -R gradle:gradle /var/ceh-catalogue/jena /var/ceh-catalogue/metrics-db
 COPY docker/entrypoint-dev.sh /usr/local/bin/entrypoint-dev.sh
 RUN chmod +x /usr/local/bin/entrypoint-dev.sh
 WORKDIR /app

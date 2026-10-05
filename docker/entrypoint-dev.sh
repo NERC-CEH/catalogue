@@ -12,6 +12,10 @@ if [ "$(id -u)" = 0 ]; then
   if [ "$(stat -c '%u' /var/ceh-catalogue/jena)" != "1000" ]; then
     chown -R gradle:gradle /var/ceh-catalogue/jena
   fi
+  # The SQLite metrics database (metrics profile, default engine) lives on the metrics-db named volume.
+  if [ "$(stat -c '%u' /var/ceh-catalogue/metrics-db)" != "1000" ]; then
+    chown -R gradle:gradle /var/ceh-catalogue/metrics-db
+  fi
   # Repair any root-owned Gradle build output left in the bind-mounted project by an
   # earlier root-context invocation (e.g. `docker compose run --entrypoint`), so that
   # host-side Gradle can overwrite it. `find` only touches mis-owned entries, so this is
