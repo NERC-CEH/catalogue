@@ -130,6 +130,16 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonIgnore
+    public List<Link> getUtilisingProgrammes() {
+        return UtilisedBy.programmes(getRelUtilisedBy());
+    }
+
+    @JsonIgnore
+    public List<Link> getProducedDataResources() {
+        return UtilisedBy.dataResources(getRelUtilisedBy());
+    }
+
     @JsonProperty("relSupersedes")
     public List<Link> getRelSupersedes() {
         return Optional.ofNullable(relSupersedes)

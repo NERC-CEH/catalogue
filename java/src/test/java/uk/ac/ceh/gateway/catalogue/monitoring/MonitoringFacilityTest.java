@@ -5,6 +5,7 @@ import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
+import tools.jackson.databind.json.JsonMapper;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
@@ -110,5 +111,39 @@ class MonitoringFacilityTest {
         assertThat(facility.getRelChildFacility().size(), equalTo(1));
         assertThat(facility.getRelParentFacility().size(), equalTo(1));
         assertThat(facility.getRelRelated().size(), equalTo(2));
+    }
+
+    @Test
+    @DisplayName("splits utilisedBy into programmes and the data resources produced there")
+    void splitsUtilisedByOnRecordType() throws Exception {
+        //given
+        val facility = new MonitoringFacility();
+        String uri = "https://example.com/facility/test";
+        facility.setUri(uri);
+        val jenaService = org.mockito.Mockito.mock(JenaLookupService.class);
+        when(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"))
+            .thenReturn(List.of(
+                Link.builder().href("https://example.com/programme/1").associationType("monitoringProgramme").build(),
+                Link.builder().href("https://example.com/dataset/1").associationType("dataset").build(),
+                Link.builder().href("https://example.com/dataset/2").associationType("nonGeographicDataset").build()
+            ));
+
+        //when
+        facility.populateFromJenaService(jenaService);
+
+        //then
+        assertThat(hrefs(facility.getUtilisingProgrammes()), equalTo(List.of("https://example.com/programme/1")));
+        assertThat(
+            hrefs(facility.getProducedDataResources()),
+            equalTo(List.of("https://example.com/dataset/1", "https://example.com/dataset/2"))
+        );
+        // derived views for the page only: relUtilisedBy stays the one JSON property
+        val json = JsonMapper.builder().build().writeValueAsString(facility);
+        assertThat(json.contains("utilisingProgrammes"), equalTo(false));
+        assertThat(json.contains("producedDataResources"), equalTo(false));
+    }
+
+    private static List<String> hrefs(List<Link> links) {
+        return links.stream().map(Link::getHref).toList();
     }
 }

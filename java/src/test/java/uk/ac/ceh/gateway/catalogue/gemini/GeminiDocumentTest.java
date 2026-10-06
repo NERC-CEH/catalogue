@@ -420,6 +420,8 @@ public class GeminiDocumentTest {
             .thenReturn(List.of(Link.builder().href("https://example.com/replaces/1").build()));
         when(jenaService.relationships(uri, "http://purl.org/dc/terms/source"))
             .thenReturn(List.of(Link.builder().href("https://example.com/source/1").build()));
+        when(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"))
+            .thenReturn(List.of(Link.builder().href("https://example.com/facility/1").build()));
 
         //when
         document.populateFromJenaService(jenaService);
@@ -433,5 +435,6 @@ public class GeminiDocumentTest {
         assertThat(document.getRelHasPart().size(), equalTo(1));
         assertThat(document.getRelReplaces().size(), equalTo(1));
         assertThat(document.getRelSource().size(), equalTo(1));
+        assertThat(document.getRelUtilises().size(), equalTo(1));
     }
 }

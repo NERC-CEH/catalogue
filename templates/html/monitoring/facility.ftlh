@@ -25,7 +25,8 @@
     <@m.relationships relBelongsToNetwork "Belongs to these networks"/>
 
     <@m.inverseRelationships relUsedBy "Used by"  />
-    <@m.inverseRelationships relUtilisedBy "Used by"  />
+    <@m.inverseRelationships utilisingProgrammes "Used by"  />
+    <@m.inverseRelationships producedDataResources "Data produced here"  />
 
     <@m.relationships relSupersedes "Supersedes" />
     <@m.inverseRelationships relSupersededBy "Superseded by"  />
