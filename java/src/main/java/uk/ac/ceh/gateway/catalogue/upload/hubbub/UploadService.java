@@ -26,7 +26,7 @@ import java.util.zip.ZipInputStream;
 
 import static java.lang.String.format;
 import static org.springframework.http.HttpMethod.*;
-import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
+import static uk.ac.ceh.gateway.catalogue.util.Headers.withBearerToken;
 
 @Slf4j
 @ToString(onlyExplicitlyIncluded = true)
@@ -35,9 +35,7 @@ public class UploadService {
     private final RestTemplate restTemplate;
     @ToString.Include
     private final String address;
-    @ToString.Include
-    private final String username;
-    private final String password;
+    private final String token;
     @ToString.Include
     private final String uploadLocation;
 
@@ -46,14 +44,16 @@ public class UploadService {
     public UploadService(
         @Qualifier("normal") RestTemplate restTemplate,
         @Value("${hubbub.url}") String address,
-        @Value("${hubbub.username}") String username,
-        @Value("${hubbub.password}") String password,
+        @Value("${hubbub.token}") String token,
         @Value("${hubbub.location}") String uploadLocation
     ) {
         this.restTemplate = restTemplate;
         this.address = address;
-        this.username = username;
-        this.password = password;
+        // Hubbub is reached through the SSO proxy, which authenticates programmatic
+        // callers with a personal access token (dri-one #399). Building the header
+        // once here rejects a missing token at start-up, not on the first upload.
+        withBearerToken(token);
+        this.token = token;
         this.uploadLocation = uploadLocation;
         log.info("Creating");
     }
@@ -63,7 +63,7 @@ public class UploadService {
         restTemplate.exchange(
             urlTemplate,
             POST,
-            new HttpEntity<>(withBasicAuth(username, password)),
+            new HttpEntity<>(withBearerToken(token)),
             Void.class,
             datasetId,
             datastore,
@@ -77,7 +77,7 @@ public class UploadService {
         restTemplate.exchange(
             urlTemplate,
             POST,
-            new HttpEntity<>(withBasicAuth(username, password)),
+            new HttpEntity<>(withBearerToken(token)),
             Void.class,
             datasetId,
             datastore,
@@ -132,7 +132,7 @@ public class UploadService {
         restTemplate.exchange(
             urlTemplate,
             DELETE,
-            new HttpEntity<>(withBasicAuth(username, password)),
+            new HttpEntity<>(withBearerToken(token)),
             Void.class,
             datasetId,
             datastore,
@@ -146,7 +146,7 @@ public class UploadService {
         val response = restTemplate.exchange(
             urlTemplate,
             GET,
-            new HttpEntity<>(withBasicAuth(username, password)),
+            new HttpEntity<>(withBearerToken(token)),
             HubbubResponse.class,
             datasetId,
             datastore,
@@ -161,7 +161,7 @@ public class UploadService {
         val response = restTemplate.exchange(
             urlTemplate,
             GET,
-            new HttpEntity<>(withBasicAuth(username, password)),
+            new HttpEntity<>(withBearerToken(token)),
             HubbubResponse.class,
             datasetId,
             datastore,
@@ -176,7 +176,7 @@ public class UploadService {
             restTemplate.exchange(
                 urlTemplate,
                 POST,
-                new HttpEntity<>(withBasicAuth(username, password)),
+                new HttpEntity<>(withBearerToken(token)),
                 Void.class,
                 datasetId,
                 datastore,
@@ -189,7 +189,7 @@ public class UploadService {
             restTemplate.exchange(
                 urlTemplate,
                 POST,
-                new HttpEntity<>(withBasicAuth(username, password)),
+                new HttpEntity<>(withBearerToken(token)),
                 Void.class,
                 datasetId,
                 datastore,
@@ -263,7 +263,7 @@ public class UploadService {
             restTemplate.exchange(
                 urlTemplate,
                 POST,
-                new HttpEntity<>(withBasicAuth(username, password)),
+                new HttpEntity<>(withBearerToken(token)),
                 Void.class,
                 datasetId,
                 datastore,
@@ -275,7 +275,7 @@ public class UploadService {
             restTemplate.exchange(
                 urlTemplate,
                 POST,
-                new HttpEntity<>(withBasicAuth(username, password)),
+                new HttpEntity<>(withBearerToken(token)),
                 Void.class,
                 datasetId,
                 datastore,
@@ -289,7 +289,7 @@ public class UploadService {
         restTemplate.exchange(
             urlTemplate,
             POST,
-            new HttpEntity<>(withBasicAuth(username, password)),
+            new HttpEntity<>(withBearerToken(token)),
             Void.class,
             datasetId,
             user
@@ -303,7 +303,7 @@ public class UploadService {
         restTemplate.exchange(
             urlTemplate,
             POST,
-            new HttpEntity<>(withBasicAuth(username, password)),
+            new HttpEntity<>(withBearerToken(token)),
             Void.class,
             datasetId,
             path,
@@ -317,7 +317,7 @@ public class UploadService {
         restTemplate.exchange(
             urlTemplate,
             POST,
-            new HttpEntity<>(withBasicAuth(username, password)),
+            new HttpEntity<>(withBearerToken(token)),
             Void.class,
             datasetId,
             datastore,
@@ -331,7 +331,7 @@ public class UploadService {
         restTemplate.exchange(
             urlTemplate,
             POST,
-            new HttpEntity<>(withBasicAuth(username, password)),
+            new HttpEntity<>(withBearerToken(token)),
             Void.class,
             datasetId,
             user

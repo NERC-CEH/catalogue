@@ -16,18 +16,25 @@ import static com.google.common.base.Strings.nullToEmpty;
 @Value
 @Slf4j
 public class Geometry {
+
     private static final String TYPE_POINT = "point";
     private static final String TYPE_POLYGON = "polygon";
     private static final String TYPE_MULTIPOLYGON = "multipolygon";
 
     String geometryString;
+    Boolean locationConfidential;
+
     @JsonIgnore
     GeometryType geometryType;
 
     @Builder
     @JsonCreator
-    private Geometry(@JsonProperty("geometryString") String geometryString) {
+    private Geometry(
+        @JsonProperty("geometryString") String geometryString,
+        @JsonProperty("locationConfidential") Boolean locationConfidential
+    ) {
         this.geometryString = nullToEmpty(geometryString);
+        this.locationConfidential = locationConfidential;
         this.geometryType = parseGeometryType(this.geometryString);
     }
 

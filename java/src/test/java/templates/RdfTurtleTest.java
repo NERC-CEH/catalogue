@@ -7,6 +7,7 @@ import lombok.val;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
@@ -1228,26 +1231,40 @@ public class RdfTurtleTest {
                     .setTitle("Contributor role");
             }
 
-            @Test
-            @DisplayName("a contributorRole of dataCurator produces a pro:RoleInTime node with scoro:data-curator")
-            void contributorRoleDataCurator() {
+            private static final String CONTRIBUTOR = "http://purl.org/dc/terms/contributor";
+            private static final String SCORO = "http://purl.org/spar/scoro/";
+            private static final String FOAF_FAMILY_NAME = "http://xmlns.com/foaf/0.1/familyName";
+
+            private ResponsibleParty contributor(String contributorRole) {
+                // As the editor saves it: the Contributors list, role "contributor", and a
+                // hyphenated SCoRO local name (dri-one #405).
+                return ResponsibleParty.builder()
+                    .familyName("Wood")
+                    .givenName("Claire")
+                    .role("contributor")
+                    .contributorRole(contributorRole)
+                    .build();
+            }
+
+            private Resource roleOf(Resource person) {
+                assertTrue(model.contains(person, createProperty(HOLDS_ROLE_IN_TIME)));
+                return model.listObjectsOfProperty(person, createProperty(HOLDS_ROLE_IN_TIME))
+                    .next().asResource();
+            }
+
+            @ParameterizedTest(name = "{0}")
+            @ValueSource(strings = {"data-creator", "data-curator", "collaborator", "researcher",
+                "technician", "project-leader", "workpackage-leader"})
+            @DisplayName("a contributor's contributorRole produces a pro:RoleInTime with the matching scoro: role")
+            void contributorRoleReachesRdf(String contributorRole) {
                 val document = dataset("roletest");
-                document.setContactPoints(List.of(
-                    ResponsibleParty.builder()
-                        .familyName("Wood")
-                        .givenName("Claire")
-                        .contributorRole("dataCurator")
-                        .build()
-                ));
+                document.setContributors(List.of(contributor(contributorRole)));
 
                 template("rdf/ttl.ftl", document);
 
                 val record = createResource("https://example.com/id/roletest");
-                val person = model.listObjectsOfProperty(record, createProperty(CONTACT_POINT)).next().asResource();
-
-                assertTrue(model.contains(person, createProperty(HOLDS_ROLE_IN_TIME)));
-                val roleInTime = model.listObjectsOfProperty(person, createProperty(HOLDS_ROLE_IN_TIME))
-                    .next().asResource();
+                val person = model.listObjectsOfProperty(record, createProperty(CONTRIBUTOR)).next().asResource();
+                val roleInTime = roleOf(person);
                 assertTrue(model.contains(
                     roleInTime,
                     createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
@@ -1256,9 +1273,82 @@ public class RdfTurtleTest {
                 assertTrue(model.contains(
                     roleInTime,
                     createProperty(WITH_ROLE),
-                    createResource("http://purl.org/spar/scoro/data-curator")
+                    createResource(SCORO + contributorRole)
                 ));
                 assertTrue(model.contains(roleInTime, createProperty(RELATES_TO_ENTITY), record));
+            }
+
+            @Test
+            @DisplayName("a legacy camelCase contributorRole saved before 18 August still maps")
+            void legacyCamelCaseContributorRole() {
+                val document = dataset("rolelegacy");
+                document.setContributors(List.of(contributor("projectLeader")));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/rolelegacy");
+                val person = model.listObjectsOfProperty(record, createProperty(CONTRIBUTOR)).next().asResource();
+                assertTrue(model.contains(
+                    roleOf(person),
+                    createProperty(WITH_ROLE),
+                    createResource(SCORO + "project-leader")
+                ));
+            }
+
+            @Test
+            @DisplayName("an unrecognised contributorRole is left unmapped, but the contributor is still linked")
+            void unknownContributorRoleIsNotMapped() {
+                val document = dataset("roleunknown");
+                document.setContributors(List.of(contributor("chief tea maker")));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/roleunknown");
+                assertTrue(model.contains(record, createProperty(CONTRIBUTOR)));
+                assertFalse(model.contains(null, createProperty(HOLDS_ROLE_IN_TIME)));
+            }
+
+            @Test
+            @DisplayName("a principal investigator in Other contacts produces scoro:principal-investigator")
+            void principalInvestigatorFromOtherContacts() {
+                val document = dataset("rolepi");
+                document.setOtherContacts(List.of(
+                    ResponsibleParty.builder()
+                        .familyName("Wood")
+                        .givenName("Claire")
+                        .role("principalInvestigator")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/rolepi");
+                val roleInTime = model.listSubjectsWithProperty(createProperty(RELATES_TO_ENTITY), record)
+                    .next();
+                assertTrue(model.contains(
+                    roleInTime,
+                    createProperty(WITH_ROLE),
+                    createResource(SCORO + "principal-investigator")
+                ));
+                assertTrue(model.contains(null, createProperty(HOLDS_ROLE_IN_TIME), roleInTime));
+            }
+
+            @Test
+            @DisplayName("an Other contact whose role has no DOO equivalent is not described at all")
+            void unmappedOtherContactIsNotDescribed() {
+                val document = dataset("rolestakeholder");
+                document.setOtherContacts(List.of(
+                    ResponsibleParty.builder()
+                        .familyName("Stakeholder")
+                        .givenName("Sam")
+                        .role("stakeholder")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                assertFalse(model.contains(null, createProperty(FOAF_FAMILY_NAME), "Stakeholder"));
+                assertFalse(model.contains(null, createProperty(HOLDS_ROLE_IN_TIME)));
             }
 
             @Test
@@ -1861,7 +1951,7 @@ public class RdfTurtleTest {
 
             private static final String FORMAT = "http://purl.org/dc/terms/format";
             private static final String RIGHTS = "http://purl.org/dc/terms/rights";
-            private static final String MEMBER = "http://xmlns.com/foaf/0.1/member";
+            private static final String MEMBER_OF = "http://www.w3.org/ns/org#memberOf";
             private static final String HOLDS_ROLE = "http://purl.org/spar/pro/holdsRoleInTime";
             private static final String COPYRIGHT_NOTICE = "http://schema.theodi.org/odrs#copyrightNotice";
             private static final String FOAF_NAME = "http://xmlns.com/foaf/0.1/name";
@@ -1949,7 +2039,7 @@ public class RdfTurtleTest {
 
                 template("rdf/ttl.ftl", document);
 
-                for (val property : List.of(FORMAT, RIGHTS, MEMBER, HOLDS_ROLE)) {
+                for (val property : List.of(FORMAT, RIGHTS, MEMBER_OF, HOLDS_ROLE)) {
                     val objects = allObjectsOf(property);
                     assertFalse(objects.isEmpty(), () -> property + " emitted nothing to assert about");
                     objects.forEach(object -> assertFalse(
@@ -2083,7 +2173,7 @@ public class RdfTurtleTest {
                 template("rdf/ttl.ftl", withAffiliation("orgA", "Wood", "Claire", "University of Exeter", ""));
                 template("rdf/ttl.ftl", withAffiliation("orgB", "Dodd", "Ben", "University of Exeter", ""));
 
-                val organisations = allObjectsOf(MEMBER);
+                val organisations = allObjectsOf(MEMBER_OF);
                 assertThat(
                     "one organisation named on two records is one node",
                     organisations.stream().distinct().toList().size(), equalTo(1)
@@ -2102,7 +2192,7 @@ public class RdfTurtleTest {
                     withAffiliation("orgror", "Wood", "Claire", "UK Centre for Ecology & Hydrology", "https://ror.org/00pggkr55"));
 
                 assertThat(
-                    allObjectsOf(MEMBER),
+                    allObjectsOf(MEMBER_OF),
                     equalTo(List.<RDFNode>of(createResource("https://ror.org/00pggkr55")))
                 );
                 assertFalse(
@@ -2125,8 +2215,8 @@ public class RdfTurtleTest {
                 template("rdf/ttl.ftl", document);
 
                 assertTrue(
-                    allObjectsOf(MEMBER).isEmpty(),
-                    "the contact is the organisation, so foaf:member would assert membership of a "
+                    allObjectsOf(MEMBER_OF).isEmpty(),
+                    "the contact is the organisation, so org:memberOf would assert membership of a "
                         + "second node carrying its own name"
                 );
             }
@@ -2139,7 +2229,7 @@ public class RdfTurtleTest {
 
                 assertThat(
                     "minting makes the variants visible and joinable; reconciling them is data cleanup",
-                    allObjectsOf(MEMBER).stream().distinct().toList().size(), equalTo(2)
+                    allObjectsOf(MEMBER_OF).stream().distinct().toList().size(), equalTo(2)
                 );
             }
 
@@ -2403,7 +2493,7 @@ public class RdfTurtleTest {
         private static final String FOAF_NAME = "http://xmlns.com/foaf/0.1/name";
         private static final String FAMILY_NAME = "http://xmlns.com/foaf/0.1/familyName";
         private static final String GIVEN_NAME = "http://xmlns.com/foaf/0.1/givenName";
-        private static final String MEMBER = "http://xmlns.com/foaf/0.1/member";
+        private static final String MEMBER_OF = "http://www.w3.org/ns/org#memberOf";
         private static final String HAS_EMAIL = "http://www.w3.org/2006/vcard/ns#hasEmail";
         private static final String HOLDS_ROLE = "http://purl.org/spar/pro/holdsRoleInTime";
 
@@ -2475,7 +2565,7 @@ public class RdfTurtleTest {
                 "writing record text onto a shared external identifier is what dri-one #320 "
                     + "forbids, and what accumulated 281 conflicting names in production",
                 predicatesOf(ORCID),
-                equalTo(List.of(HOLDS_ROLE, RDF_TYPE, MEMBER))
+                equalTo(List.of(HOLDS_ROLE, RDF_TYPE, MEMBER_OF))
             );
         }
 
@@ -2484,7 +2574,7 @@ public class RdfTurtleTest {
         void isniCarriesNoRecordText() {
             template("rdf/ttl.ftl", withAuthor("isni", person().nameIdentifier(ISNI).build()));
 
-            assertThat(predicatesOf(ISNI), equalTo(List.of(HOLDS_ROLE, RDF_TYPE, MEMBER)));
+            assertThat(predicatesOf(ISNI), equalTo(List.of(HOLDS_ROLE, RDF_TYPE, MEMBER_OF)));
         }
 
         @Test
@@ -2493,7 +2583,7 @@ public class RdfTurtleTest {
             template("rdf/ttl.ftl", withAuthor("orcidaff", person().nameIdentifier(ORCID).build()));
 
             val organisations = model.listObjectsOfProperty(
-                createResource(ORCID), createProperty(MEMBER)
+                createResource(ORCID), createProperty(MEMBER_OF)
             ).toList();
             assertThat(organisations.size(), equalTo(1));
 
@@ -2514,8 +2604,26 @@ public class RdfTurtleTest {
                 person().nameIdentifier(ORCID).organisationIdentifier(ROR).build()));
 
             assertThat(
-                model.listObjectsOfProperty(createResource(ORCID), createProperty(MEMBER)).toList(),
+                model.listObjectsOfProperty(createResource(ORCID), createProperty(MEMBER_OF)).toList(),
                 equalTo(List.<RDFNode>of(createResource(ROR)))
+            );
+        }
+
+        @Test
+        @DisplayName("an affiliation runs from the person to the organisation, never as foaf:member (dri-one #401)")
+        void affiliationPointsFromPersonToOrganisation() {
+            template("rdf/ttl.ftl", withAuthor("direction",
+                person().nameIdentifier(ORCID).organisationIdentifier(ROR).build()));
+
+            assertTrue(
+                model.contains(createResource(ORCID), createProperty(MEMBER_OF), createResource(ROR)),
+                "org:memberOf reads member → organisation, with the person as subject"
+            );
+            assertTrue(
+                model.listStatements(null, createProperty("http://xmlns.com/foaf/0.1/member"), (RDFNode) null)
+                    .toList().isEmpty(),
+                "foaf:member reads group → member, so person foaf:member organisation made "
+                    + "every organisation a member of its own staff"
             );
         }
 

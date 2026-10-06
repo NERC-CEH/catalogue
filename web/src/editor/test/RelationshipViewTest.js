@@ -95,5 +95,18 @@ describe('Test RelationshipView', function () {
       expect(query).toContain('Model')
       expect(query).toContain('Software')
     })
+
+    it('restricts utilises to monitoring networks and facilities', async () => {
+      const utilisesOptions = [
+        { value: 'https://digital.ceh.ac.uk/ontology/doo/utilises', label: 'Uses (facility or network)' }
+      ]
+
+      const query = await queryFor('https://digital.ceh.ac.uk/ontology/doo/utilises', utilisesOptions)
+
+      // resourceType is indexed as the codelist display label, so the labels are
+      // quoted - they contain spaces.
+      expect(query).toContain('resourceType%3A(%22Monitoring%20network%22%20OR%20%22Monitoring%20facility%22)')
+      expect(query).toContain('rainfall')
+    })
   })
 })

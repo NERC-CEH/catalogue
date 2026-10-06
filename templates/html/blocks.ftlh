@@ -268,18 +268,18 @@ Replace \n with line breaks and replace plain text http links with actionable on
 <#macro linebreaksAndLinks value>
   <#if value?has_content>
     <#list value?split("\n") as line>
-      <#list line?split("\\s",'r') as word>
-        <#if word?matches("[\\(\\[]?http(s?)://[-a-zA-Z0-9@:%_+.~#?&/=]+[\\]\\)]?",'r')>
-          <#assign link = word?replace('^\\(', '', 'ri')?replace('\\)$', '', 'ri')?replace('^\\[', '', 'ri')?replace('\\]$', '', 'ri')>
-          <a href="${link}" target="_blank" rel="noopener noreferrer">${word}</a>
-        <#else>
-          ${word}
-        </#if>
-      </#list>
+      <@linkify line />
       <#sep><br></#sep>
     </#list>
   </#if>
 </#macro>
+
+<#macro linkify text>
+    <#if text??>
+      ${text?replace("(https?://[^\\s\\)\\]<]+)", "<a target='_blank' rel='noopener noreferrer' href='$1'>$1</a>" , "r")?no_esc}
+    </#if>
+</#macro>
+
 
 <#--
 Admin toolbar

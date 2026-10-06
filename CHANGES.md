@@ -4,6 +4,20 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.238.0] - 2026-09-24
+
+The catalogue's linked-data export now records which organisation each person belongs to the right way round. Until now it said, in effect, that each organisation was a member of the person, so outside tools that asked which people belong to an organisation got nothing back (DRI-ONE-401). Some details of a record are worked out by the catalogue itself, such as the links between monitoring programmes, networks and facilities and the combined map area drawn from them. These can no longer be overwritten by sending an edited record directly. Before this, a direct edit could even write back the precise position of a facility marked as confidential (DRI-ONE-146).
+
+## [3.237.0] - 2026-09-21
+
+Monitoring facilities marked as confidential now have their location coarsened to a grid square of about 10 km (0.1 degrees) when they are saved, rather than only being blurred in the visitor's browser. The precise position is never published, whichever way the record was edited or whatever shape its location takes. Previously an outline shape kept its exact boundary (DRI-ONE-369). Facility pages without a location no longer fail to load. On the public map, facilities now appear as clearly styled circular markers.
+
+Search results can now be filtered by the monitoring networks and facilities a programme uses. The banner on the search page now announces that, from 5 October 2026, Personal Access Tokens replace usernames and passwords for data downloads and catalogue requests. The banner is shown on the EIDC catalogue only, until the end of October.
+
+## [3.236.0] - 2026-09-14
+
+Records can now carry their own download instructions, shown in a highlighted panel beside the download options rather than mixed in with the general conditions of use. The example commands for scripted downloads now cover curl as well as wget (DRI-ONE-389). Links that the catalogue generates for itself now start with the correct secure web address. Before, a misconfigured proxy (the server that passes visitors' requests on to the catalogue) could produce broken links (DRI-ONE-260). Behind the scenes, harmless font warnings raised while reading supporting documents have been silenced to keep the server logs readable.
+
 ## [3.235.0] - 2026-09-11
 
 Visitors can now search the catalogue by meaning rather than by exact wording. A new search mode finds records whose subject matter matches what was asked for, even where none of the words typed appear in the record itself, using a language service hosted by Amazon to interpret both the question and the catalogue's contents (EMC-865). The usual filters work alongside it, so results can still be narrowed by topic, date or record type, and paging through them keeps the mode in place. Text held in supporting documents attached to a record is now read in as well, so a search can reach a dataset through the content of its accompanying documentation and not only through its summary.

@@ -1,8 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.monitoring;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Setter;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
@@ -38,7 +41,11 @@ public class MonitoringActivity extends AbstractMetadataDocument implements Well
     private List<TimePeriod> operatingPeriod;
     private List<Keyword> environmentalDomain, purposeOfCollection, keywordsParameters;
     private List<Supplemental> linksData, linksOther;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relUseNetworkOrFacility;
+    @JsonIgnore
+    @Setter(onMethod_ = @JsonIgnore)
     private List<Link> relSetupForProgramme;
 
     @Override
@@ -56,12 +63,13 @@ public class MonitoringActivity extends AbstractMetadataDocument implements Well
         this.setRelSetupForProgramme(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/triggers"));
     }
 
-
+    @JsonProperty("relUseNetworkOrFacility")
     public List<Link> getRelUseNetworkOrFacility() {
         return Optional.ofNullable(relUseNetworkOrFacility)
             .orElseGet(Collections::emptyList);
     }
 
+    @JsonProperty("relSetupForProgramme")
     public List<Link> getRelSetupForProgramme() {
         return Optional.ofNullable(relSetupForProgramme)
             .orElseGet(Collections::emptyList);

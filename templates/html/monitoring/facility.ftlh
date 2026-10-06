@@ -5,9 +5,7 @@
     <@m.relationshipCombinedGeometriesWithOwner relCombinedGeometry />
   </#assign>
 
-  <#if locationConfidential>
-    <div class="locationConfidential">The location of this facility is confidential, so the position shown on the map is just illustrative</div>
-  </#if>
+  <#include "_locationConfidential.ftlh">
 
   <#if relationshipCombinedGeometriesOutput?has_content>
     <div class="displayFeatures">

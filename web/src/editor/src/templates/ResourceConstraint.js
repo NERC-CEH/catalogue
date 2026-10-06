@@ -9,13 +9,10 @@ export default _.template(`
         <select data-name="code" id="<%= data.modelAttribute %><%= data.index %>Code" class="form-select">
             <option class="option" value="" selected >- Select Type -</option>
             <option class="option" value="copyright">Copyright</option>
-            <option class="option" value="intellectualPropertyRights">Intellectual Property Rights</option>
+            <option class="option" value="downloadInstructions">Download instructions</option>
+            <option class="option" value="intellectualPropertyRights">Intellectual property rights</option>
             <option class="option" value="license">License</option>
-            <option class="option" value="otherRestrictions">Other Restrictions</option>
-            <option class="option" value="patent">Patent</option>
-            <option class="option" value="patentPending">Patent Pending</option>
-            <option class="option" value="restricted">Restricted</option>
-            <option class="option" value="trademark">Trademark</option>
+            <option class="option" value="otherRestrictions">Other restrictions</option>
         </select>
     </div>
 </div>

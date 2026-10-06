@@ -235,6 +235,46 @@ class SearchControllerTest extends AbstractMvcTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
+    /**
+     * The regression test for dri-one #260. Everything the search API publishes - facet URLs, the
+     * prev/next links, the related searches - is built on {@code request.getRequestURL()}, so the
+     * forwarded headers the proxy sends decide whether those links work. When the scheme said
+     * {@code http} while the port said {@code 443}, every facet URL came back as
+     * {@code http://catalogue.ceh.ac.uk:443/...} and answered 400: a plaintext request to the TLS port.
+     *
+     * <p>Nothing in this repo can be asserted about the proxy, but this can: given the headers a
+     * correct proxy sends, the base URL must come out as https on the default port, with no port in it.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("GET /{catalogue}/documents builds published URLs from the forwarded headers")
+    void searchUrlsHonourForwardedHeaders() {
+        //given
+        givenSearchResults();
+
+        //when the request arrives as the proxy forwards it, TLS having been terminated at the ingress
+        mvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .queryParam("term", "carbon")
+                .header("X-Forwarded-Proto", "https")
+                .header("X-Forwarded-Port", "443")
+                .header("X-Forwarded-Host", "catalogue.ceh.ac.uk")
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk());
+
+        //then
+        val endpoint = ArgumentCaptor.forClass(String.class);
+        verify(searcher).search(
+            endpoint.capture(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any(), any(), any()
+        );
+        assertThat(
+            "published URLs must be https with no port, or every facet link is a 400",
+            endpoint.getValue(),
+            equalTo("https://catalogue.ceh.ac.uk/eidc/documents")
+        );
+    }
+
     @Test
     @SneakyThrows
     @DisplayName("GET search page with editor buttons")

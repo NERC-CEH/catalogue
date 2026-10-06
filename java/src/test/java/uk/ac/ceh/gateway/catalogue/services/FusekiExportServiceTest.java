@@ -244,6 +244,49 @@ public class FusekiExportServiceTest {
             referenced, not(hasItem("http://catalogue.invalid/id/a-record")));
     }
 
+    /**
+     * The shape templates/rdf/_macros.ftl fundingDetail writes: the funder is a
+     * ROR IRI that is only ever the subject of frapo:awards, never the object
+     * of anything, so collecting objects alone never asked ROR about it
+     * (dri-one #412).
+     */
+    private static final String FUNDED_TTL = """
+        @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+        @prefix frapo: <http://purl.org/cerif/frapo/> .
+        @prefix prov:  <http://www.w3.org/ns/prov#> .
+        <http://catalogue.invalid/id/a-record> a dcat:Dataset ;
+            prov:wasGeneratedBy <http://catalogue.invalid/id/a-record_fund0> .
+        <http://catalogue.invalid/id/a-record_fund0> a frapo:Grant ;
+            frapo:funds <http://catalogue.invalid/id/a-record> .
+        <https://ror.org/00cwqg982> a frapo:FundingAgency ;
+            frapo:awards <http://catalogue.invalid/id/a-record_fund0> .
+        <http://catalogue.invalid/id/uncited-record> a dcat:Dataset .
+        """;
+
+    @Test
+    @SneakyThrows
+    @DisplayName("a funder that is only ever a subject is still asked about (dri-one #412)")
+    void sourceGraphsSeeFundersThatAreOnlySubjects() {
+        given(documentsToTurtleService.getBigTtl(any())).willReturn(Optional.of(FUNDED_TTL));
+        given(metadataListingService.getPublicDocumentsOfCatalogue(anyString())).willReturn(List.of());
+        given(vocabularyGraphService.graphs(any())).willReturn(Map.of());
+
+        mockServer.expect(requestTo(equalTo(FUSEKI_DATASET_URL + "?graph=" + BASE_URI)))
+            .andExpect(method(HttpMethod.PUT)).andRespond(withSuccess());
+
+        service.runExport();
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Set<String>> captor = ArgumentCaptor.forClass(Set.class);
+        verify(vocabularyGraphService).graphs(captor.capture());
+        val referenced = captor.getValue();
+
+        assertThat("the funder is an outside subject, so ROR can describe it",
+            referenced, hasItem("https://ror.org/00cwqg982"));
+        assertThat("a subject in our own namespace is still not collected",
+            referenced, not(hasItem("http://catalogue.invalid/id/uncited-record")));
+    }
+
     @Test
     @SneakyThrows
     @DisplayName("a catalogue that will not parse holds back every source graph, not just its own")

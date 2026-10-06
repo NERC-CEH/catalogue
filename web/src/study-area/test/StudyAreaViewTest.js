@@ -4,7 +4,7 @@ import { StudyAreaView } from '../src/View'
 describe('Test StudyAreaView', function () {
   let el
 
-  afterEach(() => el.remove())
+  afterEach(() => el?.remove())
 
   it('renders point', () => {
     // Given
@@ -49,5 +49,59 @@ describe('Test StudyAreaView', function () {
     // Then
     expect(view).toBeDefined()
     expect(el.hasClass('leaflet-container')).toBeTrue()
+  })
+})
+
+// Styling helpers are exercised directly: constructing the view runs the full
+// Leaflet render, which is not needed to check what style a feature resolves to.
+//
+// Deliberately a top-level describe rather than nested inside the one above.
+// That one owns a DOM fixture and tears it down with afterEach(() => el?.remove()),
+// which would also run after every test nested within it - and these tests never
+// assign `el`. Jasmine randomises test order, so nesting them made the suite pass
+// or fail depending on the seed: green locally, four failures on CI.
+describe('marker styling', () => {
+  const styling = Object.create(StudyAreaView.prototype)
+
+  it('gives an active point a heavier outline than an inactive one', () => {
+    // When
+    const active = styling.getPointStyle({ properties: { availability: 'Active' } })
+    const inactive = styling.getPointStyle({ properties: { availability: 'Inactive' } })
+
+    // Then
+    // `null` does not fall back to Leaflet's default of 3 - setOptions copies it
+    // over the prototype default and the SVG renderer emits stroke-width="null",
+    // which the browser discards, leaving 1px on the *active* marker.
+    expect(typeof active.weight).toBe('number')
+    expect(active.weight).toBeGreaterThan(inactive.weight)
+  })
+
+  it('tolerates a feature with no properties', () => {
+    // Then
+    expect(() => styling.getPointStyle({})).not.toThrow()
+  })
+
+  it('carries the source properties onto a polygon centroid', () => {
+    // Given
+    const polygon = {
+      getBounds: () => ({ getCenter: () => ({ lat: 54.5, lng: -2.6 }) }),
+      feature: { properties: { availability: 'Inactive', title: 'Test site' } }
+    }
+
+    // When
+    const centroid = styling.centerPointOfPolygon(polygon)
+
+    // Then
+    // Without these, an inactive polygon's centroid renders as active blue at the
+    // zoom levels where the centroid is all that is shown.
+    expect(centroid.properties).toEqual({ availability: 'Inactive', title: 'Test site' })
+  })
+
+  it('tolerates a polygon layer with no feature', () => {
+    // Given
+    const polygon = { getBounds: () => ({ getCenter: () => ({ lat: 54.5, lng: -2.6 }) }) }
+
+    // Then
+    expect(() => styling.centerPointOfPolygon(polygon)).not.toThrow()
   })
 })

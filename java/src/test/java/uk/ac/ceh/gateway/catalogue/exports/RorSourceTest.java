@@ -208,6 +208,66 @@ class RorSourceTest {
             model.contains(createResource(UKCEH), DCTerms.date, "2018-11-14"), is(false));
     }
 
+    private static final String ORG = "http://www.w3.org/ns/org#";
+
+    /** Which organisations this one belongs to, and which belong to it (dri-one #413). */
+    private static String withRelationships() {
+        return """
+            {
+              "id": "https://ror.org/00pggkr55",
+              "names": [{"lang": "en", "types": ["ror_display"], "value": "UK Centre for Ecology & Hydrology"}],
+              "links": [], "external_ids": [], "locations": [],
+              "relationships": [
+                {"type": "parent", "id": "https://ror.org/001aqnf71", "label": "UK Research and Innovation"},
+                {"type": "child", "id": "https://ror.org/04xw4m193", "label": "Environmental Information Data Centre"},
+                {"type": "related", "id": "https://ror.org/04g9z3b21", "label": "UK National Climate Science Partnership"},
+                {"type": "predecessor", "id": "https://ror.org/00jb3zw08", "label": "Institute of Terrestrial Ecology"},
+                {"type": "successor", "id": "https://ror.org/0successr", "label": "A future name"},
+                {"type": "sibling", "id": "https://ror.org/0unknownn", "label": "A type ROR might add"},
+                {"type": "parent", "id": "https://ror.org/{bad}", "label": "Unusable"}
+              ]
+            }
+            """;
+    }
+
+    @Test
+    @DisplayName("ROR's relationships become W3C Organization and Dublin Core links")
+    void relationshipsAreLinks() {
+        val model = describe(withRelationships());
+
+        assertThat(urisOf(model, createProperty(ORG + "subOrganizationOf")), is(List.of("https://ror.org/001aqnf71")));
+        assertThat(urisOf(model, createProperty(ORG + "hasSubOrganization")), is(List.of("https://ror.org/04xw4m193")));
+        assertThat(urisOf(model, createProperty(ORG + "linkedTo")), is(List.of("https://ror.org/04g9z3b21")));
+        assertThat("this organisation replaces its predecessor",
+            urisOf(model, DCTerms.replaces), is(List.of("https://ror.org/00jb3zw08")));
+        assertThat(urisOf(model, DCTerms.isReplacedBy), is(List.of("https://ror.org/0successr")));
+    }
+
+    @Test
+    @DisplayName("an unknown relationship type or an unusable IRI is dropped, not guessed at")
+    void unknownRelationshipsAreDropped() {
+        val model = describe(withRelationships());
+
+        assertThat("the unusable parent IRI never reaches the endpoint",
+            urisOf(model, createProperty(ORG + "subOrganizationOf")), not(hasItem("https://ror.org/{bad}")));
+        assertFalse(model.containsResource(createResource("https://ror.org/0unknownn")),
+            "a type with no agreed meaning is left out rather than mapped to something close");
+    }
+
+    @Test
+    @DisplayName("nothing is said about the related organisations themselves")
+    void relativesAreNotDescribed() {
+        val model = describe(withRelationships());
+
+        // The source graph describes only what the catalogue cites, and every IRI
+        // subject counts as a described entity, so ROR's label for a relative
+        // stays out: a cited relative has its own full description.
+        assertThat(model.listSubjects().toList().stream().map(s -> s.getURI()).distinct().toList(),
+            is(List.of(UKCEH)));
+        assertThat("the Organization Ontology is declared, at its http namespace",
+            source.vocabularies(), hasItem(ORG));
+    }
+
     @Test
     @DisplayName("a response that is not the JSON we asked for is thrown, not swallowed")
     void unreadableResponseThrows() {

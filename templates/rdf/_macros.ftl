@@ -27,18 +27,23 @@
   DCAT tooling keep working. This only adds the detail needed to ask who
   curated a dataset, who led it, or who the field technician was.
 
-  contributorRole is the editor's fixed six-value vocabulary and takes
-  precedence; role is a second, much broader controlled list where only
+  contributorRole is the editor's fixed vocabulary of SCoRO local names and
+  takes precedence; role is a second, much broader controlled list where only
   a handful of values have a confirmed DOO equivalent. Everything else is
   left unmapped rather than guessed.
+
+  The editor has stored contributorRole hyphenated (data-curator) since
+  18 August 2026; records saved before then hold camelCase (dataCurator).
+  Both are normalised to the hyphenated SCoRO local name, then checked
+  against the known terms so free text can never become a scoro: name
+  (dri-one #405).
 -->
+<#assign scoroContributorRoles = ["data-creator", "data-curator", "collaborator", "researcher",
+  "technician", "project-leader", "workpackage-leader"]>
+
 <#function doiRoleUri contact>
-  <#if contact.contributorRole == "dataCreator"><#return "scoro:data-creator"></#if>
-  <#if contact.contributorRole == "dataCurator"><#return "scoro:data-curator"></#if>
-  <#if contact.contributorRole == "collaborator"><#return "scoro:collaborator"></#if>
-  <#if contact.contributorRole == "researcher"><#return "scoro:researcher"></#if>
-  <#if contact.contributorRole == "technician"><#return "scoro:technician"></#if>
-  <#if contact.contributorRole == "projectLeader"><#return "scoro:project-leader"></#if>
+  <#local scoroRole = contact.contributorRole?replace("([a-z])([A-Z])", "$1-$2", "r")?lower_case>
+  <#if scoroContributorRoles?seq_contains(scoroRole)><#return "scoro:" + scoroRole></#if>
   <#if contact.role == "author"><#return "pro:author"></#if>
   <#if contact.role == "principalInvestigator"><#return "scoro:principal-investigator"></#if>
   <#return "">
@@ -76,7 +81,7 @@
         name.
 
         Not asserted where the contact IS the organisation. contactName and
-        organisationName are then the same string, so foaf:member would make the
+        organisationName are then the same string, so org:memberOf would make the
         organisation a member of a second node bearing its own name — 24 such
         statements in production before dri-one #334.
       -->
@@ -98,7 +103,7 @@
         one foaf:name, including one researcher's ORCID asserting a different
         person's name (dri-one #348).
 
-        foaf:member stays on both. It is not a claim about who the person is,
+        org:memberOf stays on both. It is not a claim about who the person is,
         but about what this record says of them, so it belongs with
         pro:holdsRoleInTime rather than with the name. An email address is
         asserted on neither — see the note below.
@@ -110,9 +115,9 @@
           <#if contact.givenName?has_content >foaf:givenName "${ttl.escape(contact.givenName?trim)}" ;</#if>
         </#if>
         <#if memberRor?has_content>
-          foaf:member <${memberRor}> ;
+          org:memberOf <${memberRor}> ;
         <#elseif memberOrg?has_content>
-          foaf:member ${memberOrg} ;
+          org:memberOf ${memberOrg} ;
         </#if>
       .
 

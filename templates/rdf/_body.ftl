@@ -42,6 +42,11 @@
       dcterms:publisher <@contactList publishers "pub" /> ;
     </#if>
 
+    <#--Contributors: the one list the editor offers a contributorRole on (dri-one #405)-->
+    <#if contributors?has_content>
+      dcterms:contributor <@contactList contributors "con" /> ;
+    </#if>
+
     <#--Relationships-->
     <#-- dri-one #327: a target that is itself withdrawn/unpublished (available in the Jena
          index, but not to the outside world) must not be linked to as if it resolved. -->
@@ -113,6 +118,21 @@
 
     <#if authors?has_content>
       <@contactDetail authors "a" />
+    </#if>
+
+    <#if contributors?has_content>
+      <@contactDetail contributors "con" />
+    </#if>
+
+    <#--
+      Other contacts only where their role maps onto DOO — in practice a
+      principal investigator (dri-one #405). The rest (mediator, stakeholder,
+      user…) have no confirmed equivalent and no predicate linking them to the
+      record, so describing them would leave nodes nothing points at.
+    -->
+    <#assign mappedOtherContacts = (otherContacts![])?filter(c -> doiRoleUri(c)?has_content)>
+    <#if mappedOtherContacts?has_content>
+      <@contactDetail mappedOtherContacts "oc" />
     </#if>
 
     <#if incomingCitations?has_content>

@@ -15,6 +15,17 @@ test_java:
   image: gradle:9.5.1-jdk25-alpine
   except:
     - tags
+  # PostgreSQL for JDBCMetricsServicePostgresTest, which fails rather than skips in CI without it.
+  # A service rather than Testcontainers: the job container cannot reach ports Docker maps on the
+  # host, so Testcontainers cannot connect to anything it starts here. Same tag as staging's metrics-db.
+  services:
+    - name: postgres:14.24-alpine
+      alias: metrics-db
+  variables:
+    POSTGRES_DB: metrics
+    POSTGRES_USER: metrics
+    POSTGRES_PASSWORD: metrics
+    METRICS_TEST_POSTGRES_URL: jdbc:postgresql://metrics-db:5432/metrics
   script: gradle test --no-daemon
   artifacts:
     when: always
