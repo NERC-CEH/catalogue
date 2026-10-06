@@ -5,7 +5,7 @@ import {
   FileView, FundingView, KeywordThemeView, KeywordVocabularyView,
   ParentView,
   PredefinedParentView, RightsHolderView,
-  SingleObjectView, SupportingDocView,
+  RadioView, SingleObjectView, SupportingDocView,
   TextareaView,
   TextOnlyView, TopicCategoryView
 } from '../views'
@@ -78,6 +78,72 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'title',
           required: true
+        }),
+
+        new TextOnlyView({
+          model: this.model,
+          label: 'Title location',
+          text: 'Does your title contain the location of the data resource?'
+        }),
+
+        new RadioView({
+          model: this.model,
+          modelAttribute: 'titleContainsLocation'
+        }),
+
+        new TextOnlyView({
+          model: this.model,
+          label: 'Location explanation',
+          text: 'If title does NOT contain location, state why'
+        }),
+
+        new TextareaView({
+          model: this.model,
+          modelAttribute: 'titleLocationExplanation'
+        }),
+
+        new TextOnlyView({
+          model: this.model,
+          label: 'Title date',
+          text: 'Does your title contain the date(s) of the data resource?<br>Dates are important where observations are date/time/seasonally-dependent or where observations are known to change over time (e.g. climate data, soil chemistry, spp occurrence, river flow). They may not always be necessary in lab/experimental data (e.g. animal behaviour experiments)'
+        }),
+
+        new RadioView({
+          model: this.model,
+          modelAttribute: 'titleContainsDate'
+        }),
+
+        new TextOnlyView({
+          model: this.model,
+          label: 'Date explanation',
+          text: 'If title does NOT contain dates, state why'
+        }),
+
+        new TextareaView({
+          model: this.model,
+          modelAttribute: 'titleDateExplanation'
+        }),
+
+        new TextOnlyView({
+          model: this.model,
+          label: 'Title acronym',
+          text: 'Does your title contain any unexplained acronyms?'
+        }),
+
+        new RadioView({
+          model: this.model,
+          modelAttribute: 'titleContainsAcronym'
+        }),
+
+        new TextOnlyView({
+          model: this.model,
+          label: 'Acronyms explanation',
+          text: 'If title contains unexplained acronyms, state why'
+        }),
+
+        new TextareaView({
+          model: this.model,
+          modelAttribute: 'titleAcronymExplanation'
         }),
 
         new TextOnlyView({
