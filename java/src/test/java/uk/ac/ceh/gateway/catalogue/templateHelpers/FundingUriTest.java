@@ -141,4 +141,63 @@ class FundingUriTest {
             );
         }
     }
+
+    @Nested
+    @DisplayName("Pointing a UKRI award number at Gateway to Research (dri-one #430)")
+    class GtrProject {
+
+        @ParameterizedTest
+        @DisplayName("a UKRI grant reference gets its GtR project page")
+        @CsvSource({
+            "NE/S00310X/1, https://gtr.ukri.org/projects?ref=NE/S00310X/1",
+            "BB/R005710/1, https://gtr.ukri.org/projects?ref=BB/R005710/1",
+            "BBS/E/C/000I0320, https://gtr.ukri.org/projects?ref=BBS/E/C/000I0320",
+            "EP/K039660/1, https://gtr.ukri.org/projects?ref=EP/K039660/1",
+            "'  ne/s00310x/1 ', https://gtr.ukri.org/projects?ref=NE/S00310X/1"
+        })
+        void ukriReference(String awardNumber, String expected) {
+            assertThat(service.gtrProject(funding().awardNumber(awardNumber).build()), is(expected));
+        }
+
+        @ParameterizedTest
+        @DisplayName("anything not shaped like a UKRI reference gets nothing")
+        @CsvSource({
+            "''",
+            "101086179",
+            "DEB-1716698",
+            "FAPESP 2018/14995-8",
+            "DST/TM/INDO-UK/2K17/55(C)",
+            "NE-M009106-1",
+            "NE/X019063/1)",
+            "'ICA\\R1\\180100'",
+            "RES-224-25-0093"
+        })
+        void notUkri(String awardNumber) {
+            assertThat(service.gtrProject(funding().awardNumber(awardNumber).build()), is(""));
+        }
+
+        @Test
+        @DisplayName("an award URI to some other page does not stop the GtR link")
+        void otherAwardUri() {
+            assertThat(
+                service.gtrProject(funding()
+                    .awardNumber("NE/S00310X/1")
+                    .awardURI("https://gotw.nerc.ac.uk/list_full.asp?pcode=NE/S00310X/1")
+                    .build()),
+                is("https://gtr.ukri.org/projects?ref=NE/S00310X/1")
+            );
+        }
+
+        @Test
+        @DisplayName("an award URI that already is the GtR page is not repeated")
+        void sameAsAwardUri() {
+            assertThat(
+                service.gtrProject(funding()
+                    .awardNumber("NE/S00310X/1")
+                    .awardURI("http://gtr.ukri.org/projects?ref=NE/S00310X/1/")
+                    .build()),
+                is("")
+            );
+        }
+    }
 }

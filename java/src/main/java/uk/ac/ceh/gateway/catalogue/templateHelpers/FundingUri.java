@@ -8,6 +8,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 
 import java.util.Locale;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * Decides which RDF node a funding entry's grant is, and returns it ready to
@@ -47,6 +48,18 @@ public class FundingUri {
     /** Local-name prefix, so a minted node is recognisable as one in the store. */
     private static final String GRANT_PREFIX = ":grant_";
 
+    /** Must match {@code exports/GtrSource}'s project prefix, or the source won't fetch it. */
+    private static final String GTR_PROJECT_PREFIX = "https://gtr.ukri.org/projects?ref=";
+
+    /**
+     * A research council's grant reference: a council code, then slash-separated
+     * letters and digits, e.g. {@code NE/S00310X/1} or {@code BBS/E/C/000I0320}.
+     * The council codes are a whitelist, so a reference like
+     * {@code DST/TM/INDO-UK/2K17/55(C)} is not mistaken for one.
+     */
+    private static final Pattern UKRI_REFERENCE =
+        Pattern.compile("(AH|BB|BBS|EP|ES|MR|NE|ST)(/[A-Z0-9]+)+");
+
     private final UriNormaliser uriNormaliser;
 
     /**
@@ -81,6 +94,36 @@ public class FundingUri {
             || canonicalAwardUri(fund).isPresent()
             || !fund.getAwardTitle().isBlank()
             || !fund.getFunderIdentifier().isBlank();
+    }
+
+    /**
+     * The Gateway to Research page for a UKRI grant the record identifies only
+     * by its number (dri-one #430).
+     *
+     * <p>A grant's name comes from {@code awardTitle}, which records often leave
+     * out. GtR knows the title, and {@code exports/GtrSource} already publishes
+     * it, but the source graphs fetch only the IRIs the catalogue graph
+     * references. Without this link, a grant whose record gives just an award
+     * number is never looked up. A production audit found 157 such grants that
+     * GtR describes exactly.
+     *
+     * <p>Templates emit this as {@code rdfs:seeAlso}, not {@code owl:sameAs}.
+     * The link is inferred from the shape of the reference, not recorded, and
+     * GtR does not hold every well-formed reference (doctoral training grants,
+     * for one). For a reference GtR doesn't hold, GtrSource's exact-reference
+     * match publishes nothing, never another project's title.
+     *
+     * @return the GtR project IRI, or an empty string when the award number is
+     *         not a UKRI reference, or when the record's own award URI is already
+     *         that page (so the link would only repeat its {@code owl:sameAs})
+     */
+    public String gtrProject(Funding fund) {
+        val reference = fund.getAwardNumber().trim().toUpperCase(Locale.ROOT);
+        if (!UKRI_REFERENCE.matcher(reference).matches()) {
+            return "";
+        }
+        val project = GTR_PROJECT_PREFIX + reference;
+        return canonicalAwardUri(fund).filter(project::equals).isPresent() ? "" : project;
     }
 
     private Optional<String> canonicalAwardUri(Funding fund) {

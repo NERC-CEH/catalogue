@@ -700,6 +700,7 @@ public class RdfTurtleTest {
             private static final String FOAF_NAME = "http://xmlns.com/foaf/0.1/name";
             private static final String OWL_SAME_AS = "http://www.w3.org/2002/07/owl#sameAs";
             private static final String RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
+            private static final String RDFS_SEE_ALSO = "http://www.w3.org/2000/01/rdf-schema#seeAlso";
 
             private GeminiDocument dataset(String id) {
                 return (GeminiDocument) new GeminiDocument()
@@ -871,6 +872,43 @@ public class RdfTurtleTest {
                 val grant = createResource("https://testaward.ac.uk");
                 assertTrue(model.contains(grant, createProperty(RDF_TYPE), createResource(FRAPO_GRANT)));
                 assertFalse(model.contains(grant, createProperty(FRAPO_HAS_GRANT_NUMBER), (org.apache.jena.rdf.model.RDFNode) null));
+            }
+
+            @Test
+            @DisplayName("a UKRI award number with no award URI points at its GtR project (dri-one #430)")
+            void ukriAwardNumberSeesAlsoGtr() {
+                // The record gives only the number, so nothing else references a GtR page and the
+                // GtR source graph would never fetch the grant's title.
+                val document = dataset("gtrseealso");
+                document.setFunding(List.of(
+                    Funding.builder()
+                        .funderIdentifier("https://ror.org/02b5d8509")
+                        .awardNumber("NE/S00310X/1")
+                        .build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val grant = model.listObjectsOfProperty(
+                    createResource("https://example.com/id/gtrseealso"), createProperty(WAS_GENERATED_BY)
+                ).next().asResource();
+                val gtr = createResource("https://gtr.ukri.org/projects?ref=NE/S00310X/1");
+                assertTrue(model.contains(grant, createProperty(RDFS_SEE_ALSO), gtr));
+                assertFalse(
+                    model.contains(grant, createProperty(OWL_SAME_AS), gtr),
+                    "an inferred link is not asserted as identity"
+                );
+            }
+
+            @Test
+            @DisplayName("a non-UKRI award number gets no GtR link")
+            void nonUkriAwardNumberHasNoSeeAlso() {
+                val document = dataset("nogtr");
+                document.setFunding(List.of(Funding.builder().awardNumber("DEB-1716698").build()));
+
+                template("rdf/ttl.ftl", document);
+
+                assertFalse(model.contains(null, createProperty(RDFS_SEE_ALSO), (org.apache.jena.rdf.model.RDFNode) null));
             }
         }
 
