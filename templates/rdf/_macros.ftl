@@ -219,6 +219,8 @@ ${formatUris.identify(format)} a dcterms:IMT ;
           <#local awardSameAs = uriNormaliser.normalise(fund.awardURI)>
           <#if awardSameAs?has_content>owl:sameAs <${awardSameAs}> ;</#if>
         </#if>
+        <#local gtrProject = fundingUri.gtrProject(fund)>
+        <#if gtrProject?has_content>rdfs:seeAlso <${gtrProject}> ;</#if>
         frapo:funds :${id} ;
       .
 

@@ -22,9 +22,11 @@ import java.util.Map;
 /**
  * The grants the records acknowledge, as Gateway to Research describes them.
  *
- * <p>259 projects, all referenced as {@code gtr.ukri.org/projects?ref=NE/…} —
- * a query string rather than a path, which is why the request URL has to be
- * built rather than derived.
+ * <p>Referenced as {@code gtr.ukri.org/projects?ref=NE/…}, a query string
+ * rather than a path, which is why the request URL has to be built rather than
+ * derived. There are about 440: 259 from records' own award URIs, plus about
+ * 180 that {@code FundingUri.gtrProject} links from a bare UKRI award number
+ * (dri-one #430).
  *
  * <h2>{@code ?ref=} is silently ignored, and that is dangerous</h2>
  *
@@ -107,8 +109,8 @@ class GtrSource implements AuthoritySource {
 
     @Override
     public int requestsPerRun() {
-        // All 259 in one run, comfortably inside the refresh window.
-        return 300;
+        // All ~440 in one run, comfortably inside the refresh window.
+        return 500;
     }
 
     @Override
