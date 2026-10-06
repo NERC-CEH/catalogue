@@ -19,7 +19,9 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.ERROR;
@@ -221,6 +223,31 @@ class ServiceAgreementModelAssemblerTest {
 
         //then
         assertFalse(model.getLink("submit").isPresent());
+    }
+
+    @Test
+    void titleQuestionsAreCopiedToModel() {
+        //given
+        val serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setId(id);
+        serviceAgreement.setMetadata(MetadataInfo.builder().state("published").build());
+        serviceAgreement
+            .setTitleContainsLocation(true)
+            .setTitleLocationExplanation("location explanation")
+            .setTitleContainsDate(false)
+            .setTitleDateExplanation("date explanation")
+            .setTitleAcronymExplanation("acronym explanation");
+
+        //when
+        val model = assembler.toModel(serviceAgreement);
+
+        //then
+        assertEquals(true, model.getTitleContainsLocation());
+        assertEquals("location explanation", model.getTitleLocationExplanation());
+        assertEquals(false, model.getTitleContainsDate());
+        assertEquals("date explanation", model.getTitleDateExplanation());
+        assertNull(model.getTitleContainsAcronym());
+        assertEquals("acronym explanation", model.getTitleAcronymExplanation());
     }
 
     @SneakyThrows

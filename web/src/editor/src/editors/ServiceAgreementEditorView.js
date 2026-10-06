@@ -104,8 +104,8 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
-          label: 'Title Date',
-          text: 'Does your title contain the Date of the data resource? </br> Dates are important where observations are date/time/seasonally-dependent or where observations are known to change over time (e.g. climate data, soil chemistry, spp occurrence, river flow). They may not always be necessary in lab/experimental data (e.g. animal behaviour experiments)'
+          label: 'Title date',
+          text: 'Does your title contain the date(s) of the data resource?<br>Dates are important where observations are date/time/seasonally-dependent or where observations are known to change over time (e.g. climate data, soil chemistry, spp occurrence, river flow). They may not always be necessary in lab/experimental data (e.g. animal behaviour experiments)'
         }),
 
         new RadioView({
@@ -126,7 +126,7 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
-          label: 'Title Acronym',
+          label: 'Title acronym',
           text: 'Does your title contain any unexplained acronyms?'
         }),
 

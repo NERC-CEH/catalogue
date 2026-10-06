@@ -48,7 +48,7 @@ describe('Test RadioView', function () {
     expect(view.$('#testBoolean-no').prop('checked')).toBe(true)
   })
 
-  it('ticks No radio when model value is null', () => {
+  it('ticks neither radio when model value is null', () => {
     model.set('testBoolean', null)
     view = new RadioView({
       model,
@@ -56,17 +56,17 @@ describe('Test RadioView', function () {
     })
     view.render()
     expect(view.$('#testBoolean-yes').prop('checked')).toBe(false)
-    expect(view.$('#testBoolean-no').prop('checked')).toBe(true)
+    expect(view.$('#testBoolean-no').prop('checked')).toBe(false)
   })
 
-  it('ticks No radio when model value is undefined', () => {
+  it('ticks neither radio when model value is undefined', () => {
     view = new RadioView({
       model,
       modelAttribute: 'testBoolean'
     })
     view.render()
     expect(view.$('#testBoolean-yes').prop('checked')).toBe(false)
-    expect(view.$('#testBoolean-no').prop('checked')).toBe(true)
+    expect(view.$('#testBoolean-no').prop('checked')).toBe(false)
   })
 
   it('sets model to true when Yes radio is clicked', () => {

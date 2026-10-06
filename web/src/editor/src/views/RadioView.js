@@ -29,11 +29,11 @@ export default SingleView.extend({
     SingleView.prototype.render.apply(this)
     const value = this.model.get(this.data.modelAttribute)
     this.$('.dataentry').append(template({ data: this.data }))
+    // Leave both unticked when unanswered (null/undefined), so an unanswered
+    // question isn't shown as "No"
     if (value === true) {
       this.$(`#${this.data.modelAttribute}-yes`).prop('checked', true)
-      this.$(`#${this.data.modelAttribute}-no`).prop('checked', false)
-    } else {
-      this.$(`#${this.data.modelAttribute}-yes`).prop('checked', false)
+    } else if (value === false) {
       this.$(`#${this.data.modelAttribute}-no`).prop('checked', true)
     }
     if (this.data.readonly) {
