@@ -90,4 +90,68 @@ class SignpostTemplateTest {
         //then
         assertThat(actual).contains("EIDC").doesNotContain("a third party");
     }
+
+    @Test
+    void thirdPartyFallsBackToThirdPartyWhenNoDistributor() {
+        //given
+        val gemini = new GeminiDocument();
+        gemini.setType("thirdPartyDataset");
+
+        //when
+        val actual = template("html/dataResource/_third_party.ftlh", gemini);
+
+        //then
+        assertThat(actual).contains("This is a dataset managed by a third party");
+    }
+
+    @Test
+    void thirdPartyFallsBackToThirdPartyWhenDistributorContactsNull() {
+        //given
+        val gemini = new GeminiDocument();
+        gemini.setType("thirdPartyDataset");
+        gemini.setDistributorContacts(null);
+
+        //when
+        val actual = template("html/dataResource/_third_party.ftlh", gemini);
+
+        //then
+        assertThat(actual).contains("This is a dataset managed by a third party");
+    }
+
+    @Test
+    void thirdPartyUsesDistributorOrganisationNameAndEmailWhenPresent() {
+        //given
+        val gemini = new GeminiDocument();
+        gemini.setType("thirdPartyDataset");
+        gemini.setDistributorContacts(List.of(
+            ResponsibleParty.builder().organisationName("INMS").email("data@example.org").build()
+        ));
+
+        //when
+        val actual = template("html/dataResource/_third_party.ftlh", gemini);
+
+        //then
+        assertThat(actual)
+            .contains("<a href=\"mailto:data@example.org\" title=\"data@example.org\">INMS</a>")
+            .doesNotContain("a third party");
+    }
+
+    @Test
+    void thirdPartyEscapesDistributorFields() {
+        //given
+        val gemini = new GeminiDocument();
+        gemini.setType("thirdPartyDataset");
+        gemini.setDistributorContacts(List.of(
+            ResponsibleParty.builder().organisationName("<script>x</script>").email("a\"onmouseover=\"x@example.org").build()
+        ));
+
+        //when
+        val actual = template("html/dataResource/_third_party.ftlh", gemini);
+
+        //then
+        assertThat(actual)
+            .contains("&lt;script&gt;x&lt;/script&gt;")
+            .doesNotContain("<script>")
+            .doesNotContain("\"onmouseover");
+    }
 }

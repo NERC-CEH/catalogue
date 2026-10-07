@@ -1,22 +1,22 @@
 <#assign
     distributionURLs = nonBrowseGraphics
-    dataDistributors = distributor
+    dataDistributors = distributors
 >
 
 <div id="document-thirdParty">
     <div class="card card-default d-print-none" id="segment-distribution">
         <div class="card-body">
-            <#assign distributor = "a third party">
+            <#assign distributorName = "a third party">
+            <#assign distributorEmail = "">
             <#if dataDistributors?has_content>
                 <#if dataDistributors?first.organisationName?has_content>
-                    <#assign distributor = dataDistributors?first.organisationName>
+                    <#assign distributorName = dataDistributors?first.organisationName>
                 </#if>
-
                 <#if dataDistributors?first.email?has_content>
-                    <#assign distributor = " <a href='mailto:" + dataDistributors?first.email + "' title='" + dataDistributors?first.email + "'>" + distributor + "</a>" >
+                    <#assign distributorEmail = dataDistributors?first.email>
                 </#if>
             </#if>
-            <p class="card-title"> <i class="fa-solid fa-circle-info"> </i> This is a dataset managed by ${distributor}</p>
+            <p class="card-title"> <i class="fa-solid fa-circle-info"> </i> This is a dataset managed by <#if distributorEmail?has_content><a href="mailto:${distributorEmail}" title="${distributorEmail}">${distributorName}</a><#else>${distributorName}</#if></p>
 
             <#if distributionURLs?has_content>
                 <div class="signpost-url">To access the data visit <a href="${distributionURLs?first.url}">${distributionURLs?first.url}</a></div>
