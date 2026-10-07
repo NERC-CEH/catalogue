@@ -208,6 +208,12 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, ex.getMessage(), BAD_REQUEST);
     }
 
+    @ExceptionHandler(InvalidRelationshipTargetException.class)
+    public ResponseEntity<Object> handleInvalidRelationshipTarget(InvalidRelationshipTargetException ex) {
+        log.warn("Rejected save: {}", ex.getMessage());
+        return handleExceptionInternal(ex, ex.getMessage(), BAD_REQUEST);
+    }
+
     @ExceptionHandler(MetadataConflictException.class)
     public ResponseEntity<MetadataDocument> handleMetadataConflict(MetadataConflictException ex) {
         // 409 with the submitted-but-unsaved document so the caller can preserve the user's edits.

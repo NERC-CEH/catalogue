@@ -27,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataConflictException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataPreconditionRequiredException;
+import uk.ac.ceh.gateway.catalogue.model.InvalidRelationshipTargetException;
 import uk.ac.ceh.gateway.catalogue.model.MojibakeTextException;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import org.apache.solr.client.solrj.RemoteSolrException;
@@ -218,6 +219,22 @@ class ExceptionControllerHandlerTest {
 
         //When
         ResponseEntity<Object> response = controller.handleMojibakeText(ex);
+
+        //Then
+        assertThat(response.getStatusCode(), equalTo(BAD_REQUEST));
+        assert response.getBody() != null;
+        assertThat(((ErrorResponse) response.getBody()).getMessage(), equalTo(mess));
+    }
+
+    @Test
+    @DisplayName("A save adding a relationship to the wrong kind of record becomes a 400 (dri-one #404)")
+    public void checkThatInvalidRelationshipTargetExceptionReturnsBadRequest() {
+        //Given
+        String mess = "Document cosmos says it was produced at https://example.com/x";
+        InvalidRelationshipTargetException ex = new InvalidRelationshipTargetException(mess);
+
+        //When
+        ResponseEntity<Object> response = controller.handleInvalidRelationshipTarget(ex);
 
         //Then
         assertThat(response.getStatusCode(), equalTo(BAD_REQUEST));

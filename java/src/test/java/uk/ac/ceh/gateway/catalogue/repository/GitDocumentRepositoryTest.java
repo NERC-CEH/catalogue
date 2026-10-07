@@ -17,16 +17,23 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.InvalidRelationshipTargetException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataConflictException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.MojibakeTextException;
+import uk.ac.ceh.gateway.catalogue.model.Relationship;
 import uk.ac.ceh.gateway.catalogue.model.ResourceIdentifierExistsException;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.services.ResourceIdentifierLookupService;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,6 +41,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -437,5 +445,163 @@ public class GitDocumentRepositoryTest {
         //When/Then saving with that stale revision surfaces the conflict
         assertThrows(MetadataConflictException.class, () ->
             documentRepository.save(user, document, "doc1", "Edited document: doc1", "rev1"));
+    }
+
+    private static final String UTILISES = "https://digital.ceh.ac.uk/ontology/doo/utilises";
+    private static final String BASE_URI = "https://catalogue.ceh.ac.uk";
+
+    private GeminiDocument datasetUtilising(String... targets) {
+        GeminiDocument document = (GeminiDocument) new GeminiDocument()
+            .setMetadata(MetadataInfo.builder().build());
+        document.setRelationships(Arrays.stream(targets)
+            .map(target -> new Relationship(UTILISES, target))
+            .collect(Collectors.toSet()));
+        return document;
+    }
+
+    @Test
+    @SneakyThrows
+    public void addingAUtilisesLinkToAMonitoringFacilitySaves() {
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        GeminiDocument document = datasetUtilising(BASE_URI + "/id/morley");
+        given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
+        given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
+        given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
+        given(documentBundleReader.readBundle("morley")).willReturn(new MonitoringFacility());
+
+        //When
+        documentRepository.save(user, document, "cosmos", "message");
+
+        //Then
+        verify(repo).save(eq(user), eq("cosmos"), eq("message"), any(), any(), isNull(), eq(document));
+    }
+
+    @Test
+    @SneakyThrows
+    public void addingAUtilisesLinkToAMonitoringNetworkSaves() {
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        GeminiDocument document = datasetUtilising(BASE_URI + "/id/cosmos-uk");
+        given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
+        given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
+        given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
+        given(documentBundleReader.readBundle("cosmos-uk")).willReturn(new MonitoringNetwork());
+
+        //When / Then
+        assertDoesNotThrow(() -> documentRepository.save(user, document, "cosmos", "message"));
+    }
+
+    @Test
+    @SneakyThrows
+    public void addingAUtilisesLinkToAnotherKindOfRecordThrows() {
+        // The editor only offers facilities and networks, but the API takes whatever JSON it is given.
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        GeminiDocument document = datasetUtilising(BASE_URI + "/id/another-dataset");
+        given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
+        given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
+        given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
+        given(documentBundleReader.readBundle("another-dataset")).willReturn(new GeminiDocument());
+
+        //When / Then
+        assertThrows(
+            InvalidRelationshipTargetException.class,
+            () -> documentRepository.save(user, document, "cosmos", "message")
+        );
+        verifyNoInteractions(repo);
+    }
+
+    @Test
+    @SneakyThrows
+    public void addingAUtilisesLinkOutsideTheCatalogueThrows() {
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        GeminiDocument document = datasetUtilising("https://example.com/id/morley");
+        given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
+        given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
+        given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
+
+        //When / Then
+        assertThrows(
+            InvalidRelationshipTargetException.class,
+            () -> documentRepository.save(user, document, "cosmos", "message")
+        );
+        verifyNoInteractions(repo);
+    }
+
+    @Test
+    @SneakyThrows
+    public void aUtilisesTargetThatIsNotADocumentIdIsNeverRead() {
+        // The id comes from user-supplied JSON, so it must not be able to steer the datastore read.
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        GeminiDocument document = datasetUtilising(BASE_URI + "/id/../config");
+        given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
+        given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
+        given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
+
+        //When / Then
+        assertThrows(
+            InvalidRelationshipTargetException.class,
+            () -> documentRepository.save(user, document, "cosmos", "message")
+        );
+        verify(documentBundleReader, never()).readBundle("../config");
+    }
+
+    @Test
+    @SneakyThrows
+    public void aUtilisesTargetThatCannotBeReadThrows() {
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        GeminiDocument document = datasetUtilising(BASE_URI + "/id/deleted");
+        given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
+        given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
+        given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
+        given(documentBundleReader.readBundle("deleted")).willThrow(new IOException("not found"));
+
+        //When / Then
+        assertThrows(
+            InvalidRelationshipTargetException.class,
+            () -> documentRepository.save(user, document, "cosmos", "message")
+        );
+    }
+
+    @Test
+    @SneakyThrows
+    public void aStoredInvalidUtilisesLinkDoesNotBlockSaving() {
+        // A bad link that predates the check must not make the record uneditable; its page and
+        // JSON drop the link instead. Only links a save introduces are checked.
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        String target = BASE_URI + "/id/another-dataset";
+        given(documentBundleReader.readBundle("cosmos")).willReturn(datasetUtilising(target));
+        GeminiDocument incoming = datasetUtilising(target);
+        incoming.setTitle("A corrected title");
+        given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
+
+        //When / Then
+        assertDoesNotThrow(() -> documentRepository.save(user, incoming, "cosmos", "message"));
+        verify(documentBundleReader, never()).readBundle("another-dataset");
+    }
+
+    @Test
+    @SneakyThrows
+    public void uploadingAnInvalidUtilisesLinkCommitsNothingAtAll() {
+        // Checked before the raw blob is committed, as the mojibake guard is.
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        InputStream inputStream = new ByteArrayInputStream("{}".getBytes());
+        GeminiDocument document = datasetUtilising("https://example.com/id/morley");
+        given(documentReader.read(any(), any(), any())).willReturn(document);
+        given(documentIdentifierService.generateFileId(null)).willReturn("test");
+        given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
+
+        //When / Then
+        assertThrows(
+            InvalidRelationshipTargetException.class,
+            () -> documentRepository.save(user, inputStream, MediaType.APPLICATION_JSON, "GEMINI_DOCUMENT", "eidc", "message")
+        );
+        verifyNoInteractions(repo);
     }
 }

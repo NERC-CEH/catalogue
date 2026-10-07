@@ -13,6 +13,7 @@ import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.*;
+import uk.ac.ceh.gateway.catalogue.monitoring.Utilises;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
@@ -156,7 +157,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         this.setRelReplaces(jenaService.replaces(uri));
         this.setRelSource(jenaService.relationships(uri, "http://purl.org/dc/terms/source"));
         this.setRelIsOutputOf(jenaService.inverseRelationships(uri, "http://purl.org/cerif/frapo/hasOutput"));
-        this.setRelUtilises(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"));
+        this.setRelUtilises(Utilises.targets(jenaService.relationships(uri, Utilises.PREDICATE)));
     }
 
     @JsonProperty("relUtilises")
