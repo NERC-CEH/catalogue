@@ -192,6 +192,26 @@ class ServiceAgreementControllerTest extends AbstractMvcTest {
     @Test
     @SneakyThrows
     @WithMockCatalogueUser
+    @DisplayName("a service-agreement create carries the new revision as its ETag, so the next save can send If-Match")
+    void createServiceAgreementEmitsETag() {
+        givenUserCanEdit();
+        givenMetadataRecordExists();
+        givenCreateServiceAgreement();
+        givenServiceAgreementModel();
+        givenCurrentRevision("metaRev1:rawRev1");
+
+        mvc.perform(post("/service-agreement/{id}", ID)
+                .content("{\"title\": \"Test Service Agreement\"}")
+                .queryParam("catalogue", "eidc")
+                .contentType(HAL_JSON)
+            )
+            .andExpect(status().isOk())
+            .andExpect(header().string(ETAG, "\"metaRev1:rawRev1\""));
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
     void userCannotCreateServiceAgreement() {
         // given
         givenUserCanNotEdit();
