@@ -379,7 +379,9 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     @JsonIgnore
     public List<ResponsibleParty> getDistributors() {
-        return new ArrayList<>(distributorContacts);
+        return Optional.ofNullable(distributorContacts)
+            .map(ArrayList::new)
+            .orElseGet(ArrayList::new);
     }
 
     @JsonIgnore
