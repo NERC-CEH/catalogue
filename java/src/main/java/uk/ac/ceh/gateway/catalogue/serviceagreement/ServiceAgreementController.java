@@ -39,9 +39,14 @@ public class ServiceAgreementController {
         log.info("Creating");
     }
 
+    /**
+     * Creates the service agreement and returns it with its new revision as the {@code ETag}. The create
+     * needs no precondition itself, but the editor stays open on the same model afterwards, so this
+     * response is the only place it can learn the revision its next save must send as {@code If-Match}.
+     */
     @PreAuthorize("@permission.userCanEdit(#id)")
     @PostMapping("{id}")
-    public ServiceAgreementModel create(
+    public ResponseEntity<ServiceAgreementModel> create(
         @ActiveUser CatalogueUser user,
         @PathVariable String id,
         @RequestParam("catalogue") String catalogue,
@@ -55,7 +60,7 @@ public class ServiceAgreementController {
                 catalogue,
                 serviceAgreement
             );
-            return serviceAgreementModelAssembler.toModel(newlyCreated);
+            return withETag(id).body(serviceAgreementModelAssembler.toModel(newlyCreated));
         } else {
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
