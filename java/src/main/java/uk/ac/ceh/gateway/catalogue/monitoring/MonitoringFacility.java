@@ -96,7 +96,7 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
         this.setRelCombinedGeometry(jenaService.relationshipCombinedGeometriesWithOwner(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility"));
         this.setRelBelongsToNetwork(jenaService.relationships(uri, "http://purl.org/dc/terms/isPartOf"));
         this.setRelUsedBy(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/uses"));
-        this.setRelUtilisedBy(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"));
+        this.setRelUtilisedBy(Utilises.sources(jenaService.inverseRelationships(uri, Utilises.PREDICATE)));
         this.setRelSupersedes(jenaService.relationships(uri, "http://purl.org/dc/terms/replaces"));
         this.setRelSupersededBy(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/replaces"));
         this.setRelChildFacility(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility"));
@@ -128,6 +128,16 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
     public List<Link> getRelUtilisedBy() {
         return Optional.ofNullable(relUtilisedBy)
             .orElseGet(Collections::emptyList);
+    }
+
+    @JsonIgnore
+    public List<Link> getUtilisingProgrammes() {
+        return Utilises.programmes(getRelUtilisedBy());
+    }
+
+    @JsonIgnore
+    public List<Link> getProducedDataResources() {
+        return Utilises.dataResources(getRelUtilisedBy());
     }
 
     @JsonProperty("relSupersedes")

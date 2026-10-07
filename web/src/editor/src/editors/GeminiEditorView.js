@@ -610,6 +610,11 @@ export default EditorView.extend({
               value: 'http://purl.org/dc/terms/requires',
               label: 'Requires',
               description: 'a related resource that is required by this resource to support its function/delivery'
+            },
+            {
+              value: 'https://digital.ceh.ac.uk/ontology/doo/utilises',
+              label: 'Produced at (monitoring facility or network)',
+              description: 'the monitoring facility or network whose observations this resource contains'
             }
           ],
           helpText: `

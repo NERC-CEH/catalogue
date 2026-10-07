@@ -14,6 +14,7 @@ import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.*;
+import uk.ac.ceh.gateway.catalogue.monitoring.Utilises;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.services.ResourceIdentifierLookupService;
 
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
@@ -49,6 +51,9 @@ public class GitDocumentRepository implements DocumentRepository {
      * rejected at save with no override.
      */
     private static final Pattern MOJIBAKE_PATTERN = Pattern.compile("â€|Â[^ A-Za-z]");
+
+    /** A document id as {@link DocumentIdentifierService#generateFileId} produces it. */
+    private static final Pattern DOCUMENT_ID = Pattern.compile("[A-Za-z0-9_-]+");
 
     private final DocumentTypeLookupService documentTypeLookupService;
     private final DocumentReadingService documentReader;
@@ -159,6 +164,7 @@ public class GitDocumentRepository implements DocumentRepository {
                 // that commit lands first, so rejecting afterwards would leave an orphaned raw
                 // upload in the datastore with no document to go with it.
                 validateNoMojibake(data, id);
+                validateUtilisesTargets(data, id);
 
                 repo.save(user, id, message, metadataInfo, (o) -> Files.copy(tmpFile, o));
             } finally {
@@ -277,6 +283,7 @@ public class GitDocumentRepository implements DocumentRepository {
         document.setUri(uri);
         validateUniqueResourceIdentifiers(document, id);
         validateNoMojibake(document, id);
+        validateUtilisesTargets(document, id);
         repo.save(
             user,
             id,
@@ -424,6 +431,82 @@ public class GitDocumentRepository implements DocumentRepository {
         return MOJIBAKE_PATTERN.matcher(text).results()
             .map(MatchResult::group)
             .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+    }
+
+    /**
+     * Rejects a save that adds a {@code doo:utilises} link to anything other than a monitoring
+     * facility or network in this catalogue (dri-one #404). The editor's target search only
+     * offers those, but the API and hand-edited JSON bypass it.
+     *
+     * <p>Like {@link #validateNoMojibake}, only links this save <em>introduces</em> are checked.
+     * A link that was already stored is left alone, so a record holding one stays editable; its
+     * page and JSON drop it anyway ({@link Utilises#targets}). Checking only new links also keeps
+     * an ordinary save from reading every target it already points at.
+     */
+    private void validateUtilisesTargets(MetadataDocument document, String id) {
+        Set<String> incoming = utilisesTargets(document);
+        if (incoming.isEmpty()) {
+            return;
+        }
+        Set<String> existing = storedUtilisesTargets(id);
+        String invalid = incoming.stream()
+            .filter(target -> !existing.contains(target))
+            .filter(target -> !isUtilisesTarget(target))
+            .sorted()
+            .collect(Collectors.joining(", "));
+        if (!invalid.isEmpty()) {
+            throw new InvalidRelationshipTargetException(
+                "Document " + id + " says it was produced at " + invalid + ", but only a " +
+                    "monitoring facility or network in this catalogue can be linked that way. " +
+                    "Please choose the facility or network from the search in the editor."
+            );
+        }
+    }
+
+    private static Set<String> utilisesTargets(MetadataDocument document) {
+        return Optional.ofNullable(document.getRelationships()).orElseGet(Set::of).stream()
+            .filter(relationship -> Utilises.PREDICATE.equals(relationship.getRelation()))
+            .map(Relationship::getTarget)
+            .collect(Collectors.toSet());
+    }
+
+    /**
+     * {@code doo:utilises} targets already in the stored version of a document. As with
+     * {@link #storedMojibakeCounts}, an absent or unreadable document counts as none, so every
+     * link in a create - or after a read failure - is checked.
+     */
+    private Set<String> storedUtilisesTargets(String id) {
+        try {
+            MetadataDocument stored = documentBundleReader.readBundle(id);
+            return stored == null ? Set.of() : utilisesTargets(stored);
+        } catch (IOException | PostProcessingException
+                 | UnknownContentTypeException | IllegalArgumentException ex) {
+            log.debug("No readable stored version of {} to compare utilises links against", id, ex);
+            return Set.of();
+        }
+    }
+
+    /**
+     * Whether a target URI is a record in this catalogue that is a monitoring facility or network.
+     * The id is taken from the URI only when it has the shape {@link DocumentIdentifierService}
+     * generates, so a crafted target cannot steer the read to some other path in the datastore.
+     */
+    private boolean isUtilisesTarget(String target) {
+        String prefix = documentIdentifierService.getBaseUri() + "/id/";
+        if (!target.startsWith(prefix)) {
+            return false;
+        }
+        String targetId = target.substring(prefix.length());
+        if (!DOCUMENT_ID.matcher(targetId).matches()) {
+            return false;
+        }
+        try {
+            return Utilises.isTarget(documentBundleReader.readBundle(targetId));
+        } catch (IOException | PostProcessingException
+                 | UnknownContentTypeException | IllegalArgumentException ex) {
+            log.debug("Cannot read {} to check it as a utilises target", targetId, ex);
+            return false;
+        }
     }
 
     private void addRecordUriAsResourceIdentifier(MetadataDocument document, String recordUri) {

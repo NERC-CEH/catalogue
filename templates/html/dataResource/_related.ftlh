@@ -1,5 +1,5 @@
 
-<#if (relPartOf?has_content && relPartOf?size gt 0) || (relIsRequiredBy?has_content && relIsRequiredBy?size gt 0) || (relRequires?has_content && relRequires?size gt 0) || (relRelation?has_content && relRelation?size gt 0) >
+<#if (relPartOf?has_content && relPartOf?size gt 0) || (relIsRequiredBy?has_content && relIsRequiredBy?size gt 0) || (relRequires?has_content && relRequires?size gt 0) || (relRelation?has_content && relRelation?size gt 0) || (relUtilises?has_content && relUtilises?size gt 0) >
 
     <#macro displayRelatives id title array>
       <#if array?has_content && array?size gt 0>
@@ -26,6 +26,9 @@
 
       <#-- PARENT record(s) -->
       <@displayRelatives "parents" "This ${recordType} is included in the following collections" relPartOf />
+
+      <#-- Monitoring facilities and networks this data resource was produced at -->
+      <@displayRelatives "monitoring" "Produced at these monitoring facilities and networks" relUtilises />
 
     </div>
 </#if>

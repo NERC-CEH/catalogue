@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.Relationship;
@@ -420,6 +421,9 @@ public class GeminiDocumentTest {
             .thenReturn(List.of(Link.builder().href("https://example.com/replaces/1").build()));
         when(jenaService.relationships(uri, "http://purl.org/dc/terms/source"))
             .thenReturn(List.of(Link.builder().href("https://example.com/source/1").build()));
+        when(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"))
+            .thenReturn(List.of(Link.builder().href("https://example.com/facility/1")
+                .associationType("monitoringFacility").publicationStatus("published").build()));
 
         //when
         document.populateFromJenaService(jenaService);
@@ -433,5 +437,38 @@ public class GeminiDocumentTest {
         assertThat(document.getRelHasPart().size(), equalTo(1));
         assertThat(document.getRelReplaces().size(), equalTo(1));
         assertThat(document.getRelSource().size(), equalTo(1));
+        assertThat(document.getRelUtilises().size(), equalTo(1));
+    }
+
+    @Test
+    @DisplayName("relUtilises keeps only published monitoring facilities and networks")
+    void relUtilisesDropsDraftsAndOtherRecordTypes() {
+        // Drafts are in Jena too, and a link to anything else could only have come in through the
+        // API or hand-edited JSON (dri-one #404).
+        //given
+        val document = new GeminiDocument();
+        String uri = "https://example.com/doc/test";
+        document.setUri(uri);
+        val jenaService = org.mockito.Mockito.mock(JenaLookupService.class);
+        when(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"))
+            .thenReturn(List.of(
+                Link.builder().href("https://example.com/facility/1")
+                    .associationType("monitoringFacility").publicationStatus("published").build(),
+                Link.builder().href("https://example.com/network/1")
+                    .associationType("monitoringNetwork").publicationStatus("Published").build(),
+                Link.builder().href("https://example.com/facility/draft")
+                    .associationType("monitoringFacility").publicationStatus("draft").build(),
+                Link.builder().href("https://example.com/dataset/1")
+                    .associationType("dataset").publicationStatus("published").build()
+            ));
+
+        //when
+        document.populateFromJenaService(jenaService);
+
+        //then
+        assertThat(
+            document.getRelUtilises().stream().map(Link::getHref).toList(),
+            equalTo(List.of("https://example.com/facility/1", "https://example.com/network/1"))
+        );
     }
 }

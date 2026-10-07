@@ -21,18 +21,5 @@
     <@m.keyValue "Facility type" "type of monitoring facility">${facilityType.value}</@m.keyValue>
   </#if>
 
-  <div class="relationships"><#compress>
-    <@m.relationships relBelongsToNetwork "Belongs to these networks"/>
-
-    <@m.inverseRelationships relUsedBy "Used by"  />
-    <@m.inverseRelationships relUtilisedBy "Used by"  />
-
-    <@m.relationships relSupersedes "Supersedes" />
-    <@m.inverseRelationships relSupersededBy "Superseded by"  />
-
-    <@m.relationships relChildFacility "Child facilities" />
-    <@m.inverseRelationships relParentFacility "Parent facilities"  />
-
-    <@m.symmetricRelationships relRelated "Related"/>
-  </#compress></div>
+  <#include "_facilityRelationships.ftlh">
 </@m.base>
