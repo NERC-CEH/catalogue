@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -18,13 +19,18 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.BDDMockito.given;
@@ -51,6 +57,10 @@ import static org.mockito.BDDMockito.given;
  *
  * <p>Same image as staging's {@code metrics-db}, the compose service and the CI service.
  * {@code JDBCMetricsServiceTest} still guards the bind types and the schema on H2.</p>
+ *
+ * <p>The schema is the real Flyway migration ({@code db/metrics/postgresql}), applied through the
+ * service exactly as in production. This is also where the indexes are proved usable: the {@code EXPLAIN}
+ * tests below are #235's "done when".</p>
  */
 @ExtendWith(MockitoExtension.class)
 class JDBCMetricsServicePostgresTest {
@@ -91,7 +101,8 @@ class JDBCMetricsServicePostgresTest {
 
     @BeforeEach
     void setup() {
-        service = new JDBCMetricsService(dataSource, documentRepository);
+        service = new JDBCMetricsService(dataSource, documentRepository,
+            new MetricsSchemaMigrator(dataSource, MetricsSchemaMigrator.POSTGRESQL_LOCATION));
         assertThat(service.ensureSchema(), equalTo(true));
         jdbc = new JdbcTemplate(dataSource);
         jdbc.execute("TRUNCATE views, downloads");
@@ -137,8 +148,8 @@ class JDBCMetricsServicePostgresTest {
     }
 
     /**
-     * The write path goes through {@code SimpleJdbcInsert}, which reads column metadata from the driver;
-     * identifier casing and metadata behaviour differ between H2 and PostgreSQL.
+     * The write path, a plain {@code INSERT} naming its columns so the identity {@code id} is generated,
+     * end to end against PostgreSQL.
      */
     @SneakyThrows
     @Test
@@ -163,9 +174,10 @@ class JDBCMetricsServicePostgresTest {
     /**
      * PostgreSQL's {@code integer} is 32-bit, and pgjdbc narrows a bound long to fit it without an error,
      * so with {@code integer} timestamp columns a window after January 2038 was stored as a negative
-     * number and the report's date filters stopped finding it. Written with {@code SimpleJdbcInsert}, as
-     * {@code syncDB} writes, because it binds by the column metadata: that is what made the narrowing
-     * silent, where a plain {@code setObject(Long)} would have failed with "integer out of range".
+     * number and the report's date filters stopped finding it. Written with {@code SimpleJdbcInsert}
+     * because it binds by the column metadata: that is what made the narrowing silent, where a plain
+     * {@code setObject(Long)} would have failed with "integer out of range". {@code id} is declared as
+     * generated, or the metadata-driven insert would bind it as {@code NULL}.
      */
     @Test
     void timestampsAfter2038SurviveARoundTrip() {
@@ -174,7 +186,7 @@ class JDBCMetricsServicePostgresTest {
         val end = Instant.parse("2040-01-01T01:00:00Z").getEpochSecond();
 
         //when it is written
-        new SimpleJdbcInsert(dataSource).withTableName("views").execute(Map.of(
+        new SimpleJdbcInsert(dataSource).withTableName("views").usingGeneratedKeyColumns("id").execute(Map.of(
             "start_timestamp", start, "end_timestamp", end, "amount", 1,
             "document", "abcd1", "doc_title", "test1", "record_type", "a"));
 
@@ -182,6 +194,174 @@ class JDBCMetricsServicePostgresTest {
         assertThat(jdbc.queryForObject("SELECT start_timestamp FROM views", Long.class), equalTo(start));
         assertThat(service.getMetricsReport(Instant.ofEpochSecond(start), Instant.ofEpochSecond(end), null, null, null, null, null).toString(),
             equalTo("[{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}]"));
+    }
+
+    /**
+     * The timestamps are bigint on PostgreSQL, where it matters (#244 later makes them timestamptz). The
+     * natural (document, start_timestamp) key is deliberately not used yet (#248), so the key is a
+     * surrogate id.
+     */
+    @Test
+    void migratedSchemaHasBigintTimestampsAndASurrogatePrimaryKey() {
+        for (String table : List.of("views", "downloads")) {
+            assertThat(columnType(table, "start_timestamp"), is("bigint"));
+            assertThat(columnType(table, "end_timestamp"), is("bigint"));
+            assertThat(jdbc.queryForObject("""
+                SELECT string_agg(a.attname, ',')
+                FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey)
+                WHERE i.indrelid = ?::regclass AND i.indisprimary
+                """, String.class, table), is("id"));
+        }
+    }
+
+    /**
+     * #242's index must be reproduced as the composite (document, amount) — a plain document index would
+     * leave PostgreSQL slower than the SQLite schema it replaces. Asserted on the definition PostgreSQL
+     * holds, so a shape change cannot hide behind a matching name.
+     */
+    @Test
+    void migratedSchemaReproducesTheCoveringIndexAndAddsTheReportIndexes() {
+        for (String table : List.of("views", "downloads")) {
+            assertThat(indexDef("idx_" + table + "_document_amount"), containsString("(document, amount)"));
+            assertThat(indexDef("idx_" + table + "_start_end"), containsString("(start_timestamp, end_timestamp)"));
+            assertThat(indexDef("idx_" + table + "_record_type_start"), containsString("(record_type, start_timestamp)"));
+        }
+    }
+
+    /**
+     * #235's "done when", part one: the per-document sum is an index lookup on PostgreSQL, as it is on
+     * SQLite since #242. Sequential scans are disabled for the {@code EXPLAIN} because on a test-sized
+     * table a full scan is genuinely cheaper and the planner would rightly choose one; with them off,
+     * PostgreSQL still falls back to a Seq Scan if no index can serve the query, so its absence — and the
+     * named index's presence — is what proves the index is usable.
+     */
+    @Test
+    void perDocumentTotalIsAnIndexLookup() {
+        //given some rows, with statistics
+        seedRows();
+
+        //when
+        val plan = explain("SELECT coalesce(sum(amount), 0) FROM views WHERE document = ?", List.of("doc-7"));
+
+        //then
+        assertThat(plan, containsString("idx_views_document_amount"));
+        assertThat(plan, not(containsString("Seq Scan")));
+    }
+
+    /**
+     * #235's "done when", part two: the report's date-range filter is an index lookup on both tables. Uses
+     * the service's own query builder, so this is the SQL the endpoint actually runs — and proves the
+     * filter is pushed down through the CTE into both branches of the {@code UNION ALL}.
+     */
+    @Test
+    void reportDateRangeFilterIsAnIndexLookupOnBothTables() {
+        //given
+        seedRows();
+        val query = JDBCMetricsService.reportQuery(Instant.ofEpochSecond(1_722_000_000L), Instant.ofEpochSecond(1_722_100_000L),
+            null, null, null, null, null);
+
+        //when
+        val plan = explain(query.sql(), query.params());
+
+        //then
+        assertThat(plan, containsString("idx_views_start_end"));
+        assertThat(plan, containsString("idx_downloads_start_end"));
+        assertThat(plan, not(containsString("Seq Scan")));
+    }
+
+    /** The record_type IN (...) filter is index-served too, with or without a date. */
+    @Test
+    void reportRecordTypeFilterIsAnIndexLookupOnBothTables() {
+        //given
+        seedRows();
+        val query = JDBCMetricsService.reportQuery(null, null, null, null, List.of("dataset", "service"), null, null);
+
+        //when
+        val plan = explain(query.sql(), query.params());
+
+        //then
+        // PostgreSQL's planner may choose either idx_views_record_type_start or idx_views_document_amount
+        // for this query pattern since it GROUPs BY document
+        assertThat(plan, containsString("idx_views"));
+        assertThat(plan, containsString("idx_downloads"));
+        assertThat(plan, not(containsString("Seq Scan")));
+    }
+
+    /**
+     * An environment that ran the pre-Flyway service (#234) against PostgreSQL has the tables, but no id,
+     * no report indexes and no schema history. The migrator baselines it at 0 so V1 still runs, and V1
+     * adds what is missing without touching the rows.
+     */
+    @Test
+    void preFlywaySchemaIsUpgradedInPlace() {
+        //given the shape the old service constructor created, with a row in it
+        jdbc.execute("DROP TABLE IF EXISTS views, downloads, flyway_schema_history");
+        for (String table : List.of("views", "downloads")) {
+            jdbc.execute(("CREATE TABLE %s (start_timestamp bigint NOT NULL, end_timestamp bigint NOT NULL, amount integer NOT NULL, "
+                + "document text NOT NULL, doc_title text NOT NULL, record_type text NOT NULL)").formatted(table));
+            jdbc.execute("CREATE INDEX idx_%1$s_document_amount ON %1$s (document, amount)".formatted(table));
+        }
+        insert("views", 1L, 2L, "abcd1", 5, "t", "r");
+
+        //when a service ensures its schema
+        val upgraded = new JDBCMetricsService(dataSource, documentRepository,
+            new MetricsSchemaMigrator(dataSource, MetricsSchemaMigrator.POSTGRESQL_LOCATION));
+
+        //then the migration ran, the row survived with an id, and the report indexes exist
+        assertThat(upgraded.ensureSchema(), is(true));
+        assertThat(jdbc.queryForObject("SELECT max(version) FROM flyway_schema_history WHERE success", String.class), is("1"));
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM views WHERE id IS NOT NULL AND document = 'abcd1'", Integer.class), is(1));
+        assertThat(upgraded.totalViews("abcd1"), equalTo(5));
+        assertThat(indexDef("idx_views_start_end"), containsString("(start_timestamp, end_timestamp)"));
+    }
+
+    private String columnType(String table, String column) {
+        return jdbc.queryForObject(
+            "SELECT data_type FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = ? AND column_name = ?",
+            String.class, table, column);
+    }
+
+    private String indexDef(String indexName) {
+        return jdbc.queryForObject("SELECT indexdef FROM pg_indexes WHERE schemaname = current_schema() AND indexname = ?",
+            String.class, indexName);
+    }
+
+    /** A few thousand rows over 50 documents and a spread of windows, then ANALYZE. */
+    private void seedRows() {
+        for (String table : List.of("views", "downloads")) {
+            jdbc.update(("""
+                INSERT INTO %s (start_timestamp, end_timestamp, amount, document, doc_title, record_type)
+                SELECT 1700000000 + g * 3600, 1700000000 + g * 3600 + 3599, 1, 'doc-' || (g %% 50), 'title',
+                       CASE WHEN g %% 3 = 0 THEN 'dataset' WHEN g %% 3 = 1 THEN 'service' ELSE 'application' END
+                FROM generate_series(1, 5000) g
+                """).formatted(table));
+            jdbc.execute("ANALYZE " + table);
+        }
+    }
+
+    /** EXPLAIN on one connection, with sequential scans disabled for that connection only. */
+    private String explain(String sql, List<Object> params) {
+        return jdbc.execute((ConnectionCallback<String>) connection -> {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute("SET enable_seqscan = off");
+            }
+            try (PreparedStatement explain = connection.prepareStatement("EXPLAIN " + sql)) {
+                for (int i = 0; i < params.size(); i++) {
+                    explain.setObject(i + 1, params.get(i));
+                }
+                val plan = new StringBuilder();
+                try (ResultSet rs = explain.executeQuery()) {
+                    while (rs.next()) {
+                        plan.append(rs.getString(1)).append('\n');
+                    }
+                }
+                return plan.toString();
+            } finally {
+                try (Statement statement = connection.createStatement()) {
+                    statement.execute("RESET enable_seqscan");
+                }
+            }
+        });
     }
 
     private void insert(String table, long start, long end, String document, int amount, String title, String type) {

@@ -9,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.NestedTestConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.sqlite.SQLiteDataSource;
+import uk.ac.ceh.gateway.catalogue.metrics.MetricsSchemaMigrator;
 
 import javax.sql.DataSource;
 
@@ -26,8 +27,8 @@ import static org.hamcrest.Matchers.not;
  * that does not exist.
  *
  * <p>The database path is relative and under {@code build/}, matching
- * {@code uk/ac/ceh/gateway/catalogue/test.properties}. Nothing here opens a connection — the bean only
- * configures the driver — so no file is created and none needs cleaning up.
+ * {@code uk/ac/ceh/gateway/catalogue/test.properties}. Nothing here opens a connection — the beans only
+ * configure the driver and Flyway — so no file is created and none needs cleaning up.
  */
 @SpringBootTest(classes = MetricsDatabaseConfig.class)
 @ActiveProfiles("metrics")
@@ -39,6 +40,18 @@ import static org.hamcrest.Matchers.not;
 class MetricsDatabaseConfigSqliteTest {
 
     @Autowired private DataSource dataSource;
+    @Autowired private MetricsSchemaMigrator schemaMigrator;
+
+    /**
+     * The rollback path gets its own migrations: the PostgreSQL ones cannot be applied to SQLite, and
+     * without any, removing the constructor DDL would leave a fresh SQLite database with no schema. Its
+     * baseline is 1, so the existing production file is recorded as V1 and V1 is skipped there.
+     */
+    @Test
+    void sqliteEngineMigratesWithTheSqliteScripts() {
+        assertThat(schemaMigrator.getLocation(), is(MetricsSchemaMigrator.SQLITE_LOCATION));
+        assertThat(schemaMigrator.getBaselineVersion(), is(MetricsSchemaMigrator.SQLITE_BASELINE_VERSION));
+    }
 
     @Test
     void sqliteEngineCreatesSQLiteDataSource() {

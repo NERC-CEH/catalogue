@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteDataSource;
+import uk.ac.ceh.gateway.catalogue.metrics.MetricsSchemaMigrator;
 
 import javax.sql.DataSource;
 
@@ -47,7 +48,13 @@ import javax.sql.DataSource;
  * {@code spring.datasource.hikari.*}, through the same {@link DataSourceProperties} and
  * {@code DataSourceBuilder} the auto-configuration uses, so the property names and
  * {@code application-metrics.properties} are exactly as they would be if it were auto-configured.
- * Flyway (#235) will need the same treatment.
+ *
+ * <p><b>Schema.</b> Each branch also declares the {@link MetricsSchemaMigrator} for its engine: the
+ * PostgreSQL migrations cannot be applied to SQLite, so the rollback path has its own Flyway location,
+ * and its own baseline version (1, so the existing production file skips V1). Flyway gets the same
+ * treatment as the pool — no Spring Boot auto-configuration ({@code spring-boot-flyway} is not a
+ * dependency), so nothing migrates outside the {@code metrics} profile, and nothing migrates while the
+ * context starts; {@code JDBCMetricsService.ensureSchema} runs it. See {@link MetricsSchemaMigrator}.
  */
 @Configuration
 @Slf4j
@@ -89,6 +96,18 @@ public class MetricsDatabaseConfig {
             dataSource.setUrl(url);
             return dataSource;
         }
+
+        /**
+         * The rollback path's schema: {@code db/metrics/sqlite}. The existing production file already
+         * has the V1 schema (tables plus #242's indexes), so it is baselined at 1 and V1 is skipped —
+         * nothing runs against it. A fresh local/CI file is empty, is not baselined, and runs V1, which
+         * creates what the service constructor used to.
+         */
+        @Bean
+        public MetricsSchemaMigrator metricsSchemaMigrator(DataSource dataSource) {
+            return new MetricsSchemaMigrator(dataSource, MetricsSchemaMigrator.SQLITE_LOCATION,
+                MetricsSchemaMigrator.SQLITE_BASELINE_VERSION);
+        }
     }
 
     /**
@@ -127,6 +146,17 @@ public class MetricsDatabaseConfig {
             return properties.initializeDataSourceBuilder()
                 .type(HikariDataSource.class)
                 .build();
+        }
+
+        /**
+         * {@code db/metrics/postgresql}, the target schema (#235/#246). Baseline 0: a new database is
+         * empty and runs V1; one that ran the pre-Flyway service (#234) is baselined below V1, so V1
+         * still adds the primary key and the report indexes there.
+         */
+        @Bean
+        public MetricsSchemaMigrator metricsSchemaMigrator(DataSource dataSource) {
+            return new MetricsSchemaMigrator(dataSource, MetricsSchemaMigrator.POSTGRESQL_LOCATION,
+                MetricsSchemaMigrator.POSTGRESQL_BASELINE_VERSION);
         }
     }
 }

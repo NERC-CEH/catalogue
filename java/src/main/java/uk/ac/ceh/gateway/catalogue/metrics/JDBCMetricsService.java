@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.jspecify.annotations.NonNull;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -30,59 +29,74 @@ import java.sql.SQLException;
 public class JDBCMetricsService implements MetricsService, ApplicationListener<ApplicationReadyEvent> {
     @NonNull private final Map<String, Set<String>> viewed;
     @NonNull private final Map<String, Set<String>> downloaded;
-    @NonNull private final SimpleJdbcInsert viewInserter;
-    @NonNull private final SimpleJdbcInsert downloadInserter;
     @NonNull private final JdbcTemplate jdbcTemplate;
+    @NonNull private final MetricsSchemaMigrator schemaMigrator;
     private long lastRun;
     private final DocumentRepository documentRepository;
 
     /**
-     * Set once the tables and indexes are known to exist. {@code volatile} so the fast path in
+     * Set once the schema is known to be migrated. {@code volatile} so the fast path in
      * {@link #ensureSchema} needs no lock; the slow path takes {@link #schemaLock} so two callers racing
-     * after a recovery do not both run the DDL.
+     * after a recovery do not both run the migration.
      */
     private volatile boolean schemaReady;
     private final Object schemaLock = new Object();
 
-    // SQLite has no built-in datetime type, so we store dates as Unix timestamps (seconds since 1 Jan 1970).
-    // bigint, not integer: SQLite's integer is 64-bit, but PostgreSQL's is 32-bit and would overflow in
-    // January 2038 -- silently, since pgjdbc narrows the bound long to an int. bigint is still INTEGER
-    // affinity on SQLite, and IF NOT EXISTS leaves the existing SQLite tables as they are.
-    private static final String CREATE_STATEMENT = """
-        CREATE TABLE IF NOT EXISTS %s (
-            start_timestamp bigint NOT NULL,
-            end_timestamp bigint NOT NULL,
-            amount integer NOT NULL,
-            document text NOT NULL,
-            doc_title text NOT NULL,
-            record_type text NOT NULL
-        )
-        """;
     /**
-     * Every count read filters on {@code document}, and the table carried no index for its entire
-     * lifetime, so each read was a full scan. In production that meant scanning a 1.1 GB SQLite file
-     * across a CIFS mount — about 7 seconds per scan, twice per record page render, which is what left
-     * 135 of 139 request threads sitting in {@code NativeDB.step}.
+     * Every statement written out in full, per table, rather than a template with the table name
+     * interpolated by {@code String.formatted}. The values were private constants so that was never
+     * injectable, but it built the SQL text on every call; these are compile-time constants.
      *
-     * <p>{@code amount} is in the index as well as {@code document}, making it a covering index for
-     * {@link #TOTAL_STATEMENT}: the sum is computed from a contiguous index range without touching the
-     * table at all. With {@code document} alone the row for each match still has to be fetched, and at
-     * roughly a row per document per hour that is thousands of random reads across the network per
-     * count.</p>
+     * <p>No DDL: the schema belongs to the Flyway migrations under {@code db/metrics/} (#235), applied
+     * by {@link MetricsSchemaMigrator}. The totals query is served by the covering
+     * {@code idx_<table>_document_amount} index those create, as #242's was on SQLite.</p>
      *
-     * <p>Creating this on an existing database is a one-off cost, proportional to the table size, paid
-     * by {@link #ensureSchema}; the timing is logged. It is deliberately {@code IF NOT EXISTS} so restarts
-     * are free.</p>
+     * <p>The insert names its columns rather than going through {@code SimpleJdbcInsert}. That read the
+     * table's columns from the driver's metadata, which (a) would include the new {@code id} and bind
+     * it as {@code NULL}, and (b) on PostgreSQL, if first used before {@code public.views} existed,
+     * resolved {@code views} to {@code information_schema.views} and stayed bound to it until restart.
+     * Naming the columns also keeps the insert valid on the production SQLite file, whose tables predate
+     * the {@code id} column.</p>
      */
-    private static final String INDEX_STATEMENT =
-        "CREATE INDEX IF NOT EXISTS idx_%1$s_document_amount ON %1$s (document, amount)";
-    private static final String TOTAL_STATEMENT = "SELECT coalesce(sum(amount), 0) FROM %s WHERE document = ?";
-    private static final String UPDATE_STATEMENT = "UPDATE %s SET doc_title = ?, record_type = ? WHERE document = ?";
-    private static final String DISTINCT_DOCS_QUERY = "SELECT DISTINCT document FROM %s";
-    private static final String COUNT_STATEMENT = "SELECT count(*) FROM %s WHERE document = ?";
-    private static final String DELETE_STATEMENT = "DELETE FROM %s WHERE document = ?";
+    private record Statements(String insert, String total, String count, String delete, String update, String distinctDocs) { }
+
     private static final String VIEW_TABLE = "views";
     private static final String DOWNLOAD_TABLE = "downloads";
+
+    private static final Statements VIEW_SQL = new Statements(
+        "INSERT INTO views (start_timestamp, end_timestamp, amount, document, doc_title, record_type) VALUES (?, ?, ?, ?, ?, ?)",
+        "SELECT coalesce(sum(amount), 0) FROM views WHERE document = ?",
+        "SELECT count(*) FROM views WHERE document = ?",
+        "DELETE FROM views WHERE document = ?",
+        "UPDATE views SET doc_title = ?, record_type = ? WHERE document = ?",
+        "SELECT DISTINCT document FROM views"
+    );
+    private static final Statements DOWNLOAD_SQL = new Statements(
+        "INSERT INTO downloads (start_timestamp, end_timestamp, amount, document, doc_title, record_type) VALUES (?, ?, ?, ?, ?, ?)",
+        "SELECT coalesce(sum(amount), 0) FROM downloads WHERE document = ?",
+        "SELECT count(*) FROM downloads WHERE document = ?",
+        "DELETE FROM downloads WHERE document = ?",
+        "UPDATE downloads SET doc_title = ?, record_type = ? WHERE document = ?",
+        "SELECT DISTINCT document FROM downloads"
+    );
+
+    /**
+     * Both tables in one relation, so the report's filter is written — and bound — once. It used to be
+     * substituted into each half of a {@code UNION ALL} and every parameter bound twice by index
+     * arithmetic. A single-reference CTE is inlined on PostgreSQL 12+ (and SQLite), and the planner pushes
+     * the {@code WHERE} down into both branches, so each table is still searched through its own indexes.
+     */
+    private static final String REPORT_SQL = """
+        WITH metrics AS (
+            SELECT document, doc_title, record_type, start_timestamp, end_timestamp, amount AS views, 0 AS downloads FROM views
+            UNION ALL
+            SELECT document, doc_title, record_type, start_timestamp, end_timestamp, 0 AS views, amount AS downloads FROM downloads
+        )
+        SELECT document, coalesce(doc_title, '') AS doc_title, coalesce(record_type, '') AS record_type, sum(views) AS views, sum(downloads) AS downloads
+        FROM metrics
+        WHERE %s
+        GROUP BY document, doc_title, record_type
+        """;
 
     /**
      * Separate caches per count, not one shared cache: {@link #totalViews} and {@link #totalDownloads}
@@ -96,23 +110,24 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
      * Deliberately does no I/O. The schema used to be created here, which meant an unreachable metrics
      * database failed bean creation and took the whole context down with it — Hikari's
      * {@code initialization-fail-timeout=-1} only makes building the pool lazy, it cannot help a
-     * consumer that runs SQL while the context is starting. The DDL now runs from {@link #ensureSchema}.
+     * consumer that runs SQL while the context is starting. The schema is now migrated by
+     * {@link MetricsSchemaMigrator}, from {@link #ensureSchema}.
      */
     public JDBCMetricsService(@NonNull DataSource dataSource,
-                              DocumentRepository documentRepository) {
+                              DocumentRepository documentRepository,
+                              @NonNull MetricsSchemaMigrator schemaMigrator) {
         log.info("Creating");
         this.documentRepository = documentRepository;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-        this.viewInserter = new SimpleJdbcInsert(dataSource).withTableName(VIEW_TABLE);
-        this.downloadInserter = new SimpleJdbcInsert(dataSource).withTableName(DOWNLOAD_TABLE);
+        this.schemaMigrator = schemaMigrator;
         this.viewed = Collections.synchronizedMap(new HashMap<>());
         this.downloaded = Collections.synchronizedMap(new HashMap<>());
     }
 
     /**
-     * First attempt at the schema, once the context is up. {@code ApplicationReadyEvent} is published
-     * before Spring Boot flips readiness to {@code ACCEPTING_TRAFFIC}, so on a healthy database the
-     * tables and indexes exist before Kubernetes routes any traffic to the pod.
+     * First attempt at the schema migration, once the context is up. {@code ApplicationReadyEvent} is
+     * published before Spring Boot flips readiness to {@code ACCEPTING_TRAFFIC}, so on a healthy database
+     * the tables and indexes exist before Kubernetes routes any traffic to the pod.
      *
      * <p>{@link ApplicationListener} rather than {@code @EventListener}: this bean is proxied for
      * {@code @Cacheable}, and under JDK interface proxies (as in {@code MetricsCountCachingTest}) an
@@ -131,8 +146,8 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
     }
 
     /**
-     * Creates the tables and indexes if they are not already known to exist, and reports whether they
-     * now do. Never throws for a database problem: an unreachable database is logged and left for the
+     * Runs the Flyway migrations if the schema is not already known to be current, and reports whether it
+     * now is. Never throws: an unreachable database (or a failed migration) is logged and left for the
      * next caller to retry, which is what lets the catalogue start while the metrics database is down —
      * the startup-failure policy stated in {@code application-metrics.properties}.
      *
@@ -154,15 +169,14 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
                 return true;
             }
             try {
-                List.of(VIEW_TABLE, DOWNLOAD_TABLE).forEach(table -> {
-                    jdbcTemplate.execute(CREATE_STATEMENT.formatted(table));
-                    val startedAt = System.currentTimeMillis();
-                    jdbcTemplate.execute(INDEX_STATEMENT.formatted(table));
-                    log.info("Ensured index on {}(document, amount) in {}ms", table, System.currentTimeMillis() - startedAt);
-                });
+                val startedAt = System.currentTimeMillis();
+                schemaMigrator.migrate();
+                log.info("Metrics schema migrated in {}ms", System.currentTimeMillis() - startedAt);
                 schemaReady = true;
-            } catch (DataAccessException ex) {
-                log.warn("Metrics database schema could not be ensured, will retry on next use: {}", ex.getMessage());
+            } catch (RuntimeException ex) {
+                // RuntimeException, not DataAccessException: Flyway reports an unreachable database as a
+                // FlywayException, which is outside Spring's hierarchy.
+                log.warn("Metrics database schema could not be migrated, will retry on next use: {}", ex.getMessage());
             }
             return schemaReady;
         }
@@ -198,20 +212,20 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
     @Override
     @Cacheable(cacheNames = VIEW_TOTALS_CACHE, unless = "#result == null")
     public @Nullable Integer totalViews(@NonNull String uuid) {
-        return totalAmount(VIEW_TABLE, uuid);
+        return totalAmount(VIEW_TABLE, VIEW_SQL, uuid);
     }
 
     /** Cached on the same terms as {@link #totalViews}, in its own cache to keep the keys apart. */
     @Override
     @Cacheable(cacheNames = DOWNLOAD_TOTALS_CACHE, unless = "#result == null")
     public @Nullable Integer totalDownloads(@NonNull String uuid) {
-        return totalAmount(DOWNLOAD_TABLE, uuid);
+        return totalAmount(DOWNLOAD_TABLE, DOWNLOAD_SQL, uuid);
     }
 
     @Override
     public boolean hasMetricsFor(@NonNull String uuid) {
         ensureSchema();
-        return count(VIEW_TABLE, uuid) > 0 || count(DOWNLOAD_TABLE, uuid) > 0;
+        return count(VIEW_SQL, uuid) > 0 || count(DOWNLOAD_SQL, uuid) > 0;
     }
 
     /**
@@ -222,13 +236,13 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
     @Override
     public boolean deleteMetricsFor(@NonNull String uuid) {
         ensureSchema();
-        int viewsDeleted = jdbcTemplate.update(DELETE_STATEMENT.formatted(VIEW_TABLE), uuid);
-        int downloadsDeleted = jdbcTemplate.update(DELETE_STATEMENT.formatted(DOWNLOAD_TABLE), uuid);
+        int viewsDeleted = jdbcTemplate.update(VIEW_SQL.delete(), uuid);
+        int downloadsDeleted = jdbcTemplate.update(DOWNLOAD_SQL.delete(), uuid);
         return viewsDeleted > 0 || downloadsDeleted > 0;
     }
 
-    private int count(String table, String uuid) {
-        Integer count = jdbcTemplate.queryForObject(COUNT_STATEMENT.formatted(table), Integer.class, uuid);
+    private int count(Statements sql, String uuid) {
+        Integer count = jdbcTemplate.queryForObject(sql.count(), Integer.class, uuid);
         return count == null ? 0 : count;
     }
 
@@ -253,15 +267,11 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
      * regardless.
      *
      * <p>The sync is skipped outright, before anything is drained, while the schema has never been
-     * created — the database has been unreachable since startup: the counts stay in memory,
+     * migrated — the database has been unreachable since startup: the counts stay in memory,
      * {@code lastRun} stays where it is, and the next run writes them as one longer window. Draining
      * anyway would lose every count against a database already known to be down, at the price of a
-     * connection timeout per document. It also matters for correctness on PostgreSQL:
-     * {@code SimpleJdbcInsert} resolves its table once and keeps it, and with no {@code public.views} the
-     * driver's metadata offers {@code information_schema.views} instead, so a view inserter first used
-     * before the table exists stays bound to that system view until restart. Once the schema exists this
-     * check is a volatile read, so an outage after that is handled as above, by losing that hour's
-     * counts.
+     * connection timeout per document. Once the schema exists this check is a volatile read, so an outage
+     * after that is handled as above, by losing that hour's counts.
      */
     @Scheduled(initialDelay=TimeConstants.ONE_HOUR, fixedDelay=TimeConstants.ONE_HOUR)
     public void syncDB() {
@@ -272,11 +282,11 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         }
         val windowStart = lastRun;
         lastRun = Instant.now().getEpochSecond();
-        syncTable(viewed, viewInserter, windowStart);
-        syncTable(downloaded, downloadInserter, windowStart);
+        syncTable(viewed, VIEW_SQL, windowStart);
+        syncTable(downloaded, DOWNLOAD_SQL, windowStart);
     }
 
-    private void syncTable(Map<String, Set<String>> tableMap, SimpleJdbcInsert inserter, long windowStart) {
+    private void syncTable(Map<String, Set<String>> tableMap, Statements sql, long windowStart) {
         Map<String, Integer> drained = new HashMap<>();
         synchronized (tableMap) {
             tableMap.forEach((doc, addrs) -> drained.put(doc, addrs.size()));
@@ -285,15 +295,15 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         if (drained.isEmpty()) {
             return;
         }
-        syncDBHelper(drained, inserter, windowStart);
+        syncDBHelper(drained, sql, windowStart);
     }
 
     @Scheduled(cron = "0 0 1 * * *")
     public void updateDB() {
         log.info("Updating document titles and record types");
         ensureSchema();
-        updateDBHelper(VIEW_TABLE);
-        updateDBHelper(DOWNLOAD_TABLE);
+        updateDBHelper(VIEW_TABLE, VIEW_SQL);
+        updateDBHelper(DOWNLOAD_TABLE, DOWNLOAD_SQL);
     }
 
     private void recordMetric(@NonNull Map<String, Set<String>> map, @NonNull String uuid, @NonNull String addr) {
@@ -307,23 +317,23 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
      * exhausted pool, or a failover now that the database is remote. A record page must not 500
      * because a metrics query failed, whatever the engine.
      */
-    private @Nullable Integer totalAmount(@NonNull String table, @NonNull String uuid) {
+    private @Nullable Integer totalAmount(@NonNull String table, @NonNull Statements sql, @NonNull String uuid) {
         try {
-            return jdbcTemplate.queryForObject(TOTAL_STATEMENT.formatted(table), Integer.class, uuid);
+            return jdbcTemplate.queryForObject(sql.total(), Integer.class, uuid);
         } catch (DataAccessException ex) {
             log.warn("Could not read {} total for {}: {}", table, uuid, ex.getMessage());
             return null;
         }
     }
 
-    private void updateDBHelper(String table) {
-        List<String> distinctDocs = jdbcTemplate.queryForList(DISTINCT_DOCS_QUERY.formatted(table), String.class);
+    private void updateDBHelper(String table, Statements sql) {
+        List<String> distinctDocs = jdbcTemplate.queryForList(sql.distinctDocs(), String.class);
         distinctDocs.forEach((doc) -> {
             MetadataDocument document;
             try {
                 log.debug("UPDATING title and type of document ID {} for {} table", doc, table);
                 document = documentRepository.read(doc);
-                jdbcTemplate.update(UPDATE_STATEMENT.formatted(table), document.getTitle(), document.getType(), doc);
+                jdbcTemplate.update(sql.update(), document.getTitle(), document.getType(), doc);
             } catch (Exception e) {
                 log.error("Error reading document from repository {}", doc, e);
             }
@@ -331,76 +341,90 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
     }
 
     /** Runs outside the monitor — see {@link #syncDB}. */
-    private void syncDBHelper(Map<String, Integer> drained, SimpleJdbcInsert inserter, long windowStart) {
+    private void syncDBHelper(Map<String, Integer> drained, Statements sql, long windowStart) {
         drained.forEach((doc, amount) -> {
             MetadataDocument document;
             try {
                 document = documentRepository.read(doc);
-                inserter.execute(Map.of(
-                    "start_timestamp", windowStart,
-                    "end_timestamp", Instant.now().getEpochSecond(),
-                    "amount", amount,
-                    "document", doc,
-                    "doc_title", document.getTitle(),
-                    "record_type", document.getType()
-                ));
+                // Longs for the timestamps, so they bind as bigint, never narrowed to a 32-bit integer.
+                jdbcTemplate.update(sql.insert(),
+                    windowStart,
+                    Instant.now().getEpochSecond(),
+                    amount,
+                    doc,
+                    document.getTitle(),
+                    document.getType());
             } catch (Exception e) {
                 log.error("Error reading document from repository {}", doc, e);
             }
         });
     }
 
+    /** The report's SQL and its parameters, in bind order — one value per placeholder. */
+    record ReportQuery(String sql, List<Object> params) { }
+
     /**
      * Parameters are collected as {@code Object}s and bound with {@code setObject}, so each keeps its
-     * Java type. They used to be bound with {@code setString} throughout, which pgjdbc sends as
-     * {@code varchar}; PostgreSQL has no {@code integer >= varchar} operator, so any date filter failed
-     * with "operator does not exist" (SQLSTATE 42883). H2 and SQLite coerce the string silently, which is
-     * why only a real PostgreSQL shows it — see {@code JDBCMetricsServicePostgresTest}.
+     * Java type: the epoch-second filters go over as {@code Long} (bigint) and the record types and
+     * document pattern as strings. They used to be bound with {@code setString} throughout, which pgjdbc
+     * sends as {@code varchar}; PostgreSQL has no {@code bigint >= varchar} operator, so any date filter
+     * failed with "operator does not exist" (SQLSTATE 42883). H2 and SQLite coerce the string silently,
+     * which is why only a real PostgreSQL shows it — see {@code JDBCMetricsServicePostgresTest}.
      *
      * <p>Two more differences from SQLite are handled here. The document filter lower-cases both sides,
      * because SQLite's {@code LIKE} ignores ASCII case and PostgreSQL's does not. And the result is always
      * ordered, ending on {@code document}: the query always has a {@code LIMIT}, SQLite's grouping happens
      * to come out in key order, and PostgreSQL's does not, so without it the rows returned — and which
      * ones a tie at the limit keeps — would be arbitrary.</p>
+     *
+     * <p>The date and record-type filters are served by the {@code idx_<table>_start_end} and
+     * {@code idx_<table>_record_type_start} indexes on PostgreSQL. The document filter is a leading-wildcard
+     * {@code LIKE '%...%'}, which no index can serve; it needs redesigning, not indexing (#243).</p>
      */
     public List<Map<String,String>> getMetricsReport(Instant startDate, Instant endDate, String orderBy, String ordering, List<String> recordType, String docId, Integer noOfRecords) {
-        String sql = """
-            SELECT t.document, coalesce(t.doc_title, '') AS doc_title, coalesce(t.record_type, '') AS record_type, sum(t.views) AS views, sum(t.downloads) AS downloads
-            FROM (
-                SELECT document, doc_title, record_type, amount AS downloads, 0 AS views FROM downloads WHERE %s
-                UNION ALL
-                SELECT document, doc_title, record_type, 0 AS downloads, amount AS views FROM views WHERE %s
-            ) t
-            GROUP BY document, doc_title, record_type
-        """;
-
         ensureSchema();
 
-        List<Object> whereVal = new ArrayList<>();
+        val query = reportQuery(startDate, endDate, orderBy, ordering, recordType, docId, noOfRecords);
+        log.info("Metrics report sql: {}", query.sql());
+
+        return jdbcTemplate.query(
+            query.sql(), preparedStatement -> {
+                int index = 1;
+                for (Object val : query.params()) {
+                    preparedStatement.setObject(index++, val);
+                }
+            },
+            new ReportMapper()
+        );
+    }
+
+    /** Builds the report query without running it. Package-private for the {@code EXPLAIN} tests. */
+    static ReportQuery reportQuery(Instant startDate, Instant endDate, String orderBy, String ordering, List<String> recordType, String docId, Integer noOfRecords) {
+        List<Object> params = new ArrayList<>();
         StringBuilder where = new StringBuilder("1=1");
         if (startDate != null) {
-            whereVal.add(startDate.getEpochSecond());
+            params.add(startDate.getEpochSecond());
             where.append(" AND start_timestamp >= ?");
         }
         if (endDate != null) {
-            whereVal.add(endDate.getEpochSecond());
+            params.add(endDate.getEpochSecond());
             where.append(" AND end_timestamp <= ?");
         }
         if (docId != null && !docId.isBlank()) {
-            whereVal.add("%" + docId + "%");
+            params.add("%" + docId + "%");
             where.append(" AND lower(document) LIKE lower(?)");
         }
         if (recordType != null && !recordType.isEmpty()) {
             where.append(" AND record_type IN (");
             for (String type : recordType) {
-                whereVal.add(type);
+                params.add(type);
                 where.append("?,");
             }
             where.setCharAt(where.length() - 1, ')');
         }
 
-        StringBuilder sqlBuilder = new StringBuilder(sql.formatted(where, where));
-        sqlBuilder.append(" ORDER BY ");
+        StringBuilder sqlBuilder = new StringBuilder(REPORT_SQL.formatted(where));
+        sqlBuilder.append("ORDER BY ");
         if (orderBy != null && !orderBy.isBlank()) {
             sqlBuilder.append(switch (orderBy) {
                 case "views", "downloads" -> orderBy;
@@ -416,20 +440,7 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         sqlBuilder.append(" LIMIT ");
         sqlBuilder.append(noOfRecords != null && noOfRecords >= 0 ? noOfRecords : 100);
 
-        log.info("Metrics report sql: {}", sqlBuilder);
-
-        return jdbcTemplate.query(
-            sqlBuilder.toString(), preparedStatement -> {
-                int index = 1;
-                int valSize = whereVal.size();
-                for (Object val : whereVal) {
-                    preparedStatement.setObject(index, val);
-                    preparedStatement.setObject(valSize + index, val);
-                    index++;
-                }
-            },
-            new ReportMapper()
-        );
+        return new ReportQuery(sqlBuilder.toString(), Collections.unmodifiableList(params));
     }
 
     static class ReportMapper implements RowMapper<Map<String, String>> {

@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.sqlite.SQLiteDataSource;
+import uk.ac.ceh.gateway.catalogue.metrics.MetricsSchemaMigrator;
 
 import javax.sql.DataSource;
 
@@ -67,6 +68,18 @@ class MetricsDatabaseConfigPostgresTest {
     }
 
     @Autowired private DataSource dataSource;
+    @Autowired private MetricsSchemaMigrator schemaMigrator;
+
+    /**
+     * Building the migrator connects to nothing — this context has no PostgreSQL behind it and still
+     * starts — and it points at the PostgreSQL scripts, with baseline 0 so that a database left by the
+     * pre-Flyway service still gets V1.
+     */
+    @Test
+    void postgresEngineMigratesWithThePostgresqlScripts() {
+        assertThat(schemaMigrator.getLocation(), is(MetricsSchemaMigrator.POSTGRESQL_LOCATION));
+        assertThat(schemaMigrator.getBaselineVersion(), is(MetricsSchemaMigrator.POSTGRESQL_BASELINE_VERSION));
+    }
 
     @Test
     void postgresEngineCreatesHikariDataSource() {

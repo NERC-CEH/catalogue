@@ -53,7 +53,9 @@ class MetricsCountCachingTest {
 
     /**
      * The context is shared across methods, so both the rows and the cache entries have to be reset
-     * here — a leftover cached total would make a later test pass or fail for the wrong reason.
+     * here — a leftover cached total would make a later test pass or fail for the wrong reason. The
+     * tables are the Flyway-migrated ones (see {@link Config#metricsService}); the service constructor no
+     * longer creates anything.
      */
     @SneakyThrows
     @BeforeEach
@@ -166,8 +168,10 @@ class MetricsCountCachingTest {
         @Bean
         MetricsService metricsService(EmbeddedDatabase db, DocumentRepository documentRepository) {
             // Outside a Spring Boot application there is no ApplicationReadyEvent, so the schema is
-            // ensured here rather than by the service's startup listener.
-            val service = new JDBCMetricsService(db, documentRepository);
+            // migrated here rather than by the service's startup listener -- by the real PostgreSQL
+            // migrations, which also run on H2.
+            val service = new JDBCMetricsService(db, documentRepository,
+                new MetricsSchemaMigrator(db, MetricsSchemaMigrator.POSTGRESQL_LOCATION));
             service.ensureSchema();
             return service;
         }

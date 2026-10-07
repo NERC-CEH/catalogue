@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.metrics;
 
 import lombok.SneakyThrows;
 import lombok.val;
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
+import static uk.ac.ceh.gateway.catalogue.metrics.MetricsSchemaMigrator.POSTGRESQL_LOCATION;
 
 @ExtendWith(MockitoExtension.class)
 class JDBCMetricsServiceTest {
@@ -54,7 +56,9 @@ class JDBCMetricsServiceTest {
      * unaffected: until it is severed the wrapper is a pass-through.
      *
      * <p>The schema is ensured explicitly because the constructor no longer touches the database; in the
-     * application that is done by the service's {@code ApplicationReadyEvent} listener.</p>
+     * application that is done by the service's {@code ApplicationReadyEvent} listener. It is created by
+     * the real PostgreSQL Flyway migrations — written to run on H2 too — so these tests exercise the
+     * shipped schema, not a copy of it.</p>
      */
     @BeforeEach
     void setup() {
@@ -63,7 +67,7 @@ class JDBCMetricsServiceTest {
             .generateUniqueName(true)
             .build();
         dataSource = new SeverableDataSource(db);
-        service = new JDBCMetricsService(dataSource, documentRepository);
+        service = new JDBCMetricsService(dataSource, documentRepository, migrator(dataSource));
         assertThat(service.ensureSchema(), is(true));
         doc.setTitle("default Test Title");
         doc.setType("default dataset");
@@ -74,13 +78,19 @@ class JDBCMetricsServiceTest {
         db.shutdown();
     }
 
+    private static MetricsSchemaMigrator migrator(DataSource dataSource) {
+        return new MetricsSchemaMigrator(dataSource, POSTGRESQL_LOCATION);
+    }
+
+    /**
+     * A fresh database is created by migration, and Flyway records it: the tables exist and the schema
+     * history is at V1. This replaces the old assertion on the constructor's {@code CREATE TABLE}.
+     */
     @Test
-    void testCreatedTables() throws SQLException {
-        //given
+    void freshDatabaseIsCreatedByTheFlywayMigration() throws SQLException {
+        //given/when the service has ensured its schema on an empty database
 
-        //when
-
-        //then
+        //then the tables exist
         val tables = new ArrayList<String>();
         try (Connection connection = db.getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
@@ -90,8 +100,75 @@ class JDBCMetricsServiceTest {
                 }
             }
         }
+        assertThat(tables, hasItems(equalToIgnoringCase("views"), equalToIgnoringCase("downloads"),
+            equalToIgnoringCase("flyway_schema_history")));
 
-        assertThat(tables, hasItems(equalToIgnoringCase("views"), equalToIgnoringCase("downloads")));
+        //and Flyway owns them, at V1
+        val current = Flyway.configure().dataSource(db).locations(POSTGRESQL_LOCATION).load().info().current();
+        assertThat(current.getVersion().getVersion(), is("1"));
+        assertThat(current.getState().isApplied(), is(true));
+    }
+
+    /**
+     * No DDL remains in {@link JDBCMetricsService}: given a migrator that does nothing, ensuring the
+     * schema must leave the database empty. If a {@code CREATE TABLE} or {@code CREATE INDEX} crept back
+     * into the service, the tables would appear here regardless of Flyway.
+     */
+    @Test
+    void serviceRunsNoDdlOfItsOwn() throws SQLException {
+        //given an empty database and a migrator that does nothing
+        val emptyDb = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).generateUniqueName(true).build();
+        try {
+            val noOpMigrator = mock(MetricsSchemaMigrator.class);
+            val bareService = new JDBCMetricsService(emptyDb, documentRepository, noOpMigrator);
+
+            //when the service ensures its schema
+            assertThat(bareService.ensureSchema(), is(true));
+
+            //then it delegated to the migrator and created nothing itself
+            verify(noOpMigrator).migrate();
+            try (Connection connection = emptyDb.getConnection();
+                 ResultSet rs = connection.getMetaData().getTables(null, "PUBLIC", "%", null)) {
+                assertThat(rs.next(), is(false));
+            }
+        } finally {
+            emptyDb.shutdown();
+        }
+    }
+
+    /**
+     * The primary key #246 settles on: a surrogate {@code id}. Not the natural key
+     * {@code (document, start_timestamp)} — that cannot hold until #248 stops the first sync after every
+     * restart writing a {@code (document, 0)} window.
+     */
+    @Test
+    void tablesHaveASurrogatePrimaryKey() throws SQLException {
+        for (String table : List.of("VIEWS", "DOWNLOADS")) {
+            val keyColumns = new ArrayList<String>();
+            try (Connection connection = db.getConnection();
+                 ResultSet rs = connection.getMetaData().getPrimaryKeys(null, null, table)) {
+                while (rs.next()) {
+                    keyColumns.add(rs.getString("COLUMN_NAME"));
+                }
+            }
+            assertThat(table, keyColumns, contains(equalToIgnoringCase("id")));
+        }
+    }
+
+    /** Epoch seconds overflow a 4-byte integer in January 2038, so the migration must declare bigint. */
+    @Test
+    void timestampColumnsAreBigint() throws SQLException {
+        for (String table : List.of("VIEWS", "DOWNLOADS")) {
+            try (Connection connection = db.getConnection();
+                 ResultSet rs = connection.getMetaData().getColumns(null, null, table, "%_TIMESTAMP")) {
+                int seen = 0;
+                while (rs.next()) {
+                    assertThat(table + "." + rs.getString("COLUMN_NAME"), rs.getInt("DATA_TYPE"), is(java.sql.Types.BIGINT));
+                    seen++;
+                }
+                assertThat(seen, is(2));
+            }
+        }
     }
 
     /**
@@ -107,26 +184,41 @@ class JDBCMetricsServiceTest {
     @SneakyThrows
     @Test
     void countTablesCarryACoveringIndexForTheTotalsQuery() {
-        //given/when the service has initialised its schema
+        //given/when the migration has run
 
-        //then each count table's index covers both the filter column and the summed column
-        assertThat(indexedColumnsOf("views"),
-            hasItems(equalToIgnoringCase("document"), equalToIgnoringCase("amount")));
-        assertThat(indexedColumnsOf("downloads"),
-            hasItems(equalToIgnoringCase("document"), equalToIgnoringCase("amount")));
+        //then each count table has #242's composite index, in #242's column order -- not document alone
+        assertThat(indexColumns("views", "idx_views_document_amount"), contains("DOCUMENT", "AMOUNT"));
+        assertThat(indexColumns("downloads", "idx_downloads_document_amount"), contains("DOCUMENT", "AMOUNT"));
     }
 
-    private List<String> indexedColumnsOf(String table) throws SQLException {
-        val columns = new ArrayList<String>();
+    /**
+     * The report filters on {@code start_timestamp >= ?}, {@code end_timestamp <= ?} and
+     * {@code record_type IN (...)}; #242 indexed none of them. Column order matters: the selective range
+     * column leads the date index, and {@code record_type} leads the composite it shares with the start.
+     */
+    @SneakyThrows
+    @Test
+    void countTablesCarryIndexesForTheReportFilters() {
+        for (String table : List.of("views", "downloads")) {
+            assertThat(indexColumns(table, "idx_" + table + "_start_end"), contains("START_TIMESTAMP", "END_TIMESTAMP"));
+            assertThat(indexColumns(table, "idx_" + table + "_record_type_start"), contains("RECORD_TYPE", "START_TIMESTAMP"));
+        }
+    }
+
+    /** The columns of one named index, in index order, upper-cased. */
+    private List<String> indexColumns(String table, String indexName) throws SQLException {
+        val columns = new TreeMap<Short, String>();
         try (Connection connection = db.getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
             try (ResultSet rs = metaData.getIndexInfo(null, null, table.toUpperCase(Locale.ROOT), false, false)) {
                 while (rs.next()) {
-                    columns.add(rs.getString("COLUMN_NAME"));
+                    if (indexName.equalsIgnoreCase(rs.getString("INDEX_NAME"))) {
+                        columns.put(rs.getShort("ORDINAL_POSITION"), rs.getString("COLUMN_NAME").toUpperCase(Locale.ROOT));
+                    }
                 }
             }
         }
-        return columns;
+        return new ArrayList<>(columns.values());
     }
 
     @SneakyThrows
@@ -239,7 +331,7 @@ class JDBCMetricsServiceTest {
             severed.sever();
 
             //when the service is constructed and the startup hook runs
-            val startingService = new JDBCMetricsService(severed, documentRepository);
+            val startingService = new JDBCMetricsService(severed, documentRepository, migrator(severed));
             val attemptsDuringConstruction = severed.connectionAttempts();
             startingService.initialiseSchemaOnStartup();
 
@@ -265,7 +357,7 @@ class JDBCMetricsServiceTest {
         try {
             val severed = new SeverableDataSource(freshDb);
             severed.sever();
-            val recoveringService = new JDBCMetricsService(severed, documentRepository);
+            val recoveringService = new JDBCMetricsService(severed, documentRepository, migrator(severed));
             recoveringService.initialiseSchemaOnStartup();
             given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
             recoveringService.recordView(TEST_DOCUMENT, TEST_IP1);
@@ -285,9 +377,7 @@ class JDBCMetricsServiceTest {
     /**
      * A sync that runs before the schema could ever be created — the database has been down since
      * startup — must keep the hour's counts rather than drain them: nothing can be written, and draining
-     * would throw every count away after a connection timeout per document. It also must not touch the
-     * inserters, which on PostgreSQL would resolve the missing {@code views} table to
-     * {@code information_schema.views} and stay bound to it. The counts are written by the next sync once
+     * would throw every count away after a connection timeout per document. The counts are written by the next sync once
      * the database is back, as a single longer window.
      */
     @SneakyThrows
@@ -298,7 +388,7 @@ class JDBCMetricsServiceTest {
         try {
             val severed = new SeverableDataSource(freshDb);
             severed.sever();
-            val startingService = new JDBCMetricsService(severed, documentRepository);
+            val startingService = new JDBCMetricsService(severed, documentRepository, migrator(severed));
             startingService.initialiseSchemaOnStartup();
             startingService.recordView(TEST_DOCUMENT, TEST_IP1);
             startingService.recordDownload(TEST_DOCUMENT, TEST_IP1);
@@ -307,7 +397,7 @@ class JDBCMetricsServiceTest {
             val attemptsBefore = severed.connectionAttempts();
             startingService.syncDB();
 
-            //then it gave up after the schema attempt alone, without reading any documents
+            //then it gave up after the migration's single connection attempt, without reading any documents
             assertThat(severed.connectionAttempts() - attemptsBefore, is(1));
             verifyNoInteractions(documentRepository);
 
@@ -595,7 +685,7 @@ class JDBCMetricsServiceTest {
     }
 
     /**
-     * PostgreSQL has no {@code integer >= varchar} operator, and pgjdbc sends {@code setString} values as
+     * PostgreSQL has no {@code bigint >= varchar} operator, and pgjdbc sends {@code setString} values as
      * {@code varchar}, so binding the epoch-second filters as strings fails there with "operator does not
      * exist" (SQLSTATE 42883). H2 coerces them silently, so running the report on H2 cannot catch it; this
      * asserts the bound types directly instead. The report is also run against a real PostgreSQL in
@@ -606,7 +696,8 @@ class JDBCMetricsServiceTest {
     void reportBindsTimestampFiltersAsNumbersNotStrings() {
         //given a service whose statements record how their parameters were bound
         val recording = new BindRecordingDataSource(db);
-        val reportService = new JDBCMetricsService(recording, documentRepository);
+        // Migrator on the plain database (already migrated by setup), so Flyway's own statements are not recorded.
+        val reportService = new JDBCMetricsService(recording, documentRepository, migrator(db));
         reportService.ensureSchema();
         val start = Instant.parse("2024-07-26T00:00:00Z");
         val end = Instant.parse("2024-07-27T23:59:59Z");
@@ -614,11 +705,29 @@ class JDBCMetricsServiceTest {
         //when the report is filtered by both dates
         reportService.getMetricsReport(start, end, null, null, null, null, null);
 
-        //then every timestamp parameter, in both halves of the UNION, went over as a Long
-        val expected = List.<Object>of(start.getEpochSecond(), end.getEpochSecond(),
-            start.getEpochSecond(), end.getEpochSecond());
+        //then each timestamp parameter went over as a Long -- once, not once per half of a UNION
+        val expected = List.<Object>of(start.getEpochSecond(), end.getEpochSecond());
         assertThat(recording.boundValues(), equalTo(expected));
         assertThat(recording.stringBinds(), is(0));
+    }
+
+    /**
+     * The filter used to be substituted into both halves of a {@code UNION ALL} and every value bound
+     * twice, by index arithmetic. The report now reads one CTE, so each filter value has exactly one
+     * placeholder, in the order the filters are applied.
+     */
+    @Test
+    void reportBindsEachFilterValueExactlyOnce() {
+        //given every filter at once
+        val start = Instant.parse("2024-07-26T00:00:00Z");
+        val end = Instant.parse("2024-07-27T23:59:59Z");
+
+        //when the query is built
+        val query = JDBCMetricsService.reportQuery(start, end, "views", "descending", List.of("a", "c"), "abcd", 10);
+
+        //then one placeholder per value, typed and in order
+        assertThat(query.sql().chars().filter(c -> c == '?').count(), is((long) query.params().size()));
+        assertThat(query.params(), equalTo(List.<Object>of(start.getEpochSecond(), end.getEpochSecond(), "%abcd%", "a", "c")));
     }
 
     /**
@@ -654,7 +763,8 @@ class JDBCMetricsServiceTest {
     void reportIsAlwaysOrderedEndingOnDocument() {
         //given a service whose statements are recorded
         val recording = new BindRecordingDataSource(db);
-        val reportService = new JDBCMetricsService(recording, documentRepository);
+        // Migrator on the plain database (already migrated by setup), so Flyway's own statements are not recorded.
+        val reportService = new JDBCMetricsService(recording, documentRepository, migrator(db));
         reportService.ensureSchema();
 
         //when the report is run without an order, then ordered by a count

@@ -90,6 +90,9 @@ dependencies {
     // Driver only — no compile-time dependency on it anywhere. Version managed by the Boot BOM.
     runtimeOnly 'org.postgresql:postgresql'
 
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     testImplementation(libs.mockito)

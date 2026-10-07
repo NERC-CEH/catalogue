@@ -147,6 +147,9 @@ services:
       # The local legilo container is not behind a proxy and checks no credentials;
       # any non-blank token satisfies the catalogue's start-up check.
       LEGILO_TOKEN: local-dev-token
+      # The local hubbub container is not behind a proxy and checks no credentials;
+      # any non-blank token satisfies the catalogue's start-up check.
+      HUBBUB_TOKEN: local-dev-token
       FUSEKI_SPARQL_ENDPOINT: http://fuseki:3030/ds/sparql
       FUSEKI_DATASET_URL: http://fuseki:3030/ds
       # "metrics" (Spring profile, unrelated to the compose profile above) is active: without it
