@@ -487,16 +487,17 @@ public class GitDocumentRepository implements DocumentRepository {
     }
 
     /**
-     * Whether a target URI is a record in this catalogue that is a monitoring facility or network.
-     * The id is taken from the URI only when it has the shape {@link DocumentIdentifierService}
-     * generates, so a crafted target cannot steer the read to some other path in the datastore.
+     * Whether a target is a record in this catalogue that is a monitoring facility or network.
+     * <p>
+     * A target is either a record URI or a bare record id: the editor's record picker stores the
+     * id (Solr's {@code identifier}), and Jena indexing resolves a bare id against the base URI
+     * just as it would the URI. Either way the id must have the shape
+     * {@link DocumentIdentifierService} generates, so a crafted target cannot steer the read to
+     * some other path in the datastore.
      */
     private boolean isUtilisesTarget(String target) {
         String prefix = documentIdentifierService.getBaseUri() + "/id/";
-        if (!target.startsWith(prefix)) {
-            return false;
-        }
-        String targetId = target.substring(prefix.length());
+        String targetId = target.startsWith(prefix) ? target.substring(prefix.length()) : target;
         if (!DOCUMENT_ID.matcher(targetId).matches()) {
             return false;
         }
