@@ -16,6 +16,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.monitoring.Utilises;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
+import uk.ac.ceh.gateway.catalogue.relationships.RelationshipRules;
 import uk.ac.ceh.gateway.catalogue.services.ResourceIdentifierLookupService;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
@@ -164,7 +166,7 @@ public class GitDocumentRepository implements DocumentRepository {
                 // that commit lands first, so rejecting afterwards would leave an orphaned raw
                 // upload in the datastore with no document to go with it.
                 validateNoMojibake(data, id);
-                validateUtilisesTargets(data, id);
+                validateRelationshipTargets(data, id);
 
                 repo.save(user, id, message, metadataInfo, (o) -> Files.copy(tmpFile, o));
             } finally {
@@ -283,7 +285,7 @@ public class GitDocumentRepository implements DocumentRepository {
         document.setUri(uri);
         validateUniqueResourceIdentifiers(document, id);
         validateNoMojibake(document, id);
-        validateUtilisesTargets(document, id);
+        validateRelationshipTargets(document, id);
         repo.save(
             user,
             id,
@@ -434,60 +436,69 @@ public class GitDocumentRepository implements DocumentRepository {
     }
 
     /**
-     * Rejects a save that adds a {@code doo:utilises} link to anything other than a monitoring
-     * facility or network in this catalogue (dri-one #404). The editor's target search only
-     * offers those, but the API and hand-edited JSON bypass it.
+     * Rejects a save that adds a relationship to a kind of record that relationship cannot point
+     * at, e.g. a "produced at" ({@code doo:utilises}) link to anything but a monitoring facility
+     * or network. {@link RelationshipRules} holds the rules, and the editor's record picker only
+     * offers what they allow, but the API and hand-edited JSON bypass the picker (dri-one #404,
+     * #439). A relationship with no rule is open and never checked.
      *
-     * <p>Like {@link #validateNoMojibake}, only links this save <em>introduces</em> are checked.
-     * A link that was already stored is left alone, so a record holding one stays editable; its
-     * page and JSON drop it anyway ({@link Utilises#targets}). Checking only new links also keeps
-     * an ordinary save from reading every target it already points at.
+     * <p>Like {@link #validateNoMojibake}, only relationships this save <em>introduces</em> are
+     * checked. One already stored is left alone, so a record holding one stays editable; for
+     * {@code doo:utilises} its page and JSON drop it anyway ({@link Utilises#targets}). Checking
+     * only new relationships also keeps an ordinary save from reading every target it already
+     * points at.
      */
-    private void validateUtilisesTargets(MetadataDocument document, String id) {
-        Set<String> incoming = utilisesTargets(document);
+    private void validateRelationshipTargets(MetadataDocument document, String id) {
+        Set<Relationship> incoming = restrictedRelationships(document);
         if (incoming.isEmpty()) {
             return;
         }
-        Set<String> existing = storedUtilisesTargets(id);
+        Set<Relationship> existing = storedRestrictedRelationships(id);
+        String sourceType = document.getType();
         String invalid = incoming.stream()
-            .filter(target -> !existing.contains(target))
-            .filter(target -> !isUtilisesTarget(target))
+            .filter(relationship -> !existing.contains(relationship))
+            .filter(relationship -> !isAllowedTarget(sourceType, relationship))
+            .map(relationship -> relationship.getTarget() + " (" + relationship.getRelation() + ", which links to " +
+                String.join(" or ", new TreeSet<>(RelationshipRules.ruleFor(sourceType, relationship.getRelation())
+                    .orElseThrow().targetTypesFor(sourceType))) + ")")
             .sorted()
-            .collect(Collectors.joining(", "));
+            .collect(Collectors.joining("; "));
         if (!invalid.isEmpty()) {
+            // Raw type keys rather than display labels: the editor's picker cannot produce this,
+            // so whoever sees it is calling the API and knows the record types by their keys.
             throw new InvalidRelationshipTargetException(
-                "Document " + id + " says it was produced at " + invalid + ", but only a " +
-                    "monitoring facility or network in this catalogue can be linked that way. " +
-                    "Please choose the facility or network from the search in the editor."
+                "Document " + id + " links to a kind of record that relationship cannot point at: " +
+                    invalid + ". Please choose the record from the search in the editor."
             );
         }
     }
 
-    private static Set<String> utilisesTargets(MetadataDocument document) {
+    /** A document's relationships that have a {@link RelationshipRules} rule for its type. */
+    private static Set<Relationship> restrictedRelationships(MetadataDocument document) {
+        String sourceType = document.getType();
         return Optional.ofNullable(document.getRelationships()).orElseGet(Set::of).stream()
-            .filter(relationship -> Utilises.PREDICATE.equals(relationship.getRelation()))
-            .map(Relationship::getTarget)
+            .filter(relationship -> RelationshipRules.ruleFor(sourceType, relationship.getRelation()).isPresent())
             .collect(Collectors.toSet());
     }
 
     /**
-     * {@code doo:utilises} targets already in the stored version of a document. As with
+     * Restricted relationships already in the stored version of a document. As with
      * {@link #storedMojibakeCounts}, an absent or unreadable document counts as none, so every
-     * link in a create - or after a read failure - is checked.
+     * relationship in a create - or after a read failure - is checked.
      */
-    private Set<String> storedUtilisesTargets(String id) {
+    private Set<Relationship> storedRestrictedRelationships(String id) {
         try {
             MetadataDocument stored = documentBundleReader.readBundle(id);
-            return stored == null ? Set.of() : utilisesTargets(stored);
+            return stored == null ? Set.of() : restrictedRelationships(stored);
         } catch (IOException | PostProcessingException
                  | UnknownContentTypeException | IllegalArgumentException ex) {
-            log.debug("No readable stored version of {} to compare utilises links against", id, ex);
+            log.debug("No readable stored version of {} to compare relationships against", id, ex);
             return Set.of();
         }
     }
 
     /**
-     * Whether a target is a record in this catalogue that is a monitoring facility or network.
+     * Whether a relationship's target is a record in this catalogue of a type its rule allows.
      * <p>
      * A target is either a record URI or a bare record id: the editor's record picker stores the
      * id (Solr's {@code identifier}), and Jena indexing resolves a bare id against the base URI
@@ -495,17 +506,21 @@ public class GitDocumentRepository implements DocumentRepository {
      * {@link DocumentIdentifierService} generates, so a crafted target cannot steer the read to
      * some other path in the datastore.
      */
-    private boolean isUtilisesTarget(String target) {
+    private boolean isAllowedTarget(String sourceType, Relationship relationship) {
+        String target = relationship.getTarget();
         String prefix = documentIdentifierService.getBaseUri() + "/id/";
         String targetId = target.startsWith(prefix) ? target.substring(prefix.length()) : target;
         if (!DOCUMENT_ID.matcher(targetId).matches()) {
             return false;
         }
         try {
-            return Utilises.isTarget(documentBundleReader.readBundle(targetId));
+            MetadataDocument targetDocument = documentBundleReader.readBundle(targetId);
+            return targetDocument != null && RelationshipRules.ruleFor(sourceType, relationship.getRelation())
+                .map(rule -> rule.allows(sourceType, targetDocument.getType()))
+                .orElse(true);
         } catch (IOException | PostProcessingException
                  | UnknownContentTypeException | IllegalArgumentException ex) {
-            log.debug("Cannot read {} to check it as a utilises target", targetId, ex);
+            log.debug("Cannot read {} to check it as a relationship target", targetId, ex);
             return false;
         }
     }

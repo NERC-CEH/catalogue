@@ -1,4 +1,4 @@
-import RelationshipView from '../src/views/RelationshipView.js'
+import RelationshipView, { clearRelationshipRules } from '../src/views/RelationshipView.js'
 import { EditorMetadata } from '../src'
 import $ from 'jquery'
 import 'jquery-ui/ui/widgets/autocomplete'
@@ -73,40 +73,82 @@ describe('Test RelationshipView', function () {
   })
 
   describe('relationship-specific search filters', function () {
-    const outputOptions = [{ value: 'http://purl.org/cerif/frapo/hasOutput', label: 'Has output' }]
+    const UTILISES = 'https://digital.ceh.ac.uk/ontology/doo/utilises'
+    const REPLACES = 'http://purl.org/dc/terms/replaces'
+    const RELATION = 'http://purl.org/dc/terms/relation'
 
-    async function queryFor (relation, opts) {
+    // What /relationships/rules serves for a dataset (see RelationshipRulesController)
+    const datasetRules = {
+      [REPLACES]: { resourceTypes: ['Dataset'], catalogues: [] },
+      [UTILISES]: { resourceTypes: ['Monitoring facility', 'Monitoring network'], catalogues: ['eidc', 'ukceh'] }
+    }
+
+    beforeEach(function () {
+      clearRelationshipRules()
+      $('html').data('catalogue', 'eidc')
+      $.getJSON.and.callFake(url => url.startsWith('/relationships/rules') ? datasetRules : { results: [] })
+    })
+
+    async function queryFor (relation, parent = new EditorMetadata({ id: 'cosmos', type: 'dataset' })) {
       const m = new EditorMetadata({ value: relation, target: '' })
-      const v = new RelationshipView({ model: m, options: opts })
+      const v = new RelationshipView({ model: m, options: [{ value: relation, label: 'Relationship' }], parentModel: parent })
       // The autocomplete is bound during initialize and render() replaces the
       // input, so capture the source callback before rendering.
       const source = v.$('.autocomplete').autocomplete('option', 'source')
       await v.render()
       v.$('.relationshipList').val(relation)
       await source({ term: 'rainfall' }, () => {})
-      return $.getJSON.calls.mostRecent().args[0]
+      return decodeURIComponent($.getJSON.calls.mostRecent().args[0])
     }
 
-    it('restricts hasOutput to output-bearing resource types', async () => {
-      const query = await queryFor('http://purl.org/cerif/frapo/hasOutput', outputOptions)
-      expect(query).toContain('recordType%7C(')
-      expect(query).toContain('Dataset')
-      expect(query).toContain('Map')
-      expect(query).toContain('Model')
-      expect(query).toContain('Software')
+    it('fetches the rules for the record being edited', async () => {
+      await queryFor(REPLACES)
+      expect($.getJSON).toHaveBeenCalledWith('/relationships/rules?type=dataset')
     })
 
-    it('restricts utilises to monitoring networks and facilities', async () => {
-      const utilisesOptions = [
-        { value: 'https://digital.ceh.ac.uk/ontology/doo/utilises', label: 'Uses (facility or network)' }
-      ]
+    it('filters on the indexed resourceType label, not the type key (dri-one #439)', async () => {
+      const query = await queryFor(REPLACES)
+      expect(query).toContain('resourceType:("Dataset")')
+      expect(query).not.toContain('"dataset"')
+    })
 
-      const query = await queryFor('https://digital.ceh.ac.uk/ontology/doo/utilises', utilisesOptions)
+    it('searches the record\'s own catalogue when the rule names none', async () => {
+      const query = await queryFor(REPLACES)
+      expect(query).toMatch(/^\/eidc\/documents\?term=/)
+    })
 
-      // resourceType is indexed as the codelist display label, so the labels are
-      // quoted - they contain spaces.
-      expect(query).toContain('resourceType%3A(%22Monitoring%20network%22%20OR%20%22Monitoring%20facility%22)')
-      expect(query).toContain('rainfall')
+    it('searches the rule\'s catalogues across the whole catalogue for produced at (dri-one #439)', async () => {
+      const query = await queryFor(UTILISES)
+      expect(query).toMatch(/^\/documents\?term=/)
+      expect(query).toContain('resourceType:("Monitoring facility" OR "Monitoring network")')
+      expect(query).toContain('(catalogue:eidc OR catalogue_view:eidc OR catalogue:ukceh OR catalogue_view:ukceh)')
+      expect(query).not.toContain('ukeof')
+    })
+
+    it('keeps the search term and excludes the record itself', async () => {
+      const query = await queryFor(UTILISES)
+      expect(query).toContain('(rainfall)')
+      expect(query).toContain('NOT identifier:cosmos')
+    })
+
+    it('leaves an open relationship unfiltered', async () => {
+      const query = await queryFor(RELATION)
+      expect(query).not.toContain('resourceType:')
+      expect(query).toMatch(/^\/eidc\/documents\?term=/)
+    })
+
+    it('takes a Gemini record\'s type from its resource type, which the editor can change', async () => {
+      const parent = new EditorMetadata({ id: 'cosmos', type: 'dataset', resourceType: { value: 'service' } })
+      await queryFor(REPLACES, parent)
+      expect($.getJSON).toHaveBeenCalledWith('/relationships/rules?type=service')
+    })
+
+    it('falls back to an unfiltered search if the rules cannot be fetched', async () => {
+      spyOn(console, 'error')
+      $.getJSON.and.callFake(url => url.startsWith('/relationships/rules') ? Promise.reject(new Error('down')) : { results: [] })
+      const query = await queryFor(REPLACES)
+      expect(query).not.toContain('resourceType:')
+      expect(console.error).toHaveBeenCalled()
     })
   })
 })

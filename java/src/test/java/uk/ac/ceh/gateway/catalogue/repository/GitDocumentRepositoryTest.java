@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -468,7 +469,7 @@ public class GitDocumentRepositoryTest {
         given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
         given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
         given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
-        given(documentBundleReader.readBundle("morley")).willReturn(new MonitoringFacility());
+        given(documentBundleReader.readBundle("morley")).willReturn(new MonitoringFacility().setType("monitoringFacility"));
 
         //When
         documentRepository.save(user, document, "cosmos", "message");
@@ -489,7 +490,7 @@ public class GitDocumentRepositoryTest {
         given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
         given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
         given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
-        given(documentBundleReader.readBundle("640ccee2-17c9-4b98-8de1-5dc3f6848c63")).willReturn(new MonitoringFacility());
+        given(documentBundleReader.readBundle("640ccee2-17c9-4b98-8de1-5dc3f6848c63")).willReturn(new MonitoringFacility().setType("monitoringFacility"));
 
         //When / Then
         assertDoesNotThrow(() -> documentRepository.save(user, document, "cosmos", "message"));
@@ -504,7 +505,7 @@ public class GitDocumentRepositoryTest {
         given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
         given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
         given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
-        given(documentBundleReader.readBundle("another-dataset")).willReturn(new GeminiDocument());
+        given(documentBundleReader.readBundle("another-dataset")).willReturn(new GeminiDocument().setType("dataset"));
 
         //When / Then
         assertThrows(
@@ -522,7 +523,7 @@ public class GitDocumentRepositoryTest {
         given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
         given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
         given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
-        given(documentBundleReader.readBundle("cosmos-uk")).willReturn(new MonitoringNetwork());
+        given(documentBundleReader.readBundle("cosmos-uk")).willReturn(new MonitoringNetwork().setType("monitoringNetwork"));
 
         //When / Then
         assertDoesNotThrow(() -> documentRepository.save(user, document, "cosmos", "message"));
@@ -538,7 +539,7 @@ public class GitDocumentRepositoryTest {
         given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
         given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
         given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
-        given(documentBundleReader.readBundle("another-dataset")).willReturn(new GeminiDocument());
+        given(documentBundleReader.readBundle("another-dataset")).willReturn(new GeminiDocument().setType("dataset"));
 
         //When / Then
         assertThrows(
@@ -639,5 +640,83 @@ public class GitDocumentRepositoryTest {
             () -> documentRepository.save(user, inputStream, MediaType.APPLICATION_JSON, "GEMINI_DOCUMENT", "eidc", "message")
         );
         verifyNoInteractions(repo);
+    }
+
+    private GeminiDocument geminiRelating(String type, String relation, String target) {
+        GeminiDocument document = (GeminiDocument) new GeminiDocument()
+            .setType(type)
+            .setMetadata(MetadataInfo.builder().build());
+        document.setRelationships(Set.of(new Relationship(relation, target)));
+        return document;
+    }
+
+    @Test
+    @SneakyThrows
+    public void replacingARecordOfTheSameTypeSaves() {
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        GeminiDocument document = geminiRelating("dataset", "http://purl.org/dc/terms/replaces", "old-version");
+        given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
+        given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
+        given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
+        given(documentBundleReader.readBundle("old-version")).willReturn(new GeminiDocument().setType("dataset"));
+
+        //When / Then
+        assertDoesNotThrow(() -> documentRepository.save(user, document, "cosmos", "message"));
+    }
+
+    @Test
+    @SneakyThrows
+    public void replacingARecordOfAnotherTypeThrows() {
+        // dri-one #439: every restricted relationship is checked, not only doo:utilises
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        GeminiDocument document = geminiRelating("dataset", "http://purl.org/dc/terms/replaces", "a-service");
+        given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
+        given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
+        given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
+        given(documentBundleReader.readBundle("a-service")).willReturn(new GeminiDocument().setType("service"));
+
+        //When / Then
+        InvalidRelationshipTargetException thrown = assertThrows(
+            InvalidRelationshipTargetException.class,
+            () -> documentRepository.save(user, document, "cosmos", "message")
+        );
+        org.assertj.core.api.Assertions.assertThat(thrown.getMessage())
+            .contains("a-service")
+            .contains("which links to dataset");
+        verifyNoInteractions(repo);
+    }
+
+    @Test
+    @SneakyThrows
+    public void requiringSomethingOtherThanADataResourceThrows() {
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        GeminiDocument document = geminiRelating("service", "http://purl.org/dc/terms/requires", "morley");
+        given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
+        given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
+        given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
+        given(documentBundleReader.readBundle("morley")).willReturn(new MonitoringFacility().setType("monitoringFacility"));
+
+        //When / Then
+        assertThrows(
+            InvalidRelationshipTargetException.class,
+            () -> documentRepository.save(user, document, "cosmos", "message")
+        );
+    }
+
+    @Test
+    @SneakyThrows
+    public void anOpenRelationshipIsNeverChecked() {
+        // "Related" deliberately takes any record, so its target is not even read.
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        GeminiDocument document = geminiRelating("dataset", "http://purl.org/dc/terms/relation", "https://example.com/anything");
+        given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
+
+        //When / Then
+        assertDoesNotThrow(() -> documentRepository.save(user, document, "cosmos", "message"));
+        verify(documentBundleReader, never()).readBundle("https://example.com/anything");
     }
 }

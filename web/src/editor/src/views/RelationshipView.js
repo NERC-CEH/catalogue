@@ -25,6 +25,59 @@ async function generateInformationString (target) {
   }
 }
 
+// The rules for what each relationship may point at live in the backend (RelationshipRules),
+// which also enforces them on save. Fetched once per record type.
+const rulesByType = new Map()
+
+export function relationshipRules (type) {
+  const key = type || ''
+  if (!rulesByType.has(key)) {
+    const rules = Promise.resolve($.getJSON(`/relationships/rules?type=${encodeURIComponent(key)}`))
+      .catch(error => {
+        // Fall back to an unfiltered search; the save-time check still applies
+        console.error('Error fetching relationship rules:', error)
+        rulesByType.delete(key)
+        return {}
+      })
+    rulesByType.set(key, rules)
+  }
+  return rulesByType.get(key)
+}
+
+// For tests: forget fetched rules
+export function clearRelationshipRules () {
+  rulesByType.clear()
+}
+
+// A Gemini record keeps its type in resourceType, which the editor can change; other records in type
+function recordType (model) {
+  return model?.get('resourceType')?.value || model?.get('type')
+}
+
+/**
+ * The record search for one relationship. A restricted relationship filters on resourceType,
+ * which Solr holds as the case-sensitive codelist label (e.g. "Dataset", not "dataset"), and may
+ * search other catalogues than the record's own through the cross-catalogue endpoint.
+ */
+export async function searchQuery ({ catalogue, relation, sourceType, currentId, searchTerm }) {
+  const targets = (await relationshipRules(sourceType))[relation]
+  const clauses = []
+  if (targets?.resourceTypes?.length) {
+    clauses.push(`resourceType:(${targets.resourceTypes.map(label => `"${label}"`).join(' OR ')})`)
+  }
+  const catalogues = targets?.catalogues ?? []
+  if (catalogues.length) {
+    // A record shared into a catalogue carries it in catalogue_view, not catalogue
+    clauses.push(`(${catalogues.map(c => `catalogue:${c} OR catalogue_view:${c}`).join(' OR ')})`)
+  }
+  clauses.push(searchTerm ? `(${searchTerm})` : '*')
+  if (currentId) {
+    clauses.push(`NOT identifier:${currentId}`)
+  }
+  const endpoint = catalogues.length ? '/documents' : `/${catalogue}/documents`
+  return `${endpoint}?term=${encodeURIComponent(clauses.join(' AND '))}`
+}
+
 export default ObjectInputView.extend({
 
   optionTemplate: _.template(
@@ -41,69 +94,17 @@ export default ObjectInputView.extend({
 
     const catalogue = $('html').data('catalogue')
 
-    // Current document details
-    const recordTypes = {
-      monitoringFacility: 'Monitoring facility',
-      monitoringProgramme: 'Monitoring programme',
-      monitoringNetwork: 'Monitoring network'
-    }
-
-    const currentId = this.parentModel?.get('id')
-    const currentType = this.parentModel?.get('type')
-    const currentResourceType = recordTypes[currentType] || currentType
-
     const autocomplete = this.$('.autocomplete').autocomplete({
       minLength: 2,
 
       source: async (request, response) => {
-        const searchTerm = request.term.trim()
-        const selectedRelationship = this.$('.relationshipList').val()
-
-        const term = currentId
-          ? `${searchTerm} AND NOT identifier:${currentId}`
-          : searchTerm
-
-        const encodedTerm = encodeURIComponent(term)
-
-        const relationshipQueries = {
-          'http://purl.org/dc/terms/replaces': () =>
-            `resourceType%3A%22${encodeURIComponent(currentResourceType)}%22%20AND%20${encodedTerm}`,
-
-          // resourceType is indexed as the codelist display label, so a label
-          // containing a space has to be quoted or the Solr query breaks.
-          'http://purl.org/cerif/frapo/hasOutput': () =>
-            `${encodedTerm}&facet=recordType%7C(Model%20OR%20Dataset%20OR%20Map%20(web%20service)%20OR%20Software)`,
-
-          'https://digital.ceh.ac.uk/ontology/doo/utilises': () =>
-            `resourceType%3A(%22Monitoring%20network%22%20OR%20%22Monitoring%20facility%22)%20AND%20${encodedTerm}`,
-
-          'http://purl.org/dc/terms/isPartOf': () => {
-            if (currentResourceType === 'dataset') {
-              return `resourceType%3AAggregation%20AND%20${encodedTerm}`
-            }
-
-            if (currentResourceType === 'Monitoring facility') {
-              return 'resourceType%3A%22Monitoring%20network%22%20AND%20' + encodedTerm
-            }
-
-            return encodedTerm
-          }
-        }
-
-        let query
-
-        if (!searchTerm) {
-          query = `/${catalogue}/documents`
-        } else if (
-          selectedRelationship.startsWith(
-            'https://digital.ceh.ac.uk/ontology/doo/hasChild'
-          )
-        ) {
-          query = `/${catalogue}/documents?term=resourceType%3A%22${encodeURIComponent(currentResourceType)}%22%20AND%20${encodedTerm}`
-        } else {
-          const termQuery = relationshipQueries[selectedRelationship]?.() ?? encodedTerm
-          query = `/${catalogue}/documents?term=${termQuery}`
-        }
+        const query = await searchQuery({
+          catalogue,
+          relation: this.$('.relationshipList').val(),
+          sourceType: recordType(this.parentModel),
+          currentId: this.parentModel?.get('id'),
+          searchTerm: request.term.trim()
+        })
 
         try {
           const options = await $.getJSON(query)
