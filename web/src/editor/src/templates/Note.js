@@ -3,7 +3,7 @@ import _ from 'underscore'
 export default _.template(`
 <div class="row">
     <div class="col-2">
-        <label for="note<%= data.index %>_addedDate">Date</label>
+        <label for="note<%= data.index %>_addedDate">Date/time</label>
     </div>
     <div class="col-xl-4 col-lg-10">
         <input data-name='addedDate' type="date" class="editor-input" id="note<%= data.index %>_addedDate" value="<%= data.addedDate %>">

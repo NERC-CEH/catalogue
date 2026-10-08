@@ -56,6 +56,8 @@ public class DevelopmentUserStoreConfig {
     public static final String INFRASTRUCTURE_PUBLISHER = "role_infrastructure_publisher";
     public static final String SA_EDITOR = "role_sa_editor";
     public static final String SA_PUBLISHER = "role_sa_publisher";
+    public static final String SAMPLE_EDITOR = "role_sample_editor";
+    public static final String SAMPLE_PUBLISHER = "role_sample_publisher";
     public static final String UKEOF_EDITOR = "role_ukeof_editor";
     public static final String UKEOF_PUBLISHER = "role_ukeof_publisher";
     public static final String UKSCAPE_EDITOR = "role_ukscape_editor";
@@ -199,7 +201,6 @@ public class DevelopmentUserStoreConfig {
         return user;
     }
 
-
     @Bean
     public CatalogueUser infrastructureEditor() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser("infrastructure-editor", "infrastructure-editor@ceh.ac.uk");
@@ -225,6 +226,22 @@ public class DevelopmentUserStoreConfig {
     }
 
     @Bean
+    public CatalogueUser sampleEditor() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser("sample-editor", "sample-editor@ceh.ac.uk");
+        addUserToGroup(user, SAMPLE_EDITOR);
+        userStore().addUser(user, "password");
+        return user;
+    }
+
+    @Bean
+    public CatalogueUser samplePublisher() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser("sample-publisher", "sample-publisher@ceh.ac.uk");
+        addUserToGroup(user, SAMPLE_EDITOR, SAMPLE_PUBLISHER);
+        userStore().addUser(user, "password");
+        return user;
+    }
+
+    @Bean
     public CatalogueUser superadmin() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser("superadmin", "superadmin@ceh.ac.uk");
         addUserToGroup(user, ADMIN_DELETE_ROLE, CEH_GROUP_NAME,
@@ -233,6 +250,7 @@ public class DevelopmentUserStoreConfig {
         INFRASTRUCTURE_EDITOR, INFRASTRUCTURE_PUBLISHER,
         NM_EDITOR, NM_PUBLISHER,
         SA_EDITOR, SA_PUBLISHER,
+        SAMPLE_EDITOR, SAMPLE_PUBLISHER,
         UKEOF_EDITOR, UKEOF_PUBLISHER,
         UKSCAPE_EDITOR, UKSCAPE_PUBLISHER,
         MAINTENANCE_ROLE, DATACITE_ROLE);
@@ -302,6 +320,8 @@ public class DevelopmentUserStoreConfig {
         groupStore.createGroup(INFRASTRUCTURE_PUBLISHER, "");
         groupStore.createGroup(SA_EDITOR, "");
         groupStore.createGroup(SA_PUBLISHER, "");
+        groupStore.createGroup(SAMPLE_EDITOR, "");
+        groupStore.createGroup(SAMPLE_PUBLISHER, "");
         groupStore.createGroup(UKEOF_PUBLISHER, "");
         groupStore.createGroup(UKEOF_EDITOR, "");
         groupStore.createGroup(UKSCAPE_PUBLISHER, "");

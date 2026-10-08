@@ -39,7 +39,7 @@ import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
-import uk.ac.ceh.gateway.catalogue.samples.Sample;
+import uk.ac.ceh.gateway.catalogue.samples.Archive;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
@@ -287,8 +287,8 @@ class DocumentControllerTest extends AbstractMvcTest {
             Arguments.of(new InfrastructureRecord(), APPLICATION_JSON, JSON, null),
             Arguments.of(new ResearchActivity(), TEXT_HTML, HTML, null),
             Arguments.of(new ResearchActivity(), APPLICATION_JSON, JSON, null),
-            Arguments.of(new Sample(), TEXT_HTML, HTML, null),
-            Arguments.of(new Sample(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new Archive(), TEXT_HTML, HTML, null),
+            Arguments.of(new Archive(), APPLICATION_JSON, JSON, null),
             Arguments.of(gemini, TEXT_HTML, HTML, null),
             Arguments.of(gemini, APPLICATION_JSON, JSON, "gemini.json"),
             Arguments.of(gemini, GEMINI_XML, GEMINI_XML_SHORT,  "gemini.xml"),

@@ -31,7 +31,7 @@ import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.document.writing.MessageConverterWritingService;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
-import uk.ac.ceh.gateway.catalogue.samples.Sample;
+import uk.ac.ceh.gateway.catalogue.samples.Archive;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.maintenance.AdminDeleteResponse;
 import uk.ac.ceh.gateway.catalogue.maintenance.MaintenanceResponse;
@@ -75,7 +75,7 @@ public class WebConfig implements WebMvcConfigurer {
         val dataType = new Object2TemplatedMessageConverter<>(DataType.class, freemarkerConfiguration);
         val infrastructureRecord = new Object2TemplatedMessageConverter<>(InfrastructureRecord.class, freemarkerConfiguration);
         val researchActivity = new Object2TemplatedMessageConverter<>(ResearchActivity.class, freemarkerConfiguration);
-        val sample = new Object2TemplatedMessageConverter<>(Sample.class, freemarkerConfiguration);
+        val archive = new Object2TemplatedMessageConverter<>(Archive.class, freemarkerConfiguration);
         val errorResponse = new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration);
         val gemini = new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration);
         val adminDeleteResponse = new Object2TemplatedMessageConverter<>(AdminDeleteResponse.class, freemarkerConfiguration);
@@ -112,7 +112,7 @@ public class WebConfig implements WebMvcConfigurer {
             dataType,
             infrastructureRecord,
             researchActivity,
-            sample,
+            archive,
             errorResponse,
             history,
             link,

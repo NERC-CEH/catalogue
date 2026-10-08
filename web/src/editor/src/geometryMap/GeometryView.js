@@ -1,3 +1,4 @@
+import $ from 'jquery'
 import L from 'leaflet'
 import 'leaflet-draw'
 import { ObjectInputView } from '../views'
@@ -6,8 +7,8 @@ import template from './geometryTemplate'
 export default ObjectInputView.extend({
 
   events: {
-    'change #box': 'handleInput',
-    'change #locationConfidential': 'handleLocationConfidentialCheckbox'
+    'change .box': 'handleInput',
+    'change .locationConfidential': 'handleLocationConfidentialCheckbox'
   },
 
   initialize (options) {
@@ -16,7 +17,7 @@ export default ObjectInputView.extend({
     this.render()
     this.viewMap()
     this.listenTo(this.model, 'change:geometryString', function (model, value) {
-      this.$('#box').val(value)
+      this.$('.box').val(value)
     })
   },
 
@@ -26,7 +27,7 @@ export default ObjectInputView.extend({
   },
 
   handleInput () {
-    this.model.setGeometry(this.$('#box').val())
+    this.model.setGeometry(this.$('.box').val())
 
     // Redraw shape
     this.drawnItems.clearLayers()
@@ -37,8 +38,15 @@ export default ObjectInputView.extend({
   // grid cell server-side, on save, by LocationObfuscationService - doing it here
   // meant the raw-JSON field below the map, a direct API PUT, and every geometry
   // type except Point all saved the precise location.
-  handleLocationConfidentialCheckbox () {
-    const isChecked = this.$('#locationConfidential').is(':checked')
+  handleLocationConfidentialCheckbox (event) {
+
+    console.log('handleLocationConfidentialCheckbox')
+    console.log(event.currentTarget)
+    
+    const checkbox = $(event.currentTarget)
+    const isChecked = checkbox.is(':checked')
+    console.log(isChecked)    
+    //const isChecked = this.$('.locationConfidential').is(':checked')
 
     if (isChecked) {
       const confirmed = window.confirm(
@@ -48,7 +56,7 @@ export default ObjectInputView.extend({
       )
 
       if (!confirmed) {
-        this.$('#locationConfidential').prop('checked', false)
+        checkbox.prop('checked', false)
         return
       }
     }
@@ -101,24 +109,8 @@ export default ObjectInputView.extend({
       return val
     }
 
-    this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
-      const layer = event.layer
-      const geoJson = JSON.stringify(layer.toGeoJSON(), rounding)
-      this.model.setGeometry(geoJson)
-      this.drawButtons = false
-      this.map.removeControl(this.drawControl)
-      this.drawControl = this.createToolbar()
-      this.map.addControl(this.drawControl)
-      this.drawnItems.addLayer(layer)
-    })
-
-    this.listenTo(this.map, L.Draw.Event.DELETED, function () {
-      this.model.clearGeometry()
-      this.drawButtons = true
-      this.map.removeControl(this.drawControl)
-      this.drawControl = this.createToolbar()
-      this.map.addControl(this.drawControl)
-    })
+    this.map.on(L.Draw.Event.CREATED, this.handleDrawCreated, this)
+    this.map.on(L.Draw.Event.DELETED, this.handleDrawDeleted, this)
   },
 
   createToolbar () {
@@ -148,6 +140,47 @@ export default ObjectInputView.extend({
       this.map.remove()
     }
     this.createMap()
+  },
+
+  handleDrawCreated (event) {
+    const rounding = function (key, val) {
+      if (typeof val === 'number') {
+        return Number(val.toFixed(5))
+      }
+      return val
+    }
+
+    const layer = event.layer
+    const geoJson = JSON.stringify(layer.toGeoJSON(), rounding)
+
+    this.model.setGeometry(geoJson)
+
+    this.drawButtons = false
+    this.map.removeControl(this.drawControl)
+    this.drawControl = this.createToolbar()
+    this.map.addControl(this.drawControl)
+    this.drawnItems.addLayer(layer)
+  },
+
+  handleDrawDeleted () {
+    this.model.clearGeometry()
+
+    this.drawButtons = true
+    this.map.removeControl(this.drawControl)
+    this.drawControl = this.createToolbar()
+    this.map.addControl(this.drawControl)
+  },
+
+  remove () {
+    if (this.map) {
+      this.map.off(L.Draw.Event.CREATED, this.handleDrawCreated, this)
+      this.map.off(L.Draw.Event.DELETED, this.handleDrawDeleted, this)
+
+      this.map.remove()
+      this.map = null
+    }
+
+    return ObjectInputView.prototype.remove.apply(this, arguments)
   },
 
   render () {

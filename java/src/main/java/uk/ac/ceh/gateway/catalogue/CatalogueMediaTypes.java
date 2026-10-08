@@ -27,7 +27,7 @@ public class CatalogueMediaTypes {
 
     public static final String RESEARCHACTIVITY_JSON_VALUE = "application/vnd.researchactivity+json";
 
-    public static final String SAMPLE_JSON_VALUE = "application/vnd.sample+json";
+    public static final String ARCHIVE_JSON_VALUE = "application/vnd.archive+json";
 
     public static final String METHOD_JSON_VALUE = "application/vnd.method+json";
 

@@ -23,6 +23,13 @@ public class Geometry {
 
     String geometryString;
     Boolean locationConfidential;
+    ObfuscatedPoint obfuscatedPoint;
+   
+    @Value
+    public static class ObfuscatedPoint {
+        Float latitude;
+        Float longitude;
+    }
 
     @JsonIgnore
     GeometryType geometryType;
@@ -31,10 +38,12 @@ public class Geometry {
     @JsonCreator
     private Geometry(
         @JsonProperty("geometryString") String geometryString,
-        @JsonProperty("locationConfidential") Boolean locationConfidential
+        @JsonProperty("locationConfidential") Boolean locationConfidential,
+        @JsonProperty("obfuscatedPoint") ObfuscatedPoint obfuscatedPoint
     ) {
         this.geometryString = nullToEmpty(geometryString);
         this.locationConfidential = locationConfidential;
+        this.obfuscatedPoint = obfuscatedPoint;
         this.geometryType = parseGeometryType(this.geometryString);
     }
 
@@ -104,4 +113,27 @@ public class Geometry {
         }
         return geometryType.getBoundingBox();
     }
+
+    /**
+     * If the geometry is a point location
+     * return the lat and long
+     */
+    @JsonIgnore
+    @JsonProperty("latitude")
+    public Double getLatitude() {
+        if (geometryType instanceof PointGeometry point) {
+            return point.getLatitude();
+        }
+        return null;
+    }
+
+    @JsonIgnore
+    @JsonProperty("longitude")
+    public Double getLongitude() {
+        if (geometryType instanceof PointGeometry point) {
+            return point.getLongitude();
+        }
+        return null;
+    }
+
 }

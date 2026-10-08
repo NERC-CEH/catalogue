@@ -102,7 +102,7 @@ public class CatalogueServiceConfig {
                 .documentType(MONITORING_NETWORK_TYPE)
                 .documentType(MONITORING_PROGRAMME_TYPE)
                 .documentType(RESEARCHACTIVITY_TYPE)
-                .documentType(SAMPLE_TYPE)
+                .documentType(ARCHIVE_TYPE)
                 .fileUpload(false)
                 .build(),
 
@@ -196,6 +196,7 @@ public class CatalogueServiceConfig {
                 .facetKey("saTaxon")
                 .facetKey("saTissue")
                 .documentType(SAMPLE_ARCHIVE_TYPE)
+                .documentType(ARCHIVE_TYPE)
                 .fileUpload(false)
                 .build(),
 
@@ -233,16 +234,6 @@ public class CatalogueServiceConfig {
                 .documentType(MONITORING_FACILITY_TYPE)
                 .documentType(MONITORING_NETWORK_TYPE)
                 .documentType(MONITORING_PROGRAMME_TYPE)
-                .fileUpload(false)
-                .build(),
- 
-            Catalogue.builder()
-                .id("samples")
-                .title("Samples")
-                .url("https://www.ceh.ac.uk")
-                .contactUrl("https://www.ceh.ac.uk/contact-us")
-                .logo("ukceh.png")
-                .documentType(SAMPLE_TYPE)
                 .fileUpload(false)
                 .build()
         );

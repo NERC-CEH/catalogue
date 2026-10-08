@@ -1,6 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.monitoring;
 
 import lombok.extern.slf4j.Slf4j;
+
+import java.math.BigDecimal;
+
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.geometry.GraticuleCell;
@@ -35,6 +38,7 @@ public class LocationObfuscationService {
      */
     public MonitoringFacility obfuscate(MonitoringFacility document) {
         Geometry geometry = document.getGeometry();
+
         if (geometry == null || !Boolean.TRUE.equals(geometry.getLocationConfidential())) {
             return document;
         }
@@ -42,6 +46,14 @@ public class LocationObfuscationService {
         // A blank geometryString yields an empty bounding box, so this covers it too.
         geometry.getBoundingBox().ifPresent(boundingBox -> {
             GraticuleCell cell = GraticuleCell.covering(boundingBox);
+
+            BigDecimal centroidLongitude = cell.minLongitude()
+                .add(cell.maxLongitude())
+                .divide(BigDecimal.valueOf(2));
+
+            BigDecimal centroidLatitude = cell.minLatitude()
+                .add(cell.maxLatitude())
+                .divide(BigDecimal.valueOf(2));
 
             log.info(
                 "Obfuscating confidential geometry of {} to the cell at {}, {}",
@@ -51,6 +63,10 @@ public class LocationObfuscationService {
             document.setGeometry(Geometry.builder()
                 .geometryString(cell.toGeoJson())
                 .locationConfidential(true)
+                .obfuscatedPoint(new Geometry.ObfuscatedPoint(
+                    centroidLatitude.floatValue(),
+                    centroidLongitude.floatValue()
+                ))
                 .build());
         });
 

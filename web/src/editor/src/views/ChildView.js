@@ -30,6 +30,13 @@ export default Backbone.View.extend({
   },
 
   delete () {
-    this.model.collection.remove(this.model)
+    console.log('DELETE sample:', this.model.toJSON())
+    console.log('BEFORE:', this.model.collection.toJSON())
+
+    const collection = this.model.collection
+
+    collection.remove(this.model)
+
+    console.log('AFTER:', collection.toJSON())
   }
 })

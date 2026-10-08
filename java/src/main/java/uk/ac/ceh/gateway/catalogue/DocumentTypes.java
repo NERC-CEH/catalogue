@@ -42,10 +42,10 @@ public class DocumentTypes {
         .type(RESEARCHACTIVITY)
         .build();
 
-    public static final String SAMPLE = "sample";
-    public static DocumentType SAMPLE_TYPE = DocumentType.builder()
-        .title("Sample")
-        .type(SAMPLE)
+    public static final String ARCHIVE = "archive";
+    public static DocumentType ARCHIVE_TYPE = DocumentType.builder()
+        .title("Archive")
+        .type(ARCHIVE)
         .build();
 
     public static final String GEMINI = "GEMINI_DOCUMENT";

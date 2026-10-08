@@ -6,22 +6,19 @@ import {
   PredefinedParentLargeView,
   RelationshipView,
   TextareaView, NoteView,
-  SampleStorageLocationView,
+  ArchiveLocationView,
   CheckboxView,
+  SampleView,
   ResourceIdentifierView, KeywordVocabularyView
 } from '../views'
 import {
   Contact
 } from '../models'
-import {
-  Geometry,
-  GeometryView
-} from '../geometryMap'
 
 export default EditorView.extend({
 
   initialize () {
-    if (!this.model.has('type')) { this.model.set('type', 'sample') }
+    if (!this.model.has('type')) { this.model.set('type', 'archive') }
 
     this.sections = [{
       label: 'General',
@@ -42,18 +39,9 @@ export default EditorView.extend({
 
         new SingleObjectView({
           model: this.model,
-          modelAttribute: 'storageLocation',
-          label: 'Storage location',
-          ObjectInputView: SampleStorageLocationView
-        }),
-
-        new SingleObjectView({
-          model: this.model,
-          modelAttribute: 'sampleLocation',
-          ModelType: Geometry,
-          label: 'Sample location',
-          ObjectInputView: GeometryView,
-          parentModel: this.model
+          modelAttribute: 'archiveLocation',
+          label: 'Archive location',
+          ObjectInputView: ArchiveLocationView
         }),
 
         new InputView({
@@ -160,6 +148,21 @@ export default EditorView.extend({
           ObjectInputView: KeywordVocabularyView,
           multiline: true
         })
+      ]
+    },
+    {
+      label: 'Samples',
+      title: 'Samples',
+      views: [
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'samples',
+          label: 'Samples',
+          ObjectInputView: SampleView,
+          multiline: true,
+          noSort: true
+        })
 
       ]
     },
@@ -185,7 +188,6 @@ export default EditorView.extend({
             }
           ]
         })
-
       ]
     }
     ]

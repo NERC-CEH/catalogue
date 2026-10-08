@@ -25,7 +25,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
-import uk.ac.ceh.gateway.catalogue.samples.Sample;
+import uk.ac.ceh.gateway.catalogue.samples.Archive;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
@@ -327,28 +327,28 @@ public class DocumentController extends AbstractDocumentController {
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
         method = RequestMethod.POST,
-        consumes = SAMPLE_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> newSample(
+        consumes = ARCHIVE_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newArchive(
         @ActiveUser CatalogueUser user,
-        @RequestBody Sample document,
+        @RequestBody Archive document,
         @RequestParam("catalogue") String catalogue
     ) throws DocumentRepositoryException, IOException {
         return saveNewMetadataDocument(
             user,
             document,
             catalogue,
-            "new Sample"
+            "new Archive"
         );
     }
 
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}",
         method = RequestMethod.PUT,
-        consumes = SAMPLE_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> updateSample(
+        consumes = ARCHIVE_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateArchive(
         @ActiveUser CatalogueUser user,
         @PathVariable String file,
-        @RequestBody Sample document,
+        @RequestBody Archive document,
         @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
     ) throws DocumentRepositoryException, IOException {
         return saveMetadataDocument(
@@ -506,7 +506,7 @@ public class DocumentController extends AbstractDocumentController {
             case MonitoringNetwork doc -> doc.populateFromJenaService(jenaService);
             case MonitoringProgramme doc -> doc.populateFromJenaService(jenaService);
             case ResearchActivity doc -> doc.populateFromJenaService(jenaService);
-            case Sample doc -> doc.populateFromJenaService(jenaService);
+            case Archive doc -> doc.populateFromJenaService(jenaService);
             default -> {}
         }
         return document;

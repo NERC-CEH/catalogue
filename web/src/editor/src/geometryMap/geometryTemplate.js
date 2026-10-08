@@ -1,29 +1,27 @@
 import _ from 'underscore'
 
 export default _.template(`
-<div class="row">
-    <div class="col-sm-6">
-        <div class="row">
-            <div class="map" style="width: 500px; height: 500px;"></div>
-        </div>
+<div class="geometryEditor">
+    <div class="map" style="width: 500px; height: 500px;"></div>
+    <div>
+        <label>Advanced: Edit JSON geometry
+            <!--<button class="editor-button-xs showhide" title="show/hide details"><span class="fa-solid fa-chevron-down" aria-hidden="true"></span></button>-->
+            <textarea class="box editor-textarea" data-name="geometryString"><%= data.geometryString %></textarea>
+        </label>
     </div>
-    <div class="col-sm-2">
-        <label>Advanced: Edit Geometry Json</label>
-        <!--<button class="editor-button-xs showhide" title="show/hide details"><span class="fa-solid fa-chevron-down" aria-hidden="true"></span></button>-->
-        <textarea rows="20" data-name="geometryString" id="box" class="editor-input" value="<%= data.geometryString %>" style="width: 500px; height: 250px;"><%= data.geometryString %></textarea>
-        <br>
-    </div>
-</div>
-<% if (data.showConfidentialCheckbox === true) { %>
-<div class="row">
-    <label>
-        <input type="checkbox" id="locationConfidential" <% if(data.locationConfidential === true) { %> checked <% } %> >
-        Location is confidential
-    </label>
-    <p class="form-text">
-        The saved location will be reduced to an approximate area of about 11 km by 7 km.
-        The precise location is not kept, and unticking this box will not restore it.
-    </p>
-</div>
-<% } %>
+
+    <% if (data.showConfidentialCheckbox === true) { %>
+        <div class="form-check form-switch">
+            <label>
+                <input type="checkbox" class="form-check-input locationConfidential" <% if(data.locationConfidential === true) { %> checked <% } %> role="switch" >
+                Location is confidential
+            </label>
+            <p class="text-body-secondary">
+                The location will be obfuscated to an area 0.5&deg; &times; 0.5&deg; (approximately 11 km &times; 7 km).
+                The precise location is not saved, and unticking this box will not restore it.
+            </p>
+        </div> 
+       
+    <% } %>
+ </div>
 `)

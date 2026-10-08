@@ -14,25 +14,25 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
-@DisplayName("Sample")
-class SampleTest {
+@DisplayName("Archive")
+class ArchiveTest {
 
     @Test
     @DisplayName("populateFromJenaService")
     void populateFromJenaService() {
         //given
-        val sample = new Sample();
-        String uri = "https://example.com/sample/test";
-        sample.setUri(uri);
+        val archive = new Archive();
+        String uri = "https://example.com/archive/test";
+        archive.setUri(uri);
         val jenaService = org.mockito.Mockito.mock(JenaLookupService.class);
 
         when(jenaService.relationships(uri, "http://purl.org/cerif/frapo/hasOutput"))
             .thenReturn(List.of(Link.builder().href("https://example.com/output/1").build()));
 
         //when
-        sample.populateFromJenaService(jenaService);
+        archive.populateFromJenaService(jenaService);
 
         //then
-        assertThat(sample.getRelHasOutput().size(), equalTo(1));
+        assertThat(archive.getRelHasOutput().size(), equalTo(1));
     }
 }

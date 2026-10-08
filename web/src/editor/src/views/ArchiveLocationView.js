@@ -1,5 +1,5 @@
 import ObjectInputView from './ObjectInputView'
-import template from '../templates/SampleStorageLocation'
+import template from '../templates/ArchiveLocation'
 
 export default ObjectInputView.extend({
 

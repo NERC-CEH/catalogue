@@ -5,20 +5,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import static com.google.common.base.Strings.nullToEmpty;
 import lombok.Value;
 import lombok.Builder;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Value
 public class Note {
     private String note, addedBy;
-    private final LocalDate addedDate;
+    private final LocalDateTime addedDate;
 
     @Builder
     @JsonCreator
     private Note(
         @JsonProperty("note") String note,
         @JsonProperty("addedBy") String addedBy,
-        @JsonProperty("addedDate") LocalDate addedDate){
+        @JsonProperty("addedDate") LocalDateTime addedDate){
         this.note = nullToEmpty(note);
         this.addedBy = nullToEmpty(addedBy);
         this.addedDate = addedDate;
