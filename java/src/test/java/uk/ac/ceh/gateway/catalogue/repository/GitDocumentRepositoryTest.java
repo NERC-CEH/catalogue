@@ -31,6 +31,9 @@ import uk.ac.ceh.gateway.catalogue.model.ResourceIdentifierExistsException;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
+import uk.ac.ceh.gateway.catalogue.repository.checks.NoNewMojibake;
+import uk.ac.ceh.gateway.catalogue.repository.checks.RelationshipTargets;
+import uk.ac.ceh.gateway.catalogue.repository.checks.UniqueResourceIdentifiers;
 import uk.ac.ceh.gateway.catalogue.services.ResourceIdentifierLookupService;
 
 import java.io.ByteArrayInputStream;
@@ -78,16 +81,20 @@ public class GitDocumentRepositoryTest {
 
     @BeforeEach
     public void setup() {
+        // The real checks, wired as ServicesConfig wires them, so these tests cover the checks
+        // and the order they run in, not just the repository
         documentRepository = new GitDocumentRepository(
                             documentTypeLookupService,
                             documentReader,
                             documentIdentifierService,
                             documentWritingService,
                             documentBundleReader,
-                            resourceIdentifierLookupService,
                             repo,
-                            objectMapper,
-                            permissionService);
+                            List.of(
+                                new UniqueResourceIdentifiers(resourceIdentifierLookupService),
+                                new NoNewMojibake(objectMapper),
+                                new RelationshipTargets(documentIdentifierService, documentBundleReader, permissionService)
+                            ));
         lenient().when(resourceIdentifierLookupService.findDocumentIdsByRi(any())).thenReturn(List.of());
         // Relationship targets are visible unless a test says otherwise
         lenient().when(permissionService.toAccess(any(), any(), eq("VIEW"))).thenReturn(true);
@@ -938,5 +945,75 @@ public class GitDocumentRepositoryTest {
         //Then
         org.assertj.core.api.Assertions.assertThat(thrown.getMessage())
             .contains("which links to a record of this document's own type");
+    }
+
+    @Test
+    @SneakyThrows
+    public void uploadingADuplicateResourceIdentifierCommitsNothingAtAll() {
+        // The uniqueness check used to run only after the raw upload was committed, leaving an
+        // orphaned raw blob behind when it refused. Every check now runs before any commit.
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        InputStream inputStream = new ByteArrayInputStream("{}".getBytes());
+        GeminiDocument document = (GeminiDocument) new GeminiDocument()
+            .setResourceIdentifiers(List.of(ResourceIdentifier.builder()
+                .codeSpace("ukceh.eidc").code("fafa99").build()));
+        given(documentReader.read(any(), any(), any())).willReturn(document);
+        given(documentIdentifierService.generateFileId(null)).willReturn("test");
+        given(resourceIdentifierLookupService.findDocumentIdsByRi("ukceh.eidc:fafa99"))
+            .willReturn(List.of("existing-doc"));
+
+        //When / Then
+        assertThrows(
+            ResourceIdentifierExistsException.class,
+            () -> documentRepository.save(user, inputStream, MediaType.APPLICATION_JSON, "GEMINI_DOCUMENT", "eidc", "message")
+        );
+        verifyNoInteractions(repo);
+    }
+
+    @Test
+    @SneakyThrows
+    public void anUploadIsCheckedOnce() {
+        // The upload path used to run the mojibake and relationship checks before the raw commit,
+        // then all the checks again before the document commit - reading each relationship
+        // target, and checking permission on it, twice.
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        InputStream inputStream = new ByteArrayInputStream("{}".getBytes());
+        GeminiDocument document = datasetUtilising(BASE_URI + "/id/morley");
+        given(documentReader.read(any(), any(), any())).willReturn(document);
+        given(documentIdentifierService.generateFileId(null)).willReturn("test");
+        given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
+        given(documentIdentifierService.generateUri("test")).willReturn(BASE_URI + "/id/test");
+        given(documentBundleReader.readBundle("test")).willReturn(null); // a create: nothing stored yet
+        given(documentBundleReader.readBundle("morley")).willReturn(new MonitoringFacility().setType("monitoringFacility"));
+
+        //When
+        documentRepository.save(user, inputStream, MediaType.APPLICATION_JSON, "GEMINI_DOCUMENT", "eidc", "message");
+
+        //Then
+        verify(permissionService, org.mockito.Mockito.times(1)).toAccess(user, "morley", "VIEW");
+        verify(documentBundleReader, org.mockito.Mockito.times(1)).readBundle("morley");
+    }
+
+    @Test
+    @SneakyThrows
+    public void theStoredVersionIsReadOnceHoweverManyChecksNeedIt() {
+        // Both the mojibake and relationship checks compare against the stored version; they used
+        // to read it separately.
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        GeminiDocument stored = geminiRelating("dataset", "http://purl.org/dc/terms/isPartOf", "a-collection");
+        stored.setTitle("Â© 2020 UKCEH");
+        given(documentBundleReader.readBundle("cosmos")).willReturn(stored);
+        GeminiDocument incoming = geminiRelating("dataset", "http://purl.org/dc/terms/isPartOf", "a-collection");
+        incoming.setTitle("Â© 2020 UKCEH");
+        given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
+
+        //When
+        documentRepository.save(user, incoming, "cosmos", "message");
+
+        //Then
+        verify(documentBundleReader, org.mockito.Mockito.times(1)).readBundle("cosmos");
     }
 }
