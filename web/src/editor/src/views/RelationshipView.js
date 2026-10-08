@@ -95,7 +95,8 @@ export function recordType (model) {
 /**
  * The record search for one relationship. A restricted relationship filters on resourceType,
  * which Solr holds as the case-sensitive codelist label (e.g. "Dataset", not "dataset"), and may
- * search other catalogues than the record's own through the cross-catalogue endpoint. Null when a
+ * search other catalogues than the record's own through the cross-catalogue endpoint. Link
+ * documents are never offered, whatever the relationship. Null when a
  * restricted relationship has no type it could match. The rules leave out empty lists.
  */
 export async function searchQuery ({ catalogue, relation, sourceType, currentId, searchTerm }) {
@@ -115,6 +116,9 @@ export async function searchQuery ({ catalogue, relation, sourceType, currentId,
     clauses.push(`(${catalogues.map(c => `catalogue:${c} OR catalogue_view:${c}`).join(' OR ')})`)
   }
   clauses.push(searchTerm ? `(${searchTerm})` : '*')
+  // Link documents are being retired; a relationship belongs on the record one stands in for,
+  // and the save-time check rejects them
+  clauses.push('NOT documentType:LINK_DOCUMENT')
   if (currentId) {
     clauses.push(`NOT identifier:${currentId}`)
   }

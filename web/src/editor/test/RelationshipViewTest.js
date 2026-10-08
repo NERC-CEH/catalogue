@@ -141,7 +141,12 @@ describe('Test RelationshipView', function () {
       expect(query).toContain('NOT identifier:cosmos')
     })
 
-    it('leaves an open relationship unfiltered', async () => {
+    it('never offers link documents, even for an open relationship', async () => {
+      expect(await queryFor(RELATION)).toContain('NOT documentType:LINK_DOCUMENT')
+      expect(await queryFor(UTILISES)).toContain('NOT documentType:LINK_DOCUMENT')
+    })
+
+    it('leaves an open relationship unfiltered by type', async () => {
       const query = await queryFor(RELATION)
       expect(query).not.toContain('resourceType:')
       expect(query).toMatch(/^\/eidc\/documents\?term=/)

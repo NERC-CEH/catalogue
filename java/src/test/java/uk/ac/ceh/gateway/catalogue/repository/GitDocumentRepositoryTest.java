@@ -833,42 +833,32 @@ public class GitDocumentRepositoryTest {
 
     @Test
     @SneakyThrows
-    public void aLinkDocumentIsCheckedAsTheRecordItLinksTo() {
-        // UK-SCAPE holds dozens of link documents standing in for EIDC records. Search indexes each
-        // with the linked record's fields, so the picker offers it as that kind of record; its own
-        // type is empty.
+    public void aLinkDocumentIsNeverATarget() {
+        // Link documents are being retired: a relationship belongs on the record one stands in
+        // for. Even one naming a facility is rejected, and the record it names is never read, so
+        // a link document to a hidden record cannot reveal anything about it.
         //Given
         CatalogueUser user = new CatalogueUser("test", "test@example.com");
         GeminiDocument document = datasetUtilising("link-to-morley");
         given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
         given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
         given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
+        // Its own type is normally empty, but the API will store one: even a link document claiming
+        // to be a facility is rejected
         given(documentBundleReader.readBundle("link-to-morley")).willReturn(LinkDocument.builder()
-            .linkedDocumentId("morley").build());
-        given(documentBundleReader.readBundle("morley")).willReturn(new MonitoringFacility().setType("monitoringFacility"));
+            .linkedDocumentId("morley").build().setType("monitoringFacility"));
 
-        //When / Then
-        assertDoesNotThrow(() -> documentRepository.save(user, document, "cosmos", "message"));
-    }
-
-    @Test
-    @SneakyThrows
-    public void aLinkDocumentToTheWrongKindOfRecordIsRejected() {
-        //Given
-        CatalogueUser user = new CatalogueUser("test", "test@example.com");
-        GeminiDocument document = datasetUtilising("link-to-dataset");
-        given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
-        given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
-        given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
-        given(documentBundleReader.readBundle("link-to-dataset")).willReturn(LinkDocument.builder()
-            .linkedDocumentId("a-dataset").build());
-        given(documentBundleReader.readBundle("a-dataset")).willReturn(new GeminiDocument().setType("dataset"));
-
-        //When / Then
-        assertThrows(
+        //When
+        InvalidRelationshipTargetException thrown = assertThrows(
             InvalidRelationshipTargetException.class,
             () -> documentRepository.save(user, document, "cosmos", "message")
         );
+
+        //Then
+        verify(documentBundleReader, never()).readBundle("morley");
+        verify(permissionService, never()).toAccess(user, "morley", "VIEW");
+        org.assertj.core.api.Assertions.assertThat(thrown.getMessage())
+            .isEqualTo(missingTargetMessage(user, "link-to-morley"));
     }
 
     @Test

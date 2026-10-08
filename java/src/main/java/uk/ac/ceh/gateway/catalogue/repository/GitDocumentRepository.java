@@ -565,21 +565,18 @@ public class GitDocumentRepository implements DocumentRepository {
     }
 
     /**
-     * The type of the record a target id names, or null if there is no such record.
+     * The type of the record a target id names, or null if there is no such record or it cannot
+     * be a relationship target.
      * <p>
-     * A link document stands in for a record from another catalogue (UK-SCAPE holds dozens), and
-     * search indexes it with that record's fields, so the picker offers it as that kind of record.
-     * Its own type is empty, so the type is the linked record's. The user's view permission is
-     * checked on the link document, the record they chose.
+     * A link document is never a target. It stands in for a record from another catalogue
+     * (UK-SCAPE holds dozens), link documents are being retired, and a relationship belongs on the
+     * record it stands in for. Its own type is empty, and the record it names is deliberately not
+     * read: anyone who can create records in a catalogue can create a link document to any id, so
+     * following it would carry a hidden record's existence and type back through this check.
      */
     private String recordType(String targetId) {
         MetadataDocument target = readTarget(targetId);
-        if (target instanceof LinkDocument link) {
-            target = Optional.ofNullable(documentId(link.getLinkedDocumentId()))
-                .map(this::readTarget)
-                .orElse(null);
-        }
-        return target == null ? null : target.getType();
+        return target == null || target instanceof LinkDocument ? null : target.getType();
     }
 
     private MetadataDocument readTarget(String id) {
