@@ -43,6 +43,7 @@ class RelationshipRulesTest {
     @DisplayName("a same-type rule allows nothing for a source with no type")
     void sameTypeWithoutSourceType() {
         assertThat(ruleFor(null, REPLACES).orElseThrow().allows(null, "dataset")).isFalse();
+        assertThat(ruleFor("", REPLACES).orElseThrow().allows("", "")).isFalse();
     }
 
     @ParameterizedTest
@@ -89,5 +90,30 @@ class RelationshipRulesTest {
     void open(String predicate) {
         assertThat(ruleFor("dataset", predicate)).isEmpty();
         assertThat(ruleFor("codeProject", predicate)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("a research activity's outputs are models, data, map services and software")
+    void hasOutput() {
+        var rule = ruleFor("researchActivity", HAS_OUTPUT).orElseThrow();
+        for (String output : List.of("model", "nercModel", "dataset", "nonGeographicDataset", "service", "software")) {
+            assertThat(rule.allows("researchActivity", output)).as(output).isTrue();
+        }
+        assertThat(rule.allows("researchActivity", "monitoringFacility")).isFalse();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {HAS_CHILD_FACILITY, HAS_CHILD_NETWORK, HAS_CHILD_PROGRAMME})
+    @DisplayName("a child facility, network or programme is of the same type as its parent")
+    void hasChild(String predicate) {
+        var rule = ruleFor("monitoringNetwork", predicate).orElseThrow();
+        assertThat(rule.allows("monitoringNetwork", "monitoringNetwork")).isTrue();
+        assertThat(rule.allows("monitoringNetwork", "monitoringFacility")).isFalse();
+    }
+
+    @Test
+    @DisplayName("a relationship with no predicate has no rule")
+    void noPredicate() {
+        assertThat(ruleFor("dataset", null)).isEmpty();
     }
 }

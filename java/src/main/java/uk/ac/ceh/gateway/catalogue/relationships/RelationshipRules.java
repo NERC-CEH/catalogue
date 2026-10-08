@@ -86,7 +86,8 @@ public final class RelationshipRules {
             if (!isSameType()) {
                 return targetTypes;
             }
-            return sourceType == null ? Set.of() : Set.of(sourceType);
+            // A record with no type (GeminiDocument reports it as blank) has no same type to match
+            return sourceType == null || sourceType.isBlank() ? Set.of() : Set.of(sourceType);
         }
 
         public boolean allows(String sourceType, String targetType) {
@@ -119,7 +120,11 @@ public final class RelationshipRules {
 
     /** The rule for a relationship from a record of {@code sourceType}, or empty if it is open. */
     public static Optional<Rule> ruleFor(String sourceType, String predicate) {
-        // Map.of rejects a null key even on lookup, and a record can be saved with no type
+        // Map.of rejects a null key even on lookup, and neither a record's type nor (in JSON
+        // sent to the API) a relationship's predicate is guaranteed to be present
+        if (predicate == null) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(sourceType)
             .map(type -> SOURCE_RULES.getOrDefault(type, Map.of()).get(predicate))
             .or(() -> Optional.ofNullable(RULES.get(predicate)));

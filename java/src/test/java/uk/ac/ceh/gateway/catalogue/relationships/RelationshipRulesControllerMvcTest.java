@@ -38,6 +38,8 @@ class RelationshipRulesControllerMvcTest extends AbstractMvcTest {
             .andExpect(jsonPath("$['" + RelationshipRules.UTILISES + "'].resourceTypes[0]").value("Monitoring facility"))
             .andExpect(jsonPath("$['" + RelationshipRules.UTILISES + "'].catalogues[1]").value("ukceh"))
             .andExpect(jsonPath("$['" + RelationshipRules.REPLACES + "'].resourceTypes[0]").value("Dataset"))
+            // The contract RelationshipView relies on: own-catalogue rules arrive without the key
+            .andExpect(jsonPath("$['" + RelationshipRules.REPLACES + "'].catalogues").doesNotExist())
             .andExpect(jsonPath("$['http://purl.org/dc/terms/relation']").doesNotExist());
     }
 }
