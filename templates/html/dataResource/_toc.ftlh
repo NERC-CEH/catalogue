@@ -7,7 +7,7 @@
       <#if temporalExtents?? || temporalResolution?? ><a class="list-group-item list-group-item-action" href="#segment-temporal">Temporal information</a></#if>
       <#if lineage?? && lineage?has_content><a class="list-group-item list-group-item-action" href="#segment-quality">Provenance &amp; quality</a></#if>
       <#if lineage?? && lineage?has_content><a class="list-group-item list-group-item-action" href="#segment-constraints">Licensing &amp; constraints</a></#if>
-      <#if (relPartOf?has_content && relPartOf?size gt 0) || (relIsRequiredBy?has_content && relIsRequiredBy?size gt 0) || (relRequires?has_content && relRequires?size gt 0) ||  (relRelation?has_content && relRelation?size gt 0) ><a class="list-group-item list-group-item-action" href="#segment-associations">Related records</a></#if>
+      <#if (relPartOf?has_content && relPartOf?size gt 0) || (relIsRequiredBy?has_content && relIsRequiredBy?size gt 0) || (relRequires?has_content && relRequires?size gt 0) ||  (relRelation?has_content && relRelation?size gt 0) || (relUtilises?has_content && relUtilises?size gt 0) ><a class="list-group-item list-group-item-action" href="#segment-associations">Related records</a></#if>
       <#if incomingCitations?has_content><a class="list-group-item list-group-item-action" href="#segment-citations">Citations</a></#if>
       <#if supplemental?has_content><a class="list-group-item list-group-item-action" href="#segment-supplemental">Supplemental information</a></#if>
       <#if contactPoints?has_content><a class="list-group-item list-group-item-action" href="#segment-pointOfContact">Correspondence</a></#if>
