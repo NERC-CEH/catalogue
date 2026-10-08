@@ -479,6 +479,42 @@ public class GitDocumentRepositoryTest {
 
     @Test
     @SneakyThrows
+    public void addingAUtilisesLinkByBareIdSaves() {
+        // The editor's record picker stores the target as the bare record id (Solr's identifier
+        // field), not a URI; Jena indexing resolves it against the base URI. Rejecting bare ids
+        // made every "Produced at" link created in the editor a 400.
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        GeminiDocument document = datasetUtilising("640ccee2-17c9-4b98-8de1-5dc3f6848c63");
+        given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
+        given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
+        given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
+        given(documentBundleReader.readBundle("640ccee2-17c9-4b98-8de1-5dc3f6848c63")).willReturn(new MonitoringFacility());
+
+        //When / Then
+        assertDoesNotThrow(() -> documentRepository.save(user, document, "cosmos", "message"));
+    }
+
+    @Test
+    @SneakyThrows
+    public void addingAUtilisesLinkByBareIdToAnotherKindOfRecordThrows() {
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        GeminiDocument document = datasetUtilising("another-dataset");
+        given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
+        given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
+        given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
+        given(documentBundleReader.readBundle("another-dataset")).willReturn(new GeminiDocument());
+
+        //When / Then
+        assertThrows(
+            InvalidRelationshipTargetException.class,
+            () -> documentRepository.save(user, document, "cosmos", "message")
+        );
+    }
+
+    @Test
+    @SneakyThrows
     public void addingAUtilisesLinkToAMonitoringNetworkSaves() {
         //Given
         CatalogueUser user = new CatalogueUser("test", "test@example.com");
