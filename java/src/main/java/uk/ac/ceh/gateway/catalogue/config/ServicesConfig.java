@@ -53,6 +53,9 @@ import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingServi
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitDocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.checks.NoNewMojibake;
+import uk.ac.ceh.gateway.catalogue.repository.checks.RelationshipTargets;
+import uk.ac.ceh.gateway.catalogue.repository.checks.UniqueResourceIdentifiers;
 import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.services.ResourceIdentifierLookupService;
@@ -225,10 +228,15 @@ public class ServicesConfig {
             documentIdentifierService,
             documentWritingService,
             bundledReaderService,
-            resourceIdentifierLookupService,
             gitRepoWrapper,
-            objectMapper,
-            permissionService
+            // A refused save stops at the first check that refuses it, so the order decides which
+            // error a save that breaks several rules reports. The relationship check goes last:
+            // it reads other records and checks permissions on them.
+            List.of(
+                new UniqueResourceIdentifiers(resourceIdentifierLookupService),
+                new NoNewMojibake(objectMapper),
+                new RelationshipTargets(documentIdentifierService, bundledReaderService, permissionService)
+            )
         );
     }
 
