@@ -1,4 +1,4 @@
-import RelationshipView, { clearRelationshipRules } from '../src/views/RelationshipView.js'
+import RelationshipView, { clearRelationshipRules, resultItem } from '../src/views/RelationshipView.js'
 import { EditorMetadata } from '../src'
 import $ from 'jquery'
 import 'jquery-ui/ui/widgets/autocomplete'
@@ -149,6 +149,43 @@ describe('Test RelationshipView', function () {
       const query = await queryFor(REPLACES)
       expect(query).not.toContain('resourceType:')
       expect(console.error).toHaveBeenCalled()
+    })
+  })
+
+  describe('search result labels', function () {
+    const facility = {
+      identifier: '640ccee2',
+      title: 'COSMOS platform at Wimpole',
+      resourceType: 'Monitoring facility',
+      catalogue: 'ukceh'
+    }
+
+    beforeEach(function () {
+      clearRelationshipRules()
+    })
+
+    it('says which catalogue a result comes from, by its title', async () => {
+      $.getJSON.and.callFake(url => url === '/catalogues'
+        ? [{ id: 'ukceh', title: 'UKCEH digital assets' }, { id: 'eidc', title: 'EIDC' }]
+        : {})
+      const item = await resultItem(facility)
+      expect(item.html).toContain('<span>UKCEH digital assets · 640ccee2</span>')
+      expect(item.html).toContain('COSMOS platform at Wimpole (Monitoring facility)')
+      expect(item.value).toBe('640ccee2')
+    })
+
+    it('falls back to the catalogue id if the titles cannot be fetched', async () => {
+      spyOn(console, 'error')
+      $.getJSON.and.callFake(url => url === '/catalogues' ? Promise.reject(new Error('down')) : {})
+      const item = await resultItem(facility)
+      expect(item.html).toContain('ukceh')
+    })
+
+    it('escapes record titles, which are rendered as HTML', async () => {
+      $.getJSON.and.callFake(() => [])
+      const item = await resultItem({ ...facility, title: '<img src=x onerror=alert(1)>' })
+      expect(item.html).not.toContain('<img')
+      expect(item.html).toContain('&lt;img')
     })
   })
 })

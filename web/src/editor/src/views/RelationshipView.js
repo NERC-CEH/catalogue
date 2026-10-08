@@ -44,9 +44,44 @@ export function relationshipRules (type) {
   return rulesByType.get(key)
 }
 
-// For tests: forget fetched rules
+// Catalogue titles by id, for showing where each search result comes from. Fetched once.
+let catalogueTitles = null
+
+function cataloguesById () {
+  if (!catalogueTitles) {
+    catalogueTitles = Promise.resolve($.getJSON('/catalogues'))
+      .then(catalogues => Object.fromEntries((catalogues || []).map(c => [c.id, c.title])))
+      .catch(error => {
+        // Fall back to showing the catalogue id
+        console.error('Error fetching catalogues:', error)
+        catalogueTitles = null
+        return {}
+      })
+  }
+  return catalogueTitles
+}
+
+/**
+ * One search result in the picker. A relationship such as "Produced at" searches other
+ * catalogues than the record's own, so each result says which catalogue it comes from.
+ * Record titles are escaped: the menu item is rendered as HTML.
+ */
+export async function resultItem (d) {
+  const titles = await cataloguesById()
+  const catalogue = titles[d.catalogue] || d.catalogue
+  // Shares the identifier's secondary line (every span in a menu item is one, see editor.scss)
+  const detail = [catalogue, d.identifier].filter(Boolean).map(_.escape).join(' · ')
+  return {
+    value: d.identifier,
+    label: d.title,
+    html: `${_.escape(d.title)} (${_.escape(d.resourceType)}) <span>${detail}</span>`
+  }
+}
+
+// For tests: forget fetched rules and catalogues
 export function clearRelationshipRules () {
   rulesByType.clear()
+  catalogueTitles = null
 }
 
 // A Gemini record keeps its type in resourceType, which the editor can change; other records in type
@@ -109,13 +144,7 @@ export default ObjectInputView.extend({
         try {
           const options = await $.getJSON(query)
 
-          response(
-            _.map(options.results, d => ({
-              value: d.identifier,
-              label: d.title,
-              html: `${d.title} (${d.resourceType}) <span>${d.identifier}</span>`
-            }))
-          )
+          response(await Promise.all(_.map(options.results, resultItem)))
         } catch (error) {
           console.error('Error fetching data:', error)
         }
