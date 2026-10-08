@@ -84,21 +84,30 @@ export function clearRelationshipRules () {
   catalogueTitles = null
 }
 
-// A Gemini record keeps its type in resourceType, which the editor can change; other records in type
-function recordType (model) {
-  return model?.get('resourceType')?.value || model?.get('type')
+// A Gemini record keeps its type in resourceType, which the editor can change; other records in
+// type. Once edited, resourceType is a ResourceType model rather than the plain object it loads as
+// (SingleView.updateMetadataModel stores what the change event passes).
+export function recordType (model) {
+  const resourceType = model?.get('resourceType')
+  return resourceType?.get?.('value') || resourceType?.value || model?.get('type')
 }
 
 /**
  * The record search for one relationship. A restricted relationship filters on resourceType,
  * which Solr holds as the case-sensitive codelist label (e.g. "Dataset", not "dataset"), and may
- * search other catalogues than the record's own through the cross-catalogue endpoint.
+ * search other catalogues than the record's own through the cross-catalogue endpoint. Null when a
+ * restricted relationship has no type it could match. The rules leave out empty lists.
  */
 export async function searchQuery ({ catalogue, relation, sourceType, currentId, searchTerm }) {
   const targets = (await relationshipRules(sourceType))[relation]
   const clauses = []
-  if (targets?.resourceTypes?.length) {
-    clauses.push(`resourceType:(${targets.resourceTypes.map(label => `"${label}"`).join(' OR ')})`)
+  if (targets) {
+    const labels = targets.resourceTypes ?? []
+    if (!labels.length) {
+      // Restricted, but nothing can match yet: e.g. "Replaces" before the record has a type
+      return null
+    }
+    clauses.push(`resourceType:(${labels.map(label => `"${label}"`).join(' OR ')})`)
   }
   const catalogues = targets?.catalogues ?? []
   if (catalogues.length) {
@@ -141,12 +150,19 @@ export default ObjectInputView.extend({
           searchTerm: request.term.trim()
         })
 
+        if (!query) {
+          response([])
+          return
+        }
+
         try {
           const options = await $.getJSON(query)
 
           response(await Promise.all(_.map(options.results, resultItem)))
         } catch (error) {
           console.error('Error fetching data:', error)
+          // Always answer, or the autocomplete stays in its loading state
+          response([])
         }
       },
 

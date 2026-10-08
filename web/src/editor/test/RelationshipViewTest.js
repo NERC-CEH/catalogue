@@ -1,4 +1,5 @@
-import RelationshipView, { clearRelationshipRules, resultItem } from '../src/views/RelationshipView.js'
+import RelationshipView, { clearRelationshipRules, recordType, resultItem } from '../src/views/RelationshipView.js'
+import ResourceType from '../src/models/ResourceType'
 import { EditorMetadata } from '../src'
 import $ from 'jquery'
 import 'jquery-ui/ui/widgets/autocomplete'
@@ -77,9 +78,10 @@ describe('Test RelationshipView', function () {
     const REPLACES = 'http://purl.org/dc/terms/replaces'
     const RELATION = 'http://purl.org/dc/terms/relation'
 
-    // What /relationships/rules serves for a dataset (see RelationshipRulesController)
+    // What /relationships/rules serves for a dataset (see RelationshipRulesController). The app's
+    // mapper leaves out empty lists, so an own-catalogue rule has no catalogues key at all.
     const datasetRules = {
-      [REPLACES]: { resourceTypes: ['Dataset'], catalogues: [] },
+      [REPLACES]: { resourceTypes: ['Dataset'] },
       [UTILISES]: { resourceTypes: ['Monitoring facility', 'Monitoring network'], catalogues: ['eidc', 'ukceh'] }
     }
 
@@ -89,7 +91,7 @@ describe('Test RelationshipView', function () {
       $.getJSON.and.callFake(url => url.startsWith('/relationships/rules') ? datasetRules : { results: [] })
     })
 
-    async function queryFor (relation, parent = new EditorMetadata({ id: 'cosmos', type: 'dataset' })) {
+    async function pickerFor (relation, parent = new EditorMetadata({ id: 'cosmos', type: 'dataset' })) {
       const m = new EditorMetadata({ value: relation, target: '' })
       const v = new RelationshipView({ model: m, options: [{ value: relation, label: 'Relationship' }], parentModel: parent })
       // The autocomplete is bound during initialize and render() replaces the
@@ -97,8 +99,16 @@ describe('Test RelationshipView', function () {
       const source = v.$('.autocomplete').autocomplete('option', 'source')
       await v.render()
       v.$('.relationshipList').val(relation)
-      await source({ term: 'rainfall' }, () => {})
-      return decodeURIComponent($.getJSON.calls.mostRecent().args[0])
+      return async () => {
+        const results = []
+        await source({ term: 'rainfall' }, items => results.push(items))
+        return { query: decodeURIComponent($.getJSON.calls.mostRecent().args[0]), results }
+      }
+    }
+
+    async function queryFor (relation, parent) {
+      const search = await pickerFor(relation, parent)
+      return (await search()).query
     }
 
     it('fetches the rules for the record being edited', async () => {
@@ -149,6 +159,48 @@ describe('Test RelationshipView', function () {
       const query = await queryFor(REPLACES)
       expect(query).not.toContain('resourceType:')
       expect(console.error).toHaveBeenCalled()
+    })
+
+    it('reads the record type afresh on every search, as the resource type can change', async () => {
+      const parent = new EditorMetadata({ id: 'cosmos', type: 'dataset' })
+      const search = await pickerFor(REPLACES, parent)
+      await search()
+      parent.set('resourceType', new ResourceType({ value: 'service' }))
+      await search()
+      expect($.getJSON).toHaveBeenCalledWith('/relationships/rules?type=service')
+    })
+
+    it('searches nothing for a restricted relationship with no type to match', async () => {
+      $.getJSON.and.callFake(url => url.startsWith('/relationships/rules') ? { [REPLACES]: {} } : { results: [] })
+      const search = await pickerFor(REPLACES)
+      $.getJSON.calls.reset()
+      const { results } = await search()
+      expect(results).toEqual([[]])
+      // Only the rules are fetched: no record search is made
+      expect($.getJSON.calls.allArgs().map(args => args[0])).toEqual(['/relationships/rules?type=dataset'])
+    })
+
+    it('answers the autocomplete even when the search fails', async () => {
+      spyOn(console, 'error')
+      $.getJSON.and.callFake(url => url.startsWith('/relationships/rules') ? datasetRules : Promise.reject(new Error('Solr 400')))
+      const search = await pickerFor(REPLACES)
+      const { results } = await search()
+      expect(results).toEqual([[]])
+    })
+  })
+
+  describe('record type', function () {
+    it('is the resource type of an edited Gemini record, held as a ResourceType model', () => {
+      const model = new EditorMetadata({ type: 'dataset', resourceType: new ResourceType({ value: 'service' }) })
+      expect(recordType(model)).toBe('service')
+    })
+
+    it('is the resource type of a Gemini record as loaded', () => {
+      expect(recordType(new EditorMetadata({ type: 'dataset', resourceType: { value: 'service' } }))).toBe('service')
+    })
+
+    it('is the type of any other record', () => {
+      expect(recordType(new EditorMetadata({ type: 'monitoringFacility' }))).toBe('monitoringFacility')
     })
   })
 
