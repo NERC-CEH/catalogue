@@ -15,6 +15,7 @@ import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.monitoring.Utilises;
+import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.relationships.RelationshipRules;
 import uk.ac.ceh.gateway.catalogue.services.ResourceIdentifierLookupService;
@@ -65,6 +66,7 @@ public class GitDocumentRepository implements DocumentRepository {
     private final ResourceIdentifierLookupService resourceIdentifierLookupService;
     private final GitRepoWrapper repo;
     private final JsonMapper objectMapper;
+    private final PermissionService permissionService;
 
     public GitDocumentRepository(
         DocumentTypeLookupService documentTypeLookupService,
@@ -74,7 +76,8 @@ public class GitDocumentRepository implements DocumentRepository {
         BundledReaderService<MetadataDocument> documentBundleReader,
         ResourceIdentifierLookupService resourceIdentifierLookupService,
         GitRepoWrapper repo,
-        JsonMapper objectMapper
+        JsonMapper objectMapper,
+        PermissionService permissionService
     ) {
         this.documentTypeLookupService = documentTypeLookupService;
         this.documentReader = documentReader;
@@ -84,6 +87,7 @@ public class GitDocumentRepository implements DocumentRepository {
         this.resourceIdentifierLookupService = resourceIdentifierLookupService;
         this.repo = repo;
         this.objectMapper = objectMapper;
+        this.permissionService = permissionService;
         log.info("Creating");
     }
 
@@ -166,7 +170,7 @@ public class GitDocumentRepository implements DocumentRepository {
                 // that commit lands first, so rejecting afterwards would leave an orphaned raw
                 // upload in the datastore with no document to go with it.
                 validateNoMojibake(data, id);
-                validateRelationshipTargets(data, id);
+                validateRelationshipTargets(user, data, id);
 
                 repo.save(user, id, message, metadataInfo, (o) -> Files.copy(tmpFile, o));
             } finally {
@@ -285,7 +289,7 @@ public class GitDocumentRepository implements DocumentRepository {
         document.setUri(uri);
         validateUniqueResourceIdentifiers(document, id);
         validateNoMojibake(document, id);
-        validateRelationshipTargets(document, id);
+        validateRelationshipTargets(user, document, id);
         repo.save(
             user,
             id,
@@ -448,7 +452,7 @@ public class GitDocumentRepository implements DocumentRepository {
      * only new relationships also keeps an ordinary save from reading every target it already
      * points at.
      */
-    private void validateRelationshipTargets(MetadataDocument document, String id) {
+    private void validateRelationshipTargets(CatalogueUser user, MetadataDocument document, String id) {
         Set<Relationship> incoming = restrictedRelationships(document);
         if (incoming.isEmpty()) {
             return;
@@ -457,7 +461,7 @@ public class GitDocumentRepository implements DocumentRepository {
         String sourceType = document.getType();
         String invalid = incoming.stream()
             .filter(relationship -> !existing.contains(relationship))
-            .filter(relationship -> !isAllowedTarget(sourceType, relationship))
+            .filter(relationship -> !isAllowedTarget(user, sourceType, relationship))
             .map(relationship -> relationship.getTarget() + " (" + relationship.getRelation() + ", which links to " +
                 String.join(" or ", new TreeSet<>(RelationshipRules.ruleFor(sourceType, relationship.getRelation())
                     .orElseThrow().targetTypesFor(sourceType))) + ")")
@@ -498,7 +502,13 @@ public class GitDocumentRepository implements DocumentRepository {
     }
 
     /**
-     * Whether a relationship's target is a record in this catalogue of a type its rule allows.
+     * Whether a relationship's target is a record in this catalogue, that the user saving can
+     * view, of a type its rule allows.
+     * <p>
+     * The view check comes before the target is read, and a record the user cannot see is
+     * rejected exactly as a missing one or one of the wrong type is. Otherwise whether a save
+     * succeeds would tell anyone who can edit a record whether some draft or private record
+     * exists, and roughly what type it is.
      * <p>
      * A target is either a record URI or a bare record id: the editor's record picker stores the
      * id (Solr's {@code identifier}), and Jena indexing resolves a bare id against the base URI
@@ -506,11 +516,14 @@ public class GitDocumentRepository implements DocumentRepository {
      * {@link DocumentIdentifierService} generates, so a crafted target cannot steer the read to
      * some other path in the datastore.
      */
-    private boolean isAllowedTarget(String sourceType, Relationship relationship) {
+    private boolean isAllowedTarget(CatalogueUser user, String sourceType, Relationship relationship) {
         String target = relationship.getTarget();
         String prefix = documentIdentifierService.getBaseUri() + "/id/";
         String targetId = target.startsWith(prefix) ? target.substring(prefix.length()) : target;
         if (!DOCUMENT_ID.matcher(targetId).matches()) {
+            return false;
+        }
+        if (!canView(user, targetId)) {
             return false;
         }
         try {
@@ -521,6 +534,16 @@ public class GitDocumentRepository implements DocumentRepository {
         } catch (IOException | PostProcessingException
                  | UnknownContentTypeException | IllegalArgumentException ex) {
             log.debug("Cannot read {} to check it as a relationship target", targetId, ex);
+            return false;
+        }
+    }
+
+    /** A record that does not exist is one the user cannot view. */
+    private boolean canView(CatalogueUser user, String targetId) {
+        try {
+            return permissionService.toAccess(user, targetId, "VIEW");
+        } catch (PermissionDeniedException ex) {
+            log.debug("{} cannot view relationship target {}", user.getUsername(), targetId, ex);
             return false;
         }
     }

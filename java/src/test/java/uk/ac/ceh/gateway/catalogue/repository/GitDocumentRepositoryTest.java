@@ -22,10 +22,12 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataConflictException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.MojibakeTextException;
+import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
 import uk.ac.ceh.gateway.catalogue.model.Relationship;
 import uk.ac.ceh.gateway.catalogue.model.ResourceIdentifierExistsException;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
+import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.services.ResourceIdentifierLookupService;
 
 import java.io.ByteArrayInputStream;
@@ -63,6 +65,7 @@ public class GitDocumentRepositoryTest {
     @Mock
     ResourceIdentifierLookupService resourceIdentifierLookupService;
     @Mock GitRepoWrapper repo;
+    @Mock PermissionService permissionService;
 
     // A real (not mocked) mapper: the mojibake guard scans the document's actual serialised
     // form, so the test needs genuine JSON output rather than a stubbed one.
@@ -80,8 +83,11 @@ public class GitDocumentRepositoryTest {
                             documentBundleReader,
                             resourceIdentifierLookupService,
                             repo,
-                            objectMapper);
+                            objectMapper,
+                            permissionService);
         lenient().when(resourceIdentifierLookupService.findDocumentIdsByRi(any())).thenReturn(List.of());
+        // Relationship targets are visible unless a test says otherwise
+        lenient().when(permissionService.toAccess(any(), any(), eq("VIEW"))).thenReturn(true);
     }
 
     @Test
@@ -718,5 +724,65 @@ public class GitDocumentRepositoryTest {
         //When / Then
         assertDoesNotThrow(() -> documentRepository.save(user, document, "cosmos", "message"));
         verify(documentBundleReader, never()).readBundle("https://example.com/anything");
+    }
+
+    @Test
+    @SneakyThrows
+    public void aTargetTheUserCannotViewIsRejectedWithoutBeingRead() {
+        // Otherwise accepting or rejecting the save would reveal whether a draft or private record
+        // exists, and roughly what type it is. A facility the user cannot see is refused exactly as
+        // a missing record is, and its content is never read.
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        GeminiDocument document = datasetUtilising("private-facility");
+        given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
+        given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
+        given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
+        given(permissionService.toAccess(user, "private-facility", "VIEW")).willReturn(false);
+
+        //When
+        InvalidRelationshipTargetException cannotView = assertThrows(
+            InvalidRelationshipTargetException.class,
+            () -> documentRepository.save(user, document, "cosmos", "message")
+        );
+
+        //Then
+        verify(documentBundleReader, never()).readBundle("private-facility");
+        org.assertj.core.api.Assertions.assertThat(cannotView.getMessage())
+            .isEqualTo(missingTargetMessage(user, "private-facility"));
+    }
+
+    @Test
+    @SneakyThrows
+    public void aTargetThatDoesNotExistIsRejectedLikeOneTheUserCannotView() {
+        //Given
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
+        GeminiDocument document = datasetUtilising("no-such-record");
+        given(documentIdentifierService.getBaseUri()).willReturn(BASE_URI);
+        given(documentIdentifierService.generateUri("cosmos")).willReturn(BASE_URI + "/id/cosmos");
+        given(documentBundleReader.readBundle("cosmos")).willReturn(null); // a create: nothing stored yet
+        given(permissionService.toAccess(user, "no-such-record", "VIEW"))
+            .willThrow(new PermissionDeniedException("No document found for: no-such-record"));
+
+        //When / Then
+        InvalidRelationshipTargetException missing = assertThrows(
+            InvalidRelationshipTargetException.class,
+            () -> documentRepository.save(user, document, "cosmos", "message")
+        );
+        org.assertj.core.api.Assertions.assertThat(missing.getMessage())
+            .isEqualTo(missingTargetMessage(user, "no-such-record"));
+    }
+
+    /** The message for an unusable target: the same whether it is missing, hidden or the wrong type. */
+    @SneakyThrows
+    private String missingTargetMessage(CatalogueUser user, String target) {
+        given(permissionService.toAccess(user, "wrong-type", "VIEW")).willReturn(true);
+        given(documentBundleReader.readBundle("wrong-type")).willReturn(new GeminiDocument().setType("dataset"));
+        GeminiDocument wrongType = datasetUtilising("wrong-type");
+        String message = assertThrows(
+            InvalidRelationshipTargetException.class,
+            () -> documentRepository.save(user, wrongType, "cosmos", "message")
+        ).getMessage();
+        return message.replace("wrong-type", target);
     }
 }

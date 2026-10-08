@@ -47,6 +47,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
+import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
@@ -215,7 +216,8 @@ public class ServicesConfig {
         DocumentWritingService documentWritingService,
         ResourceIdentifierLookupService resourceIdentifierLookupService,
         GitRepoWrapper gitRepoWrapper,
-        JsonMapper objectMapper
+        JsonMapper objectMapper,
+        PermissionService permissionService
     ) {
         return new GitDocumentRepository(
             documentTypeLookupService,
@@ -225,7 +227,8 @@ public class ServicesConfig {
             bundledReaderService,
             resourceIdentifierLookupService,
             gitRepoWrapper,
-            objectMapper
+            objectMapper,
+            permissionService
         );
     }
 
