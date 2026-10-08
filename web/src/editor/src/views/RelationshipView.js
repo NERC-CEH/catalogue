@@ -25,6 +25,107 @@ async function generateInformationString (target) {
   }
 }
 
+// The rules for what each relationship may point at live in the backend (RelationshipRules),
+// which also enforces them on save. Fetched once per record type.
+const rulesByType = new Map()
+
+export function relationshipRules (type) {
+  const key = type || ''
+  if (!rulesByType.has(key)) {
+    const rules = Promise.resolve($.getJSON(`/relationships/rules?type=${encodeURIComponent(key)}`))
+      .catch(error => {
+        // Fall back to an unfiltered search; the save-time check still applies
+        console.error('Error fetching relationship rules:', error)
+        rulesByType.delete(key)
+        return {}
+      })
+    rulesByType.set(key, rules)
+  }
+  return rulesByType.get(key)
+}
+
+// Catalogue titles by id, for showing where each search result comes from. Fetched once.
+let catalogueTitles = null
+
+function cataloguesById () {
+  if (!catalogueTitles) {
+    catalogueTitles = Promise.resolve($.getJSON('/catalogues'))
+      .then(catalogues => Object.fromEntries((catalogues || []).map(c => [c.id, c.title])))
+      .catch(error => {
+        // Fall back to showing the catalogue id
+        console.error('Error fetching catalogues:', error)
+        catalogueTitles = null
+        return {}
+      })
+  }
+  return catalogueTitles
+}
+
+/**
+ * One search result in the picker. A relationship such as "Produced at" searches other
+ * catalogues than the record's own, so each result says which catalogue it comes from.
+ * Record titles are escaped: the menu item is rendered as HTML.
+ */
+export async function resultItem (d) {
+  const titles = await cataloguesById()
+  const catalogue = titles[d.catalogue] || d.catalogue
+  // Shares the identifier's secondary line (every span in a menu item is one, see editor.scss)
+  const detail = [catalogue, d.identifier].filter(Boolean).map(_.escape).join(' · ')
+  return {
+    value: d.identifier,
+    label: d.title,
+    html: `${_.escape(d.title)} (${_.escape(d.resourceType)}) <span>${detail}</span>`
+  }
+}
+
+// For tests: forget fetched rules and catalogues
+export function clearRelationshipRules () {
+  rulesByType.clear()
+  catalogueTitles = null
+}
+
+// A Gemini record keeps its type in resourceType, which the editor can change; other records in
+// type. Once edited, resourceType is a ResourceType model rather than the plain object it loads as
+// (SingleView.updateMetadataModel stores what the change event passes).
+export function recordType (model) {
+  const resourceType = model?.get('resourceType')
+  return resourceType?.get?.('value') || resourceType?.value || model?.get('type')
+}
+
+/**
+ * The record search for one relationship. A restricted relationship filters on resourceType,
+ * which Solr holds as the case-sensitive codelist label (e.g. "Dataset", not "dataset"), and may
+ * search other catalogues than the record's own through the cross-catalogue endpoint. Link
+ * documents are never offered, whatever the relationship. Null when a
+ * restricted relationship has no type it could match. The rules leave out empty lists.
+ */
+export async function searchQuery ({ catalogue, relation, sourceType, currentId, searchTerm }) {
+  const targets = (await relationshipRules(sourceType))[relation]
+  const clauses = []
+  if (targets) {
+    const labels = targets.resourceTypes ?? []
+    if (!labels.length) {
+      // Restricted, but nothing can match yet: e.g. "Replaces" before the record has a type
+      return null
+    }
+    clauses.push(`resourceType:(${labels.map(label => `"${label}"`).join(' OR ')})`)
+  }
+  const catalogues = targets?.catalogues ?? []
+  if (catalogues.length) {
+    // A record shared into a catalogue carries it in catalogue_view, not catalogue
+    clauses.push(`(${catalogues.map(c => `catalogue:${c} OR catalogue_view:${c}`).join(' OR ')})`)
+  }
+  clauses.push(searchTerm ? `(${searchTerm})` : '*')
+  // Link documents are being retired; a relationship belongs on the record one stands in for,
+  // and the save-time check rejects them
+  clauses.push('NOT documentType:LINK_DOCUMENT')
+  if (currentId) {
+    clauses.push(`NOT identifier:${currentId}`)
+  }
+  const endpoint = catalogues.length ? '/documents' : `/${catalogue}/documents`
+  return `${endpoint}?term=${encodeURIComponent(clauses.join(' AND '))}`
+}
+
 export default ObjectInputView.extend({
 
   optionTemplate: _.template(
@@ -41,82 +142,31 @@ export default ObjectInputView.extend({
 
     const catalogue = $('html').data('catalogue')
 
-    // Current document details
-    const recordTypes = {
-      monitoringFacility: 'Monitoring facility',
-      monitoringProgramme: 'Monitoring programme',
-      monitoringNetwork: 'Monitoring network'
-    }
-
-    const currentId = this.parentModel?.get('id')
-    const currentType = this.parentModel?.get('type')
-    const currentResourceType = recordTypes[currentType] || currentType
-
     const autocomplete = this.$('.autocomplete').autocomplete({
       minLength: 2,
 
       source: async (request, response) => {
-        const searchTerm = request.term.trim()
-        const selectedRelationship = this.$('.relationshipList').val()
+        const query = await searchQuery({
+          catalogue,
+          relation: this.$('.relationshipList').val(),
+          sourceType: recordType(this.parentModel),
+          currentId: this.parentModel?.get('id'),
+          searchTerm: request.term.trim()
+        })
 
-        const term = currentId
-          ? `${searchTerm} AND NOT identifier:${currentId}`
-          : searchTerm
-
-        const encodedTerm = encodeURIComponent(term)
-
-        const relationshipQueries = {
-          'http://purl.org/dc/terms/replaces': () =>
-            `resourceType%3A%22${encodeURIComponent(currentResourceType)}%22%20AND%20${encodedTerm}`,
-
-          // resourceType is indexed as the codelist display label, so a label
-          // containing a space has to be quoted or the Solr query breaks.
-          'http://purl.org/cerif/frapo/hasOutput': () =>
-            `${encodedTerm}&facet=recordType%7C(Model%20OR%20Dataset%20OR%20Map%20(web%20service)%20OR%20Software)`,
-
-          'https://digital.ceh.ac.uk/ontology/doo/utilises': () =>
-            `resourceType%3A(%22Monitoring%20network%22%20OR%20%22Monitoring%20facility%22)%20AND%20${encodedTerm}`,
-
-          'http://purl.org/dc/terms/isPartOf': () => {
-            if (currentResourceType === 'dataset') {
-              return `resourceType%3AAggregation%20AND%20${encodedTerm}`
-            }
-
-            if (currentResourceType === 'Monitoring facility') {
-              return 'resourceType%3A%22Monitoring%20network%22%20AND%20' + encodedTerm
-            }
-
-            return encodedTerm
-          }
-        }
-
-        let query
-
-        if (!searchTerm) {
-          query = `/${catalogue}/documents`
-        } else if (
-          selectedRelationship.startsWith(
-            'https://digital.ceh.ac.uk/ontology/doo/hasChild'
-          )
-        ) {
-          query = `/${catalogue}/documents?term=resourceType%3A%22${encodeURIComponent(currentResourceType)}%22%20AND%20${encodedTerm}`
-        } else {
-          const termQuery = relationshipQueries[selectedRelationship]?.() ?? encodedTerm
-          query = `/${catalogue}/documents?term=${termQuery}`
+        if (!query) {
+          response([])
+          return
         }
 
         try {
           const options = await $.getJSON(query)
 
-          response(
-            _.map(options.results, d => ({
-              value: d.identifier,
-              label: d.title,
-              html: `${d.title} (${d.resourceType}) <span>${d.identifier}</span>`
-            }))
-          )
+          response(await Promise.all(_.map(options.results, resultItem)))
         } catch (error) {
           console.error('Error fetching data:', error)
+          // Always answer, or the autocomplete stays in its loading state
+          response([])
         }
       },
 

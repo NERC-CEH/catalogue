@@ -214,6 +214,12 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, ex.getMessage(), BAD_REQUEST);
     }
 
+    @ExceptionHandler(RelationshipTargetCheckException.class)
+    public ResponseEntity<Object> handleRelationshipTargetCheck(RelationshipTargetCheckException ex) {
+        // The cause is logged where it is caught; it is a datastore fault, not the user's input
+        return handleExceptionInternal(ex, ex.getMessage(), SERVICE_UNAVAILABLE);
+    }
+
     @ExceptionHandler(MetadataConflictException.class)
     public ResponseEntity<MetadataDocument> handleMetadataConflict(MetadataConflictException ex) {
         // 409 with the submitted-but-unsaved document so the caller can preserve the user's edits.

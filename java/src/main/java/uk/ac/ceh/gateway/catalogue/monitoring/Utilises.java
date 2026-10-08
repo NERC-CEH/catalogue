@@ -1,39 +1,33 @@
 package uk.ac.ceh.gateway.catalogue.monitoring;
 
 import uk.ac.ceh.gateway.catalogue.model.Link;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.relationships.RelationshipRules;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * {@code doo:utilises} links a monitoring programme that runs at a facility or network, or a
  * data resource produced there, to that facility or network (dri-one #404).
  * <p>
- * The editor only offers facilities and networks as targets, but the API and hand-edited JSON
- * do not go through the editor. {@link #isTarget} is what the save-time check enforces, and
- * {@link #targets} re-applies it to links already in the store.
+ * {@link RelationshipRules} says what a {@code doo:utilises} link may point at, and the save-time
+ * check enforces it for new links. {@link #targets} re-applies it to links already in the store,
+ * which may predate the check.
  * <p>
  * Both directions also drop records that are not published: Jena indexes drafts alongside
  * published records, and these links are served on public pages and in public JSON.
  */
 public final class Utilises {
-    public static final String PREDICATE = "https://digital.ceh.ac.uk/ontology/doo/utilises";
+    public static final String PREDICATE = RelationshipRules.UTILISES;
 
     private static final String PROGRAMME = "monitoringProgramme";
-    private static final Set<String> TARGET_TYPES = Set.of("monitoringFacility", "monitoringNetwork");
 
     private Utilises() {}
-
-    public static boolean isTarget(MetadataDocument document) {
-        return document instanceof MonitoringFacility || document instanceof MonitoringNetwork;
-    }
 
     /** The published facilities and networks a record utilises. */
     public static List<Link> targets(List<Link> utilises) {
         return utilises.stream()
             .filter(Utilises::isPublished)
-            .filter(link -> TARGET_TYPES.contains(link.getAssociationType()))
+            .filter(link -> RelationshipRules.MONITORING_SITES.contains(link.getAssociationType()))
             .toList();
     }
 

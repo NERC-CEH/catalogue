@@ -29,6 +29,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataPreconditionRequiredException;
 import uk.ac.ceh.gateway.catalogue.model.InvalidRelationshipTargetException;
 import uk.ac.ceh.gateway.catalogue.model.MojibakeTextException;
+import uk.ac.ceh.gateway.catalogue.model.RelationshipTargetCheckException;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import org.apache.solr.client.solrj.RemoteSolrException;
 import uk.ac.ceh.gateway.catalogue.search.InvalidFacetException;
@@ -45,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 
 @WithMockCatalogueUser
 @ActiveProfiles({"test", "server-eidc", "search-basic"})
@@ -238,6 +240,22 @@ class ExceptionControllerHandlerTest {
 
         //Then
         assertThat(response.getStatusCode(), equalTo(BAD_REQUEST));
+        assert response.getBody() != null;
+        assertThat(((ErrorResponse) response.getBody()).getMessage(), equalTo(mess));
+    }
+
+    @Test
+    @DisplayName("A datastore fault while checking relationship targets becomes a 503, not a 400 (dri-one #439)")
+    public void relationshipTargetCheckFaultReturnsServiceUnavailable() {
+        //Given
+        String mess = "The records this document links to could not be checked just now. Please try saving again.";
+        RelationshipTargetCheckException ex = new RelationshipTargetCheckException(mess, new java.io.IOException("SMB"));
+
+        //When
+        ResponseEntity<Object> response = controller.handleRelationshipTargetCheck(ex);
+
+        //Then
+        assertThat(response.getStatusCode(), equalTo(SERVICE_UNAVAILABLE));
         assert response.getBody() != null;
         assertThat(((ErrorResponse) response.getBody()).getMessage(), equalTo(mess));
     }
