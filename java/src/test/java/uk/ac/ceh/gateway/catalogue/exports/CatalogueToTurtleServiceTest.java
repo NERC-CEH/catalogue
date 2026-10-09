@@ -241,4 +241,41 @@ class CatalogueToTurtleServiceTest {
             model.createLiteral("Wood, C.")
         ));
     }
+
+    /**
+     * The record template already renders a non-geographic dataset as a
+     * dcat:Dataset, but the type filter in front of it dropped all 140 of
+     * EIDC's before they reached the template, so none were in Fuseki.
+     */
+    @Test
+    void bigTtlExportsNonGeographicDatasets() {
+        //Given
+        val document = (GeminiDocument) new GeminiDocument()
+            .setType("nonGeographicDataset")
+            .setId("nongeorecord")
+            .setUri(baseUri + "/id/nongeorecord")
+            .setTitle("Non-geographic record");
+
+        given(catalogueService.retrieve(catalogueKey)).willReturn(catalogue);
+        given(listing.getLatestPublicDocumentsOfCatalogue(catalogueKey)).willReturn(List.of(document));
+
+        //When
+        val ttl = service.getBigTtl(catalogueKey).orElseThrow();
+
+        //Then
+        Model model = ModelFactory.createDefaultModel();
+        RDFDataMgr.read(model, new StringReader(ttl), baseUri + "/", Lang.TTL);
+
+        val record = createResource(baseUri + "/id/nongeorecord");
+        assertTrue(model.contains(
+            createResource(baseUri + "/" + catalogueKey + "/documents"),
+            createProperty("http://www.w3.org/ns/dcat#resource"),
+            record
+        ));
+        assertTrue(model.contains(
+            record,
+            createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            createResource("http://www.w3.org/ns/dcat#Dataset")
+        ));
+    }
 }
