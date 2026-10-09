@@ -24,6 +24,17 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Records view and download counts and serves them back.
+ *
+ * <p><b>Schema.</b> The target metrics schema is decided in #246 and recorded in
+ * {@code docs/metrics-schema-decision.md}; do not redesign it here. The tables this class reads and
+ * writes are the decision's landing shape — two denormalised, insert-only tables, {@code views} and
+ * {@code downloads} — and stay so while SQLite remains a selectable engine, because the same SQL runs on
+ * both. The target shape (one {@code metric_counts} fact table plus a {@code documents} dimension,
+ * {@code timestamptz} windows) arrives as one change, schema and SQL together, after the SQLite path is
+ * removed.</p>
+ */
 @Profile("metrics")
 @Slf4j
 @Service
@@ -44,6 +55,7 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
     private volatile boolean schemaReady;
     private final Object schemaLock = new Object();
 
+    // The landing shape from #246 (docs/metrics-schema-decision.md); #235 moves it into a Flyway migration.
     // SQLite has no built-in datetime type, so we store dates as Unix timestamps (seconds since 1 Jan 1970).
     // bigint, not integer: SQLite's integer is 64-bit, but PostgreSQL's is 32-bit and would overflow in
     // January 2038 -- silently, since pgjdbc narrows the bound long to an int. bigint is still INTEGER
