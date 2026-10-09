@@ -38,8 +38,9 @@ CREATE TABLE metric_counts (
 COMMENT ON COLUMN metric_counts.counted_from  IS 'Start of the period amount was counted over (inclusive)';
 COMMENT ON COLUMN metric_counts.counted_until IS 'End of the period amount was counted over (exclusive)';
 
-CREATE INDEX idx_metric_counts_document_type_amount
-    ON metric_counts (document_id, metric_type, amount);
+CREATE INDEX idx_metric_counts_document_type
+    ON metric_counts (document_id, metric_type)
+    INCLUDE (amount);
 CREATE INDEX idx_metric_counts_counted_from
     ON metric_counts (counted_from)
     INCLUDE (counted_until, document_id, metric_type, amount);
@@ -66,12 +67,12 @@ between `counted_from` and `counted_until`.
 
 | Query | Two tables (today) | One table (decided) |
 |---|---|---|
-| Per-document total (#242) | `idx_<t>_document_amount` covers it | The same, via `(document_id, metric_type, amount)`. Both totals can also come from one query (`GROUP BY metric_type`) instead of two per page render. |
+| Per-document total (#242) | `idx_<t>_document_amount` covers it | The same, via `(document_id, metric_type) INCLUDE (amount)`. Both totals can also come from one query (`GROUP BY metric_type`) instead of two per page render. |
 | Filtered/ordered report (#243) | `UNION ALL` of two tables. The `WHERE` is built once, substituted twice and every parameter is bound twice by index arithmetic (the "fragile" issue in #235). Every filter and index exists twice. | One scan, with `sum(amount) FILTER (WHERE metric_type = 'view')` per document, joined to `documents`. No union and no duplicate binding. Ordering and paging run on one relation. |
 | Monthly bucketing (#194) | Two `GROUP BY`s, then a merge | One `GROUP BY date_trunc('month', counted_from, 'Europe/London'), metric_type` |
 
-**Cost:** one extra column at the front of the index, and a predicate on queries that want only
-one metric. Both are negligible. A third metric would be a new `CHECK` value, not a new table.
+**Cost:** one extra column in the index key, and a predicate on queries that want only one metric.
+Both are negligible. A third metric would be a new `CHECK` value, not a new table.
 
 ## 2. Primary key and write pattern: surrogate `id`, insert-only raw rows
 
@@ -156,15 +157,18 @@ so very few cross a month boundary. Until V2, `date_trunc('month', to_timestamp(
 
 | Index | Serves |
 |---|---|
-| `metric_counts (document_id, metric_type, amount)` | Per-document totals as a covering index (#242's composite carried forward). Also covers the foreign key. |
+| `metric_counts (document_id, metric_type) INCLUDE (amount)` | Per-document totals as an index-only scan (#242's covering index carried forward). `amount` is never searched on; it's included only so the sum can be read from the index without visiting the table. Also covers the foreign key, so `deleteMetricsFor` doesn't need a full scan. |
 | `metric_counts (counted_from) INCLUDE (counted_until, document_id, metric_type, amount)` | Report date range (`counted_from >= ? AND counted_until <= ?`) and monthly bucketing, both as index-only scans. `counted_from` is the only key column because it carries the range; after a range, another key column couldn't narrow the scan further. The table is insert-only, so the visibility map stays current and index-only scans really do skip the table. |
 | `documents (record_type)` | Report `record_type IN (…)` |
 | *(none)* for `docId LIKE '%…%'` | A leading wildcard can't use a b-tree index. The filter needs redesigning in #243. |
 
 **H2 caveat:** H2 doesn't support `INCLUDE`. Run the V2 schema tests against real PostgreSQL
-(#237), not H2. If H2 has to stay, use plain key columns
-`(counted_from, counted_until, document_id, metric_type, amount)` instead. It covers the same
-queries with a slightly larger index.
+(#237), not H2. If H2 has to stay, list the included columns as trailing key columns instead
+(`(document_id, metric_type, amount)` and `(counted_from, counted_until, document_id, metric_type, amount)`).
+They cover the same queries with slightly larger indexes.
+
+V1 keeps #242's `(document, amount)` as plain key columns: its script also runs on H2, and it
+matches the index name and shape already on the SQLite file.
 
 ## Sequencing: why two migrations, and what V1 is
 
@@ -189,7 +193,7 @@ data-access paths for the length of the window, and #236 couldn't reconcile tabl
 
 ## Confirmed supported without further redesign
 
-* **Per-document total (#242):** yes, a covering index lookup.
+* **Per-document total (#242):** yes, an index-only scan.
 * **Filtered/ordered report (#243):** yes, one relation plus a join to `documents`, with the date
   range as an index-only scan. The `docId` filter is #243's redesign.
 * **Monthly bucketing (#194):** yes, a single `GROUP BY date_trunc('month', counted_from, 'Europe/London')`.
