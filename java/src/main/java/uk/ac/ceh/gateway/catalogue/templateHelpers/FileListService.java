@@ -39,7 +39,7 @@ public class FileListService {
     }
 
     public List<String> getFileList(String datasetId) {
-        log.info("Getting file list for dataset: {}", datasetId);
+        log.debug("Getting file list for dataset: {}", datasetId);
         return getFileListRecursive(datasetId, "");
     }
 
@@ -56,7 +56,7 @@ public class FileListService {
             ? format("%s/datastore/eidchub/%s/?format=json", baseUri, datasetId)
             : format("%s/datastore/eidchub/%s/%s/?format=json", baseUri, datasetId, path);
 
-        log.info("Getting files from url: {}", urlTemplate);
+        log.debug("Getting files from url: {}", urlTemplate);
 
         try {
             ResponseEntity<List<FileListService.FileListInfo>> response = restTemplate.exchange(
@@ -76,7 +76,7 @@ public class FileListService {
                     allFiles.add(item.getName());
 
                 } else if ("directory".equalsIgnoreCase(item.getType())) {
-                    log.info("Directory found: {}, traversing it looking for files and sub-directories", item.getName());
+                    log.debug("Directory found: {}, traversing it looking for files and sub-directories", item.getName());
                     String newPath = path.isEmpty()
                         ? item.getName()
                         : path + "/" + item.getName();

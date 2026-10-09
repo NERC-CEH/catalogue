@@ -95,7 +95,7 @@ public class ServiceAgreementController {
         @ActiveUser CatalogueUser user,
         @PathVariable String id
     ) {
-        log.info("GET {}", id);
+        log.debug("GET {}", id);
         val serviceAgreement = serviceAgreementService.get(user, id);
         return withETag(id).body(serviceAgreementModelAssembler.toModel(serviceAgreement));
     }
@@ -179,7 +179,7 @@ public class ServiceAgreementController {
     @GetMapping("{id}/history")
     public History getHistory(@PathVariable String id) {
         if (serviceAgreementService.metadataRecordExists(id)) {
-            log.info("GETTING SERVICE AGREEMENT {} HISTORY", id);
+            log.debug("GETTING SERVICE AGREEMENT {} HISTORY", id);
 
             return serviceAgreementService.getHistory(id);
 
@@ -195,7 +195,7 @@ public class ServiceAgreementController {
         @PathVariable String version
     ) {
         if (serviceAgreementService.metadataRecordExists(id)) {
-            log.info("GETTING SERVICE AGREEMENT {} HISTORY", id);
+            log.debug("GETTING SERVICE AGREEMENT {} HISTORY", id);
             val serviceAgreement = serviceAgreementService.getPreviousVersion(id, version);
             return serviceAgreementModelAssembler.toModel(serviceAgreement);
         } else {
@@ -210,7 +210,7 @@ public class ServiceAgreementController {
         @ActiveUser CatalogueUser user,
         @PathVariable String id
     ) {
-        log.info("GETTING SERVICE AGREEMENT PERMISSIONS");
+        log.debug("GETTING SERVICE AGREEMENT PERMISSIONS");
         return withETag(id).body(
             new ServiceAgreementPermissionResource(
                 serviceAgreementService.get(user, id)

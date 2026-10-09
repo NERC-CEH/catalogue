@@ -52,7 +52,7 @@ public class FileSystemStorageService implements StorageService {
     @SneakyThrows
     public List<FileInfo> filenames(String id) {
         try {
-            log.info("In {} loading all files", id);
+            log.debug("In {} loading all files", id);
             val dir = Path.of(datastore, id);
             if (!Files.isDirectory(dir)) {
                 throw new UserInputException(id, "Could not retrieve files");

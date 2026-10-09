@@ -19,7 +19,7 @@ public class CatalogueUserOidcUserService extends OidcUserService {
      */
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
-        log.info(userRequest.getIdToken().getSubject());
+        log.debug(userRequest.getIdToken().getSubject());
         return new CatalogueOidcUser(super.loadUser(userRequest));
     }
 }

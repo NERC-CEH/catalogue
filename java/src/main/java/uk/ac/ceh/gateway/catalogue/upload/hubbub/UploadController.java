@@ -79,7 +79,7 @@ public class UploadController {
         @PathVariable String datasetId,
         Model model
     ) {
-        log.info("Requesting upload page for {}", datasetId);
+        log.debug("Requesting upload page for {}", datasetId);
         model.addAttribute("id", datasetId);
 
         val geminiDocument = (GeminiDocument) documentRepository.read(datasetId);
