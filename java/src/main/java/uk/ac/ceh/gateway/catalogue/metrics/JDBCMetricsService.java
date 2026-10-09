@@ -416,7 +416,7 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         sqlBuilder.append(" LIMIT ");
         sqlBuilder.append(noOfRecords != null && noOfRecords >= 0 ? noOfRecords : 100);
 
-        log.info("Metrics report sql: {}", sqlBuilder);
+        log.debug("Metrics report sql: {}", sqlBuilder);
 
         return jdbcTemplate.query(
             sqlBuilder.toString(), preparedStatement -> {

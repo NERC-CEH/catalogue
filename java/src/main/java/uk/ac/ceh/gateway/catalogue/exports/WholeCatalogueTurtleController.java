@@ -40,12 +40,12 @@ public class WholeCatalogueTurtleController {
     @GetMapping("{catalogueId}/catalogue.ttl")
     public HttpEntity<String> getTtl(@PathVariable String catalogueId) {
         return docsToTurtle.getBigTtl(catalogueId).map(ttl -> {
-            log.info("serving big turtle for {}", catalogueId);
+            log.debug("serving big turtle for {}", catalogueId);
             return ResponseEntity.ok()
                 .contentType(RDF_TTL_UTF8)
                 .body(ttl);
         }).orElseGet(() -> {
-            log.info("not serving big turtle for unknown catalogue {}", catalogueId);
+            log.debug("not serving big turtle for unknown catalogue {}", catalogueId);
             return ResponseEntity.notFound().build();
         });
     }
@@ -62,7 +62,7 @@ public class WholeCatalogueTurtleController {
             log.info("no Fuseki catalogues to serve");
             return ResponseEntity.notFound().build();
         }
-        log.info("serving combined turtle for Fuseki catalogues: {}", fusekiCatalogueIds);
+        log.debug("serving combined turtle for Fuseki catalogues: {}", fusekiCatalogueIds);
         return ResponseEntity.ok()
             .contentType(RDF_TTL_UTF8)
             .body(combined);

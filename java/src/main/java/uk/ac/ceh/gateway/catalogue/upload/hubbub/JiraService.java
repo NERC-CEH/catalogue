@@ -95,7 +95,7 @@ public class JiraService {
     }
 
     public Optional<JiraIssue> retrieveDataTransferIssue(String id) {
-        log.info("Retrieving data transfer issues for {}", id);
+        log.debug("Retrieving data transfer issues for {}", id);
         val url = UriComponentsBuilder
             .fromUriString(jiraEndpoint)
             .path("search")

@@ -36,7 +36,7 @@ public class SparqlController {
         SparqlResponse response = new SparqlResponse();
         response.setQuery(queryStr);
         try {
-            log.info("Running query: \n{}", queryStr);
+            log.debug("Running query: \n{}", queryStr);
             Query query = QueryFactory.create(queryStr, Syntax.syntaxARQ);
             executeQuery(query, response);
         }
@@ -52,7 +52,7 @@ public class SparqlController {
         try ( QueryExecution qExec = QueryExecutionFactory.create(query, jenaTdb)) {
             qExec.getContext().set(ARQConstants.registryFunctions, FunctionRegistry.get());
             FunctionFactory f = FunctionRegistry.get().get("http://www.opengis.net/def/function/geosparql/distance");
-            log.info("Function instance: {}", f.getClass().getName());
+            log.debug("Function instance: {}", f.getClass().getName());
 
             if(query.isSelectType()) {
                 response.setResult(ResultSetFormatter.asText(qExec.execSelect()));

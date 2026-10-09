@@ -53,7 +53,7 @@ public class UploadController {
             Model model
     ) {
         try {
-            log.info("Getting upload page for {}", id);
+            log.debug("Getting upload page for {}", id);
             model.addAttribute("id", id);
             val metadataDocument = (AbstractMetadataDocument) documentRepository.read(id);
             model.addAttribute("title", metadataDocument.getTitle());
@@ -77,7 +77,7 @@ public class UploadController {
     public ResponseEntity<List<FileInfo>> filenames (
             @PathVariable String id
     ) {
-        log.info("For {} getting filenames", id);
+        log.debug("For {} getting filenames", id);
         return ResponseEntity.ok(storageService.filenames(id));
     }
 
@@ -104,7 +104,7 @@ public class UploadController {
         val fullPath = Path.of(URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8));
         val elts = fullPath.getNameCount();
         val filePath = fullPath.subpath(2, elts);
-        log.info("fullPath is {}, filePath is {}", fullPath, filePath);
+        log.debug("fullPath is {}, filePath is {}", fullPath, filePath);
 
         storageService.delete(id, filePath.toString());
         log.info("Successfully deleted {} for {}", filePath, id);

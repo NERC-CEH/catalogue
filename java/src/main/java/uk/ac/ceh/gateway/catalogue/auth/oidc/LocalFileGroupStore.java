@@ -41,7 +41,7 @@ public class LocalFileGroupStore<CatalogueUser extends User> implements GroupSto
     @SneakyThrows
     @Override
     public List<Group> getGroups(CatalogueUser user) {
-        log.info("Get groups for user {}", user);
+        log.debug("Get groups for user {}", user);
         if (user != null) {
             val userRoles = objectMapper
                 .readValue(new File(rolesPath), typeRef)

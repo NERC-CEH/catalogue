@@ -148,7 +148,7 @@ public class MapViewerController {
             .buildAndExpand(id)
             .toUri();
 
-        log.info("WMS request URL built: {}", uri);
+        log.debug("WMS request URL built: {}", uri);
         return uri;
     }
 }

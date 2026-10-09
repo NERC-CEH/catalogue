@@ -60,7 +60,7 @@ public class DownloadController {
             throw new ResponseStatusException(HttpStatus.valueOf(404), "Invalid download url");
         }
         if(!excludedUsers.contains(user.getUsername()) && this.metricsService != null) {
-            log.info(String.format("Redirecting to %s", redirectUrl));
+            log.debug(String.format("Redirecting to %s", redirectUrl));
             this.metricsService.recordDownload(uuid, request.getRemoteAddr());
         }
         return "redirect:" + redirectUrl;

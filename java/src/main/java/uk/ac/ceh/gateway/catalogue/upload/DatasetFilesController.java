@@ -36,7 +36,7 @@ public class DatasetFilesController {
         @RequestParam(value = "page", defaultValue = "1") int page,
         @RequestParam(value = "size", defaultValue = "10000") int size
     ) {
-        log.info("Fetching dataset files for {}", datasetId);
+        log.debug("Fetching dataset files for {}", datasetId);
 
         try {
             GeminiDocument document = (GeminiDocument) documentRepository.read(datasetId);
