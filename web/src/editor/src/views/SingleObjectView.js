@@ -5,6 +5,9 @@ export default SingleView.extend({
 
   initialize (options) {
     SingleView.prototype.initialize.call(this, options)
+    // The control is rendered by the object view, so the section label can only name it if that
+    // view says it renders input-<modelAttribute>
+    this.labelsControl = Boolean(this.data.ObjectInputView.prototype.labelsControl)
     this.render()
 
     this.inputModel = new this.data.ModelType(this.model.get(this.data.modelAttribute))

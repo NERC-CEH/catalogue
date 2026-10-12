@@ -3,6 +3,9 @@ import template from '../templates/ResourceType'
 
 export default ObjectInputView.extend({
 
+  // Renders the select#input-<modelAttribute> that the section label names
+  labelsControl: true,
+
   initialize (options) {
     this.template = template
     ObjectInputView.prototype.initialize.call(this, options)

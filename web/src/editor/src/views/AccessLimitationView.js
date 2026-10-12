@@ -3,6 +3,9 @@ import template from '../templates/AccessLimitation'
 
 export default ObjectInputView.extend({
 
+  // Renders the select#input-<modelAttribute> that the section label names
+  labelsControl: true,
+
   initialize () {
     this.template = template
     ObjectInputView.prototype.initialize.apply(this, arguments)
