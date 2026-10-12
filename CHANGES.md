@@ -4,6 +4,22 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.242.0] - 2026-10-02
+
+The catalogue's linked-data export now includes contributors and their roles, such as data curator, technician or principal investigator. Until now only authors could reach it, because the export never read the contributors list and still expected the way roles were recorded before August (DRI-ONE-405). Behind the scenes, the catalogue now signs in to its file-upload and keyword-suggestion services with personal access tokens, because the single sign-on gateway in front of them is withdrawing password logins. How to rotate those tokens is now documented.
+
+## [3.241.0] - 2026-09-28
+
+Terms from AGROVOC, the UN Food and Agriculture Organization's agricultural vocabulary, now appear in the catalogue's knowledge graph for the first time. AGROVOC's web addresses redirect in a way the catalogue rightly refuses to follow, so every term had come back empty. It now asks AGROVOC's own lookup service directly (DRI-ONE-414).
+
+## [3.240.0] - 2026-09-28
+
+The knowledge graph now records how organisations relate to each other, taken from the Research Organization Registry (ROR, a global directory of research organisations): parent and child organisations, related organisations, and predecessors and successors. For example, it can now say that BBSRC and NERC are both part of UKRI (DRI-ONE-413).
+
+## [3.239.0] - 2026-09-28
+
+Funders now have their names in the knowledge graph. Previously 43 of the catalogue's 61 funders appeared without one, because the catalogue never asked the Research Organization Registry about them (DRI-ONE-412).
+
 ## [3.238.0] - 2026-09-24
 
 The catalogue's linked-data export now records which organisation each person belongs to the right way round. Until now it said, in effect, that each organisation was a member of the person, so outside tools that asked which people belong to an organisation got nothing back (DRI-ONE-401). Some details of a record are worked out by the catalogue itself, such as the links between monitoring programmes, networks and facilities and the combined map area drawn from them. These can no longer be overwritten by sending an edited record directly. Before this, a direct edit could even write back the precise position of a facility marked as confidential (DRI-ONE-146).
