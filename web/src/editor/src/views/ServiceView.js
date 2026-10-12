@@ -1,5 +1,4 @@
 import _ from 'underscore'
-import $ from 'jquery'
 import SingleView from '../SingleView'
 import ServiceTypeView from './ServiceTypeView'
 import { Service } from '../models'
@@ -19,40 +18,37 @@ export default SingleView.extend({
       this.updateMetadataModel(model.toJSON())
     })
 
-    const that = this
-    $(document).ready(function () {
-      const typeView = new ServiceTypeView({
-        model: service,
-        modelAttribute: 'type',
-        disabled: options.disabled
-      })
-
-      const serviceOperations = new ParentView({
-        model: service,
-        modelAttribute: 'containsOperations',
-        ObjectInputView: ServiceOperationView,
-        label: 'Operations',
-        multiline: true,
-        disabled: options.disabled
-      })
-
-      const coupledResources = new ParentView({
-        model: service,
-        modelAttribute: 'coupledResources',
-        ObjectInputView: CoupledResourceView,
-        label: 'Coupled Resources',
-        multiline: true,
-        disabled: options.disabled
-      })
-
-      const versions = new ParentStringView({
-        model: service,
-        modelAttribute: 'versions',
-        label: 'Versions',
-        disabled: options.disabled
-      })
-      _.invoke([serviceOperations, coupledResources, versions], 'show')
-      that.$('.dataentry').append(typeView.el, serviceOperations.el, coupledResources.el, versions.el)
+    const typeView = new ServiceTypeView({
+      model: service,
+      modelAttribute: 'type',
+      disabled: options.disabled
     })
+
+    const serviceOperations = new ParentView({
+      model: service,
+      modelAttribute: 'containsOperations',
+      ObjectInputView: ServiceOperationView,
+      label: 'Operations',
+      multiline: true,
+      disabled: options.disabled
+    })
+
+    const coupledResources = new ParentView({
+      model: service,
+      modelAttribute: 'coupledResources',
+      ObjectInputView: CoupledResourceView,
+      label: 'Coupled Resources',
+      multiline: true,
+      disabled: options.disabled
+    })
+
+    const versions = new ParentStringView({
+      model: service,
+      modelAttribute: 'versions',
+      label: 'Versions',
+      disabled: options.disabled
+    })
+    _.invoke([serviceOperations, coupledResources, versions], 'show')
+    this.$('.dataentry').append(typeView.el, serviceOperations.el, coupledResources.el, versions.el)
   }
 })

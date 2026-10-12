@@ -1,5 +1,4 @@
 import _ from 'underscore'
-import $ from 'jquery'
 import SingleView from '../SingleView'
 
 export default SingleView.extend({
@@ -13,15 +12,11 @@ export default SingleView.extend({
     this.listenTo(this.model, 'sync', function (model) {
       this.inputModel.set(model.get(this.data.modelAttribute))
     })
-    this.objectInputView = null
-    const that = this
-    $(document).ready(function () {
-      /* eslint no-new: "off" */
-      that.objectInputView = new that.data.ObjectInputView(_.extend({}, that.data, {
-        el: that.$('.dataentry'),
-        model: that.inputModel
-      }))
-    })
+    /* eslint no-new: "off" */
+    this.objectInputView = new this.data.ObjectInputView(_.extend({}, this.data, {
+      el: this.$('.dataentry'),
+      model: this.inputModel
+    }))
   },
 
   show () {

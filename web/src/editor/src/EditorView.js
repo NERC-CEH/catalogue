@@ -272,9 +272,11 @@ export default Backbone.View.extend({
     this.$el.html(this.template(this.model.attributes))
     $('body').toggleClass('edit-mode')
     $('#search').toggleClass('search')
+    // Section views render themselves in initialize. Rendering them again here would replace
+    // what they built there, such as the rows of a record's saved contacts (dri-one #451).
     this.sections.forEach(section => {
       section.views.forEach(view => {
-        this.$('#editor').append(view.render().el)
+        this.$('#editor').append(view.el)
       })
     })
     return this
