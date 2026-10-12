@@ -174,10 +174,7 @@ export default EditorView.extend({
         })
       ]
     },
-    /*
-    ## Disable contributors section temporarily
-    ## When training of staff is completed this can be enabled
-     {
+    {
       label: 'Contributors',
       title: 'Contributors',
       views: [
@@ -206,7 +203,6 @@ export default EditorView.extend({
         })
       ]
     },
-    */
     {
       label: 'Additional contacts',
       title: 'Additional contacts',
