@@ -34,17 +34,17 @@ export default ObjectInputView.extend({
     this.listenTo(this.model, 'change:colour change:symbol', this.update)
     this.update()
 
-    this.$('#picker').change(() => {
-      this.model.set('colour', this.$('#picker').val())
+    this.$('.picker').change(() => {
+      this.model.set('colour', this.$('.picker').val())
     })
-    this.$('#colorCode').on('input change', ev => {
+    this.$('.colorCode').on('input change', ev => {
       this.model.set('colour', ev.target.value)
     })
   },
 
   update () {
     let color = this.model.get('colour')
-    this.$('#colorCode').val(color)
+    this.$('.colorCode').val(color)
     if (!(/^#([0-9A-Fa-f]{6})$/.test(color))) {
       color = this.defaultColour
     }
@@ -58,11 +58,11 @@ export default ObjectInputView.extend({
     }
 
     this.$('.icon').css({ backgroundColor: color })
-    this.$('#picker').val(color)
+    this.$('.picker').val(color)
   },
 
   setColour () {
-    this.model.set('colour', this.$('#colorCode').val())
+    this.model.set('colour', this.$('.colorCode').val())
   },
 
   setSymbol (e) {

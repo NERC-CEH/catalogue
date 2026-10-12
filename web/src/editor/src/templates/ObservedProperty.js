@@ -29,7 +29,7 @@ export default _.template(`
             <label for="schema-type<%= data.index %>">Type</label>
         </div>
         <div class="col-xxl-4">
-            <input list="dataTypeList" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" autocomplete="off" aria-autocomplete="none" />
+            <input list="dataTypeList<%= data.index %>" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" autocomplete="off" aria-autocomplete="none" />
         </div>
         <div class="col-xxl-2">
             <div class="d-none d-xxl-block text-end">
@@ -37,7 +37,7 @@ export default _.template(`
             </div>
         </div>
         <div class="col-xxl-4">
-            <input list="dataFormatList" data-name="format" id="schema-format<%= data.index %>" class="editor-input" value="<%= data.format %>" autocomplete="off" aria-autocomplete="none" placeholder="optional (recommended for dates and times)" />
+            <input list="dataFormatList<%= data.index %>" data-name="format" id="schema-format<%= data.index %>" class="editor-input" value="<%= data.format %>" autocomplete="off" aria-autocomplete="none" placeholder="optional (recommended for dates and times)" />
         </div>
     </div>
     <div class="row">
@@ -98,18 +98,18 @@ export default _.template(`
             </div>
             <div class="col-xxl-10">
               <div class="form-check form-check-inline">
-                <input data-name="unique" name="schema-unique<%= data.index %>"  class="form-check-input" type="radio" name="exampleRadios" id="schema-unique<%= data.index %>" value="true" <% if (data.constraints.unique == true) { %> checked="checked" <% } %>>
-                <label class="form-check-label" for="schema-unique<%= data.index %>">Yes</label>
+                <input data-name="unique" name="schema-unique<%= data.index %>"  class="form-check-input" type="radio" name="exampleRadios" id="schema-unique<%= data.index %>-true" value="true" <% if (data.constraints.unique == true) { %> checked="checked" <% } %>>
+                <label class="form-check-label" for="schema-unique<%= data.index %>-true">Yes</label>
               </div>
               <div class="form-check form-check-inline">
-                <input type="radio" data-name="unique" name="schema-unique<%= data.index %>" class="form-check-input" type="radio" name="exampleRadios" id="schema-unique<%= data.index %>" value="false" <% if (data.constraints.unique == false) { %> checked="checked" <% } %> >
-                <label class="form-check-label" for="schema-unique<%= data.index %>">No</label>
+                <input type="radio" data-name="unique" name="schema-unique<%= data.index %>" class="form-check-input" type="radio" name="exampleRadios" id="schema-unique<%= data.index %>-false" value="false" <% if (data.constraints.unique == false) { %> checked="checked" <% } %> >
+                <label class="form-check-label" for="schema-unique<%= data.index %>-false">No</label>
               </div>
             </div>
         </div>
     </div>
 </div>
-<datalist id="dataTypeList">
+<datalist id="dataTypeList<%= data.index %>">
     <option value="float">Decimal number/float</option>
     <option value="integer">Integer</option>
     <option value="text">Text string</option>
@@ -118,7 +118,7 @@ export default _.template(`
     <option value="time">Time</option>
     <option value="dateTime">Date AND time</option>
 </datalist>
-<datalist id="dataFormatList">
+<datalist id="dataFormatList<%= data.index %>">
     <option value="YYYY">Four digit year e.g. 2018</option>
     <option value="YYYY-MM">Year and month e.g. 2018-12</option>
     <option value="YYYY-MM-DD">ISO date e.g. 2018-12-25</option>

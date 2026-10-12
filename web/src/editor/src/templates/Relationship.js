@@ -13,7 +13,7 @@ export default _.template(`
         <input data-name="target" value="<%= data.target %>" id="relationship<%= data.index %>Target" class="editor-input autocomplete" placeholder="Enter record ID or type to search…">
     </div>
     <div class="relationshipRecord col-md-7 d-none">
-        <input data-name="target" id="relationship<%= data.index %>Target" class="editor-input read-only-identifier" value="<%= data.target %>" disabled>
+        <input data-name="target" class="editor-input read-only-identifier" value="<%= data.target %>" disabled>
     </div>
 </div>
 `)

@@ -12,7 +12,7 @@ export default _.template(`
         <label for="schema-type<%= data.index %>">Type</label>
     </div>
     <div class="col-sm-4">
-        <input list="dataTypeList" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" autocomplete="off" aria-autocomplete="none" />
+        <input list="dataTypeList<%= data.index %>" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" autocomplete="off" aria-autocomplete="none" />
     </div>
 </div>
 <div class="row">
@@ -32,7 +32,7 @@ export default _.template(`
     </div>
 </div>
 
-<datalist id="dataTypeList">
+<datalist id="dataTypeList<%= data.index %>">
     <option value="float">Decimal number/float</option>
     <option value="integer">Integer</option>
     <option value="text">Text string</option>

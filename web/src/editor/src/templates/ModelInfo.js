@@ -7,7 +7,7 @@ export default _.template(`
     </div>
     <div class="col-sm-9 col-lg-9">
         <div class="input-group">
-            <span class="input-group-addon" id="sizing-addon2">Search</span>
+            <span class="input-group-addon">Search</span>
             <input data-name="name" id="modelInfo<%= data.index %>Name" class="form-control autocomplete" value="<%= data.name %>">
         </div>
     </div>
@@ -38,7 +38,7 @@ export default _.template(`
 </div>
 <div class="row">
     <div class="col-sm-3">
-        <label for="modelInfo<%= data.index %>spatialExtentOfApplication">Spatial extent of application</label>
+        <label for="modelInfo<%= data.index %>SpatialExtentOfApplication">Spatial extent of application</label>
     </div>
     <div class="col-sm-9 col-lg-9">
         <input autocomplete="off" aria-autocomplete="none" list="modelInfo<%= data.index %>SpatialExtentOfApplicationList" data-name="spatialExtentOfApplication" id="modelInfo<%= data.index %>SpatialExtentOfApplication" class="editor-input"/>

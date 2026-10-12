@@ -12,7 +12,7 @@ export default _.template(`
           <label class="control-label">Encoding format</label>
       </div>
       <div class="col-xxl-4">
-          <input list="encodingFormatList" data-name='encodingFormat' class="editor-input" placeholder="e.g., text/csv" value="<%= data.encodingFormat %>">
+          <input list="encodingFormatList<%= data.index %>" data-name='encodingFormat' class="editor-input" placeholder="e.g., text/csv" value="<%= data.encodingFormat %>">
       </div>
   </div>
   <div class="row">
@@ -26,13 +26,13 @@ export default _.template(`
         <% if (data.fetchVariablesButton) { %>
           <button class="legilo-variables-btn editor-button px-4 me-2"><i class="fa-solid fa-wand-magic-sparkles"></i> Suggest</button>
         <% } %>
-        <button class="editor-button dropdown-toggle" data-bs-toggle="dropdown" type="button" id="addObservedPropertyBtn" aria-expanded="false">
+        <button class="editor-button dropdown-toggle add-observed-property" data-bs-toggle="dropdown" type="button" id="addObservedPropertyBtn<%= data.index %>" aria-expanded="false">
             Add property
         </button>
-        <ul class="dropdown-menu" aria-labelledby="addObservedPropertyBtn"></ul>
+        <ul class="dropdown-menu" aria-labelledby="addObservedPropertyBtn<%= data.index %>"></ul>
       </div>
   </div>
-  <datalist id="encodingFormatList">
+  <datalist id="encodingFormatList<%= data.index %>">
     <option value="text/csv">CSVs</option>
     <option value="image/tiff">Geotiffs</option>
     <option value="application/netcdf">NetCDFs</option>

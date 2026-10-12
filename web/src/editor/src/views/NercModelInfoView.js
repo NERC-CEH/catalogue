@@ -7,7 +7,7 @@ export default ObjectInputView.extend({
 
   initialize () {
     this.template = template
-    ObjectInputView.prototype.initialize.apply(this)
+    ObjectInputView.prototype.initialize.apply(this, arguments)
     const catalogue = $('html').data('catalogue')
 
     this.$('.autocomplete').autocomplete({

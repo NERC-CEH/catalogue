@@ -5,6 +5,10 @@ export default Backbone.View.extend({
 
   className: 'component',
 
+  // Whether the view renders a control with id input-<modelAttribute> for the section label to name.
+  // Repeating and compound sections have no single control, so their label must not point at one.
+  labelsControl: false,
+
   initialize (options) {
     this.data = options
     if (!this.data.ModelType) {
@@ -21,7 +25,7 @@ export default Backbone.View.extend({
   },
 
   render () {
-    this.$el.html(template({ data: this.data }))
+    this.$el.html(template({ data: this.data, labelsControl: this.labelsControl }))
     return this
   },
 

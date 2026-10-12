@@ -8,25 +8,25 @@ export default ObjectInputView.extend({
 
   events: function () {
     return _.extend({}, ObjectInputView.prototype.events, {
-      'click #update' () { return this.viewMap() }
+      'click .update-map' () { return this.viewMap() }
     })
   },
 
   initialize () {
     this.template = template
-    ObjectInputView.prototype.initialize.apply(this)
+    ObjectInputView.prototype.initialize.apply(this, arguments)
     this.render()
     this.listenTo(this.model, 'change:westBoundLongitude', function (model, value) {
-      return this.$('#boundingBoxWestBoundLongitude').val(value)
+      return this.$('[data-name="westBoundLongitude"]').val(value)
     })
     this.listenTo(this.model, 'change:southBoundLatitude', function (model, value) {
-      return this.$('#boundingBoxSouthBoundLatitude').val(value)
+      return this.$('[data-name="southBoundLatitude"]').val(value)
     })
     this.listenTo(this.model, 'change:eastBoundLongitude', function (model, value) {
-      return this.$('#boundingBoxEastBoundLongitude').val(value)
+      return this.$('[data-name="eastBoundLongitude"]').val(value)
     })
     this.listenTo(this.model, 'change:northBoundLatitude', function (model, value) {
-      return this.$('#boundingBoxNorthBoundLatitude').val(value)
+      return this.$('[data-name="northBoundLatitude"]').val(value)
     })
     this.listenTo(this.model.collection, 'visible', this.viewMap)
   },

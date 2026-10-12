@@ -6,7 +6,7 @@ export default ObjectInputView.extend({
 
   initialize (options) {
     this.template = template
-    ObjectInputView.prototype.initialize.apply(this)
+    ObjectInputView.prototype.initialize.apply(this, arguments)
     createOrgAutocomplete('.orgAutocomplete', this)
   },
 

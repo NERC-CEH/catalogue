@@ -36,7 +36,7 @@
         min-height: calc(100vh - var(--header-height));
     }
 
-    #map-style-selector {
+    .map-style-selector {
         button.dropdown-toggle::after {
             content: none;
         }

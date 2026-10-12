@@ -5,6 +5,8 @@ import template from '../templates/ReadOnly'
 
 export default SingleView.extend({
 
+  labelsControl: true,
+
   events: {
     change: 'modify'
   },

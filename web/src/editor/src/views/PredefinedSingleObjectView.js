@@ -18,7 +18,7 @@ export default SingleObjectView.extend({
     this.predefinedTemplate = predefinedTemplate
     this.dropdownTemplate = dropdownTemplate
     SingleObjectView.prototype.render.apply(this)
-    this.$('#template-add-on').replaceWith(this.predefinedTemplate({ data: this.data }))
+    this.$('.template-add-on').replaceWith(this.predefinedTemplate({ data: this.data }))
     this.$('.editor-button').html('Set <span class="caret"></span>')
     _.chain(this.data.predefined)
       .keys()
