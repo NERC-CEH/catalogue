@@ -76,6 +76,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             if (isQualifyingDocument(parsedMeta)) {
                 val checks = Stream.of(
                     checkBasics(parsedDoc).stream(),
+                    checkTitleQuestions(parsedDoc).stream(),
                     checkDiscoveryMetadata(parsedDoc).stream(),
                     checkAuthors(parsedDoc).stream(),
                     checkSupportingDocs(parsedDoc).stream(),
@@ -130,6 +131,37 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
         }
 
         return toReturn;
+    }
+
+    /**
+     * Each title question needs an explanation for one particular answer. For location and dates that is "No",
+     * but the acronym question is phrased the other way round, so it needs one for "Yes".
+     * An unanswered question needs no explanation.
+     */
+    List<MetadataCheck> checkTitleQuestions(DocumentContext parsed) {
+        val toReturn = new ArrayList<MetadataCheck>();
+        checkTitleQuestion(parsed, "titleContainsLocation", false, "titleLocationExplanation",
+            "Title does not contain location, but no reason is given").ifPresent(toReturn::add);
+        checkTitleQuestion(parsed, "titleContainsDate", false, "titleDateExplanation",
+            "Title does not contain dates, but no reason is given").ifPresent(toReturn::add);
+        checkTitleQuestion(parsed, "titleContainsAcronym", true, "titleAcronymExplanation",
+            "Title contains unexplained acronyms, but no reason is given").ifPresent(toReturn::add);
+        return toReturn;
+    }
+
+    private Optional<MetadataCheck> checkTitleQuestion(
+        DocumentContext parsed,
+        String answerKey,
+        boolean answerNeedingExplanation,
+        String explanationKey,
+        String message
+    ) {
+        val answer = parsed.read("$." + answerKey, Boolean.class);
+        if (answer != null && answer == answerNeedingExplanation
+            && stringIsMissing(parsed.read("$." + explanationKey, String.class))) {
+            return Optional.of(new MetadataCheck(message, ERROR));
+        }
+        return Optional.empty();
     }
 
     List<MetadataCheck> checkDiscoveryMetadata(DocumentContext parsed) {

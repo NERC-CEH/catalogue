@@ -11,6 +11,7 @@ import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
@@ -20,6 +21,8 @@ import uk.ac.ceh.gateway.catalogue.quality.CatalogueResults;
 import uk.ac.ceh.gateway.catalogue.quality.MetadataCheck;
 import uk.ac.ceh.gateway.catalogue.quality.Results;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -346,5 +349,88 @@ public class ServiceAgreementQualityServiceTest {
 
         //then
         assertThat(actual, not(empty()));
+    }
+
+    @Test
+    public void checkTitleQuestionsAllExplained() {
+        //given
+        val parsed = JsonPath.parse("""
+            {
+              "titleContainsLocation": false, "titleLocationExplanation": "Global dataset",
+              "titleContainsDate": false, "titleDateExplanation": "Lab experiment",
+              "titleContainsAcronym": true, "titleAcronymExplanation": "Widely known"
+            }""", this.config);
+
+        //when
+        val actual = this.service.checkTitleQuestions(parsed);
+
+        //then
+        assertThat(actual, empty());
+    }
+
+    @Test
+    public void checkTitleQuestionsNoExplanationNeeded() {
+        //given
+        val parsed = JsonPath.parse("""
+            {"titleContainsLocation": true, "titleContainsDate": true, "titleContainsAcronym": false}""", this.config);
+
+        //when
+        val actual = this.service.checkTitleQuestions(parsed);
+
+        //then
+        assertThat(actual, empty());
+    }
+
+    @Test
+    public void checkTitleQuestionsUnansweredNotFlagged() {
+        //given
+        val parsed = JsonPath.parse("{}", this.config);
+
+        //when
+        val actual = this.service.checkTitleQuestions(parsed);
+
+        //then
+        assertThat(actual, empty());
+    }
+
+    @Test
+    public void checkTitleQuestionsMissingExplanations() {
+        //given
+        val parsed = JsonPath.parse("""
+            {
+              "titleContainsLocation": false,
+              "titleContainsDate": false, "titleDateExplanation": null,
+              "titleContainsAcronym": true, "titleAcronymExplanation": "   "
+            }""", this.config);
+
+        //when
+        val actual = this.service.checkTitleQuestions(parsed);
+
+        //then
+        assertThat(actual, containsInAnyOrder(
+            new MetadataCheck("Title does not contain location, but no reason is given", ERROR),
+            new MetadataCheck("Title does not contain dates, but no reason is given", ERROR),
+            new MetadataCheck("Title contains unexplained acronyms, but no reason is given", ERROR)
+        ));
+    }
+
+    @Test
+    @SneakyThrows
+    public void checkTitleQuestionsIncludedInCheck(@TempDir Path dir) {
+        //given
+        val raw = Files.writeString(dir.resolve("test.raw"), """
+            {"titleContainsLocation": false, "depositorContactDetails": "depositor@example.com"}""");
+        val meta = Files.writeString(dir.resolve("test.meta"), """
+            {"documentType": "service-agreement"}""");
+        given(documentReader.read(FOLDER + "test", "raw")).willReturn(raw.toFile());
+        given(documentReader.read(FOLDER + "test", "meta")).willReturn(meta.toFile());
+
+        //when
+        val actual = this.service.check("test");
+
+        //then
+        assertThat(actual.getErrorList(), hasItem(
+            new MetadataCheck("Title does not contain location, but no reason is given", ERROR)
+        ));
     }
 }

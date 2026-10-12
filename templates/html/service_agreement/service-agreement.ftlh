@@ -128,7 +128,7 @@
                   PLEASE NOTE: ONCE A DOI HAS BEEN ISSUED, THE INFORMATION PROVIDED IN THIS SECTION CANNOT BE CHANGED
                   </div>
               </div>
-              <h4 class="my-4">Title of data resource: ${title}</h4>
+              <h4 class="my-4 text-body fw-bold">Title of data resource: ${title}</h4>
 
               <div class="row key-value">
                   <div class="key">Does your title contain the location of the data resource?</div>
@@ -153,9 +153,7 @@
               </#if>
 
               <div class="row key-value">
-                <div class="key">Does your title contain the date(s) of the data resource?
-                  <p>Dates are important where observations are date/time/seasonally-dependent or where observations are known to change over time (e.g. climate data, soil chemistry, spp occurrence, river flow). They may not always be necessary in lab/experimental data (e.g. animal behaviour experiments)</p>
-                </div>
+                <div class="key">Does your title contain the date(s) of data collection or generation?</div>
                 <div class="value">
                     <#if titleContainsDate??>
                         ${titleContainsDate?string('Yes', 'No')}

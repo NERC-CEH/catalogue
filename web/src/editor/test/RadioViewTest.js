@@ -26,6 +26,26 @@ describe('Test RadioView', function () {
     expect(view.$('input')).toBeDefined()
   })
 
+  it('renders question text above the radios when given', () => {
+    view = new RadioView({
+      model,
+      modelAttribute: 'testBoolean',
+      text: 'Is this a <strong>test</strong>?'
+    })
+    const $question = view.$('.dataentry .radio-question')
+    expect($question.length).toBe(1)
+    expect($question.html()).toBe('Is this a <strong>test</strong>?')
+    expect($question.nextAll('.form-check').length).toBe(2)
+  })
+
+  it('renders no question text when not given', () => {
+    view = new RadioView({
+      model,
+      modelAttribute: 'testBoolean'
+    })
+    expect(view.$('.radio-question').length).toBe(0)
+  })
+
   it('ticks Yes radio when model value is true', () => {
     model.set('testBoolean', true)
     view = new RadioView({

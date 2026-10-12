@@ -80,69 +80,63 @@ export default EditorView.extend({
           required: true
         }),
 
-        new TextOnlyView({
-          model: this.model,
-          label: 'Title location',
-          text: 'Does your title contain the location of the data resource?'
-        }),
-
         new RadioView({
           model: this.model,
+          className: 'component component--subquestion component--subquestion-start',
+          label: 'Location',
+          text: 'Does your title contain the location of the data resource?',
           modelAttribute: 'titleContainsLocation'
         }),
 
         new TextOnlyView({
           model: this.model,
-          label: 'Location explanation',
+          className: 'component component--textonly component--subquestion',
           text: 'If title does NOT contain location, state why'
         }),
 
         new TextareaView({
           model: this.model,
+          className: 'component component--subquestion component--subquestion-end',
           modelAttribute: 'titleLocationExplanation'
-        }),
-
-        new TextOnlyView({
-          model: this.model,
-          label: 'Title date',
-          text: 'Does your title contain the date(s) of the data resource?<br>Dates are important where observations are date/time/seasonally-dependent or where observations are known to change over time (e.g. climate data, soil chemistry, spp occurrence, river flow). They may not always be necessary in lab/experimental data (e.g. animal behaviour experiments)'
         }),
 
         new RadioView({
           model: this.model,
+          className: 'component component--subquestion component--subquestion-start',
+          label: 'Dates',
+          text: 'Does your title contain the date(s) of data collection or generation?<br>Dates are important where observations are date/time/seasonally-dependent or where observations are known to change over time (e.g. climate data, soil chemistry, spp occurrence, river flow). They may not always be necessary in lab/experimental data (e.g. animal behaviour experiments)',
           modelAttribute: 'titleContainsDate'
         }),
 
         new TextOnlyView({
           model: this.model,
-          label: 'Date explanation',
+          className: 'component component--textonly component--subquestion',
           text: 'If title does NOT contain dates, state why'
         }),
 
         new TextareaView({
           model: this.model,
+          className: 'component component--subquestion component--subquestion-end',
           modelAttribute: 'titleDateExplanation'
-        }),
-
-        new TextOnlyView({
-          model: this.model,
-          label: 'Title acronym',
-          text: 'Does your title contain any unexplained acronyms?'
         }),
 
         new RadioView({
           model: this.model,
+          className: 'component component--subquestion component--subquestion-start',
+          label: 'Acronyms',
+          text: 'Does your title contain any unexplained acronyms?',
           modelAttribute: 'titleContainsAcronym'
         }),
 
         new TextOnlyView({
           model: this.model,
-          label: 'Acronyms explanation',
+          className: 'component component--textonly component--subquestion',
           text: 'If title contains unexplained acronyms, state why'
         }),
 
         new TextareaView({
           model: this.model,
+          className: 'component component--subquestion component--subquestion-end',
           modelAttribute: 'titleAcronymExplanation'
         }),
 
@@ -318,7 +312,7 @@ export default EditorView.extend({
           model: this.model,
           label: 'Owner of IPR',
           text: `\
-<p>This is usually the organisation to which the grant is awarded and will be specified in the grant/funding conditions. If no other organisation is specified, IPR should default to the funder.</p>
+<p>This is usually the organisation to which the grant is awarded but it is the responsibility of the data depositor to check what is specified in the grant/funding conditions. If no other organisation is specified, IPR should default to the funder.</p>
 `
         }),
 

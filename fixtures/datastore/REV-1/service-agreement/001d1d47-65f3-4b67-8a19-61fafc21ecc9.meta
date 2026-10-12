@@ -1,0 +1,1 @@
+{"rawType":"application/json","state":"draft","documentType":"service-agreement","catalogue":"eidc","permissions":{"VIEW":["superadmin","depositor@example.com"],"EDIT":["superadmin","depositor@example.com"],"DELETE":["superadmin"]}}

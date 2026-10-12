@@ -36,7 +36,7 @@ Local environment overrides can be placed in `override.env`.
 
 ## Project Structure
 
-- **/datastore**  - Git-backed document store created at runtime (local development only; do not edit). The source records are in `/fixtures/datastore/REV-1/` — edit `.raw` and `.meta` files there to change the demo data that gets loaded on startup
+- **/datastore**  - Git-backed document store created at runtime (local development only; do not edit). The source records are in `/fixtures/datastore/REV-1/` — edit `.raw` and `.meta` files there to change the demo data that gets loaded on startup. `service-agreement/` holds a draft Service Agreement for record `001d1d47-65f3-4b67-8a19-61fafc21ecc9` (as `superadmin`, open the record and choose More ▸ Service agreement; local Solr has no `service-agreement` core, so service agreements cannot be searched for). Fixtures are copied in only when the `datastore` volume is first created, so to pick up new ones run `docker compose down`, `docker volume rm catalogue_datastore` (discarding local edits) and `docker compose up --build`
 - **/docs**       - Documentation
 - **/fixtures**   - Test data
 - **/java**       - Standard `gradle` project which powers the server side of the catalogue
