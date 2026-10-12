@@ -104,6 +104,10 @@ public class ServiceAgreementPublicationService implements PublicationService {
     }
 
     private boolean userIsDepositor(CatalogueUser user, ServiceAgreement doc) {
+        // Absent on service agreements saved before an email was required; they must still open so it can be added
+        if (doc.getDepositorContactDetails() == null) {
+            return false;
+        }
         String contactDetails = doc.getDepositorContactDetails().toLowerCase();
         String username = user.getUsername().toLowerCase();
         return doc.getMetadata().getIdentities(Permission.VIEW).contains(username)

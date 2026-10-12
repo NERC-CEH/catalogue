@@ -9,6 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -40,6 +43,7 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -408,6 +412,44 @@ public class GitRepoServiceAgreementServiceTest {
         assertThrows(ServiceAgreementException.class, () ->
             service.create(user, ID, "eidc", serviceAgreement)
         );
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"   "})
+    @SneakyThrows
+    @DisplayName("a service agreement without a depositor email is not created")
+    public void cannotCreateServiceAgreementWithBlankDepositorContactDetails(String depositorContactDetails) {
+        //Given
+        serviceAgreement.setDepositorContactDetails(depositorContactDetails);
+
+        //When
+        val ex = assertThrows(ServiceAgreementException.class, () ->
+            service.create(user, ID, "eidc", serviceAgreement)
+        );
+
+        //Then the reason reaches the editor, and nothing is written
+        assertThat(ex.getMessage(), containsString("depositor"));
+        verify(repo, never()).submitData(any(), any());
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"   "})
+    @SneakyThrows
+    @DisplayName("a service agreement save that clears the depositor email is rejected before anything is written")
+    public void cannotUpdateServiceAgreementWithBlankDepositorContactDetails(String depositorContactDetails) {
+        //Given
+        serviceAgreement.setDepositorContactDetails(depositorContactDetails);
+
+        //When
+        val ex = assertThrows(ServiceAgreementException.class, () ->
+            service.update(user, ID, serviceAgreement, "revision")
+        );
+
+        //Then
+        assertThat(ex.getMessage(), containsString("depositor"));
+        verify(repo, never()).submitData(any(), any());
     }
 
     @Test

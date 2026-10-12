@@ -91,7 +91,13 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             }
         } catch (Exception ex) {
             log.error("Error - could not check " + id, ex);
-            return new Results(Collections.emptyList(), id, "Error - could not check this document");
+            // An error, not an empty result: submission is only offered when there are no errors, so an
+            // unchecked service agreement must not look like a clean one
+            return new Results(
+                List.of(new MetadataCheck("This service agreement could not be checked, please contact the EIDC", ERROR)),
+                id,
+                "Error - could not check this document"
+            );
         }
     }
 
@@ -249,9 +255,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
 
         if (depositorContactDetails == null || depositorContactDetails.isBlank()) {
             toReturn.add(new MetadataCheck("Depositor's email address is missing", ERROR));
-        }
-
-        if (isInvalidEmail(depositorContactDetails)) {
+        } else if (isInvalidEmail(depositorContactDetails)) {
             toReturn.add(new MetadataCheck(format("Depositor's email address is incorrect  (%s)", depositorContactDetails), ERROR));
         }
 

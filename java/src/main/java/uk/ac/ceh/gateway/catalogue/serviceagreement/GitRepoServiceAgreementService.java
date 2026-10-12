@@ -179,6 +179,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @Override
     public ServiceAgreement update(CatalogueUser user, String id, ServiceAgreement serviceAgreement, String expectedRevision) {
         serviceAgreement.setId(id);
+        requireDepositorContactDetails(serviceAgreement);
         // Guard read-check-write as one unit, as GitRepoWrapper.save does for metadata documents: two
         // concurrent saves must not both pass the check before either commits.
         synchronized (this) {
@@ -245,14 +246,23 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         cachedDataRepository.evictAfterDirectWrite(FOLDER + id);
     }
 
-    private void addPermissionsForDepositor(CatalogueUser user, String id, MetadataInfo metadataInfo, ServiceAgreement serviceAgreement) {
-        val rawEmail = Optional.ofNullable(serviceAgreement.getDepositorContactDetails()).orElseThrow(() -> {
-            val message = format(
-                "No depositor contact details present, cannot add permissions for Service Agreement: %s",
+    /**
+     * Every read works out the viewer's role from the depositor's email, and a blank one is not stored at all
+     * (empty values are omitted on write), so a service agreement must never be saved without one.
+     */
+    private String requireDepositorContactDetails(ServiceAgreement serviceAgreement) {
+        val rawEmail = serviceAgreement.getDepositorContactDetails();
+        if (rawEmail == null || rawEmail.isBlank()) {
+            throw new ServiceAgreementException(format(
+                "The depositor's email address is required, cannot save Service Agreement: %s",
                 serviceAgreement.getId()
-            );
-            return new ServiceAgreementException(message);
-        });
+            ));
+        }
+        return rawEmail;
+    }
+
+    private void addPermissionsForDepositor(CatalogueUser user, String id, MetadataInfo metadataInfo, ServiceAgreement serviceAgreement) {
+        val rawEmail = requireDepositorContactDetails(serviceAgreement);
         val identity = normaliseIdentity(rawEmail);
         log.info(
             "Service Agreement {}: granting EDIT/VIEW to depositor identity '{}' (from contact details '{}')",
@@ -389,7 +399,9 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             val dataRevisions = repo.getRevisions(timeLimitInSecond, "(creating|updating) service agreement " + id);
             return new History(baseUri, id, dataRevisions);
         } catch (DataRepositoryException ex) {
-            throw new ServiceAgreementException(ex.getMessage());
+            // The datastore's message carries internal detail, and this one is shown to the user
+            log.error("Could not read history of service agreement {}", id, ex);
+            throw new ServiceAgreementException(format("Could not read history of Service Agreement: %s", id));
         }
     }
 
