@@ -98,11 +98,11 @@ export default _.template(`
             </div>
             <div class="col-xxl-10">
               <div class="form-check form-check-inline">
-                <input data-name="unique" name="schema-unique<%= data.index %>"  class="form-check-input" type="radio" name="exampleRadios" id="schema-unique<%= data.index %>-true" value="true" <% if (data.constraints.unique == true) { %> checked="checked" <% } %>>
+                <input data-name="unique" name="schema-unique<%= data.index %>" class="form-check-input" type="radio" id="schema-unique<%= data.index %>-true" value="true" <% if (data.constraints.unique == true) { %> checked="checked" <% } %>>
                 <label class="form-check-label" for="schema-unique<%= data.index %>-true">Yes</label>
               </div>
               <div class="form-check form-check-inline">
-                <input type="radio" data-name="unique" name="schema-unique<%= data.index %>" class="form-check-input" type="radio" name="exampleRadios" id="schema-unique<%= data.index %>-false" value="false" <% if (data.constraints.unique == false) { %> checked="checked" <% } %> >
+                <input type="radio" data-name="unique" name="schema-unique<%= data.index %>" class="form-check-input" id="schema-unique<%= data.index %>-false" value="false" <% if (data.constraints.unique == false) { %> checked="checked" <% } %> >
                 <label class="form-check-label" for="schema-unique<%= data.index %>-false">No</label>
               </div>
             </div>

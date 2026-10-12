@@ -52,6 +52,19 @@ describe('Editor element ids', () => {
           .filter(target => counts[target] !== 1)
         expect([...new Set(broken)]).toEqual([])
       })
+
+      it('points a section label at the section control', () => {
+        // The other direction: when a section has a label and renders its input-<modelAttribute>
+        // control, the label must name it. A control rendered by a sub-view (the single-object
+        // selects) lost its label's for once only views declaring labelsControl kept it.
+        const unlinked = editor.sections
+          .flatMap(section => section.views)
+          .filter(view => view.data && view.data.label && view.data.modelAttribute)
+          .filter(view => view.$(`select#input-${view.data.modelAttribute}, input#input-${view.data.modelAttribute}, textarea#input-${view.data.modelAttribute}`).length)
+          .filter(view => view.$('.datalabel label, label').first().attr('for') !== `input-${view.data.modelAttribute}`)
+          .map(view => view.data.modelAttribute)
+        expect(unlinked).toEqual([])
+      })
     })
   })
 })
