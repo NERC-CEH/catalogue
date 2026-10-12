@@ -16,11 +16,9 @@ export default EditorMetadata.extend({
   urlRoot () { return `/service-agreement/${this.id}${this.parameters}` },
 
   validate (attrs) {
+    // No depositor email check: a stub is created before the depositor is known, and the quality check
+    // stops it being submitted without one
     const errors = EditorMetadata.prototype.validate.call(this, attrs) || []
-
-    if (!attrs?.depositorContactDetails) {
-      errors.push('Depositor contact details are mandatory')
-    }
 
     if (attrs.availability) {
       const date = new Date(attrs.availability)

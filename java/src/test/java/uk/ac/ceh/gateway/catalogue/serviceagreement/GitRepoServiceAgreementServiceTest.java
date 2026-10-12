@@ -402,54 +402,97 @@ public class GitRepoServiceAgreementServiceTest {
         verify(cachedDataRepository, atLeastOnce()).evictAfterDirectWrite(FOLDER + ID);
     }
 
-    @Test
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"   "})
     @SneakyThrows
-    public void cannotCreateServiceAgreementWithoutDepositorContactDetails() {
+    @DisplayName("a stub service agreement can be created before the depositor's email is known")
+    public void createStubServiceAgreementWithoutDepositorContactDetails(String depositorContactDetails) {
         //Given
-        givenServiceAgreementWithoutDepositorContactDetails();
+        service = spy(service);
+        serviceAgreement.setDepositorContactDetails(depositorContactDetails);
+        val dataOngoingCommit = mock(DataOngoingCommit.class);
+        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
+        given(dataOngoingCommit.submitData(any(), any())).willReturn(dataOngoingCommit);
+        doReturn(serviceAgreement).when(service).get(user, ID);
 
         //When
-        assertThrows(ServiceAgreementException.class, () ->
-            service.create(user, ID, "eidc", serviceAgreement)
-        );
+        service.create(user, ID, "eidc", serviceAgreement);
+
+        //Then it is created, and no depositor is granted access
+        verify(dataOngoingCommit).commit(user, "creating service agreement " + ID);
+        verify(service, never()).updateMetadata(any(), anyString(), any());
     }
 
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"   "})
     @SneakyThrows
-    @DisplayName("a service agreement without a depositor email is not created")
-    public void cannotCreateServiceAgreementWithBlankDepositorContactDetails(String depositorContactDetails) {
+    @DisplayName("a stub service agreement can be saved before the depositor's email is known")
+    public void updateStubServiceAgreementWithoutDepositorContactDetails(String depositorContactDetails) {
         //Given
+        val dataOngoingCommit = givenUpdateCommits();
+        val stored = givenStoredServiceAgreement("draft");
         serviceAgreement.setDepositorContactDetails(depositorContactDetails);
 
         //When
-        val ex = assertThrows(ServiceAgreementException.class, () ->
-            service.create(user, ID, "eidc", serviceAgreement)
-        );
-
-        //Then the reason reaches the editor, and nothing is written
-        assertThat(ex.getMessage(), containsString("depositor"));
-        verify(repo, never()).submitData(any(), any());
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    @ValueSource(strings = {"   "})
-    @SneakyThrows
-    @DisplayName("a service agreement save that clears the depositor email is rejected before anything is written")
-    public void cannotUpdateServiceAgreementWithBlankDepositorContactDetails(String depositorContactDetails) {
-        //Given
-        serviceAgreement.setDepositorContactDetails(depositorContactDetails);
-
-        //When
-        val ex = assertThrows(ServiceAgreementException.class, () ->
-            service.update(user, ID, serviceAgreement, "revision")
-        );
+        service.update(user, ID, serviceAgreement);
 
         //Then
-        assertThat(ex.getMessage(), containsString("depositor"));
-        verify(repo, never()).submitData(any(), any());
+        verify(dataOngoingCommit).commit(user, "updating service agreement " + ID);
+        assertThat(stored.getPermissions().isEmpty(), is(true));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("adding the depositor's email to a draft grants the depositor access in the same save")
+    public void updateDraftGrantsDepositorAccess() {
+        //Given a stub with no depositor yet
+        val dataOngoingCommit = givenUpdateCommits();
+        val stored = givenStoredServiceAgreement("draft");
+        serviceAgreement.setDepositorContactDetails("A.Test@Email.com");
+
+        //When the email is filled in
+        service.update(user, ID, serviceAgreement);
+
+        //Then the depositor can open and edit it, granted in the one commit
+        assertThat(stored.getPermissions().containsEntry(Permission.EDIT, "a.test@email.com"), is(true));
+        assertThat(stored.getPermissions().containsEntry(Permission.VIEW, "a.test@email.com"), is(true));
+        verify(dataOngoingCommit).commit(user, "updating service agreement " + ID);
+        verify(dataOngoingCommit, never()).commit(user, "updating service agreement metadata " + ID);
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("saving a submitted service agreement does not give the depositor back the edit access submission removed")
+    public void updateSubmittedDoesNotRegrantDepositorAccess() {
+        //Given
+        givenUpdateCommits();
+        val stored = givenStoredServiceAgreement("submitted");
+        serviceAgreement.setDepositorContactDetails("depositor@example.com");
+
+        //When a publisher saves it during review
+        service.update(user, ID, serviceAgreement);
+
+        //Then
+        assertThat(stored.getPermissions().containsEntry(Permission.EDIT, "depositor@example.com"), is(false));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("returning a stub without a depositor email to draft grants nobody access")
+    public void returnToDraftWithoutDepositorContactDetails() {
+        //Given
+        service = spy(service);
+        serviceAgreement.setDepositorContactDetails(null);
+        serviceAgreement.setMetadata(MetadataInfo.builder().state("submitted").rawType(APPLICATION_JSON_VALUE).build());
+        doReturn(serviceAgreement).when(service).get(user, ID);
+
+        //When
+        service.doTransitionAction(user, ID, ServiceAgreementPublicationConfig.submittedToDraftId);
+
+        //Then
+        verify(service, never()).updateMetadata(any(), anyString(), any());
     }
 
     @Test
@@ -487,11 +530,12 @@ public class GitRepoServiceAgreementServiceTest {
                 .willReturn(serviceAgreement);
 
         //when
-        assertThrows(ServiceAgreementException.class, () ->
+        val ex = assertThrows(ServiceAgreementException.class, () ->
                 service.submitServiceAgreement(user, ID)
         );
 
-        //then
+        //then the reason is kept, as it is the body of the 400 the editor shows
+        assertThat(ex.getMessage(), containsString("Cannot submit"));
         verifyNoInteractions(jiraService);
     }
 
@@ -777,6 +821,18 @@ public class GitRepoServiceAgreementServiceTest {
 
     @SneakyThrows
     private void givenPublishedServiceAgreement() {
+        givenStoredServiceAgreement("published");
+    }
+
+    private DataOngoingCommit givenUpdateCommits() throws Exception {
+        val dataOngoingCommit = mock(DataOngoingCommit.class);
+        given(repo.submitData(any(String.class), any(DataWriter.class))).willReturn(dataOngoingCommit);
+        given(dataOngoingCommit.submitData(any(), any())).willReturn(dataOngoingCommit);
+        return dataOngoingCommit;
+    }
+
+    @SneakyThrows
+    private MetadataInfo givenStoredServiceAgreement(String state) {
         val metadataInfoDocument = mock(DataDocument.class);
         given(repo.getData(FOLDER + ID + ".meta"))
             .willReturn(metadataInfoDocument);
@@ -785,7 +841,7 @@ public class GitRepoServiceAgreementServiceTest {
             .willAnswer(invocation -> new ByteArrayInputStream("meta".getBytes()));
 
         val metadata = MetadataInfo.builder()
-            .state("published")
+            .state(state)
             .rawType(APPLICATION_JSON_VALUE)
             .build();
         given(metadataInfoMapper.readInfo(any()))
@@ -802,17 +858,7 @@ public class GitRepoServiceAgreementServiceTest {
         serviceAgreement.setTitle("this is a test");
         serviceAgreement.setEndUserLicence(new ResourceConstraint("test", "test", "test"));
         serviceAgreement.setDepositorContactDetails("deposit@example.com");
-    }
-
-    @SneakyThrows
-    private void givenServiceAgreementWithoutDepositorContactDetails() {
-        val metadata = MetadataInfo.builder()
-            .state("draft")
-            .rawType(APPLICATION_JSON_VALUE)
-            .build();
-        serviceAgreement.setMetadata(metadata);
-        serviceAgreement.setTitle("No Depositor Contact Details");
-        serviceAgreement.setDepositorContactDetails(null);
+        return metadata;
     }
 
     @SneakyThrows

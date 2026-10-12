@@ -179,13 +179,17 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @Override
     public ServiceAgreement update(CatalogueUser user, String id, ServiceAgreement serviceAgreement, String expectedRevision) {
         serviceAgreement.setId(id);
-        requireDepositorContactDetails(serviceAgreement);
         // Guard read-check-write as one unit, as GitRepoWrapper.save does for metadata documents: two
         // concurrent saves must not both pass the check before either commits.
         synchronized (this) {
             checkRevision(id, expectedRevision, serviceAgreement);
             val fromDatastore = repo.getData(FOLDER + id + ".meta");
             val metadataInfo = metadataInfoMapper.readInfo(fromDatastore.getInputStream());
+            // A stub may get its depositor's email on any save. Only in draft, though: submitting removes the
+            // depositor's edit access, and a publisher's save during review must not hand it back.
+            if (DRAFT.equals(metadataInfo.getState())) {
+                grantDepositorAccess(id, metadataInfo, serviceAgreement);
+            }
             repo
                 .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
                 .submitData(FOLDER + id + ".raw", o -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
@@ -246,23 +250,24 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         cachedDataRepository.evictAfterDirectWrite(FOLDER + id);
     }
 
-    /**
-     * Every read works out the viewer's role from the depositor's email, and a blank one is not stored at all
-     * (empty values are omitted on write), so a service agreement must never be saved without one.
-     */
-    private String requireDepositorContactDetails(ServiceAgreement serviceAgreement) {
-        val rawEmail = serviceAgreement.getDepositorContactDetails();
-        if (rawEmail == null || rawEmail.isBlank()) {
-            throw new ServiceAgreementException(format(
-                "The depositor's email address is required, cannot save Service Agreement: %s",
-                serviceAgreement.getId()
-            ));
+    private void addPermissionsForDepositor(CatalogueUser user, String id, MetadataInfo metadataInfo, ServiceAgreement serviceAgreement) {
+        if (grantDepositorAccess(id, metadataInfo, serviceAgreement)) {
+            updateMetadata(user, id, metadataInfo);
         }
-        return rawEmail;
     }
 
-    private void addPermissionsForDepositor(CatalogueUser user, String id, MetadataInfo metadataInfo, ServiceAgreement serviceAgreement) {
-        val rawEmail = requireDepositorContactDetails(serviceAgreement);
+    /**
+     * Grants the depositor EDIT/VIEW in {@code metadataInfo}, without writing it. A stub service agreement may
+     * not have a depositor's email yet; then nobody is granted anything, and the quality check stops it being
+     * submitted until one is added.
+     *
+     * @return whether a depositor was granted access
+     */
+    private boolean grantDepositorAccess(String id, MetadataInfo metadataInfo, ServiceAgreement serviceAgreement) {
+        val rawEmail = serviceAgreement.getDepositorContactDetails();
+        if (rawEmail == null || rawEmail.isBlank()) {
+            return false;
+        }
         val identity = normaliseIdentity(rawEmail);
         log.info(
             "Service Agreement {}: granting EDIT/VIEW to depositor identity '{}' (from contact details '{}')",
@@ -270,7 +275,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         );
         metadataInfo.addPermission(EDIT, identity);
         metadataInfo.addPermission(VIEW, identity);
-        updateMetadata(user, id, metadataInfo);
+        return true;
     }
 
     private String normaliseIdentity(String rawEmail) {
