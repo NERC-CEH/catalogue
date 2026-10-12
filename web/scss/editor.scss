@@ -377,6 +377,59 @@
                     padding-bottom: 0 !important;
                 }
 
+                // Sub-questions of the preceding question: each answer and its explanation share one indented panel
+                &--subquestion {
+                    margin-inline-start: 2rem;
+                    padding-inline: 1rem;
+                    background-color: var(--bs-tertiary-bg);
+                    border-inline-start: 3px solid var(--bs-primary-border-subtle);
+                    border-block-end: none !important;
+                    margin-block-end: 0 !important;
+                    padding-bottom: 0 !important;
+
+                    // Contain the inner rows' margins, which would otherwise collapse through and gap the panel
+                    &.visible {
+                        display: flow-root;
+                    }
+
+                    .row:has(.dataentry) {
+                        margin-block-end: 0.5rem;
+                    }
+
+                    &.component--textonly .row:has(.dataentry) {
+                        margin-block-end: 0.25rem;
+                    }
+
+                    .radio-question {
+                        margin-block-end: 0.25rem;
+                    }
+                }
+
+                &--subquestion-start {
+                    padding-top: 0.75rem;
+                    border-start-end-radius: 5px;
+                }
+
+                &--subquestion-end {
+                    padding-bottom: 0.25rem !important;
+                    margin-block-end: 1rem !important;
+                    border-end-end-radius: 5px;
+
+                    + .component:not(.component--subquestion-start) {
+                        border-block-start: 1px solid gray;
+                        padding-top: 1rem;
+                        margin-block-start: 1.25rem;
+                    }
+                }
+
+                // The usual rule between questions moves from above the sub-questions (above) to below them (in
+                // &--subquestion-end), so they stay with their parent question
+                &:has(+ .component--subquestion-start) {
+                    border-block-end: none;
+                    padding-bottom: 0;
+                    margin-bottom: 0.5rem;
+                }
+
                 .component {
                     border-style: solid;
                     border-width: 1px;
