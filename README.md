@@ -122,13 +122,14 @@ Available tools: `searchCatalogue`, `semanticSearch` (requires `vector-search` p
 
 ## Usernames and Passwords
 
-You will need to create a `secrets.env` file with the following. Ask one of the dev team for access to Keypass to retrieve the values. `JIRA_TOKEN` is a JIRA Personal Access Token generated for the `eidc_ingest` account (Profile → Personal Access Tokens in JIRA). `HUBBUB_TOKEN` is a proxy personal access token for the `eidc_hubbub` account (log in to hubbub as `eidc_hubbub`, then `/sso/tokens`); against a local hubbub container any non-blank value will do.
+You will need to create a `secrets.env` file with the following. Ask one of the dev team for access to Keypass to retrieve the values. `JIRA_TOKEN` is a JIRA Personal Access Token generated for the `eidc_ingest` account (Profile → Personal Access Tokens in JIRA). `HUBBUB_TOKEN` and `LEGILO_TOKEN` are proxy personal access tokens for the `eidc_hubbub` account, one for each service (log in as `eidc_hubbub`, then `/sso/tokens`; see [Service tokens in staging and production](#service-tokens-in-staging-and-production)). The catalogue will not start if either is missing or blank. Against a local hubbub container any non-blank `HUBBUB_TOKEN` will do. `LEGILO_TOKEN` in `secrets.env` has no effect under `docker compose`: `docker-compose.yml` sets `LEGILO_TOKEN: local-dev-token` for the local legilo container, which checks no credentials, and a service's `environment` takes precedence over its `env_file`. It is only used when you point `LEGILO_URL` at a real legilo, and then you must also remove that line.
 
 ```
 JIRA_TOKEN=
 CROWD_PASSWORD=
 DOI_PASSWORD=
 HUBBUB_TOKEN=
+LEGILO_TOKEN=
 FUSEKI_PASSWORD=
 ```
 
