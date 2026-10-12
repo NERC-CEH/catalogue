@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Profile;
@@ -17,23 +16,18 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 
-import java.util.List;
-
 @Profile("service-agreement")
 @Slf4j
 @RestController
 @RequestMapping("service-agreement")
 public class ServiceAgreementController {
-    private final ServiceAgreementSearch search;
     private final ServiceAgreementService serviceAgreementService;
     private final ServiceAgreementModelAssembler serviceAgreementModelAssembler;
 
     public ServiceAgreementController(
-        ServiceAgreementSearch search,
         ServiceAgreementService serviceAgreementService,
         ServiceAgreementModelAssembler serviceAgreementModelAssembler
     ) {
-        this.search = search;
         this.serviceAgreementService = serviceAgreementService;
         this.serviceAgreementModelAssembler = serviceAgreementModelAssembler;
         log.info("Creating");
@@ -123,15 +117,6 @@ public class ServiceAgreementController {
     ) {
         log.info("DELETE {}", id);
         serviceAgreementService.delete(user, id);
-    }
-
-    @PreAuthorize("@permission.userIsAdmin()")
-    @GetMapping
-    @SneakyThrows
-    public List<ServiceAgreementSolrIndex> search(
-        @RequestParam(value = "query", defaultValue = "*") String query
-    ) {
-        return search.query(query);
     }
 
     @PreAuthorize("@permission.userCanEditServiceAgreement(#id)")
