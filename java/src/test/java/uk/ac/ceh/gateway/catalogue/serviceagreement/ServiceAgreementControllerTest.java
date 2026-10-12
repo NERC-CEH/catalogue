@@ -31,7 +31,6 @@ import uk.ac.ceh.gateway.catalogue.publication.State;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -57,7 +56,6 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class ServiceAgreementControllerTest extends AbstractMvcTest {
-    @MockitoBean private ServiceAgreementSearch search;
     @MockitoBean private ServiceAgreementService serviceAgreementService;
     @MockitoBean private ServiceAgreementModelAssembler assembler;
     @MockitoBean private CatalogueService catalogueService;
@@ -100,16 +98,15 @@ class ServiceAgreementControllerTest extends AbstractMvcTest {
 
     @Test
     @SneakyThrows
-    void search() {
+    @DisplayName("there is no service agreement search: nothing indexed them and its Solr core does not exist (dri-one #450)")
+    void noServiceAgreementSearch() {
         //given
         givenUserIsAdmin();
-        given(search.query("chess"))
-            .willReturn(Collections.emptyList());
 
         //when
         mvc.perform(get("/service-agreement")
             .queryParam("query", "chess"))
-            .andExpect(status().isOk());
+            .andExpect(status().isNotFound());
     }
 
     @Test

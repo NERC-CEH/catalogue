@@ -93,7 +93,6 @@ class EidcApplicationContextTest {
         assertNotNull(applicationContext.getBean(ServiceAgreementService.class));
         assertNotNull(applicationContext.getBean(ServiceAgreementModelAssembler.class));
         assertNotNull(applicationContext.getBean(ServiceAgreementQualityService.class));
-        assertNotNull(applicationContext.getBean(ServiceAgreementSearch.class));
     }
 
     @Test
