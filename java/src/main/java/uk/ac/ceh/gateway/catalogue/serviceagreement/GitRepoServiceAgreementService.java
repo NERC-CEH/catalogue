@@ -185,6 +185,11 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             checkRevision(id, expectedRevision, serviceAgreement);
             val fromDatastore = repo.getData(FOLDER + id + ".meta");
             val metadataInfo = metadataInfoMapper.readInfo(fromDatastore.getInputStream());
+            // A stub may get its depositor's email on any save. Only in draft, though: submitting removes the
+            // depositor's edit access, and a publisher's save during review must not hand it back.
+            if (DRAFT.equals(metadataInfo.getState())) {
+                grantDepositorAccess(id, metadataInfo, serviceAgreement);
+            }
             repo
                 .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
                 .submitData(FOLDER + id + ".raw", o -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
@@ -246,13 +251,23 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     }
 
     private void addPermissionsForDepositor(CatalogueUser user, String id, MetadataInfo metadataInfo, ServiceAgreement serviceAgreement) {
-        val rawEmail = Optional.ofNullable(serviceAgreement.getDepositorContactDetails()).orElseThrow(() -> {
-            val message = format(
-                "No depositor contact details present, cannot add permissions for Service Agreement: %s",
-                serviceAgreement.getId()
-            );
-            return new ServiceAgreementException(message);
-        });
+        if (grantDepositorAccess(id, metadataInfo, serviceAgreement)) {
+            updateMetadata(user, id, metadataInfo);
+        }
+    }
+
+    /**
+     * Grants the depositor EDIT/VIEW in {@code metadataInfo}, without writing it. A stub service agreement may
+     * not have a depositor's email yet; then nobody is granted anything, and the quality check stops it being
+     * submitted until one is added.
+     *
+     * @return whether a depositor was granted access
+     */
+    private boolean grantDepositorAccess(String id, MetadataInfo metadataInfo, ServiceAgreement serviceAgreement) {
+        val rawEmail = serviceAgreement.getDepositorContactDetails();
+        if (rawEmail == null || rawEmail.isBlank()) {
+            return false;
+        }
         val identity = normaliseIdentity(rawEmail);
         log.info(
             "Service Agreement {}: granting EDIT/VIEW to depositor identity '{}' (from contact details '{}')",
@@ -260,7 +275,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         );
         metadataInfo.addPermission(EDIT, identity);
         metadataInfo.addPermission(VIEW, identity);
-        updateMetadata(user, id, metadataInfo);
+        return true;
     }
 
     private String normaliseIdentity(String rawEmail) {
@@ -389,7 +404,9 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             val dataRevisions = repo.getRevisions(timeLimitInSecond, "(creating|updating) service agreement " + id);
             return new History(baseUri, id, dataRevisions);
         } catch (DataRepositoryException ex) {
-            throw new ServiceAgreementException(ex.getMessage());
+            // The datastore's message carries internal detail, and this one is shown to the user
+            log.error("Could not read history of service agreement {}", id, ex);
+            throw new ServiceAgreementException(format("Could not read history of Service Agreement: %s", id));
         }
     }
 

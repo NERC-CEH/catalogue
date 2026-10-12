@@ -144,4 +144,19 @@ describe('EditorMetadata', () => {
       expect(headers['If-Match']).toBeUndefined()
     })
   })
+
+  // A stub is created before the depositor is known; their email is only needed to submit, which the
+  // quality check enforces
+  describe('ServiceAgreement validation', () => {
+    it('allows a stub without a depositor email', () => {
+      const model = new ServiceAgreement({ id: 'sa1', title: 'this is a title' }, { id: 'sa1' })
+      expect(model.isValid()).toBe(true)
+    })
+
+    it('still requires a title', () => {
+      const model = new ServiceAgreement({ id: 'sa1' }, { id: 'sa1' })
+      expect(model.isValid()).toBe(false)
+      expect(model.validationError).toContain('A title is mandatory')
+    })
+  })
 })

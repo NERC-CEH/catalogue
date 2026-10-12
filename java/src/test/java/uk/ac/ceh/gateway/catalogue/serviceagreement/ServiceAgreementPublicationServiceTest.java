@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -94,6 +95,20 @@ public class ServiceAgreementPublicationServiceTest {
         //Then
         verify(serviceAgreementService).get(publisher, FILENAME);
         assertThat("State should be draft", current.getId(), equalTo("draft"));
+    }
+
+    @Test
+    @DisplayName("a stored service agreement without a depositor email can still be opened, so it can be fixed")
+    public void getCurrentStateWithoutDepositorContactDetails() {
+        //Given
+        draft.setDepositorContactDetails(null);
+        draft.getMetadata().addPermission(Permission.VIEW, depositor.getUsername());
+
+        //When
+        StateResource current = publicationService.current(depositor, draft);
+
+        //Then
+        assertThat("Service agreement state should be draft", current.getId(), equalTo("draft"));
     }
 
     @Test

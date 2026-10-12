@@ -433,4 +433,30 @@ public class ServiceAgreementQualityServiceTest {
             new MetadataCheck("Title does not contain location, but no reason is given", ERROR)
         ));
     }
+
+    @Test
+    public void checkDepositorContactDetailsMissing() {
+        //given
+        val parsed = JsonPath.parse("{}", this.config);
+
+        //when
+        val actual = this.service.checkDepositorContactDetails(parsed);
+
+        //then
+        assertThat(actual, contains(new MetadataCheck("Depositor's email address is missing", ERROR)));
+    }
+
+    @Test
+    @SneakyThrows
+    public void checkFailureIsAnError(@TempDir Path dir) {
+        //given a document the checks cannot read
+        val raw = Files.writeString(dir.resolve("broken.raw"), "{ not json");
+        given(documentReader.read(FOLDER + "broken", "raw")).willReturn(raw.toFile());
+
+        //when
+        val actual = this.service.check("broken");
+
+        //then it counts as an error, so the service agreement cannot be submitted unchecked
+        assertThat(actual.getErrors(), is(1L));
+    }
 }
