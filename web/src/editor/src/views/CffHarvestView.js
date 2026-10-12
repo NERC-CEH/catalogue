@@ -23,6 +23,8 @@ const template = _.template(`
 `)
 
 const CffHarvestView = SingleView.extend({
+
+  labelsControl: true,
   events: {
     'click .cff-extract-btn': 'onExtractClick'
   },

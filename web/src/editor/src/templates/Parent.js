@@ -9,7 +9,7 @@ export default _.template(`
   <% } %>
 >
     <div class="col-md-3">
-      <label for="input-<%= data.modelAttribute %>">
+      <label>
           <%= data.label %>
           <% if(data.helpText) { %>
               <a data-bs-toggle="collapse" title="Click for help" href="#help-<%= data.modelAttribute %>" data-parent="#editor"><i class="fa-regular fa-circle-question"></i></a>

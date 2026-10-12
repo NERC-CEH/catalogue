@@ -10,7 +10,7 @@ export default ObjectInputView.extend({
 
   initialize (options) {
     this.template = template
-    ObjectInputView.prototype.initialize.apply(this)
+    ObjectInputView.prototype.initialize.apply(this, arguments)
     this.vocabularies = new Backbone.Collection()
     const catalogue = $('html').data('catalogue')
     this.$vocabularies = this.$('.vocabularyPicker')

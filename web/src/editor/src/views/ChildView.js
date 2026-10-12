@@ -14,7 +14,9 @@ export default Backbone.View.extend({
     this.childTemplate = childTemplate
     this.data = options
     this.listenTo(this.model, 'remove', function () { this.remove() })
-    this.index = this.model.collection.indexOf(this.model)
+    // Templates build element ids from the index, so it has to be unique on the whole page: a
+    // position is only unique within one collection, and goes stale when rows are removed or moved
+    this.index = this.model.cid
     this.render()
     // eslint-disable-next-line no-unused-vars
     this.contentView = new this.data.ObjectInputView(_.extend({}, this.data, {

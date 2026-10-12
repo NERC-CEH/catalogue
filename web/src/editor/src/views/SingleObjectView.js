@@ -15,7 +15,10 @@ export default SingleView.extend({
     /* eslint no-new: "off" */
     this.objectInputView = new this.data.ObjectInputView(_.extend({}, this.data, {
       el: this.$('.dataentry'),
-      model: this.inputModel
+      model: this.inputModel,
+      // Templates build element ids from the index; an editor can hold several single-object fields
+      // of the same type, so it has to be unique on the page
+      index: this.inputModel.cid
     }))
   },
 

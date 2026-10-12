@@ -8,6 +8,8 @@ const template = _.template(`
 
 export default SingleView.extend({
 
+  labelsControl: true,
+
   events: {
     change: 'modify'
   },

@@ -7,6 +7,9 @@ import template from '../templates/LinkDocumentSelector'
 
 export default InputView.extend({
 
+  // The template has a search box and a catalogue picker rather than one input-<modelAttribute>
+  labelsControl: false,
+
   events: function () {
     return _.extend({}, InputView.prototype.events, {
       'keyup #term': 'search',

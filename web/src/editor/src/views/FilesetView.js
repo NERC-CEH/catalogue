@@ -16,8 +16,8 @@ export default ObjectInputView.extend({
   events: function () {
     return _.extend({}, ObjectInputView.prototype.events, {
       'click .dropdown-menu': 'addObservedProperty',
-      'mousedown #addObservedPropertyBtn': 'updateZIndex',
-      'hide.bs.dropdown #addObservedPropertyBtn': 'dropdownClose'
+      'mousedown .add-observed-property': 'updateZIndex',
+      'hide.bs.dropdown .add-observed-property': 'dropdownClose'
     })
   },
 

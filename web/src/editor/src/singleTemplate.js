@@ -10,14 +10,14 @@ export default _.template(`
 >
     <div class="col-md-3 datalabel">
         <% if(data.label) { %>
-        <label for="input-<%= data.modelAttribute %>">
+        <label<% if (labelsControl) { %> for="input-<%= data.modelAttribute %>"<% } %>>
             <%= data.label %>
             <% if(data.helpText) { %>
                 <a data-bs-toggle="collapse" title="Click for help" href="#help-<%= data.modelAttribute %>" data-parent="#editor"><i class="fa-regular fa-circle-question"></i></a>
             <% } %>
         </label>
         <% } %>
-        <div id="template-add-on"></div>
+        <div class="template-add-on"></div>
         <% if(data.helpText) { %>
             <div id="help-<%= data.modelAttribute %>" class="editor-help">
             <%= data.helpText %>

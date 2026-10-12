@@ -10,13 +10,13 @@ export default ObjectInputView.extend({
 
     const beginDate = formatDateForInput(this.model.get('begin'))
     const endDate = formatDateForInput(this.model.get('end'))
-    this.$('#input-begin').val(beginDate)
-    this.$('#input-end').val(endDate)
+    this.$('[data-name="begin"]').val(beginDate)
+    this.$('[data-name="end"]').val(endDate)
 
-    this.$('#input-begin').on('input', (event) => {
+    this.$('[data-name="begin"]').on('input', (event) => {
       this.model.set('begin', event.target.value)
     })
-    this.$('#input-end').on('input', (event) => {
+    this.$('[data-name="end"]').on('input', (event) => {
       this.model.set('end', event.target.value)
     })
   }

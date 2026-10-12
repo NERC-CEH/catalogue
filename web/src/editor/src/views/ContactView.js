@@ -27,7 +27,7 @@ export default ObjectInputView.extend({
           { value: 'resourceProvider', label: 'Resource provider' },
           { value: 'user', label: 'User' }
         ]
-    ObjectInputView.prototype.initialize.apply(this)
+    ObjectInputView.prototype.initialize.apply(this, arguments)
     createOrgAutocomplete('.orgAutocomplete', this)
 
     if (!this.model.get('role')) {

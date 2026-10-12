@@ -10,7 +10,7 @@ export default ObjectInputView.extend({
     this.template = template
     this.index = options.index
 
-    ObjectInputView.prototype.initialize.apply(this)
+    ObjectInputView.prototype.initialize.apply(this, arguments)
     createOrgAutocomplete('.orgAutocomplete', this, 'funderIdentifier')
   },
 
