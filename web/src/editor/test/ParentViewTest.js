@@ -12,7 +12,7 @@ import { hasContent } from '../src/utils'
  */
 const StubInputView = Backbone.View.extend({})
 
-// `disabled` skips the sortable() wiring, which needs a real DOM layout.
+// `disabled` skips the sortable() wiring, which these specs don't exercise (EditorRenderTest does).
 const build = (View, attrs, options = {}) => {
   const model = new Backbone.Model(attrs)
   const view = new View(Object.assign({

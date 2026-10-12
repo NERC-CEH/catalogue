@@ -1,5 +1,5 @@
 import _ from 'underscore'
-import $ from 'jquery'
+import 'jquery-ui/ui/widgets/sortable'
 import SingleView from '../SingleView'
 import ChildView from './ChildView'
 import template from '../templates/Parent'
@@ -30,33 +30,29 @@ export default SingleView.extend({
     this.listenTo(this.model, 'sync', this.updateCollection)
 
     this.render()
+    this.makeSortable()
     this.collection.reset(this.getModelData())
 
     if (this.data.multiline) {
       this.$el.addClass('multiline')
     }
 
-    const that = this
-    $(document).ready(function () {
-      if ((that.data.fetchKeywordsButton || that.data.renderLegiloKeywords) && that.model.get('id')) {
-        const locationSelect = that.$('#location-select')
-
-        that.legiloKeywords = new LegiloView({
-          collection: that.collection,
-          model: that.model,
-          modelType: LegiloKeyword,
-          template: keywordsTemplate,
-          fetcher: fetchKeywordsFromLegilo,
-          fetchButton: that.$('.legilo-keywords-btn'),
-          result: that.$('.legilo-keywords-view'),
-          locationSelectEl: locationSelect,
-          onSelect: keywordOnSelect
-        })
-        if (that.data.renderLegiloKeywords) {
-          that.listenTo(that.model, 'change:' + that.legiloKeywords.fetcher.name, that.legiloKeywords.render.bind(that.legiloKeywords))
-        }
+    if ((this.data.fetchKeywordsButton || this.data.renderLegiloKeywords) && this.model.get('id')) {
+      this.legiloKeywords = new LegiloView({
+        collection: this.collection,
+        model: this.model,
+        modelType: LegiloKeyword,
+        template: keywordsTemplate,
+        fetcher: fetchKeywordsFromLegilo,
+        fetchButton: this.$('.legilo-keywords-btn'),
+        result: this.$('.legilo-keywords-view'),
+        locationSelectEl: this.$('#location-select'),
+        onSelect: keywordOnSelect
+      })
+      if (this.data.renderLegiloKeywords) {
+        this.listenTo(this.model, 'change:' + this.legiloKeywords.fetcher.name, this.legiloKeywords.render.bind(this.legiloKeywords))
       }
-    })
+    }
   },
 
   render () {
@@ -64,23 +60,22 @@ export default SingleView.extend({
     return this
   },
 
+  makeSortable () {
+    if (this.data.disabled !== 'disabled' && this.data.modelAttribute !== 'boundingBoxes') {
+      this.$('.existing').sortable({
+        start: (event, ui) => {
+          this._oldPosition = ui.item.index()
+        },
+        update: (event, ui) => {
+          this.collection.position(this._oldPosition, ui.item.index())
+        }
+      })
+    }
+  },
+
   addOne (model) {
     const view = new ChildView(_.extend({}, this.data, { model, parentModel: this.model }))
-    const that = this
-    $(document).ready(function () {
-      that.$('.existing').append(view.el)
-      if (that.data.disabled !== 'disabled' && that.data.modelAttribute !== 'boundingBoxes') {
-        that.$('.existing').sortable({
-          animation: 150,
-          start: (event, ui) => {
-            that._oldPosition = ui.item.index()
-          },
-          update: (event, ui) => {
-            that.collection.position(that._oldPosition, ui.item.index())
-          }
-        })
-      }
-    })
+    this.$('.existing').append(view.el)
   },
 
   addAll () {
