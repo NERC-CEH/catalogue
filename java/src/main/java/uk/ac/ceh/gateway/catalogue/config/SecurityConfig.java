@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import uk.ac.ceh.components.userstore.springsecurity.AnonymousUserAuthenticationFilter;
+import uk.ac.ceh.gateway.catalogue.csp.CspReportController;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -41,6 +42,8 @@ public class SecurityConfig {
                 .authenticationFilter(new AnonymousUserAuthenticationFilter("NotSure", CatalogueUser.PUBLIC_USER, "ROLE_ANONYMOUS"))
             )
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                // Browsers report Content-Security-Policy violations anonymously (dri-one #454)
+                .requestMatchers(HttpMethod.POST, CspReportController.PATH).permitAll()
                 .requestMatchers(HttpMethod.POST, "/**").fullyAuthenticated()
                 .requestMatchers(HttpMethod.PUT, "/**").fullyAuthenticated()
                 .requestMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated()
