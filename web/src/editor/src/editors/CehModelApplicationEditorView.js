@@ -183,6 +183,8 @@ export default EditorView.extend({
           modelAttribute: 'inputData',
           label: 'Input Data',
           ObjectInputView: DataInfoView,
+          // CehModelApplication.DataInfo calls it variableName, not name
+          nameAttribute: 'variableName',
           multiline: true,
           helpText: `
 <p>Detailed description of input data including: variable name, units, file format, URL to data catalogue record for each input</p>
@@ -194,6 +196,8 @@ export default EditorView.extend({
           modelAttribute: 'outputData',
           label: 'Output Data',
           ObjectInputView: DataInfoView,
+          // CehModelApplication.DataInfo calls it variableName, not name
+          nameAttribute: 'variableName',
           multiline: true,
           helpText: `
 <p>Detailed description of model outputs including: variable name, units, file format, URL to data catalogue record for each output (or alternative location of model outputs from this application)</p>
