@@ -15,6 +15,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -22,6 +23,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -306,6 +309,29 @@ class UploadServiceTest {
     }
 
     @Test
+    @SneakyThrows
+    void uploadWithZipFileInsideAFolderRegistersWhereTheEntriesAreWritten() {
+        // A zip dropped inside a folder is unpacked under that folder; register the path the file
+        // is written to (previously registered as data/..., while written to sub/data/...)
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/register/c5db2755-bdbb-470f-987b-da71d9489fd0")))
+            .andExpect(queryParam("path", "sub/data/sub-folder1/data2.txt"))
+            .andRespond(withNoContent());
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/register/c5db2755-bdbb-470f-987b-da71d9489fd0")))
+            .andExpect(queryParam("path", "sub/data/data1.txt"))
+            .andRespond(withNoContent());
+        val multipartFile = new MockMultipartFile(
+            "file", null, "application/zip", IOUtils.toByteArray(getClass().getResource("data.zip"))
+        );
+
+        service.upload(datasetId, username, multipartFile, "sub/data.zip");
+
+        mockServer.verify();
+        assertTrue(Files.exists(Paths.get(directory.getPath(), datasetId, "sub/data/data1.txt")));
+    }
+
+    @Test
     void uploadWithoutFilename() {
         //given
         val multipartFile = new MockMultipartFile(
@@ -420,5 +446,40 @@ class UploadServiceTest {
 
         //then
         mockServer.verify();
+    }
+
+    @Test
+    void refusesAFilenameThatEscapesTheRecordFolder() {
+        // dri-one #453: nothing may be registered, created or written outside the record's folder
+        val multipartFile = new MockMultipartFile("file", "x.csv", "text/csv", "some file content".getBytes(UTF_8));
+
+        assertThrows(UploadException.class, () ->
+            service.upload(datasetId, username, multipartFile, "../other-record/evil.csv")
+        );
+
+        mockServer.verify();
+        assertFalse(Files.exists(Paths.get(directory.getPath(), "other-record")));
+    }
+
+    @Test
+    @SneakyThrows
+    void refusesAZipEntryThatEscapesTheRecordFolder() {
+        // zip-slip: the entry would otherwise be written before Hubbub's register is called
+        // The unzip folder exists after an earlier upload of the same zip name
+        Files.createDirectories(Paths.get(directory.getPath(), datasetId, "data"));
+        val zipBytes = new ByteArrayOutputStream();
+        try (val zip = new ZipOutputStream(zipBytes)) {
+            zip.putNextEntry(new ZipEntry("../../evil.txt"));
+            zip.write("evil".getBytes(UTF_8));
+            zip.closeEntry();
+        }
+        val multipartFile = new MockMultipartFile("file", null, "application/zip", zipBytes.toByteArray());
+
+        assertThrows(UploadException.class, () ->
+            service.upload(datasetId, username, multipartFile, "data.zip")
+        );
+
+        mockServer.verify();
+        assertFalse(Files.exists(Paths.get(directory.getPath(), "evil.txt")));
     }
 }

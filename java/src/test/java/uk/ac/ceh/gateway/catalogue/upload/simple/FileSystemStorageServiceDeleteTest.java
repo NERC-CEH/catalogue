@@ -12,6 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadException;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.ID;
 
@@ -57,4 +59,16 @@ public class FileSystemStorageServiceDeleteTest {
         });
     }
 
+    @Test
+    @SneakyThrows
+    public void refusesToDeleteOutsideTheRecordFolder() {
+        // dri-one #453
+        Files.createDirectories(directory.resolve(ID));
+        val otherRecord = Files.createDirectories(directory.resolve("other-record"));
+        val otherFile = Files.createFile(otherRecord.resolve(filename));
+
+        assertThrows(UploadException.class, () -> service.delete(ID, "../other-record/" + filename));
+
+        assertTrue(Files.exists(otherFile));
+    }
 }

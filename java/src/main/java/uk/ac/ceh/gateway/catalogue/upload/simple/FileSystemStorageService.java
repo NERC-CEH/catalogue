@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import uk.ac.ceh.gateway.catalogue.upload.UploadPaths;
 
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -33,8 +34,9 @@ public class FileSystemStorageService implements StorageService {
     @Override
     @SneakyThrows
     public void store(String id, MultipartFile file, String filename) {
+        // Outside the try, so a refused path is a 400 rather than a wrapped storage failure
+        val path = UploadPaths.within(datastore, id, filename);
         try {
-            val path = Path.of(datastore, id, filename);
             log.info("Storing {}", path);
             Files.createDirectories(path.getParent());
             if (Files.exists(path)) {
@@ -76,9 +78,9 @@ public class FileSystemStorageService implements StorageService {
     @Override
     @SneakyThrows
     public void delete(String id, String filename) {
+        val deleteFile = UploadPaths.within(datastore, id, filename);
         try {
             log.info("In {} deleting {}", id, filename);
-            val deleteFile = Path.of(datastore, id, filename);
             Files.delete(deleteFile);
         } catch (NoSuchFileException ex) {
             throw new UserInputException(id, format("File not found %s", filename));
