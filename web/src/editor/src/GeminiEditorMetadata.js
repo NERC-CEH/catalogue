@@ -20,10 +20,9 @@ export default EditorMetadata.extend({
 
     const { hasOnlineServiceAgreement, resourceType } = attrs
 
-    // resourceType is a plain object if it's unchanged
-    // or a Backbone model if it has been updated
-    // we need to handle both cases
-    const newType = resourceType?.value ?? resourceType?.get('value')
+    // resourceType is a plain object if it's unchanged, possibly {} when none was selected (the
+    // server drops Keyword's empty strings), or a Backbone model once the editor has set it
+    const newType = typeof resourceType?.get === 'function' ? resourceType.get('value') : resourceType?.value
 
     if (hasOnlineServiceAgreement && !mayHaveOnlineServiceAgreement.includes(newType)) {
       errors.push('Invalid resource type to have an online service agreement')

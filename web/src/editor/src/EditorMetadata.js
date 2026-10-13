@@ -1,5 +1,14 @@
 import Backbone from 'backbone'
 
+const COORDINATES = ['westBoundLongitude', 'eastBoundLongitude', 'southBoundLatitude', 'northBoundLatitude']
+
+// A single box is held as a Backbone model once edited (SingleObjectView), a list as plain objects
+const asJSON = box => typeof box?.toJSON === 'function' ? box.toJSON() : box
+const boundingBoxes = attrs => [attrs.boundingBox, ...(attrs.boundingBoxes || [])].filter(Boolean).map(asJSON)
+const coordinatesSet = box => COORDINATES.filter(name => box[name] != null && box[name] !== '').length
+
+export { COORDINATES, asJSON, coordinatesSet }
+
 export default Backbone.Model.extend({
 
   url () {
@@ -56,6 +65,10 @@ export default Backbone.Model.extend({
 
     if (!attrs.title) {
       errors.push('A title is mandatory')
+    }
+
+    if (boundingBoxes(attrs).some(box => coordinatesSet(box) > 0 && coordinatesSet(box) < COORDINATES.length)) {
+      errors.push('A bounding box needs all four coordinates: west, east, south and north')
     }
 
     if (errors.length) {

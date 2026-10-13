@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import lombok.Value;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 @Value
 @Slf4j
@@ -23,6 +25,16 @@ public class BoundingBox {
             @JsonProperty("southBoundLatitude") String southBoundLatitude,
             @JsonProperty("northBoundLatitude") String northBoundLatitude) {
         log.debug("w: {}, e: {}, s: {}, n: {}", westBoundLongitude, eastBoundLongitude, southBoundLatitude, northBoundLatitude);
+        // A cleared or half-filled box used to fail here with a NullPointerException (dri-one #457)
+        val missing = new ArrayList<String>();
+        if (westBoundLongitude == null) missing.add("west");
+        if (eastBoundLongitude == null) missing.add("east");
+        if (southBoundLatitude == null) missing.add("south");
+        if (northBoundLatitude == null) missing.add("north");
+        if (!missing.isEmpty()) {
+            throw new IllegalArgumentException(
+                "A bounding box needs all four coordinates: west, east, south and north (missing " + String.join(", ", missing) + ")");
+        }
         this.westBoundLongitude = new BigDecimal(westBoundLongitude);
         this.eastBoundLongitude = new BigDecimal(eastBoundLongitude);
         this.southBoundLatitude = new BigDecimal(southBoundLatitude);

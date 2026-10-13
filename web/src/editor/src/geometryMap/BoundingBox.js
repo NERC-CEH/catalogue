@@ -23,10 +23,12 @@ export default Backbone.Model.extend({
   },
 
   clearBounds () {
-    this.set('northBoundLatitude', null)
-    this.set('eastBoundLongitude', null)
-    this.set('southBoundLatitude', null)
-    this.set('westBoundLongitude', null)
+    // Unset rather than null: the server cannot read a coordinate of null, and an attribute-less
+    // box is dropped from the record (dri-one #457)
+    this.unset('northBoundLatitude')
+    this.unset('eastBoundLongitude')
+    this.unset('southBoundLatitude')
+    this.unset('westBoundLongitude')
   },
 
   validate (attrs) {

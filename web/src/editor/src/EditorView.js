@@ -3,7 +3,7 @@ import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import template from './editorTemplate'
-import { BoundingBox } from './geometryMap'
+import { COORDINATES, asJSON, coordinatesSet } from './EditorMetadata'
 
 export default Backbone.View.extend({
 
@@ -136,34 +136,39 @@ export default Backbone.View.extend({
   },
 
   save () {
-    const boundingBoxData = this.model.get('boundingBox')
-    if (boundingBoxData) {
-      boundingBoxData.northBoundLatitude = parseFloat(boundingBoxData.northBoundLatitude)
-      boundingBoxData.southBoundLatitude = parseFloat(boundingBoxData.southBoundLatitude)
-      boundingBoxData.eastBoundLongitude = parseFloat(boundingBoxData.eastBoundLongitude)
-      boundingBoxData.westBoundLongitude = parseFloat(boundingBoxData.westBoundLongitude)
-    }
-
-    const boundingBox = new BoundingBox(boundingBoxData)
-    if (boundingBox && !boundingBox.hasBoundingBox()) {
-      this.model.unset('boundingBox')
+    // A single bounding box is held as a Backbone model once edited: send its attributes, as
+    // numbers, or leave it out once cleared. A half-filled one is left for validation to report.
+    const boundingBox = asJSON(this.model.get('boundingBox'))
+    if (boundingBox) {
+      const set = coordinatesSet(boundingBox)
+      if (set === 0) {
+        this.model.unset('boundingBox', { silent: true })
+      } else if (set === COORDINATES.length) {
+        this.model.set('boundingBox', _.object(COORDINATES, COORDINATES.map(name => parseFloat(boundingBox[name]))), { silent: true })
+      }
     }
 
     this.setSaveButtonSaving()
-    const request = this.model.save(null, {
-      wait: true,
-      success: () => {
-        this.resetSaveButton()
-        Swal.fire({
-          title: 'Saved!',
-          icon: 'success'
-        })
-        this.saveRequired = false
-      },
-      error: () => {
-        this.resetSaveButton()
-      }
-    })
+    let request
+    try {
+      request = this.model.save(null, {
+        wait: true,
+        success: () => {
+          this.resetSaveButton()
+          Swal.fire({
+            title: 'Saved!',
+            icon: 'success'
+          })
+          this.saveRequired = false
+        },
+        error: () => {
+          this.resetSaveButton()
+        }
+      })
+    } catch (error) {
+      this.resetSaveButton()
+      throw error
+    }
 
     // save() returns false when client-side validation fails, so no request is
     // sent and neither callback will fire — re-enable the button immediately.
