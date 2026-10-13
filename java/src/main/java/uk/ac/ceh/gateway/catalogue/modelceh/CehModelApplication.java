@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.modelceh;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -77,8 +78,10 @@ public class CehModelApplication extends AbstractMetadataDocument {
 
     @Data
     public static class DataInfo {
+        // The editor sent "name" from 2023-02 until dri-one #455; accept it so nothing is lost
+        @JsonAlias("name")
+        private String variableName;
         private String
-            variableName,
             units,
             fileFormat,
             url;

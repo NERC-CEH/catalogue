@@ -7,6 +7,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 import uk.ac.ceh.gateway.catalogue.model.Relationship;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication.ModelInfo;
 
@@ -47,4 +48,24 @@ public class CehModelApplicationTest {
         assertThat("should be no relationships", actual.size(), is(0));
     }
 
+    @Test
+    public void readsAParameterNameSentAsName() {
+        // dri-one #455: from 2023-02 the editor sent "name", which was silently dropped
+        CehModelApplication.DataInfo dataInfo = JsonMapper.builder().build()
+            .readValue("{\"name\":\"rainfall\",\"units\":\"mm\"}", CehModelApplication.DataInfo.class);
+
+        assertThat(dataInfo.getVariableName(), is("rainfall"));
+    }
+
+    @Test
+    public void writesTheParameterNameAsVariableName() {
+        CehModelApplication.DataInfo dataInfo = new CehModelApplication.DataInfo();
+        dataInfo.setVariableName("rainfall");
+
+        String json = JsonMapper.builder().build().writeValueAsString(dataInfo);
+
+        assertThat(json.contains("\"variableName\":\"rainfall\""), is(true));
+        assertThat(json.contains("\"name\""), is(false));
+    }
 }
+

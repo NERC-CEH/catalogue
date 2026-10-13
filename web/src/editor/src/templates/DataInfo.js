@@ -6,7 +6,7 @@ export default _.template(`
         <label for="dataInfo<%- data.index %>Name">Parameter name</label>
     </div>
     <div class="col-sm-10">
-        <input data-name="name" id="dataInfo<%- data.index %>Name" class="editor-input" value="<%- data.name %>">
+        <input data-name="<%- data.nameAttribute %>" id="dataInfo<%- data.index %>Name" class="editor-input" value="<%- data[data.nameAttribute] %>">
     </div>
 </div>
 <div class="row">
