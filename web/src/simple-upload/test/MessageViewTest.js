@@ -30,4 +30,11 @@ describe('Test MessageView', function () {
     // then
     expect(view.remove).toHaveBeenCalled()
   })
+
+  it('renders a message model with no message instead of throwing (dri-one #456)', () => {
+    const bare = new MessageView({ model: new Backbone.Model({ type: 'error' }) })
+
+    expect(() => bare.render()).not.toThrow()
+    expect(bare.$('span').hasClass('error')).toBe(true)
+  })
 })
