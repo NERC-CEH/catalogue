@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.243.0] - 2026-10-12
+
+Editors can now link datasets to the monitoring facilities that produced them, and the relationship picker only offers records each kind of relationship can point to, shows which catalogue each result comes from, and only accepts records the editor is allowed to see (DRI-ONE-404, DRI-ONE-439). Draft or invalid links are kept off public pages. UKRI award numbers now link to their project on Gateway to Research (the UK research funders' grant database) (DRI-ONE-430). The Contributors section is back in the dataset editor (DRI-ONE-429). The Service Agreement form now asks follow-up questions about a dataset's title and flags missing explanations (DRI-ONE-212). A Service Agreement can be started before the depositor's email is known, but a blank email is caught before it is submitted (DRI-ONE-449).
+
+Several faults have been fixed. Every third-party dataset page was showing an error, and saving a newly created Service Agreement failed (DRI-ONE-436, DRI-ONE-438). The editor has been tidied up so that every field label points at the right field, which also helps people using screen readers, and two editor field bugs were fixed along the way (DRI-ONE-451, DRI-ONE-452). Datasets without a geographic extent are now included in the linked-data export. Behind the scenes, the usage statistics (views and downloads) can now be stored in a proper database server instead of a single file, and production keeps the current file until the switch is made (DRI-ONE-234). The server logs are now more useful for diagnosing problems, and an unused search index has been removed.
+
 ## [3.242.0] - 2026-10-02
 
 The catalogue's linked-data export now includes contributors and their roles, such as data curator, technician or principal investigator. Until now only authors could reach it, because the export never read the contributors list and still expected the way roles were recorded before August (DRI-ONE-405). Behind the scenes, the catalogue now signs in to its file-upload and keyword-suggestion services with personal access tokens, because the single sign-on gateway in front of them is withdrawing password logins. How to rotate those tokens is now documented.
