@@ -14,6 +14,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import uk.ac.ceh.gateway.catalogue.upload.UploadPaths;
+
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -217,7 +220,8 @@ public class UploadService {
         }
 
         String sanitisedFilename = sanitisedFilename(datasetId, filename);
-        Path path = Path.of(uploadLocation, datasetId, sanitisedFilename);
+        Path path = UploadPaths.within(uploadLocation, datasetId, sanitisedFilename);
+        Path folder = UploadPaths.folder(uploadLocation, datasetId);
         Path uploadPath = path.getParent();
         Files.createDirectories(uploadPath);
 
@@ -231,8 +235,11 @@ public class UploadService {
                     log.debug("Skipping macOS metadata file: {}", entryName);
                     continue;
                 }
-                String unZipFileName = Paths.get(unzipPath, sanitisedFilename(datasetId, entry.getName())).toString();
-                Path resolvedPath = uploadPath.resolve(unZipFileName);
+                // Checked before anything is created or written: the entry is written before
+                // Hubbub's register is called, so Hubbub can't be relied on to refuse it
+                Path entryPath = folder.relativize(uploadPath).resolve(Paths.get(unzipPath, sanitisedFilename(datasetId, entry.getName())));
+                Path resolvedPath = UploadPaths.within(uploadLocation, datasetId, entryPath.toString());
+                String unZipFileName = folder.relativize(resolvedPath).toString();
                 if (entry.isDirectory()) {
                     Files.createDirectories(resolvedPath);
                 } else {
@@ -241,7 +248,10 @@ public class UploadService {
                     }
                     log.debug("Unzip adding {} to {}", unZipFileName, datasetId);
                     Files.createDirectories(resolvedPath.getParent());
-                    long fileSize = zipStream.transferTo(Files.newOutputStream(resolvedPath));
+                    long fileSize;
+                    try (OutputStream out = Files.newOutputStream(resolvedPath)) {
+                        fileSize = zipStream.transferTo(out);
+                    }
                     try {
                         register(datasetId, unZipFileName, username, fileSize);
                     } catch (Exception ex) {
@@ -252,7 +262,7 @@ public class UploadService {
             }
         } else {
             log.debug("Adding {} to {}", sanitisedFilename, datasetId);
-            register(datasetId, sanitisedFilename, username, multipartFile.getSize());
+            register(datasetId, folder.relativize(path).toString(), username, multipartFile.getSize());
             multipartFile.transferTo(path.toFile());
         }
     }

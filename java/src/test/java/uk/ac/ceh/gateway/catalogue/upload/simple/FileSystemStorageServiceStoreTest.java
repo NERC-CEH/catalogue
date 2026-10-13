@@ -12,6 +12,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadException;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.*;
 
@@ -82,4 +84,51 @@ public class FileSystemStorageServiceStoreTest {
         assertTrue(Files.exists(fileWithSpaces));
     }
 
+    @Test
+    public void storesIntoASubfolderOfTheRecord() {
+        //when
+        val file = dataCsv(getClass());
+        service.store(ID, file, "folder/sub/data.csv");
+
+        //then
+        assertTrue(Files.exists(directory.resolve(ID).resolve("folder/sub/data.csv")));
+    }
+
+    @Test
+    @SneakyThrows
+    public void refusesAFilenameThatEscapesTheRecordFolder() {
+        // dri-one #453: a user with upload rights on one record must not write into another. The
+        // record's folder exists after its first upload, which is what lets <id>/.. resolve
+        Files.createDirectories(directory.resolve(ID));
+        val file = dataCsv(getClass());
+
+        assertThrows(UploadException.class, () -> service.store(ID, file, "../other-record/data.csv"));
+
+        assertFalse(Files.exists(directory.resolve("other-record")));
+    }
+
+    @Test
+    public void storesAnAbsoluteFilenameInsideTheRecordFolder() {
+        // Path.of(datastore, id, filename) joins an absolute filename as a relative one
+        val file = dataCsv(getClass());
+        val outside = directory.resolve("outside.csv");
+
+        service.store(ID, file, outside.toString());
+
+        assertFalse(Files.exists(outside));
+        assertTrue(Files.exists(Path.of(directory.toString(), ID, outside.toString())));
+    }
+
+    @Test
+    @SneakyThrows
+    public void refusesAnIdOutsideTheDatastore() {
+        // Rooted one level down, so a failure writes inside the temporary directory, not its parent
+        val datastore = Files.createDirectories(directory.resolve("datastore"));
+        val nested = new FileSystemStorageService(datastore.toString());
+        val file = dataCsv(getClass());
+
+        assertThrows(UploadException.class, () -> nested.store("..", file, "data.csv"));
+
+        assertFalse(Files.exists(directory.resolve("data.csv")));
+    }
 }

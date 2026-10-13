@@ -32,6 +32,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
+import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadException;
+
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.Matchers.emptyCollectionOf;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -366,6 +368,25 @@ class UploadControllerTest extends AbstractMvcTest {
 
         //then
         verify(storageService).store(ID, multipartFile, filename);
+    }
+
+    @Test
+    @DisplayName("upload outside the record's folder is a bad request")
+    @SneakyThrows
+    void uploadOutsideTheRecordFolderIsABadRequest() {
+        // dri-one #453: the browser sends filename as a form field, which the URL firewall never sees
+        givenUserHasPermissionToUpload();
+        MockMultipartFile multipartFile = dataCsv();
+        val filename = "../other-record/data.csv";
+        doThrow(new UploadException("outside")).when(storageService).store(ID, multipartFile, filename);
+
+        mvc.perform(
+            multipart("/upload/{id}", ID)
+                .file(multipartFile)
+                .param("filename", filename)
+                .header("remote-user", UPLOADER_USERNAME)
+        )
+            .andExpect(status().isBadRequest());
     }
 
     @Test
