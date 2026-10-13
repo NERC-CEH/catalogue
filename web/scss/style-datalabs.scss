@@ -1,8 +1,3 @@
+// Data Labs uses the default UKCEH look. Its green was never applied: it was set as Sass variables
+// after the theme had compiled, and nothing read the custom property (dri-one #463)
 @use "theme";
-
-$datalab-green: hsl(174, 63%, 40%);
-$brand-success: $datalab-green;
-
-:root {
-    --datalab-green: $datalab-green;
-}

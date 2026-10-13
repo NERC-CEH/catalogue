@@ -32,6 +32,11 @@
       <#-- The proxy serves /favicon.ico in front of every environment, so point at it rather than at
            a catalogue logo; locally the same path is served by the compose nginx. -->
       <link rel="icon" href="/favicon.ico">
+      <#-- Linked here rather than @imported by the stylesheet, so the font loads alongside it
+           instead of after it has downloaded (dri-one #463) -->
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap">
       <link rel="stylesheet" type="text/css" href="/static/css/style-<#if catalogue?has_content>${catalogue.id}<#else>${catalogues.defaultCatalogue().id}</#if>.css">
 
       <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>

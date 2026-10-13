@@ -4,6 +4,7 @@ FROM node:24-alpine AS build-web
 WORKDIR /web
 RUN apk --no-cache upgrade
 COPY web/package.json web/package-lock.json web/webpack.js web/gulpfile.js ./
+COPY web/scripts/sass-options.js ./scripts/
 RUN --mount=type=cache,target=/web/.npm npm ci --cache /web/.npm --no-audit
 COPY web/img ./img
 COPY web/scss ./scss
@@ -46,7 +47,6 @@ COPY --chown=spring:spring templates /opt/ceh-catalogue/templates
 COPY --chown=spring:spring --from=build-web /web/img /opt/ceh-catalogue/static/img
 COPY --chown=spring:spring --from=build-web /web/dist /opt/ceh-catalogue/static/scripts
 COPY --chown=spring:spring --from=build-web /web/css /opt/ceh-catalogue/static/css
-COPY --chown=spring:spring --from=build-web /web/node_modules/leaflet-draw/dist/images /opt/ceh-catalogue/static/css/images
 COPY --chown=spring:spring --from=build-web /web/node_modules/@fortawesome/fontawesome-free/webfonts /opt/ceh-catalogue/static/webfonts
 RUN chown spring:spring -R /var/ceh-catalogue && chown spring:spring -R /var/upload
 # /var/ceh-catalogue/metrics-db (above and below) holds the SQLite metrics database and is the mount

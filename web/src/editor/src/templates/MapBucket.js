@@ -15,7 +15,7 @@ export default _.template(`
     <div class="col-sm-3">
         <div class="input-group">
             <input data-name='min' class="form-control editor-input" value="<%- data.min %>" placeholder="-∞" <%- data.disabled%>>
-            <span class="input-group-addon">'&#60 𝑥 &#8804</span>
+            <span class="input-group-text">'&#60 𝑥 &#8804</span>
             <input data-name='max' class="form-control editor-input" value="<%- data.max %>" placeholder="∞" <%- data.disabled%>>
         </div>
     </div>

@@ -3,25 +3,19 @@
  * Copyright 2014 Centre for Ecology & Hydrology, Application Development Team
  * Licensed under the GNU Public License v2.0
  * http://www.gnu.org/licenses/
- *
- * This theme was built using the Themestrap Bootstrap Theme Kit.
- * https://github.com/divshot/themestrap
  */
-
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
 @import "customProperties";
 @import "variables";
-@import "../node_modules/bootstrap/scss/bootstrap";
-@import "../node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
-@import "../node_modules/@fortawesome/fontawesome-free/scss/regular";
-@import "../node_modules/@fortawesome/fontawesome-free/scss/solid";
-@import "../node_modules/@fortawesome/fontawesome-free/scss/brands";
+@import "bootstrap/scss/bootstrap";
+@import "@fortawesome/fontawesome-free/scss/fontawesome";
+@import "@fortawesome/fontawesome-free/scss/regular";
+@import "@fortawesome/fontawesome-free/scss/solid";
+@import "@fortawesome/fontawesome-free/scss/brands";
 @import "message-panel";
 @import "search";
 @import "metadata";
 @import "editor";
-@import "validation";
 @import "documents-upload";
 @import "upload-simple";
 
@@ -36,7 +30,7 @@ body {
 
 a {
     text-decoration: none;
-    @extend .link-offset-2 !optional;
+    text-underline-offset: 0.25em;
     color: var(--link-colour);
 
     &:hover,
@@ -46,13 +40,10 @@ a {
     }
 }
 
-.option-ukeof,
 .option-eidc,
 .option-ukceh,
 .option-inms,
-.option-assist,
-.option-nm,
-.option-inms {
+.option-assist {
     display: var(--display-option, none);
 }
 
@@ -71,32 +62,12 @@ main {
     }
 
     section {
-        @extend .py-3 !optional;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
 
         &.section {
             &-grey {
                 background-color: #EEE;
-            }
-
-            &-air {
-                background-color: var(--ukceh-colour-air);
-            }
-
-            &-data {
-                background-color: var(--ukceh-colour-data);
-            }
-
-            &-earth {
-                background-color: var(--ukceh-colour-earth);
-            }
-
-            &-land {
-                background-color: var(--ukceh-colour-land);
-            }
-
-            &-water {
-                background-color: var(--ukceh-colour-water);
-                color: white
             }
         }
 
@@ -567,18 +538,6 @@ i.fa-solid,
 i.fa-regular,
 i.fa-brands {
     font-style: normal;
-}
-
-.results-linked {
-    .result {
-        border: 1px solid lightgray;
-        padding: 0.4em;
-        margin: 0.5em 0;
-
-        .result--title {
-            font-weight: 600;
-        }
-    }
 }
 
 

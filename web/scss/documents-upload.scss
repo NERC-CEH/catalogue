@@ -5,20 +5,23 @@
     margin-block: 1em;
 
     .page-header {
-        @extend .display-6 !optional;
-        @extend .py-3 !optional;
+        @extend .display-6;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
     }
 
     .return {
-        @extend .py-3 !optional;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
     }
 
     .document-upload-section {
-        @extend .mt-5 !optional;
+        margin-top: 3rem;
 
         .section-header {
             font-size: 1.8rem;
-            @extend .py-3 !optional;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
         }
 
         .total-files {
@@ -83,22 +86,6 @@
 
     .filetable-content {
 
-        &-recordInfo {
-            @extend .d-flex !optional;
-            @extend .py-3 !optional;
-            @extend .justify-content-center !optional;
-
-        }
-
-        &-pagination {
-            @extend .d-flex !optional;
-            @extend .justify-content-center !optional;
-        }
-
-        &-searchAll {
-            @extend .d-none !optional;
-        }
-
         table {
             tr.table-danger {
                 font-weight: 600;
@@ -108,13 +95,13 @@
                 }
 
                 .btn-actions {
-                    @extend .btn-danger !optional;
+                    @extend .btn-danger;
                 }
             }
 
             tr:not(.table-danger) {
                 .btn-actions {
-                    @extend .btn-outline-dark !optional;
+                    @extend .btn-outline-dark;
                 }
             }
         }

@@ -1,12 +1,4 @@
-@use "sass:color";
-
 @use "theme";
-
-//colours
-$ukri-blue: hsla(241, 37%, 28%, 1);
-$nerc-blue: $ukri-blue;
-
-$link-hover-color: $nerc-blue;
 
 :root {
     --ukri-blue: hsla(241, 37%, 28%, 1);
@@ -61,13 +53,6 @@ a.navbar-brand {
     }
 }
 
-#editor {
-    .option-nm {
-        --display-option:block;
-    }
-
-}
-
 .nerc-model {
     #adminPanel {
         padding: 1em 0.5em;
@@ -76,21 +61,6 @@ a.navbar-brand {
     p.text-danger {
         font-weight: 600;
         color: red;
-    }
-
-    .btn {
-        &-code {
-            background-color: color.adjust($nerc-blue, $lightness: 60%, $space: hsl);
-            color: black;
-            border-color: lightgray;
-            border-radius: 6px;
-        }
-
-        &-documentation {
-            color: black;
-            border-color: lightgray;
-            border-radius: 6px;
-        }
     }
 
     .accessLinks {

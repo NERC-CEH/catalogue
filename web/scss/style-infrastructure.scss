@@ -16,7 +16,7 @@
     }
 
     .row.role {
-        @extend .visually-hidden !optional;
+        @extend .visually-hidden;
     }
 
 }
