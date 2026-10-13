@@ -5,6 +5,15 @@ import Backbone from 'backbone'
 import DataTable from 'datatables.net-bs5'
 import TableTemplate from './TableTemplate'
 
+// The file cards this table replaced (EMC-275) explained problem states such as a failed move or a
+// changed checksum; the table had shown only the code (dri-one #459)
+function statusCell (status, message) {
+  const code = `<span class="file-status">${_.escape(status)}</span>`
+  if (!message) return code
+  const title = message.title ? `<strong>${_.escape(message.title)}</strong> ` : ''
+  return `${code}<div class="file-status-message small">${title}${_.escape(message.content)}</div>`
+}
+
 export default Backbone.View.extend({
   template: TableTemplate,
 
@@ -47,7 +56,8 @@ export default Backbone.View.extend({
         { data: 'file' },
         { data: 'size', type: 'file-size' },
         { data: 'checksum' },
-        { data: 'status' },
+        // Displayed with its explanation; filtered and sorted on the status code alone
+        { data: 'status', render: (status, type, row) => type === 'display' ? statusCell(status, row.model.get('message')) : status },
         { data: 'lastValidated' },
         { data: 'actions', orderable: false }
       ],

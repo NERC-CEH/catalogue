@@ -202,4 +202,42 @@ describe('TableView', function () {
       expect(row.checksum).toBe('<span title="&quot;&gt;&lt;b&gt;hash">Yes</span>')
     })
   })
+
+  describe('status explanations (dri-one #459)', () => {
+    // The file cards this table replaced explained problem states; the table showed only the code
+    function statusCell (file) {
+      collection.reset([file])
+      view.render()
+      return view.$('#filetable tbody tr').first().children().eq(3)
+    }
+
+    it('explains a problem state under the status', () => {
+      const cell = statusCell(new File({ datasetId: '1', datastore: 'dropbox', path: 'a.csv', status: 'MOVING_TO_ERROR', bytes: 1 }))
+
+      expect(cell.find('.file-status').text()).toBe('MOVING_TO_ERROR')
+      expect(cell.find('.file-status-message').text()).toContain('The file failed to move')
+    })
+
+    it('shows the message title when there is one', () => {
+      const cell = statusCell(new File({ datasetId: '1', datastore: 'dropbox', path: 'a.csv', status: 'CHANGED_MTIME', bytes: 1 }))
+
+      expect(cell.find('.file-status-message strong').text()).toBe('Detected a possible file change')
+    })
+
+    it('shows just the status when there is nothing to explain', () => {
+      const cell = statusCell(new File({ datasetId: '1', datastore: 'dropbox', path: 'a.csv', status: 'VALID', bytes: 1 }))
+
+      expect(cell.text().trim()).toBe('VALID')
+      expect(cell.find('.file-status-message').length).toBe(0)
+    })
+
+    it('still filters and sorts on the status code alone', () => {
+      collection.reset([new File({ datasetId: '1', datastore: 'dropbox', path: 'a.csv', status: 'MOVING_TO_ERROR', bytes: 1 })])
+      view.render()
+
+      expect(view.dataTable.column(3).data().toArray()).toEqual(['MOVING_TO_ERROR'])
+      view.dataTable.column(3).search('failed to move').draw()
+      expect(view.dataTable.rows({ search: 'applied' }).count()).toBe(0)
+    })
+  })
 })
