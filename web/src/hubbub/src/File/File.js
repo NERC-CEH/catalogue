@@ -4,7 +4,7 @@ import { filesize } from 'filesize'
 export default Backbone.Model.extend({
 
   initialize () {
-    let action, classes, storage
+    let action, storage
     const datastore = this.get('datastore')
     if (datastore === 'dropbox') {
       storage = 'dropbox'
@@ -18,14 +18,6 @@ export default Backbone.Model.extend({
     const errorType = status in errorTypes ? errorTypes[status] : 'valid'
     const open = !validTypes.has(status)
 
-    if (open && (errorType !== 'valid')) {
-      classes = 'card-danger'
-    } else if (open) {
-      classes = 'card-default'
-    } else {
-      classes = 'card-default is-collapsed'
-    }
-
     if (errorType === 'valid') {
       action = keyToAction[storage]
     } else {
@@ -33,23 +25,17 @@ export default Backbone.Model.extend({
     }
 
     const size = this.has('bytes') ? filesize(this.get('bytes')) : 0
-    const date = this.get('lastValidated')
-    const hash = this.has('hash') ? this.get('hash') : 'NO_HASH'
     const message = messages[status]
     const moving = status === 'MOVING_FROM' || status === 'MOVING_TO' || status === 'WRITING'
-    const validating = status === 'VALIDATING_HASH'
 
+    // Only what the file table reads; the card-only fields (classes, date, validating…) went with
+    // the cards (dri-one #459)
     return this.set({
       action,
-      classes,
-      date,
-      errorType,
-      hash,
       message,
       moving,
       open,
-      size,
-      validating
+      size
     })
   },
 

@@ -23,15 +23,10 @@ describe('File model', function () {
     // then
     // set or manipulated in initialize
     expect(file.get('action')).toBe('move-metadata')
-    expect(file.get('classes')).toBe('card-default is-collapsed')
-    expect(file.get('date')).toBe('2022-03-05T06:23:57')
-    expect(file.get('errorType')).toBe('valid')
-    expect(file.get('hash')).toBe('28111a4e084f1a57c7a0f50bc9a35472')
     expect(file.get('message')).toBe(undefined)
     expect(file.get('moving')).toBe(false)
     expect(file.get('open')).toBe(false)
     expect(file.get('size')).toBe('300 B')
-    expect(file.get('validating')).toBe(false)
 
     // from server
     expect(file.has('bytes')).toBeTrue()
