@@ -22,6 +22,9 @@
     --ukceh-colour-land-50: rgb(199 212 179 /1);
     --ukceh-colour-land-25: rgb(227 233 217 /1);
     --ukceh-colour-water-75: rgb(117 156 234 /1);
+    /* Water darkened 15% for text, and for backgrounds behind white or data-yellow text: the
+       brand water is 4.08:1 on white, this is 5.34:1 (WCAG AA needs 4.5:1, dri-one #462) */
+    --ukceh-colour-water-text: rgb(60 104 192 /1);
     --ukceh-colour-water-50: rgb(163 188 240 /1);
     --ukceh-colour-water-25: rgb(209 222 248 /1);
 
@@ -31,8 +34,8 @@
     --body-background-colour: #fff;
     --text-default-colour: #1d1d1b;
 
-    --link-colour:var(--ukceh-colour-water);
-    --link-hover-colour: var(--ukceh-colour-water);
+    --link-colour: var(--ukceh-colour-water-text);
+    --link-hover-colour: var(--ukceh-colour-water-text);
 
     --font-family-body: var(--ukceh-font-family-SansSerif);
     --font-family-headers: var(--ukceh-font-family-SansSerif);
@@ -45,6 +48,8 @@
     --header-link-hover-background-colour: color-mix(in lab, var(--header-link-background-colour), white 25%);
     --header-link-hover-colour: var(--ukceh-colour-data);
     --header-link-weight: 200;
+    /* The search button sat on the header colour, which is white on some catalogues */
+    --search-button-background-colour: var(--header-background-colour);
     --header-border-bottom-colour: #bbb;
     --header-border-bottom-width: 1px;
     --dropdownmenu-background: #EEE;
@@ -53,7 +58,7 @@
     --nav-toggle-colour: var(--header-link-colour);
 
     --bs-border-color: rgb(166, 166, 166);
-    --bs-border-color-light: color(from var(-bs-border-color) srgb r g b /0.5);
+    --bs-border-color-light: color(from var(--bs-border-color) srgb r g b /0.5);
 
     --filter-width: 350px;
     --filter-background-colour: var(--body-background-colour);

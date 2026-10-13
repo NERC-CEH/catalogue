@@ -1,11 +1,13 @@
 @use "theme";
 
 :root {
-    --link-colour: hsl(204, 55%, 48%);
-    --link-hover-colour: hsl(204, 55%, 48%);
+    /* L 40% rather than 48%: 5.29:1 on white instead of 3.88:1 (dri-one #462) */
+    --link-colour: hsl(204, 55%, 40%);
+    --link-hover-colour: hsl(204, 55%, 40%);
 
     --header-height: 100px;
     --header-background-colour: white;
+    --search-button-background-colour: var(--link-colour);
     --header-link-background-colour: var(--header-background-colour);
     --header-link-hover-background-colour: color-mix(in lab, var(--header-link-background-colour), black 5%);
     --header-link-colour: var(--link-colour);

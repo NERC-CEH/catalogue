@@ -3,10 +3,12 @@
 $fa-font-path: "../fonts";
 
 :root {
-    --link-colour: #1C9C32;
+    /* #1C9C32 was 3.59:1 on white; this is 5.45:1 (dri-one #462) */
+    --link-colour: #187a2a;
     --link-hover-colour: #990000;
 
     --header-background-colour: white;
+    --search-button-background-colour: var(--link-colour);
     --header-height: 80px;
     --header-logo-size: calc(var(--header-height) * 0.65);
     --header-link-colour: var(--link-colour);

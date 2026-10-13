@@ -14,7 +14,7 @@
         "lint": "eslint .",
         "standard": "standard",
         "standard-fix": "standard --fix",
-        "pretest": "node scripts/check-template-escaping.js",
+        "pretest": "node scripts/check-template-escaping.js && node scripts/build-test-css.js",
         "test": "karma start --single-run",
         "test-coverage": "COVERAGE=true karma start --single-run",
         "test-server": "concurrently 'webpack --watch' 'karma start'",

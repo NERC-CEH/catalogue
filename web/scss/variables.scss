@@ -107,7 +107,9 @@ $border-radius-small:       3px;
 //** Global color for active items (e.g., navs or dropdowns).
 $component-active-color:    #fff;
 //** Global background color for active items (e.g., navs or dropdowns).
-$component-active-bg:       $brand-primary;
+// Checked boxes and active items: $brand-primary (#3fc3cb) was 2.13:1, below the 3:1 for
+// controls; this is UKCEH water darkened for text, 5.34:1 (dri-one #462)
+$component-active-bg:       #3c68c0;
 
 //** Width of the `border` for generating carets that indicator dropdowns.
 $caret-width-base:          4px;
@@ -178,7 +180,7 @@ $input-bg:                       #fff;
 $input-bg-disabled:              $gray-lighter;
 
 //** Text color for `<input>`s
-$input-color:                    $gray;
+// $input-color is left to Bootstrap (the body colour): $gray was 3.5:1 (dri-one #462)
 //** `<input>` border color
 $input-border:                   #ccc;
 //** `<input>` border radius

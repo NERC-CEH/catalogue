@@ -53,6 +53,16 @@ describe('Editor element ids', () => {
         expect([...new Set(broken)]).toEqual([])
       })
 
+      it('names every form control with a label', () => {
+        // A control with no label is announced as an unnamed field: the service agreement's questions
+        // sat in a separate TextOnlyView with nothing tying them to the field (dri-one #462)
+        const named = new Set(editor.$('label[for]').toArray().map(label => label.htmlFor))
+        const unnamed = editor.$('input[id^="input-"], select[id^="input-"], textarea[id^="input-"]').toArray()
+          .filter(control => !named.has(control.id) && !control.hasAttribute('aria-label') && !control.hasAttribute('aria-labelledby'))
+          .map(control => control.id)
+        expect(unnamed).toEqual([])
+      })
+
       it('points a section label at the section control', () => {
         // The other direction: when a section has a label and renders its input-<modelAttribute>
         // control, the label must name it. A control rendered by a sub-view (the single-object

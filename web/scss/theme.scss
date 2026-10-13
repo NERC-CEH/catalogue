@@ -246,14 +246,14 @@ h6 {
 }
 
 h1 {
-    color: var(--colour-hero);
     font-weight: 200;
 }
 
 h2,
 h3,
 h4 {
-    color: #999;
+    /* #999 was 2.85:1 on white; this is 5.33:1 (dri-one #462) */
+    color: #6b6b6b;
     font-weight: 200;
 }
 
@@ -544,7 +544,7 @@ header {
 /* -- END Navigation */
 
 .search-form .btn {
-    background-color: var(--header-background-colour);
+    background-color: var(--search-button-background-colour);
     color: white;
     transition: background-color 0.15s ease-in-out;
 
@@ -558,7 +558,7 @@ header {
     // gives a visible change on the catalogues whose header is white.
     &:hover,
     &:focus-visible {
-        background-color: color-mix(in hsl, var(--header-background-colour), black 15%);
+        background-color: color-mix(in hsl, var(--search-button-background-colour), black 15%);
         color: white;
     }
 }

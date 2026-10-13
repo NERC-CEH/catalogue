@@ -19,7 +19,9 @@ module.exports = function (config) {
     frameworks: ['jasmine-ajax', 'jasmine', 'webpack'],
 
     files: [
-      'src/**/test/**/*.js'
+      'src/**/test/**/*.js',
+      // Catalogue themes compiled by scripts/build-test-css.js, for the contrast specs
+      { pattern: 'build/test-css/*.css', included: false, served: true, watched: false }
     ],
 
     preprocessors: {

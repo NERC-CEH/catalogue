@@ -1,4 +1,5 @@
 import _ from 'underscore'
+import $ from 'jquery'
 import SingleView from '../../SingleView'
 
 export default SingleView.extend({
@@ -13,7 +14,13 @@ export default SingleView.extend({
 
   render () {
     SingleView.prototype.render.apply(this)
-    this.$('.dataentry').append(this.template({ data: _.extend({}, this.data, { value: this.model.get }) }))
+    const text = this.template({ data: _.extend({}, this.data, { value: this.model.get }) })
+    // A question with no section label names the field it introduces itself (dri-one #462)
+    if (this.data.labels && !this.data.label) {
+      this.$('.dataentry').append($('<label>').attr('for', `input-${this.data.labels}`).html(text))
+    } else {
+      this.$('.dataentry').append(text)
+    }
     return this
   }
 })
