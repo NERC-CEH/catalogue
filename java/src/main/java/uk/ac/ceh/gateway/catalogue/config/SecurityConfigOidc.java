@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain;
 import uk.ac.ceh.components.userstore.springsecurity.AnonymousUserAuthenticationFilter;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.CatalogueUserOidcUserService;
+import uk.ac.ceh.gateway.catalogue.csp.CspReportController;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -37,6 +38,8 @@ public class SecurityConfigOidc {
                 .authenticationFilter(new AnonymousUserAuthenticationFilter("NotSure", CatalogueUser.PUBLIC_USER, "ROLE_ANONYMOUS"))
             )
             .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
+                // Browsers report Content-Security-Policy violations anonymously (dri-one #454)
+                .requestMatchers(HttpMethod.POST, CspReportController.PATH).permitAll()
                 .requestMatchers(HttpMethod.POST, "/**").fullyAuthenticated() // Require full authentication for POST requests
                 .requestMatchers(HttpMethod.PUT, "/**").fullyAuthenticated() // Require full authentication for PUT requests
                 .requestMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated() // Require full authentication for DELETE requests

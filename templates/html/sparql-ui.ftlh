@@ -31,7 +31,8 @@
   <ul id="examples"></ul>
 </div>
 <div id="yasgui"></div>
-<script>
+<#-- The nonce lets this script run under the Content-Security-Policy (dri-one #454) -->
+<script nonce="${csp.nonce}">
   const ENDPOINT = "${sparqlEndpoint}";
   const CATALOGUE_GRAPH = "${catalogueGraph}";
 

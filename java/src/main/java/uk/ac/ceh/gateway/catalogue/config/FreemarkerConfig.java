@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.csp.CspNonce;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.quality.MultiDocumentTypeMetadataQualityService;
@@ -51,6 +52,7 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("catalogues", catalogueService);
         freemarkerConfiguration.setSharedVariable("codes", codeLookupService);
         freemarkerConfiguration.setSharedVariable("contactUri", contactUri);
+        freemarkerConfiguration.setSharedVariable("csp", new CspNonce());
         freemarkerConfiguration.setSharedVariable("downloadOrderDetails", downloadOrderDetailsService);
         freemarkerConfiguration.setSharedVariable("formatUris", formatUri);
         freemarkerConfiguration.setSharedVariable("fundingUri", fundingUri);
