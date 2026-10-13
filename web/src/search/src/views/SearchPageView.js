@@ -3,6 +3,15 @@ import $ from 'jquery'
 import Backbone from 'backbone'
 import template from '../templates/searchPage'
 
+// The search to share, without its paging. Splitting on & dropped the base URL along with page when
+// page came first (dri-one #460)
+export function shareUrl (href) {
+  const url = new URL(href)
+  url.searchParams.delete('page')
+  url.searchParams.delete('rows')
+  return url.toString()
+}
+
 export default Backbone.View.extend({
 
   events: {
@@ -104,11 +113,7 @@ export default Backbone.View.extend({
 
   initSearchShareIcon (el) {
     el.click(() => {
-      const url = window.location.href
-        .split('&')
-        .filter(p => !p.includes('page=') && !p.includes('rows='))
-        .join('&')
-      window.location.href = 'mailto:?body=' + encodeURIComponent(url)
+      window.location.href = 'mailto:?body=' + encodeURIComponent(shareUrl(window.location.href))
     })
   }
 })

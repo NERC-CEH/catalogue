@@ -27,7 +27,27 @@ export default Backbone.Model.extend({
     this.createSearchPage() // Create initial search page
     this.on('change', this.jumpToPageOne)
     this.on('change', this.disableDrawing)
-    this.on('change', _.debounce(this.performSearch, 1_000 /* ms */))
+    // Search once things settle, for every search field that changed meanwhile: the debounced
+    // performSearch used to see only the last change, so a search was lost when, say, the map tab
+    // changed mapsearch within the second (dri-one #460)
+    this.pendingChanges = {}
+    this.debouncedFlush = _.debounce(() => this.flushSearch(), 1_000 /* ms */)
+    this.on('change', this.queueSearch)
+    // A failed search is reported, not left as an empty results pane (dri-one #460)
+    this.on('results-error', (page, xhr) => this.trigger('error', page, xhr))
+  },
+
+  queueSearch (model, options = {}) {
+    // Results the server has already rendered for this state need no search of their own
+    if (options.serverRendered) return
+    Object.assign(this.pendingChanges, model.changed)
+    this.debouncedFlush()
+  },
+
+  flushSearch () {
+    const changed = this.pendingChanges
+    this.pendingChanges = {}
+    this.performSearch({ changed })
   },
 
   /*
@@ -42,7 +62,8 @@ export default Backbone.Model.extend({
      *
      */
   createSearchPage () {
-    this._proxyResultsEvents = evt => this.trigger(`results-${evt}`)
+    // Pass the event's arguments on too: an error carries the response, with the reason
+    this._proxyResultsEvents = (evt, ...args) => this.trigger(`results-${evt}`, ...args)
     this.results = new SearchPage()
     this.results.on('all', this._proxyResultsEvents)
   },
@@ -80,6 +101,10 @@ export default Backbone.Model.extend({
      * and nothing would otherwise happen.
      */
   searchNow () {
+    // This search covers anything still waiting on the debounce: typing a term and pressing Enter
+    // used to search now and then again a second later
+    this.debouncedFlush.cancel()
+    this.pendingChanges = {}
     if (!this.isSearchable()) { return }
     this.clearResults() // Make sure that the results have been cleared
     this.createSearchPage() // Redefine a new search page

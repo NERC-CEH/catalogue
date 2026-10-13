@@ -22,7 +22,9 @@ export default Backbone.View.extend({
     const initialParams = deparam(window.location.search.substring(1), true)
 
     if (Object.keys(initialParams).length) {
-      this.model.setState(initialParams)
+      // The views still pick up the state, but when the server has rendered these results the
+      // page doesn't search for them again (a second Bedrock call for a semantic search, dri-one #460)
+      this.model.setState(initialParams, this.$('#num-records').length ? { serverRendered: true } : undefined)
     }
 
     this.delegateEvents() // Register the mutated events object

@@ -17,13 +17,18 @@
     </div>
     <div class="small">
       <label for="sort-search">Sort by</label>
+        <#-- The current sort, as the option values spell it, so a sorted page shows its sort (dri-one #460) -->
+        <#assign currentSort = sortField?has_content?then(sortField + "-" + (order!"asc"), "")>
+        <#macro sortOption value label class="">
+          <option<#if class?has_content> class="${class}"</#if> value="${value}"<#if value == currentSort> selected</#if>>${label}</option>
+        </#macro>
         <select class="sort-search" id="sort-search" aria-label="Select dropdown for sorting serch results">
-          <option value="">Relevance</option>
-          <option class="option-eidc" value="publicationDate-desc">Published date (newest first)</option>
-          <option class="option-eidc" value="publicationDate-asc">Published date (oldest first)</option>
-          <option class="option-eidc" value="incomingCitationCount-desc">Number of citations</option>
-          <option value="title-asc">Title (A-Z)</option>
-          <option value="title-desc">Title (Z-A)</option>
+          <@sortOption "" "Relevance"/>
+          <@sortOption "publicationDate-desc" "Published date (newest first)" "option-eidc"/>
+          <@sortOption "publicationDate-asc" "Published date (oldest first)" "option-eidc"/>
+          <@sortOption "incomingCitationCount-desc" "Number of citations" "option-eidc"/>
+          <@sortOption "title-asc" "Title (A-Z)"/>
+          <@sortOption "title-desc" "Title (Z-A)"/>
         </select>
     </div>
   <#else>

@@ -22,7 +22,9 @@ export default Backbone.View.extend({
         },
         selectionCssClass: 'select2',
         dropdownCssClass: 'select2',
-        templateSelection: e => { return e.text.split(' (')[0] }
+        // The option text is just the name now (counts are no longer part of it), so a name with
+        // " (" in it, like "Natural Environment Research Council (NERC)", was being cut short
+        templateSelection: e => e.text
       })
       this.$('.select2-selection__choice').removeAttr('title')
 
