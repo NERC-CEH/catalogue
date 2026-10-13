@@ -3,10 +3,10 @@ import _ from 'underscore'
 export default _.template(`
 <div class="row">
     <div class="col-sm-1">
-        <label for="inspireThemes<%= data.index %>Theme">Theme</label>
+        <label for="inspireThemes<%- data.index %>Theme">Theme</label>
     </div>
     <div class="col-sm-6">
-        <select class="inspireTheme form-select" data-name="theme" id="inspireThemes<%= data.index %>Theme">
+        <select class="inspireTheme form-select" data-name="theme" id="inspireThemes<%- data.index %>Theme">
             <option value="" selected>Choose a theme</option>
             <option value="Addresses">Addresses</option>
             <option value="Administrative Units">Administrative Units</option>
@@ -45,10 +45,10 @@ export default _.template(`
         </select>
     </div>
     <div class="col-sm-2">
-        <label for="inspireThemes<%= data.index %>Conformity">Conformity</label>
+        <label for="inspireThemes<%- data.index %>Conformity">Conformity</label>
     </div>
     <div class="col-sm-3">
-        <select class="conformity form-select"  data-name="conformity" id="inspireThemes<%= data.index %>Conformity">
+        <select class="conformity form-select"  data-name="conformity" id="inspireThemes<%- data.index %>Conformity">
                 <option value="" selected>Not evaluated</option>
                 <option value="Conformant">Conformant</option>
                 <option value="Not conformant">Not conformant</option>

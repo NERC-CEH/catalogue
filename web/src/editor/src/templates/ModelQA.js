@@ -3,10 +3,10 @@ import _ from 'underscore'
 export default _.template(`
 <div class="row">
     <div class="col-sm-1">
-            <label for="qa<%= data.index %>Category">Category</label>
+            <label for="qa<%- data.index %>Category">Category</label>
     </div>
     <div class="col-sm-5">
-            <select data-name="category" class="category" id="qa<%= data.index %>Category">
+            <select data-name="category" class="category" id="qa<%- data.index %>Category">
                 <option value="" selected>-- Choose one --</option>
                 <option value="developerTesting">Developer testing</option>
                 <option value="governance">Governance</option>
@@ -21,17 +21,17 @@ export default _.template(`
     </div>
 
     <div class="col-sm-1">
-        <label for="qa<%= data.index %>Date">Date</label>
+        <label for="qa<%- data.index %>Date">Date</label>
     </div>
     <div class="col-sm-5">
-        <input data-name="date" type="date" id="qa<%= data.index %>Date" class="editor-input" value="<%= data.date %>">
+        <input data-name="date" type="date" id="qa<%- data.index %>Date" class="editor-input" value="<%- data.date %>">
     </div>
 
     <div class="col-sm-1">
-        <label for="qa<%= data.index %>Notes">Notes</label>
+        <label for="qa<%- data.index %>Notes">Notes</label>
     </div>
     <div class="col-sm-11">
-        <textarea data-name="notes" id="qa<%= data.index %>Notes" class="editor-textarea" rows="3"><%= data.notes %></textarea>
+        <textarea data-name="notes" id="qa<%- data.index %>Notes" class="editor-textarea" rows="3"><%- data.notes %></textarea>
     </div>
 </div>
 `)

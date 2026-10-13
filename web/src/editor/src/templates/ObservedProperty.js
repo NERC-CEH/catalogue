@@ -4,91 +4,91 @@ export default _.template(`
 <div class="dataentry child observedProperty">
     <div class="row">
         <div class="col-xxl-2">
-            <label for="schema-value<%= data.index %>">Name</label>
+            <label for="schema-value<%- data.index %>">Name</label>
         </div>
         <div class="col-xxl-4">
-            <input data-name="value" id="schema-value<%= data.index %>" class="editor-input" value="<%= data.value %>" placeholder="name of field/column" />
+            <input data-name="value" id="schema-value<%- data.index %>" class="editor-input" value="<%- data.value %>" placeholder="name of field/column" />
         </div>
         <div class="col-xxl-2">
-            <label for="schema-uri<%= data.index %>">URI</label>
+            <label for="schema-uri<%- data.index %>">URI</label>
         </div>
         <div class="col-xxl-4">
-            <input data-name="uri" id="schema-uri<%= data.index %>" class="editor-input" value="<%= data.uri %>" placeholder="uri of controlled term" />
+            <input data-name="uri" id="schema-uri<%- data.index %>" class="editor-input" value="<%- data.uri %>" placeholder="uri of controlled term" />
         </div>
     </div>
     <div class="row">
         <div class="col-xxl-2">
-            <label for="schema-title<%= data.index %>">Title</label>
+            <label for="schema-title<%- data.index %>">Title</label>
         </div>
         <div class="col-xxl-10">
-            <input data-name="title" id="schema-title<%= data.index %>" class="editor-input" value="<%= data.title %>" placeholder="A nicer human readable label for the field (optional)" />
+            <input data-name="title" id="schema-title<%- data.index %>" class="editor-input" value="<%- data.title %>" placeholder="A nicer human readable label for the field (optional)" />
         </div>
     </div>
     <div class="row">
         <div class="col-xxl-2">
-            <label for="schema-type<%= data.index %>">Type</label>
+            <label for="schema-type<%- data.index %>">Type</label>
         </div>
         <div class="col-xxl-4">
-            <input list="dataTypeList<%= data.index %>" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" autocomplete="off" aria-autocomplete="none" />
+            <input list="dataTypeList<%- data.index %>" data-name="type" id="schema-type<%- data.index %>" class="editor-input" value="<%- data.type %>" autocomplete="off" aria-autocomplete="none" />
         </div>
         <div class="col-xxl-2">
             <div class="d-none d-xxl-block text-end">
-                <label for="schema-format<%= data.index %>">Format</label>
+                <label for="schema-format<%- data.index %>">Format</label>
             </div>
         </div>
         <div class="col-xxl-4">
-            <input list="dataFormatList<%= data.index %>" data-name="format" id="schema-format<%= data.index %>" class="editor-input" value="<%= data.format %>" autocomplete="off" aria-autocomplete="none" placeholder="optional (recommended for dates and times)" />
+            <input list="dataFormatList<%- data.index %>" data-name="format" id="schema-format<%- data.index %>" class="editor-input" value="<%- data.format %>" autocomplete="off" aria-autocomplete="none" placeholder="optional (recommended for dates and times)" />
         </div>
     </div>
     <div class="row">
         <div class="col-xxl-2">
-            <label for="schema-units<%= data.index %>">Unit</label>
+            <label for="schema-units<%- data.index %>">Unit</label>
         </div>
         <div class="col-xxl-4">
-            <input data-name="units" id="schema-units<%= data.index %>" class="editor-input" value="<%= data.units %>"/>
+            <input data-name="units" id="schema-units<%- data.index %>" class="editor-input" value="<%- data.units %>"/>
         </div>
         <div class="col-xxl-2">
-            <label for="schema-unitsUri<%= data.index %>">Unit uri</label>
+            <label for="schema-unitsUri<%- data.index %>">Unit uri</label>
         </div>
         <div class="col-xxl-4">
-            <input data-name="unitsUri" id="schema-unitsUri<%= data.index %>" class="editor-input" value="<%= data.unitsUri %>"/>
+            <input data-name="unitsUri" id="schema-unitsUri<%- data.index %>" class="editor-input" value="<%- data.unitsUri %>"/>
         </div>
     </div>
-    <div class="extended d-none" id="schemaDetail<%= data.index %>">
+    <div class="extended d-none" id="schemaDetail<%- data.index %>">
         <div class="row">
             <div class="col-xxl-2">
-                <label for="schema-description<%= data.index %>">Description</label>
+                <label for="schema-description<%- data.index %>">Description</label>
             </div>
             <div class="col-xxl-10">
-                <textarea data-name="description" id="schema-description<%= data.index %>" class="editor-textarea" rows="3"><%= data.description %></textarea>
+                <textarea data-name="description" id="schema-description<%- data.index %>" class="editor-textarea" rows="3"><%- data.description %></textarea>
             </div>
         </div>
         <div class="row">
             <div class="col-xxl-2">
-                <label for="schema-minimum<%= data.index %>">Minimum value</label>
+                <label for="schema-minimum<%- data.index %>">Minimum value</label>
             </div>
             <div class="col-xxl-4">
-                <input data-name="minimum" type="number" id="schema-minimum<%= data.index %>" class="editor-input" value="<%= data.constraints.minimum %>"/>
+                <input data-name="minimum" type="number" id="schema-minimum<%- data.index %>" class="editor-input" value="<%- data.constraints.minimum %>"/>
             </div>
             <div class="col-xxl-2">
-                <label for="schema-maximum<%= data.index %>">Maximum value</label>
+                <label for="schema-maximum<%- data.index %>">Maximum value</label>
             </div>
             <div class="col-xxl-4">
-                <input data-name="maximum" type="number" id="schema-maximum<%= data.index %>" class="editor-input" value="<%= data.constraints.maximum %>"/>
+                <input data-name="maximum" type="number" id="schema-maximum<%- data.index %>" class="editor-input" value="<%- data.constraints.maximum %>"/>
             </div>
         </div>
         <div class="row">
             <div class="col-xxl-2">
-                <label for="schema-minLength<%= data.index %>">Minimum length</label>
+                <label for="schema-minLength<%- data.index %>">Minimum length</label>
             </div>
             <div class="col-xxl-4">
-                <input data-name="minLength" type="number" step="1" id="schema-minLength<%= data.index %>" class="editor-input" value="<%= data.constraints.minLength %>"/>
+                <input data-name="minLength" type="number" step="1" id="schema-minLength<%- data.index %>" class="editor-input" value="<%- data.constraints.minLength %>"/>
             </div>
             <div class="col-xxl-2">
-                <label for="schema-maxLength<%= data.index %>">Maximum length</label>
+                <label for="schema-maxLength<%- data.index %>">Maximum length</label>
             </div>
             <div class="col-xxl-4">
-                <input data-name="maxLength" type="number" step="1" id="schema-maxLength<%= data.index %>" class="editor-input" value="<%= data.constraints.maxLength %>"/>
+                <input data-name="maxLength" type="number" step="1" id="schema-maxLength<%- data.index %>" class="editor-input" value="<%- data.constraints.maxLength %>"/>
             </div>
         </div>
 
@@ -98,18 +98,18 @@ export default _.template(`
             </div>
             <div class="col-xxl-10">
               <div class="form-check form-check-inline">
-                <input data-name="unique" name="schema-unique<%= data.index %>" class="form-check-input" type="radio" id="schema-unique<%= data.index %>-true" value="true" <% if (data.constraints.unique == true) { %> checked="checked" <% } %>>
-                <label class="form-check-label" for="schema-unique<%= data.index %>-true">Yes</label>
+                <input data-name="unique" name="schema-unique<%- data.index %>" class="form-check-input" type="radio" id="schema-unique<%- data.index %>-true" value="true" <% if (data.constraints.unique == true) { %> checked="checked" <% } %>>
+                <label class="form-check-label" for="schema-unique<%- data.index %>-true">Yes</label>
               </div>
               <div class="form-check form-check-inline">
-                <input type="radio" data-name="unique" name="schema-unique<%= data.index %>" class="form-check-input" id="schema-unique<%= data.index %>-false" value="false" <% if (data.constraints.unique == false) { %> checked="checked" <% } %> >
-                <label class="form-check-label" for="schema-unique<%= data.index %>-false">No</label>
+                <input type="radio" data-name="unique" name="schema-unique<%- data.index %>" class="form-check-input" id="schema-unique<%- data.index %>-false" value="false" <% if (data.constraints.unique == false) { %> checked="checked" <% } %> >
+                <label class="form-check-label" for="schema-unique<%- data.index %>-false">No</label>
               </div>
             </div>
         </div>
     </div>
 </div>
-<datalist id="dataTypeList<%= data.index %>">
+<datalist id="dataTypeList<%- data.index %>">
     <option value="float">Decimal number/float</option>
     <option value="integer">Integer</option>
     <option value="text">Text string</option>
@@ -118,7 +118,7 @@ export default _.template(`
     <option value="time">Time</option>
     <option value="dateTime">Date AND time</option>
 </datalist>
-<datalist id="dataFormatList<%= data.index %>">
+<datalist id="dataFormatList<%- data.index %>">
     <option value="YYYY">Four digit year e.g. 2018</option>
     <option value="YYYY-MM">Year and month e.g. 2018-12</option>
     <option value="YYYY-MM-DD">ISO date e.g. 2018-12-25</option>

@@ -129,7 +129,7 @@ export async function searchQuery ({ catalogue, relation, sourceType, currentId,
 export default ObjectInputView.extend({
 
   optionTemplate: _.template(
-    '<option value="<%= value %>" <%=selected%>><%= label %></option>'
+    '<option value="<%- value %>" <%-selected%>><%- label %></option>'
   ),
 
   async initialize (options) {

@@ -1,11 +1,11 @@
 import _ from 'underscore'
 import InputView from './InputView'
 
-const template = _.template('<select data-name="<%= data.modelAttribute %>" id="input-<%= data.modelAttribute %>" class="form-select form-select-sm"></select>')
+const template = _.template('<select data-name="<%- data.modelAttribute %>" id="input-<%- data.modelAttribute %>" class="form-select form-select-sm"></select>')
 export default InputView.extend({
 
   initialize (options) {
-    this.optionTemplate = _.template('<option value="<%= value %>"><%= label %></option>')
+    this.optionTemplate = _.template('<option value="<%- value %>"><%- label %></option>')
     this.options = options.options
     this.template = template
     InputView.prototype.initialize.call(this, options)

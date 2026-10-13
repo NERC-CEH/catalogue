@@ -19,7 +19,7 @@ export default InputView.extend({
     })
   },
 
-  optionTemplate: _.template('<option value="<%= id %>" <% if (id === data.catalogue) { %>selected<% } %>><%= title %></option>'),
+  optionTemplate: _.template('<option value="<%- id %>" <% if (id === data.catalogue) { %>selected<% } %>><%- title %></option>'),
 
   initialize (options) {
     this.template = template

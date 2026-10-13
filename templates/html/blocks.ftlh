@@ -276,7 +276,9 @@ Replace \n with line breaks and replace plain text http links with actionable on
 
 <#macro linkify text>
     <#if text??>
-      ${text?replace("(https?://[^\\s\\)\\]<]+)", "<a target='_blank' rel='noopener noreferrer' href='$1'>$1</a>" , "r")?no_esc}
+      <#-- Escape the record text first, then add the links: escaping is switched off to emit them.
+           A URL ends at whitespace, ) or ], or an escaped quote or angle bracket, but keeps &amp; -->
+      ${text?esc?markup_string?replace("(https?://(?:(?!&(?:lt|gt|quot|#39);)[^\\s\\)\\]<])+)", "<a target='_blank' rel='noopener noreferrer' href='$1'>$1</a>" , "r")?no_esc}
     </#if>
 </#macro>
 

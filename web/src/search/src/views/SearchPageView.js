@@ -92,9 +92,8 @@ export default Backbone.View.extend({
         } else {
           prefix = ''
         }
-        $relatedSearches.append(
-          `${prefix}<a href="${relatedSearch.href}">${relatedSearch.title}</a>`
-        )
+        // Titles are vocabulary labels from a third-party source: set them as text
+        $relatedSearches.append(prefix, $('<a>').attr('href', relatedSearch.href).text(relatedSearch.title))
       })
     }
 

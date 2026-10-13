@@ -1,4 +1,5 @@
 import $ from 'jquery'
+import _ from 'underscore'
 import Backbone from 'backbone'
 import L from 'leaflet'
 import 'leaflet.markercluster/dist/leaflet.markercluster.js'
@@ -97,10 +98,12 @@ export default Backbone.View.extend({
         const title = feature.properties.title
         const availability = feature.properties.availability
 
-        let content = `<p>${title}</p>`
-        if (typeof feature.properties.link !== 'undefined') {
-          const link = feature.properties.link
-          content = `<p><a href=${link}>${title}</a></p>`
+        // Leaflet sets popup content as HTML; the title comes from a linked record
+        let content = `<p>${_.escape(title)}</p>`
+        // Only http(s) links: escaping doesn't stop a javascript: URL from running when clicked
+        const link = feature.properties.link
+        if (typeof link === 'string' && /^https?:\/\//i.test(link)) {
+          content = `<p><a href="${_.escape(link)}">${_.escape(title)}</a></p>`
         }
 
         if (availability === 'Inactive') {

@@ -6,7 +6,7 @@ export default _.template(`
         <label class="control-label">Label</label>
     </div>
     <div class="col-sm-3">
-        <input data-name='label' class="editor-input" value="<%= data.label %>" <%= data.disabled%>>
+        <input data-name='label' class="editor-input" value="<%- data.label %>" <%- data.disabled%>>
     </div>
 
     <div class="col-sm-1">
@@ -14,9 +14,9 @@ export default _.template(`
     </div>
     <div class="col-sm-3">
         <div class="input-group">
-            <input data-name='min' class="form-control editor-input" value="<%= data.min %>" placeholder="-∞" <%= data.disabled%>>
+            <input data-name='min' class="form-control editor-input" value="<%- data.min %>" placeholder="-∞" <%- data.disabled%>>
             <span class="input-group-addon">'&#60 𝑥 &#8804</span>
-            <input data-name='max' class="form-control editor-input" value="<%= data.max %>" placeholder="∞" <%= data.disabled%>>
+            <input data-name='max' class="form-control editor-input" value="<%- data.max %>" placeholder="∞" <%- data.disabled%>>
         </div>
     </div>
 

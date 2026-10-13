@@ -1,4 +1,5 @@
 import $ from 'jquery'
+import _ from 'underscore'
 import Backbone from 'backbone'
 // eslint-disable-next-line no-unused-vars
 import DataTable from 'datatables.net-bs5'
@@ -89,10 +90,11 @@ export default Backbone.View.extend({
 
   prepareSingleTableData (model) {
     const fullPath = model.get('path') || ''
-    const fullPathMarkup = fullPath.replace(/\//g, '<span class="folder-separator">/</span>')
+    // DataTables writes cells as HTML and file names come from depositors: escape before adding markup
+    const fullPathMarkup = _.escape(fullPath).replace(/\//g, '<span class="folder-separator">/</span>')
     const sha256 = model.get('sha256') || ''
     const checksumBool = (sha256 && sha256 !== 'NO_HASH') ? 'Yes' : 'No'
-    const checksum = (sha256 && sha256 !== 'NO_HASH') ? `<span title="${sha256}">Yes</span>` : 'No'
+    const checksum = (sha256 && sha256 !== 'NO_HASH') ? `<span title="${_.escape(sha256)}">Yes</span>` : 'No'
     const lastValidatedRaw = model.get('lastValidated') || ''
     let lastValidated = ''
     const status = model.get('status') || ''

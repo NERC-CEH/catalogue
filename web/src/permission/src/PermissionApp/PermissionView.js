@@ -5,7 +5,7 @@ import template from './PermissionsTemplate'
 import { IdentityPermission, IdentityPermissionView } from '../IdentityPermission'
 
 export const documentsTemplate = _.template(`
-<td><%= identity %></td>
+<td><%- identity %></td>
 <td><input data-permission="canView" type="checkbox" <% if(canView) { %>checked<% } %>></td>
 <td><input data-permission="canEdit" type="checkbox" <% if(canEdit) { %>checked<% } %>></td>
 <td><input data-permission="canDelete" type="checkbox" <% if(canDelete) { %>checked<% } %>></td>
@@ -14,7 +14,7 @@ export const documentsTemplate = _.template(`
 `)
 
 export const serviceAgreementTemplate = _.template(`
-<td><%= identity %></td>
+<td><%- identity %></td>
 <td><input data-permission="canView" type="checkbox" <% if(canView) { %>checked<% } %>></td>
 <td><input data-permission="canEdit" type="checkbox" <% if(canEdit) { %>checked<% } %>></td>
 <td><button class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-times"></i></button></td>

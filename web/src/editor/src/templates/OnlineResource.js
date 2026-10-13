@@ -3,34 +3,34 @@ import _ from 'underscore'
 export default _.template(`
 <div class="row">
     <div class="col-sm-2">
-        <label for="onlineResource<%= data.index %>Name">Name</label>
+        <label for="onlineResource<%- data.index %>Name">Name</label>
     </div>
     <div class="col-sm-10">
-        <input data-name="name" id="onlineResource<%= data.index %>Name" class="editor-input" value="<%= data.name %>" <%= data.disabled%>>
+        <input data-name="name" id="onlineResource<%- data.index %>Name" class="editor-input" value="<%- data.name %>" <%- data.disabled%>>
     </div>
 </div>
 <div class="row">
     <div class="col-sm-2">
-        <label for="onlineResource<%= data.index %>Description">Description</label>
+        <label for="onlineResource<%- data.index %>Description">Description</label>
     </div>
     <div class="col-sm-10">
-        <textarea rows="3" data-name="description" id="onlineResource<%= data.index %>Description" class="editor-textarea" <%= data.disabled%>><%= data.description %></textarea>
+        <textarea rows="3" data-name="description" id="onlineResource<%- data.index %>Description" class="editor-textarea" <%- data.disabled%>><%- data.description %></textarea>
     </div>
 </div>
 <div class="row">
     <div class="col-sm-2">
-        <label for="onlineResource<%= data.index %>Url">URL</label>
+        <label for="onlineResource<%- data.index %>Url">URL</label>
     </div>
     <div class="col-sm-10">
-        <input data-name="url" id="onlineResource<%= data.index %>Url" class="editor-input" value="<%= data.url %>" <%= data.disabled%>>
+        <input data-name="url" id="onlineResource<%- data.index %>Url" class="editor-input" value="<%- data.url %>" <%- data.disabled%>>
     </div>
 </div>
 <div class="row">
     <div class="col-sm-2">
-        <label for="onlineResource<%= data.index %>Function">Function</label>
+        <label for="onlineResource<%- data.index %>Function">Function</label>
     </div>
     <div class="col-sm-4">
-        <select data-name="function" id="onlineResource<%= data.index %>Function" class="form-select" <%= data.disabled%>>
+        <select data-name="function" id="onlineResource<%- data.index %>Function" class="form-select" <%- data.disabled%>>
             <option value="" selected >- Select Function -</option>
             <option value="browseGraphic">Browse graphic <span>(a static image such as a logo or data preview)</span></option>
             <option value="browsing">Browsing <span>(an application that allows you to browse/preview the data)</span></option>
@@ -43,10 +43,10 @@ export default _.template(`
         </select>
     </div>
     <div class="col-sm-2">
-        <label for="onlineResource<%= data.index %>Size">Approx. size (bytes)</label>
+        <label for="onlineResource<%- data.index %>Size">Approx. size (bytes)</label>
     </div>
     <div class="col-sm-4">
-        <input data-name="size" type="number" id="onlineResource<%= data.index %>Size" class="editor-input" value="<%= data.size %>" <%= data.disabled%>>
+        <input data-name="size" type="number" id="onlineResource<%- data.index %>Size" class="editor-input" value="<%- data.size %>" <%- data.disabled%>>
     </div>
 </div>
 `)

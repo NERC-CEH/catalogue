@@ -11,7 +11,7 @@ export default ObjectInputView.extend({
     this.template = template
     this.hasRoleDefault = options.roleDefault !== undefined
     this.roleDefault = options.roleDefault || 'pointOfContact'
-    this.optionTemplate = _.template('<option value="<%= value %>"><%= label %></option>')
+    this.optionTemplate = _.template('<option value="<%- value %>"><%- label %></option>')
     this.options = Array.isArray(options.roleoptions)
       ? options.roleoptions
       : [

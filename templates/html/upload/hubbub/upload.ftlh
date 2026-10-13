@@ -213,7 +213,9 @@
 </#macro>
 
 <#macro data title files>
+    <#-- Raw JSON, so a file name containing </script> could end the element early. JSON has no <
+         outside strings, and \u003c in a string is the same character, so this keeps it valid -->
     <script id="${title}-data" type="application/json">
-        ${files?no_esc}
+        ${files?replace("<", "\\u003c")?no_esc}
     </script>
 </#macro>

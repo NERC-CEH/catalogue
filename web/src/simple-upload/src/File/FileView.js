@@ -2,7 +2,7 @@ import _ from 'underscore'
 import Backbone from 'backbone'
 
 const template = _.template(`
-<label><%= name %>
+<label><%- name %>
     <input type="checkbox" <% if (toDelete) { %> checked <% } %>/>
 </label>
 `)

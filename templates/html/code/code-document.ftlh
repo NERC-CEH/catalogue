@@ -215,11 +215,10 @@
    <@displayNest key>
       <#list value as item>
         <#if item?matches("^http(s)?://.+$")>
-          <#local foo = "<a href='" + item + "'>" + item + "</a>">
+          <div><a href="${item}">${item}</a></div>
         <#else>
-        <#local foo = item>
+          <div>${item}</div>
         </#if>
-        <div>${foo?no_esc}</div>
       </#list>
    </@displayNest>
 </#macro>
