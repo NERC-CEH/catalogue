@@ -15,7 +15,8 @@ export default Backbone.View.extend({
   defaultMessage: 'A requested resource failed to load.',
 
   events: {
-    'click span.fas': 'dismissMessage'
+    // The icon is fa-solid (Font Awesome 6), so span.fas never matched (dri-one #460)
+    'click .fa-times': 'dismissMessage'
   },
 
   initialize () {

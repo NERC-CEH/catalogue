@@ -7,6 +7,7 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocumentList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
@@ -92,8 +93,12 @@ class SearchTemplateTest {
         return catalogues;
     }
 
-    @SuppressWarnings("unchecked")
     private SearchResults results(boolean semanticEnabled) {
+        val basic = results(mock(QueryResponse.class), null, SolrQuery.ORDER.desc);
+        return semanticEnabled ? new SearchResults(basic, true) : basic;
+    }
+
+    private SearchResults results(QueryResponse response, String sortField, SolrQuery.ORDER order) {
         val query = new SearchQuery(
             "https://catalogue.ceh.ac.uk/documents",
             CatalogueUser.PUBLIC_USER,
@@ -106,19 +111,40 @@ class SearchTemplateTest {
             mock(GroupStore.class),
             eidc(),
             Collections.emptyList(),
-            null,
-            SolrQuery.ORDER.desc
+            sortField,
+            order
         );
-        val basic = new SearchResults(mock(QueryResponse.class), query, List.of());
-        return semanticEnabled ? new SearchResults(basic, true) : basic;
+        return new SearchResults(response, query, List.of());
     }
 
     @SneakyThrows
     private String render(boolean semanticEnabled) {
-        return FreeMarkerTemplateUtils.processTemplateIntoString(
-            configuration.getTemplate(TEMPLATE),
-            results(semanticEnabled)
-        );
+        return render(results(semanticEnabled));
+    }
+
+    @SneakyThrows
+    private String render(SearchResults results) {
+        return FreeMarkerTemplateUtils.processTemplateIntoString(configuration.getTemplate(TEMPLATE), results);
+    }
+
+    /** A page sorted as given, with one record found so the sort dropdown is rendered. */
+    private String renderSorted(String sortField, SolrQuery.ORDER order) {
+        val found = new SolrDocumentList();
+        found.setNumFound(1);
+        val response = mock(QueryResponse.class);
+        when(response.getResults()).thenReturn(found);
+        return render(results(response, sortField, order));
+    }
+
+    /** The values of the selected options in the sort dropdown. */
+    private List<String> selectedSorts(String html) {
+        int start = html.indexOf("id=\"sort-search\"");
+        assertThat(start).as("no sort dropdown in the rendered page").isNotNegative();
+        Matcher matcher = Pattern.compile("<option[^>]*value=\"([^\"]*)\"[^>]*\\bselected\\b")
+            .matcher(html.substring(start, html.indexOf("</select>", start)));
+        List<String> selected = new java.util.ArrayList<>();
+        while (matcher.find()) selected.add(matcher.group(1));
+        return selected;
     }
 
     /** The opening tag of the first element of the given name, so attributes can be asserted on. */
@@ -144,6 +170,19 @@ class SearchTemplateTest {
 
     private int occurrences(String html, String needle) {
         return html.split(Pattern.quote(needle), -1).length - 1;
+    }
+
+    // ------------------------------------------------------------------------ sort
+
+    /**
+     * The server-rendered dropdown used to mark nothing as selected, so a page sorted by
+     * citations or title (a shared link, a reload) showed "Relevance" (dri-one #460).
+     */
+    @Test
+    void theSortDropdownShowsTheCurrentSort() {
+        assertThat(selectedSorts(renderSorted("incomingCitationCount", SolrQuery.ORDER.desc))).containsExactly("incomingCitationCount-desc");
+        assertThat(selectedSorts(renderSorted("title", SolrQuery.ORDER.asc))).containsExactly("title-asc");
+        assertThat(selectedSorts(renderSorted(null, SolrQuery.ORDER.desc))).containsExactly("");
     }
 
     // ---------------------------------------------------------------- keyword mode

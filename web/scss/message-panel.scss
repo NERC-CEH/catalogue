@@ -2,6 +2,8 @@
     //@include panel();
 
     position:  fixed;
+    // Above the sticky header (z-index 1025), which otherwise covers every message
+    z-index:   $zindex-fixed;
     display:   none;
     top:       $navbar-height + $navbar-border-width;
     right:     0;
