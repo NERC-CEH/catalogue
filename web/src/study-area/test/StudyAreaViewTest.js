@@ -126,4 +126,24 @@ describe('marker styling', () => {
     expect(popup.find('a').text()).toBe(feature.properties.title)
     expect(popup.find('a').attr('href')).toBe(feature.properties.link)
   })
+
+  it('links a popup only to an http(s) address (dri-one #454)', () => {
+    // Escaping does not stop a javascript: URL from running when the link is clicked
+    spyOn(L.Layer.prototype, 'bindPopup').and.callThrough()
+    const feature = {
+      type: 'Feature',
+      properties: { title: 'Site A', link: 'javascript:window.__xss454=1' }, // eslint-disable-line no-script-url
+      geometry: { type: 'Point', coordinates: [-2.64501, 54.5261] }
+    }
+    const el = $('<div id="studyarea-map" class="studyarea-map"><span dataType="geoJson"/></div>')
+    el.find('span').attr('content', JSON.stringify({ type: 'FeatureCollection', features: [feature] }))
+    el.appendTo($('body'))
+
+    new StudyAreaView({ el }) // eslint-disable-line no-new
+    el.remove()
+
+    const popup = $('<div>').html(L.Layer.prototype.bindPopup.calls.first().args[0])
+    expect(popup.find('a').length).toBe(0)
+    expect(popup.text()).toContain('Site A')
+  })
 })
