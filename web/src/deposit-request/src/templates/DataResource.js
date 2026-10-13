@@ -10,7 +10,7 @@ export default _.template(`
           data-name='title'
           class="form-control"
           placeholder="Enter working title"
-          value="<%= data.title || '' %>">
+          value="<%- data.title || '' %>">
     <div class="invalid-feedback"></div>
   </div>
 
@@ -21,7 +21,7 @@ export default _.template(`
     </label>
     <textarea data-name='description'
               class="form-control"
-              placeholder="Enter brief description"><%= data.description || '' %></textarea>
+              placeholder="Enter brief description"><%- data.description || '' %></textarea>
     <div class="invalid-feedback"></div>
   </div>
 
@@ -31,12 +31,12 @@ export default _.template(`
     </label>
     <select data-name="resourceType" class="form-select">
       <option value="">Select resource type</option>
-      <option value="Experimental data" <%= data.resourceType === 'Experimental data' ? 'selected' : '' %>>Experimental data</option>
-      <option value="Images" <%= data.resourceType === 'Images' ? 'selected' : '' %>>Images</option>
-      <option value="Interview/survey" <%= data.resourceType === 'Interview/survey' ? 'selected' : '' %>>Interview/survey</option>
-      <option value="Model output" <%= data.resourceType === 'Model output' ? 'selected' : '' %>>Model output</option>
-      <option value="Monitoring data" <%= data.resourceType === 'Monitoring data' ? 'selected' : '' %>>Monitoring data</option>
-      <option value="Other" <%= data.resourceType === 'Other' ? 'selected' : '' %>>Other</option>
+      <option value="Experimental data" <%- data.resourceType === 'Experimental data' ? 'selected' : '' %>>Experimental data</option>
+      <option value="Images" <%- data.resourceType === 'Images' ? 'selected' : '' %>>Images</option>
+      <option value="Interview/survey" <%- data.resourceType === 'Interview/survey' ? 'selected' : '' %>>Interview/survey</option>
+      <option value="Model output" <%- data.resourceType === 'Model output' ? 'selected' : '' %>>Model output</option>
+      <option value="Monitoring data" <%- data.resourceType === 'Monitoring data' ? 'selected' : '' %>>Monitoring data</option>
+      <option value="Other" <%- data.resourceType === 'Other' ? 'selected' : '' %>>Other</option>
     </select>
     <div class="invalid-feedback"></div>
 
@@ -44,14 +44,14 @@ export default _.template(`
       <input type="text"
             data-name="resourceTypeOther"
             class="form-control"
-            value="<%= data.otherResourceType || '' %>"
+            value="<%- data.otherResourceType || '' %>"
             placeholder="Specify resource type"
-            style="<%= data.resourceType === 'Other' ? '' : 'display: none;' %>">
+            style="<%- data.resourceType === 'Other' ? '' : 'display: none;' %>">
       <div class="invalid-feedback"></div>
     </div>
   </div>
 
-  <div class="mt-2 easilyRecreated" style="<%= data.resourceType === 'Other' || data.resourceType === 'Model output' ? '' : 'display: none;' %>">
+  <div class="mt-2 easilyRecreated" style="<%- data.resourceType === 'Other' || data.resourceType === 'Model output' ? '' : 'display: none;' %>">
     <div class="alert alert-info">
       <p>Please note: If the data is model output from a publicly available model that can be quickly
       and easily re-run to produce the same data, we <span class="fw-bold text-decoration-underline link-offset-2">may not</span> consider it to be data of long-term value
@@ -70,27 +70,27 @@ export default _.template(`
       <div class="form-check form-check-inline">
         <input class="form-check-input"
                 type="radio"
-                name="easilyRecreated-<%= data.index %>"
+                name="easilyRecreated-<%- data.index %>"
                 data-name="easilyRecreated"
                 id="easilyRecreatedYes"
                 value=true
-                <%= data.easilyRecreated === true ? 'checked' : '' %>>
+                <%- data.easilyRecreated === true ? 'checked' : '' %>>
         <label class="form-check-label" for="easilyRecreatedYes">Yes</label>
       </div>
       <div class="form-check form-check-inline">
         <input class="form-check-input"
                 type="radio"
-                name="easilyRecreated-<%= data.index %>"
+                name="easilyRecreated-<%- data.index %>"
                 data-name="easilyRecreated"
                 id="easilyRecreatedNo"
                 value=false
-                <%= data.easilyRecreated === false ? 'checked' : '' %>>
+                <%- data.easilyRecreated === false ? 'checked' : '' %>>
         <label class="form-check-label" for="easilyRecreatedNo">No</label>
       </div>
       <div>
         <input class="d-none"
                 type="radio"
-                name="easilyRecreated-<%= data.index %>"
+                name="easilyRecreated-<%- data.index %>"
                 data-name="easilyRecreated"
                 id="easilyRecreatedNone">
         <label class="d-none" >None</label>
@@ -106,20 +106,20 @@ export default _.template(`
     </label>
     <select data-name="resourceFormat" class="form-select">
       <option value="">Select resource format</option>
-      <option value="Comma separated values (csv)" <%= data.resourceFormat === 'Comma separated values (csv)' ? 'selected' : '' %>>Comma separated values (csv)</option>
-      <option value="Excel spreadsheet" <%= data.resourceFormat === 'Excel spreadsheet' ? 'selected' : '' %>>Excel spreadsheet</option>
-      <option value="NetCDF" <%= data.resourceFormat === 'NetCDF' ? 'selected' : '' %>>NetCDF</option>
-      <option value="Shapefile" <%= data.resourceFormat === 'Shapefile' ? 'selected' : '' %>>Shapefile</option>
-      <option value="Other" <%= data.resourceFormat === 'Other' ? 'selected' : '' %>>Other</option>
+      <option value="Comma separated values (csv)" <%- data.resourceFormat === 'Comma separated values (csv)' ? 'selected' : '' %>>Comma separated values (csv)</option>
+      <option value="Excel spreadsheet" <%- data.resourceFormat === 'Excel spreadsheet' ? 'selected' : '' %>>Excel spreadsheet</option>
+      <option value="NetCDF" <%- data.resourceFormat === 'NetCDF' ? 'selected' : '' %>>NetCDF</option>
+      <option value="Shapefile" <%- data.resourceFormat === 'Shapefile' ? 'selected' : '' %>>Shapefile</option>
+      <option value="Other" <%- data.resourceFormat === 'Other' ? 'selected' : '' %>>Other</option>
     </select>
     <div class="invalid-feedback"></div>
     <div class="mt-2">
       <input type="text"
             data-name="resourceFormatOther"
             class="form-control"
-            value="<%= data.resourceFormatOther || '' %>"
+            value="<%- data.resourceFormatOther || '' %>"
             placeholder="Please specify the file format(s)"
-            style="<%= data.resourceFormat === 'Other' ? '' : 'display: none;' %>">
+            style="<%- data.resourceFormat === 'Other' ? '' : 'display: none;' %>">
       <div class="invalid-feedback"></div>
     </div>
   </div>
@@ -132,7 +132,7 @@ export default _.template(`
     <input type="text"
           data-name="size"
           class="form-control"
-          value="<%= data.size || '' %>"
+          value="<%- data.size || '' %>"
           placeholder="Enter a rough estimate of size (Mb or Gb and approx number of files)">
     <div class="invalid-feedback"></div>
   </div>
@@ -144,27 +144,27 @@ export default _.template(`
     <div class="form-check form-check-inline">
       <input class="form-check-input"
               type="radio"
-              name="largeData-<%= data.index %>"
+              name="largeData-<%- data.index %>"
               data-name="largeData"
               id="largeDataYes"
               value=true
-              <%= data.largeData === true ? 'checked' : '' %>>
+              <%- data.largeData === true ? 'checked' : '' %>>
       <label class="form-check-label" for="largeDataYes">Yes</label>
     </div>
     <div class="form-check form-check-inline">
       <input class="form-check-input"
               type="radio"
-              name="largeData-<%= data.index %>"
+              name="largeData-<%- data.index %>"
               data-name="largeData"
               id="largeDataNo"
               value=false
-              <%= data.largeData === false ? 'checked' : '' %>>
+              <%- data.largeData === false ? 'checked' : '' %>>
       <label class="form-check-label" for="largeDataNo">No</label>
     </div>
     <div>
       <input class="d-none"
               type="radio"
-              name="largeData-<%= data.index %>"
+              name="largeData-<%- data.index %>"
               data-name="largeData"
               id="largeDataNone">
       <label class="d-none" >None</label>

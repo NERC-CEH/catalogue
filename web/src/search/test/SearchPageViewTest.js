@@ -84,4 +84,45 @@ describe('Test SearchPageView', () => {
       expect(view.$el.children().length).toEqual(0)
     })
   })
+
+  describe('rendering search results (dri-one #454)', () => {
+    const payload = 'Soil "X" <img src=x onerror="window.__xss454=1">'
+
+    beforeEach(() => {
+      $(document.body).html("<div id='page'></div>")
+      model = new SearchApp({})
+      view = new SearchPageView({ el: '#page', model })
+    })
+
+    afterEach(() => {
+      $(document.body).empty()
+    })
+
+    it('shows record titles, descriptions and related searches as text', () => {
+      model.getResults().set({
+        numFound: 1,
+        page: 1,
+        rows: 20,
+        url: '/eidc/documents',
+        results: [{
+          identifier: 'rec1',
+          title: payload,
+          shortenedDescription: payload,
+          documentType: 'GEMINI_DOCUMENT',
+          recordType: 'Dataset',
+          state: 'published',
+          url: '/documents/rec1'
+        }],
+        relatedSearches: [{ href: '/eidc/documents?term="soil"&x=1', title: payload }]
+      })
+
+      view.render()
+
+      expect(view.$('img').length).toBe(0)
+      expect(view.$('.result__title').first().text()).toBe(payload)
+      const related = view.$('.results__related_searches a')
+      expect(related.text()).toBe(payload)
+      expect(related.attr('href')).toBe('/eidc/documents?term="soil"&x=1')
+    })
+  })
 })

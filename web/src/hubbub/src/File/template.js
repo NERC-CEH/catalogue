@@ -1,23 +1,23 @@
 import _ from 'underscore'
 
 export default _.template(`
-<div class="card card-file <%= classes %>">
+<div class="card card-file <%- classes %>">
     <div class="card-header">
         <% if (errorType === 'file') { %>
             <i class="file-icon fa-solid fa-exclamation-circle"></i>
         <% } else { %>
             <% if (status === 'MOVING_FROM' || status === 'MOVING_TO') { %>
-                <span class="card-header-type"><%= size %></span>
+                <span class="card-header-type"><%- size %></span>
             <% } %>
         <% } %>
-        <span><strong><%= status %></strong>&nbsp;</span>
-        <span>&nbsp;<%= path %></span>
+        <span><strong><%- status %></strong>&nbsp;</span>
+        <span>&nbsp;<%- path %></span>
 
         <i class="card-header-chevron fa-solid fa-chevron-down"></i>
     </div>
     <div class="card-body">
         <p>
-            <b>Path: </b> <span><%= path %></span>
+            <b>Path: </b> <span><%- path %></span>
         </p>
         <div class="row">
             <div class="col-md-2"><b>Status</b></div>
@@ -26,18 +26,18 @@ export default _.template(`
             <div class="col-md-3"><b>Last validated</b></div>
         </div>
         <div class="row">
-            <div class="col-md-2"><%= status %></div>
-            <div class="col-md-2"><%= size %></div>
-            <div class="col-md-5"><%= hash %></div>
-            <div class="col-md-3"><%= date %></div>
+            <div class="col-md-2"><%- status %></div>
+            <div class="col-md-2"><%- size %></div>
+            <div class="col-md-5"><%- hash %></div>
+            <div class="col-md-3"><%- date %></div>
         </div>
 
         <% if (message) { %>
             <div class="card-file-message">
                 <% if (message.title) { %>
-                <span class="card-file-message-title"><%= message.title %></span>
+                <span class="card-file-message-title"><%- message.title %></span>
                 <% } %>
-                <p class="card-file-message-body"><%= message.content %></p>
+                <p class="card-file-message-body"><%- message.content %></p>
             </div>
         <% } %>
     </div>

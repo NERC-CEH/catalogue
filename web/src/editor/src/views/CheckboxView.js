@@ -3,7 +3,7 @@ import $ from 'jquery'
 import SingleView from '../SingleView'
 
 const template = _.template(`
-<input data-name="<%= data.modelAttribute %>" id="input-<%= data.modelAttribute %>" value="<%= data.value %>" type="checkbox" >
+<input data-name="<%- data.modelAttribute %>" id="input-<%- data.modelAttribute %>" value="<%- data.value %>" type="checkbox" >
 `)
 
 export default SingleView.extend({

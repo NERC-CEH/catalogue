@@ -13,10 +13,10 @@ const tableTemplate = `
     <% if (suggestions && suggestions.length > 0) { %>
       <% _.each(suggestions, function(suggestion) { %>
         <tr>
-          <td><input type="checkbox" class="suggestions-checkbox" data-term="<%= suggestion.name || '' %>" data-uri="<%= suggestion.uri || '' %>"  <% if (suggestion.isChecked) { %>checked<% } %>></td>
-          <td><%= suggestion.name || '' %></td>
-          <td><%= suggestion.uri || '' %></td>
-          <td><%= suggestion.confidence || 0 %></td>
+          <td><input type="checkbox" class="suggestions-checkbox" data-term="<%- suggestion.name || '' %>" data-uri="<%- suggestion.uri || '' %>"  <% if (suggestion.isChecked) { %>checked<% } %>></td>
+          <td><%- suggestion.name || '' %></td>
+          <td><%- suggestion.uri || '' %></td>
+          <td><%- suggestion.confidence || 0 %></td>
         </tr>
       <% }); %>
     <% } %>

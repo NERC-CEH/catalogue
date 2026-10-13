@@ -1,7 +1,7 @@
 import Backbone from 'backbone'
 import _ from 'underscore'
 
-const template = _.template('<span class="<%= type %>"><%= message %></span>')
+const template = _.template('<span class="<%- type %>"><%- message %></span>')
 export default Backbone.View.extend({
 
   tagName: 'li',

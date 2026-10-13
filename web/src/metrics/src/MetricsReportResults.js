@@ -4,11 +4,11 @@ import _ from 'underscore'
 export default Backbone.View.extend({
   template: _.template(`
     <tr>
-      <td><%= document %></td>
-      <td><%= docTitle %></td>
-      <td><%= recordType %></td>
-      <td><%= views %></td>
-      <td><%= downloads %></td>
+      <td><%- document %></td>
+      <td><%- docTitle %></td>
+      <td><%- recordType %></td>
+      <td><%- views %></td>
+      <td><%- downloads %></td>
     </tr>
   `),
 

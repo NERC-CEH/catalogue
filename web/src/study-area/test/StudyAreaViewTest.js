@@ -1,4 +1,5 @@
 import $ from 'jquery'
+import L from 'leaflet'
 import { StudyAreaView } from '../src/View'
 
 describe('Test StudyAreaView', function () {
@@ -103,5 +104,26 @@ describe('marker styling', () => {
 
     // Then
     expect(() => styling.centerPointOfPolygon(polygon)).not.toThrow()
+  })
+
+  it('shows a linked record title as text in its popup (dri-one #454)', () => {
+    spyOn(L.Layer.prototype, 'bindPopup').and.callThrough()
+    const feature = {
+      type: 'Feature',
+      properties: { title: '<img src=x onerror="window.__xss454=1">', link: 'https://example.com/" onmouseover="x' },
+      geometry: { type: 'Point', coordinates: [-2.64501, 54.5261] }
+    }
+    const el = $('<div id="studyarea-map" class="studyarea-map"><span dataType="geoJson"/></div>')
+    // Linked records arrive as a feature collection, the only path that adds popups
+    el.find('span').attr('content', JSON.stringify({ type: 'FeatureCollection', features: [feature] }))
+    el.appendTo($('body'))
+
+    new StudyAreaView({ el }) // eslint-disable-line no-new
+    el.remove()
+
+    const popup = $('<div>').html(L.Layer.prototype.bindPopup.calls.first().args[0])
+    expect(popup.find('img').length).toBe(0)
+    expect(popup.find('a').text()).toBe(feature.properties.title)
+    expect(popup.find('a').attr('href')).toBe(feature.properties.link)
   })
 })

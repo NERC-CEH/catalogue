@@ -26,9 +26,14 @@ import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.CODE_JSON_VALUE;
 
 @WithMockCatalogueUser
@@ -84,6 +89,31 @@ class CodeDocumentControllerTest extends AbstractMvcTest {
                 .logo("eidc.png")
                 .build()
             );
+    }
+
+    @Test
+    public void escapesInputsOutputsAndPackagesOnTheRecordPage() throws Exception {
+        // dri-one #454: these lists were output with escaping switched off to build links
+        givenFreemarkerConfiguration();
+        givenCatalogue();
+        given(permissionService.toAccess(any(CatalogueUser.class), eq(id), eq("VIEW"))).willReturn(true);
+
+        CodeDocument document = new CodeDocument();
+        document.setId(id);
+        document.setUri("https://catalogue.ceh.ac.uk/id/" + id);
+        document.setMetadata(MetadataInfo.builder().catalogue(catalogue).documentType("CODE_DOCUMENT").build());
+        document.setTitle("Test");
+        document.setInputs(java.util.List.of("<script>alert(1)</script>", "https://example.com/'onmouseover='alert(1)"));
+        given(documentRepository.read(id)).willReturn(document);
+
+        mvc.perform(get("/documents/{id}", id).accept(org.springframework.http.MediaType.TEXT_HTML))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                not(containsString("<script>alert(1)</script>")),
+                containsString("&lt;script&gt;alert(1)&lt;/script&gt;"),
+                not(containsString("href='https://example.com/'onmouseover")),
+                containsString("href=\"https://example.com/&#39;onmouseover=&#39;alert(1)\"")
+            )));
     }
 
     @Test

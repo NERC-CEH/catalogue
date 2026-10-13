@@ -3,10 +3,10 @@ import _ from 'underscore'
 export default _.template(`
 <div class="row">
     <div class="col-lg-2">
-        <label for="coupledResource<%= data.index %>OperationName">Operation Name</label>
+        <label for="coupledResource<%- data.index %>OperationName">Operation Name</label>
     </div>
     <div class="col-lg-4">
-        <select data-name='operationName' class="form-select" id="coupledResource<%= data.index %>OperationName" <%= data.disabled%>>
+        <select data-name='operationName' class="form-select" id="coupledResource<%- data.index %>OperationName" <%- data.disabled%>>
             <option value="">- Select Operation -</option>
             <option>COM</option>
             <option>Corba</option>
@@ -21,18 +21,18 @@ export default _.template(`
         </select>
     </div>
     <div class="col-lg-2">
-        <label for="coupledResource<%= data.index %>LayerName">Layer Name</label>
+        <label for="coupledResource<%- data.index %>LayerName">Layer Name</label>
     </div>
     <div class="col-lg-4">
-        <input data-name='layerName' class="editor-input" id="coupledResource<%= data.index %>LayerName" value="<%= data.layerName %>" <%= data.disabled%>>
+        <input data-name='layerName' class="editor-input" id="coupledResource<%- data.index %>LayerName" value="<%- data.layerName %>" <%- data.disabled%>>
     </div>
 </div>
 <div class="row">
     <div class="col-lg-2">
-        <label for="coupledResource<%= data.index %>Identifier">Identifier</label>
+        <label for="coupledResource<%- data.index %>Identifier">Identifier</label>
     </div>
     <div class="col-lg-10">
-        <input data-name='identifier' class="editor-input" id="coupledResource<%= data.index %>Identifier" value="<%= data.identifier %>" <%= data.disabled%>>
+        <input data-name='identifier' class="editor-input" id="coupledResource<%- data.index %>Identifier" value="<%- data.identifier %>" <%- data.disabled%>>
     </div>
 </div>
 `)

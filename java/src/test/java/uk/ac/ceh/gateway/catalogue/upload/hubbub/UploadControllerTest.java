@@ -36,6 +36,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.containsString;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -200,6 +202,10 @@ class UploadControllerTest extends AbstractMvcTest {
     }
 
     private void givenDropbox() {
+        givenDropbox(path);
+    }
+
+    private void givenDropbox(String filePath) {
         val data = Collections.singletonList(
             new HubbubResponse.FileInfo(
                 456L,
@@ -210,7 +216,7 @@ class UploadControllerTest extends AbstractMvcTest {
                 0.32,
                 lastModified,
                 lastValidated,
-                path,
+                filePath,
                 "VALID",
                 "sha256HASH",
                 "text/csv"
@@ -270,6 +276,26 @@ class UploadControllerTest extends AbstractMvcTest {
             .andExpect(model().attribute("isInProgress", false))
             .andExpect(model().attributeExists("datastore", "dropbox", "metadata", "maxFileSize"));
 
+    }
+
+    @Test
+    @SneakyThrows
+    void fileListJsonCannotCloseItsScriptElement() {
+        // dri-one #454: file names come from depositors and the list is embedded in <script> as raw JSON
+        givenUserCanUpload();
+        givenUserIsAdmin();
+        givenGeminiDocument();
+        givenDataTransferIssue();
+        givenFreemarkerConfiguration();
+        givenDefaultCatalogue();
+        givenDatastore();
+        givenDropbox("data/</script><img src=x onerror=alert(1)>.csv");
+        givenMetadata();
+
+        mvc.perform(get("/upload/{datasetId}", datasetId))
+            .andExpect(status().isOk())
+            .andExpect(content().string(not(containsString("</script><img"))))
+            .andExpect(content().string(containsString("data/\\u003c/script>\\u003cimg src=x onerror=alert(1)>.csv")));
     }
 
     @Test

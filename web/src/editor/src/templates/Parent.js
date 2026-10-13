@@ -12,10 +12,10 @@ export default _.template(`
       <label>
           <%= data.label %>
           <% if(data.helpText) { %>
-              <a data-bs-toggle="collapse" title="Click for help" href="#help-<%= data.modelAttribute %>" data-parent="#editor"><i class="fa-regular fa-circle-question"></i></a>
+              <a data-bs-toggle="collapse" title="Click for help" href="#help-<%- data.modelAttribute %>" data-parent="#editor"><i class="fa-regular fa-circle-question"></i></a>
           <% } %>
       </label>
-      <button class="editor-button add" <%= data.disabled%>>Add <span class="fa-solid fa-plus" aria-hidden="true"></span></button>
+      <button class="editor-button add" <%- data.disabled%>>Add <span class="fa-solid fa-plus" aria-hidden="true"></span></button>
       <div class="clearfix"></div>
       <% if (data.fetchKeywordsButton) { %>
         <div class="d-inline-flex">
@@ -31,7 +31,7 @@ export default _.template(`
           </div>
         </div>
       <% } %>
-      <div id="help-<%= data.modelAttribute %>" class="editor-help w-100">
+      <div id="help-<%- data.modelAttribute %>" class="editor-help w-100">
           <%= data.helpText %>
       </div>
     </div>

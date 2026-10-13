@@ -45,8 +45,12 @@
 <#assign headContent>
 <link rel="alternate" type="text/turtle" href="${uri}?format=ttl"/>
 <link rel="alternate" type="application/vnd.schemaorg.ld+json" href="${uri}?format=schema.org"/>
+<#-- schema.org.ftl is plain .ftl, so record text inside it is not HTML-escaped. JSON has no <
+     outside strings and \u003c in a string is the same character, so this keeps a </script> in
+     record text from ending the element while leaving the JSON-LD unchanged -->
+<#assign jsonLd><#include "../schema.org/schema.org.ftl"></#assign>
 <script type="application/ld+json">
-  <#include "../schema.org/schema.org.ftl">
+  ${jsonLd?markup_string?replace("<", "\\u003c")?no_esc}
 </script>
 </#assign>
 <@skeleton.master title=title catalogue=catalogue canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue) footer=true headContent=headContent>

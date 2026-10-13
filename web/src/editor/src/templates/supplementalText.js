@@ -11,7 +11,7 @@ export default _.template(`
       </select>
     </div>
     <div class="col-md-10 col-sm-8">
-      <textarea data-name='description' class="editor-textarea" id="supplemental<%= data.index %>Description" rows="6"><%= data.description %></textarea>
+      <textarea data-name='description' class="editor-textarea" id="supplemental<%- data.index %>Description" rows="6"><%- data.description %></textarea>
     </div>
 </div>
 `)

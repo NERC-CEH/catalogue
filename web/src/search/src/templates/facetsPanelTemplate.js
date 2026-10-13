@@ -11,7 +11,7 @@ export default _.template(`
   <% if(facet.results) { %>
    <div class="facet form-floating <% if(facet.admin) { %>facet-admin<% } %>">
       <%= template({"facet": facet, "template": template}) %>
-      <label>Filter <%=facet.displayName.toLowerCase() %></label>
+      <label>Filter <%-facet.displayName.toLowerCase() %></label>
     </div>
   <% } %>
 <% }); %>

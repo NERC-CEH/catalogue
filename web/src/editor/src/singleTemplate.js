@@ -10,16 +10,16 @@ export default _.template(`
 >
     <div class="col-md-3 datalabel">
         <% if(data.label) { %>
-        <label<% if (labelsControl) { %> for="input-<%= data.modelAttribute %>"<% } %>>
+        <label<% if (labelsControl) { %> for="input-<%- data.modelAttribute %>"<% } %>>
             <%= data.label %>
             <% if(data.helpText) { %>
-                <a data-bs-toggle="collapse" title="Click for help" href="#help-<%= data.modelAttribute %>" data-parent="#editor"><i class="fa-regular fa-circle-question"></i></a>
+                <a data-bs-toggle="collapse" title="Click for help" href="#help-<%- data.modelAttribute %>" data-parent="#editor"><i class="fa-regular fa-circle-question"></i></a>
             <% } %>
         </label>
         <% } %>
         <div class="template-add-on"></div>
         <% if(data.helpText) { %>
-            <div id="help-<%= data.modelAttribute %>" class="editor-help">
+            <div id="help-<%- data.modelAttribute %>" class="editor-help">
             <%= data.helpText %>
             </div>
         <% } %>

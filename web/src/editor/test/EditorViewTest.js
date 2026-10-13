@@ -179,4 +179,15 @@ describe('EditorView', () => {
     // edits are still on the model
     expect(view.model.get('title')).toBe('my in-progress title')
   })
+
+  it('shows the record JSON in the save-error dialog as text (dri-one #454)', () => {
+    const swalSpy = spyOn(Swal, 'fire')
+    view.model.set('title', '</textarea><img src=x onerror="window.__xss454=1">')
+
+    view.model.trigger('error', view.model, { status: 500, statusText: 'Server Error', responseText: 'boom' })
+
+    const html = swalSpy.calls.mostRecent().args[0].html
+    expect(html).not.toContain('<img')
+    expect(html).toContain('&lt;/textarea&gt;&lt;img')
+  })
 })

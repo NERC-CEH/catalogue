@@ -10,7 +10,7 @@ const template = `
                 class="form-control"
                 id="your-name"
                 data-name="name"
-                value="<%= model.name %>">
+                value="<%- model.name %>">
         <label for="your-name">
           Your name <span class="text-danger">*</span>
         </label>
@@ -21,7 +21,7 @@ const template = `
                 class="form-control"
                 id="your-email"
                 data-name="email"
-                value="<%= model.email %>">
+                value="<%- model.email %>">
         <label for="your-email">
           Your email address <span class="text-danger">*</span>
         </label>
@@ -32,22 +32,22 @@ const template = `
                 class="form-control"
                 id="your-affiliation"
                 data-name="affiliation"
-                value="<%= model.affiliation %>">
+                value="<%- model.affiliation %>">
         <div class="invalid-feedback"></div>
         <label for="your-affiliation">
           Your affiliation <span class="text-danger">*</span>
         </label>
       </div>
-      <div id="scienceAreaContainer" class="mt-3 <%= model.email?.includes('@ceh.ac.uk') ? '' : 'd-none' %>">
+      <div id="scienceAreaContainer" class="mt-3 <%- model.email?.includes('@ceh.ac.uk') ? '' : 'd-none' %>">
         <label for="scienceArea">Which science area should this be attributed to?</label>
         <select class="form-select" data-name="scienceArea" id="scienceArea">
             <option value="">Select science area</option>
-            <option value="2025_Biodiversity and Land Use" <%= model.scienceArea === '2025_Biodiversity and Land Use' ? 'selected' : '' %>>Biodiversity and Land Use</option>
-            <option value="2025_Environmental Pressures & Responses" <%= model.scienceArea === '2025_Environmental Pressures & Responses' ? 'selected' : '' %>>Environmental Pressures & Responses</option>
-            <option value="2025_Land-Atmosphere Interactions" <%= model.scienceArea === '2025_Land-Atmosphere Interactions' ? 'selected' : '' %>>Land-Atmosphere Interactions</option>
-            <option value="2025_National Capability and Digital Research" <%= model.scienceArea === '2025_National Capability and Digital Research' ? 'selected' : '' %>>National Capability and Digital Research</option>
-            <option value="2025_Water and Climate Science" <%= model.scienceArea === '2025_Water and Climate Science' ? 'selected' : '' %>>Water and Climate Science</option>
-            <option value="External" <%= model.scienceArea === 'External' ? 'selected' : '' %>>External</option>
+            <option value="2025_Biodiversity and Land Use" <%- model.scienceArea === '2025_Biodiversity and Land Use' ? 'selected' : '' %>>Biodiversity and Land Use</option>
+            <option value="2025_Environmental Pressures & Responses" <%- model.scienceArea === '2025_Environmental Pressures & Responses' ? 'selected' : '' %>>Environmental Pressures & Responses</option>
+            <option value="2025_Land-Atmosphere Interactions" <%- model.scienceArea === '2025_Land-Atmosphere Interactions' ? 'selected' : '' %>>Land-Atmosphere Interactions</option>
+            <option value="2025_National Capability and Digital Research" <%- model.scienceArea === '2025_National Capability and Digital Research' ? 'selected' : '' %>>National Capability and Digital Research</option>
+            <option value="2025_Water and Climate Science" <%- model.scienceArea === '2025_Water and Climate Science' ? 'selected' : '' %>>Water and Climate Science</option>
+            <option value="External" <%- model.scienceArea === 'External' ? 'selected' : '' %>>External</option>
         </select>
         <div class="invalid-feedback"></div>
       </div>
@@ -63,10 +63,10 @@ const template = `
           </label>
           <select class="form-select" data-name="funder">
             <option value="">Select funder</option>
-            <option value="BBSRC" <%= model.funder === 'BBSRC' ? 'selected' : '' %>>BBSRC</option>
-            <option value="NERC" <%= model.funder === 'NERC' ? 'selected' : '' %>>NERC</option>
-            <option value="STFC" <%= model.funder === 'STFC' ? 'selected' : '' %>>STFC</option>
-            <option value="Other" <%= model.funder === 'Other' ? 'selected' : '' %>>Other</option>
+            <option value="BBSRC" <%- model.funder === 'BBSRC' ? 'selected' : '' %>>BBSRC</option>
+            <option value="NERC" <%- model.funder === 'NERC' ? 'selected' : '' %>>NERC</option>
+            <option value="STFC" <%- model.funder === 'STFC' ? 'selected' : '' %>>STFC</option>
+            <option value="Other" <%- model.funder === 'Other' ? 'selected' : '' %>>Other</option>
           </select>
           <div class="invalid-feedback"></div>
         </div>
@@ -74,9 +74,9 @@ const template = `
           <input type="text" id="funderOther"
                   class="form-control"
                   data-name="funderOther"
-                  style="<%= model.funder === 'Other' ? '' : 'display: none;' %>"
+                  style="<%- model.funder === 'Other' ? '' : 'display: none;' %>"
                   placeholder="Specify funder(s)"
-                  value="<%= model.funderOther || '' %>">
+                  value="<%- model.funderOther || '' %>">
           <div class="invalid-feedback"></div>
         </div>
         <div class="my-5">
@@ -86,7 +86,7 @@ const template = `
           <input type="text"
                   class="form-control"
                   data-name="fundingRef"
-                  value="<%= model.fundingRef || '' %>"
+                  value="<%- model.fundingRef || '' %>"
                   placeholder="e.g. NE/X87234/1">
         </div>
         <div class="my-5">
@@ -101,7 +101,7 @@ const template = `
                     data-name="eidcRemit"
                     id="eidcRemitYes"
                     value="Yes"
-                    <%= model.eidcRemit === 'Yes' ? 'checked' : '' %>>
+                    <%- model.eidcRemit === 'Yes' ? 'checked' : '' %>>
             <label class="form-check-label" for="eidcRemitYes">Yes</label>
           </div>
           <div class="form-check form-check-inline">
@@ -111,7 +111,7 @@ const template = `
                     data-name="eidcRemit"
                     id="eidcRemitNo"
                     value="No"
-                    <%= model.eidcRemit === 'No' ? 'checked' : '' %>>
+                    <%- model.eidcRemit === 'No' ? 'checked' : '' %>>
             <label class="form-check-label" for="eidcRemitNo">No</label>
           </div>
           <div class="form-check form-check-inline">
@@ -121,7 +121,7 @@ const template = `
                     data-name="eidcRemit"
                     id="eidcRemitSome"
                     value="Some are"
-                    <%= model.eidcRemit === 'Some are' ? 'checked' : '' %>>
+                    <%- model.eidcRemit === 'Some are' ? 'checked' : '' %>>
             <label class="form-check-label" for="eidcRemitSome">Some are</label>
           </div>
           <div>
@@ -146,7 +146,7 @@ const template = `
                     data-name="alternativeData"
                     id="alternativeDataYes"
                     value="Yes"
-                    <%= model.alternativeData === 'Yes' ? 'checked' : '' %>>
+                    <%- model.alternativeData === 'Yes' ? 'checked' : '' %>>
             <label class="form-check-label" for="alternativeDataYes">Yes</label>
           </div>
           <div class="form-check form-check-inline">
@@ -156,7 +156,7 @@ const template = `
                     data-name="alternativeData"
                     id="alternativeDataNo"
                     value="No"
-                    <%= model.alternativeData === 'No' ? 'checked' : '' %>>
+                    <%- model.alternativeData === 'No' ? 'checked' : '' %>>
             <label class="form-check-label" for="alternativeDataNo">No</label>
           </div>
           <div class="form-check form-check-inline">
@@ -166,7 +166,7 @@ const template = `
                     data-name="alternativeData"
                     id="alternativeDataSome"
                     value="Some are"
-                    <%= model.alternativeData === 'Some are' ? 'checked' : '' %>>
+                    <%- model.alternativeData === 'Some are' ? 'checked' : '' %>>
             <label class="form-check-label" for="alternativeDataSome">Some are</label>
           </div>
           <div>
@@ -192,7 +192,7 @@ const template = `
                     data-name="hasSupportingDocs"
                     id="hasSupportingDocsYes"
                     value=true
-                    <%= model.hasSupportingDocs === true ? 'checked' : '' %>>
+                    <%- model.hasSupportingDocs === true ? 'checked' : '' %>>
             <label class="form-check-label" for="hasSupportingDocsYes">Yes</label>
           </div>
           <div class="form-check form-check-inline">
@@ -202,7 +202,7 @@ const template = `
                     data-name="hasSupportingDocs"
                     id="hasSupportingDocsNo"
                     value=false
-                    <%= model.hasSupportingDocs === false ? 'checked' : '' %>>
+                    <%- model.hasSupportingDocs === false ? 'checked' : '' %>>
             <label class="form-check-label" for="hasSupportingDocsNo">No</label>
           </div>
           <div>
@@ -228,7 +228,7 @@ const template = `
                     data-name="isSupportingDocsReady"
                     id="isSupportingDocsReadyYes"
                     value=true
-                    <%= model.isSupportingDocsReady === true ? 'checked' : '' %>>
+                    <%- model.isSupportingDocsReady === true ? 'checked' : '' %>>
             <label class="form-check-label" for="isSupportingDocsReadyYes">Yes</label>
           </div>
           <div class="form-check form-check-inline">
@@ -238,7 +238,7 @@ const template = `
                     data-name="isSupportingDocsReady"
                     id="isSupportingDocsReadyNo"
                     value=false
-                    <%= model.isSupportingDocsReady === false ? 'checked' : '' %>>
+                    <%- model.isSupportingDocsReady === false ? 'checked' : '' %>>
             <label class="form-check-label" for="isSupportingDocsReadyNo">No</label>
           </div>
           <div>
@@ -263,7 +263,7 @@ const template = `
                     data-name="replaceExisting"
                     id="replaceExistingYes"
                     value=true
-                    <%= model.replaceExisting === true ? 'checked' : '' %>>
+                    <%- model.replaceExisting === true ? 'checked' : '' %>>
             <label class="form-check-label" for="replaceExistingYes">Yes</label>
           </div>
           <div class="form-check form-check-inline">
@@ -273,7 +273,7 @@ const template = `
                     data-name="replaceExisting"
                     id="replaceExistingNo"
                     value=false
-                    <%= model.replaceExisting === false ? 'checked' : '' %>>
+                    <%- model.replaceExisting === false ? 'checked' : '' %>>
             <label class="form-check-label" for="replaceExistingNo">No</label>
           </div>
           <div>
@@ -297,7 +297,7 @@ const template = `
                   data-name="relatedToExisting"
                   id="relatedToExistingYes"
                   value=true
-                  <%= model.relatedToExisting === true ? 'checked' : '' %>>
+                  <%- model.relatedToExisting === true ? 'checked' : '' %>>
           <label class="form-check-label" for="relatedToExistingYes">Yes</label>
         </div>
         <div class="form-check form-check-inline">
@@ -307,7 +307,7 @@ const template = `
                   data-name="relatedToExisting"
                   id="relatedToExistingNo"
                   value=false
-                  <%= model.relatedToExisting === false ? 'checked' : '' %>>
+                  <%- model.relatedToExisting === false ? 'checked' : '' %>>
           <label class="form-check-label" for="relatedToExistingNo">No</label>
         </div>
         <div>
@@ -348,7 +348,7 @@ const template = `
           </label>
           <textarea class="form-control"
                     data-name="additionalInfo"
-                    placeholder="Enter any additional information here..."><%= model.additionalInfo || '' %></textarea>
+                    placeholder="Enter any additional information here..."><%- model.additionalInfo || '' %></textarea>
         </div>
       </div>
 
@@ -364,7 +364,7 @@ const template = `
                     data-name="checklist1"
                     id="checklist1"
                     value="Yes"
-                    <%= model.checklist1 ? 'checked' : '' %>>
+                    <%- model.checklist1 ? 'checked' : '' %>>
             <label class="form-check-label" for="checklist1">
               you are the owner, or have permission from the owner to publish it
             <span class="text-danger">*</span>
@@ -378,7 +378,7 @@ const template = `
                     data-name="checklist2"
                     id="checklist2"
                     value="Yes"
-                    <%= model.checklist2 ? 'checked' : '' %>>
+                    <%- model.checklist2 ? 'checked' : '' %>>
             <label class="form-check-label" for="checklist2">
               the funder(s) permits its publication
             <span class="text-danger">*</span>
@@ -392,7 +392,7 @@ const template = `
                     data-name="checklist3"
                     id="checklist3"
                     value="Yes"
-                    <%= model.checklist3 ? 'checked' : '' %>>
+                    <%- model.checklist3 ? 'checked' : '' %>>
             <label class="form-check-label" for="checklist3">
               any third-party data used in its generation or derivation were accessed under terms and conditions which permit its subsequent publication
             <span class="text-danger">*</span>
@@ -406,7 +406,7 @@ const template = `
                     data-name="checklist4"
                     id="checklist4"
                     value="Yes"
-                    <%= model.checklist4 ? 'checked' : '' %>>
+                    <%- model.checklist4 ? 'checked' : '' %>>
             <label class="form-check-label" for="checklist4">
               it was generated by research that had all relevant ethical approvals, and adhered to relevant institutional and/or funder requirements
               <span class="text-danger">*</span>

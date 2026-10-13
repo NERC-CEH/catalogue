@@ -66,7 +66,7 @@ export default Backbone.View.extend({
 
       Swal.fire({
         title: `Server response: ${response.status} ${response.statusText}`,
-        html: `<p>${_.escape(message)}</p><textarea readonly style="resize:none; height:auto;" rows="10">${JSON.stringify(model.toJSON())}</textarea>`,
+        html: `<p>${_.escape(message)}</p><textarea readonly style="resize:none; height:auto;" rows="10">${_.escape(JSON.stringify(model.toJSON()))}</textarea>`,
         icon: 'error',
         confirmButtonText: 'Close'
       })

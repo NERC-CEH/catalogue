@@ -5,12 +5,12 @@ import SingleView from '../SingleView'
 const template = _.template(`
 <% if (data.text) { %><div class="radio-question"><%= data.text %></div><% } %>
 <div class="form-check form-check-inline">
-  <input data-name="<%= data.modelAttribute %>" id="<%= data.modelAttribute %>-yes" class="form-check-input" type="radio" name="<%= data.modelAttribute %>" value="true">
-  <label class="form-check-label" for="<%= data.modelAttribute %>-yes">Yes</label>
+  <input data-name="<%- data.modelAttribute %>" id="<%- data.modelAttribute %>-yes" class="form-check-input" type="radio" name="<%- data.modelAttribute %>" value="true">
+  <label class="form-check-label" for="<%- data.modelAttribute %>-yes">Yes</label>
 </div>
 <div class="form-check form-check-inline">
-  <input data-name="<%= data.modelAttribute %>" id="<%= data.modelAttribute %>-no" class="form-check-input" type="radio" name="<%= data.modelAttribute %>" value="false">
-  <label class="form-check-label" for="<%= data.modelAttribute %>-no">No</label>
+  <input data-name="<%- data.modelAttribute %>" id="<%- data.modelAttribute %>-no" class="form-check-input" type="radio" name="<%- data.modelAttribute %>" value="false">
+  <label class="form-check-label" for="<%- data.modelAttribute %>-no">No</label>
 </div>
 `)
 

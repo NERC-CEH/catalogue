@@ -6,14 +6,14 @@ export default _.template(`
         <label class="control-label">Layer ID/Name</label>
     </div>
     <div class="col-lg-3">
-        <input data-name='name' class="editor-input" value="<%= data.name %>">
+        <input data-name='name' class="editor-input" value="<%- data.name %>">
     </div>
 
     <div class="col-lg-1">
         <label class="control-label">Legend</label>
     </div>
     <div class="col-lg-3">
-        <input data-name='label' class="editor-input" value="<%= data.label %>">
+        <input data-name='label' class="editor-input" value="<%- data.label %>">
     </div>
 
     <div class="col-lg-1">

@@ -15,12 +15,12 @@ const tableTemplate = `
     <% if (suggestions && suggestions.length > 0) { %>
       <% _.each(suggestions, function(suggestion) { %>
         <tr>
-          <td><input type="checkbox" class="suggestions-checkbox" data-value="<%= suggestion.name || '' %>" data-title="<%= suggestion.longName || '' %>" data-units="<%= suggestion.units || '' %>" data-description="<%= suggestion.meaning || '' %>" <% if (suggestion.isChecked) { %>checked<% } %>></td>
-          <td><%= suggestion.name || '' %></td>
-          <td><%= suggestion.longName || '' %></td>
-          <td><%= suggestion.units || '' %></td>
-          <td><%= suggestion.meaning || '' %></td>
-          <td><%= suggestion.confidence || 0 %></td>
+          <td><input type="checkbox" class="suggestions-checkbox" data-value="<%- suggestion.name || '' %>" data-title="<%- suggestion.longName || '' %>" data-units="<%- suggestion.units || '' %>" data-description="<%- suggestion.meaning || '' %>" <% if (suggestion.isChecked) { %>checked<% } %>></td>
+          <td><%- suggestion.name || '' %></td>
+          <td><%- suggestion.longName || '' %></td>
+          <td><%- suggestion.units || '' %></td>
+          <td><%- suggestion.meaning || '' %></td>
+          <td><%- suggestion.confidence || 0 %></td>
         </tr>
       <% }); %>
     <% } %>

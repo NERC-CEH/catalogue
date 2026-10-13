@@ -189,4 +189,17 @@ describe('TableView', function () {
       expect(view.getServerState).toHaveBeenCalledTimes(0)
     })
   })
+
+  describe('escaping (dri-one #454)', () => {
+    // File names come from depositors and DataTables writes cells as HTML
+    it('shows a file path as text, with folder separators', () => {
+      const row = view.prepareSingleTableData(new File({
+        path: 'data/<img src=x onerror="window.__xss454=1">.csv',
+        sha256: '"><b>hash'
+      }))
+
+      expect(row.file).toBe('data<span class="folder-separator">/</span>&lt;img src=x onerror=&quot;window.__xss454=1&quot;&gt;.csv')
+      expect(row.checksum).toBe('<span title="&quot;&gt;&lt;b&gt;hash">Yes</span>')
+    })
+  })
 })

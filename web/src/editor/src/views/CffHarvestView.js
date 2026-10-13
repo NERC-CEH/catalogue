@@ -6,7 +6,7 @@ const template = _.template(`
   <div class="mb-2">
     <div class="d-flex align-items-center input-group">
       <input type="text" class="editor-input cff-url"
-             id="input-<%= data.modelAttribute %>"
+             id="input-<%- data.modelAttribute %>"
              placeholder="Enter the path to the GitHub.com CFF file" />
       <button class="btn editor-button cff-extract-btn" type="button">
         <i class="fa-brands fa-github fa-fw"></i>

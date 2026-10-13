@@ -3,10 +3,10 @@ import _ from 'underscore'
 export default _.template(`
 <div class="row">
     <div class="col-lg-2">
-        <label for="resourceMaintenance<%= data.index %>Frequency">Frequency of Update</label>
+        <label for="resourceMaintenance<%- data.index %>Frequency">Frequency of Update</label>
     </div>
     <div class="col-lg-3">
-        <select data-name="frequencyOfUpdate" id="resourceMaintenance<%= data.index %>Frequency">
+        <select data-name="frequencyOfUpdate" id="resourceMaintenance<%- data.index %>Frequency">
             <option value="" selected>- Select Frequency of Update -</option>
             <optgroup label="Time Period">
                 <option value="daily">Daily</option>
@@ -27,10 +27,10 @@ export default _.template(`
         </select>
     </div>
     <div class="col-lg-1">
-        <label for="resourceMaintenance<%= data.index %>Note">Notes</label>
+        <label for="resourceMaintenance<%- data.index %>Note">Notes</label>
     </div>
     <div class="col-lg-6">
-        <textarea data-name="note" rows="3" id="resourceMaintenance<%= data.index %>Note" class="editor-textarea"><%= data.note %></textarea>
+        <textarea data-name="note" rows="3" id="resourceMaintenance<%- data.index %>Note" class="editor-textarea"><%- data.note %></textarea>
     </div>
 </div>
 `)

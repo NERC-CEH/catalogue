@@ -3,9 +3,9 @@ import $ from 'jquery'
 import Backbone from 'backbone'
 
 const template = _.template(`
-<div class="alert alert-<%=type%>" role="alert">
+<div class="alert alert-<%-type%>" role="alert">
     <span class="fa-solid fa-times"></span>
-    <span><%=message%></span>
+    <span><%-message%></span>
 </div>
 `)
 

@@ -308,6 +308,37 @@ class DocumentControllerTest extends AbstractMvcTest {
 
     @Test
     @SneakyThrows
+    @DisplayName("Record text cannot close the page's JSON-LD script element")
+    void recordTextCannotCloseTheJsonLdScript() {
+        // dri-one #454: schema.org.ftl is plain .ftl, so nothing is escaped inside the
+        // <script type="application/ld+json"> block on every dataset page
+        //given
+        val document = new GeminiDocument();
+        document.setType("dataset");
+        givenUserIsPermittedToView();
+        givenMetadataDocument(document);
+        document.setDescription("Soil data</script><script>window.__xss454=1</script>");
+        givenCatalogue();
+        givenDefaultCatalogue();
+        givenFreemarkerConfiguration();
+        givenProfileNotActive();
+        givenCodeLookup();
+        givenMetadataQuality();
+
+        //when
+        val result = mvc.perform(get("/documents/{id}", id).accept(TEXT_HTML))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        //then
+        assertThat(result, not(containsString("<script>window.__xss454=1</script>")));
+        assertThat(result, containsString("Soil data\\u003c/script>\\u003cscript>window.__xss454=1\\u003c/script>"));
+    }
+
+    @Test
+    @SneakyThrows
     @DisplayName("Research activity HTML renders funding and outputs")
     void researchActivityHtmlRendersFundingAndOutputs() {
         // The awardURI property is easy to mistype as awardUri, which FreeMarker

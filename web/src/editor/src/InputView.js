@@ -4,8 +4,8 @@ import SingleView from './SingleView'
 import { cleanText } from './utils'
 
 const template = _.template(`
-<input autocomplete="off" aria-autocomplete="none" list="<%= data.modelAttribute %>List" data-name="<%= data.modelAttribute %>" type="<%= data.typeAttribute %>" placeholder="<%= data.placeholderAttribute %>" class="editor-input" id="input-<%= data.modelAttribute %>" value="<%= data.value %>" <%= data.disabled%>>
-<datalist id="<%= data.modelAttribute %>List"><%= data.listAttribute%></datalist>
+<input autocomplete="off" aria-autocomplete="none" list="<%- data.modelAttribute %>List" data-name="<%- data.modelAttribute %>" type="<%- data.typeAttribute %>" placeholder="<%- data.placeholderAttribute %>" class="editor-input" id="input-<%- data.modelAttribute %>" value="<%- data.value %>" <%- data.disabled%>>
+<datalist id="<%- data.modelAttribute %>List"><%= data.listAttribute%></datalist>
 `)
 
 export default SingleView.extend({
