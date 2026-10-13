@@ -301,7 +301,7 @@ Admin toolbar
               <li><a class="dropdown-item" href="/documents/${id}/permission"><i class="fa-solid fa-users"></i> Permissions</a></li>
               <li><a class="dropdown-item" href="/documents/${id}/publication"><i class="fa-solid fa-eye"></i> Publication status</a></li>
               <li class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="/documents/${id}/catalogue" class="catalogue-control"><i class="fa-solid fa-right-from-bracket"></i> Move to a different catalogue</a></li>
+              <li><a class="dropdown-item catalogue-control" href="/documents/${id}/catalogue"><i class="fa-solid fa-right-from-bracket"></i> Move to a different catalogue</a></li>
             </ul>
             </#if>
           </div>

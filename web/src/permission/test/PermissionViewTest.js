@@ -133,4 +133,41 @@ describe('Test PermissionView', () => {
       expect(JSON.stringify(args)).not.toMatch(/changed by another user/)
     })
   })
+
+  describe('adding an identity that is already listed (dri-one #461)', () => {
+    // Backbone skips an add whose id (the identity) is already in the collection, so the grant was
+    // silently dropped while the form cleared as if it had worked
+    function viewWith (identities) {
+      const model = new Permission({ id: 1, doctype: 'documents', permissions: identities.map(identity => ({ identity, canView: true })) })
+      model.loadCollection()
+      // The view's default el is .permission, which a spec page doesn't have
+      const view = new PermissionView({ model, el: document.createElement('div') })
+      view.render()
+      return { model, view }
+    }
+
+    it('says so and keeps the form, instead of silently doing nothing', () => {
+      const { model, view } = viewWith(['bob'])
+      spyOn(Swal, 'fire')
+      view.$('#identity').val('bob')
+      view.$('#canEdit').prop('checked', true)
+
+      view.add()
+
+      expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ text: 'bob already has permissions on this record: change them in the table.' }))
+      expect(model.get('permissions').length).toBe(1)
+      expect(view.$('#identity').val()).toBe('bob')
+      expect(view.$('#canEdit').prop('checked')).toBe(true)
+    })
+
+    it('still adds a new identity', () => {
+      const { model, view } = viewWith(['bob'])
+      view.$('#identity').val('alice')
+
+      view.add()
+
+      expect(model.get('permissions').length).toBe(2)
+      expect(view.$('#identity').val()).toBe('')
+    })
+  })
 })

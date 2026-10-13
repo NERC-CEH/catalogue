@@ -44,7 +44,7 @@ export default _.template(`
       <input type="text"
             data-name="resourceTypeOther"
             class="form-control"
-            value="<%- data.otherResourceType || '' %>"
+            value="<%- data.resourceTypeOther || '' %>"
             placeholder="Specify resource type"
             style="<%- data.resourceType === 'Other' ? '' : 'display: none;' %>">
       <div class="invalid-feedback"></div>
@@ -72,27 +72,27 @@ export default _.template(`
                 type="radio"
                 name="easilyRecreated-<%- data.index %>"
                 data-name="easilyRecreated"
-                id="easilyRecreatedYes"
+                id="easilyRecreatedYes-<%- data.index %>"
                 value=true
-                <%- data.easilyRecreated === true ? 'checked' : '' %>>
-        <label class="form-check-label" for="easilyRecreatedYes">Yes</label>
+                <%- String(data.easilyRecreated) === 'true' ? 'checked' : '' %>>
+        <label class="form-check-label" for="easilyRecreatedYes-<%- data.index %>">Yes</label>
       </div>
       <div class="form-check form-check-inline">
         <input class="form-check-input"
                 type="radio"
                 name="easilyRecreated-<%- data.index %>"
                 data-name="easilyRecreated"
-                id="easilyRecreatedNo"
+                id="easilyRecreatedNo-<%- data.index %>"
                 value=false
-                <%- data.easilyRecreated === false ? 'checked' : '' %>>
-        <label class="form-check-label" for="easilyRecreatedNo">No</label>
+                <%- String(data.easilyRecreated) === 'false' ? 'checked' : '' %>>
+        <label class="form-check-label" for="easilyRecreatedNo-<%- data.index %>">No</label>
       </div>
       <div>
         <input class="d-none"
                 type="radio"
                 name="easilyRecreated-<%- data.index %>"
                 data-name="easilyRecreated"
-                id="easilyRecreatedNone">
+                id="easilyRecreatedNone-<%- data.index %>">
         <label class="d-none" >None</label>
         <div class="invalid-feedback"></div>
       </div>
@@ -146,27 +146,27 @@ export default _.template(`
               type="radio"
               name="largeData-<%- data.index %>"
               data-name="largeData"
-              id="largeDataYes"
+              id="largeDataYes-<%- data.index %>"
               value=true
-              <%- data.largeData === true ? 'checked' : '' %>>
-      <label class="form-check-label" for="largeDataYes">Yes</label>
+              <%- String(data.largeData) === 'true' ? 'checked' : '' %>>
+      <label class="form-check-label" for="largeDataYes-<%- data.index %>">Yes</label>
     </div>
     <div class="form-check form-check-inline">
       <input class="form-check-input"
               type="radio"
               name="largeData-<%- data.index %>"
               data-name="largeData"
-              id="largeDataNo"
+              id="largeDataNo-<%- data.index %>"
               value=false
-              <%- data.largeData === false ? 'checked' : '' %>>
-      <label class="form-check-label" for="largeDataNo">No</label>
+              <%- String(data.largeData) === 'false' ? 'checked' : '' %>>
+      <label class="form-check-label" for="largeDataNo-<%- data.index %>">No</label>
     </div>
     <div>
       <input class="d-none"
               type="radio"
               name="largeData-<%- data.index %>"
               data-name="largeData"
-              id="largeDataNone">
+              id="largeDataNone-<%- data.index %>">
       <label class="d-none" >None</label>
       <div class="invalid-feedback"></div>
     </div>
