@@ -331,7 +331,7 @@ main {
             padding: 0.85em;
             border: 1px solid var(--border-colour, #ccc);
             border-radius: 5px;
-            color: var(--text-default-color);
+            color: var(--text-default-colour);
             transform: scale(99%);
 
             &:hover,
@@ -483,6 +483,8 @@ main {
 
         a:hover {
             background-color: var(--link-hover-colour);
+            // Bootstrap's link-hover colour is a dark blue: unreadable on a dark hover background
+            color: white;
             text-decoration: none;
         }
     }

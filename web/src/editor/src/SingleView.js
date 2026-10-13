@@ -9,6 +9,14 @@ export default Backbone.View.extend({
   // Repeating and compound sections have no single control, so their label must not point at one.
   labelsControl: false,
 
+  // The id the section label names: the view's own control, or the field it introduces when it
+  // only holds the question for a field that follows it (the `labels` option, dri-one #462)
+  labelFor () {
+    if (this.labelsControl) return `input-${this.data.modelAttribute}`
+    if (this.data.labels) return `input-${this.data.labels}`
+    return null
+  },
+
   initialize (options) {
     this.data = options
     if (!this.data.ModelType) {
@@ -25,7 +33,7 @@ export default Backbone.View.extend({
   },
 
   render () {
-    this.$el.html(template({ data: this.data, labelsControl: this.labelsControl }))
+    this.$el.html(template({ data: this.data, labelFor: this.labelFor() }))
     return this
   },
 

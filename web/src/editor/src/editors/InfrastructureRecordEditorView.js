@@ -44,6 +44,7 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
+          labels: 'description',
           label: 'Purpose',
           text: `<p>Explain strategic relevance: What does it do? Why? Who cares?<br>Write in plain English and avoid (or define) acronyms.<br>Explain relevance to government policy agenda</p>
 `

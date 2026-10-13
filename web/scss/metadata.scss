@@ -151,7 +151,8 @@ body {
         }
 
         &-water {
-            background-color: var(--ukceh-colour-water);
+            // The text variant: white is 5.34:1 on it and the data-yellow links 4.58:1
+            background-color: var(--ukceh-colour-water-text);
             color: var(--ukceh-colour-day);
 
             a {

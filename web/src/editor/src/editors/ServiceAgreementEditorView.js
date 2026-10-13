@@ -68,6 +68,7 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
+          labels: 'title',
           label: 'Title',
           text: `<p>Provide a brief title that best describes the data resource, <strong>not</strong> the project or activity from which the data were derived. Include references to the subject, spatial and temporal aspects of the data resource, if applicable. <a href='https://eidc.ac.uk/deposit/metadata/guidance' target='_blank' rel='noopener noreferrer' >Further guidance is available on our website</a>.</p>
 `,
@@ -90,6 +91,7 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
+          labels: 'titleLocationExplanation',
           className: 'component component--textonly component--subquestion',
           text: 'If title does NOT contain location, state why'
         }),
@@ -110,6 +112,7 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
+          labels: 'titleDateExplanation',
           className: 'component component--textonly component--subquestion',
           text: 'If title does NOT contain dates, state why'
         }),
@@ -130,6 +133,7 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
+          labels: 'titleAcronymExplanation',
           className: 'component component--textonly component--subquestion',
           text: 'If title contains unexplained acronyms, state why'
         }),
@@ -166,6 +170,7 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
+          labels: 'policyExceptions',
           label: 'Data retention',
           text: `<p>The EIDC's policy is to assign a DOI to all deposited data; such data will be kept in perpetuity.  If a DOI is not required or there are any other exceptions to this policy, please state them below.</p>
 `
@@ -215,6 +220,7 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
+          labels: 'fileNamingConvention',
           label: 'Naming convention',
           text: `\
 <p>Please describe a convention, or multiple conventions, that cover any files to be deposited not described in the previous field. Indicate sizes (or a size range) for each file covered by the convention and also the total size of the files covered by the naming convention.</p>
@@ -327,6 +333,7 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
+          labels: 'availability',
           label: 'Embargo',
           text: `\
 <p>Depositors may request that access to the data be restricted for an agreed period (embargoed). Embargoes and embargo periods may be subject to funder requirements. For NERC-funded research, a reasonable embargo period is considered to be a maximum of two years <strong>from the end of data collection.</strong></p>
@@ -358,6 +365,7 @@ export default EditorView.extend({
       views: [
         new TextOnlyView({
           model: this.model,
+          labels: 'otherPoliciesOrLegislation',
           label: 'Other policies/legislation',
           text: `<p>All environmental data deposited into the EIDC are subject to the requirements of the <a href='https://nerc.ukri.org/research/sites/environmental-data-service-eds/policy/' target='_blank' rel='noopener noreferrer'>NERC Data Policy.</a></p>
 <p>By depositing data, you confirm that the data is compliant with the provisions of UK data protection laws.</p>
@@ -422,6 +430,7 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
+          labels: 'supersededData',
           label: 'Superseding existing data',
           text: `
 <p>Please note, superseding is only available where errors have been discovered in a datasets or a dataset is being extended with new data and the replacement duplicates the previous version entirely.</p>
@@ -436,6 +445,7 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
+          labels: 'relatedDataHoldings',
           label: 'Related data holdings',
           text: `
 <p>Please identify any related data resources already curated by, or being deposited with, the EIDC that you wish to link your data resource to, and the nature of the relationship.
@@ -451,6 +461,7 @@ Details of relationships we can accommodate are available at: <a href='https://e
 
         new TextOnlyView({
           model: this.model,
+          labels: 'otherInfo',
           label: 'Other info',
           text: `
 <p>If there is any other information you wish to provide, please include it below.</p>
@@ -574,6 +585,7 @@ Details of relationships we can accommodate are available at: <a href='https://e
 
         new TextOnlyView({
           model: this.model,
+          labels: 'description',
           label: 'Description (min 100 characters)',
           text: `\
 <p>Data resources deposited with the EIDC have an entry in the EIDC data catalogue, enabling users to find and access them. Please provide the following information to help complete the catalogue record. <a href='https://eidc.ac.uk/deposit/metadata/guidance' target='_blank' rel='noopener noreferrer' >Further guidance is available on our website</a>.</p>
@@ -593,6 +605,7 @@ Details of relationships we can accommodate are available at: <a href='https://e
 
         new TextOnlyView({
           model: this.model,
+          labels: 'lineage',
           label: 'Lineage',
           text: `\
 <p>The lineage should describe how the data came into existence and the stages it has passed through before being provided to the data centre.</p>

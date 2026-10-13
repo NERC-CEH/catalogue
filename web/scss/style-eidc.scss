@@ -166,16 +166,18 @@ When UKCEH brand colours are approved for EIDC, they can be deleted
 :root {
     --eidc-blue: hsl(195 95% 33% / 1);
     --eidc-orange: hsl(31 90% 58% /1);
+    /* The orange darkened for text and for backgrounds behind white: 5.44:1 instead of 2.25:1 */
+    --eidc-orange-text: #a05708;
     --primary-colour: var(--eidc-blue);
-    --link-hover-colour: var(--eidc-orange);
+    --link-hover-colour: var(--eidc-orange-text);
     --header-background-colour: hsl(195 95% 33% / 1);
     --header-link-hover-background-colour: white;
-    --header-link-hover-colour: var(--eidc-orange);
+    --header-link-hover-colour: var(--eidc-orange-text);
 }
 
 .btn-ukceh {
     --bs-btn-bg: var(--eidc-blue);
-    --bs-btn-hover-bg: var(--eidc-orange);
+    --bs-btn-hover-bg: var(--eidc-orange-text);
     --bs-btn-hover-color: white;
 }
 
