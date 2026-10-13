@@ -12,7 +12,8 @@ export default Backbone.View.extend({
   },
 
   render () {
-    this.$el.html(this.template(this.model.attributes))
+    // Fill in both fields: the template reads them as variables, so a missing one throws
+    this.$el.html(this.template(_.extend({ type: 'info', message: '' }, this.model.attributes)))
     return this
   }
 })
