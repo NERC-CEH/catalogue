@@ -1,3 +1,4 @@
+import $ from 'jquery'
 import Backbone from 'backbone'
 import _ from 'underscore'
 
@@ -21,6 +22,13 @@ export default Backbone.View.extend({
     }, { silent: true })
 
     this.listenTo(this.model, 'change:metricsReport', this.render)
+    // A failed report replaces the old rows, which no longer match the filters (dri-one #461)
+    this.listenTo(this.model, 'error', this.renderError)
+  },
+
+  renderError (model, xhr) {
+    const reason = (xhr && (xhr.responseJSON?.detail || xhr.responseJSON?.message || xhr.responseText)) || 'the server did not respond'
+    this.$('tbody').empty().append($('<tr>').append($('<td colspan="5" class="text-danger">').text(`The report could not be produced: ${reason}`)))
   },
 
   render () {

@@ -192,7 +192,7 @@ const template = `
                     data-name="hasSupportingDocs"
                     id="hasSupportingDocsYes"
                     value=true
-                    <%- model.hasSupportingDocs === true ? 'checked' : '' %>>
+                    <%- String(model.hasSupportingDocs) === 'true' ? 'checked' : '' %>>
             <label class="form-check-label" for="hasSupportingDocsYes">Yes</label>
           </div>
           <div class="form-check form-check-inline">
@@ -202,7 +202,7 @@ const template = `
                     data-name="hasSupportingDocs"
                     id="hasSupportingDocsNo"
                     value=false
-                    <%- model.hasSupportingDocs === false ? 'checked' : '' %>>
+                    <%- String(model.hasSupportingDocs) === 'false' ? 'checked' : '' %>>
             <label class="form-check-label" for="hasSupportingDocsNo">No</label>
           </div>
           <div>
@@ -228,7 +228,7 @@ const template = `
                     data-name="isSupportingDocsReady"
                     id="isSupportingDocsReadyYes"
                     value=true
-                    <%- model.isSupportingDocsReady === true ? 'checked' : '' %>>
+                    <%- String(model.isSupportingDocsReady) === 'true' ? 'checked' : '' %>>
             <label class="form-check-label" for="isSupportingDocsReadyYes">Yes</label>
           </div>
           <div class="form-check form-check-inline">
@@ -238,7 +238,7 @@ const template = `
                     data-name="isSupportingDocsReady"
                     id="isSupportingDocsReadyNo"
                     value=false
-                    <%- model.isSupportingDocsReady === false ? 'checked' : '' %>>
+                    <%- String(model.isSupportingDocsReady) === 'false' ? 'checked' : '' %>>
             <label class="form-check-label" for="isSupportingDocsReadyNo">No</label>
           </div>
           <div>
@@ -263,7 +263,7 @@ const template = `
                     data-name="replaceExisting"
                     id="replaceExistingYes"
                     value=true
-                    <%- model.replaceExisting === true ? 'checked' : '' %>>
+                    <%- String(model.replaceExisting) === 'true' ? 'checked' : '' %>>
             <label class="form-check-label" for="replaceExistingYes">Yes</label>
           </div>
           <div class="form-check form-check-inline">
@@ -273,7 +273,7 @@ const template = `
                     data-name="replaceExisting"
                     id="replaceExistingNo"
                     value=false
-                    <%- model.replaceExisting === false ? 'checked' : '' %>>
+                    <%- String(model.replaceExisting) === 'false' ? 'checked' : '' %>>
             <label class="form-check-label" for="replaceExistingNo">No</label>
           </div>
           <div>
@@ -297,7 +297,7 @@ const template = `
                   data-name="relatedToExisting"
                   id="relatedToExistingYes"
                   value=true
-                  <%- model.relatedToExisting === true ? 'checked' : '' %>>
+                  <%- String(model.relatedToExisting) === 'true' ? 'checked' : '' %>>
           <label class="form-check-label" for="relatedToExistingYes">Yes</label>
         </div>
         <div class="form-check form-check-inline">
@@ -307,7 +307,7 @@ const template = `
                   data-name="relatedToExisting"
                   id="relatedToExistingNo"
                   value=false
-                  <%- model.relatedToExisting === false ? 'checked' : '' %>>
+                  <%- String(model.relatedToExisting) === 'false' ? 'checked' : '' %>>
           <label class="form-check-label" for="relatedToExistingNo">No</label>
         </div>
         <div>

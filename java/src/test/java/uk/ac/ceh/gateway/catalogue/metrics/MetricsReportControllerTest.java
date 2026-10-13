@@ -20,6 +20,9 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -65,6 +68,26 @@ class MetricsReportControllerTest extends AbstractMvcTest {
         mvc.perform(get("/{catalogue}/metrics", testCatalogue))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.TEXT_HTML_VALUE));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("The To date includes that whole day")
+    void endDateIncludesTheWholeDay() {
+        // dri-one #461: the To date was midnight at its start, and the report keeps rows that end
+        // by then, so a report "to 13 October" left out the 13th
+        givenDefaultCatalogue();
+
+        mvc.perform(get("/{catalogue}/metrics", "testCatalogue")
+            .param("startDate", "2026-10-01")
+            .param("endDate", "2026-10-13")
+            .accept(MediaType.TEXT_HTML))
+            .andExpect(status().isOk());
+
+        verify(metricsService).getMetricsReport(
+            eq(Instant.parse("2026-10-01T00:00:00Z")),
+            eq(Instant.parse("2026-10-14T00:00:00Z")),
+            any(), any(), any(), any(), any());
     }
 
     @Test

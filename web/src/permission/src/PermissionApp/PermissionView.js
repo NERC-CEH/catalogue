@@ -94,6 +94,16 @@ export default Backbone.View.extend({
 
   add () {
     const identity = this.$('#identity').val().trim()
+    // The collection is keyed on identity, so adding one already listed was silently dropped while
+    // the form cleared as if it had worked (dri-one #461). Keep the form so nothing typed is lost.
+    if (identity && this.model.get('permissions').get(identity)) {
+      Swal.fire({
+        title: 'Already listed',
+        text: `${identity} already has permissions on this record: change them in the table.`,
+        icon: 'info'
+      })
+      return
+    }
     if (identity) {
       const permission = new IdentityPermission({
         identity,

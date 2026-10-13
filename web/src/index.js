@@ -21,7 +21,7 @@ import {
   SampleArchiveEditorView, ServiceAgreementEditorView, UkemsDocumentEditorView
 } from './editor/src/editors'
 import { EditorMetadata, LinkEditorMetadata, GeminiEditorMetadata } from './editor/src'
-import { Catalogue, CatalogueView, CatalogueViewModel, CatalogueViewView } from './catalogue/src/CatalogueApp'
+import { Catalogue, CatalogueView, CatalogueViewModel, CatalogueViewView, linkHref } from './catalogue/src/CatalogueApp'
 import { StudyAreaView } from './study-area/src/View'
 import { PermissionApp, PermissionAppView, PermissionRouter } from './permission/src/PermissionApp'
 import SearchApp from './search/src/SearchApp'
@@ -71,10 +71,6 @@ if ($('.permission').length) {
   initPermission()
 }
 
-if ($('.service-agreement-permission').length) {
-  initPermission()
-}
-
 if ($('#search').length) {
   initSearch()
 }
@@ -110,7 +106,7 @@ stickyHeader()
 function initCatalogue () {
   $catalogue.on('click', function (event) {
     event.preventDefault()
-    $.getJSON($(event.target).attr('href'), function (data, textStatus, jqXHR) {
+    $.getJSON(linkHref(event), function (data, textStatus, jqXHR) {
       const model = new Catalogue(data)
       const etag = jqXHR.getResponseHeader('ETag')
       if (etag) {
@@ -130,7 +126,7 @@ function initCatalogue () {
 function initCatalogueView () {
   $catalogueView.on('click', function (event) {
     event.preventDefault()
-    $.getJSON($(event.target).attr('href'), function (data, textStatus, jqXHR) {
+    $.getJSON(linkHref(event), function (data, textStatus, jqXHR) {
       const model = new CatalogueViewModel(data)
       const etag = jqXHR.getResponseHeader('ETag')
       if (etag) {

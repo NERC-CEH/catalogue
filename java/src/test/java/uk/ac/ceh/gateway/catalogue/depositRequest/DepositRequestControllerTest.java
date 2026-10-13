@@ -18,6 +18,8 @@ import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 import java.net.URI;
 import java.util.List;
 
+import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -88,7 +90,10 @@ class DepositRequestControllerTest extends AbstractMvcTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(bad)))
             .andExpect(status().isBadRequest())
-            .andExpect(content().string("Invalid request"));
+            // dri-one #461: the reasons were discarded, so the depositor saw only "Invalid request"
+            .andExpect(content().string(startsWith("Invalid request: ")))
+            .andExpect(content().string(containsString("name: Name is required")))
+            .andExpect(content().string(containsString("email: Email is required")));
     }
 
     @Test

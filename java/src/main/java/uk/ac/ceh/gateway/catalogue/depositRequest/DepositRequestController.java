@@ -15,6 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -69,7 +70,13 @@ public class DepositRequestController {
         BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body("Invalid request");
+            // The depositor sees this text: name each field and why, rather than just "Invalid
+            // request" (dri-one #461)
+            String reasons = bindingResult.getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .sorted()
+                .collect(Collectors.joining("; "));
+            return ResponseEntity.badRequest().body("Invalid request: " + reasons);
         }
 
         ObjectNode jiraResponse = depositRequestService.handleSubmission(depositRequest);

@@ -9,9 +9,11 @@ export default Backbone.Model.extend({
   searchFields: ['startDate', 'endDate', 'orderBy', 'ordering', 'recordType', 'docId', 'noOfRecords'],
 
   initialize () {
-    for (const field of this.searchFields) {
-      this.on(`change:${field}`, this.doSearch)
-    }
+    // One search per change, however many fields it touched: a listener per field fetched once
+    // for each (dri-one #461)
+    this.on('change', model => {
+      if (this.searchFields.some(field => field in model.changed)) this.doSearch()
+    })
   },
 
   url () { return window.location.pathname },

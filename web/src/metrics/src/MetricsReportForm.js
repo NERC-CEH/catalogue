@@ -11,10 +11,12 @@ export default Backbone.View.extend({
   onSubmit (event) {
     event.preventDefault()
     const recordType = this.$('input[name=recordType]:checked').get().map(el => el.value)
+    // Every search field on the form is set, emptied ones to '': dropping them left the previous
+    // value in place, so a filter could never be cleared (dri-one #461)
     this.model.set({
       ...Object.fromEntries(
         this.$el.serializeArray()
-          .filter(({ name, value }) => value && this.model.searchFields.includes(name))
+          .filter(({ name }) => this.model.searchFields.includes(name))
           .map(({ name, value }) => [name, value])
       ),
       recordType
