@@ -85,11 +85,9 @@ export function clearRelationshipRules () {
 }
 
 // A Gemini record keeps its type in resourceType, which the editor can change; other records in
-// type. Once edited, resourceType is a ResourceType model rather than the plain object it loads as
-// (SingleView.updateMetadataModel stores what the change event passes).
+// type. SingleObjectView stores resourceType as plain data.
 export function recordType (model) {
-  const resourceType = model?.get('resourceType')
-  return resourceType?.get?.('value') || resourceType?.value || model?.get('type')
+  return model?.get('resourceType')?.value || model?.get('type')
 }
 
 /**

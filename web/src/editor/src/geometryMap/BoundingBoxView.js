@@ -54,8 +54,8 @@ export default ObjectInputView.extend({
     this.map.addLayer(baseMaps.Map)
 
     this.drawnItems = L.featureGroup()
-    if (this.model.get('northBoundLatitude') && this.model.get('westBoundLongitude') &&
-                this.model.get('southBoundLatitude') && this.model.get('eastBoundLongitude')) {
+    // hasBoundingBox, not truthiness: a coordinate of 0 (the equator, Greenwich) is a real one
+    if (this.model.hasBoundingBox()) {
       this.shapeDrawn = true
       this.boundingBox = L.rectangle([[[this.model.get('northBoundLatitude'), this.model.get('westBoundLongitude')],
         [this.model.get('southBoundLatitude'), this.model.get('eastBoundLongitude')]]])

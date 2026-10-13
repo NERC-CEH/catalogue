@@ -1,4 +1,5 @@
 import Backbone from 'backbone'
+import BoundingBox from './geometryMap/BoundingBox'
 
 export default Backbone.Model.extend({
 
@@ -56,6 +57,12 @@ export default Backbone.Model.extend({
 
     if (!attrs.title) {
       errors.push('A title is mandatory')
+    }
+
+    // The record knows which attributes hold bounding boxes; each box knows whether it is complete
+    const boxes = [attrs.boundingBox, ...(attrs.boundingBoxes || [])].filter(Boolean)
+    if (boxes.some(box => new BoundingBox(box).isIncomplete())) {
+      errors.push(BoundingBox.INCOMPLETE)
     }
 
     if (errors.length) {

@@ -1,5 +1,6 @@
 import _ from 'underscore'
 import SingleView from '../SingleView'
+import { hasContent } from '../utils'
 
 export default SingleView.extend({
 
@@ -11,7 +12,7 @@ export default SingleView.extend({
     this.render()
 
     this.inputModel = new this.data.ModelType(this.model.get(this.data.modelAttribute))
-    this.listenTo(this.inputModel, 'change', this.updateMetadataModel)
+    this.listenTo(this.inputModel, 'change', this.storeInput)
     this.listenTo(this.model, 'sync', function (model) {
       this.inputModel.set(model.get(this.data.modelAttribute))
     })
@@ -23,6 +24,18 @@ export default SingleView.extend({
       // of the same type, so it has to be unique on the page
       index: this.inputModel.cid
     }))
+  },
+
+  // The record keeps plain data, not the live input model, so every reader sees one shape and
+  // each edit is a change to the record. An emptied field (a cleared bounding box, say) is
+  // removed, as ParentView does for an empty row (dri-one #457).
+  storeInput () {
+    const data = this.inputModel.toJSON()
+    if (hasContent(data)) {
+      this.model.set(this.data.modelAttribute, data)
+    } else {
+      this.model.unset(this.data.modelAttribute)
+    }
   },
 
   show () {
