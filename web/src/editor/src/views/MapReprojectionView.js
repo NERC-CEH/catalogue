@@ -10,5 +10,10 @@ export default ObjectInputView.extend({
   initialize () {
     this.template = template
     ObjectInputView.prototype.initialize.apply(this, arguments)
+  },
+
+  // These rows have no ChildView wrapper, so this button is the only way to remove one
+  delete () {
+    this.model.collection.remove(this.model)
   }
 })

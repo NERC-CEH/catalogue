@@ -12,7 +12,7 @@ export default InputView.extend({
 
   events: function () {
     return _.extend({}, InputView.prototype.events, {
-      'keyup #term': 'search',
+      'keyup #term': 'searchSoon',
       'change #term': 'search',
       'change #catalogue': 'search',
       'click button': 'search'
@@ -33,7 +33,6 @@ export default InputView.extend({
 
     options.catalogue = 'eidc'
 
-    // this.searchOnceComplete = _.debounce(this.search, 500)
     this.results = new Backbone.Collection()
 
     $.getJSON(`/catalogues?${params}`, catalogues => {
@@ -54,20 +53,33 @@ export default InputView.extend({
     return this
   },
 
+  // Typing searches once it pauses. Created here rather than in initialize, because Backbone binds
+  // the events (by method name) before initialize runs
+  searchSoon () {
+    this.debouncedSearch = this.debouncedSearch || _.debounce(() => this.search(), 500)
+    this.debouncedSearch()
+  },
+
   search () {
-    let searchUrl
+    if (this.debouncedSearch) {
+      this.debouncedSearch.cancel()
+    }
     this.data.catalogue = this.$('#catalogue').val()
     this.data.term = this.$('#term').val()
 
+    const clauses = ['state:published', 'view:public', 'NOT documentType:LINK_DOCUMENT']
     if (this.data.term.length > 0 && this.data.catalogue) {
-      searchUrl = `/${this.data.catalogue}/documents?term=state:published AND view:public AND NOT documentType:LINK_DOCUMENT AND ${this.data.term}`
-    } else {
-      searchUrl = `/${this.data.catalogue}/documents?term=state:published AND view:public AND NOT documentType:LINK_DOCUMENT`
+      clauses.push(`(${this.data.term})`)
     }
 
-    $.getJSON(searchUrl, data => {
-      this.results.reset(data.results)
-    })
+    // Only the latest search may show its results; an earlier one can answer after it
+    const search = this.latestSearch = (this.latestSearch || 0) + 1
+    $.getJSON(`/${this.data.catalogue}/documents?term=${encodeURIComponent(clauses.join(' AND '))}`)
+      .done(data => {
+        if (search === this.latestSearch) {
+          this.results.reset(data.results)
+        }
+      })
   },
 
   addOne (result) {

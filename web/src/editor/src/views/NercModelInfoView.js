@@ -13,19 +13,17 @@ export default ObjectInputView.extend({
     this.$('.autocomplete').autocomplete({
       minLength: 0,
       source (request, response) {
-        let query
         const term = request.term.trim()
-        if (_.isEmpty(term)) {
-          query = `/${catalogue}/documents?term=documentType:nerc-model`
-        } else {
-          query = `/${catalogue}/documents?term=documentType:nerc-model AND ${request.term}`
-        }
+        // The term is a Solr query of its own: bracketed, so an OR in it can't widen the type filter
+        const solrQuery = _.isEmpty(term) ? 'documentType:nerc-model' : `documentType:nerc-model AND (${term})`
 
-        $.getJSON(query, data => response(_.map(data.results, d => ({
-          value: d.title,
-          label: d.title,
-          identifier: d.identifier
-        }))))
+        $.getJSON(`/${catalogue}/documents?term=${encodeURIComponent(solrQuery)}`)
+          .done(data => response(_.map(data.results, d => ({
+            value: d.title,
+            label: d.title,
+            identifier: d.identifier
+          }))))
+          .fail(() => response([]))
       }
     })
 

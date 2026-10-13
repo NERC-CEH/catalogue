@@ -20,21 +20,5 @@ export default ObjectInputView.extend({
     this.$('#input-unavailableDate').val(unavailableDate)
     this.$('#input-releasedDate').val(releasedDate)
     this.$('#input-supersededDate').val(supersededDate)
-
-    this.$('#input-creationDate').on('input', (event) => {
-      this.model.set('creationDate', this.value)
-    })
-    this.$('#input-publicationDate').on('input', (event) => {
-      this.model.set('publicationDate', event.value)
-    })
-    this.$('#input-unavailableDate').on('input', (event) => {
-      this.model.set('unavailableDate', event.value)
-    })
-    this.$('#input-releasedDate').on('input', (event) => {
-      this.model.set('releasedDate', event.value)
-    })
-    this.$('#input-supersededDate').on('input', (event) => {
-      this.model.set('supersededDate', event.value)
-    })
   }
 })

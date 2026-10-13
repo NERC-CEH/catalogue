@@ -15,14 +15,6 @@ export default ObjectInputView.extend({
     this.$('#input-creationDate').val(creationDate)
     this.$('#input-modificationDate').val(modificationDate)
 
-    this.$('#input-creationDate').on('input', (event) => {
-      this.model.set('creationDate', event.target.value)
-    })
-
-    this.$('#input-modificationDate').on('input', (event) => {
-      this.model.set('modificationDate', event.value)
-    })
-
     new ParentStringView({
       el: this.$('#provenanceContributors'),
       model: this.model,

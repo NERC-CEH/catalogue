@@ -11,7 +11,7 @@ export default ObjectInputView.extend({
     this.index = options.index
 
     ObjectInputView.prototype.initialize.apply(this, arguments)
-    createOrgAutocomplete('.orgAutocomplete', this, 'funderIdentifier')
+    createOrgAutocomplete('.orgAutocomplete', this, 'funderIdentifier', 'funderName')
   },
 
   render () {
