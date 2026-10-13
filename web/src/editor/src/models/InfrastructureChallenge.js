@@ -6,11 +6,12 @@ export default Backbone.Model.extend({
     value: ''
   },
 
+  // Keyed by the option values in templates/InfrastructureChallenge
   uris: {
-    Biodiversity: 'http://vocab.ceh.ac.uk/ri#Biodiversity',
+    'Climate change: mitigation': 'http://vocab.ceh.ac.uk/ri#Mitigation',
+    'Climate change: adaptation': 'http://vocab.ceh.ac.uk/ri#Resilience',
     Pollution: 'http://vocab.ceh.ac.uk/ri#Pollution',
-    'Climate change adaptation': 'http://vocab.ceh.ac.uk/ri#Resilience',
-    'Climate change mitigation': 'http://vocab.ceh.ac.uk/ri#Mitigation'
+    'Sustainable ecosystems: biodiversity net gain': 'http://vocab.ceh.ac.uk/ri#Biodiversity'
   },
 
   initialize () {

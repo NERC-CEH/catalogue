@@ -10,7 +10,9 @@ export default ObjectInputView.extend({
   initialize (options) {
     this.template = template
     this.hasRoleDefault = options.roleDefault !== undefined
-    this.roleDefault = options.roleDefault || 'pointOfContact'
+    // A section with its own role options and no default makes the user choose one: falling back
+    // to pointOfContact saved a role that wasn't among them (dri-one #458)
+    this.roleDefault = options.roleDefault || (Array.isArray(options.roleoptions) ? undefined : 'pointOfContact')
     this.optionTemplate = _.template('<option value="<%- value %>"><%- label %></option>')
     this.options = Array.isArray(options.roleoptions)
       ? options.roleoptions
@@ -27,17 +29,20 @@ export default ObjectInputView.extend({
           { value: 'resourceProvider', label: 'Resource provider' },
           { value: 'user', label: 'User' }
         ]
-    ObjectInputView.prototype.initialize.apply(this, arguments)
-    createOrgAutocomplete('.orgAutocomplete', this)
-
-    if (!this.model.get('role')) {
+    // Before rendering, so a new row's select shows the role it will be saved with
+    if (!this.model.get('role') && this.roleDefault) {
       this.model.set('role', this.roleDefault)
     }
+    ObjectInputView.prototype.initialize.apply(this, arguments)
+    createOrgAutocomplete('.orgAutocomplete', this)
   },
 
   render () {
     ObjectInputView.prototype.render.apply(this)
 
+    if (!this.roleDefault) {
+      this.$('.role-select').append(this.optionTemplate({ value: '', label: 'Select a role' }))
+    }
     if (this.options.length > 0) {
       this.options.forEach(option => {
         this.$('.role-select').append(this.optionTemplate(option))
@@ -82,7 +87,8 @@ export default ObjectInputView.extend({
       }
     }
 
-    const selectedRole = this.$('.role-select').val()
-    this.model.set('role', selectedRole || this.roleDefault)
+    if (this.roleDefault) {
+      this.model.set('role', this.$('.role-select').val() || this.roleDefault)
+    }
   }
 })

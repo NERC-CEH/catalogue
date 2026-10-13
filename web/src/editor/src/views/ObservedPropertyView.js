@@ -31,5 +31,6 @@ export default ObjectInputView.extend({
         this.model.unset(name)
       }
     }
+    return false // or the fileset around this row copies the field onto itself
   }
 })

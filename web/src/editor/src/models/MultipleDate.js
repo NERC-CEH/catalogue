@@ -10,6 +10,8 @@ export default Backbone.Model.extend({
       publicationDate: 'Publication date',
       revisionDate: 'Revision date',
       supersededDate: 'Date superseded',
+      unavailableDate: 'Date withdrawn',
+      modificationDate: 'Modification date',
       deprecatedDate: 'Date deprecated',
       releasedDate: 'Date released',
       begin: 'Begin',
@@ -23,6 +25,9 @@ export default Backbone.Model.extend({
       .keys()
       .each(function (key) {
         const dateString = attrs[key]
+        if (!dateString) {
+          return // not given yet
+        }
         if (!dateString.match(dateRegEx)) {
           errors.push({
             message: `${labels[key]} is wrong. The date format is yyyy-mm-dd`

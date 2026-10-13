@@ -43,19 +43,16 @@ export default ObjectInputView.extend({
       this.$('.autocomplete').autocomplete({
         minLength: 2,
         source: (request, response) => {
-          let query
-          const vocab = _.pluck(this.vocabularies.where({ toSearch: true }), 'id')
+          const vocab = _.pluck(this.vocabularies.where({ toSearch: true }), 'id').join(',')
           const term = request.term.trim()
-          if (_.isEmpty(term)) {
-            query = `/vocabulary/keywords?vocab=${vocab}`
-          } else {
-            query = `/vocabulary/keywords?query=${request.term}&vocab=${vocab}`
-          }
-          $.getJSON(query, data => response(_.map(data, d => ({
-            value: d.label,
-            label: `${d.label} (${d.vocabId})`,
-            url: d.url
-          }))))
+          const params = _.isEmpty(term) ? { vocab } : { query: term, vocab }
+          $.getJSON(`/vocabulary/keywords?${$.param(params)}`)
+            .done(data => response(_.map(data, d => ({
+              value: d.label,
+              label: `${d.label} (${d.vocabId})`,
+              url: d.url
+            }))))
+            .fail(() => response([]))
         },
         select: (event, ui) => {
           this.model.set('value', ui.item.value)
