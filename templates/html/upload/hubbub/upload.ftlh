@@ -122,7 +122,7 @@
 </#macro>
 
 <#macro dropZoneContainer>
-    <div class='dropzone-container'>
+    <div class='dropzone-container' data-max-file-size="${maxFileSizeBytes?c}">
         <div class="dropzone-files">
             <div class="p-3 fs-4 text-center">Drag and drop files/folders here or click the <b>add files</b> button</div>
         </div>

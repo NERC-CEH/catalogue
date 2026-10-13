@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.util.unit.DataSize;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
@@ -103,6 +104,8 @@ public class UploadController {
         model.addAttribute("isScheduled", dataTransfer.isScheduled());
         model.addAttribute("isInProgress", dataTransfer.isInProgress());
         model.addAttribute("maxFileSize", maxFileSize);
+        // For the uploader to refuse an oversized file before sending it (dri-one #459)
+        model.addAttribute("maxFileSizeBytes", DataSize.parse(maxFileSize).toBytes());
 
         if (dataTransfer.isScheduled()) {
             addHubbubResponse(model, DROPBOX, datasetId, DROPBOX);

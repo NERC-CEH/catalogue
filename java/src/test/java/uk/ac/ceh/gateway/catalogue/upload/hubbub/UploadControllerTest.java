@@ -274,6 +274,8 @@ class UploadControllerTest extends AbstractMvcTest {
             .andExpect(model().attribute("isOpen", false))
             .andExpect(model().attribute("isScheduled", true))
             .andExpect(model().attribute("isInProgress", false))
+            // dri-one #459: the uploader refuses an oversized file before sending it
+            .andExpect(model().attribute("maxFileSizeBytes", 2L * 1024 * 1024 * 1024))
             .andExpect(model().attributeExists("datastore", "dropbox", "metadata", "maxFileSize"));
 
     }

@@ -21,34 +21,12 @@ export default Backbone.View.extend({
 
   initialize () {
     this.dropzoneData = []
+    this.zipUploaded = false
     if (this.$('.dropzone-container').length) {
-      const dropzoneSuccess = (file) => {
-        const filename = (file?.fullPath ?? file.name).toLowerCase().replaceAll(' ', '-')
-        if (filename.endsWith('.zip')) {
-          this.reloadPage()
-        }
-        const model = new File({
-          bytes: file.size,
-          datasetId: this.model.get('id'),
-          datastore: 'dropbox',
-          path: filename,
-          status: 'NO_HASH',
-          check: false
-        })
-        this.dropzoneData.push(model)
-        $(file.previewElement).remove()
-      }
-
-      const dropzoneComplete = () => {
-        this.dropbox.length > 0 ? this.dropbox.trigger('addBatch', this.dropzoneData) : this.dropbox.reset(this.dropzoneData)
-        this.model.set('dropboxTotalFiles', (this.model.get('dropboxTotalFiles') ?? 0) + this.dropzoneData.length)
-        this.dropzoneData = []
-      }
-
       this.dropzoneView = new DropzoneView({
         el: '.dropzone-container',
-        success: dropzoneSuccess,
-        complete: dropzoneComplete,
+        success: file => this.uploaded(file),
+        complete: () => this.queueCompleted(),
         url: this.model.url()
       })
     }
@@ -119,6 +97,36 @@ export default Backbone.View.extend({
     this.listenTo(this.metadata, 'addBatch', (models) => this.addBatch(this.metadataView, this.metadata, models))
   },
 
+  uploaded (file) {
+    const filename = (file?.fullPath ?? file.name).toLowerCase().replaceAll(' ', '-')
+    // A zip is unpacked on the server, so the page is reloaded to show its files, but only once the
+    // queue is done: reloading now would cancel the uploads still in flight (dri-one #459)
+    if (filename.endsWith('.zip')) {
+      this.zipUploaded = true
+    }
+    const model = new File({
+      bytes: file.size,
+      datasetId: this.model.get('id'),
+      datastore: 'dropbox',
+      path: filename,
+      status: 'NO_HASH',
+      check: false
+    })
+    this.dropzoneData.push(model)
+    $(file.previewElement).remove()
+  },
+
+  queueCompleted () {
+    if (this.zipUploaded) {
+      this.zipUploaded = false
+      this.reloadPage()
+      return
+    }
+    this.dropbox.length > 0 ? this.dropbox.trigger('addBatch', this.dropzoneData) : this.dropbox.reset(this.dropzoneData)
+    this.model.set('dropboxTotalFiles', (this.model.get('dropboxTotalFiles') ?? 0) + this.dropzoneData.length)
+    this.dropzoneData = []
+  },
+
   addBatch (tableView, collection, models) {
     if (models.length === 0) return
 
@@ -129,7 +137,14 @@ export default Backbone.View.extend({
   },
 
   addAll (tableView, collection, $container) {
-    if (collection.length === 0) return
+    // A refresh can come back empty (everything moved or deleted): clear the old rows rather than
+    // leave them on screen. reset fires no update, so the empty message is shown here too.
+    if (collection.length === 0) {
+      if (this[tableView]) this[tableView].dataTable.clear().draw()
+      const title = { datastoreView: 'datastore', dropboxView: 'data', metadataView: 'metadata' }[tableView]
+      this.showEmptyStorage(collection, $container, title)
+      return
+    }
     this.setLoadMoreButton(tableView.replace('View', ''))
     $container.empty()
     const view = new TableView({
@@ -231,7 +246,22 @@ export default Backbone.View.extend({
     $icon.attr('class', 'btn-icon fa-fw fa fa-exclamation-triangle')
   },
 
+  pendingUploads () {
+    const dropzone = this.dropzoneView?.dropzone
+    return dropzone ? dropzone.getUploadingFiles().length + dropzone.getQueuedFiles().length : 0
+  },
+
+  // Finishing hands the dataset to the EIDC and removes the depositor's upload permission, and
+  // leaving the page cancels any upload still in flight, so it waits for those and asks first
   finish (event) {
+    const pending = this.pendingUploads()
+    if (pending > 0) {
+      window.alert(`${pending} ${pending === 1 ? 'file is' : 'files are'} still uploading. Wait for them to finish before you finish uploading.`)
+      return
+    }
+    if (!window.confirm('Finish uploading? You will not be able to add more files to this dataset afterwards.')) {
+      return
+    }
     const that = this
     const currentClasses = this.showInProgress(event)
     return $.ajax({
@@ -267,6 +297,9 @@ export default Backbone.View.extend({
   },
 
   moveAllDatastore (event) {
+    if (!window.confirm('Move every file in the dropbox to the datastore, including any not yet validated?')) {
+      return
+    }
     const that = this
     const currentClasses = this.showInProgress(event)
     $.ajax({
@@ -358,7 +391,10 @@ export default Backbone.View.extend({
       type: 'POST',
       success: () => this.collectionSuccess(event, currentClasses, name, datastore, collection),
       error: (xhr) => {
-        if (xhr.status !== 400) {
+        // 400: nothing in that store to validate. Stop the spinner rather than leave it running.
+        if (xhr.status === 400) {
+          this.showNormal(event, currentClasses)
+        } else {
           this.showInError(event)
         }
       }
@@ -374,13 +410,14 @@ export default Backbone.View.extend({
         () => {
           if (callback) callback()
           this.showNormal(event, currentClasses)
-        }
+        },
+        () => this.showInError(event)
       ),
       7000
     )
   },
 
-  getServerState (name, datastore, collection, callback) {
+  getServerState (name, datastore, collection, callback, onError) {
     const page = 1
     const collectionSize = collection.length
     let size = (this.model.has(`${name}Size`)) ? this.model.get(`${name}Size`) : 5000
@@ -398,6 +435,9 @@ export default Backbone.View.extend({
         self.model.set(`${name}LastPage`, response.meta.lastPage)
         self.setLoadMoreButton(name)
         if (callback) { callback() }
+      },
+      error () {
+        if (onError) { onError() }
       }
     })
   }

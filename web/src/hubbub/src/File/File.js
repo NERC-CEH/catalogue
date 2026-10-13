@@ -53,17 +53,10 @@ export default Backbone.Model.extend({
     })
   },
 
+  // Takes the file as the server now has it (sha256, lastValidated, bytes…) and recomputes what is
+  // derived from it: copying only some fields left the checksum and last-checked columns stale
   update (data) {
-    this.set({
-      check: false,
-      date: data.date,
-      hash: data.hash,
-      message: messages[data.status],
-      moving: false,
-      path: data.path,
-      size: filesize(data.bytes),
-      status: data.status
-    })
+    this.set(Object.assign({}, data, { check: false }))
     this.initialize()
   },
 

@@ -273,6 +273,8 @@ describe('UploadView', function () {
   describe('finish', function () {
     beforeEach(function () {
       jasmine.Ajax.install()
+      // These actions now ask first (dri-one #459)
+      spyOn(window, 'confirm').and.returnValue(true)
       $(document.body)
         .html(`
                         <div class="document-upload">
@@ -343,6 +345,8 @@ describe('UploadView', function () {
   describe('move', function () {
     beforeEach(function () {
       jasmine.Ajax.install()
+      // These actions now ask first (dri-one #459)
+      spyOn(window, 'confirm').and.returnValue(true)
       $(document.body)
         .html(`
                         <div class="document-upload">

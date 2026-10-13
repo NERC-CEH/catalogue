@@ -8,15 +8,17 @@ export default Backbone.View.extend({
 
   initialize (options) {
     const { el, success, url, complete } = options
-    // eslint-disable-next-line no-new
-    new Dropzone(el, this.dropzoneOptions(url, success, complete))
+    // The server's limit, in bytes, from the page. Dropzone's maxFilesize is in MiB; refusing an
+    // oversized file here saves uploading gigabytes only to be rejected (dri-one #459)
+    const maxBytes = Number($(el).data('max-file-size'))
+    this.dropzone = new Dropzone(el, this.dropzoneOptions(url, success, complete, maxBytes))
   },
 
-  dropzoneOptions (url, success, complete) {
+  dropzoneOptions (url, success, complete, maxBytes) {
     return {
       timeout: -1,
       url,
-      maxFilesize: 20 * 1000 * 1000,
+      maxFilesize: maxBytes > 0 ? maxBytes / (1024 * 1024) : 2048,
       previewTemplate: template,
       previewsContainer: '.dropzone-files',
       clickable: '.fileinput-button',
@@ -50,7 +52,6 @@ export default Backbone.View.extend({
         })
 
         this.on('error', function (file, error, xhr) {
-          let message
           const $file = $(file.previewElement)
           $file.find('.file-status').text('Error')
           $file.find('.file-name i').attr('class', 'fa fa-exclamation-triangle')
@@ -60,8 +61,10 @@ export default Backbone.View.extend({
             403: 'Unauthorized',
             500: 'Internal Server Error'
           }
-          if (xhr) { message = errorMessages[xhr.status] || error.error }
-          $file.find('.file-message').text(message)
+          // Dropzone's own errors (too big, cancelled) are strings with no xhr; the server sends a
+          // string, or a problem detail with the reason in detail
+          const reason = typeof error === 'string' ? error : (error && (error.detail || error.message || error.error))
+          $file.find('.file-message').text((xhr && errorMessages[xhr.status]) || reason || 'Upload failed')
         })
       }
     }
