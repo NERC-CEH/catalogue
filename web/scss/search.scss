@@ -113,9 +113,9 @@ main {
                 }
 
                 // Selectors here deliberately target the element and its name
-                // rather than .form-control / .btn: those two classes are @extend-ed
-                // by the editor styles, so using them fans a single rule out across
-                // a dozen unrelated selectors in the compiled CSS.
+                // rather than .form-control / .btn: the editor's controls @extend
+                // those two classes, so a rule using them is copied for each of them
+                // in the compiled CSS.
                 textarea[name='term'] {
                     // The form is position: sticky, so a user-dragged textarea
                     // could grow tall enough to push the results out of view.
@@ -176,7 +176,7 @@ main {
         }
 
         .recordCount {
-            @extend .text-body-secondary !optional;
+            color: var(--bs-secondary-color);
         }
     }
 }
@@ -362,15 +362,17 @@ main {
             }
 
             .availability {
-                @extend .badge !optional;
+                @extend .badge;
 
                 &-Embargoed {
-                    @extend .text-bg-primary !optional;
+                    color: #fff;
+                    background-color: RGBA(var(--bs-primary-rgb), var(--bs-bg-opacity, 1));
                 }
 
                 &-Superseded,
                 &-Withdrawn {
-                    @extend .text-bg-warning !optional;
+                    color: #000;
+                    background-color: RGBA(var(--bs-warning-rgb), var(--bs-bg-opacity, 1));
                 }
             }
 
@@ -385,7 +387,7 @@ main {
                 }
 
                 .opstatus {
-                    @extend .badge !optional;
+                    @extend .badge;
                     display: var(--showOpStatus, none);
                 }
 
@@ -439,7 +441,8 @@ main {
 
             &--inactive .opstatus {
                 --showOpStatus: block;
-                @extend .text-bg-danger !optional;
+                color: #fff;
+                background-color: RGBA(var(--bs-danger-rgb), var(--bs-bg-opacity, 1));
             }
 
             &--restricted {
@@ -469,9 +472,8 @@ main {
 }
 
 .results__footer {
-    @extend .d-flex !optional;
-    @extend .justify-content-center !optional;
-    @extend .mt2 !optional;
+    display: flex;
+    justify-content: center;
 
     .pagination {
 

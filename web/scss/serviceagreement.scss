@@ -29,13 +29,6 @@
                     counter-increment: component;
                     position: relative;
 
-                    .row {
-                        &:not(:last-of-type) {
-                            @extend .mb-2 !optional;
-                        }
-
-                    }
-
                     &:before {
                         content: counter(component);
                         font-weight: 600;
@@ -96,10 +89,6 @@
         .indent {
             &--1 {
                 margin-inline-start: 2em;
-            }
-
-            &--2 {
-                margin-inline-start: 4em;
             }
         }
 
@@ -385,9 +374,6 @@
     }
 
     header,
-    #devbar {
-        display: none !important;
-    }
 
     .metadata {
         &.serviceAgreement {

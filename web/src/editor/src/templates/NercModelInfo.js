@@ -7,7 +7,7 @@ export default _.template(`
     </div>
     <div class="col-sm-9 col-lg-9">
         <div class="input-group">
-            <span class="input-group-addon">Search</span>
+            <span class="input-group-text">Search</span>
             <input data-name="name" id="modelInfo<%- data.index %>Name" class="form-control autocomplete" value="<%- data.name %>">
         </div>
     </div>
