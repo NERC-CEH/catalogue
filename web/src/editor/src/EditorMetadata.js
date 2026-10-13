@@ -1,13 +1,5 @@
 import Backbone from 'backbone'
-
-const COORDINATES = ['westBoundLongitude', 'eastBoundLongitude', 'southBoundLatitude', 'northBoundLatitude']
-
-// A single box is held as a Backbone model once edited (SingleObjectView), a list as plain objects
-const asJSON = box => typeof box?.toJSON === 'function' ? box.toJSON() : box
-const boundingBoxes = attrs => [attrs.boundingBox, ...(attrs.boundingBoxes || [])].filter(Boolean).map(asJSON)
-const coordinatesSet = box => COORDINATES.filter(name => box[name] != null && box[name] !== '').length
-
-export { COORDINATES, asJSON, coordinatesSet }
+import BoundingBox from './geometryMap/BoundingBox'
 
 export default Backbone.Model.extend({
 
@@ -67,8 +59,10 @@ export default Backbone.Model.extend({
       errors.push('A title is mandatory')
     }
 
-    if (boundingBoxes(attrs).some(box => coordinatesSet(box) > 0 && coordinatesSet(box) < COORDINATES.length)) {
-      errors.push('A bounding box needs all four coordinates: west, east, south and north')
+    // The record knows which attributes hold bounding boxes; each box knows whether it is complete
+    const boxes = [attrs.boundingBox, ...(attrs.boundingBoxes || [])].filter(Boolean)
+    if (boxes.some(box => new BoundingBox(box).isIncomplete())) {
+      errors.push(BoundingBox.INCOMPLETE)
     }
 
     if (errors.length) {

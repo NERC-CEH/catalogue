@@ -3,7 +3,6 @@ import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import template from './editorTemplate'
-import { COORDINATES, asJSON, coordinatesSet } from './EditorMetadata'
 
 export default Backbone.View.extend({
 
@@ -136,18 +135,6 @@ export default Backbone.View.extend({
   },
 
   save () {
-    // A single bounding box is held as a Backbone model once edited: send its attributes, as
-    // numbers, or leave it out once cleared. A half-filled one is left for validation to report.
-    const boundingBox = asJSON(this.model.get('boundingBox'))
-    if (boundingBox) {
-      const set = coordinatesSet(boundingBox)
-      if (set === 0) {
-        this.model.unset('boundingBox', { silent: true })
-      } else if (set === COORDINATES.length) {
-        this.model.set('boundingBox', _.object(COORDINATES, COORDINATES.map(name => parseFloat(boundingBox[name]))), { silent: true })
-      }
-    }
-
     this.setSaveButtonSaving()
     let request
     try {

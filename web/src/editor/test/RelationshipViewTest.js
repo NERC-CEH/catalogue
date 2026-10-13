@@ -1,5 +1,4 @@
 import RelationshipView, { clearRelationshipRules, recordType, resultItem } from '../src/views/RelationshipView.js'
-import ResourceType from '../src/models/ResourceType'
 import { EditorMetadata } from '../src'
 import $ from 'jquery'
 import 'jquery-ui/ui/widgets/autocomplete'
@@ -170,7 +169,7 @@ describe('Test RelationshipView', function () {
       const parent = new EditorMetadata({ id: 'cosmos', type: 'dataset' })
       const search = await pickerFor(REPLACES, parent)
       await search()
-      parent.set('resourceType', new ResourceType({ value: 'service' }))
+      parent.set('resourceType', { value: 'service' })
       await search()
       expect($.getJSON).toHaveBeenCalledWith('/relationships/rules?type=service')
     })
@@ -195,11 +194,6 @@ describe('Test RelationshipView', function () {
   })
 
   describe('record type', function () {
-    it('is the resource type of an edited Gemini record, held as a ResourceType model', () => {
-      const model = new EditorMetadata({ type: 'dataset', resourceType: new ResourceType({ value: 'service' }) })
-      expect(recordType(model)).toBe('service')
-    })
-
     it('is the resource type of a Gemini record as loaded', () => {
       expect(recordType(new EditorMetadata({ type: 'dataset', resourceType: { value: 'service' } }))).toBe('service')
     })

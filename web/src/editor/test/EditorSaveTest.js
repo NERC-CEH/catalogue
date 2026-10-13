@@ -1,5 +1,3 @@
-import Backbone from 'backbone'
-import Swal from 'sweetalert2'
 import { EditorView, EditorMetadata, GeminiEditorMetadata } from '../src'
 import { BoundingBox, BoundingBoxView } from '../src/geometryMap'
 
@@ -25,8 +23,8 @@ describe('Saving a record', () => {
       expect(model.validate(model.attributes)).toEqual(['Invalid resource type to have an online service agreement'])
     })
 
-    it('reads a resource type the editor has set as a model', () => {
-      const model = new GeminiEditorMetadata({ id: 'rec1', title: 'A dataset', resourceType: new Backbone.Model({ value: 'dataset' }), hasOnlineServiceAgreement: true })
+    it('accepts a resource type that may have an online service agreement', () => {
+      const model = new GeminiEditorMetadata({ id: 'rec1', title: 'A dataset', resourceType: { value: 'dataset' }, hasOnlineServiceAgreement: true })
 
       expect(model.validate(model.attributes)).toBeUndefined()
     })
@@ -56,50 +54,9 @@ describe('Saving a record', () => {
     })
   })
 
-  describe('a single bounding box (monitoring records)', () => {
-    let view
-    let sent
-
-    beforeEach(() => {
-      const ViewType = EditorView.extend({
-        initialize () {
-          this.sections = [{ label: 'One', title: 'One', views: [] }]
-          return EditorView.prototype.initialize.apply(this)
-        }
-      })
-      view = new ViewType({ model: new EditorMetadata({ title: 'A record' }) })
-      spyOn(view.model, 'save').and.callFake(function () {
-        sent = JSON.parse(JSON.stringify(this.toJSON()))
-        return {}
-      })
-      spyOn(Swal, 'fire')
-    })
-
-    afterEach(() => { document.body.classList.remove('edit-mode') })
-
-    it('is left out once it has been cleared', () => {
-      // SingleObjectView stores the box model itself on the record
-      const box = new BoundingBox({ westBoundLongitude: '-3', eastBoundLongitude: '1', southBoundLatitude: '50', northBoundLatitude: '55' })
-      box.clearBounds()
-      view.model.set('boundingBox', box)
-
-      view.save()
-
-      expect(sent.boundingBox).toBeUndefined()
-    })
-
-    it('is sent as numbers when complete, including a zero coordinate', () => {
-      view.model.set('boundingBox', new BoundingBox({ westBoundLongitude: '-3.5', eastBoundLongitude: '0', southBoundLatitude: '50', northBoundLatitude: '55.25' }))
-
-      view.save()
-
-      expect(sent.boundingBox).toEqual({ westBoundLongitude: -3.5, eastBoundLongitude: 0, southBoundLatitude: 50, northBoundLatitude: 55.25 })
-    })
-  })
-
   describe('validation', () => {
     const halfFilled = { westBoundLongitude: '-3', eastBoundLongitude: '1' }
-    const message = 'A bounding box needs all four coordinates: west, east, south and north'
+    const message = BoundingBox.INCOMPLETE
 
     it('refuses a half-filled bounding box in a list', () => {
       const model = new EditorMetadata({ title: 'A record', boundingBoxes: [halfFilled] })
@@ -107,8 +64,8 @@ describe('Saving a record', () => {
       expect(model.validate(model.attributes)).toEqual([message])
     })
 
-    it('refuses a half-filled single bounding box, held as a model', () => {
-      const model = new EditorMetadata({ title: 'A record', boundingBox: new BoundingBox(halfFilled) })
+    it('refuses a half-filled single bounding box', () => {
+      const model = new EditorMetadata({ title: 'A record', boundingBox: halfFilled })
 
       expect(model.validate(model.attributes)).toEqual([message])
     })
@@ -124,6 +81,32 @@ describe('Saving a record', () => {
   })
 
   describe('a bounding box model', () => {
+    it('knows whether it is empty, incomplete or complete', () => {
+      expect(new BoundingBox().isEmpty()).toBe(true)
+      expect(new BoundingBox({ westBoundLongitude: '', eastBoundLongitude: null }).isEmpty()).toBe(true)
+      expect(new BoundingBox({ westBoundLongitude: '-3' }).isIncomplete()).toBe(true)
+      const zeroes = new BoundingBox({ westBoundLongitude: 0, eastBoundLongitude: 0, southBoundLatitude: 0, northBoundLatitude: 0 })
+      expect(zeroes.isIncomplete()).toBe(false)
+      expect(zeroes.isEmpty()).toBe(false)
+    })
+
+    it('sends only its four coordinates, not the bounds and coordinates the server derives', () => {
+      // A saved box comes back from the server with bounds (GeoJSON) and coordinates added
+      const saved = {
+        westBoundLongitude: -3.5,
+        eastBoundLongitude: 0,
+        southBoundLatitude: 50,
+        northBoundLatitude: 55.25,
+        bounds: '{"type": "Feature"}',
+        coordinates: '[[[-3.5, 50]]]'
+      }
+      expect(new BoundingBox(saved).toJSON()).toEqual({ westBoundLongitude: -3.5, eastBoundLongitude: 0, southBoundLatitude: 50, northBoundLatitude: 55.25 })
+
+      const cleared = new BoundingBox(saved)
+      cleared.clearBounds()
+      expect(cleared.toJSON()).toEqual({})
+    })
+
     it('forgets its coordinates when cleared', () => {
       const box = new BoundingBox({ westBoundLongitude: '-3', eastBoundLongitude: '1', southBoundLatitude: '50', northBoundLatitude: '55' })
 

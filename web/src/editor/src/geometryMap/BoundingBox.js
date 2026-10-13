@@ -1,13 +1,34 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
 
+const COORDINATES = ['westBoundLongitude', 'eastBoundLongitude', 'southBoundLatitude', 'northBoundLatitude']
+
 export default Backbone.Model.extend({
 
+  // How many coordinates are set: 0 is a real coordinate (the equator, Greenwich), a blank is not
+  coordinatesSet () {
+    return COORDINATES.filter(name => this.get(name) != null && this.get(name) !== '').length
+  },
+
+  // Only the four coordinates are the box. A saved box comes back from the server with bounds
+  // (GeoJSON) and coordinates derived from them; sending those back kept a cleared box alive, and
+  // the server could not build a box from them alone (dri-one #457)
+  toJSON () {
+    return _.pick(this.attributes, COORDINATES)
+  },
+
+  isEmpty () {
+    return this.coordinatesSet() === 0
+  },
+
+  // Some but not all coordinates: the server cannot read it, so it can't be saved
+  isIncomplete () {
+    const set = this.coordinatesSet()
+    return set > 0 && set < COORDINATES.length
+  },
+
   hasBoundingBox () {
-    return this.has('westBoundLongitude') &&
-                        this.has('southBoundLatitude') &&
-                        this.has('eastBoundLongitude') &&
-                        this.has('northBoundLatitude')
+    return this.coordinatesSet() === COORDINATES.length
   },
 
   getBoundingBox () {
@@ -119,4 +140,7 @@ export default Backbone.Model.extend({
       return errors
     }
   }
+}, {
+  COORDINATES,
+  INCOMPLETE: 'A bounding box needs all four coordinates: west, east, south and north'
 })
