@@ -33,7 +33,19 @@ class ContentSecurityPolicyTest {
     @Test
     @DisplayName("lets the SPARQL page query the Fuseki endpoint's origin, not the whole web")
     void connectsToTheSparqlOrigin() {
-        assertThat(directives("n").get("connect-src")).isEqualTo("'self' https://sparql.example.org");
+        assertThat(directives("n").get("connect-src"))
+            .startsWith("'self' https://sparql.example.org ")
+            .doesNotContain(" https: ");
+    }
+
+    @Test
+    @DisplayName("lets Google Analytics run once a visitor accepts analytics cookies")
+    void allowsGoogleAnalytics() {
+        // Tag Manager and gtag.js, then GA4's collection endpoints (dri-one #454: staging reported
+        // all four as blocked)
+        assertThat(directives("n").get("script-src")).contains("https://www.googletagmanager.com");
+        assertThat(directives("n").get("connect-src")).contains(
+            "https://*.google-analytics.com", "https://*.analytics.google.com", "https://*.googletagmanager.com");
     }
 
     @Test
