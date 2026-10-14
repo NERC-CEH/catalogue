@@ -28,11 +28,6 @@
       <#-- The proxy serves /favicon.ico in front of every environment, so point at it rather than at
            a catalogue logo; locally the same path is served by the compose nginx. -->
       <link rel="icon" href="/favicon.ico">
-      <#-- Linked here rather than @imported by the stylesheet, so the font loads alongside it
-           instead of after it has downloaded (dri-one #463) -->
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap">
       <#-- Shared by every catalogue, then the catalogue's own theme, which only overrides it (dri-one #362) -->
       <#assign stylesheets = ["base", "style-" + catalogue?has_content?then(catalogue.id, catalogues.defaultCatalogue().id)]>
       <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>
@@ -166,9 +161,12 @@
           </#if>
         </footer>
       </#if>
+      <#-- EIDC's Jira feedback collector. defer, like the catalogue's own scripts, so it no longer holds up
+           parsing; deferred scripts run in order, so its jQuery (which it makes window.jQuery) still
+           loads before it. The catalogue's code imports its own and never reads the global. -->
       <#if catalogue?has_content && catalogue.id == "eidc">
-        <script type="text/javascript" src="https://jira.ceh.ac.uk/s/d41d8cd98f00b204e9800998ecf8427e-CDN/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/2.2.4.7/_/download/batch/com.atlassian.plugins.jquery:jquery/com.atlassian.plugins.jquery:jquery.js?collectorId=1977b77c"></script>
-        <script type="text/javascript" src="https://jira.ceh.ac.uk/s/743f218046d73ea8e8033c2a0fad57f5-T/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/4.0.4/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-UK&collectorId=1977b77c"></script>
+        <script defer src="https://jira.ceh.ac.uk/s/d41d8cd98f00b204e9800998ecf8427e-CDN/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/2.2.4.7/_/download/batch/com.atlassian.plugins.jquery:jquery/com.atlassian.plugins.jquery:jquery.js?collectorId=1977b77c"></script>
+        <script defer src="https://jira.ceh.ac.uk/s/743f218046d73ea8e8033c2a0fad57f5-T/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/4.0.4/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-UK&collectorId=1977b77c"></script>
       </#if>
     </body>
   </html>

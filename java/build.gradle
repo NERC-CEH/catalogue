@@ -120,5 +120,9 @@ tasks {
         inputs.dir(rootProject.file('templates'))
             .withPropertyName('templates')
             .withPathSensitivity(PathSensitivity.RELATIVE)
+        // Likewise the SPARQL page's example queries, which SparqlUiExamplesTest parses (dri-one #367)
+        inputs.file(rootProject.file('web/src/sparql/index.js'))
+            .withPropertyName('sparqlExamples')
+            .withPathSensitivity(PathSensitivity.RELATIVE)
     }
 }

@@ -20,9 +20,9 @@ import java.util.regex.Pattern;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * The Content-Security-Policy through the real server and security chain (dri-one #454): every response
- * carries it, inline scripts carry the same nonce as their response's policy, and anonymous browsers
- * can report violations.
+ * The Content-Security-Policy through the real server and security chain (dri-one #454). Every response
+ * carries it, with a fresh nonce for any inline script. The SPARQL page, which had the only inline
+ * script, now has none (dri-one #367). Anonymous browsers can report violations.
  */
 @ActiveProfiles({"test", "server-eidc", "search-basic"})
 @DisplayName("Content-Security-Policy, end to end")
@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ContentSecurityPolicyEndToEndTest {
 
     private static final Pattern POLICY_NONCE = Pattern.compile("'nonce-([^']+)'");
-    private static final Pattern SCRIPT_NONCE = Pattern.compile("<script nonce=\"([^\"]+)\">");
+    private static final Pattern INLINE_SCRIPT = Pattern.compile("<script(?![^>]*\\bsrc=)[^>]*>");
 
     @LocalServerPort
     private int port;
@@ -40,15 +40,15 @@ class ContentSecurityPolicyEndToEndTest {
 
     @Test
     @SneakyThrows
-    @DisplayName("an inline script carries the nonce its response's policy allows, new on every request")
-    void inlineScriptCarriesTheResponseNonce() {
+    @DisplayName("the SPARQL page runs no inline script, and each response's policy has a nonce of its own")
+    void noInlineScriptAndAFreshNonce() {
         var first = send(HttpRequest.newBuilder(uri("/sparql")).GET());
         var second = send(HttpRequest.newBuilder(uri("/sparql")).GET());
 
         assertThat(first.statusCode()).isEqualTo(200);
-        String nonce = find(POLICY_NONCE, policy(first));
-        assertThat(find(SCRIPT_NONCE, first.body())).isEqualTo(nonce);
-        assertThat(find(POLICY_NONCE, policy(second))).isNotEqualTo(nonce);
+        // Its start-up script is bundled now, and the page hands it the endpoint as data (dri-one #367)
+        assertThat(first.body()).contains("data-endpoint=").doesNotContainPattern(INLINE_SCRIPT);
+        assertThat(find(POLICY_NONCE, policy(first))).isNotEqualTo(find(POLICY_NONCE, policy(second)));
     }
 
     @Test

@@ -12,15 +12,18 @@ import java.util.stream.Collectors;
  *
  * <p>Why each source is allowed:</p>
  * <ul>
- *   <li>{@code script-src}: the bundle is our own. Inline scripts need the per-request nonce
- *   ({@code <script nonce="${csp.nonce}">}). {@code 'unsafe-eval'} is there because underscore's
- *   {@code _.template} compiles every front-end template with {@code new Function} when it loads;
- *   precompiling them at build time would let it go (dri-one #464). jira.ceh.ac.uk is the EIDC issue collector,
- *   unpkg.com the YASGUI editor on the maintenance SPARQL page (#367). www.googletagmanager.com is
- *   Google Analytics: on EIDC the proxy adds a cookie banner to every page, and once a visitor accepts
- *   analytics cookies it loads Tag Manager (via /sso/static/gtm-loader.js), which loads gtag.js.</li>
+ *   <li>{@code script-src}: the bundles are our own, YASGUI on the SPARQL page included (#367).
+ *   Inline scripts would need the per-request nonce ({@code <script nonce="${csp.nonce}">}); there are
+ *   none at present. {@code 'unsafe-eval'} is there because underscore's {@code _.template} compiles
+ *   every front-end template with {@code new Function} when it loads; precompiling them at build time
+ *   would let it go (dri-one #464). jira.ceh.ac.uk is the EIDC issue collector.
+ *   www.googletagmanager.com is Google Analytics: on EIDC the proxy adds a cookie banner to every page,
+ *   and once a visitor accepts analytics cookies it loads Tag Manager (via /sso/static/gtm-loader.js),
+ *   which loads gtag.js.</li>
  *   <li>{@code style-src}: {@code 'unsafe-inline'} because templates set {@code style} attributes and
- *   the SPARQL page has an inline stylesheet; styles can't run code.</li>
+ *   the SPARQL page has an inline stylesheet; styles can't run code. jira.ceh.ac.uk styles the issue
+ *   collector.</li>
+ *   <li>{@code font-src}: the fonts, Inter included, are served from /static (#367).</li>
  *   <li>{@code img-src https:}: a record's browse graphic and the map tiles can come from any host.</li>
  *   <li>{@code connect-src}: the SPARQL page queries the Fuseki endpoint, which is a different host.
  *   Google Analytics 4 sends its hits to the google-analytics.com, analytics.google.com and
@@ -44,10 +47,9 @@ public class ContentSecurityPolicy {
         Map<String, List<String>> directives = new LinkedHashMap<>();
         directives.put("default-src", List.of("'self'"));
         directives.put("script-src", List.of("'self'", "'nonce-" + NONCE + "'", "'unsafe-eval'",
-            "https://jira.ceh.ac.uk", "https://unpkg.com", "https://www.googletagmanager.com"));
-        directives.put("style-src", List.of("'self'", "'unsafe-inline'", "https://fonts.googleapis.com",
-            "https://jira.ceh.ac.uk", "https://unpkg.com"));
-        directives.put("font-src", List.of("'self'", "data:", "https://fonts.gstatic.com"));
+            "https://jira.ceh.ac.uk", "https://www.googletagmanager.com"));
+        directives.put("style-src", List.of("'self'", "'unsafe-inline'", "https://jira.ceh.ac.uk"));
+        directives.put("font-src", List.of("'self'", "data:"));
         directives.put("img-src", List.of("'self'", "data:", "https:"));
         directives.put("connect-src", List.of("'self'", origin(sparqlEndpoint),
             "https://*.google-analytics.com", "https://*.analytics.google.com", "https://*.googletagmanager.com"));

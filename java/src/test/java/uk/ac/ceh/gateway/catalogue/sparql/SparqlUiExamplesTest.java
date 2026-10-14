@@ -22,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * The example queries offered by the SPARQL UI.
  *
- * <p>They are hand-written SPARQL embedded in a template as arrays of JavaScript
- * string literals, and nothing checked them. A typo in one is not a broken
+ * <p>They are hand-written SPARQL, in the page's script (web/src/sparql/index.js, bundled since
+ * dri-one #367) as arrays of JavaScript string literals, and nothing checked them. A typo in one is not a broken
  * build, it is a visitor clicking "Datasets, their licence and their funder" and
  * getting a parse error from the endpoint — the worst place to find out, since
  * these exist to demonstrate that the endpoint works.
@@ -34,34 +34,37 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DisplayName("The SPARQL UI's example queries")
 class SparqlUiExamplesTest {
 
-    private static final Path TEMPLATE = Path.of("../templates/html/sparql-ui.ftlh");
+    private static final Path SCRIPT = Path.of("../web/src/sparql/index.js");
 
     /** Matches one {@code query: [ ... ]} block. */
     private static final Pattern BLOCK = Pattern.compile(
         "query:\\s*\\[(.*?)\\n\\s*\\]", Pattern.DOTALL);
-    private static final Pattern LITERAL = Pattern.compile("\"((?:[^\"\\\\]|\\\\.)*)\"");
+    /** A single- or double-quoted string: StandardJS uses double quotes when the text has an apostrophe. */
+    private static final Pattern LITERAL = Pattern.compile("'((?:[^'\\\\]|\\\\.)*)'|\"((?:[^\"\\\\]|\\\\.)*)\"");
 
     /**
      * Every example, assembled the way the page assembles it.
      *
-     * <p>The template concatenates a JavaScript constant into some lines, as
-     * {@code "  GRAPH <" + CATALOGUE_GRAPH + "> {"}. That is substituted first,
+     * <p>The script concatenates the catalogue's graph into some lines, as
+     * {@code '  GRAPH <' + catalogueGraph + '> {'}. That is substituted first,
      * so the line becomes a single literal — extracting the pieces separately
      * would silently produce {@code GRAPH <> } and test a query no visitor ever
      * runs.
      */
     @SneakyThrows
     private static List<String> examples() {
-        var template = Files.readString(TEMPLATE)
-            .replace("\" + CATALOGUE_GRAPH + \"", "https://catalogue.ceh.ac.uk");
+        var script = Files.readString(SCRIPT)
+            .replace("' + catalogueGraph + '", "https://catalogue.ceh.ac.uk")
+            .replace("\" + catalogueGraph + \"", "https://catalogue.ceh.ac.uk");
 
         val queries = new ArrayList<String>();
-        Matcher block = BLOCK.matcher(template);
+        Matcher block = BLOCK.matcher(script);
         while (block.find()) {
             val lines = new ArrayList<String>();
             Matcher literal = LITERAL.matcher(block.group(1));
             while (literal.find()) {
-                lines.add(literal.group(1));
+                String text = literal.group(1) != null ? literal.group(1) : literal.group(2);
+                lines.add(text.replaceAll("\\\\(.)", "$1"));
             }
             queries.add(String.join("\n", lines));
         }
@@ -73,7 +76,7 @@ class SparqlUiExamplesTest {
     void examplesAreFound() {
         val examples = examples();
 
-        assertThat("the template offers six; an extraction bug must not look like success",
+        assertThat("the page offers six; an extraction bug must not look like success",
             examples.size(), greaterThanOrEqualTo(6));
         assertTrue(examples.stream().allMatch(query -> query.contains("SELECT")
                 || query.contains("CONSTRUCT") || query.contains("DESCRIBE")),

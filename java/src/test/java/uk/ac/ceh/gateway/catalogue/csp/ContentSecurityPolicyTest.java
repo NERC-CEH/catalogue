@@ -49,6 +49,17 @@ class ContentSecurityPolicyTest {
     }
 
     @Test
+    @DisplayName("serves YASGUI and the Inter font itself, so neither unpkg nor Google Fonts is allowed")
+    void noUnpkgOrGoogleFonts() {
+        // Bundled and self-hosted since dri-one #367
+        Map<String, String> directives = directives("n");
+
+        assertThat(directives.get("script-src")).doesNotContain("unpkg.com");
+        assertThat(directives.get("style-src")).doesNotContain("unpkg.com").doesNotContain("fonts.googleapis.com");
+        assertThat(directives.get("font-src")).isEqualTo("'self' data:");
+    }
+
+    @Test
     @DisplayName("refuses plugins, foreign base URLs and framing by other sites, and says where to report")
     void lockedDownDefaults() {
         Map<String, String> directives = directives("n");
