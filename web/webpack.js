@@ -48,9 +48,11 @@ class StylesheetEntries {
   }
 }
 
-// Drops the rule Font Awesome emits for each icon (.fa-<name>::before) unless the catalogue uses that
-// icon: about 1,900 rules, a sixth of base.css (NERC-CEH/dri-one#362). Done before the minifier runs,
-// and in every build, so a missing icon shows up in development too.
+// Drops the rule Font Awesome emits for each icon unless the catalogue uses that icon: about 1,900
+// rules, a sixth of base.css (NERC-CEH/dri-one#362). Done before the minifier runs, and in every
+// build, so a missing icon shows up in development too. An icon's rule is `.fa-<name>::before
+// { content: ... }` up to Font Awesome 6.6 and `.fa-<name> { --fa: ... }` from 6.7; the body is checked
+// too, as utilities such as .fa-spin have the same selector shape.
 class FontAwesomeSubset {
   apply (compiler) {
     const { Compilation, sources } = compiler.webpack
@@ -64,13 +66,21 @@ class FontAwesomeSubset {
           for (const file of compilation.namedChunks.get('base').files) {
             if (!file.endsWith('.css')) continue
             const root = postcss.parse(compilation.getAsset(file).source.source().toString())
+            let iconRules = 0
             root.walkRules(rule => {
-              const icons = rule.selectors.map(selector => selector.match(/^\.fa-([a-z0-9-]+)::?before$/))
+              const icons = rule.selectors.map(selector => selector.match(/^\.fa-([a-z0-9-]+)(?:::?before)?$/))
               if (!icons.every(Boolean)) return
+              if (!rule.nodes.every(node => node.type === 'decl' && ['content', '--fa'].includes(node.prop))) return
+              iconRules++
               const kept = icons.filter(([, name]) => used.has(name)).map(([selector]) => selector)
               if (kept.length) rule.selectors = kept
               else rule.remove()
             })
+            // A Font Awesome upgrade that changes the rules' shape would otherwise keep every icon quietly
+            if (iconRules < 1000) {
+              compilation.errors.push(new compiler.webpack.WebpackError(
+                `FontAwesomeSubset recognised only ${iconRules} icon rules in ${file}: has Font Awesome changed how it writes them?`))
+            }
             compilation.updateAsset(file, new sources.RawSource(root.toString()))
           }
         }
@@ -167,7 +177,9 @@ module.exports = (env, { mode } = {}) => ({
   optimization: {
     // '...' keeps webpack's own JavaScript minifier; cssnano minifies the stylesheets, library CSS
     // included, in production builds (NERC-CEH/dri-one#362)
-    minimizer: ['...', new CssMinimizerPlugin()],
+    // (cssnano's SVG step is off: it can't parse the URL-encoded SVGs Bootstrap puts in data: URIs,
+    // and warns on each)
+    minimizer: ['...', new CssMinimizerPlugin({ minimizerOptions: { preset: ['default', { svgo: false }] } })],
     splitChunks: {
       cacheGroups: {
         // The libraries every page loads (jQuery, Backbone, Bootstrap...) in a chunk of their own,
