@@ -13,9 +13,7 @@ const path = require('path')
 const NOT_YET_LOADED = {
   // Every page's entry point: claims the jQuery globals and calls startApps(document), which runs on
   // import. What it starts is in startup/apps.js, which the specs cover.
-  'src/index.js': 'runs the page on import',
-  // The SPARQL page's start-up, which builds YASGUI on import
-  'src/sparql/index.js': '#473'
+  'src/index.js': 'runs the page on import'
 }
 
 const root = path.join(__dirname, '..')
