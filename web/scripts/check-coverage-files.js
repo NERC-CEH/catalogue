@@ -11,12 +11,11 @@ const fs = require('fs')
 const path = require('path')
 
 const NOT_YET_LOADED = {
-  // Every page's entry point: DOM probes and import() routing (#364); runs on import, so needs reshaping
-  'src/index.js': '#473',
+  // Every page's entry point: claims the jQuery globals and calls startApps(document), which runs on
+  // import. What it starts is in startup/apps.js, which the specs cover.
+  'src/index.js': 'runs the page on import',
   // The SPARQL page's start-up, which builds YASGUI on import
-  'src/sparql/index.js': '#473',
-  // A one-line re-export, loaded by import() in index.js
-  'src/metrics/src/index.js': '#473'
+  'src/sparql/index.js': '#473'
 }
 
 const root = path.join(__dirname, '..')
