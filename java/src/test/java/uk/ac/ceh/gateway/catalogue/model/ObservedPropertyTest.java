@@ -6,7 +6,12 @@ import org.junit.jupiter.api.Test;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 
 /**
  * A field of a data type's schema, or a model's parameter. Its name was stored as {@code name} until
@@ -28,7 +33,7 @@ class ObservedPropertyTest {
     void readsValue() {
         ObservedProperty property = mapper.readValue("{\"value\": \"SITE\", \"type\": \"string\"}", ObservedProperty.class);
 
-        assertThat(property.getValue()).isEqualTo("SITE");
+        assertThat(property.getValue(), equalTo("SITE"));
     }
 
     @Test
@@ -36,8 +41,8 @@ class ObservedPropertyTest {
     void readsTheOldName() {
         ObservedProperty property = mapper.readValue("{\"name\": \"ID\", \"type\": \"integer\"}", ObservedProperty.class);
 
-        assertThat(property.getValue()).isEqualTo("ID");
-        assertThat(property.getType()).isEqualTo("integer");
+        assertThat(property.getValue(), equalTo("ID"));
+        assertThat(property.getType(), equalTo("integer"));
     }
 
     @Test
@@ -47,7 +52,7 @@ class ObservedPropertyTest {
 
         String json = mapper.writeValueAsString(property);
 
-        assertThat(json).contains("\"value\":\"ID\"").doesNotContain("\"name\"");
+        assertThat(json, allOf(containsString("\"value\":\"ID\""), not(containsString("\"name\""))));
     }
 
     @Test
@@ -57,6 +62,6 @@ class ObservedPropertyTest {
             "{\"type\": \"dataType\", \"schema\": [{\"name\": \"ID\", \"type\": \"integer\"}, {\"name\": \"YEAR\", \"type\": \"year\"}]}",
             DataType.class);
 
-        assertThat(dataType.getSchema()).extracting(ObservedProperty::getValue).containsExactly("ID", "YEAR");
+        assertThat(dataType.getSchema().stream().map(ObservedProperty::getValue).toList(), contains("ID", "YEAR"));
     }
 }

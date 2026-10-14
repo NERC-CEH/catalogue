@@ -21,7 +21,10 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 
 /**
  * Where the pages show an {@link ObservedProperty}'s name: a data type's schema table, and a NERC
@@ -62,9 +65,10 @@ class ObservedPropertyNameTemplateTest {
         return FreeMarkerTemplateUtils.processTemplateIntoString(configuration.getTemplate(template), model);
     }
 
+    // The table's markup with its whitespace collapsed, so a cell reads `<td nowrap="nowrap"> ID </td>`
     private String schemaTable(String schemaJson) {
         DataType dataType = mapper.readValue("{\"type\": \"dataType\", \"schema\": " + schemaJson + "}", DataType.class);
-        return render("html/dataType/_schemaTable.ftlh", Map.of("schema", dataType.getSchema()));
+        return render("html/dataType/_schemaTable.ftlh", Map.of("schema", dataType.getSchema())).replaceAll("\\s+", " ");
     }
 
     @Test
@@ -72,7 +76,7 @@ class ObservedPropertyNameTemplateTest {
     void schemaTableShowsValue() {
         String html = schemaTable("[{\"value\": \"SITE\", \"type\": \"string\"}]");
 
-        assertThat(html).containsPattern("<td nowrap=\"nowrap\">\\s*SITE\\s*</td>");
+        assertThat(html, containsString("<td nowrap=\"nowrap\"> SITE </td>"));
     }
 
     @Test
@@ -80,9 +84,9 @@ class ObservedPropertyNameTemplateTest {
     void schemaTableShowsOldName() {
         String html = schemaTable("[{\"name\": \"ID\", \"type\": \"integer\"}, {\"name\": \"YEAR\", \"type\": \"year\"}]");
 
-        assertThat(html)
-            .containsPattern("<td nowrap=\"nowrap\">\\s*ID\\s*</td>")
-            .containsPattern("<td nowrap=\"nowrap\">\\s*YEAR\\s*</td>");
+        assertThat(html, allOf(
+            containsString("<td nowrap=\"nowrap\"> ID </td>"),
+            containsString("<td nowrap=\"nowrap\"> YEAR </td>")));
     }
 
     @Test
@@ -94,6 +98,8 @@ class ObservedPropertyNameTemplateTest {
 
         String html = render("parameters", Map.of("params", params));
 
-        assertThat(html).contains("soil_ph", "rainfall", "Temperature").doesNotContain(">t<");
+        assertThat(html, allOf(
+            containsString("soil_ph"), containsString("rainfall"), containsString("Temperature"),
+            not(containsString(">t<"))));
     }
 }
