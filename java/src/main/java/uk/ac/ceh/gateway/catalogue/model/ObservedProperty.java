@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,7 +17,8 @@ public class ObservedProperty {
     @Builder
     @JsonCreator
     private ObservedProperty(
-        @JsonProperty("value") String value,
+        // Stored as name until fe683df84 (2024-10-25); older records still say so (dri-one #472)
+        @JsonProperty("value") @JsonAlias("name") String value,
         @JsonProperty("uri") String uri,
         @JsonProperty("title") String title,
         @JsonProperty("description") String description,
