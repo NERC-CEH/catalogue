@@ -56,4 +56,82 @@ describe('DataResourceView', () => {
     expect(view.$('[data-name="easilyRecreated"][value="false"]').prop('checked')).toBe(true)
     expect(view.$('[data-name="largeData"][value="true"]').prop('checked')).toBe(true)
   })
+
+  // The follow-up questions a dataset asks, and what it reports missing (dri-one #473)
+  describe('as a dataset is described', () => {
+    function choose (view, name, value) {
+      view.$(`[data-name="${name}"]`).val(value).trigger('change')
+    }
+
+    it('asks for the type only when it is "Other", and forgets it otherwise', () => {
+      choose(first, 'resourceType', 'Other')
+      expect(first.$('[data-name="resourceTypeOther"]').css('display')).not.toBe('none')
+      choose(first, 'resourceTypeOther', 'Field notebooks')
+
+      choose(first, 'resourceType', 'Images')
+
+      expect(first.$('[data-name="resourceTypeOther"]').css('display')).toBe('none')
+      expect(first.model.get('resourceTypeOther')).toBe('')
+    })
+
+    it('asks whether it could be recreated only for model output or "Other"', () => {
+      choose(first, 'resourceType', 'Model output')
+      expect(first.$('.easilyRecreated').css('display')).not.toBe('none')
+
+      choose(first, 'resourceType', 'Monitoring data')
+
+      expect(first.$('.easilyRecreated').css('display')).toBe('none')
+      expect(first.model.get('easilyRecreated')).toBe('')
+    })
+
+    it('asks for the format only when it is "Other", and forgets it otherwise', () => {
+      choose(first, 'resourceFormat', 'Other')
+      expect(first.$('[data-name="resourceFormatOther"]').css('display')).not.toBe('none')
+
+      choose(first, 'resourceFormat', 'NetCDF')
+
+      expect(first.$('[data-name="resourceFormatOther"]').css('display')).toBe('none')
+      expect(first.model.get('resourceFormatOther')).toBe('')
+    })
+
+    it('marks what is missing, and checks again as answers change', () => {
+      const view = row('c5', {})
+
+      const focus = view.validate()
+
+      expect(focus.attr('data-name')).toBe('title')
+      expect(view.$('[data-name="title"]').hasClass('is-invalid')).toBeTrue()
+      expect(view.$('[data-name="title"]').siblings('.invalid-feedback').text()).toBe('Working title is required')
+
+      choose(view, 'title', 'Rainfall')
+
+      expect(view.$('[data-name="title"]').hasClass('is-invalid')).toBeFalse()
+      expect(view.$('[data-name="description"]').hasClass('is-invalid')).toBeTrue()
+    })
+  })
+
+  describe('validation', () => {
+    const valid = {
+      title: 'Rainfall',
+      description: 'Daily rainfall',
+      resourceType: 'Monitoring data',
+      resourceFormat: 'NetCDF',
+      size: '1 GB',
+      largeData: 'false'
+    }
+    const errorNames = attributes => (new DataResource(attributes).validate() || []).map(error => error.name)
+
+    it('accepts a complete dataset', () => {
+      expect(errorNames(valid)).toEqual([])
+    })
+
+    it('requires the "other" type and format when they are chosen', () => {
+      expect(errorNames({ ...valid, resourceType: 'Other', easilyRecreated: 'true' })).toEqual(['resourceTypeOther'])
+      expect(errorNames({ ...valid, resourceFormat: 'Other' })).toEqual(['resourceFormatOther'])
+    })
+
+    it('requires an answer on recreating model output', () => {
+      expect(errorNames({ ...valid, resourceType: 'Model output' })).toEqual(['easilyRecreated'])
+    })
+  })
 })

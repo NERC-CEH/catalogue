@@ -27,8 +27,9 @@ export default ObjectInputView.extend({
   },
 
   render () {
+    // The template reads the answers as plain fields (model.funder), not through the Backbone model
     this.$el.html(this.template({
-      model: this.model
+      model: this.model.toJSON()
     }))
 
     const email = this.model.get('email') || ''
@@ -174,7 +175,7 @@ export default ObjectInputView.extend({
       ? xhr.getResponseHeader('Location')
       : null
     if (location) {
-      window.location.href = location
+      this.navigateTo(location)
       return
     }
 
@@ -185,6 +186,10 @@ export default ObjectInputView.extend({
     const target = this.$('#message-box')
     target.text(msg).show()
     target[0].scrollIntoView({ behavior: 'smooth', block: 'center' })
+  },
+
+  navigateTo (url) {
+    window.location.assign(url)
   },
 
   onError (xhr) {
