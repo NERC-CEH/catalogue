@@ -41,6 +41,12 @@ module.exports = function (config) {
     reporters: coverage ? ['progress', 'junit', 'coverage'] : ['progress', 'junit'],
 
     coverageReporter: {
+      // A floor, just under the coverage the specs reach, so it can't fall; raised as it rises, towards
+      // 80% of lines and 70% of branches before Karma is replaced, when the new runner has to reach
+      // the same (NERC-CEH/dri-one#473, #468). CI runs `npm run test-coverage`, so it fails below it.
+      check: {
+        global: { statements: 69, branches: 56, functions: 67, lines: 70 }
+      },
       dir: 'coverage',
       reporters: [
         { type: 'html', subdir: 'html' },

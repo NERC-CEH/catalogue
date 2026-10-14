@@ -1,11 +1,12 @@
 import $ from 'jquery'
 import { DropzoneView } from '../../src/Upload'
+import { spy } from '../../../test/support'
 
 describe('DropzoneView', function () {
   let view
 
   beforeEach(function () {
-    const dropzoneSuccess = jasmine.createSpy('dropzoneSuccess')
+    const dropzoneSuccess = spy('dropzoneSuccess')
     $(document.body).html(`
                 <div class ="dropzone-container">
                         <div class="dropzone-files"></div>

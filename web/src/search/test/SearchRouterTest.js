@@ -1,5 +1,6 @@
 import Backbone from 'backbone'
 import SearchRouter from '../src/SearchRouter'
+import { spy } from '../../test/support'
 
 describe('SearchRouter', function () {
   // A minimal model stand-in: SearchRouter only needs getState/setState plus
@@ -8,7 +9,7 @@ describe('SearchRouter', function () {
   function fakeModel (state = {}) {
     const model = new Backbone.Model()
     model.getState = () => state
-    model.setState = jasmine.createSpy('setState')
+    model.setState = spy('setState')
     return model
   }
 

@@ -45,7 +45,9 @@ test_web:
     - cd web/
     - npm ci --no-audit
     - npm run lint
-    - npm test
+    # With coverage, which fails below the floor in karma.conf.js (dri-one #473)
+    - npm run test-coverage
+  coverage: '/Lines\s*:\s*(\d+\.?\d*)%/'
   artifacts:
     when: always
     reports:

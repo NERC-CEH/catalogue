@@ -18,6 +18,7 @@ import infrastructureChallengeTemplate from '../src/templates/InfrastructureChal
 import purposeOfCollectionTemplate from '../src/templates/PurposeOfCollection'
 import KeywordVocabularyView from '../src/views/KeywordVocabularyView'
 import MapReprojectionView from '../src/views/MapReprojectionView'
+import { spy } from '../../test/support'
 
 /**
  * Editor fields that did the wrong thing, or nothing at all (NERC-CEH/dri-one#458).
@@ -27,7 +28,7 @@ describe('Editor fields', () => {
   const autocompleteRequest = (view, term) => {
     const request = $.Deferred()
     spyOn($, 'getJSON').and.returnValue(request.promise())
-    const response = jasmine.createSpy('response')
+    const response = spy('response')
     view.$('.ui-autocomplete-input').first().autocomplete('option', 'source')({ term }, response)
     return { url: $.getJSON.calls.mostRecent().args[0], request, response }
   }
@@ -47,7 +48,7 @@ describe('Editor fields', () => {
     [ObservedPropertyView, ObservedPropertySimpleView].forEach(View => {
       it(`keeps its edits to itself (${View === ObservedPropertyView ? 'full' : 'simple'})`, () => {
         // In the editor the row sits inside a FilesetView, whose own modify would copy the field
-        const fileset = jasmine.createSpy('fileset change')
+        const fileset = spy('fileset change')
         const $fileset = $('<div>').on('change', fileset)
         const view = new View({ model: new Backbone.Model({ constraints: {} }) })
         $fileset.append(view.el)

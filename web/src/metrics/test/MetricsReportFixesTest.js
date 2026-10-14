@@ -2,6 +2,7 @@ import $ from 'jquery'
 import MetricsReportApp from '../src/MetricsReportApp'
 import MetricsReportForm from '../src/MetricsReportForm'
 import MetricsReportResults from '../src/MetricsReportResults'
+import { fakeServer, spyObject } from '../../test/support'
 
 /**
  * A metrics filter could not be cleared, one submit fetched once per changed field, and a failed
@@ -26,11 +27,11 @@ describe('Metrics report', () => {
   it('clears a filter emptied on the form', () => {
     spyOn(app, 'fetch')
     const form = new MetricsReportForm({ el: '#mf', model: app })
-    form.onSubmit(jasmine.createSpyObj('event', ['preventDefault']))
+    form.onSubmit(spyObject('event', ['preventDefault']))
     expect(app.getState().docId).toBe('abc')
 
     $('input[name=docId]').val('')
-    form.onSubmit(jasmine.createSpyObj('event', ['preventDefault']))
+    form.onSubmit(spyObject('event', ['preventDefault']))
 
     expect(app.getState().docId).toBeUndefined()
     expect(app.fetch.calls.mostRecent().args[0].data.docId).toBeUndefined()
@@ -40,22 +41,22 @@ describe('Metrics report', () => {
     spyOn(app, 'fetch')
     const form = new MetricsReportForm({ el: '#mf', model: app })
 
-    form.onSubmit(jasmine.createSpyObj('event', ['preventDefault']))
+    form.onSubmit(spyObject('event', ['preventDefault']))
 
     expect(app.fetch).toHaveBeenCalledTimes(1)
   })
 
   it('replaces the old rows with the reason when the report fails', () => {
-    jasmine.Ajax.install()
+    fakeServer.install()
     try {
       const results = new MetricsReportResults({ el: '#mt', model: app })
       app.set('docId', 'abc')
-      jasmine.Ajax.requests.mostRecent().respondWith({ status: 400, responseText: 'Start date must be before end date' })
+      fakeServer.lastRequest().respondWith({ status: 400, responseText: 'Start date must be before end date' })
 
       expect(results.$('tbody').text()).not.toContain('Old record')
       expect(results.$('tbody').text()).toContain('The report could not be produced: Start date must be before end date')
     } finally {
-      jasmine.Ajax.uninstall()
+      fakeServer.uninstall()
     }
   })
 })
