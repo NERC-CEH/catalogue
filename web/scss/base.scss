@@ -26,6 +26,13 @@ $-fa-fonts: "../node_modules/@fortawesome/fontawesome-free/webfonts";
 @use "documents-upload";
 @use "upload-simple";
 
+// Inter, with its optical-size axis, upright and italic, as Google Fonts served it. It's served from
+// /static now: no request to a third party, and its faces are declared in this stylesheet rather than
+// one fetched after it (dri-one #367). Each face covers a script, so a browser fetches only the ones
+// a page's text needs.
+@import "@fontsource-variable/inter/opsz.css";
+@import "@fontsource-variable/inter/opsz-italic.css";
+
 // Bootstrap's own @extends (.h1 is an h1, .small is a small, .container-sm is a .container-fluid)
 // reach only Bootstrap's rules now that it is a module. Under @import they also reached the rules
 // above and below for h1-h6, small and .container-fluid, so they are repeated here: an @extend

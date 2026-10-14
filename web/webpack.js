@@ -108,6 +108,8 @@ class Manifest {
 module.exports = {
   entry: {
     main: './src/index.js',
+    // The SPARQL page (/sparql), which isn't built on the skeleton and loads only this
+    sparql: './src/sparql/index.js',
     ...stylesheets
   },
   output: {
@@ -148,6 +150,11 @@ module.exports = {
         ]
       },
       {
+        // Library stylesheets imported from JavaScript (YASGUI's)
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader']
+      },
+      {
         test: /\.(png|svg|gif|jpe?g|woff2?|ttf|eot)$/,
         type: 'asset/resource',
         generator: { filename: 'assets/[name].[contenthash:8][ext]' }
@@ -174,8 +181,9 @@ module.exports = {
   performance: {
     // The budget webpack warns past. Three files exceed its default 244 KiB, each for a reason:
     // base.css is shared by every page and cached for a year; the editor's chunk loads only in the
-    // editor; and the .ttf fonts are a fallback that browsers with woff2 never fetch.
-    assetFilter: file => !/\.(map|ttf)$/.test(file),
+    // editor; and the .ttf fonts are a fallback that browsers with woff2 never fetch. The SPARQL page's
+    // YASGUI (1 MB, as unpkg served it) is left out: only that page loads it.
+    assetFilter: file => !/\.(map|ttf)$/.test(file) && !/(^|\/)sparql\./.test(file),
     maxAssetSize: 450 * 1024,
     maxEntrypointSize: 450 * 1024
   },
