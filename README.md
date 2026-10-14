@@ -186,7 +186,7 @@ Check that annotation processing is enabled in `settings -> Build, Execution, De
 
 ### Developing JavaScript and CSS
 
-The `web` service in Docker Compose runs the webpack and gulp CSS watchers automatically.
+The `web` service in Docker Compose runs the webpack watcher, which rebuilds both the JavaScript and the stylesheets, automatically.
 Any changes to `web/src/` or `web/scss/` are rebuilt within a few seconds — refresh the
 browser to see the result; no container restart is needed.
 
@@ -259,12 +259,13 @@ Currently it supports two databases:
 - SQLite (default; will be removed after PostgreSQL is thoroughly tested)
 - PostgreSQL (enabled by setting `metrics.database.engine=postgres`; requires the docker compose profile: run `docker compose --profile metrics up` for local dev).
 
-### Developing LESS
+### Building the JavaScript and stylesheets
+webpack builds both: the JavaScript to `dist/` and each `scss/style-<catalogue>.scss` to `css/`.
 In the web directory run
 
-    npm run build-css-dev   # one-off dev build
-    npm run watch-css       # watch and recompile on changes
-    npm run build-css       # production build
+    npm run build-dev   # one-off development build
+    npm run watch       # watch and rebuild on changes (docker compose runs this)
+    npm run build       # production build
 
 ## Adding new document types to the catalogue
 

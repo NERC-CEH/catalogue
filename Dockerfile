@@ -3,14 +3,13 @@
 FROM node:24-alpine AS build-web
 WORKDIR /web
 RUN apk --no-cache upgrade
-COPY web/package.json web/package-lock.json web/webpack.js web/gulpfile.js ./
+COPY web/package.json web/package-lock.json web/webpack.js ./
 COPY web/scripts/sass-options.js ./scripts/
 RUN --mount=type=cache,target=/web/.npm npm ci --cache /web/.npm --no-audit
 COPY web/img ./img
 COPY web/scss ./scss
 COPY web/src ./src
-RUN npm run build-css
-RUN npm run build-prod
+RUN npm run build
 
 # Build Java
 FROM gradle:9.5.1-jdk25-alpine AS build-java

@@ -1,6 +1,6 @@
 /*
- * The Sass options every build of the catalogue stylesheets uses: gulp (dev, prod and watch) and the
- * test build for the contrast specs.
+ * The Sass options every build of the catalogue stylesheets uses: webpack (webpack.js) and the test
+ * build for the contrast specs.
  *
  * Bootstrap and Font Awesome are loaded through loadPaths, so quietDeps silences their warnings and
  * only the project's own are reported: any of those means something to fix (dri-one #463).

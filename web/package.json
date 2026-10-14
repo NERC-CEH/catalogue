@@ -6,11 +6,8 @@
     "license": "GPL-2.0-or-later",
     "private": "true",
     "scripts": {
-        "build-css-dev": "gulp dev",
-        "build-css": "gulp prod",
-        "watch-css": "gulp watch",
-        "build-dev": "webpack --mode development",
-        "build-prod": "webpack --mode production",
+        "build": "webpack --config webpack.js --mode production",
+        "build-dev": "webpack --config webpack.js --mode development",
         "lint": "eslint .",
         "standard": "standard",
         "standard-fix": "standard --fix",
@@ -18,8 +15,11 @@
         "test": "karma start --single-run",
         "test-coverage": "COVERAGE=true karma start --single-run",
         "test-server": "concurrently 'webpack --watch' 'karma start'",
-        "watch": "webpack --mode development --watch"
+        "watch": "webpack --config webpack.js --mode development --watch"
     },
+    "browserslist": [
+        "defaults"
+    ],
     "babel": {
         "presets": [
             "@babel/preset-env"
@@ -80,10 +80,10 @@
         "@babel/preset-env": "^7.22.15",
         "babel-loader": "^8.2.3",
         "babel-plugin-istanbul": "^8.0.0",
+        "css-loader": "^7.1.5",
         "eslint": "^8.48.0",
         "eslint-config-standard": "^17.1.0",
         "eslint-plugin-jasmine": "^4.1.3",
-        "gulp": "^5.0.0",
         "karma": "^6.4.2",
         "karma-babel-preprocessor": "^8.0.2",
         "karma-chrome-launcher": "^3.2.0",
@@ -92,10 +92,10 @@
         "karma-jasmine-ajax": "^0.1.13",
         "karma-junit-reporter": "^2.0.1",
         "karma-webpack": "^5.0.0",
-        "postcss": "^8.4.49",
-        "postcss-import": "^16.1.0",
+        "mini-css-extract-plugin": "^2.10.2",
         "puppeteer": "^25.1.0",
         "sass": "^1.83.1",
+        "sass-loader": "^17.0.1",
         "standard": "^17.1.0",
         "webpack": "^5.95.0",
         "webpack-cli": "^5.1.4"
