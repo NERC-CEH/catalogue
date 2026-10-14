@@ -1,5 +1,6 @@
 import $ from 'jquery'
 import Backbone from 'backbone'
+import DataTable from 'datatables.net-bs5'
 import { TableView } from '../src/table'
 import FileCollection from '../src/File/FileCollection'
 import File from '../src/File/File'
@@ -61,13 +62,11 @@ describe('TableView', function () {
 
   describe('table rendering', function () {
     it('should initialize DataTable when view is rendered', function () {
-      spyOn($.fn, 'DataTable').and.callThrough()
       view.render()
 
-      expect($.fn.DataTable).toHaveBeenCalled()
-      expect(view.dataTable).toBeDefined()
-      expect(view.dataTable).not.toBeNull()
-      expect($('#filetable').length).toBe(1)
+      // A DataTables API on the view's own table (DataTables 3 has no $.fn.DataTable to spy on)
+      expect(view.dataTable instanceof DataTable.Api).toBeTrue()
+      expect(view.dataTable.table().node()).toBe(view.$('#filetable')[0])
     })
   })
 
