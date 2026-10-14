@@ -1,7 +1,8 @@
 import $ from 'jquery'
 import _ from 'underscore'
 import Backbone from 'backbone'
-// eslint-disable-next-line no-unused-vars
+// DataTables 3 works without jQuery: a table is `new DataTable(element, options)`, and the plugin
+// interface, $(el).DataTable() and $.fn.dataTable, is gone (dri-one #467)
 import DataTable from 'datatables.net-bs5'
 import TableTemplate from './TableTemplate'
 
@@ -35,7 +36,7 @@ export default Backbone.View.extend({
   },
 
   initializeDataTable () {
-    $.fn.dataTable.ext.type.order['file-size-pre'] = function (data) {
+    DataTable.ext.type.order['file-size-pre'] = function (data) {
       if (!data || data === '') return 0
 
       const fileSizeUnits = ['B', 'KB', 'MB', 'GB']
@@ -50,7 +51,7 @@ export default Backbone.View.extend({
       return (unitIndex === -1) ? sizeNumber : sizeNumber * Math.pow(1024, unitIndex)
     }
 
-    this.dataTable = this.$('#filetable').DataTable({
+    this.dataTable = new DataTable(this.$('#filetable')[0], {
       data: this.prepareTableData(),
       columns: [
         { data: 'file' },
@@ -81,7 +82,8 @@ export default Backbone.View.extend({
       rowId: 'id',
       initComplete: () => {
         this.updateSelectList()
-        $('.dt-search input').css('width', '300px')
+        // This table's own search box: the upload page has several tables
+        this.$('.dt-search input').css('width', '300px')
       }
     })
   },
@@ -210,7 +212,7 @@ export default Backbone.View.extend({
       $dropdown.find('.dropdown-menu').removeClass('show')
       const action = $actionBtn.data('action')
 
-      const tr = this.dataTable.row($actionBtn.closest('tr'))
+      const tr = this.dataTable.row($actionBtn.closest('tr')[0])
       const rowData = tr.data()
       const model = this.collection.get(rowData.id)
 

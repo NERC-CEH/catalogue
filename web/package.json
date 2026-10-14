@@ -75,7 +75,7 @@
         "@triply/yasgui": "4.2.28",
         "backbone": "^1.6.1",
         "bootstrap": "^5.3.8",
-        "datatables.net-bs5": "^2.3.8",
+        "datatables.net-bs5": "^3.1.4",
         "deparam.js": "^3.0.16",
         "dropzone": "^6.3.5",
         "filesize": "^11.0.26",
