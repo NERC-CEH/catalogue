@@ -7,7 +7,13 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.startsWith;
 
 @DisplayName("ContentSecurityPolicy")
 class ContentSecurityPolicyTest {
@@ -26,23 +32,23 @@ class ContentSecurityPolicyTest {
     void inlineScriptsNeedTheNonce() {
         String scripts = directives("abc123").get("script-src");
 
-        assertThat(scripts).contains("'nonce-abc123'").doesNotContain("'unsafe-inline'");
-        assertThat(policy.withNonce("abc123")).doesNotContain(ContentSecurityPolicy.NONCE);
+        assertThat(scripts, allOf(containsString("'nonce-abc123'"), not(containsString("'unsafe-inline'"))));
+        assertThat(policy.withNonce("abc123"), not(containsString(ContentSecurityPolicy.NONCE)));
     }
 
     @Test
     @DisplayName("refuses eval: the front-end templates are compiled at build time")
     void noEval() {
         // dri-one #464: underscore's _.template compiled them in the browser with new Function
-        assertThat(directives("n").get("script-src")).doesNotContain("'unsafe-eval'");
+        assertThat(directives("n").get("script-src"), not(containsString("'unsafe-eval'")));
     }
 
     @Test
     @DisplayName("lets the SPARQL page query the Fuseki endpoint's origin, not the whole web")
     void connectsToTheSparqlOrigin() {
-        assertThat(directives("n").get("connect-src"))
-            .startsWith("'self' https://sparql.example.org ")
-            .doesNotContain(" https: ");
+        assertThat(directives("n").get("connect-src"), allOf(
+            startsWith("'self' https://sparql.example.org "),
+            not(containsString(" https: "))));
     }
 
     @Test
@@ -50,9 +56,11 @@ class ContentSecurityPolicyTest {
     void allowsGoogleAnalytics() {
         // Tag Manager and gtag.js, then GA4's collection endpoints (dri-one #454: staging reported
         // all four as blocked)
-        assertThat(directives("n").get("script-src")).contains("https://www.googletagmanager.com");
-        assertThat(directives("n").get("connect-src")).contains(
-            "https://*.google-analytics.com", "https://*.analytics.google.com", "https://*.googletagmanager.com");
+        assertThat(directives("n").get("script-src"), containsString("https://www.googletagmanager.com"));
+        assertThat(directives("n").get("connect-src"), allOf(
+            containsString("https://*.google-analytics.com"),
+            containsString("https://*.analytics.google.com"),
+            containsString("https://*.googletagmanager.com")));
     }
 
     @Test
@@ -61,9 +69,9 @@ class ContentSecurityPolicyTest {
         // Bundled and self-hosted since dri-one #367
         Map<String, String> directives = directives("n");
 
-        assertThat(directives.get("script-src")).doesNotContain("unpkg.com");
-        assertThat(directives.get("style-src")).doesNotContain("unpkg.com").doesNotContain("fonts.googleapis.com");
-        assertThat(directives.get("font-src")).isEqualTo("'self' data:");
+        assertThat(directives.get("script-src"), not(containsString("unpkg.com")));
+        assertThat(directives.get("style-src"), allOf(not(containsString("unpkg.com")), not(containsString("fonts.googleapis.com"))));
+        assertThat(directives.get("font-src"), equalTo("'self' data:"));
     }
 
     @Test
@@ -71,18 +79,18 @@ class ContentSecurityPolicyTest {
     void lockedDownDefaults() {
         Map<String, String> directives = directives("n");
 
-        assertThat(directives)
-            .containsEntry("default-src", "'self'")
-            .containsEntry("object-src", "'none'")
-            .containsEntry("base-uri", "'self'")
-            .containsEntry("frame-ancestors", "'none'")
-            .containsEntry("report-uri", "/csp-reports")
-            .containsEntry("report-to", ContentSecurityPolicyFilter.REPORT_GROUP);
+        assertThat(directives, allOf(
+            hasEntry("default-src", "'self'"),
+            hasEntry("object-src", "'none'"),
+            hasEntry("base-uri", "'self'"),
+            hasEntry("frame-ancestors", "'none'"),
+            hasEntry("report-uri", "/csp-reports"),
+            hasEntry("report-to", ContentSecurityPolicyFilter.REPORT_GROUP)));
     }
 
     @Test
     @DisplayName("allows images over https only, so mixed content is still reported")
     void imagesOverHttpsOnly() {
-        assertThat(directives("n").get("img-src")).isEqualTo("'self' data: https:");
+        assertThat(directives("n").get("img-src"), equalTo("'self' data: https:"));
     }
 }

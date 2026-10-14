@@ -10,7 +10,9 @@ import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 
 @DisplayName("StaticAssets")
 class StaticAssetsTest {
@@ -36,8 +38,8 @@ class StaticAssetsTest {
 
         StaticAssets assets = assets();
 
-        assertThat(assets.files("main")).containsExactly("/static/scripts/vendor.1a2b3c4d.js", "/static/scripts/main.5e6f7a8b.js");
-        assertThat(assets.files("base")).containsExactly("/static/css/base.9c0d1e2f.css");
+        assertThat(assets.files("main"), contains("/static/scripts/vendor.1a2b3c4d.js", "/static/scripts/main.5e6f7a8b.js"));
+        assertThat(assets.files("base"), contains("/static/css/base.9c0d1e2f.css"));
     }
 
     @Test
@@ -45,13 +47,13 @@ class StaticAssetsTest {
     void nothingForAnUnknownEntry() throws IOException {
         manifest("{\"main\": [\"/static/scripts/main.5e6f7a8b.js\"]}", Instant.parse("2026-10-14T09:00:00Z"));
 
-        assertThat(assets().files("style-nowhere")).isEmpty();
+        assertThat(assets().files("style-nowhere"), empty());
     }
 
     @Test
     @DisplayName("lists nothing, rather than failing the page, before webpack has built anything")
     void nothingWithoutAManifest() {
-        assertThat(assets().files("main")).isEmpty();
+        assertThat(assets().files("main"), empty());
     }
 
     @Test
@@ -59,11 +61,11 @@ class StaticAssetsTest {
     void readsARebuild() throws IOException {
         StaticAssets assets = assets();
         manifest("{\"main\": [\"/static/scripts/main.11111111.js\"]}", Instant.parse("2026-10-14T09:00:00Z"));
-        assertThat(assets.files("main")).containsExactly("/static/scripts/main.11111111.js");
+        assertThat(assets.files("main"), contains("/static/scripts/main.11111111.js"));
 
         manifest("{\"main\": [\"/static/scripts/main.22222222.js\"]}", Instant.parse("2026-10-14T09:00:05Z"));
 
-        assertThat(assets.files("main")).containsExactly("/static/scripts/main.22222222.js");
+        assertThat(assets.files("main"), contains("/static/scripts/main.22222222.js"));
     }
 
     @Test
@@ -71,12 +73,12 @@ class StaticAssetsTest {
     void survivesAHalfWrittenManifest() throws IOException {
         StaticAssets assets = assets();
         manifest("{\"main\": [\"/static/scripts/main.11111111.js\"]}", Instant.parse("2026-10-14T09:00:00Z"));
-        assertThat(assets.files("main")).containsExactly("/static/scripts/main.11111111.js");
+        assertThat(assets.files("main"), contains("/static/scripts/main.11111111.js"));
 
         manifest("{\"main\": [\"/static/scri", Instant.parse("2026-10-14T09:00:05Z"));
-        assertThat(assets.files("main")).containsExactly("/static/scripts/main.11111111.js");
+        assertThat(assets.files("main"), contains("/static/scripts/main.11111111.js"));
 
         manifest("{\"main\": [\"/static/scripts/main.22222222.js\"]}", Instant.parse("2026-10-14T09:00:05Z"));
-        assertThat(assets.files("main")).containsExactly("/static/scripts/main.22222222.js");
+        assertThat(assets.files("main"), contains("/static/scripts/main.22222222.js"));
     }
 }
