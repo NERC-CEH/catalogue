@@ -82,7 +82,8 @@ export default Backbone.View.extend({
       rowId: 'id',
       initComplete: () => {
         this.updateSelectList()
-        $('.dt-search input').css('width', '300px')
+        // This table's own search box: the upload page has several tables
+        this.$('.dt-search input').css('width', '300px')
       }
     })
   },
