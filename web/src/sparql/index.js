@@ -136,7 +136,13 @@ export const examples = catalogueGraph => [
 
 const element = document.getElementById('yasgui')
 const yasgui = new Yasgui(element, {
-  requestConfig: { endpoint: element.dataset.endpoint }
+  requestConfig: { endpoint: element.dataset.endpoint },
+  yasqe: {
+    // The prefixes the editor suggests after PREFIX. YASQE fetches them from prefix.cc by default,
+    // which the Content-Security-Policy refuses (connect-src), so they come from a list of the
+    // namespaces the catalogue's graphs use, built as one of our own assets (NERC-CEH/dri-one#470)
+    prefixCcApi: new URL('./prefixes.json', import.meta.url).href
+  }
 })
 
 yasgui.getTab().yasqe.addPrefixes({

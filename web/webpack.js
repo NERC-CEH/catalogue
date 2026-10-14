@@ -132,6 +132,8 @@ module.exports = (env, { mode } = {}) => ({
     publicPath: '/static/',
     filename: 'scripts/[name].[contenthash:8].js',
     chunkFilename: 'scripts/[name].[contenthash:8].js',
+    // Files a script asks for by URL (new URL('./x.json', import.meta.url)), beside the stylesheets' assets
+    assetModuleFilename: 'assets/[name].[contenthash:8][ext]',
     clean: true
   },
   module: {
