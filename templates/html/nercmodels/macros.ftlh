@@ -35,8 +35,8 @@
       <#items as value>
         <#if value.title?? && value.title?has_content>
           ${value.title}
-        <#elseif value.name?? && value.name?has_content>
-          ${value.name}
+        <#elseif value.value?? && value.value?has_content>
+          ${value.value}
         </#if>
         <sep><br></sep>
       </#items>
