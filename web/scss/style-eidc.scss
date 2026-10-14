@@ -99,31 +99,31 @@ footer {
         padding: 0.5em;
     }
 
-    section {
-        &--schema {
-            // Bootstrap's .table-sm, which this @extended while the themes were compiled with
-            // Bootstrap. (`&--schema` under `section` makes an element selector, section--schema,
-            // so neither this nor &--provenance matches the template's <div class="section--schema">.)
-            .table-schema > :not(caption) > * > * {
-                padding: 0.25rem 0.25rem;
-            }
+    // The template's <div class="section--schema"> and <div class="section--provenance">. These were
+    // nested as `section { &--schema }`, which compiles to an element selector, section--schema, so
+    // they never applied (NERC-CEH/dri-one#469).
+    .section--schema {
+        // Bootstrap's .table-sm cell padding
+        .table-schema > :not(caption) > * > * {
+            padding: 0.25rem 0.25rem;
         }
+    }
 
-        &--provenance {
-            display: table;
+    // Created, Modified and Contributors as a two-column table of right-aligned bold labels
+    .section--provenance .section-content {
+        display: table;
 
-            div {
-                display: table-row;
+        > div {
+            display: table-row;
 
-                span:first-child {
-                    font-weight: bold;
-                    text-align: right;
-                }
+            > span {
+                display: table-cell;
+                padding: 0.35em 1em;
+            }
 
-                span {
-                    display: table-cell;
-                    padding: 0.35em 1em;
-                }
+            > span:first-child {
+                font-weight: bold;
+                text-align: right;
             }
         }
     }
