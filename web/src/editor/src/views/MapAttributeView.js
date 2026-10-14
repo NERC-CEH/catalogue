@@ -61,7 +61,6 @@ export default ObjectInputView.extend({
   },
 
   newValue (m) {
-    // eslint-disable-next-line no-unused-vars
     return new ChildView({
       model: m,
       ObjectInputView: MapValueView,
@@ -70,7 +69,6 @@ export default ObjectInputView.extend({
   },
 
   newBucket (m) {
-    // eslint-disable-next-line no-unused-vars
     return new ChildView({
       model: m,
       ObjectInputView: MapBucketView,

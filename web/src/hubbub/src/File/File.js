@@ -47,7 +47,9 @@ export default Backbone.Model.extend({
   },
 
   copy (datastore) {
-    return new this.constructor({
+    // The model's own class, so a copy of a subclass is one too
+    const Model = this.constructor
+    return new Model({
       bytes: this.get('bytes'),
       check: true,
       dataset: this.get('datasetId'),
