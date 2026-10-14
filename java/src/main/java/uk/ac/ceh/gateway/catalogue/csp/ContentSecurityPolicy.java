@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
  * <ul>
  *   <li>{@code script-src}: the bundles are our own, YASGUI on the SPARQL page included (#367).
  *   Inline scripts would need the per-request nonce ({@code <script nonce="${csp.nonce}">}); there are
- *   none at present. {@code 'unsafe-eval'} is there because underscore's {@code _.template} compiles
- *   every front-end template with {@code new Function} when it loads; precompiling them at build time
- *   would let it go (dri-one #464). jira.ceh.ac.uk is the EIDC issue collector.
+ *   none at present. There is no {@code 'unsafe-eval'}: the front-end templates are compiled at build
+ *   time (web/scripts/babel-plugin-precompile-templates.js, dri-one #464) rather than by underscore's
+ *   {@code _.template} with {@code new Function}. jira.ceh.ac.uk is the EIDC issue collector.
  *   www.googletagmanager.com is Google Analytics: on EIDC the proxy adds a cookie banner to every page,
  *   and once a visitor accepts analytics cookies it loads Tag Manager (via /sso/static/gtm-loader.js),
  *   which loads gtag.js.</li>
@@ -46,7 +46,7 @@ public class ContentSecurityPolicy {
     public ContentSecurityPolicy(String sparqlEndpoint, String reportPath) {
         Map<String, List<String>> directives = new LinkedHashMap<>();
         directives.put("default-src", List.of("'self'"));
-        directives.put("script-src", List.of("'self'", "'nonce-" + NONCE + "'", "'unsafe-eval'",
+        directives.put("script-src", List.of("'self'", "'nonce-" + NONCE + "'",
             "https://jira.ceh.ac.uk", "https://www.googletagmanager.com"));
         directives.put("style-src", List.of("'self'", "'unsafe-inline'", "https://jira.ceh.ac.uk"));
         directives.put("font-src", List.of("'self'", "data:"));

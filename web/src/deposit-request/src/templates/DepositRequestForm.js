@@ -1,6 +1,7 @@
+import _ from 'underscore'
 import baseTemplate from './DepositRequestBase'
 
-const template = `
+const form = _.template(`
     <div id="message-box" class="text-center mt-5 alert alert-danger" role="alert" style="display: none;"></div>
     <p><span class="text-danger">*</span> indicates required information</p>
     <form id="deposit-request-form" class="mt-3">
@@ -420,6 +421,6 @@ const template = `
         <button type="submit" class="btn btn-outline-dark btn-submit">Submit</button>
       </div>
     </form>
-`
+`)
 
-export default baseTemplate(template)
+export default baseTemplate(form)

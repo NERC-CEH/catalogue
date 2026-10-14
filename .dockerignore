@@ -18,5 +18,6 @@
 !web/webpack.js
 !web/scripts/sass-options.js
 !web/scripts/font-awesome-icons.js
+!web/scripts/babel-plugin-precompile-templates.js
 
 
