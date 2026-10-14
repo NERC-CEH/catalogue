@@ -45,7 +45,7 @@ module.exports = function (config) {
       // 80% of lines and 70% of branches before Karma is replaced, when the new runner has to reach
       // the same (NERC-CEH/dri-one#473, #468). CI runs `npm run test-coverage`, so it fails below it.
       check: {
-        global: { statements: 76, branches: 71, functions: 73, lines: 77 }
+        global: { statements: 79, branches: 74, functions: 76, lines: 80 }
       },
       dir: 'coverage',
       reporters: [
