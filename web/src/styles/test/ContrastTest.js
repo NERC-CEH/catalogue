@@ -29,7 +29,11 @@ function loadTheme (theme) {
     frame.style.width = '1200px'
     frame.onload = () => resolve(frame)
     frame.onerror = reject
-    frame.srcdoc = `<!doctype html><html><head><link rel="stylesheet" href="/base/build/test-css/style-${theme}.css"></head><body>${MARKUP}</body></html>`
+    // As a page does: the shared stylesheet, then the catalogue's theme
+    frame.srcdoc = `<!doctype html><html><head>
+      <link rel="stylesheet" href="/base/build/test-css/base.css">
+      <link rel="stylesheet" href="/base/build/test-css/style-${theme}.css">
+      </head><body>${MARKUP}</body></html>`
     document.body.appendChild(frame)
   })
 }
@@ -80,8 +84,8 @@ describe('Catalogue theme contrast', () => {
         return contrast(rgba(win.getComputedStyle(el).color), background(el))
       }
 
-      it('loads its stylesheet', () => {
-        expect(doc.styleSheets.length).toBe(1)
+      it('loads the base stylesheet and its theme', () => {
+        expect(doc.styleSheets.length).toBe(2)
         expect(doc.styleSheets[0].cssRules.length).toBeGreaterThan(100)
       })
 

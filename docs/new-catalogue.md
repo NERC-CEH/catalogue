@@ -116,23 +116,23 @@ Use a browser plugin like [ModHeaders](https://bewisse.com/modheader/) to modify
 
 You need to create an `scss` file in the `scss` folder with a name starting with `style-`. For example:
 
-`src/scss/style-youId.scss`
+`web/scss/style-yourId.scss`
 
 webpack picks up every `style-*.scss` file, so it is compiled by `npm run build-dev` (and by the
 `npm run watch` that docker compose runs). Restart the watcher to pick up a new file.
 
-Your `scss` files will look like this
+Every page loads the shared `base.css` (Bootstrap, Font Awesome and the catalogue components, from
+`base.scss`) and then its catalogue's `style-<id>.css`. The theme is compiled on its own: it only
+overrides the base, mostly through the CSS custom properties in `customProperties.scss`, and can't
+`@extend` anything in it. An empty file gives the default UKCEH look.
 
 ```scss
-@import "style-ceh";
-```
+:root {
+    --link-colour: #1F618D;
+    --header-background-colour: #2C3E50;
+}
 
-but if you want your own colors you can add something like this
-
-```scss
-$brand-success: #3498DB;
-$header-text: #ECF0F1;
-.text-red {color:#E74C3C;}
+.text-red { color: #E74C3C; }
 ```
 
 ## Step 4: Adding new DocumentTypes

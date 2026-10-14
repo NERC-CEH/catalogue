@@ -18,5 +18,6 @@
 !web/package-lock.json
 !web/webpack.js
 !web/scripts/sass-options.js
+!web/scripts/font-awesome-icons.js
 
 

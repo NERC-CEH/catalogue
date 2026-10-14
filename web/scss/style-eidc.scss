@@ -1,4 +1,3 @@
-@use "theme";
 @use "serviceagreement";
 
 
@@ -102,8 +101,11 @@ footer {
 
     section {
         &--schema {
-            .table-schema {
-                @extend .table-sm;
+            // Bootstrap's .table-sm, which this @extended while the themes were compiled with
+            // Bootstrap. (`&--schema` under `section` makes an element selector, section--schema,
+            // so neither this nor &--provenance matches the template's <div class="section--schema">.)
+            .table-schema > :not(caption) > * > * {
+                padding: 0.25rem 0.25rem;
             }
         }
 

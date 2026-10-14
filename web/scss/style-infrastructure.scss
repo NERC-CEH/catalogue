@@ -1,4 +1,4 @@
-@use "theme";
+@use "bootstrap/scss/mixins/visually-hidden" as *;
 
 .metadata {
     #pageTitle {
@@ -16,7 +16,7 @@
     }
 
     .row.role {
-        @extend .visually-hidden;
+        @include visually-hidden;
     }
 
 }
