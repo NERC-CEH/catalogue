@@ -28,7 +28,9 @@ module.exports = function (config) {
       'src/**/test/**/*.js': ['webpack']
     },
 
-    webpack: require('./webpack.js'),
+    // Only the loaders: the build's entries (main.js and every stylesheet) and plugins aren't wanted
+    // for the specs, which karma-webpack bundles itself
+    webpack: { module: require('./webpack.js').module },
 
     reporters: coverage ? ['progress', 'junit', 'coverage'] : ['progress', 'junit'],
 

@@ -203,7 +203,7 @@ services:
       npm_config_cache: /tmp/.npm
     volumes:
       - ./web:/app/web
-    command: sh -c "npm install && (npm run watch & npm run watch-css)"
+    command: sh -c "npm install && npm run watch"
 volumes:
   dropbox:
   mapfiles:

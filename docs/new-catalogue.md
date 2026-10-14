@@ -118,7 +118,8 @@ You need to create an `scss` file in the `scss` folder with a name starting with
 
 `src/scss/style-youId.scss`
 
-Gulp will automatically detect and compile it when you run npm run build-css-dev.
+webpack picks up every `style-*.scss` file, so it is compiled by `npm run build-dev` (and by the
+`npm run watch` that docker compose runs). Restart the watcher to pick up a new file.
 
 Your `scss` files will look like this
 

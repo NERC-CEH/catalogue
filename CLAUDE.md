@@ -47,7 +47,7 @@ The application is available at http://localhost:8080.
 | `.java` source | `./gradlew :java:compileJava` (on host) | ~5–15s |
 | `templates/` | Refresh browser (Freemarker cache off) | instant |
 | `web/src/` JS | webpack watch rebuilds automatically | ~3–10s |
-| `web/scss/` CSS | gulp watch rebuilds automatically | ~2–5s |
+| `web/scss/` CSS | webpack watch rebuilds automatically (a new `style-*.scss` needs `docker compose restart web`) | ~2–5s |
 | `nginx.conf` | `docker compose restart nginx` | ~1s |
 | `build.gradle` / `libs.versions.toml` | automatic with `docker compose watch` | rebuild |
 | `web/package.json` / `package-lock.json` | `docker compose restart web` | ~rebuild |
