@@ -15,10 +15,6 @@ const NOT_YET_LOADED = {
   'src/index.js': '#473',
   // The SPARQL page's start-up, which builds YASGUI on import
   'src/sparql/index.js': '#473',
-  // The EIDC deposit request form
-  'src/deposit-request/src/view/DepositRequestFormView.js': '#473',
-  'src/deposit-request/src/templates/DepositRequestForm.js': '#473',
-  'src/deposit-request/src/templates/DepositRequestBase.js': '#473',
   // A one-line re-export, loaded by import() in index.js
   'src/metrics/src/index.js': '#473'
 }
