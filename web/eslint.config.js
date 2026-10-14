@@ -12,6 +12,17 @@ module.exports = [
     env: ['browser', 'jasmine']
   }),
   {
+    // The page's jQuery globals belong to nobody: the catalogue imports jQuery, and on EIDC pages the
+    // Jira issue collector has its own (see index.js). Bare `$`/`jQuery` are already caught by no-undef.
+    rules: {
+      'no-restricted-properties': ['error', ...['window', 'globalThis'].flatMap(object => ['jQuery', '$'].map(property => ({
+        object,
+        property,
+        message: "Import jQuery (import $ from 'jquery') rather than using the global"
+      })))]
+    }
+  },
+  {
     // The build's own scripts run in Node
     files: ['*.js', 'scripts/**/*.js'],
     languageOptions: { globals: globals.node }
