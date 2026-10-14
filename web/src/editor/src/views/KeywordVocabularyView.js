@@ -5,6 +5,7 @@ import ObjectInputView from './ObjectInputView'
 import template from '../templates/KeywordVocabulary'
 import KeywordCheckboxView from './KeywordCheckboxView'
 import { vocabsList } from './KeywordVocabularyConfig'
+import 'jquery-ui/ui/widgets/autocomplete'
 
 export default ObjectInputView.extend({
 

@@ -1,6 +1,6 @@
 <#import "../../skeleton.ftlh" as skeleton>
 
-<@skeleton.master title="Data Transfer for: " + title scripts=uploadScripts catalogue=catalogues.defaultCatalogue()>
+<@skeleton.master title="Data Transfer for: " + title catalogue=catalogues.defaultCatalogue()>
     <@documentContainer>
         <@titleHeading/>
         <@returnToDocument/>

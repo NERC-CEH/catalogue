@@ -45,10 +45,12 @@ public class FreemarkerConfig {
     @Nullable private final MetricsService metricsService;
     @Value("${access-button.collection.link}") private String collectionAccessButtonLink;
     @Value("#{'${fuseki.catalogueIds:}'.split(',')}") private List<String> fusekiCatalogueIds;
+    @Value("${spring.web.resources.static-locations}") private String staticLocation;
 
     @SneakyThrows
     @PostConstruct
     public void configureFreemarkerSharedVariables() {
+        freemarkerConfiguration.setSharedVariable("assets", StaticAssets.in(staticLocation));
         freemarkerConfiguration.setSharedVariable("catalogues", catalogueService);
         freemarkerConfiguration.setSharedVariable("codes", codeLookupService);
         freemarkerConfiguration.setSharedVariable("contactUri", contactUri);

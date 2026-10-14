@@ -1,6 +1,7 @@
 import { ObjectInputView } from '../index'
 import $ from 'jquery'
 import template from '../../templates/service-agreement/supportingDoc'
+import 'jquery-ui/ui/widgets/autocomplete'
 
 export default ObjectInputView.extend({
   template,

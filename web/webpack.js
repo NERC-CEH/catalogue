@@ -17,24 +17,6 @@ const stylesheets = {
     .map(file => [path.basename(file, '.scss'), path.join(scss, file)]))
 }
 
-// The images the inlined library stylesheets load from css/images (url("images/..."))
-const IMAGES = [
-  'node_modules/leaflet-draw/dist/images',
-  'node_modules/jquery-ui/dist/themes/base/images'
-]
-
-class CopyLibraryImages {
-  apply (compiler) {
-    compiler.hooks.afterEmit.tapPromise('CopyLibraryImages', async () => {
-      const images = path.join(__dirname, 'css', 'images')
-      await fs.promises.mkdir(images, { recursive: true })
-      for (const dir of IMAGES) {
-        await fs.promises.cp(path.join(__dirname, dir), images, { recursive: true })
-      }
-    })
-  }
-}
-
 // Tidies what webpack makes of a stylesheet entry. It still gets a JavaScript file, holding nothing
 // but webpack's runtime, which is dropped. And the library stylesheets are concatenated ahead of the
 // Sass output, so its @charset lands mid-file, where browsers ignore it; it is moved to the top.
@@ -97,14 +79,44 @@ class FontAwesomeSubset {
   }
 }
 
+// Every file the build writes has a content hash in its name, so it can be cached for a year. This
+// writes manifest.json, which lists the files each entry needs, in order, and is how the templates
+// find them (StaticAssets on the Java side, NERC-CEH/dri-one#364):
+//   { "main": ["/static/scripts/vendor.1a2b3c4d.js", "/static/scripts/main.5e6f7a8b.js"],
+//     "base": ["/static/css/base.9c0d1e2f.css"], ... }
+class Manifest {
+  apply (compiler) {
+    const { Compilation, sources } = compiler.webpack
+    compiler.hooks.thisCompilation.tap('Manifest', compilation => {
+      compilation.hooks.processAssets.tap(
+        { name: 'Manifest', stage: Compilation.PROCESS_ASSETS_STAGE_REPORT },
+        () => {
+          const publicPath = compilation.outputOptions.publicPath
+          const manifest = {}
+          for (const [name, entrypoint] of compilation.entrypoints) {
+            manifest[name] = entrypoint.getFiles()
+              .filter(file => /\.(js|css)$/.test(file) && compilation.getAsset(file))
+              .map(file => publicPath + file)
+          }
+          compilation.emitAsset('manifest.json', new sources.RawSource(JSON.stringify(manifest, null, 2)))
+        }
+      )
+    })
+  }
+}
+
 module.exports = {
   entry: {
     main: './src/index.js',
     ...stylesheets
   },
   output: {
-    // Served as /static/scripts; the stylesheets go to ../css, served as /static/css
+    // Laid out as it is served, under /static: scripts/, css/ and assets/ (the images and fonts the
+    // stylesheets use), plus manifest.json
     path: path.join(__dirname, 'dist'),
+    publicPath: '/static/',
+    filename: 'scripts/[name].[contenthash:8].js',
+    chunkFilename: 'scripts/[name].[contenthash:8].js',
     clean: true
   },
   module: {
@@ -123,28 +135,54 @@ module.exports = {
           MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
-            // Inline the library stylesheets the Sass @imports as plain CSS (leaflet, select2,
-            // DataTables...), as they are, and leave url()s alone: images and fonts are served as
-            // they are
-            options: { url: false }
+            options: {
+              // Relative url()s, the images and fonts of Font Awesome and the libraries, are built
+              // as hashed assets. /static/img/... and other absolute ones are served as they are.
+              url: { filter: url => !/^(\/|#|data:|[a-z]+:\/\/)/.test(url) }
+            }
           },
           {
             loader: 'sass-loader',
             options: { sassOptions: { ...sassOptions, style: 'expanded' } }
           }
         ]
+      },
+      {
+        test: /\.(png|svg|gif|jpe?g|woff2?|ttf|eot)$/,
+        type: 'asset/resource',
+        generator: { filename: 'assets/[name].[contenthash:8][ext]' }
       }
     ]
   },
   optimization: {
     // '...' keeps webpack's own JavaScript minifier; cssnano minifies the stylesheets, library CSS
     // included, in production builds (NERC-CEH/dri-one#362)
-    minimizer: ['...', new CssMinimizerPlugin()]
+    minimizer: ['...', new CssMinimizerPlugin()],
+    splitChunks: {
+      cacheGroups: {
+        // The libraries every page loads (jQuery, Backbone, Bootstrap...) in a chunk of their own,
+        // which a change to the catalogue's own code leaves as it is, and so cached. Libraries only
+        // a micro-app uses (Leaflet, select2, DataTables...) go with that micro-app's chunk.
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendor',
+          chunks: chunk => chunk.name === 'main'
+        }
+      }
+    }
+  },
+  performance: {
+    // The budget webpack warns past. Three files exceed its default 244 KiB, each for a reason:
+    // base.css is shared by every page and cached for a year; the editor's chunk loads only in the
+    // editor; and the .ttf fonts are a fallback that browsers with woff2 never fetch.
+    assetFilter: file => !/\.(map|ttf)$/.test(file),
+    maxAssetSize: 450 * 1024,
+    maxEntrypointSize: 450 * 1024
   },
   plugins: [
-    new MiniCssExtractPlugin({ filename: '../css/[name].css' }),
-    new CopyLibraryImages(),
+    new MiniCssExtractPlugin({ filename: 'css/[name].[contenthash:8].css' }),
     new StylesheetEntries(),
-    new FontAwesomeSubset()
+    new FontAwesomeSubset(),
+    new Manifest()
   ]
 }

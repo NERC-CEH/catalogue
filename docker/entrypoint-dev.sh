@@ -28,12 +28,15 @@ if [ "$(id -u)" = 0 ]; then
   exec su-exec gradle "$0" "$@"
 fi
 
-mkdir -p /app/static /app/mapfiles /app/metrics-db /app/dropbox /app/web/css
+mkdir -p /app/static /app/mapfiles /app/metrics-db /app/dropbox /app/web/dist
 
 [ -L /app/static/img ]        || ln -sf /app/web/img /app/static/img
-[ -L /app/static/css ]        || ln -sf /app/web/css /app/static/css
-[ -L /app/static/scripts ]    || ln -sf /app/web/dist /app/static/scripts
-[ -L /app/static/webfonts ]   || ln -sf /app/web/node_modules/@fortawesome/fontawesome-free/webfonts /app/static/webfonts
+# webpack's output, laid out as it is served (dri-one #364). -n replaces a link left by an earlier
+# layout (static/scripts was web/dist, static/css web/css) rather than adding one inside it.
+for asset in scripts css assets manifest.json; do
+  ln -sfn "/app/web/dist/$asset" "/app/static/$asset"
+done
+rm -f /app/static/webfonts
 
 # --project-cache-dir keeps the container's Gradle file-hash/config cache out of the
 # bind-mounted project tree, so it doesn't lock-contend with Gradle invoked on the host

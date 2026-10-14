@@ -3,37 +3,20 @@
 import './globals'
 import $ from 'jquery'
 import Backbone from 'backbone'
-import Swal from 'sweetalert2'
 import 'bootstrap'
-import {
-  CehModelApplicationEditorView,
-  CehModelEditorView, CodeDocumentEditorView,
-  DataTypeEditorView,
-  GeminiEditorView, InfrastructureRecordEditorView, ResearchActivityEditorView,
-  LinkEditorView,
-  MonitoringEditorView,
-  MonitoringActivityEditorView,
-  MonitoringFacilityEditorView,
-  MonitoringNetworkEditorView,
-  MonitoringProgrammeEditorView,
-  NercModelEditorView,
-  NercModelUseEditorView,
-  SampleArchiveEditorView, ServiceAgreementEditorView, UkemsDocumentEditorView
-} from './editor/src/editors'
-import { EditorMetadata, LinkEditorMetadata, GeminiEditorMetadata } from './editor/src'
-import { Catalogue, CatalogueView, CatalogueViewModel, CatalogueViewView, linkHref } from './catalogue/src/CatalogueApp'
-import { StudyAreaView } from './study-area/src/View'
-import { PermissionApp, PermissionAppView, PermissionRouter } from './permission/src/PermissionApp'
-import SearchApp from './search/src/SearchApp'
-import SearchAppView from './search/src/SearchAppView'
-import SearchRouter from './search/src/SearchRouter'
-import { SimpleUploadView } from './simple-upload/src/App'
-import { MessageView } from './search/src/views'
-import { ServiceAgreement } from './editor/src/models'
-import { UploadModel, UploadView } from './hubbub/src/Upload'
-import { MetricsReportApp, MetricsReportForm, MetricsReportResults } from './metrics/src'
-import DepositRequestApp from './deposit-request/src/model/DepositRequestApp'
-import DepositRequestFormView from './deposit-request/src/view/DepositRequestFormView'
+
+// Every page loads this file, so it holds only what every page needs. Each micro-app is a chunk of
+// its own, fetched by import() only on a page that has it: a public record page doesn't download
+// the editor, the maps or the upload tables (NERC-CEH/dri-one#364).
+const editor = () => Promise.all([
+  import(/* webpackChunkName: "editor" */ './editor/src/editors'),
+  import(/* webpackChunkName: "editor" */ './editor/src'),
+  import(/* webpackChunkName: "editor" */ './editor/src/models')
+]).then(([editors, src, models]) => ({ ...editors, ...src, ...models }))
+const catalogueApp = () => import(/* webpackChunkName: "catalogue" */ './catalogue/src/CatalogueApp')
+const studyArea = () => import(/* webpackChunkName: "study-area" */ './study-area/src/View')
+const messageView = () => import(/* webpackChunkName: "message" */ './search/src/views/MessageView')
+const swal = () => import(/* webpackChunkName: "sweetalert" */ 'sweetalert2')
 
 const $catalogue = $('.catalogue-control')
 const $catalogueView = $('.catalogue-view-control')
@@ -42,6 +25,10 @@ const $edit = $('.edit-control')
 const $serviceAgreement = $('.service-agreement')
 const $navbarToggle = $('.nav-toggle')
 const $clone = $('.clone-control')
+
+// Each micro-app that sets up a Backbone router adds its start-up here, and history starts once they
+// have all run, as it did when they were all in this file
+const apps = []
 
 if ($catalogue.length) {
   initCatalogue()
@@ -64,59 +51,65 @@ if ($serviceAgreement.length) {
 }
 
 if ($('.geometry-map').length) {
-  initGeometryMap()
+  apps.push(initGeometryMap())
 }
 
 if ($('.permission').length) {
-  initPermission()
+  apps.push(initPermission())
 }
 
 if ($('#search').length) {
-  initSearch()
+  apps.push(initSearch())
 }
 
 if ($('#simple-upload').length) {
-  initSimpleUpload()
+  apps.push(initSimpleUpload())
 }
 
 if ($documentUpload.length) {
-  initHubbub()
+  apps.push(initHubbub())
 }
 
 if ($('#studyarea-map').length) {
-  initStudyAreaMap()
+  apps.push(initStudyAreaMap())
 }
 
 if ($('#metrics-report').length) {
-  initMetricsReport()
+  apps.push(initMetricsReport())
 }
 
 if ($('#deposit-request').length) {
-  initDepositRequest()
+  apps.push(initDepositRequest())
 }
 
 if ($clone.length) {
   initClone()
 }
 
-Backbone.history.start()
+// A micro-app that fails to load is reported, and doesn't stop history starting for the others
+Promise.allSettled(apps).then(results => {
+  results.filter(result => result.status === 'rejected').forEach(result => console.error(result.reason))
+  Backbone.history.start()
+})
 stickyHeader()
 
 /* Initialize the catalogue application */
 function initCatalogue () {
   $catalogue.on('click', function (event) {
     event.preventDefault()
-    $.getJSON(linkHref(event), function (data, textStatus, jqXHR) {
-      const model = new Catalogue(data)
-      const etag = jqXHR.getResponseHeader('ETag')
-      if (etag) {
-        model.setRevision(etag.replace(/^"|"$/g, ''))
-      }
-      $.getJSON('/catalogues', function (data) {
-        model.options = data.map(val => ({ value: val.id, label: val.title }))
-        new CatalogueView({
-          el: '#metadata',
-          model
+    catalogueApp().then(({ Catalogue, CatalogueView, linkHref }) => {
+      $.getJSON(linkHref(event), function (data, textStatus, jqXHR) {
+        const model = new Catalogue(data)
+        const etag = jqXHR.getResponseHeader('ETag')
+        if (etag) {
+          model.setRevision(etag.replace(/^"|"$/g, ''))
+        }
+        $.getJSON('/catalogues', function (data) {
+          model.options = data.map(val => ({ value: val.id, label: val.title }))
+          new CatalogueView({
+            el: '#metadata',
+            model
+          })
         })
       })
     })
@@ -126,25 +119,42 @@ function initCatalogue () {
 function initCatalogueView () {
   $catalogueView.on('click', function (event) {
     event.preventDefault()
-    $.getJSON(linkHref(event), function (data, textStatus, jqXHR) {
-      const model = new CatalogueViewModel(data)
-      const etag = jqXHR.getResponseHeader('ETag')
-      if (etag) {
-        model.setRevision(etag.replace(/^"|"$/g, ''))
-      }
-      $.getJSON(`/catalogues?identifier=${data.id}`, function (catalogues) {
-        model.catalogues = catalogues
-        new CatalogueViewView({
-          el: '#metadata',
-          model
+    catalogueApp().then(({ CatalogueViewModel, CatalogueViewView, linkHref }) => {
+      $.getJSON(linkHref(event), function (data, textStatus, jqXHR) {
+        const model = new CatalogueViewModel(data)
+        const etag = jqXHR.getResponseHeader('ETag')
+        if (etag) {
+          model.setRevision(etag.replace(/^"|"$/g, ''))
+        }
+        $.getJSON(`/catalogues?identifier=${data.id}`, function (catalogues) {
+          model.catalogues = catalogues
+          new CatalogueViewView({
+            el: '#metadata',
+            model
+          })
         })
       })
     })
   })
 }
 
-function initEditor () {
-  const lookup = {
+function editorLookup ({
+  CehModelApplicationEditorView,
+  CehModelEditorView, CodeDocumentEditorView,
+  DataTypeEditorView,
+  GeminiEditorView, InfrastructureRecordEditorView, ResearchActivityEditorView,
+  LinkEditorView,
+  MonitoringEditorView,
+  MonitoringActivityEditorView,
+  MonitoringFacilityEditorView,
+  MonitoringNetworkEditorView,
+  MonitoringProgrammeEditorView,
+  NercModelEditorView,
+  NercModelUseEditorView,
+  SampleArchiveEditorView, ServiceAgreementEditorView, UkemsDocumentEditorView,
+  EditorMetadata, LinkEditorMetadata, GeminiEditorMetadata, ServiceAgreement
+}) {
+  return {
     GEMINI_DOCUMENT: {
       View: GeminiEditorView,
       Model: GeminiEditorMetadata,
@@ -236,6 +246,11 @@ function initEditor () {
       mediaType: 'application/vnd.researchactivity+json'
     }
   }
+}
+
+function initEditor () {
+  // Fetched now rather than on the click, so that the editor opens as promptly as it used to
+  const lookup = editor().then(editorLookup)
 
   // the create document dropdown
   const $editorCreate = $('#editorCreate')
@@ -244,34 +259,37 @@ function initEditor () {
     event.preventDefault()
 
     const title = $(event.target).data('documentType')
-    const documentType = lookup[title]
 
-    if ($editorCreate.length) {
-      new documentType.View({
-        model: new documentType.Model(null, documentType, title),
-        el: '#search'
-      })
-    } else {
-      $.ajax({
-        url: $(window.location).attr('href'),
-        dataType: 'json',
-        accepts: {
-          json: documentType.mediaType
-        },
-        success (data, textStatus, jqXHR) {
-          $('#metadata').removeClass('alert alert-danger missingResourceType')
-          const model = new documentType.Model(data, documentType, title)
-          const etag = jqXHR.getResponseHeader('ETag')
-          if (etag) {
-            model.setRevision(etag.replace(/^"|"$/g, ''))
+    lookup.then(lookup => {
+      const documentType = lookup[title]
+
+      if ($editorCreate.length) {
+        new documentType.View({
+          model: new documentType.Model(null, documentType, title),
+          el: '#search'
+        })
+      } else {
+        $.ajax({
+          url: $(window.location).attr('href'),
+          dataType: 'json',
+          accepts: {
+            json: documentType.mediaType
+          },
+          success (data, textStatus, jqXHR) {
+            $('#metadata').removeClass('alert alert-danger missingResourceType')
+            const model = new documentType.Model(data, documentType, title)
+            const etag = jqXHR.getResponseHeader('ETag')
+            if (etag) {
+              model.setRevision(etag.replace(/^"|"$/g, ''))
+            }
+            new documentType.View({
+              model,
+              el: '#metadata'
+            })
           }
-          new documentType.View({
-            model,
-            el: '#metadata'
-          })
-        }
-      })
-    }
+        })
+      }
+    })
   })
 }
 
@@ -292,9 +310,11 @@ function initServiceAgreement () {
           window.location.href = `/service-agreement/${id}`
         },
         error () {
-          new ServiceAgreementEditorView({
-            el: '#metadata',
-            model: new ServiceAgreement(data, options)
+          editor().then(({ ServiceAgreementEditorView, ServiceAgreement }) => {
+            new ServiceAgreementEditorView({
+              el: '#metadata',
+              model: new ServiceAgreement(data, options)
+            })
           })
         }
       })
@@ -302,19 +322,29 @@ function initServiceAgreement () {
   })
 }
 
-function initGeometryMap () {
+async function initGeometryMap () {
+  const { StudyAreaView } = await studyArea()
   new StudyAreaView({ el: '#studyarea-map' })
 }
 
-function initPermission () {
+async function initPermission () {
+  const [{ PermissionApp, PermissionAppView, PermissionRouter }, { default: MessageView }] = await Promise.all([
+    import(/* webpackChunkName: "permission" */ './permission/src/PermissionApp'),
+    messageView()
+  ])
   const app = new PermissionApp()
   new PermissionAppView({ model: app })
   new PermissionRouter({ model: app })
-
-  return createMessageViewFor(app)
+  new MessageView({ model: app })
 }
 
-function initSearch () {
+async function initSearch () {
+  const [{ default: SearchApp }, { default: SearchAppView }, { default: SearchRouter }, { default: MessageView }] = await Promise.all([
+    import(/* webpackChunkName: "search" */ './search/src/SearchApp'),
+    import(/* webpackChunkName: "search" */ './search/src/SearchAppView'),
+    import(/* webpackChunkName: "search" */ './search/src/SearchRouter'),
+    messageView()
+  ])
   const app = new SearchApp()
   const searchAppView = new SearchAppView({ model: app })
   searchAppView.facetsPanelView.createFacetSearch(app)
@@ -323,7 +353,8 @@ function initSearch () {
   new MessageView({ model: app })
 }
 
-function initSimpleUpload () {
+async function initSimpleUpload () {
+  const { SimpleUploadView } = await import(/* webpackChunkName: "simple-upload" */ './simple-upload/src/App')
   const url = $('#simple-upload-dropzone').attr('action')
   new SimpleUploadView({
     el: '#simple-upload',
@@ -331,7 +362,8 @@ function initSimpleUpload () {
   })
 }
 
-function initHubbub () {
+async function initHubbub () {
+  const { UploadModel, UploadView } = await import(/* webpackChunkName: "hubbub" */ './hubbub/src/Upload')
   const id = $documentUpload.data('guid')
   new UploadView({
     el: '.document-upload',
@@ -339,14 +371,9 @@ function initHubbub () {
   })
 }
 
-function initStudyAreaMap () {
+async function initStudyAreaMap () {
+  const { StudyAreaView } = await studyArea()
   new StudyAreaView({ el: '#studyarea-map' })
-}
-
-/* Create a message view. Which listens to the supplied app model for messages (errors, info) */
-
-function createMessageViewFor (app) {
-  new MessageView({ model: app })
 }
 
 function navbarToggle ($navbarItems) {
@@ -356,7 +383,11 @@ function navbarToggle ($navbarItems) {
   })
 }
 
-function initMetricsReport () {
+async function initMetricsReport () {
+  const [{ MetricsReportApp, MetricsReportForm, MetricsReportResults }, { default: SearchRouter }] = await Promise.all([
+    import(/* webpackChunkName: "metrics" */ './metrics/src'),
+    import(/* webpackChunkName: "search" */ './search/src/SearchRouter')
+  ])
   const app = new MetricsReportApp()
   new MetricsReportForm({
     el: '#metrics-form',
@@ -369,7 +400,11 @@ function initMetricsReport () {
   new SearchRouter({ model: app, location: window.location })
 }
 
-function initDepositRequest () {
+async function initDepositRequest () {
+  const [{ default: DepositRequestApp }, { default: DepositRequestFormView }] = await Promise.all([
+    import(/* webpackChunkName: "deposit-request" */ './deposit-request/src/model/DepositRequestApp'),
+    import(/* webpackChunkName: "deposit-request" */ './deposit-request/src/view/DepositRequestFormView')
+  ])
   const app = new DepositRequestApp()
   new DepositRequestFormView({
     el: '#deposit-request',
@@ -391,14 +426,14 @@ function initClone () {
     event.preventDefault()
     const form = event.currentTarget
 
-    Swal.fire({
+    swal().then(({ default: Swal }) => Swal.fire({
       title: 'Are you sure?',
       text: 'This will create a copy of the record and save it as a draft',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, copy it',
       cancelButtonText: 'Cancel'
-    }).then((result) => {
+    })).then((result) => {
       if (result.isConfirmed) {
         form.submit()
       }

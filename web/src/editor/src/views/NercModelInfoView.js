@@ -2,6 +2,7 @@ import _ from 'underscore'
 import $ from 'jquery'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/NercModelInfo'
+import 'jquery-ui/ui/widgets/autocomplete'
 
 export default ObjectInputView.extend({
 

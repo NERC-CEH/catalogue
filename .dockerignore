@@ -8,7 +8,6 @@
 !java/lombok.config
 !schemas
 !templates
-!web/css
 !web/dist
 !web/img
 !web/scss
