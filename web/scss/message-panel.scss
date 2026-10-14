@@ -1,3 +1,6 @@
+@use "bootstrap-configured" as *;
+@use "variables" as *;
+
 #message-panel {
     //@include panel();
 

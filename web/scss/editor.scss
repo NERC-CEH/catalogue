@@ -1,4 +1,6 @@
 @use "sass:color";
+@use "bootstrap-configured" as *;
+@use "variables" as *;
 
 @import "leaflet-draw/dist/leaflet.draw.css";
 @import "leaflet/dist/leaflet.css";
