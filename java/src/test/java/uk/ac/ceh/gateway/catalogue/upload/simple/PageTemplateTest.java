@@ -7,10 +7,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StreamUtils;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.StaticAssets;
 import uk.ac.ceh.gateway.catalogue.userdetails.UserInfo;
 
 import java.io.File;
@@ -50,6 +52,7 @@ public class PageTemplateTest {
     private Configuration configureFreemarker() {
         val config = new Configuration(Configuration.VERSION_2_3_31);
         config.setDirectoryForTemplateLoading(new File("../templates"));
+        config.setSharedVariable("assets", new StaticAssets(new ClassPathResource("manifest.json", getClass())));
         config.setSharedVariable("catalogues", catalogueService);
         config.setSharedVariable("profile", profileService);
         // Mirror production's FreemarkerConfig, which always registers userInfo.

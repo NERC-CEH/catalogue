@@ -2,6 +2,7 @@ import _ from 'underscore'
 import $ from 'jquery'
 import template from '../templates/Relationship'
 import ObjectInputView from './ObjectInputView'
+import 'jquery-ui/ui/widgets/autocomplete'
 
 // constrain autocomplete menu so that it does not exceed the width of the associate input field
 if ($.ui && $.ui.autocomplete && $.ui.autocomplete.prototype) {

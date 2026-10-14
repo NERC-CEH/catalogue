@@ -22,6 +22,7 @@ import uk.ac.ceh.gateway.catalogue.search.SearchQuery;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.search.SpatialOperation;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.StaticAssets;
 
 import java.io.File;
 import java.util.Collections;
@@ -69,6 +70,8 @@ class SearchTemplateTest {
         // date format renders here as it does in production. The expiringBanner macro
         // states its own format and no longer needs this.
         configuration.setDateFormat("yyyy-MM-dd");
+        // No manifest, so no scripts or stylesheets: these tests are about the page's markup
+        configuration.setSharedVariable("assets", StaticAssets.in("classpath:no-static-assets"));
         configuration.setSharedVariable("catalogues", catalogues());
         configuration.setSharedVariable("codes", mock(CodeLookupService.class));
         configuration.setSharedVariable("permission", mock(PermissionService.class));

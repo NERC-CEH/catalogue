@@ -1,5 +1,6 @@
 import _ from 'underscore'
 import $ from 'jquery'
+import 'jquery-ui/ui/widgets/autocomplete'
 
 export function createOrgAutocomplete (id, obj, identifierFieldName = 'organisationIdentifier', nameFieldName = 'organisationName') {
   const selector = `[data-name=${identifierFieldName}]`

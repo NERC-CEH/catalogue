@@ -260,8 +260,10 @@ Currently it supports two databases:
 - PostgreSQL (enabled by setting `metrics.database.engine=postgres`; requires the docker compose profile: run `docker compose --profile metrics up` for local dev).
 
 ### Building the JavaScript and stylesheets
-webpack builds both: the JavaScript to `dist/` and each `scss/style-<catalogue>.scss` to `css/`.
-In the web directory run
+webpack builds both into `dist/`, laid out as it is served under `/static`: `scripts/`, `css/` and
+`assets/` (the images and fonts the stylesheets use). Every file name carries a hash of its content,
+so browsers may cache them for a year; `dist/manifest.json` lists each entry's files, and the
+templates find them through it (`assets.files("main")`). In the web directory run
 
     npm run build-dev   # one-off development build
     npm run watch       # watch and rebuild on changes (docker compose runs this)

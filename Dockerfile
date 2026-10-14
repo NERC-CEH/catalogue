@@ -46,9 +46,9 @@ COPY --chown=spring:spring --from=build-java /app/build/libs/app/snapshot-depend
 COPY --chown=spring:spring --from=build-java /app/build/libs/app/application/ ./
 COPY --chown=spring:spring templates /opt/ceh-catalogue/templates
 COPY --chown=spring:spring --from=build-web /web/img /opt/ceh-catalogue/static/img
-COPY --chown=spring:spring --from=build-web /web/dist /opt/ceh-catalogue/static/scripts
-COPY --chown=spring:spring --from=build-web /web/css /opt/ceh-catalogue/static/css
-COPY --chown=spring:spring --from=build-web /web/node_modules/@fortawesome/fontawesome-free/webfonts /opt/ceh-catalogue/static/webfonts
+# webpack's scripts/, css/ and assets/, each file named by a hash of its content, and the
+# manifest.json the templates find them by (dri-one #364)
+COPY --chown=spring:spring --from=build-web /web/dist /opt/ceh-catalogue/static
 RUN chown spring:spring -R /var/ceh-catalogue && chown spring:spring -R /var/upload
 # /var/ceh-catalogue/metrics-db (above and below) holds the SQLite metrics database and is the mount
 # point for the CIFS share in the deployed environments. It exists now only for the

@@ -14,9 +14,11 @@
 @use "customProperties";
 @use "bootstrap-configured" as *;
 @use "@fortawesome/fontawesome-free/scss/fontawesome";
-@use "@fortawesome/fontawesome-free/scss/regular";
-@use "@fortawesome/fontawesome-free/scss/solid";
-@use "@fortawesome/fontawesome-free/scss/brands";
+// The fonts, as webpack resolves them from this file, so that it builds them as hashed assets
+$-fa-fonts: "../node_modules/@fortawesome/fontawesome-free/webfonts";
+@use "@fortawesome/fontawesome-free/scss/regular" with ($fa-font-path: $-fa-fonts);
+@use "@fortawesome/fontawesome-free/scss/solid" with ($fa-font-path: $-fa-fonts);
+@use "@fortawesome/fontawesome-free/scss/brands" with ($fa-font-path: $-fa-fonts);
 @use "message-panel";
 @use "search";
 @use "metadata";
