@@ -17,7 +17,13 @@ import java.net.http.HttpResponse;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.oneOf;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The Content-Security-Policy through the real server and security chain (dri-one #454). Every response
@@ -45,10 +51,11 @@ class ContentSecurityPolicyEndToEndTest {
         var first = send(HttpRequest.newBuilder(uri("/sparql")).GET());
         var second = send(HttpRequest.newBuilder(uri("/sparql")).GET());
 
-        assertThat(first.statusCode()).isEqualTo(200);
+        assertThat(first.statusCode(), equalTo(200));
         // Its start-up script is bundled now, and the page hands it the endpoint as data (dri-one #367)
-        assertThat(first.body()).contains("data-endpoint=").doesNotContainPattern(INLINE_SCRIPT);
-        assertThat(find(POLICY_NONCE, policy(first))).isNotEqualTo(find(POLICY_NONCE, policy(second)));
+        assertThat(first.body(), containsString("data-endpoint="));
+        assertFalse(INLINE_SCRIPT.matcher(first.body()).find(), "the SPARQL page has an inline script");
+        assertThat(find(POLICY_NONCE, policy(first)), not(equalTo(find(POLICY_NONCE, policy(second)))));
     }
 
     @Test
@@ -61,7 +68,7 @@ class ContentSecurityPolicyEndToEndTest {
                 "{\"csp-report\": {\"effective-directive\": \"img-src\", \"blocked-uri\": \"http://a.example/i.png\", "
                     + "\"document-uri\": \"https://catalogue.example/\"}}")));
 
-        assertThat(response.statusCode()).isEqualTo(204);
+        assertThat(response.statusCode(), equalTo(204));
     }
 
     @Test
@@ -71,9 +78,9 @@ class ContentSecurityPolicyEndToEndTest {
         // Every other anonymous POST needs authentication
         var response = send(HttpRequest.newBuilder(uri("/documents")).POST(HttpRequest.BodyPublishers.noBody()));
 
-        assertThat(response.statusCode()).isIn(401, 403);
-        assertThat(policy(response)).contains("default-src 'self'");
-        assertThat(response.headers().firstValue("Content-Security-Policy")).isEmpty();
+        assertThat(response.statusCode(), oneOf(401, 403));
+        assertThat(policy(response), containsString("default-src 'self'"));
+        assertFalse(response.headers().firstValue("Content-Security-Policy").isPresent(), "an enforced policy was sent");
     }
 
     private URI uri(String path) {
@@ -91,7 +98,7 @@ class ContentSecurityPolicyEndToEndTest {
 
     private static String find(Pattern pattern, String text) {
         Matcher matcher = pattern.matcher(text);
-        assertThat(matcher.find()).as("%s in %s", pattern, text.length() > 300 ? text.substring(0, 300) : text).isTrue();
+        assertTrue(matcher.find(), () -> String.format("%s in %s", pattern, text.length() > 300 ? text.substring(0, 300) : text));
         return matcher.group(1);
     }
 }

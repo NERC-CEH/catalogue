@@ -13,7 +13,11 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 
 @DisplayName("CspReportController")
 @ExtendWith(OutputCaptureExtension.class)
@@ -47,30 +51,30 @@ class CspReportControllerTest {
     @Test
     @DisplayName("logs a report-uri report")
     void logsReportUri(CapturedOutput output) throws Exception {
-        assertThat(post(REPORT_URI_BODY)).isEqualTo(204);
+        assertThat(post(REPORT_URI_BODY), equalTo(204));
 
-        assertThat(output.getOut()).contains(
+        assertThat(output.getOut(), containsString(
             "CSP: script-src-elem would block https://evil.example/x.js on https://catalogue.ceh.ac.uk/documents/abc "
-                + "(https://catalogue.ceh.ac.uk/documents/abc:12)");
+                + "(https://catalogue.ceh.ac.uk/documents/abc:12)"));
     }
 
     @Test
     @DisplayName("logs the CSP reports in a Reporting API batch and ignores the others")
     void logsReportingApiBatch(CapturedOutput output) throws Exception {
-        assertThat(post(REPORTING_API_BODY)).isEqualTo(204);
+        assertThat(post(REPORTING_API_BODY), equalTo(204));
 
-        assertThat(output.getOut())
-            .contains("CSP: img-src would block http://insecure.example/a.png on https://catalogue.ceh.ac.uk/eidc/documents")
-            .doesNotContain("not a CSP report");
+        assertThat(output.getOut(), allOf(
+            containsString("CSP: img-src would block http://insecure.example/a.png on https://catalogue.ceh.ac.uk/eidc/documents"),
+            not(containsString("not a CSP report"))));
     }
 
     @Test
     @DisplayName("refuses a body that isn't JSON, or is too big, without logging it")
     void refusesBadBodies(CapturedOutput output) throws Exception {
-        assertThat(post("not json")).isEqualTo(400);
-        assertThat(post("[" + " ".repeat(CspReportController.MAX_BODY_BYTES) + "]")).isEqualTo(413);
+        assertThat(post("not json"), equalTo(400));
+        assertThat(post("[" + " ".repeat(CspReportController.MAX_BODY_BYTES) + "]"), equalTo(413));
 
-        assertThat(output.getOut()).doesNotContain("CSP:");
+        assertThat(output.getOut(), not(containsString("CSP:")));
     }
 
     @Test
@@ -81,8 +85,10 @@ class CspReportControllerTest {
 
         post(forged);
 
-        assertThat(output.getOut()).doesNotContain("\nERROR fake line").contains("https://a.example/ ERROR fake line");
-        assertThat(output.getOut()).doesNotContain("y".repeat(250));
+        assertThat(output.getOut(), allOf(
+            not(containsString("\nERROR fake line")),
+            containsString("https://a.example/ ERROR fake line"),
+            not(containsString("y".repeat(250)))));
     }
 
     @Test
@@ -93,6 +99,6 @@ class CspReportControllerTest {
         }
 
         long logged = output.getOut().lines().filter(line -> line.contains("CSP: script-src-elem")).count();
-        assertThat(logged).isEqualTo(CspReportController.LOGGED_PER_MINUTE);
+        assertThat(logged, equalTo((long) CspReportController.LOGGED_PER_MINUTE));
     }
 }
