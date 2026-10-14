@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /*
- * Compiles each catalogue theme for the colour-contrast specs (src/styles/test/ContrastTest.js),
- * which Karma runs against the real stylesheets in an iframe (NERC-CEH/dri-one#462).
+ * Compiles the shared base stylesheet and each catalogue theme for the colour-contrast specs
+ * (src/styles/test/ContrastTest.js), which Karma runs against the real stylesheets in an iframe
+ * (NERC-CEH/dri-one#462). A page loads base.css and then its theme (dri-one #362).
  *
  * Only Sass is run: the CSS libraries the production build inlines with postcss-import don't affect
  * the colours checked. Run by `npm test` (as part of the pretest step) and in CI.
@@ -27,12 +28,12 @@ const logger = {
     warnings.add(`${message.split('\n')[0]}${where}`)
   }
 }
-for (const theme of THEMES) {
-  const { css } = sass.compile(path.join(root, 'scss', `style-${theme}.scss`), { ...sassOptions, logger })
-  fs.writeFileSync(path.join(out, `style-${theme}.css`), css)
+for (const name of ['base', ...THEMES.map(theme => `style-${theme}`)]) {
+  const { css } = sass.compile(path.join(root, 'scss', `${name}.scss`), { ...sassOptions, logger })
+  fs.writeFileSync(path.join(out, `${name}.css`), css)
 }
 if (warnings.size) {
   console.error(`The catalogue stylesheets have ${warnings.size} Sass warning(s):\n  ${[...warnings].join('\n  ')}`)
   process.exit(1)
 }
-console.log(`Compiled ${THEMES.length} catalogue themes for the contrast specs, with no Sass warnings`)
+console.log(`Compiled the base stylesheet and ${THEMES.length} catalogue themes for the contrast specs, with no Sass warnings`)

@@ -203,6 +203,8 @@ services:
       npm_config_cache: /tmp/.npm
     volumes:
       - ./web:/app/web
+      # Read by the build, which keeps only the Font Awesome icons the templates use (dri-one #362)
+      - ./templates:/app/templates:ro
     command: sh -c "npm install && npm run watch"
 volumes:
   dropbox:

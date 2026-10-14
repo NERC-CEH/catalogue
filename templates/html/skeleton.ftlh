@@ -37,6 +37,8 @@
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap">
+      <#-- Shared by every catalogue, then the catalogue's own theme, which only overrides it (dri-one #362) -->
+      <link rel="stylesheet" type="text/css" href="/static/css/base.css">
       <link rel="stylesheet" type="text/css" href="/static/css/style-<#if catalogue?has_content>${catalogue.id}<#else>${catalogues.defaultCatalogue().id}</#if>.css">
 
       <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>

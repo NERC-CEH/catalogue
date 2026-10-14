@@ -5,6 +5,11 @@
  * http://www.gnu.org/licenses/
  */
 
+// The stylesheet every catalogue shares, base.css: Bootstrap, Font Awesome and the catalogue's own
+// components. Each page also links its catalogue's theme, style-<catalogue>.css, which only overrides
+// it, so a visitor moving between catalogues downloads this once (NERC-CEH/dri-one#362). The themes
+// are compiled on their own and can't @extend anything here.
+
 // Each module's CSS is emitted once, where it is first used, so this order is the stylesheet's
 @use "customProperties";
 @use "bootstrap-configured" as *;

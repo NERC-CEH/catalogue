@@ -4,11 +4,13 @@ FROM node:24-alpine AS build-web
 WORKDIR /web
 RUN apk --no-cache upgrade
 COPY web/package.json web/package-lock.json web/webpack.js ./
-COPY web/scripts/sass-options.js ./scripts/
+COPY web/scripts/sass-options.js web/scripts/font-awesome-icons.js ./scripts/
 RUN --mount=type=cache,target=/web/.npm npm ci --cache /web/.npm --no-audit
 COPY web/img ./img
 COPY web/scss ./scss
 COPY web/src ./src
+# Beside web/, as in the repository: the build keeps only the Font Awesome icons they use
+COPY templates /templates
 RUN npm run build
 
 # Build Java

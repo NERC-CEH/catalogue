@@ -1,14 +1,21 @@
 const fs = require('fs')
 const path = require('path')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const postcss = require('postcss')
+const usedIcons = require('./scripts/font-awesome-icons')
 const sassOptions = require('./scripts/sass-options')
 
 const scss = path.join(__dirname, 'scss')
 
-// One stylesheet per catalogue (style-<catalogue>.scss); the other files are partials they use
-const stylesheets = Object.fromEntries(fs.readdirSync(scss)
-  .filter(file => file.startsWith('style-') && file.endsWith('.scss'))
-  .map(file => [path.basename(file, '.scss'), path.join(scss, file)]))
+// base.css, which every page links, and one theme per catalogue (style-<catalogue>.scss) that each
+// page links after it; the other files are partials base.scss uses
+const stylesheets = {
+  base: path.join(scss, 'base.scss'),
+  ...Object.fromEntries(fs.readdirSync(scss)
+    .filter(file => file.startsWith('style-') && file.endsWith('.scss'))
+    .map(file => [path.basename(file, '.scss'), path.join(scss, file)]))
+}
 
 // The images the inlined library stylesheets load from css/images (url("images/..."))
 const IMAGES = [
@@ -59,6 +66,37 @@ class StylesheetEntries {
   }
 }
 
+// Drops the rule Font Awesome emits for each icon (.fa-<name>::before) unless the catalogue uses that
+// icon: about 1,900 rules, a sixth of base.css (NERC-CEH/dri-one#362). Done before the minifier runs,
+// and in every build, so a missing icon shows up in development too.
+class FontAwesomeSubset {
+  apply (compiler) {
+    const { Compilation, sources } = compiler.webpack
+    compiler.hooks.thisCompilation.tap('FontAwesomeSubset', compilation => {
+      // So that the watcher rebuilds when a template starts using another icon
+      compilation.contextDependencies.add(path.join(__dirname, '..', 'templates'))
+      compilation.hooks.processAssets.tap(
+        { name: 'FontAwesomeSubset', stage: Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE },
+        () => {
+          const used = usedIcons()
+          for (const file of compilation.namedChunks.get('base').files) {
+            if (!file.endsWith('.css')) continue
+            const root = postcss.parse(compilation.getAsset(file).source.source().toString())
+            root.walkRules(rule => {
+              const icons = rule.selectors.map(selector => selector.match(/^\.fa-([a-z0-9-]+)::?before$/))
+              if (!icons.every(Boolean)) return
+              const kept = icons.filter(([, name]) => used.has(name)).map(([selector]) => selector)
+              if (kept.length) rule.selectors = kept
+              else rule.remove()
+            })
+            compilation.updateAsset(file, new sources.RawSource(root.toString()))
+          }
+        }
+      )
+    })
+  }
+}
+
 module.exports = {
   entry: {
     main: './src/index.js',
@@ -98,9 +136,15 @@ module.exports = {
       }
     ]
   },
+  optimization: {
+    // '...' keeps webpack's own JavaScript minifier; cssnano minifies the stylesheets, library CSS
+    // included, in production builds (NERC-CEH/dri-one#362)
+    minimizer: ['...', new CssMinimizerPlugin()]
+  },
   plugins: [
     new MiniCssExtractPlugin({ filename: '../css/[name].css' }),
     new CopyLibraryImages(),
-    new StylesheetEntries()
+    new StylesheetEntries(),
+    new FontAwesomeSubset()
   ]
 }
