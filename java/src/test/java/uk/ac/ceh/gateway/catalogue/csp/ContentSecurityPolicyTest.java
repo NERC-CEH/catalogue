@@ -31,6 +31,13 @@ class ContentSecurityPolicyTest {
     }
 
     @Test
+    @DisplayName("refuses eval: the front-end templates are compiled at build time")
+    void noEval() {
+        // dri-one #464: underscore's _.template compiled them in the browser with new Function
+        assertThat(directives("n").get("script-src")).doesNotContain("'unsafe-eval'");
+    }
+
+    @Test
     @DisplayName("lets the SPARQL page query the Fuseki endpoint's origin, not the whole web")
     void connectsToTheSparqlOrigin() {
         assertThat(directives("n").get("connect-src"))

@@ -105,7 +105,10 @@ class Manifest {
   }
 }
 
-module.exports = {
+module.exports = (env, { mode } = {}) => ({
+  // Development's default source maps are eval()ed, which the Content-Security-Policy refuses
+  // (dri-one #464); these are files beside the scripts instead
+  devtool: mode === 'development' ? 'cheap-module-source-map' : false,
   entry: {
     main: './src/index.js',
     // The SPARQL page (/sparql), which isn't built on the skeleton and loads only this
@@ -193,4 +196,4 @@ module.exports = {
     new FontAwesomeSubset(),
     new Manifest()
   ]
-}
+})

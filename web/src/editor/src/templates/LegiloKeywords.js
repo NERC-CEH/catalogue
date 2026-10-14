@@ -1,6 +1,7 @@
+import _ from 'underscore'
 import baseTemplate from './LegiloBase'
 
-const tableTemplate = `
+const table = _.template(`
   <thead>
     <tr>
       <th scope="col" class="col-1">Select</th>
@@ -21,6 +22,6 @@ const tableTemplate = `
       <% }); %>
     <% } %>
   </tbody>
-`
+`)
 
-export default baseTemplate('Suggested Keywords', tableTemplate)
+export default baseTemplate('Suggested Keywords', table)
