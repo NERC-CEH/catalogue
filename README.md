@@ -200,8 +200,6 @@ cd web && npm run test
 cd web && npm run lint
 ```
 
-#### Note — there are many uses of JQuery's `$(document).ready()` in the editor module. Do not remove them as they prevent timing issues with views of existing documents in the editor.
-
 ### Test JavaScript using Karma
 
       npm run test
