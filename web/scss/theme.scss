@@ -5,19 +5,32 @@
  * http://www.gnu.org/licenses/
  */
 
-@import "customProperties";
-@import "variables";
-@import "bootstrap/scss/bootstrap";
-@import "@fortawesome/fontawesome-free/scss/fontawesome";
-@import "@fortawesome/fontawesome-free/scss/regular";
-@import "@fortawesome/fontawesome-free/scss/solid";
-@import "@fortawesome/fontawesome-free/scss/brands";
-@import "message-panel";
-@import "search";
-@import "metadata";
-@import "editor";
-@import "documents-upload";
-@import "upload-simple";
+// Each module's CSS is emitted once, where it is first used, so this order is the stylesheet's
+@use "customProperties";
+@use "bootstrap-configured" as *;
+@use "@fortawesome/fontawesome-free/scss/fontawesome";
+@use "@fortawesome/fontawesome-free/scss/regular";
+@use "@fortawesome/fontawesome-free/scss/solid";
+@use "@fortawesome/fontawesome-free/scss/brands";
+@use "message-panel";
+@use "search";
+@use "metadata";
+@use "editor";
+@use "documents-upload";
+@use "upload-simple";
+
+// Bootstrap's own @extends (.h1 is an h1, .small is a small, .container-sm is a .container-fluid)
+// reach only Bootstrap's rules now that it is a module. Under @import they also reached the rules
+// above and below for h1-h6, small and .container-fluid, so they are repeated here: an @extend
+// applies to the module it is in and every module that one uses (NERC-CEH/dri-one#365).
+.h1 { @extend h1; }
+.h2 { @extend h2; }
+.h3 { @extend h3; }
+.h4 { @extend h4; }
+.h5 { @extend h5; }
+.h6 { @extend h6; }
+.small { @extend small; }
+.container-sm, .container-md, .container-lg, .container-xl, .container-xxl { @extend .container-fluid; }
 
 body {
     display: flex;

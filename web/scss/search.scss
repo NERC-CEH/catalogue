@@ -1,4 +1,6 @@
 @use "sass:color";
+@use "bootstrap-configured" as *;
+@use "variables" as *;
 
 // PAGE STRUCTURE
 html:has(.search),
