@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Testing
 - Run the test suite scoped to what changed, especially after upgrades, refactors, or migrations:
   - Java changes → `./gradlew :java:test`
-  - Frontend-only changes (`web/`) → `cd web && npm run test` and `npm run standard`; the Java suite is not required
+  - Frontend-only changes (`web/`) → `cd web && npm run test` and `npm run lint` (neostandard: StandardJS rules on ESLint 10); the Java suite is not required
   - Mixed changes → run both
 - When fixing one test failure, check for similar patterns elsewhere (e.g., if one method needs a transaction wrapper, audit all similar methods)
 - Verify null-safety fixes cover both missing keys AND keys with null values

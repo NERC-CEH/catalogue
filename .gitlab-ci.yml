@@ -44,7 +44,7 @@ test_web:
     - export PUPPETEER_EXECUTABLE_PATH=$(which chromium-browser 2>/dev/null || which chromium)
     - cd web/
     - npm ci --no-audit
-    - npm run standard
+    - npm run lint
     - npm test
   artifacts:
     when: always

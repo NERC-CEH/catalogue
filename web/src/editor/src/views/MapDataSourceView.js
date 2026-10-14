@@ -61,7 +61,6 @@ export default ObjectInputView.extend({
   },
 
   newReprojection (model) {
-    // eslint-disable-next-line no-unused-vars
     return new MapReprojectionView({
       model,
       disabled: this.data.disabled
@@ -69,7 +68,6 @@ export default ObjectInputView.extend({
   },
 
   newAttribute (model, i) {
-    // eslint-disable-next-line no-unused-vars
     return new ChildView({
       model,
       index: i,

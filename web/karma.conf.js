@@ -1,9 +1,15 @@
 const { execFileSync } = require('child_process')
+const fs = require('fs')
 process.env.CHROME_BIN = execFileSync(
   process.execPath,
   ['-e', "require('puppeteer').executablePath().then(p => process.stdout.write(p))"],
   { cwd: __dirname }
 ).toString().trim()
+// Puppeteer downloads its Chrome when it is installed, unless npm skips its install script (npm 11
+// can) or a Puppeteer upgrade wants a newer Chrome. CI sets PUPPETEER_EXECUTABLE_PATH to its own.
+if (!fs.existsSync(process.env.CHROME_BIN)) {
+  throw new Error(`No Chrome at ${process.env.CHROME_BIN} for the specs: run \`npx puppeteer browsers install chrome\` in web/`)
+}
 
 // Opt-in coverage: `npm run test-coverage` sets COVERAGE, which selects the
 // Babel `coverage` env (babel-plugin-istanbul) and adds the coverage reporter.

@@ -132,7 +132,7 @@ describe('marker styling', () => {
     spyOn(L.Layer.prototype, 'bindPopup').and.callThrough()
     const feature = {
       type: 'Feature',
-      properties: { title: 'Site A', link: 'javascript:window.__xss454=1' }, // eslint-disable-line no-script-url
+      properties: { title: 'Site A', link: 'javascript:window.__xss454=1' },
       geometry: { type: 'Point', coordinates: [-2.64501, 54.5261] }
     }
     const el = $('<div id="studyarea-map" class="studyarea-map"><span dataType="geoJson"/></div>')

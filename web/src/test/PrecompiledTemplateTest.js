@@ -4,7 +4,7 @@ import _ from 'underscore'
 // The build compiles each `_.template` literal ahead of time (scripts/babel-plugin-precompile-templates.js,
 // dri-one #464). Each template here is compiled that way and, from the same text, by underscore in the
 // browser (`_['template']`, which the plugin leaves alone); the two must render alike.
-const runtime = _['template'] // eslint-disable-line dot-notation
+const runtime = _['template']
 
 describe('A template compiled at build time', () => {
   afterEach(() => { delete window.precompiledTemplateGlobal })
