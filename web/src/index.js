@@ -1,6 +1,5 @@
 /* global window IntersectionObserver */
 /* eslint no-new: "off" */
-import './globals'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import 'bootstrap'
