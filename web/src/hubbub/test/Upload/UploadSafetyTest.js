@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import { UploadModel, UploadView, DropzoneView } from '../../src/Upload'
 import { File } from '../../src/File'
+import { fakeClock, fakeServer } from '../../../test/support'
 
 /**
  * The upload page could lose a depositor's work (NERC-CEH/dri-one#459): "Finish uploading" aborted
@@ -17,9 +18,9 @@ describe('Upload page safety', () => {
     view = new UploadView({ el: '.document-upload', model: new UploadModel({ id }) })
   }
 
-  beforeEach(() => jasmine.Ajax.install())
+  beforeEach(() => fakeServer.install())
   afterEach(() => {
-    jasmine.Ajax.uninstall()
+    fakeServer.uninstall()
     $(document.body).empty()
   })
 
@@ -35,7 +36,7 @@ describe('Upload page safety', () => {
 
       expect(window.alert).toHaveBeenCalledWith('3 files are still uploading. Wait for them to finish before you finish uploading.')
       expect(window.confirm).not.toHaveBeenCalled()
-      expect(jasmine.Ajax.requests.count()).toBe(0)
+      expect(fakeServer.requestCount()).toBe(0)
     })
 
     it('asks first, and does nothing if the depositor says no', () => {
@@ -44,7 +45,7 @@ describe('Upload page safety', () => {
       view.$('.finish').trigger('click')
 
       expect(window.confirm).toHaveBeenCalled()
-      expect(jasmine.Ajax.requests.count()).toBe(0)
+      expect(fakeServer.requestCount()).toBe(0)
     })
 
     it('finishes once confirmed', () => {
@@ -52,7 +53,7 @@ describe('Upload page safety', () => {
 
       view.$('.finish').trigger('click')
 
-      expect(jasmine.Ajax.requests.mostRecent().url).toBe(`/upload/${id}/finish`)
+      expect(fakeServer.lastRequest().url).toBe(`/upload/${id}/finish`)
     })
   })
 
@@ -63,7 +64,7 @@ describe('Upload page safety', () => {
     view.$('.move-all').trigger('click')
 
     expect(window.confirm).toHaveBeenCalled()
-    expect(jasmine.Ajax.requests.count()).toBe(0)
+    expect(fakeServer.requestCount()).toBe(0)
   })
 
   it('reloads after a zip only once the whole queue has finished', () => {
@@ -82,16 +83,16 @@ describe('Upload page safety', () => {
   describe('refreshing', () => {
     beforeEach(() => {
       build('<button class="validate-all"><i class="fa-solid fa-check"></i></button><div class="data-files"></div>')
-      jasmine.clock().install()
+      fakeClock.install()
     })
-    afterEach(() => jasmine.clock().uninstall())
+    afterEach(() => fakeClock.uninstall())
 
     it('shows an error when the refresh after an action fails', () => {
       spyOn(view, 'showInError')
 
       view.collectionSuccess({ currentTarget: view.$('.validate-all')[0] }, 'fa-solid fa-check', 'dropbox', 'dropbox', view.dropbox)
-      jasmine.clock().tick(7000)
-      jasmine.Ajax.requests.mostRecent().respondWith({ status: 500 })
+      fakeClock.tick(7000)
+      fakeServer.lastRequest().respondWith({ status: 500 })
 
       expect(view.showInError).toHaveBeenCalled()
     })
@@ -100,7 +101,7 @@ describe('Upload page safety', () => {
       spyOn(view, 'showNormal')
 
       view.validate({ currentTarget: view.$('.validate-all')[0] }, 'dropbox', 'dropbox', view.dropbox, 'fa-solid fa-check')
-      jasmine.Ajax.requests.mostRecent().respondWith({ status: 400 })
+      fakeServer.lastRequest().respondWith({ status: 400 })
 
       expect(view.showNormal).toHaveBeenCalled()
     })

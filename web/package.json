@@ -15,7 +15,9 @@
         "lint-fix": "eslint --fix .",
         "pretest": "node scripts/check-template-escaping.js && node scripts/build-test-css.js",
         "test": "karma start --single-run",
+        "pretest-coverage": "npm run pretest",
         "test-coverage": "COVERAGE=true karma start --single-run",
+        "posttest-coverage": "node scripts/check-coverage-files.js",
         "watch": "webpack --config webpack.js --mode development --watch"
     },
     "browserslist": [

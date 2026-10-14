@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import { SearchFormView } from '../src/views'
 import SearchApp from '../src/SearchApp'
+import { spyObject } from '../../test/support'
 
 describe('Test SearchFormView', () => {
   let view = null
@@ -45,7 +46,7 @@ describe('Test SearchFormView', () => {
   })
 
   it('prevents the default form submission', () => {
-    const e = jasmine.createSpyObj('event', ['preventDefault'])
+    const e = spyObject('event', ['preventDefault'])
     view.handleSubmit(e)
     expect(e.preventDefault).toHaveBeenCalled()
   })
@@ -147,7 +148,7 @@ describe('Test SearchFormView', () => {
     it('clears the pending flag once the query is submitted', () => {
       view.handleTyping()
 
-      view.handleSubmit(jasmine.createSpyObj('event', ['preventDefault']))
+      view.handleSubmit(spyObject('event', ['preventDefault']))
 
       expect(view.$el.hasClass('term-pending')).toBe(false)
     })
@@ -162,7 +163,7 @@ describe('Test SearchFormView', () => {
     })
 
     it('puts the typed term on the model when the form is submitted', () => {
-      const e = jasmine.createSpyObj('event', ['preventDefault'])
+      const e = spyObject('event', ['preventDefault'])
 
       view.handleSubmit(e)
 
@@ -243,7 +244,7 @@ describe('Test SearchFormView', () => {
    * had already committed the displayed term, silently sent no request at all.
    */
   describe('search button when the term has not changed', () => {
-    const submit = () => view.handleSubmit(jasmine.createSpyObj('event', ['preventDefault']))
+    const submit = () => view.handleSubmit(spyObject('event', ['preventDefault']))
 
     it('starts a search even though the model term is unchanged', () => {
       model.set({ semantic: true, term: 'rivers' })

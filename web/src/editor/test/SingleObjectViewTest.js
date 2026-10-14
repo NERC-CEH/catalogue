@@ -3,6 +3,7 @@ import { EditorMetadata } from '../src'
 import { SingleObjectView, ResourceTypeView } from '../src/views'
 import { ResourceType } from '../src/models'
 import { BoundingBox, BoundingBoxView } from '../src/geometryMap'
+import { spy } from '../../test/support'
 
 /**
  * A single-object field (resource type, bounding box, access limitation…) is edited through its own
@@ -34,7 +35,7 @@ describe('SingleObjectView', () => {
   it('reports every edit as a change to the record', () => {
     const record = new EditorMetadata({ resourceType: { value: 'dataset' } })
     const view = resourceTypeField(record)
-    const changes = jasmine.createSpy('change:resourceType')
+    const changes = spy('change:resourceType')
     record.on('change:resourceType', changes)
 
     view.inputModel.set('value', 'service')

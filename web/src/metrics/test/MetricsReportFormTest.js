@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import MetricsReportApp from '../src/MetricsReportApp'
 import MetricsReportForm from '../src/MetricsReportForm'
+import { spyObject } from '../../test/support'
 
 describe('MetricsReportForm', () => {
   let model
@@ -24,23 +25,23 @@ describe('MetricsReportForm', () => {
   })
 
   it('prevents the default submit', () => {
-    const event = jasmine.createSpyObj('event', ['preventDefault'])
+    const event = spyObject('event', ['preventDefault'])
     view.onSubmit(event)
     expect(event.preventDefault).toHaveBeenCalled()
   })
 
   it('copies recognised search fields from the form onto the model', () => {
-    view.onSubmit(jasmine.createSpyObj('event', ['preventDefault']))
+    view.onSubmit(spyObject('event', ['preventDefault']))
     expect(model.get('startDate')).toBe('2020-01-01')
   })
 
   it('collects only the checked recordType values', () => {
-    view.onSubmit(jasmine.createSpyObj('event', ['preventDefault']))
+    view.onSubmit(spyObject('event', ['preventDefault']))
     expect(model.get('recordType')).toEqual(['dataset'])
   })
 
   it('ignores form inputs that are not search fields', () => {
-    view.onSubmit(jasmine.createSpyObj('event', ['preventDefault']))
+    view.onSubmit(spyObject('event', ['preventDefault']))
     expect(model.get('notASearchField')).toBeUndefined()
   })
 })

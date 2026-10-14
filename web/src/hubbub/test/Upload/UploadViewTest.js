@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import { UploadModel, UploadView } from '../../src/Upload'
 import FileCollection from '../../src/File/FileCollection'
+import { fakeServer, spy } from '../../../test/support'
 
 describe('UploadView', function () {
   const id = 'ebaf006d-b014-4d8b-9131-7677e61519dd'
@@ -193,7 +194,7 @@ describe('UploadView', function () {
 
   describe('loadMore', function () {
     beforeEach(function () {
-      jasmine.Ajax.install()
+      fakeServer.install()
       $(document.body)
         .html(`
                         <div class="document-upload">
@@ -218,7 +219,7 @@ describe('UploadView', function () {
     })
 
     afterEach(function () {
-      jasmine.Ajax.uninstall()
+      fakeServer.uninstall()
     })
 
     it('when next page is available', function () {
@@ -238,7 +239,7 @@ describe('UploadView', function () {
       view.loadMore(event, 'datastore', 'eidchub', collection)
 
       // then
-      const request = jasmine.Ajax.requests.mostRecent()
+      const request = fakeServer.lastRequest()
       // noinspection JSCheckFunctionSignatures
       request.respondWith(testResponses.success)
 
@@ -272,7 +273,7 @@ describe('UploadView', function () {
 
   describe('finish', function () {
     beforeEach(function () {
-      jasmine.Ajax.install()
+      fakeServer.install()
       // These actions now ask first (dri-one #459)
       spyOn(window, 'confirm').and.returnValue(true)
       $(document.body)
@@ -289,7 +290,7 @@ describe('UploadView', function () {
     })
 
     afterEach(function () {
-      jasmine.Ajax.uninstall()
+      fakeServer.uninstall()
     })
 
     it('success', function () {
@@ -305,7 +306,7 @@ describe('UploadView', function () {
       // then
       expect($finishBtn.length).toEqual(1)
 
-      const request = jasmine.Ajax.requests.mostRecent()
+      const request = fakeServer.lastRequest()
       // noinspection JSCheckFunctionSignatures
       request.respondWith(testResponses.success)
 
@@ -330,7 +331,7 @@ describe('UploadView', function () {
       // then
       expect($finish.length).toEqual(1)
 
-      const request = jasmine.Ajax.requests.mostRecent()
+      const request = fakeServer.lastRequest()
       // noinspection JSCheckFunctionSignatures
       request.respondWith(testResponses.error)
 
@@ -344,7 +345,7 @@ describe('UploadView', function () {
 
   describe('move', function () {
     beforeEach(function () {
-      jasmine.Ajax.install()
+      fakeServer.install()
       // These actions now ask first (dri-one #459)
       spyOn(window, 'confirm').and.returnValue(true)
       $(document.body)
@@ -361,7 +362,7 @@ describe('UploadView', function () {
     })
 
     afterEach(function () {
-      jasmine.Ajax.uninstall()
+      fakeServer.uninstall()
     })
 
     it('success', function () {
@@ -376,7 +377,7 @@ describe('UploadView', function () {
       view.$('.move-all').trigger('click')
 
       // then
-      const request = jasmine.Ajax.requests.mostRecent()
+      const request = fakeServer.lastRequest()
       // noinspection JSCheckFunctionSignatures
       request.respondWith(testResponses.serverState)
 
@@ -396,7 +397,7 @@ describe('UploadView', function () {
 
   describe('scheduling', function () {
     beforeEach(function () {
-      jasmine.Ajax.install()
+      fakeServer.install()
       $(document.body)
         .html(`
                         <div class="document-upload">
@@ -415,7 +416,7 @@ describe('UploadView', function () {
     })
 
     afterEach(function () {
-      jasmine.Ajax.uninstall()
+      fakeServer.uninstall()
     })
 
     it('trigger reschedule', function () {
@@ -428,7 +429,7 @@ describe('UploadView', function () {
       view.$('.reschedule').trigger('click')
 
       // then
-      const request = jasmine.Ajax.requests.mostRecent()
+      const request = fakeServer.lastRequest()
       // noinspection JSCheckFunctionSignatures
       request.respondWith(testResponses.success)
 
@@ -449,7 +450,7 @@ describe('UploadView', function () {
       view.$('.schedule').trigger('click')
 
       // then
-      const request = jasmine.Ajax.requests.mostRecent()
+      const request = fakeServer.lastRequest()
       // noinspection JSCheckFunctionSignatures
       request.respondWith(testResponses.success)
 
@@ -471,7 +472,7 @@ describe('UploadView', function () {
       view.$('.schedule').trigger('click')
 
       // then
-      const request = jasmine.Ajax.requests.mostRecent()
+      const request = fakeServer.lastRequest()
       // noinspection JSCheckFunctionSignatures
       request.respondWith(testResponses.error)
 
@@ -486,7 +487,7 @@ describe('UploadView', function () {
 
   describe('validate', function () {
     beforeEach(function () {
-      jasmine.Ajax.install()
+      fakeServer.install()
       $(document.body)
         .html(`
                         <div class="document-upload">
@@ -501,7 +502,7 @@ describe('UploadView', function () {
     })
 
     afterEach(function () {
-      jasmine.Ajax.uninstall()
+      fakeServer.uninstall()
     })
 
     it('validate-all', function () {
@@ -525,7 +526,7 @@ describe('UploadView', function () {
       view.validate(event, 'datastore', 'eidchub', collection)
 
       // then
-      const request = jasmine.Ajax.requests.mostRecent()
+      const request = fakeServer.lastRequest()
       // noinspection JSCheckFunctionSignatures
       request.respondWith(testResponses.success)
       expect(request.method).toBe('POST')
@@ -537,11 +538,11 @@ describe('UploadView', function () {
       // given
       const collection = new FileCollection()
       spyOn(collection, 'reset')
-      const callback = jasmine.createSpy('callback')
+      const callback = spy('callback')
       // when
       view.getServerState('datastore', 'eidchub', collection, callback)
       // then
-      const request = jasmine.Ajax.requests.mostRecent()
+      const request = fakeServer.lastRequest()
       // noinspection JSCheckFunctionSignatures
       request.respondWith(testResponses.serverState)
       expect(request.method).toBe('GET')
@@ -555,7 +556,7 @@ describe('UploadView', function () {
 
   describe('hash', function () {
     beforeEach(function () {
-      jasmine.Ajax.install()
+      fakeServer.install()
       $(document.body)
         .html(`
                         <div class="document-upload">
@@ -570,7 +571,7 @@ describe('UploadView', function () {
     })
 
     afterEach(function () {
-      jasmine.Ajax.uninstall()
+      fakeServer.uninstall()
     })
 
     it('success', function () {
@@ -581,7 +582,7 @@ describe('UploadView', function () {
       view.$('.hash-dropbox').trigger('click')
 
       // then
-      const request = jasmine.Ajax.requests.mostRecent()
+      const request = fakeServer.lastRequest()
       // noinspection JSCheckFunctionSignatures
       request.respondWith(testResponses.success)
       expect(request.method).toBe('POST')
@@ -592,7 +593,7 @@ describe('UploadView', function () {
 
   describe('register', function () {
     beforeEach(function () {
-      jasmine.Ajax.install()
+      fakeServer.install()
       $(document.body)
         .html(`
                         <div class="document-upload">
@@ -607,7 +608,7 @@ describe('UploadView', function () {
     })
 
     afterEach(function () {
-      jasmine.Ajax.uninstall()
+      fakeServer.uninstall()
     })
 
     it('success', function () {
@@ -620,7 +621,7 @@ describe('UploadView', function () {
       view.$('.register-dropbox').trigger('click')
 
       // then
-      const request = jasmine.Ajax.requests.mostRecent()
+      const request = fakeServer.lastRequest()
       // noinspection JSCheckFunctionSignatures
       request.respondWith(testResponses.success)
       expect(request.method).toBe('POST')
