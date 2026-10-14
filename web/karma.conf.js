@@ -35,8 +35,12 @@ module.exports = function (config) {
     },
 
     // Only the loaders: the build's entries (main.js and every stylesheet) and plugins aren't wanted
-    // for the specs, which karma-webpack bundles itself
-    webpack: { module: require('./webpack.js')({}, { mode: 'development' }).module },
+    // for the specs, which karma-webpack bundles itself. The CSS loader needs its plugin, for a module
+    // that imports a stylesheet (the SPARQL page's YASGUI); the specs don't load what it extracts.
+    webpack: {
+      module: require('./webpack.js')({}, { mode: 'development' }).module,
+      plugins: [new (require('mini-css-extract-plugin'))()]
+    },
 
     reporters: coverage ? ['progress', 'junit', 'coverage'] : ['progress', 'junit'],
 

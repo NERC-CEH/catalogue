@@ -134,38 +134,45 @@ export const examples = catalogueGraph => [
   }
 ]
 
+// Builds YASGUI in element, on the page's endpoint, and lists the examples in list. Yasgui is passed in
+// so that the specs can watch what the page asks of it (dri-one #473).
+export function startSparql (element, list, Yasgui) {
+  const yasgui = new Yasgui(element, {
+    requestConfig: { endpoint: element.dataset.endpoint },
+    yasqe: {
+      // The prefixes the editor suggests after PREFIX. YASQE fetches them from prefix.cc by default,
+      // which the Content-Security-Policy refuses (connect-src), so they come from a list of the
+      // namespaces the catalogue's graphs use, built as one of our own assets (NERC-CEH/dri-one#470)
+      prefixCcApi: new URL('./prefixes.json', import.meta.url).href
+    }
+  })
+
+  yasgui.getTab().yasqe.addPrefixes({
+    dcat: 'http://www.w3.org/ns/dcat#',
+    dcterm: 'http://purl.org/dc/terms/',
+    dcterms: 'http://purl.org/dc/terms/',
+    skos: 'http://www.w3.org/2004/02/skos/core#',
+    foaf: 'http://xmlns.com/foaf/0.1/',
+    prov: 'http://www.w3.org/ns/prov#',
+    frapo: 'http://purl.org/cerif/frapo/',
+    sd: 'http://www.w3.org/ns/sparql-service-description#',
+    void: 'http://rdfs.org/ns/void#'
+  })
+
+  // Loaded on click rather than on page load: YASGUI persists tabs in localStorage, so writing a query
+  // into the editor unprompted would discard whatever the visitor was last working on.
+  examples(element.dataset.catalogueGraph).forEach(example => {
+    const item = document.createElement('li')
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.textContent = example.name
+    button.addEventListener('click', () => yasgui.getTab().yasqe.setValue(example.query.join('\n')))
+    item.appendChild(button)
+    list.appendChild(item)
+  })
+  return yasgui
+}
+
+// Only the SPARQL page has the element; anywhere else, importing this starts nothing
 const element = document.getElementById('yasgui')
-const yasgui = new Yasgui(element, {
-  requestConfig: { endpoint: element.dataset.endpoint },
-  yasqe: {
-    // The prefixes the editor suggests after PREFIX. YASQE fetches them from prefix.cc by default,
-    // which the Content-Security-Policy refuses (connect-src), so they come from a list of the
-    // namespaces the catalogue's graphs use, built as one of our own assets (NERC-CEH/dri-one#470)
-    prefixCcApi: new URL('./prefixes.json', import.meta.url).href
-  }
-})
-
-yasgui.getTab().yasqe.addPrefixes({
-  dcat: 'http://www.w3.org/ns/dcat#',
-  dcterm: 'http://purl.org/dc/terms/',
-  dcterms: 'http://purl.org/dc/terms/',
-  skos: 'http://www.w3.org/2004/02/skos/core#',
-  foaf: 'http://xmlns.com/foaf/0.1/',
-  prov: 'http://www.w3.org/ns/prov#',
-  frapo: 'http://purl.org/cerif/frapo/',
-  sd: 'http://www.w3.org/ns/sparql-service-description#',
-  void: 'http://rdfs.org/ns/void#'
-})
-
-// Loaded on click rather than on page load: YASGUI persists tabs in localStorage, so writing a query
-// into the editor unprompted would discard whatever the visitor was last working on.
-const list = document.getElementById('examples')
-examples(element.dataset.catalogueGraph).forEach(example => {
-  const item = document.createElement('li')
-  const button = document.createElement('button')
-  button.type = 'button'
-  button.textContent = example.name
-  button.addEventListener('click', () => yasgui.getTab().yasqe.setValue(example.query.join('\n')))
-  item.appendChild(button)
-  list.appendChild(item)
-})
+if (element) startSparql(element, document.getElementById('examples'), Yasgui)
