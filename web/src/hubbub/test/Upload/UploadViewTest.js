@@ -531,7 +531,8 @@ describe('UploadView', function () {
       request.respondWith(testResponses.success)
       expect(request.method).toBe('POST')
       expect(request.url).toBe(`/upload/${id}/eidchub/validate`)
-      expect(view.collectionSuccess).toHaveBeenCalledWith(event, undefined, 'datastore', 'eidchub', collection)
+      // No done callback when validating one store on its own, so the button is set as before
+      expect(view.collectionSuccess).toHaveBeenCalledWith(event, undefined, 'datastore', 'eidchub', collection, undefined, undefined)
     })
 
     it('getServerState', function () {

@@ -22,6 +22,10 @@ export const fakeServer = {
   install () { jasmine.Ajax.install() },
   uninstall () { jasmine.Ajax.uninstall() },
   lastRequest () { return caught(jasmine.Ajax.requests.mostRecent()) },
+  // Every request caught, oldest first, for answering one that isn't the latest
+  requests () {
+    return Array.from({ length: jasmine.Ajax.requests.count() }, (_, i) => caught(jasmine.Ajax.requests.at(i)))
+  },
   requestCount () { return jasmine.Ajax.requests.count() }
 }
 

@@ -391,7 +391,13 @@ export default Backbone.View.extend({
         url: `${self.model.url()}/${model.get('datastore')}?path=${encodeURIComponent(model.get('path'))}`,
         method: 'GET',
         success: (response) => {
-          model.update(response.data[0])
+          const file = response?.data?.[0]
+          // Gone from Hubbub since (deleted, or moved by someone else): say the action didn't land
+          if (!file) {
+            self.showError($dropdown)
+            return
+          }
+          model.update(file)
           if (callback) callback(model)
         },
         error: () => self.showError($dropdown)
