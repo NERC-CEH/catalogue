@@ -12,6 +12,9 @@ function caught (request) {
     get url () { return request.url },
     get method () { return request.method },
     get status () { return request.status },
+    // What was sent: the body as a string, and the headers by name
+    get body () { return request.params },
+    get headers () { return request.requestHeaders },
     // response: { status, contentType, responseText, responseHeaders }
     respondWith (response) { request.respondWith(response) }
   }

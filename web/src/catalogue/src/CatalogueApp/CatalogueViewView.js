@@ -1,3 +1,4 @@
+import _ from 'underscore'
 import SingleView from '../../../editor/src/SingleView'
 import { EditorView } from '../../../editor/src/index'
 
@@ -22,9 +23,11 @@ const CheckboxListView = SingleView.extend({
     } else {
       const checkboxes = catalogues.map(cat => {
         const checked = current.includes(cat.id) ? 'checked' : ''
+        // Written as HTML, so a catalogue's id and title are escaped
+        const id = _.escape(cat.id)
         return `<div class="form-check">
-          <input class="form-check-input" type="checkbox" value="${cat.id}" id="cat-view-${cat.id}" ${checked}>
-          <label class="form-check-label" for="cat-view-${cat.id}">${cat.title}</label>
+          <input class="form-check-input" type="checkbox" value="${id}" id="cat-view-${id}" ${checked}>
+          <label class="form-check-label" for="cat-view-${id}">${_.escape(cat.title)}</label>
         </div>`
       }).join('')
       this.$('.dataentry').html(checkboxes)

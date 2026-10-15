@@ -2,6 +2,7 @@ import $ from 'jquery'
 import _ from 'underscore'
 import Backbone from 'backbone'
 import L from 'leaflet'
+import '../../../map/markerIcons'
 import 'leaflet.markercluster/dist/leaflet.markercluster.js'
 
 export default Backbone.View.extend({
