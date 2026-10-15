@@ -74,19 +74,18 @@ export default ObjectInputView.extend({
       this.drawnItems.addLayer(this.geometryString)
 
       if (this.model.hasGeometry()) {
-       requestAnimationFrame(() => {
-          this.map.invalidateSize()
+        requestAnimationFrame(() => {
+            this.map.invalidateSize()
 
-          const bounds = this.drawnItems.getBounds()
+            const bounds = this.drawnItems.getBounds()
 
-          if (bounds.isValid()) {
-            this.map.fitBounds(bounds, {
-              padding: [20, 20]
-            })
-          }
-        })
+            if (bounds.isValid()) {
+              this.map.fitBounds(bounds, {
+                padding: [20, 20]
+              })
+            }
+          })
       }
-
     } else {
       this.drawButtons = true
     }
