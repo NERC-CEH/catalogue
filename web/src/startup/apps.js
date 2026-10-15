@@ -204,6 +204,8 @@ export function initEditor ($controls) {
       }
     })
   })
+  // The editor's code, so that start-up reports it if it fails to load
+  return lookup
 }
 
 export function initServiceAgreement ($controls) {
@@ -352,19 +354,38 @@ export const APPS = [
   { selector: '.clone-control', start: initClone }
 ]
 
-// Starts each app whose element is on the page, then Backbone history. An app that fails to load is
-// reported, and doesn't stop history starting for the others.
+// Starts each app whose element is on the page, then Backbone history once the apps with routers have
+// started. An app that fails to load is reported by name, and doesn't stop history starting for the
+// others. Resolves, once every app has finished starting, to which of those on the page started and
+// which failed: { started: ['#search'], failed: [{ selector: '#metrics-report', reason }] }. An app that
+// loads its code only when clicked (the catalogue controls, clone) counts as started once its handler
+// is in place; a failure on a later click isn't reported here.
 export function startApps (root = document, apps = APPS) {
-  const routers = []
+  const starting = []
   for (const { selector, start, router } of apps) {
     const $found = $(selector, root)
     if (!$found.length) continue
-    const started = start($found)
-    if (router) routers.push(started)
+    let started
+    try {
+      started = Promise.resolve(start($found))
+    } catch (error) {
+      // An app that throws as it starts is reported like one whose code failed to load
+      started = Promise.reject(error)
+    }
+    starting.push({ selector, router, started })
   }
   stickyHeader(root)
-  return Promise.allSettled(routers).then(results => {
-    results.filter(result => result.status === 'rejected').forEach(result => console.error(result.reason))
-    Backbone.history.start()
+
+  const routers = starting.filter(app => app.router).map(app => app.started)
+  const history = Promise.allSettled(routers).then(() => Backbone.history.start())
+  const report = Promise.allSettled(starting.map(app => app.started)).then(results => {
+    const failed = results.flatMap((result, i) =>
+      result.status === 'rejected' ? [{ selector: starting[i].selector, reason: result.reason }] : [])
+    failed.forEach(({ selector, reason }) => console.error(`${selector} failed to start:`, reason))
+    return {
+      started: starting.map(app => app.selector).filter(selector => !failed.some(each => each.selector === selector)),
+      failed
+    }
   })
+  return Promise.all([history, report]).then(([, result]) => result)
 }
