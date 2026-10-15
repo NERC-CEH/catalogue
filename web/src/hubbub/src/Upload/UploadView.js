@@ -210,14 +210,17 @@ export default Backbone.View.extend({
   renderTotalFiles (datastore) {
     const $totalFiles = this.$(`.document-upload-section.${datastore} .total-files`)
     const totalFiles = this.model.get(`${datastore}TotalFiles`)
-    const fileText = totalFiles <= 1 ? 'file' : 'files'
+    const fileText = totalFiles === 1 ? 'file' : 'files'
     $totalFiles.text(`${Number(totalFiles).toLocaleString()} ${fileText}`)
   },
 
   showEmptyStorage (collection, $container, title) {
     const store = (title === 'data') ? 'dropbox' : title
     if (collection.length === 0 && this.checkLastPage(store)) {
-      $container.append(`<h3 class="no-documents text-center">NO FILES IN ${title.toUpperCase()}</h3>`)
+      // Once: the page renders this message for an empty store, which then loads empty too
+      if (!$container.find('.no-documents').length) {
+        $container.append(`<h3 class="no-documents text-center">NO FILES IN ${title.toUpperCase()}</h3>`)
+      }
     } else {
       $container.find('.no-documents').remove()
     }
@@ -307,16 +310,17 @@ export default Backbone.View.extend({
       type: 'POST',
       success () {
         that.collectionSuccess(event, currentClasses, 'datastore', 'eidchub', that.datastore, () => {
-          that.dropboxView.dataTable.clear().draw()
+          // No table when the arrivals were empty as the page loaded
+          that.dropboxView?.dataTable.clear().draw()
           that.model.set({
-            dropboxCurrentPage: 0,
+            dropboxPage: 0,
             dropboxLastPage: 0,
             dropboxTotalFiles: 0
           })
           if (that.dropbox.length > 0) {
             that.dropbox.set([])
           } else {
-            that.showEmptyStorage(that.dropbox, that.$dropbox, 'dropbox')
+            that.showEmptyStorage(that.dropbox, that.$dropbox, 'data')
           }
         })
       },
@@ -378,21 +382,37 @@ export default Backbone.View.extend({
     })
   },
 
+  // One button for three stores, so it shows the outcome once all three have answered: each used to
+  // set it as it finished, and a store finishing last hid another's failure
   validateAll (event) {
     const currentClasses = this.showInProgress(event)
-    this.validate(event, 'dropbox', 'dropbox', this.dropbox, currentClasses)
-    this.validate(event, 'metadata', 'supporting-documents', this.metadata, currentClasses)
-    this.validate(event, 'datastore', 'eidchub', this.datastore, currentClasses)
+    const stores = [
+      ['dropbox', 'dropbox', this.dropbox],
+      ['metadata', 'supporting-documents', this.metadata],
+      ['datastore', 'eidchub', this.datastore]
+    ]
+    let waiting = stores.length
+    let failed = false
+    const done = succeeded => {
+      failed = failed || !succeeded
+      if (--waiting > 0) return
+      failed ? this.showInError(event) : this.showNormal(event, currentClasses)
+    }
+    stores.forEach(([name, datastore, collection]) => this.validate(event, name, datastore, collection, currentClasses, done))
   },
 
-  validate (event, name, datastore, collection, currentClasses) {
+  // done, if given, is told whether the store validated and refreshed, in place of the button being set
+  validate (event, name, datastore, collection, currentClasses, done) {
     $.ajax({
       url: `${this.model.url()}/${datastore}/validate`,
       type: 'POST',
-      success: () => this.collectionSuccess(event, currentClasses, name, datastore, collection),
+      success: () => this.collectionSuccess(event, currentClasses, name, datastore, collection, undefined, done),
       error: (xhr) => {
         // 400: nothing in that store to validate. Stop the spinner rather than leave it running.
-        if (xhr.status === 400) {
+        const succeeded = xhr.status === 400
+        if (done) {
+          done(succeeded)
+        } else if (succeeded) {
           this.showNormal(event, currentClasses)
         } else {
           this.showInError(event)
@@ -401,7 +421,7 @@ export default Backbone.View.extend({
     })
   },
 
-  collectionSuccess (event, currentClasses, name, datastore, collection, callback) {
+  collectionSuccess (event, currentClasses, name, datastore, collection, callback, done) {
     setTimeout(
       () => this.getServerState(
         name,
@@ -409,9 +429,9 @@ export default Backbone.View.extend({
         collection,
         () => {
           if (callback) callback()
-          this.showNormal(event, currentClasses)
+          done ? done(true) : this.showNormal(event, currentClasses)
         },
-        () => this.showInError(event)
+        () => done ? done(false) : this.showInError(event)
       ),
       7000
     )
