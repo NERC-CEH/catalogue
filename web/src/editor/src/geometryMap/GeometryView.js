@@ -13,9 +13,13 @@ export default ObjectInputView.extend({
 
   initialize (options) {
     this.template = template
+    this.resizeFrame = null
+
     ObjectInputView.prototype.initialize.apply(this, arguments)
+
     this.render()
     this.viewMap()
+
     this.listenTo(this.model, 'change:geometryString', function (model, value) {
       this.$('#box').val(value)
     })
@@ -28,15 +32,19 @@ export default ObjectInputView.extend({
 
   handleInput () {
     const typed = this.$('#box').val().trim()
+
     if (!typed) {
       this.model.clearGeometry()
       this.drawnItems.clearLayers()
       return
     }
+
     this.model.setGeometry(typed)
+
     // Redrawn only from GeoJSON that reads: the model's validation says what is wrong with the rest,
     // and the shape stays as it was meanwhile
     if (!this.model.isValid()) return
+
     this.drawnItems.clearLayers()
     this.drawnItems.addLayer(this.getGeometry())
   },
@@ -65,16 +73,25 @@ export default ObjectInputView.extend({
   },
 
   createMap () {
-    this.map = new L.Map(this.$('.map')[0], { center: new L.LatLng(51.513, -0.09), zoom: 4 })
+    this.map = new L.Map(this.$('.map')[0], {
+      center: new L.LatLng(51.513, -0.09),
+      zoom: 4
+    })
 
     this.drawnItems = L.featureGroup()
+
     if (this.model.getGeometry()) {
       this.geometryString = this.getGeometry()
       this.drawButtons = false
       this.drawnItems.addLayer(this.geometryString)
 
       if (this.model.hasGeometry()) {
-        requestAnimationFrame(() => {
+        this.resizeFrame = requestAnimationFrame(() => {
+          // Map may have been removed before this callback runs
+          if (!this.map || !this.map._mapPane) {
+            return
+          }
+
           this.map.invalidateSize()
 
           const bounds = this.drawnItems.getBounds()
@@ -89,7 +106,9 @@ export default ObjectInputView.extend({
     } else {
       this.drawButtons = true
     }
+
     this.drawControl = this.createToolbar()
+
     this.drawnItems.addTo(this.map)
 
     const baseMaps = {
@@ -97,9 +116,12 @@ export default ObjectInputView.extend({
         maxZoom: 18,
         attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
       }),
-      Satellite: L.tileLayer('https://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
-        attribution: 'google'
-      })
+      Satellite: L.tileLayer(
+        'https://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}',
+        {
+          attribution: 'google'
+        }
+      )
     }
 
     L.control.layers(baseMaps, { drawlayer: this.drawnItems }, {
@@ -112,24 +134,30 @@ export default ObjectInputView.extend({
 
     // Five decimal places is roughly half a metre; four would be about six.
     const rounding = function (key, val) {
-      if (typeof val === 'number') { return Number(val.toFixed(5)) }
+      if (typeof val === 'number') {
+        return Number(val.toFixed(5))
+      }
       return val
     }
 
     this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
       const layer = event.layer
       const geoJson = JSON.stringify(layer.toGeoJSON(), rounding)
+
       this.model.setGeometry(geoJson)
       this.drawButtons = false
+
       this.map.removeControl(this.drawControl)
       this.drawControl = this.createToolbar()
       this.map.addControl(this.drawControl)
+
       this.drawnItems.addLayer(layer)
     })
 
     this.listenTo(this.map, L.Draw.Event.DELETED, function () {
       this.model.clearGeometry()
       this.drawButtons = true
+
       this.map.removeControl(this.drawControl)
       this.drawControl = this.createToolbar()
       this.map.addControl(this.drawControl)
@@ -158,10 +186,16 @@ export default ObjectInputView.extend({
   },
 
   viewMap () {
+    if (this.resizeFrame) {
+      cancelAnimationFrame(this.resizeFrame)
+      this.resizeFrame = null
+    }
+
     if (this.map) {
       this.map.off()
       this.map.remove()
     }
+
     this.createMap()
   },
 
