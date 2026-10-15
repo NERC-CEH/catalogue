@@ -73,12 +73,20 @@ export default ObjectInputView.extend({
       this.drawButtons = false
       this.drawnItems.addLayer(this.geometryString)
 
-      // Zoom to polygon if one was provided
       if (this.model.hasGeometry()) {
-        if (this.model.getGeometry().toLowerCase().includes('polygon')) {
-          this.map.fitBounds(this.drawnItems.getBounds())
-        }
+       requestAnimationFrame(() => {
+          this.map.invalidateSize()
+
+          const bounds = this.drawnItems.getBounds()
+
+          if (bounds.isValid()) {
+            this.map.fitBounds(bounds, {
+              padding: [20, 20]
+            })
+          }
+        })
       }
+
     } else {
       this.drawButtons = true
     }
