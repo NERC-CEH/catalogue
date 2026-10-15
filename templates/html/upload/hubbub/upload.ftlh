@@ -7,12 +7,12 @@
         <#if !hasDataTransfer>
             <@noDataTransfer/>
         <#elseif isScheduled>
-            <@documentUploadSection "Upload" "upload" "file-upload">
+            <@documentUploadSection title="Upload" name="upload" icon="file-upload">
                 <@dropZoneContainer/>
             </@documentUploadSection>
         </#if>
 
-        <@documentUploadSection "Arrivals" "dropbox" "archive">
+        <@documentUploadSection title="Arrivals" name="dropbox" icon="archive">
             <@loadingContainer "data"/>
             <@loadMoreRow "data"/>
 
@@ -45,7 +45,7 @@
                 <@loadMoreRow "metadata"/>
             </@documentUploadSection>
 
-            <@documentUploadSection "Datastore" "datastore" "lock">
+            <@documentUploadSection title="Datastore" name="datastore" icon="lock">
                 <@loadingContainer "datastore"/>
                 <@loadMoreRow "datastore"/>
             </@documentUploadSection>
