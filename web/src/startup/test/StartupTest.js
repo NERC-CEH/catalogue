@@ -45,11 +45,21 @@ describe('Page start-up', () => {
       const editor = spy('editor')
       const metrics = spy('metrics')
 
-      await startApps(document, [app('#search', search, true), app('.edit-control', editor), app('#metrics-report', metrics, true)])
+      const report = await startApps(document, [app('#search', search, true), app('.edit-control', editor), app('#metrics-report', metrics, true)])
 
       expect(search).toHaveBeenCalledTimes(1)
       expect(editor.calls.argsFor(0)[0].length).toBe(2)
       expect(metrics).not.toHaveBeenCalled()
+      expect(report).toEqual({ started: ['#search', '.edit-control'], failed: [] })
+    })
+
+    it('starts each app as the page loads, not a turn later', () => {
+      pageWith('<button class="nav-toggle"></button>')
+      const toggle = spy('toggle')
+
+      startApps(document, [app('.nav-toggle', toggle)])
+
+      expect(toggle).toHaveBeenCalled()
     })
 
     it('starts history only once the apps with routers have started', async () => {
@@ -65,13 +75,39 @@ describe('Page start-up', () => {
       expect(Backbone.history.start).toHaveBeenCalled()
     })
 
-    it('reports an app that failed to load, and starts history for the others', async () => {
-      pageWith('<div id="search"></div>')
+    it('doesn\'t hold history back for an app without a router', async () => {
+      pageWith('<div id="search"></div><a class="edit-control"></a>')
+      let finish
+      const started = startApps(document, [app('#search', spy('search'), true), app('.edit-control', () => new Promise(resolve => { finish = resolve }))])
+      await settle()
+
+      expect(Backbone.history.start).toHaveBeenCalled()
+      finish()
+      expect(await started).toEqual({ started: ['#search', '.edit-control'], failed: [] })
+    })
+
+    it('reports by name an app that failed to load, and starts history for the others', async () => {
+      pageWith('<div id="search"></div><div id="metrics-report"></div>')
       spyOn(console, 'error')
+      const error = new Error('chunk failed')
 
-      await startApps(document, [app('#search', () => Promise.reject(new Error('chunk failed')), true)])
+      const report = await startApps(document, [app('#search', spy('search'), true), app('#metrics-report', () => Promise.reject(error), true)])
 
-      expect(console.error).toHaveBeenCalledWith(jasmine.objectContaining({ message: 'chunk failed' }))
+      expect(report).toEqual({ started: ['#search'], failed: [{ selector: '#metrics-report', reason: error }] })
+      expect(console.error).toHaveBeenCalledWith('#metrics-report failed to start:', error)
+      expect(Backbone.history.start).toHaveBeenCalled()
+    })
+
+    it('reports an app that throws as it starts, and still starts the rest', async () => {
+      pageWith('<div id="search"></div><button class="nav-toggle"></button>')
+      spyOn(console, 'error')
+      const error = new TypeError('no element')
+      const search = spy('search')
+
+      const report = await startApps(document, [app('.nav-toggle', () => { throw error }), app('#search', search, true)])
+
+      expect(search).toHaveBeenCalled()
+      expect(report).toEqual({ started: ['#search'], failed: [{ selector: '.nav-toggle', reason: error }] })
       expect(Backbone.history.start).toHaveBeenCalled()
     })
 
@@ -174,6 +210,18 @@ describe('Page start-up', () => {
       expect(View.made[0][0].el).toBe('#metadata')
       expect(View.made[0][0].model.setRevision).toHaveBeenCalledWith('r7')
       expect($('#metadata').hasClass('missingResourceType')).toBeFalse()
+    })
+
+    it('is reported by start-up when its code fails to load, though nothing waits on it', async () => {
+      pageWith('<a class="edit-control" data-document-type="GEMINI_DOCUMENT">Edit</a>')
+      spyOn(console, 'error')
+      const error = new Error('Loading chunk editor failed')
+      spyOn(load, 'editor').and.rejectWith(error)
+
+      const report = await startApps(document)
+
+      expect(report.failed).toEqual([{ selector: '.edit-control', reason: error }])
+      expect(Backbone.history.start).toHaveBeenCalled()
     })
   })
 
