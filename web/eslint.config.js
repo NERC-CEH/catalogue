@@ -25,7 +25,7 @@ module.exports = [
   },
   {
     // The build's own scripts run in Node
-    files: ['*.js', 'scripts/**/*.js'],
+    files: ['*.js', '*.mjs', 'scripts/**/*.js', 'scripts/**/*.mjs'],
     languageOptions: { globals: globals.node }
   }
 ]

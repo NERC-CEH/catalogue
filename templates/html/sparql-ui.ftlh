@@ -6,7 +6,7 @@
     <#if file?ends_with(".css")>
   <link rel="stylesheet" type="text/css" href="${file}">
     <#else>
-  <script defer src="${file}"></script>
+  <script type="module" src="${file}"></script>
     </#if>
   </#list>
   <title>EIDC - SPARQL Query</title>

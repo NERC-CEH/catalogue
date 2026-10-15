@@ -9,7 +9,7 @@
 ### Running the application
 
 The recommended way to run the application is with Docker Compose, which starts all services
-including nginx, Solr, the Spring Boot application, and the webpack watcher:
+including nginx, Solr, the Spring Boot application, and the Vite build watcher:
 
 ```bash
 # First run, or after changing the Dockerfile or entrypoint script:
@@ -186,7 +186,7 @@ Check that annotation processing is enabled in `settings -> Build, Execution, De
 
 ### Developing JavaScript and CSS
 
-The `web` service in Docker Compose runs the webpack watcher, which rebuilds both the JavaScript and the stylesheets, automatically.
+The `web` service in Docker Compose runs the Vite build watcher (`npm run watch`), which rebuilds both the JavaScript and the stylesheets, automatically.
 Any changes to `web/src/` or `web/scss/` are rebuilt within a few seconds — refresh the
 browser to see the result; no container restart is needed.
 
@@ -261,10 +261,12 @@ Currently it supports two databases:
 - PostgreSQL (enabled by setting `metrics.database.engine=postgres`; requires the docker compose profile: run `docker compose --profile metrics up` for local dev).
 
 ### Building the JavaScript and stylesheets
-webpack builds both into `dist/`, laid out as it is served under `/static`: `scripts/`, `css/` and
-`assets/` (the images and fonts the stylesheets use). Every file name carries a hash of its content,
-so browsers may cache them for a year; `dist/manifest.json` lists each entry's files, and the
-templates find them through it (`assets.files("main")`). In the web directory run
+Vite builds both (`web/vite.config.mjs`) into `dist/`, laid out as it is served under `/static`:
+`scripts/`, `css/` and `assets/` (the images and fonts the stylesheets use). Every file name carries a
+hash of its content, so browsers may cache them for a year; `dist/manifest.json` lists each entry's
+files, and the templates find them through it (`assets.files("main")`). The scripts are ES modules,
+loaded with `<script type="module">`. The specs (`vitest.config.mjs`) share the build's plugins, so
+they run the code as the pages do. In the web directory run
 
     npm run build-dev   # one-off development build
     npm run watch       # watch and rebuild on changes (docker compose runs this)
