@@ -203,11 +203,12 @@ describe('Editor fields', () => {
 
   describe('a date field', () => {
     [
-      [DatasetReferenceDateView, ['creationDate', 'publicationDate', 'unavailableDate', 'releasedDate', 'supersededDate']],
-      [DataTypeProvenanceView, ['creationDate', 'modificationDate']]
-    ].forEach(([View, names]) => {
+      ['reference dates', DatasetReferenceDateView, ['creationDate', 'publicationDate', 'unavailableDate', 'releasedDate', 'supersededDate']],
+      ['provenance', DataTypeProvenanceView, ['creationDate', 'modificationDate']]
+    ].forEach(([fields, View, names]) => {
       names.forEach(name => {
-        it(`never writes undefined while typing (${name})`, () => {
+        // Named by the fields too: both have a creationDate, and a report merges specs of one name
+        it(`never writes undefined while typing (${fields}: ${name})`, () => {
           const model = new MultipleDate()
           const view = new View({ model })
 
