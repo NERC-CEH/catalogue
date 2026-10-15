@@ -1,5 +1,6 @@
 import $ from 'jquery'
 import L from 'leaflet'
+import { Tab } from 'bootstrap'
 import SearchApp from '../src/SearchApp'
 import SearchAppView from '../src/SearchAppView'
 import SearchRouter from '../src/SearchRouter'
@@ -68,8 +69,8 @@ describe('The search page', () => {
   const requested = () => new URL(fakeServer.lastRequest().url, window.location.href).searchParams
   const searchRuns = () => app.flushSearch()
   const wait = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))
-  // Bootstrap's tab plugin isn't loaded here: this is the event it sends once a tab is showing
-  const showMapTab = () => $('.map-tab a')[0].dispatchEvent(new Event('shown.bs.tab', { bubbles: true }))
+  // The jQuery event Bootstrap raises once a tab is showing, the page's jQuery being global
+  const showMapTab = () => $('.map-tab a').trigger('shown.bs.tab')
   const shown = () => $('.results .result__title').map((i, title) => title.textContent.trim()).get()
 
   // As initSearch does, with the address the visitor arrived at
@@ -288,11 +289,39 @@ describe('The search page', () => {
       expect(invalidateSize).toHaveBeenCalled()
     })
 
+    // Bootstrap itself, with the page's jQuery global as index.js makes it
+    describe('shown by Bootstrap', () => {
+      let previous
+
+      beforeEach(() => { previous = window.jQuery }) // eslint-disable-line no-restricted-properties
+      afterEach(() => { window.jQuery = previous }) // eslint-disable-line no-restricted-properties
+
+      it('is made when Bootstrap shows its tab', () => {
+        window.jQuery = $ // eslint-disable-line no-restricted-properties
+        open()
+
+        new Tab($('.map-tab a')[0]).show()
+
+        expect($('#spatial-tab').hasClass('active')).toBeTrue()
+        expect(view.spatialFilterView.map).toBeDefined()
+      })
+
+      it('isn\'t made without the global, as Bootstrap then raises only the native event', () => {
+        window.jQuery = undefined // eslint-disable-line no-restricted-properties
+        open()
+
+        new Tab($('.map-tab a')[0]).show()
+
+        expect($('#spatial-tab').hasClass('active')).toBeTrue()
+        expect(view.spatialFilterView.map).toBeUndefined()
+      })
+    })
+
     it('isn\'t made for another tab', () => {
       open()
 
       $('#facet-tab').closest('.tab-content').before('<a id="other" href="#facet-tab"></a>')
-      $('#other')[0].dispatchEvent(new Event('shown.bs.tab', { bubbles: true }))
+      $('#other').trigger('shown.bs.tab')
 
       expect(view.spatialFilterView.map).toBeUndefined()
     })
