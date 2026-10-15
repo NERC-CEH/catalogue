@@ -12,6 +12,38 @@ export function shareUrl (href) {
   return url.toString()
 }
 
+// Some mail programs refuse a mailto: link much longer than this
+export const MAILTO_LIMIT = 2000
+// A blank line between entries; a mailto: body breaks lines as CRLF (RFC 6068)
+const BREAK = '\r\n\r\n'
+
+/*
+ * The email that shares a search: the catalogue and today's date in the subject, the search's
+ * address, then each result on the page by title and address, in order. Results that would take the
+ * link past MAILTO_LIMIT are left out and counted instead, the search's address showing them all.
+ */
+export function shareEmail ({ catalogue, href, results = [], date = new Date(), limit = MAILTO_LIMIT }) {
+  const day = date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+  const subject = `${catalogue} search results, ${day}`
+  const origin = new URL(href).origin
+  const head = `Search: ${shareUrl(href)}`
+  const entries = results.map((result, i) => {
+    // A server-rendered title is read from the page, line breaks and all
+    const title = String(result.title || result.identifier).replace(/\s+/g, ' ').trim()
+    return `${i + 1}. ${title}\r\n   ${origin}/documents/${encodeURIComponent(result.identifier)}`
+  })
+  const mailto = body => `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+
+  let shown = entries.length
+  let link = mailto([head, ...entries].join(BREAK))
+  while (link.length > limit && shown > 0) {
+    shown--
+    const more = `…and ${entries.length - shown} more: see the search link`
+    link = mailto([head, ...entries.slice(0, shown), more].join(BREAK))
+  }
+  return link
+}
+
 export default Backbone.View.extend({
 
   events: {
@@ -119,14 +151,21 @@ export default Backbone.View.extend({
       })
     }
 
-    this.initSearchShareIcon(this.$('#searchShareIcon'))
+    this.initSearchShare(this.$('#searchShare'))
 
     return this
   },
 
-  initSearchShareIcon (el) {
-    el.click(() => {
-      window.location.href = 'mailto:?body=' + encodeURIComponent(shareUrl(window.location.href))
-    })
+  initSearchShare (el) {
+    el.click(() => this.openMail(shareEmail({
+      catalogue: $('meta[name="og.site_name"]').attr('content') || String($('html').data('catalogue') || '').toUpperCase(),
+      href: window.location.href,
+      results: this.model.getResults()?.get('results')
+    })))
+  },
+
+  // Opens the visitor's mail program
+  openMail (link) {
+    window.location.href = link
   }
 })

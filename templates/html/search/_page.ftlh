@@ -13,7 +13,9 @@
       <span id="num-records" class="recordCount">
         Showing <span class="recordCount-start">${startItem}</span> - <span class="recordCount-end">${endItem}</span>  of <span class="recordCount-total">${numFound}</span> records
       </span>
-      <i id="searchShareIcon" class="ms-3 fa-solid fa-fw fa-share-square mx-1" data-bs-toggle="tooltip" data-bs-placement="right" role="button"  title="Email search results"></i>
+      <button type="button" id="searchShare" class="btn btn-sm btn-outline-secondary ms-3 search-share">
+        <i class="fa-regular fa-envelope" aria-hidden="true"></i> Email results
+      </button>
     </div>
     <div class="small">
       <label for="sort-search">Sort by</label>

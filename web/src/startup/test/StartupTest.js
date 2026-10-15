@@ -267,11 +267,11 @@ describe('Page start-up', () => {
 
   describe('the apps that set up routers', () => {
     it('search: the app, its view, facet search, share icon, router and messages', async () => {
-      pageWith('<span id="searchShareIcon"></span>')
+      pageWith('<span id="searchShare"></span>')
       const createFacetSearch = spy('createFacetSearch')
-      const initSearchShareIcon = spy('initSearchShareIcon')
+      const initSearchShare = spy('initSearchShare')
       const SearchApp = recording()
-      const SearchAppView = recording({ facetsPanelView: { createFacetSearch }, searchResultsView: { initSearchShareIcon } })
+      const SearchAppView = recording({ facetsPanelView: { createFacetSearch }, searchResultsView: { initSearchShare } })
       const SearchRouter = recording()
       const MessageView = recording()
       spyOn(load, 'search').and.resolveTo({ SearchApp, SearchAppView, SearchRouter })
@@ -282,7 +282,7 @@ describe('Page start-up', () => {
       const app = SearchAppView.made[0][0].model
       expect(app).toEqual(jasmine.any(SearchApp))
       expect(createFacetSearch).toHaveBeenCalledWith(app)
-      expect(initSearchShareIcon.calls.argsFor(0)[0][0]).toBe($('#searchShareIcon')[0])
+      expect(initSearchShare.calls.argsFor(0)[0][0]).toBe($('#searchShare')[0])
       expect(SearchRouter.made[0][0]).toEqual({ model: app, location: window.location })
       expect(MessageView.made[0][0].model).toBe(app)
     })
