@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import {
@@ -90,7 +91,7 @@ describe('The editor\'s look-up boxes', () => {
           fakeServer.lastRequest().respondWith({ status: 503, contentType: 'text/plain', responseText: '' })
 
           expect(offered($input)).toEqual([])
-          expect($input.hasClass('ui-autocomplete-loading')).toBeFalse()
+          expect($input.hasClass('ui-autocomplete-loading')).toBe(false)
         })
       })
     })
@@ -136,9 +137,9 @@ describe('The editor\'s look-up boxes', () => {
       expect(model.get('value')).toBe('soil')
       expect(model.get('uri')).toBe('http://www.eionet.europa.eu/gemet/concept/7843')
       expect(view.$('.value').val()).toBe('soil')
-      expect(view.$('.value').prop('disabled')).toBeTrue()
-      expect(view.$('.uri').prop('disabled')).toBeTrue()
-      expect(view.$('.keywordPicker').hasClass('d-none')).toBeTrue()
+      expect(view.$('.value').prop('disabled')).toBe(true)
+      expect(view.$('.uri').prop('disabled')).toBe(true)
+      expect(view.$('.keywordPicker').hasClass('d-none')).toBe(true)
     })
 
     it('opens a saved keyword locked, without the search', () => {
@@ -147,8 +148,8 @@ describe('The editor\'s look-up boxes', () => {
         vocabs: { eidc: ['gemet'] }
       }))
 
-      expect(saved.$('.keywordPicker').hasClass('d-none')).toBeTrue()
-      expect(saved.$('.uri').prop('disabled')).toBeTrue()
+      expect(saved.$('.keywordPicker').hasClass('d-none')).toBe(true)
+      expect(saved.$('.uri').prop('disabled')).toBe(true)
     })
   })
 
@@ -217,7 +218,7 @@ describe('The editor\'s look-up boxes', () => {
     it('records which contents it has, from tick boxes ticked as saved', () => {
       const box = value => view.$(`input[type=checkbox][value=${value}]`)
       expect(view.$('input[type=checkbox]').length).toBe(9)
-      expect(box('qc').prop('checked')).toBeTrue()
+      expect(box('qc').prop('checked')).toBe(true)
 
       box('dataStructure').prop('checked', true).trigger('change')
       box('qc').prop('checked', false).trigger('change')

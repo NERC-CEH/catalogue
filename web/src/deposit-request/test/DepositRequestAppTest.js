@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest'
 import DepositRequestApp from '../src/model/DepositRequestApp'
 
 describe('DepositRequestApp.validate', () => {
@@ -35,7 +36,7 @@ describe('DepositRequestApp.validate', () => {
 
   it('flags every required field on an empty default model', () => {
     const errors = model.validate(model.defaults)
-    expect(errorNames(errors)).toEqual(jasmine.arrayContaining([
+    expect(errorNames(errors)).toEqual(expect.arrayContaining([
       'name', 'email', 'affiliation',
       'checklist1', 'checklist2', 'checklist3', 'checklist4',
       'funder', 'dataResources'

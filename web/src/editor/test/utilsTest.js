@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { cleanText } from '../src/utils/textUtils'
 import { formatDateForInput } from '../src/utils/dateUtils'
 

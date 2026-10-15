@@ -1,3 +1,4 @@
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import { GeminiEditorView, LinkEditorView } from '../src/editors'
 import { EditorMetadata } from '../src'
@@ -61,11 +62,11 @@ describe('Opening a saved record in the editor', () => {
   })
 
   it('does not search a null catalogue for documents to link to', () => {
-    spyOn($, 'getJSON').and.returnValue($.Deferred().promise())
+    vi.spyOn($, 'getJSON').mockReturnValue($.Deferred().promise())
 
     new LinkEditorView({ model: new EditorMetadata({ type: 'link' }) }) // eslint-disable-line no-new
 
-    const urls = $.getJSON.calls.allArgs().map(args => args[0])
+    const urls = $.getJSON.mock.calls.map(args => args[0])
     expect(urls.filter(url => url.startsWith('/null/'))).toEqual([])
   })
 })

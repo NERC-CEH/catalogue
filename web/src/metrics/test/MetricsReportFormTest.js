@@ -1,7 +1,7 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import MetricsReportApp from '../src/MetricsReportApp'
 import MetricsReportForm from '../src/MetricsReportForm'
-import { spyObject } from '../../test/support'
 
 describe('MetricsReportForm', () => {
   let model
@@ -16,7 +16,7 @@ describe('MetricsReportForm', () => {
         <input type='checkbox' name='recordType' value='service'>
       </form>`)
     model = new MetricsReportApp()
-    spyOn(model, 'fetch') // onSubmit sets fields -> change -> doSearch -> fetch
+    vi.spyOn(model, 'fetch').mockImplementation(() => {}) // onSubmit sets fields -> change -> doSearch -> fetch
     view = new MetricsReportForm({ el: '#mf', model })
   })
 
@@ -25,23 +25,23 @@ describe('MetricsReportForm', () => {
   })
 
   it('prevents the default submit', () => {
-    const event = spyObject('event', ['preventDefault'])
+    const event = { preventDefault: vi.fn() }
     view.onSubmit(event)
     expect(event.preventDefault).toHaveBeenCalled()
   })
 
   it('copies recognised search fields from the form onto the model', () => {
-    view.onSubmit(spyObject('event', ['preventDefault']))
+    view.onSubmit({ preventDefault: vi.fn() })
     expect(model.get('startDate')).toBe('2020-01-01')
   })
 
   it('collects only the checked recordType values', () => {
-    view.onSubmit(spyObject('event', ['preventDefault']))
+    view.onSubmit({ preventDefault: vi.fn() })
     expect(model.get('recordType')).toEqual(['dataset'])
   })
 
   it('ignores form inputs that are not search fields', () => {
-    view.onSubmit(spyObject('event', ['preventDefault']))
+    view.onSubmit({ preventDefault: vi.fn() })
     expect(model.get('notASearchField')).toBeUndefined()
   })
 })

@@ -1,7 +1,7 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import { SearchFormView } from '../src/views'
 import SearchApp from '../src/SearchApp'
-import { spyObject } from '../../test/support'
 
 describe('Test SearchFormView', () => {
   let view = null
@@ -46,13 +46,13 @@ describe('Test SearchFormView', () => {
   })
 
   it('prevents the default form submission', () => {
-    const e = spyObject('event', ['preventDefault'])
+    const e = { preventDefault: vi.fn() }
     view.handleSubmit(e)
     expect(e.preventDefault).toHaveBeenCalled()
   })
 
   it('clears results and pushes the new term to the model when typing changes it', () => {
-    spyOn(model, 'clearResults')
+    vi.spyOn(model, 'clearResults').mockImplementation(() => {})
 
     view.handleTyping()
 
@@ -62,7 +62,7 @@ describe('Test SearchFormView', () => {
 
   it('does nothing when the displayed term already matches the model', () => {
     model.set('term', 'rivers')
-    spyOn(model, 'clearResults')
+    vi.spyOn(model, 'clearResults').mockImplementation(() => {})
 
     view.handleTyping()
 
@@ -132,7 +132,7 @@ describe('Test SearchFormView', () => {
     })
 
     it('leaves the already rendered results alone while typing', () => {
-      spyOn(model, 'clearResults')
+      vi.spyOn(model, 'clearResults').mockImplementation(() => {})
 
       view.handleTyping()
 
@@ -148,7 +148,7 @@ describe('Test SearchFormView', () => {
     it('clears the pending flag once the query is submitted', () => {
       view.handleTyping()
 
-      view.handleSubmit(spyObject('event', ['preventDefault']))
+      view.handleSubmit({ preventDefault: vi.fn() })
 
       expect(view.$el.hasClass('term-pending')).toBe(false)
     })
@@ -163,7 +163,7 @@ describe('Test SearchFormView', () => {
     })
 
     it('puts the typed term on the model when the form is submitted', () => {
-      const e = spyObject('event', ['preventDefault'])
+      const e = { preventDefault: vi.fn() }
 
       view.handleSubmit(e)
 
@@ -244,11 +244,11 @@ describe('Test SearchFormView', () => {
    * had already committed the displayed term, silently sent no request at all.
    */
   describe('search button when the term has not changed', () => {
-    const submit = () => view.handleSubmit(spyObject('event', ['preventDefault']))
+    const submit = () => view.handleSubmit({ preventDefault: vi.fn() })
 
     it('starts a search even though the model term is unchanged', () => {
       model.set({ semantic: true, term: 'rivers' })
-      spyOn(model, 'searchNow')
+      vi.spyOn(model, 'searchNow').mockImplementation(() => {})
 
       submit()
 
@@ -258,7 +258,7 @@ describe('Test SearchFormView', () => {
     it('leaves a genuinely new term to start its own search, so the request is not doubled', () => {
       model.set({ semantic: true, term: 'lakes' })
       textarea().val('rivers') // typed but withheld, as semantic mode does
-      spyOn(model, 'searchNow')
+      vi.spyOn(model, 'searchNow').mockImplementation(() => {})
 
       submit()
 
@@ -268,7 +268,7 @@ describe('Test SearchFormView', () => {
 
     it('also re-runs a keyword search when the button is pressed again', () => {
       model.set('term', 'rivers')
-      spyOn(model, 'searchNow')
+      vi.spyOn(model, 'searchNow').mockImplementation(() => {})
 
       submit()
 

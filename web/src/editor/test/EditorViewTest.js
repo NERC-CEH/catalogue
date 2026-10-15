@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { EditorView } from '../src'
 import Backbone from 'backbone'
 import Swal from 'sweetalert2'
@@ -45,7 +46,7 @@ describe('EditorView', () => {
   })
 
   it('attemptDelete should be called', () => {
-    spyOn(view, 'attemptDelete')
+    vi.spyOn(view, 'attemptDelete').mockImplementation(() => {})
     view.initialize()
     view.delegateEvents()
     // when
@@ -57,7 +58,7 @@ describe('EditorView', () => {
 
   it('attemptExit should be called', () => {
     // given
-    spyOn(view, 'attemptExit')
+    vi.spyOn(view, 'attemptExit').mockImplementation(() => {})
     view.initialize()
     view.delegateEvents()
 
@@ -70,7 +71,7 @@ describe('EditorView', () => {
 
   it('save should be called', () => {
     // given
-    spyOn(view, 'save')
+    vi.spyOn(view, 'save').mockImplementation(() => {})
     view.initialize()
     view.delegateEvents()
 
@@ -83,7 +84,7 @@ describe('EditorView', () => {
 
   it('next should be called', () => {
     // given
-    spyOn(view, 'next')
+    vi.spyOn(view, 'next').mockImplementation(() => {})
     view.initialize()
     view.delegateEvents()
 
@@ -96,7 +97,7 @@ describe('EditorView', () => {
 
   it('direct should be called', () => {
     // given
-    spyOn(view, 'direct')
+    vi.spyOn(view, 'direct').mockImplementation(() => {})
     view.initialize()
     view.delegateEvents()
 
@@ -109,8 +110,8 @@ describe('EditorView', () => {
 
   it('save shows a "Saving…" state and defers "Saved!" until the request succeeds', () => {
     // given: a save that is in flight (truthy jqXHR), not yet resolved
-    spyOn(view.model, 'save').and.returnValue({})
-    spyOn(Swal, 'fire')
+    vi.spyOn(view.model, 'save').mockReturnValue({})
+    vi.spyOn(Swal, 'fire').mockImplementation(() => {})
     view.saveRequired = true
 
     // when
@@ -125,7 +126,7 @@ describe('EditorView', () => {
 
     // and when the server confirms, the success callback shows the popup and
     // restores the button
-    const options = view.model.save.calls.mostRecent().args[1]
+    const options = view.model.save.mock.lastCall[1]
     expect(options.wait).toBe(true)
     options.success()
 
@@ -137,15 +138,15 @@ describe('EditorView', () => {
 
   it('re-enables the save button when validation blocks the request or the save fails', () => {
     // validation failure: save() returns false, no request sent
-    spyOn(view.model, 'save').and.returnValue(false)
+    vi.spyOn(view.model, 'save').mockReturnValue(false)
     view.save()
     expect(view.$('#editorSave').prop('disabled')).toBe(false)
 
     // server error: the error callback restores the button
-    view.model.save.and.returnValue({})
+    view.model.save.mockReturnValue({})
     view.save()
     expect(view.$('#editorSave').prop('disabled')).toBe(true)
-    view.model.save.calls.mostRecent().args[1].error()
+    view.model.save.mock.lastCall[1].error()
     expect(view.$('#editorSave').prop('disabled')).toBe(false)
   })
 
@@ -161,14 +162,14 @@ describe('EditorView', () => {
   })
 
   it('shows a conflict banner and preserves edits on 409', () => {
-    const swalSpy = spyOn(Swal, 'fire')
+    const swalSpy = vi.spyOn(Swal, 'fire').mockImplementation(() => {})
     view.model.set('title', 'my in-progress title')
 
     // Simulate Backbone's error event for a 409 conflict
     view.model.trigger('error', view.model, { status: 409, statusText: 'Conflict', responseJSON: {} })
 
     expect(swalSpy).toHaveBeenCalled()
-    const args = swalSpy.calls.mostRecent().args[0]
+    const args = swalSpy.mock.lastCall[0]
     expect(args.title).toBe('Edit conflict')
     // this must be the conflict-specific banner, not the generic error dialog
     // (whose title also happens to contain "Conflict" via statusText)
@@ -181,12 +182,12 @@ describe('EditorView', () => {
   })
 
   it('shows the record JSON in the save-error dialog as text (dri-one #454)', () => {
-    const swalSpy = spyOn(Swal, 'fire')
+    const swalSpy = vi.spyOn(Swal, 'fire').mockImplementation(() => {})
     view.model.set('title', '</textarea><img src=x onerror="window.__xss454=1">')
 
     view.model.trigger('error', view.model, { status: 500, statusText: 'Server Error', responseText: 'boom' })
 
-    const html = swalSpy.calls.mostRecent().args[0].html
+    const html = swalSpy.mock.lastCall[0].html
     expect(html).not.toContain('<img')
     expect(html).toContain('&lt;/textarea&gt;&lt;img')
   })

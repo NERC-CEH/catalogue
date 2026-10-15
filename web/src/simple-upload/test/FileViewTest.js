@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import { FileView } from '../src/File'
@@ -9,8 +10,8 @@ describe('Test FileView', function () {
 
   beforeEach(function () {
     el = $('ul').appendTo($('body'))
-    spyOn(FileView.prototype, 'remove').and.callThrough()
-    spyOn(FileView.prototype, 'render').and.callThrough()
+    vi.spyOn(FileView.prototype, 'remove')
+    vi.spyOn(FileView.prototype, 'render')
     model = new Backbone.Model({
       message: 'Hello World',
       type: 'info'

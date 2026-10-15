@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import _ from 'underscore'
 import Backbone from 'backbone'
@@ -18,7 +19,6 @@ import infrastructureChallengeTemplate from '../src/templates/InfrastructureChal
 import purposeOfCollectionTemplate from '../src/templates/PurposeOfCollection'
 import KeywordVocabularyView from '../src/views/KeywordVocabularyView'
 import MapReprojectionView from '../src/views/MapReprojectionView'
-import { spy } from '../../test/support'
 
 /**
  * Editor fields that did the wrong thing, or nothing at all (NERC-CEH/dri-one#458).
@@ -27,10 +27,10 @@ describe('Editor fields', () => {
   // Calls an autocomplete's source as jQuery UI would, and returns the URL it asked for
   const autocompleteRequest = (view, term) => {
     const request = $.Deferred()
-    spyOn($, 'getJSON').and.returnValue(request.promise())
-    const response = spy('response')
+    vi.spyOn($, 'getJSON').mockReturnValue(request.promise())
+    const response = vi.fn()
     view.$('.ui-autocomplete-input').first().autocomplete('option', 'source')({ term }, response)
-    return { url: $.getJSON.calls.mostRecent().args[0], request, response }
+    return { url: $.getJSON.mock.lastCall[0], request, response }
   }
 
   describe('a reprojection row', () => {
@@ -48,7 +48,7 @@ describe('Editor fields', () => {
     [ObservedPropertyView, ObservedPropertySimpleView].forEach(View => {
       it(`keeps its edits to itself (${View === ObservedPropertyView ? 'full' : 'simple'})`, () => {
         // In the editor the row sits inside a FilesetView, whose own modify would copy the field
-        const fileset = spy('fileset change')
+        const fileset = vi.fn()
         const $fileset = $('<div>').on('change', fileset)
         const view = new View({ model: new Backbone.Model({ constraints: {} }) })
         $fileset.append(view.el)
@@ -70,7 +70,7 @@ describe('Editor fields', () => {
       expect(view.model.get('role')).toBeUndefined()
       expect(view.$('.role-select').val()).toBe('')
       expect(view.$('.role-select option').first().text()).toBe('Select a role')
-      expect(view.model.validate(view.model.attributes)).toContain({ message: 'Role is mandatory.' })
+      expect(view.model.validate(view.model.attributes)).toContainEqual({ message: 'Role is mandatory.' })
     })
 
     it('saves the role that is chosen', () => {
@@ -157,7 +157,7 @@ describe('Editor fields', () => {
 
     beforeEach(() => {
       requests = []
-      spyOn($, 'getJSON').and.callFake((url, success) => {
+      vi.spyOn($, 'getJSON').mockImplementation((url, success) => {
         const request = $.Deferred()
         requests.push({ url, request })
         if (url.startsWith('/catalogues')) {
@@ -203,11 +203,12 @@ describe('Editor fields', () => {
 
   describe('a date field', () => {
     [
-      [DatasetReferenceDateView, ['creationDate', 'publicationDate', 'unavailableDate', 'releasedDate', 'supersededDate']],
-      [DataTypeProvenanceView, ['creationDate', 'modificationDate']]
-    ].forEach(([View, names]) => {
+      ['reference dates', DatasetReferenceDateView, ['creationDate', 'publicationDate', 'unavailableDate', 'releasedDate', 'supersededDate']],
+      ['provenance', DataTypeProvenanceView, ['creationDate', 'modificationDate']]
+    ].forEach(([fields, View, names]) => {
       names.forEach(name => {
-        it(`never writes undefined while typing (${name})`, () => {
+        // Named by the fields too: both have a creationDate, and a report merges specs of one name
+        it(`never writes undefined while typing (${fields}: ${name})`, () => {
           const model = new MultipleDate()
           const view = new View({ model })
 
@@ -238,7 +239,7 @@ describe('Editor fields', () => {
         values.forEach(value => {
           const model = new Model()
           model.set('value', value)
-          expect(model.get('uri')).withContext(value).toMatch(/^https?:\/\//)
+          expect(model.get('uri'), value).toMatch(/^https?:\/\//)
         })
       })
     })

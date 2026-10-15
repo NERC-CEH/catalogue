@@ -1,8 +1,8 @@
+import { describe, expect, it, vi } from 'vitest'
 import {
   Author, Contact, DistributionFormat, Funding, MapDataSource, MultipleDate, ObservedProperty, OnlineResource,
   Reference, RightsHolder, ServiceAgreement, SpatialResolution, Supplemental
 } from '../../src/models'
-import { spy } from '../../../test/support'
 
 // What each editor model refuses, and what it keeps, before a record is saved (dri-one #473)
 const messages = model => (model.validate(model.attributes) || []).map(error => error.message || error)
@@ -32,7 +32,7 @@ describe('Editor model validation', () => {
       const author = new Author({ ...valid, email: 'not-an-email', nameIdentifier: '0000-1234-5678-999X' })
       expect(messages(author)).toEqual([
         'That email address is invalid',
-        jasmine.stringMatching(/^That ORCiD is invalid/)
+        expect.stringMatching(/^That ORCiD is invalid/)
       ])
     })
 
@@ -70,7 +70,7 @@ describe('Editor model validation', () => {
       expect(messages(contact)).toEqual([
         'That email address is wrong',
         'Invalid ORCiD',
-        jasmine.stringMatching(/^ORCiDs should be entered as/),
+        expect.stringMatching(/^ORCiDs should be entered as/),
         'Invalid RoR'
       ])
     })
@@ -126,7 +126,7 @@ describe('Editor model validation', () => {
 
   describe('DistributionFormat', () => {
     it('requires a version once a name or type is given', () => {
-      expect(messages(new DistributionFormat({ name: 'CSV' }))).toEqual([jasmine.stringMatching(/^The version is mandatory/)])
+      expect(messages(new DistributionFormat({ name: 'CSV' }))).toEqual([expect.stringMatching(/^The version is mandatory/)])
       expect(messages(new DistributionFormat({ type: 'text/csv', version: 'unknown' }))).toEqual([])
       expect(messages(new DistributionFormat({}))).toEqual([])
     })
@@ -135,7 +135,7 @@ describe('Editor model validation', () => {
   describe('SpatialResolution', () => {
     it('takes a scale or a distance, not both', () => {
       expect(messages(new SpatialResolution({ equivalentScale: '10000' }))).toEqual([])
-      expect(messages(new SpatialResolution({ equivalentScale: '10000', distance: '5' }))).toEqual([jasmine.stringMatching(/EITHER/)])
+      expect(messages(new SpatialResolution({ equivalentScale: '10000', distance: '5' }))).toEqual([expect.stringMatching(/EITHER/)])
     })
   })
 
@@ -202,7 +202,7 @@ describe('Editor model validation', () => {
 
     it('announces a change of styling mode', () => {
       const source = new MapDataSource({})
-      const changed = spy('change')
+      const changed = vi.fn()
       source.on('change', changed)
 
       source.setStylingMode('attributes')

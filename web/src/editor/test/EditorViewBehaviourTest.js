@@ -1,8 +1,9 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import Swal from 'sweetalert2'
 import { EditorView } from '../src'
-import { fakeServer, spy } from '../../test/support'
+import { fakeServer } from '../../test/support'
 
 // What the editor does around its sections: moving between them, saving, deleting, leaving with or
 // without unsaved changes, and reporting what the server or validation says (dri-one #473).
@@ -10,7 +11,7 @@ import { fakeServer, spy } from '../../test/support'
 describe('EditorView behaviour', () => {
   let view, model, location, sections
 
-  const section = label => ({ label, title: label, views: [{ el: document.createElement('div'), show: spy(`show ${label}`), hide: spy(`hide ${label}`) }] })
+  const section = label => ({ label, title: label, views: [{ el: document.createElement('div'), show: vi.fn(), hide: vi.fn() }] })
 
   function editor (attributes = { id: 'abc', title: 'Rainfall' }) {
     model = new Backbone.Model(attributes)
@@ -27,13 +28,13 @@ describe('EditorView behaviour', () => {
   }
 
   const settle = () => new Promise(resolve => setTimeout(resolve, 0))
-  const answer = isConfirmed => Swal.fire.and.resolveTo({ isConfirmed })
+  const answer = isConfirmed => Swal.fire.mockResolvedValue({ isConfirmed })
 
   beforeEach(() => {
     fakeServer.install()
-    spyOn(Swal, 'fire').and.resolveTo({ isConfirmed: false })
+    vi.spyOn(Swal, 'fire').mockResolvedValue({ isConfirmed: false })
     $('html').attr('data-catalogue', 'eidc').removeData('catalogue')
-    location = { pathname: '/eidc/documents', replace: spy('replace'), reload: spy('reload') }
+    location = { pathname: '/eidc/documents', replace: vi.fn(), reload: vi.fn() }
     Object.defineProperty(Backbone.history, 'location', { value: location, configurable: true, writable: true })
   })
 
@@ -53,7 +54,7 @@ describe('EditorView behaviour', () => {
       expect(view.currentStep).toBe(1)
       expect(sections[0].views[0].show).toHaveBeenCalled()
       expect(view.$('.editor-nav span').map((i, span) => span.textContent).get()).toEqual(['One', 'Two', 'Three'])
-      expect(view.$('.editor-nav span').first().hasClass('active')).toBeTrue()
+      expect(view.$('.editor-nav span').first().hasClass('active')).toBe(true)
     })
 
     it('shows the next section and hides the rest, up to the last', () => {
@@ -63,13 +64,13 @@ describe('EditorView behaviour', () => {
       expect(view.currentStep).toBe(2)
       expect(sections[1].views[0].show).toHaveBeenCalled()
       expect(sections[0].views[0].hide).toHaveBeenCalled()
-      expect(view.$('#editorBack').prop('disabled')).toBeFalse()
-      expect(view.$('.editor-nav span').eq(1).hasClass('active')).toBeTrue()
+      expect(view.$('#editorBack').prop('disabled')).toBe(false)
+      expect(view.$('.editor-nav span').eq(1).hasClass('active')).toBe(true)
 
       view.next()
       view.next()
       expect(view.currentStep).toBe(3)
-      expect(view.$('#editorNext').prop('disabled')).toBeTrue()
+      expect(view.$('#editorNext').prop('disabled')).toBe(true)
     })
 
     it('goes back, but not before the first', () => {
@@ -80,7 +81,7 @@ describe('EditorView behaviour', () => {
       view.back()
 
       expect(view.currentStep).toBe(1)
-      expect(view.$('#editorBack').prop('disabled')).toBeTrue()
+      expect(view.$('#editorBack').prop('disabled')).toBe(true)
     })
 
     it('goes straight to a section chosen from the menu', () => {
@@ -96,13 +97,13 @@ describe('EditorView behaviour', () => {
   describe('changes', () => {
     it('notices a change, and forgets it once saved', () => {
       editor()
-      expect(view.saveRequired).toBeFalse()
+      expect(view.saveRequired).toBe(false)
 
       model.set('title', 'Rain')
-      expect(view.saveRequired).toBeTrue()
+      expect(view.saveRequired).toBe(true)
 
       model.trigger('sync')
-      expect(view.saveRequired).toBeFalse()
+      expect(view.saveRequired).toBe(false)
     })
 
     it('lists what validation refused', () => {
@@ -110,7 +111,7 @@ describe('EditorView behaviour', () => {
 
       model.trigger('invalid', model, ['A title is mandatory', 'Embargo date is in the past or too far in the future'])
 
-      expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({
+      expect(Swal.fire).toHaveBeenCalledWith(expect.objectContaining({
         title: 'Validation Errors',
         html: '<p>A title is mandatory</p><p>Embargo date is in the past or too far in the future</p>'
       }))
@@ -129,9 +130,9 @@ describe('EditorView behaviour', () => {
       expect(request.url).toBe('/documents/abc')
       request.respondWith({ status: 204, contentType: 'application/json', responseText: '' })
 
-      expect(document.body.contains(view.el)).toBeFalse()
+      expect(document.body.contains(view.el)).toBe(false)
       expect(location.replace).toHaveBeenCalledWith('/eidc/documents')
-      expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ title: 'Deleted!' }))
+      expect(Swal.fire).toHaveBeenCalledWith(expect.objectContaining({ title: 'Deleted!' }))
     })
 
     it('keeps the record when the editor cancels', async () => {
@@ -152,8 +153,8 @@ describe('EditorView behaviour', () => {
       view.$('#editorExit').trigger('click')
 
       expect(Swal.fire).not.toHaveBeenCalled()
-      expect(document.body.contains(view.el)).toBeFalse()
-      expect($('body').hasClass('edit-mode')).toBeFalse()
+      expect(document.body.contains(view.el)).toBe(false)
+      expect($('body').hasClass('edit-mode')).toBe(false)
       expect(location.replace).toHaveBeenCalledWith('/documents/abc')
     })
 
@@ -175,7 +176,7 @@ describe('EditorView behaviour', () => {
       view.$('#editorExit').trigger('click')
       await settle()
 
-      expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ title: 'There are unsaved changes.' }))
+      expect(Swal.fire).toHaveBeenCalledWith(expect.objectContaining({ title: 'There are unsaved changes.' }))
       expect(location.replace).not.toHaveBeenCalled()
     })
 
@@ -195,10 +196,10 @@ describe('EditorView behaviour', () => {
     it('offers to copy the unsaved edits to the clipboard', async () => {
       editor()
       model.set('title', 'Rain')
-      const writeText = spyOn(navigator.clipboard, 'writeText').and.resolveTo()
+      const writeText = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue()
 
       model.trigger('error', model, { status: 409 })
-      const options = Swal.fire.calls.mostRecent().args[0]
+      const options = Swal.fire.mock.lastCall[0]
       $(document.body).append(options.html)
       options.didOpen()
       $('#conflictCopy').trigger('click')
@@ -213,11 +214,11 @@ describe('EditorView behaviour', () => {
       editor()
       const clipboard = Object.getOwnPropertyDescriptor(Navigator.prototype, 'clipboard')
       Object.defineProperty(navigator, 'clipboard', { value: undefined, configurable: true })
-      spyOn(document, 'execCommand').and.returnValue(true)
+      vi.spyOn(document, 'execCommand').mockReturnValue(true)
 
       try {
         model.trigger('error', model, { status: 409 })
-        const options = Swal.fire.calls.mostRecent().args[0]
+        const options = Swal.fire.mock.lastCall[0]
         $(document.body).append(options.html)
         options.didOpen()
         $('#conflictCopy').trigger('click')
@@ -236,7 +237,7 @@ describe('EditorView behaviour', () => {
 
     model.trigger('error', model, { status: 500, statusText: 'Server Error', responseJSON: { message: 'Solr is down' } })
 
-    expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ title: 'Server response: 500 Server Error', icon: 'error' }))
-    expect(Swal.fire.calls.mostRecent().args[0].html).toContain('<p>Solr is down</p>')
+    expect(Swal.fire).toHaveBeenCalledWith(expect.objectContaining({ title: 'Server response: 500 Server Error', icon: 'error' }))
+    expect(Swal.fire.mock.lastCall[0].html).toContain('<p>Solr is down</p>')
   })
 })

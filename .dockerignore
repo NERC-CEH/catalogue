@@ -12,7 +12,6 @@
 !web/img
 !web/scss
 !web/src
-!web/karma.conf.js
 !web/package.json
 !web/package-lock.json
 !web/webpack.js

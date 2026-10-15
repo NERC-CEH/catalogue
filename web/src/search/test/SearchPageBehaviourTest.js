@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import L from 'leaflet'
 import { Tab } from 'bootstrap'
@@ -5,7 +6,7 @@ import SearchApp from '../src/SearchApp'
 import SearchAppView from '../src/SearchAppView'
 import SearchRouter from '../src/SearchRouter'
 import { MessageView } from '../src/views'
-import { fakeServer, spy } from '../../test/support'
+import { fakeServer } from '../../test/support'
 
 // The search page as initSearch puts it together, on the markup templates/html/search.ftlh renders:
 // what a visitor's changes search for, what comes back on the page, the address bar kept in step,
@@ -98,7 +99,7 @@ describe('The search page', () => {
   describe('searching', () => {
     it('searches a second after the last change, and shows what comes back', async () => {
       open()
-      const searches = spyOn(app, 'searchNow').and.callThrough()
+      const searches = vi.spyOn(app, 'searchNow')
 
       app.set('term', 'up')
       await wait(500)
@@ -125,7 +126,7 @@ describe('The search page', () => {
       app.set('term', 'upland')
       searchRuns()
       expect(app.get('page')).toBe(1)
-      expect(requested().has('page')).toBeFalse()
+      expect(requested().has('page')).toBe(false)
     })
 
     it('doesn\'t search, or go back to the first page, for a change that isn\'t part of the search', () => {
@@ -157,13 +158,13 @@ describe('The search page', () => {
 
       app.set('term', 'river')
       searchRuns()
-      expect($('.results').is(':empty')).toBeTrue()
+      expect($('.results').is(':empty')).toBe(true)
       const slow = fakeServer.lastRequest()
       app.set('term', 'river flow')
       searchRuns()
       const newest = fakeServer.lastRequest()
       respond(slow, answer(['River Thames']))
-      expect($('.results').is(':empty')).withContext('still waiting for the newest search').toBeTrue()
+      expect($('.results').is(':empty'), 'still waiting for the newest search').toBe(true)
       respond(newest, answer(['River flows']))
 
       expect(shown()).toEqual(['River flows'])
@@ -191,7 +192,7 @@ describe('The search page', () => {
       searchRuns()
       fakeServer.lastRequest().respondWith({ status: 502, contentType: 'application/json', responseText: '{"message":"Semantic search is unavailable"}' })
 
-      expect($('#message-panel').is(':visible')).toBeTrue()
+      expect($('#message-panel').is(':visible')).toBe(true)
       expect($('#message-panel .alert-danger').text()).toContain('Semantic search is unavailable')
     })
   })
@@ -231,7 +232,7 @@ describe('The search page', () => {
       window.history.replaceState = undefined
       try {
         const router = new SearchRouter({ model: app, location: window.location })
-        spyOn(router, 'navigate')
+        vi.spyOn(router, 'navigate').mockImplementation(() => {})
 
         app.set('term', 'upland')
 
@@ -252,7 +253,7 @@ describe('The search page', () => {
       const click = $.Event('click')
       $('a[aria-label=Next]').trigger(click)
 
-      expect(click.isDefaultPrevented()).toBeTrue()
+      expect(click.isDefaultPrevented()).toBe(true)
       expect(app.get('page')).toBe(3)
       expect(app.get('rows')).toBe(2)
       expect(app.get('term')).toBeUndefined()
@@ -277,12 +278,12 @@ describe('The search page', () => {
       const spatial = view.spatialFilterView
       expect(spatial.map).toBeUndefined()
       expect($('.mapsearch .leaflet-container').length).toBe(0)
-      expect($('.mapsearch #opIntersects').prop('checked')).toBeTrue()
+      expect($('.mapsearch #opIntersects').prop('checked')).toBe(true)
 
       showMapTab()
       expect($('.mapsearch .leaflet-container').length).toBe(1)
       const map = spatial.map
-      const invalidateSize = spyOn(map, 'invalidateSize')
+      const invalidateSize = vi.spyOn(map, 'invalidateSize').mockImplementation(() => {})
       showMapTab()
 
       expect(spatial.map).toBe(map)
@@ -302,7 +303,7 @@ describe('The search page', () => {
 
         new Tab($('.map-tab a')[0]).show()
 
-        expect($('#spatial-tab').hasClass('active')).toBeTrue()
+        expect($('#spatial-tab').hasClass('active')).toBe(true)
         expect(view.spatialFilterView.map).toBeDefined()
       })
 
@@ -312,7 +313,7 @@ describe('The search page', () => {
 
         new Tab($('.map-tab a')[0]).show()
 
-        expect($('#spatial-tab').hasClass('active')).toBeTrue()
+        expect($('#spatial-tab').hasClass('active')).toBe(true)
         expect(view.spatialFilterView.map).toBeUndefined()
       })
     })
@@ -339,7 +340,7 @@ describe('The search page', () => {
       expect(requested().get('op')).toBe('intersects')
       expect(spatial.drawnItems.getLayers().length).toBe(1)
       expect(spatial.drawControl).not.toBe(before)
-      expect(spatial.drawControl.options.draw.rectangle).toBeFalse()
+      expect(spatial.drawControl.options.draw.rectangle).toBe(false)
       expect(spatial.drawControl.options.edit.remove).toBeTruthy()
     })
 
@@ -348,13 +349,13 @@ describe('The search page', () => {
       showMapTab()
       const spatial = view.spatialFilterView
       expect(spatial.drawnItems.getLayers().length).toBe(1)
-      expect($('#opWithin').prop('checked')).toBeTrue()
+      expect($('#opWithin').prop('checked')).toBe(true)
 
       spatial.map.fire(L.Draw.Event.DELETED)
       searchRuns()
 
-      expect(requested().has('bbox')).toBeFalse()
-      expect(requested().has('op')).toBeFalse()
+      expect(requested().has('bbox')).toBe(false)
+      expect(requested().has('op')).toBe(false)
       // leaflet-draw turns rectangle: true into the rectangle's options
       expect(spatial.drawControl.options.draw.rectangle).toBeTruthy()
     })
@@ -384,8 +385,8 @@ describe('The search page', () => {
 
       app.set('op', 'iswithin')
 
-      expect($('#opWithin').prop('checked')).toBeTrue()
-      expect($('#opIntersects').prop('checked')).toBeFalse()
+      expect($('#opWithin').prop('checked')).toBe(true)
+      expect($('#opIntersects').prop('checked')).toBe(false)
     })
   })
 
@@ -415,7 +416,7 @@ describe('The search page', () => {
 
       expect(boxes().map(layer => layer.identifier)).toEqual(['record-0', 'record-1'])
       expect(box('record-0').getBounds().toBBoxString()).toBe('-8.6,49.8,1.7,60.8')
-      expect(box('record-1').getLayers()[0] instanceof L.CircleMarker).toBeTrue()
+      expect(box('record-1').getLayers()[0] instanceof L.CircleMarker).toBe(true)
     })
 
     it('shows the results already on the page when the map is first shown', () => {
@@ -497,17 +498,17 @@ describe('The search page', () => {
       expect($('#message-panel .alert-info').text()).toContain('Results are limited to 1000 records')
 
       $('#message-panel .alert-info .fa-times').trigger('click')
-      expect($('#message-panel').is(':visible')).toBeTrue()
+      expect($('#message-panel').is(':visible')).toBe(true)
       $('#message-panel .fa-times').trigger('click')
 
       expect($('#message-panel .alert').length).toBe(0)
-      expect($('#message-panel').is(':visible')).toBeFalse()
+      expect($('#message-panel').is(':visible')).toBe(false)
     })
   })
 
   it('is told when results arrive, by an event on the search', () => {
     open()
-    const synced = spy('results-sync')
+    const synced = vi.fn()
     app.on('results-sync', synced)
 
     app.set('term', 'upland')

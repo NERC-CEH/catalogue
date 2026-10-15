@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import { MAILTO_LIMIT, shareEmail } from '../src/views/SearchPageView'
@@ -21,7 +22,7 @@ describe('Emailing a search', () => {
   it('gives the search\'s address, then each result by title and address, in order', () => {
     const link = shareEmail({ catalogue: 'EIDC', href, date, results: [result('abc', 'Rainfall 1960-2020'), result('def', 'Rain gauges')] })
 
-    expect(link.startsWith('mailto:?subject=')).toBeTrue()
+    expect(link.startsWith('mailto:?subject=')).toBe(true)
     expect(read(link).body).toBe([
       'Search: https://catalogue.ceh.ac.uk/eidc/documents?term=rain',
       '1. Rainfall 1960-2020\r\n   https://catalogue.ceh.ac.uk/documents/abc',
@@ -70,7 +71,7 @@ describe('Emailing a search', () => {
       view = new SearchPageView({ model, el: $('<div class="results">').appendTo(document.body) })
       // As a search's answer arrives, after the view has read the (empty) page
       page.set({ numFound: 2, page: 1, rows: 20, url: href, results: [result('abc', 'Rainfall 1960-2020'), result('def', 'Rain gauges')] })
-      opened = spyOn(view, 'openMail')
+      opened = vi.spyOn(view, 'openMail').mockImplementation(() => {})
       view.render()
     })
 
@@ -83,7 +84,7 @@ describe('Emailing a search', () => {
     it('is a button saying what it does', () => {
       const $share = view.$('#searchShare')
 
-      expect($share.is('button[type=button]')).toBeTrue()
+      expect($share.is('button[type=button]')).toBe(true)
       expect($share.text().trim()).toBe('Email results')
       expect($share.find('i.fa-envelope').attr('aria-hidden')).toBe('true')
     })
@@ -91,7 +92,7 @@ describe('Emailing a search', () => {
     it('emails the results shown, under the catalogue\'s name', () => {
       view.$('#searchShare').trigger('click')
 
-      const { subject, body } = read(opened.calls.mostRecent().args[0])
+      const { subject, body } = read(opened.mock.lastCall[0])
       expect(subject).toMatch(/^Environmental Information Data Centre search results, \d{1,2} \w+ \d{4}$/)
       expect(body).toContain('1. Rainfall 1960-2020\r\n')
       expect(body).toContain('2. Rain gauges\r\n')
@@ -102,7 +103,7 @@ describe('Emailing a search', () => {
 
       view.$('#searchShare').trigger('click')
 
-      expect(read(opened.calls.mostRecent().args[0]).subject).toMatch(/^EIDC search results, /)
+      expect(read(opened.mock.lastCall[0]).subject).toMatch(/^EIDC search results, /)
     })
   })
 })

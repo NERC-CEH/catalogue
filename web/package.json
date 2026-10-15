@@ -14,10 +14,9 @@
         "lint": "eslint .",
         "lint-fix": "eslint --fix .",
         "pretest": "node scripts/check-template-escaping.js && node scripts/build-test-css.js",
-        "test": "karma start --single-run",
+        "test": "vitest run",
         "pretest-coverage": "npm run pretest",
-        "test-coverage": "COVERAGE=true karma start --single-run",
-        "posttest-coverage": "node scripts/check-coverage-files.js",
+        "test-coverage": "vitest run --coverage",
         "watch": "webpack --config webpack.js --mode development --watch"
     },
     "browserslist": [
@@ -29,45 +28,28 @@
         ],
         "plugins": [
             "./scripts/babel-plugin-precompile-templates"
-        ],
-        "env": {
-            "coverage": {
-                "plugins": [
-                    [
-                        "istanbul",
-                        {
-                            "exclude": [
-                                "**/test/**",
-                                "**/node_modules/**"
-                            ]
-                        }
-                    ]
-                ]
-            }
-        }
+        ]
     },
     "devDependencies": {
         "@babel/core": "^8.0.7",
         "@babel/preset-env": "^8.0.7",
+        "@vitest/browser-playwright": "4.1.11",
+        "@vitest/coverage-istanbul": "4.1.11",
         "babel-loader": "^10.1.1",
-        "babel-plugin-istanbul": "^8.0.0",
         "css-loader": "^7.1.5",
         "css-minimizer-webpack-plugin": "^8.0.0",
         "eslint": "^10.12.0",
         "globals": "^17.13.0",
-        "karma": "^6.4.4",
-        "karma-chrome-launcher": "^3.2.0",
-        "karma-coverage": "^2.2.1",
-        "karma-jasmine": "^5.1.0",
-        "karma-jasmine-ajax": "^0.1.13",
-        "karma-junit-reporter": "^2.0.1",
-        "karma-webpack": "^5.0.1",
         "mini-css-extract-plugin": "^2.10.2",
         "neostandard": "^0.14.1",
+        "nise": "6.1.5",
+        "playwright": "1.63.0",
         "postcss": "^8.5.30",
         "puppeteer": "^25.13.0",
         "sass": "^1.105.1",
         "sass-loader": "^17.0.1",
+        "vite": "8.3.1",
+        "vitest": "4.1.11",
         "webpack": "^5.111.1",
         "webpack-cli": "^7.2.3"
     },

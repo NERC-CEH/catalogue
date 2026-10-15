@@ -1,4 +1,4 @@
-/* global window */
+import { afterEach, describe, expect, it } from 'vitest'
 import _ from 'underscore'
 
 // The build compiles each `_.template` literal ahead of time (scripts/babel-plugin-precompile-templates.js,

@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest'
 import { InputView, EditorMetadata } from '../src'
 
 describe('Test InputView', function () {

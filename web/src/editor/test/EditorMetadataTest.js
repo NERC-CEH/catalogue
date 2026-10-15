@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { EditorMetadata } from '../src'
 import { ServiceAgreement } from '../src/models'
 import Backbone from 'backbone'
@@ -15,7 +16,7 @@ describe('EditorMetadata', () => {
     it('produces error without title', () => {
       const editor = new EditorMetadata()
       const errors = editor.validate(editor.attributes)
-      expect(errors).toHaveSize(1)
+      expect(errors).toHaveLength(1)
     })
   })
 
@@ -23,7 +24,7 @@ describe('EditorMetadata', () => {
     let syncArgs
 
     beforeEach(() => {
-      spyOn(Backbone, 'sync').and.callFake((method, model, options) => {
+      vi.spyOn(Backbone, 'sync').mockImplementation((method, model, options) => {
         syncArgs = { method, options }
         return { done: () => {} }
       })
@@ -50,7 +51,7 @@ describe('EditorMetadata', () => {
     let doneCallback
 
     beforeEach(() => {
-      spyOn(Backbone, 'sync').and.callFake(() => {
+      vi.spyOn(Backbone, 'sync').mockImplementation(() => {
         return {
           done: (cb) => { doneCallback = cb }
         }
@@ -95,7 +96,7 @@ describe('EditorMetadata', () => {
     it('sends the create ETag as If-Match on the following save', () => {
       let syncArgs
       let doneCallback
-      spyOn(Backbone, 'sync').and.callFake((method, model, options) => {
+      vi.spyOn(Backbone, 'sync').mockImplementation((method, model, options) => {
         syncArgs = { method, options }
         return { done: (cb) => { doneCallback = cb } }
       })
@@ -123,7 +124,7 @@ describe('EditorMetadata', () => {
     let syncArgs
 
     beforeEach(() => {
-      spyOn(Backbone, 'sync').and.callFake((method, model, options) => {
+      vi.spyOn(Backbone, 'sync').mockImplementation((method, model, options) => {
         syncArgs = { method, options }
         return { done: () => {} }
       })

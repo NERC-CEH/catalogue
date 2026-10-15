@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest'
 import { FacetsPanelView } from '../src/views'
 import SearchApp from '../src/SearchApp'
 

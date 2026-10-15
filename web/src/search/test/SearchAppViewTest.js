@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest'
 import SearchAppView from '../src/SearchAppView'
 import SearchApp from '../src/SearchApp'
 import $ from 'jquery'

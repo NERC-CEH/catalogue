@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Run the test suite scoped to what changed, especially after upgrades, refactors, or migrations:
   - Java changes → `./gradlew :java:test`
   - Frontend-only changes (`web/`) → `cd web && npm run test` and `npm run lint` (neostandard: StandardJS rules on ESLint 10)
-  - CI runs `npm run test-coverage`, which fails below the coverage floor in `web/karma.conf.js` or when a source file is loaded by no spec (`web/scripts/check-coverage-files.js`); run it before shipping web changes. Specs use `web/src/test/support.js` for fake XHR, clock and spies, not `jasmine.*` directly; the Java suite is not required
+  - The specs run on Vitest in a real browser (Chromium via Playwright, `web/vitest.config.mjs`). CI runs `npm run test-coverage`, which fails below the coverage floor in `web/vitest.config.mjs`; every source file counts, so an untested one lowers the figures. Run it before shipping web changes. Specs import what they use from `vitest` (`vi` for spies, mocks and the clock) and use `fakeServer` from `web/src/test/support.js` for jQuery's XHR; the Java suite is not required
   - Mixed changes → run both
 - When fixing one test failure, check for similar patterns elsewhere (e.g., if one method needs a transaction wrapper, audit all similar methods)
 - Verify null-safety fixes cover both missing keys AND keys with null values

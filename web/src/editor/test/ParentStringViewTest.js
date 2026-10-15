@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import ParentStringView from '../src/views/ParentStringView'

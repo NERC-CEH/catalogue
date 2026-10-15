@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { EditorView, EditorMetadata, GeminiEditorMetadata } from '../src'
 import { BoundingBox, BoundingBoxView } from '../src/geometryMap'
 
@@ -46,7 +47,7 @@ describe('Saving a record', () => {
     afterEach(() => { document.body.classList.remove('edit-mode') })
 
     it('is reset when saving throws', () => {
-      spyOn(view.model, 'save').and.throwError('validation crashed')
+      vi.spyOn(view.model, 'save').mockImplementation(() => { throw new Error('validation crashed') })
 
       expect(() => view.save()).toThrowError('validation crashed')
 

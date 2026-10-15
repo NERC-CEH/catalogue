@@ -101,12 +101,19 @@ module.exports = function precompileTemplates (babel) {
           throw path.buildCodeFrameError(`could not compile this template: ${error.message}`)
         }
         // Called as underscore calls its compiled templates, with `this` passed through
-        path.replaceWith(t.callExpression(
+        const call = t.callExpression(
           template.expression.ast`(function (render, _) {
             return function (data) { return render.call(this, data, _) }
           })`,
           [compiled, t.cloneNode(object.node)]
-        ))
+        )
+        // The functions are underscore's, written by this build, not the catalogue's code: left out of
+        // the specs' coverage, as they were when the coverage plugin saw the source before this one did.
+        // Each is marked: printed, a comment on the call lands on its callee alone, not the render
+        // function passed to it
+        t.addComment(call, 'leading', ' istanbul ignore next ')
+        t.addComment(compiled, 'leading', ' istanbul ignore next ')
+        path.replaceWith(call)
       }
     }
   }

@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import $ from 'jquery'
 import RelationshipView, { clearRelationshipRules, recordUrl } from '../src/views/RelationshipView'
 import {
@@ -56,12 +57,12 @@ describe('Relationships in the editor', () => {
     })
 
     it('waits for a relationship before searching', () => {
-      expect($search.prop('disabled')).toBeTrue()
+      expect($search.prop('disabled')).toBe(true)
       expect($search.attr('placeholder')).toBe('Choose a relationship type first')
 
       view.$('.relationshipList').val(PART_OF).trigger('change')
 
-      expect($search.prop('disabled')).toBeFalse()
+      expect($search.prop('disabled')).toBe(false)
       expect($search.attr('placeholder')).toBe('Enter record ID or type to search…')
       expect(model.get('relation')).toBe(PART_OF)
     })
@@ -97,8 +98,8 @@ describe('Relationships in the editor', () => {
 
       expect(model.get('target')).toBe('640ccee2')
       expect(view.$('.read-only-identifier').val()).toBe('COSMOS at Wimpole (monitoringFacility, 640ccee2)')
-      expect(view.$('.relationshipList').prop('disabled')).toBeTrue()
-      expect(view.$('.relationshipSearch').hasClass('d-none')).toBeTrue()
+      expect(view.$('.relationshipList').prop('disabled')).toBe(true)
+      expect(view.$('.relationshipSearch').hasClass('d-none')).toBe(true)
     })
   })
 
@@ -171,7 +172,7 @@ describe('Relationships in the editor', () => {
         const editor = new Editor({ model: new Model(attributes, { mediaType: 'application/json' }), el: '#search' })
         const relationships = editor.sections.flatMap(section => section.views)
           .find(each => each.data?.ObjectInputView === RelationshipView)
-        expect(relationships).withContext('has a relationships list').toBeDefined()
+        expect(relationships, 'has a relationships list').toBeDefined()
 
         relationships.$('button.add').trigger('click')
         const $row = relationships.$('.existing .relationshipList').last()

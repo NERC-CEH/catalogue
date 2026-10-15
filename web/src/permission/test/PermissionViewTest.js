@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import Swal from 'sweetalert2'
 import { Permission, PermissionView } from '../src/PermissionApp'
 import template from '../src/PermissionApp/PermissionsTemplate'
@@ -23,7 +24,7 @@ describe('Test PermissionView', () => {
     })
     const view = new PermissionView({ model })
     view.template = template
-    spyOn(view, 'reload')
+    vi.spyOn(view, 'reload').mockImplementation(() => {})
     view.initialize()
     view.delegateEvents()
 
@@ -47,7 +48,7 @@ describe('Test PermissionView', () => {
     model.loadCollection()
     const view = new PermissionView({ model })
     view.template = template
-    spyOn(view, 'addAll')
+    vi.spyOn(view, 'addAll').mockImplementation(() => {})
     view.initialize()
     view.delegateEvents()
 
@@ -71,7 +72,7 @@ describe('Test PermissionView', () => {
     model.loadCollection()
     const view = new PermissionView({ model })
     view.template = template
-    spyOn(view, 'addAll')
+    vi.spyOn(view, 'addAll').mockImplementation(() => {})
     view.initialize()
     view.delegateEvents()
 
@@ -95,38 +96,38 @@ describe('Test PermissionView', () => {
     it('renders a conflict-specific dialog and not the generic one on a 409 save error', () => {
       // given
       const { model, view } = createView()
-      spyOn(model, 'save').and.callFake((attrs, options) => {
+      vi.spyOn(model, 'save').mockImplementation((attrs, options) => {
         options.error(model, { status: 409, statusText: 'Conflict' })
       })
-      const swalSpy = spyOn(Swal, 'fire')
+      const swalSpy = vi.spyOn(Swal, 'fire').mockImplementation(() => {})
 
       // when
       view.save()
 
       // then
       expect(swalSpy).toHaveBeenCalled()
-      const args = swalSpy.calls.mostRecent().args[0]
+      const args = swalSpy.mock.lastCall[0]
       expect(args.title).toBe('Edit conflict')
       expect(args.icon).toBe('warning')
       // this must be the conflict-specific dialog, not the generic error dialog
       expect(args.title).not.toContain('Server response')
-      expect(swalSpy.calls.count()).toBe(1)
+      expect(swalSpy.mock.calls.length).toBe(1)
     })
 
     it('renders a generic error dialog (not the conflict wording) on a non-409 save error', () => {
       // given
       const { model, view } = createView()
-      spyOn(model, 'save').and.callFake((attrs, options) => {
+      vi.spyOn(model, 'save').mockImplementation((attrs, options) => {
         options.error(model, { status: 500, statusText: 'Server Error' })
       })
-      const swalSpy = spyOn(Swal, 'fire')
+      const swalSpy = vi.spyOn(Swal, 'fire').mockImplementation(() => {})
 
       // when
       view.save()
 
       // then
       expect(swalSpy).toHaveBeenCalled()
-      const args = swalSpy.calls.mostRecent().args[0]
+      const args = swalSpy.mock.lastCall[0]
       expect(args.title).toBe('Server response: 500 Server Error')
       expect(args.icon).toBe('error')
       expect(args.title).not.toBe('Edit conflict')
@@ -148,13 +149,13 @@ describe('Test PermissionView', () => {
 
     it('says so and keeps the form, instead of silently doing nothing', () => {
       const { model, view } = viewWith(['bob'])
-      spyOn(Swal, 'fire')
+      vi.spyOn(Swal, 'fire').mockImplementation(() => {})
       view.$('#identity').val('bob')
       view.$('#canEdit').prop('checked', true)
 
       view.add()
 
-      expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ text: 'bob already has permissions on this record: change them in the table.' }))
+      expect(Swal.fire).toHaveBeenCalledWith(expect.objectContaining({ text: 'bob already has permissions on this record: change them in the table.' }))
       expect(model.get('permissions').length).toBe(1)
       expect(view.$('#identity').val()).toBe('bob')
       expect(view.$('#canEdit').prop('checked')).toBe(true)

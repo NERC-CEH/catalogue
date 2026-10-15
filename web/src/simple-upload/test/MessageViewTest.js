@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import { MessageView } from '../src/Message'
@@ -9,7 +10,7 @@ describe('Test MessageView', function () {
 
   beforeEach(function () {
     el = $('ul').appendTo($('body'))
-    spyOn(MessageView.prototype, 'remove').and.callThrough()
+    vi.spyOn(MessageView.prototype, 'remove')
     model = new Backbone.Model({
       message: 'Hello World',
       type: 'info'

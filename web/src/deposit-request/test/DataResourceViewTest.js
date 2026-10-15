@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import $ from 'jquery'
 import DataResource from '../src/model/DataResource'
 import DataResourceView from '../src/view/DataResourceView'
@@ -100,13 +101,13 @@ describe('DataResourceView', () => {
       const focus = view.validate()
 
       expect(focus.attr('data-name')).toBe('title')
-      expect(view.$('[data-name="title"]').hasClass('is-invalid')).toBeTrue()
+      expect(view.$('[data-name="title"]').hasClass('is-invalid')).toBe(true)
       expect(view.$('[data-name="title"]').siblings('.invalid-feedback').text()).toBe('Working title is required')
 
       choose(view, 'title', 'Rainfall')
 
-      expect(view.$('[data-name="title"]').hasClass('is-invalid')).toBeFalse()
-      expect(view.$('[data-name="description"]').hasClass('is-invalid')).toBeTrue()
+      expect(view.$('[data-name="title"]').hasClass('is-invalid')).toBe(false)
+      expect(view.$('[data-name="description"]').hasClass('is-invalid')).toBe(true)
     })
   })
 

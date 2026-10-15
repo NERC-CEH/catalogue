@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import _ from 'underscore'
 import { GeminiEditorView } from '../src/editors'
 import { EditorMetadata } from '../src'
@@ -45,7 +46,7 @@ describe('GeminiEditorView', function () {
       const { view } = contributorView()
       expect(view.$('.contributorRole').hasClass('d-none')).toBe(false)
       expect(view.$('select.contributorRole-select option').map((i, o) => o.value).get())
-        .toEqual(jasmine.arrayContaining(['data-curator', 'workpackage-leader']))
+        .toEqual(expect.arrayContaining(['data-curator', 'workpackage-leader']))
     })
   })
 })

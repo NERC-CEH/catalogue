@@ -45,7 +45,8 @@ test_web:
     - cd web/
     - npm ci --no-audit
     - npm run lint
-    # With coverage, which fails below the floor in karma.conf.js (dri-one #473)
+    # Vitest in chromium, driven by Playwright, with coverage, which fails below the floor in
+    # vitest.config.mjs (dri-one #468, #473)
     - npm run test-coverage
   coverage: '/Lines\s*:\s*(\d+\.?\d*)%/'
   artifacts:

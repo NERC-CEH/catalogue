@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /*
  * Compiles the shared base stylesheet and each catalogue theme for the colour-contrast specs
- * (src/styles/test/ContrastTest.js), which Karma runs against the real stylesheets in an iframe
+ * (src/styles/test/ContrastTest.js), which the specs run against the real stylesheets in an iframe
  * (NERC-CEH/dri-one#462). A page loads base.css and then its theme (dri-one #362).
  *
  * Only Sass is run: the CSS libraries the production build inlines with postcss-import don't affect

@@ -1,3 +1,4 @@
+import { afterEach, describe, expect, it } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import { InputView } from '../src'

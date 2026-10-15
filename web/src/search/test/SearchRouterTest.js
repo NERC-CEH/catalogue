@@ -1,6 +1,6 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import Backbone from 'backbone'
 import SearchRouter from '../src/SearchRouter'
-import { spy } from '../../test/support'
 
 describe('SearchRouter', function () {
   // A minimal model stand-in: SearchRouter only needs getState/setState plus
@@ -9,7 +9,7 @@ describe('SearchRouter', function () {
   function fakeModel (state = {}) {
     const model = new Backbone.Model()
     model.getState = () => state
-    model.setState = spy('setState')
+    model.setState = vi.fn()
     return model
   }
 
@@ -32,7 +32,7 @@ describe('SearchRouter', function () {
     it('seeds the model from the query string when there is no hash', function () {
       const router = newRouter({}, { hash: '', search: '?term=init' })
       expect(router.model.setState).toHaveBeenCalledWith(
-        jasmine.objectContaining({ term: 'init' }),
+        expect.objectContaining({ term: 'init' }),
         { silent: true }
       )
     })
@@ -47,13 +47,13 @@ describe('SearchRouter', function () {
     let replaceState
 
     beforeEach(function () {
-      replaceState = spyOn(window.history, 'replaceState')
+      replaceState = vi.spyOn(window.history, 'replaceState').mockImplementation(() => {})
     })
 
     function urlFor (state) {
       const router = newRouter(state)
       router.updateRoute()
-      return replaceState.calls.mostRecent().args[2]
+      return replaceState.mock.lastCall[2]
     }
 
     it('serialises scalar fields, url-encoding values', function () {
@@ -84,19 +84,19 @@ describe('SearchRouter', function () {
   describe('updateModel', function () {
     it('parses the query string and delegates to setState', function () {
       const router = newRouter({})
-      router.model.setState.calls.reset()
+      router.model.setState.mockClear()
 
       router.updateModel('term=foo&page=3')
 
       expect(router.model.setState).toHaveBeenCalledWith(
-        jasmine.objectContaining({ term: 'foo' }),
+        expect.objectContaining({ term: 'foo' }),
         undefined
       )
     })
 
     it('does nothing when given an empty state', function () {
       const router = newRouter({})
-      router.model.setState.calls.reset()
+      router.model.setState.mockClear()
 
       router.updateModel('')
       router.updateModel(undefined)

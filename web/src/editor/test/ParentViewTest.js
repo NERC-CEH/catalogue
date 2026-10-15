@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import Backbone from 'backbone'
 import ParentView from '../src/views/ParentView'
 import ParentLargeView from '../src/views/ParentLargeView'
@@ -25,16 +26,16 @@ const build = (View, attrs, options = {}) => {
 
 describe('hasContent', () => {
   it('treats an attribute-less row as empty', () => {
-    expect(hasContent({})).toBeFalse()
+    expect(hasContent({})).toBe(false)
   })
 
   it('treats blank and whitespace-only strings as empty', () => {
-    expect(hasContent({ value: '', uri: '' })).toBeFalse()
-    expect(hasContent({ value: '   ' })).toBeFalse()
+    expect(hasContent({ value: '', uri: '' })).toBe(false)
+    expect(hasContent({ value: '   ' })).toBe(false)
   })
 
   it('treats null and undefined as empty', () => {
-    expect(hasContent({ value: null, uri: undefined })).toBeFalse()
+    expect(hasContent({ value: null, uri: undefined })).toBe(false)
   })
 
   /**
@@ -47,23 +48,23 @@ describe('hasContent', () => {
       southBoundLatitude: 0,
       eastBoundLongitude: 0,
       westBoundLongitude: 0
-    })).toBeTrue()
-    expect(hasContent({ value: '0' })).toBeTrue()
+    })).toBe(true)
+    expect(hasContent({ value: '0' })).toBe(true)
   })
 
   it('treats false as content', () => {
-    expect(hasContent({ published: false })).toBeTrue()
+    expect(hasContent({ published: false })).toBe(true)
   })
 
   it('recurses into nested structures', () => {
-    expect(hasContent({ observedProperty: [] })).toBeFalse()
-    expect(hasContent({ observedProperty: [{ value: '' }] })).toBeFalse()
-    expect(hasContent({ observedProperty: [{ value: 'rainfall' }] })).toBeTrue()
+    expect(hasContent({ observedProperty: [] })).toBe(false)
+    expect(hasContent({ observedProperty: [{ value: '' }] })).toBe(false)
+    expect(hasContent({ observedProperty: [{ value: 'rainfall' }] })).toBe(true)
   })
 
   it('keeps a row that has any populated field', () => {
-    expect(hasContent({ value: 'flood', uri: '' })).toBeTrue()
-    expect(hasContent({ value: '', uri: 'http://example.com/flood' })).toBeTrue()
+    expect(hasContent({ value: 'flood', uri: '' })).toBe(true)
+    expect(hasContent({ value: '', uri: 'http://example.com/flood' })).toBe(true)
   })
 })
 
@@ -156,7 +157,7 @@ describe('ParentView empty rows', () => {
 
     view.add()
 
-    expect(model.hasChanged('keywordsOther')).toBeFalse()
+    expect(model.hasChanged('keywordsOther')).toBe(false)
   })
 
   it('writes through a nested model attribute path unchanged', () => {

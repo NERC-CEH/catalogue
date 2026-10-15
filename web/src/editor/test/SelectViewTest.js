@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest'
 import { EditorMetadata, SingleView } from '../src'
 
 describe('Test SelectView', () => {

@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import { KeywordVocabularyView } from '../src/views'
@@ -31,7 +32,7 @@ describe('Test KeywordVocabularyView', () => {
       model,
       vocabs: { eidc: [] }
     })
-    expect(view.$('.keywordPicker').is(':visible')).toBeFalse()
+    expect(view.$('.keywordPicker').is(':visible')).toBe(false)
     expect(view.$('.vocabularyPicker').children().length).toBe(0)
   })
 
@@ -40,7 +41,7 @@ describe('Test KeywordVocabularyView', () => {
     view = new KeywordVocabularyView({
       model
     })
-    expect(view.$('.keywordPicker').is(':visible')).toBeFalse()
+    expect(view.$('.keywordPicker').is(':visible')).toBe(false)
     expect(view.$('.vocabularyPicker').children().length).toBe(0)
   })
 

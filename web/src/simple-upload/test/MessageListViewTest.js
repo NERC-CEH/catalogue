@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import { MessageListView } from '../src/Message'
@@ -13,7 +14,7 @@ describe('Test MessageListView', function () {
 
   beforeEach(function () {
     el = $(template).appendTo($('body'))
-    spyOn(MessageListView.prototype, 'addMessage').and.callThrough()
+    vi.spyOn(MessageListView.prototype, 'addMessage')
     messages = new Backbone.Collection()
     view = new MessageListView({
       el,

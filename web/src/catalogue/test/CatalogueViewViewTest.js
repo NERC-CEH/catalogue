@@ -1,7 +1,8 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import CatalogueViewView from '../src/CatalogueApp/CatalogueViewView'
 import CatalogueViewModel from '../src/CatalogueApp/CatalogueViewModel'
-import { fakeServer, spy } from '../../test/support'
+import { fakeServer } from '../../test/support'
 
 // The dialog that shares a record into other catalogues, opened from "Manage secondary catalogues" in a
 // record's admin menu (startup/apps.js initCatalogueView), as an editor ticks and saves it (dri-one #473)
@@ -35,8 +36,8 @@ describe('Sharing a record into other catalogues', () => {
     open({ id: 'abc', value: ['ukceh'] })
 
     expect(view.$('.form-check label').map((i, label) => label.textContent).get()).toEqual(['UKCEH digital assets', 'About ASSIST'])
-    expect(box('ukceh').prop('checked')).toBeTrue()
-    expect(box('assist').prop('checked')).toBeFalse()
+    expect(box('ukceh').prop('checked')).toBe(true)
+    expect(box('assist').prop('checked')).toBe(false)
   })
 
   it('reads a record shown in no other catalogue, which comes without a value', () => {
@@ -71,7 +72,7 @@ describe('Sharing a record into other catalogues', () => {
     expect(request.url).toBe('/documents/abc/catalogue-view')
     expect(JSON.parse(request.body).value).toEqual(['assist'])
     expect(request.headers['If-Match']).toBe('r1')
-    const saved = spy('saved')
+    const saved = vi.fn()
     model.on('sync', saved)
     request.respondWith({ status: 200, contentType: 'application/json', responseText: '{"id":"abc","value":["assist"]}', responseHeaders: { ETag: '"r2"' } })
     expect(saved).toHaveBeenCalled()

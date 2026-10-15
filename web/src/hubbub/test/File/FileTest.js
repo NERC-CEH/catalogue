@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { File } from '../../src/File'
 
 describe('File model', function () {
@@ -29,14 +30,14 @@ describe('File model', function () {
     expect(file.get('size')).toBe('300 B')
 
     // from server
-    expect(file.has('bytes')).toBeTrue()
-    expect(file.has('datasetId')).toBeTrue()
-    expect(file.has('datastore')).toBeTrue()
-    expect(file.has('format')).toBeTrue()
-    expect(file.has('hashingTime')).toBeTrue()
-    expect(file.has('lastModified')).toBeTrue()
-    expect(file.has('lastValidated')).toBeTrue()
-    expect(file.has('path')).toBeTrue()
+    expect(file.has('bytes')).toBe(true)
+    expect(file.has('datasetId')).toBe(true)
+    expect(file.has('datastore')).toBe(true)
+    expect(file.has('format')).toBe(true)
+    expect(file.has('hashingTime')).toBe(true)
+    expect(file.has('lastModified')).toBe(true)
+    expect(file.has('lastValidated')).toBe(true)
+    expect(file.has('path')).toBe(true)
   })
 
   it('updates', function () {
@@ -47,8 +48,8 @@ describe('File model', function () {
     file.update(attributes)
 
     // then
-    expect(file.get('check')).toBeFalse()
-    expect(file.get('moving')).toBeFalse()
+    expect(file.get('check')).toBe(false)
+    expect(file.get('moving')).toBe(false)
   })
 
   it('copy', function () {
@@ -59,7 +60,7 @@ describe('File model', function () {
     const copy = file.copy('eidchub')
 
     // then
-    expect(copy.get('check')).toBeTrue()
+    expect(copy.get('check')).toBe(true)
     expect(copy.get('datastore')).toBe('eidchub')
     expect(copy.get('status')).toBe('MOVING_TO')
   })

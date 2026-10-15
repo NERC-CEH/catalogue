@@ -1,7 +1,8 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import { UploadModel, UploadView } from '../../src/Upload'
 import FileCollection from '../../src/File/FileCollection'
-import { fakeServer, spy } from '../../../test/support'
+import { fakeServer } from '../../../test/support'
 
 describe('UploadView', function () {
   const id = 'ebaf006d-b014-4d8b-9131-7677e61519dd'
@@ -155,40 +156,40 @@ describe('UploadView', function () {
     it('trigger loadDatastore', function () {
       // given
       const $button = view.$('.load.datastore')
-      spyOn(view, 'loadMore')
+      vi.spyOn(view, 'loadMore').mockImplementation(() => {})
 
       // when
       $button.trigger('click')
 
       // then
       expect($button.length).toEqual(1)
-      expect(view.loadMore).toHaveBeenCalledWith(jasmine.anything(), 'datastore', 'eidchub', jasmine.anything())
+      expect(view.loadMore).toHaveBeenCalledWith(expect.anything(), 'datastore', 'eidchub', expect.anything())
     })
 
     it('trigger loadDropbox', function () {
       // given
       const $button = view.$('.load.data')
-      spyOn(view, 'loadMore')
+      vi.spyOn(view, 'loadMore').mockImplementation(() => {})
 
       // when
       $button.trigger('click')
 
       // then
       expect($button.length).toEqual(1)
-      expect(view.loadMore).toHaveBeenCalledWith(jasmine.anything(), 'dropbox', 'dropbox', jasmine.anything())
+      expect(view.loadMore).toHaveBeenCalledWith(expect.anything(), 'dropbox', 'dropbox', expect.anything())
     })
 
     it('trigger loadMetadata', function () {
       // given
       const $button = view.$('.load.metadata')
-      spyOn(view, 'loadMore')
+      vi.spyOn(view, 'loadMore').mockImplementation(() => {})
 
       // when
       $button.trigger('click')
 
       // then
       expect($button.length).toEqual(1)
-      expect(view.loadMore).toHaveBeenCalledWith(jasmine.anything(), 'metadata', 'supporting-documents', jasmine.anything())
+      expect(view.loadMore).toHaveBeenCalledWith(expect.anything(), 'metadata', 'supporting-documents', expect.anything())
     })
   })
 
@@ -232,8 +233,8 @@ describe('UploadView', function () {
           responseText: '{"data":[{},{}],"meta":{"currentPage":7}}'
         }
       }
-      spyOn(view, 'showInProgress')
-      spyOn(collection, 'trigger').and.callThrough()
+      vi.spyOn(view, 'showInProgress').mockImplementation(() => {})
+      vi.spyOn(collection, 'trigger')
 
       // when
       view.loadMore(event, 'datastore', 'eidchub', collection)
@@ -248,9 +249,9 @@ describe('UploadView', function () {
       // loadMore no longer mutates the collection directly; it fires an
       // 'addBatch' event carrying the freshly-fetched File models, which the
       // view's listener adds to the wired collection.
-      const addBatchCall = collection.trigger.calls.all().find(c => c.args[0] === 'addBatch')
+      const addBatchCall = collection.trigger.mock.calls.find(args => args[0] === 'addBatch')
       expect(addBatchCall).toBeDefined()
-      expect(addBatchCall.args[1].length).toEqual(2)
+      expect(addBatchCall[1].length).toEqual(2)
       expect(view.showInProgress).toHaveBeenCalledWith(event)
       expect(view.model.get('datastorePage')).toEqual(7)
     })
@@ -259,8 +260,8 @@ describe('UploadView', function () {
       // given
       const event = {}
       const collection = new FileCollection()
-      spyOn(view, 'showInProgress')
-      spyOn($, 'ajax')
+      vi.spyOn(view, 'showInProgress').mockImplementation(() => {})
+      vi.spyOn($, 'ajax').mockImplementation(() => {})
 
       // when
       view.loadMore(event, 'metadata', 'supporting-documents', collection)
@@ -275,7 +276,7 @@ describe('UploadView', function () {
     beforeEach(function () {
       fakeServer.install()
       // These actions now ask first (dri-one #459)
-      spyOn(window, 'confirm').and.returnValue(true)
+      vi.spyOn(window, 'confirm').mockReturnValue(true)
       $(document.body)
         .html(`
                         <div class="document-upload">
@@ -296,9 +297,9 @@ describe('UploadView', function () {
     it('success', function () {
       // given
       const $finishBtn = view.$('.finish')
-      spyOn(view, 'showInProgress')
-      spyOn(view, 'showNormal')
-      spyOn(view, 'redirectToDocuments')
+      vi.spyOn(view, 'showInProgress').mockImplementation(() => {})
+      vi.spyOn(view, 'showNormal').mockImplementation(() => {})
+      vi.spyOn(view, 'redirectToDocuments').mockImplementation(() => {})
 
       // when
       $finishBtn.trigger('click')
@@ -321,9 +322,9 @@ describe('UploadView', function () {
     it('error', function () {
       // given
       const $finish = view.$('.finish')
-      spyOn(view, 'showInProgress')
-      spyOn(view, 'showNormal')
-      spyOn(view, 'showInError')
+      vi.spyOn(view, 'showInProgress').mockImplementation(() => {})
+      vi.spyOn(view, 'showNormal').mockImplementation(() => {})
+      vi.spyOn(view, 'showInError').mockImplementation(() => {})
 
       // when
       $finish.trigger('click')
@@ -347,7 +348,7 @@ describe('UploadView', function () {
     beforeEach(function () {
       fakeServer.install()
       // These actions now ask first (dri-one #459)
-      spyOn(window, 'confirm').and.returnValue(true)
+      vi.spyOn(window, 'confirm').mockReturnValue(true)
       $(document.body)
         .html(`
                         <div class="document-upload">
@@ -367,11 +368,11 @@ describe('UploadView', function () {
 
     it('success', function () {
       // given
-      spyOn(view, 'showInProgress')
+      vi.spyOn(view, 'showInProgress').mockImplementation(() => {})
       // moveAllDatastore delegates the (deferred) refresh + dropbox cleanup to
       // collectionSuccess, which reloads the datastore after a 7s timeout. Spy
       // at that boundary rather than driving the timer + dataTable internals.
-      spyOn(view, 'collectionSuccess')
+      vi.spyOn(view, 'collectionSuccess').mockImplementation(() => {})
 
       // when
       view.$('.move-all').trigger('click')
@@ -385,12 +386,12 @@ describe('UploadView', function () {
       expect(request.url).toBe(`/upload/${id}/dropbox/move?to=eidchub`)
       expect(view.showInProgress).toHaveBeenCalled()
       expect(view.collectionSuccess).toHaveBeenCalledWith(
-        jasmine.anything(),
+        expect.anything(),
         undefined, // currentClasses: showInProgress is stubbed, so returns undefined
         'datastore',
         'eidchub',
         view.datastore,
-        jasmine.any(Function)
+        expect.any(Function)
       )
     })
   })
@@ -421,9 +422,9 @@ describe('UploadView', function () {
 
     it('trigger reschedule', function () {
       // given
-      spyOn(view, 'showInProgress')
-      spyOn(view, 'showNormal')
-      spyOn(view, 'reloadPage')
+      vi.spyOn(view, 'showInProgress').mockImplementation(() => {})
+      vi.spyOn(view, 'showNormal').mockImplementation(() => {})
+      vi.spyOn(view, 'reloadPage').mockImplementation(() => {})
 
       // when
       view.$('.reschedule').trigger('click')
@@ -442,9 +443,9 @@ describe('UploadView', function () {
 
     it('trigger schedule', function () {
       // given
-      spyOn(view, 'showInProgress')
-      spyOn(view, 'showNormal')
-      spyOn(view, 'reloadPage')
+      vi.spyOn(view, 'showInProgress').mockImplementation(() => {})
+      vi.spyOn(view, 'showNormal').mockImplementation(() => {})
+      vi.spyOn(view, 'reloadPage').mockImplementation(() => {})
 
       // when
       view.$('.schedule').trigger('click')
@@ -463,10 +464,10 @@ describe('UploadView', function () {
 
     it('error', function () {
       // given
-      spyOn(view, 'showInProgress')
-      spyOn(view, 'showNormal')
-      spyOn(view, 'reloadPage')
-      spyOn(view, 'showInError')
+      vi.spyOn(view, 'showInProgress').mockImplementation(() => {})
+      vi.spyOn(view, 'showNormal').mockImplementation(() => {})
+      vi.spyOn(view, 'reloadPage').mockImplementation(() => {})
+      vi.spyOn(view, 'showInError').mockImplementation(() => {})
 
       // when
       view.$('.schedule').trigger('click')
@@ -507,7 +508,7 @@ describe('UploadView', function () {
 
     it('validate-all', function () {
       // given
-      spyOn(view, 'validate')
+      vi.spyOn(view, 'validate').mockImplementation(() => {})
 
       // when
       view.$('.validate-all').trigger('click')
@@ -520,7 +521,7 @@ describe('UploadView', function () {
       // given
       const collection = new FileCollection()
       const event = {}
-      spyOn(view, 'collectionSuccess')
+      vi.spyOn(view, 'collectionSuccess').mockImplementation(() => {})
 
       // when
       view.validate(event, 'datastore', 'eidchub', collection)
@@ -538,8 +539,8 @@ describe('UploadView', function () {
     it('getServerState', function () {
       // given
       const collection = new FileCollection()
-      spyOn(collection, 'reset')
-      const callback = spy('callback')
+      vi.spyOn(collection, 'reset').mockImplementation(() => {})
+      const callback = vi.fn()
       // when
       view.getServerState('datastore', 'eidchub', collection, callback)
       // then
@@ -577,7 +578,7 @@ describe('UploadView', function () {
 
     it('success', function () {
       // given
-      spyOn(view, 'collectionSuccess')
+      vi.spyOn(view, 'collectionSuccess').mockImplementation(() => {})
 
       // when
       view.$('.hash-dropbox').trigger('click')
@@ -588,7 +589,7 @@ describe('UploadView', function () {
       request.respondWith(testResponses.success)
       expect(request.method).toBe('POST')
       expect(request.url).toBe(`/upload/${id}/hash`)
-      expect(view.collectionSuccess).toHaveBeenCalledWith(jasmine.anything(), undefined, 'dropbox', 'dropbox', jasmine.anything())
+      expect(view.collectionSuccess).toHaveBeenCalledWith(expect.anything(), undefined, 'dropbox', 'dropbox', expect.anything())
     })
   })
 
@@ -614,9 +615,9 @@ describe('UploadView', function () {
 
     it('success', function () {
       // given
-      spyOn(view, 'showInProgress')
-      spyOn(view, 'showNormal')
-      spyOn(view, 'reloadPage')
+      vi.spyOn(view, 'showInProgress').mockImplementation(() => {})
+      vi.spyOn(view, 'showNormal').mockImplementation(() => {})
+      vi.spyOn(view, 'reloadPage').mockImplementation(() => {})
 
       // when
       view.$('.register-dropbox').trigger('click')

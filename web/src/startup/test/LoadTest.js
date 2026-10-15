@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { load } from '../load'
 
 // Each loader fetches its micro-app's chunk and resolves to the classes its start-up uses: a renamed
@@ -18,14 +19,14 @@ describe('Micro-app loaders', () => {
   Object.entries(EXPECTED).forEach(([name, classes]) => {
     it(`${name} gives ${classes.join(', ')}`, async () => {
       const module = await load[name]()
-      classes.forEach(each => expect(module[each]).withContext(each).toEqual(jasmine.any(Function)))
+      classes.forEach(each => expect(module[each], each).toEqual(expect.any(Function)))
     })
   })
 
   it('messageView, searchRouter and swal give what their callers use directly', async () => {
-    expect(await load.messageView()).toEqual(jasmine.any(Function))
-    expect(await load.searchRouter()).toEqual(jasmine.any(Function))
-    expect((await load.swal()).fire).toEqual(jasmine.any(Function))
+    expect(await load.messageView()).toEqual(expect.any(Function))
+    expect(await load.searchRouter()).toEqual(expect.any(Function))
+    expect((await load.swal()).fire).toEqual(expect.any(Function))
   })
 
   it('covers every loader', () => {
