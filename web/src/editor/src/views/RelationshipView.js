@@ -12,14 +12,23 @@ if ($.ui && $.ui.autocomplete && $.ui.autocomplete.prototype) {
   }
 }
 
-async function generateInformationString (target) {
-  // Records can be kept either as a full URI or simply a UID
-  const urlRegEx = /^https?:\/\/(?!catalogue\.ceh\.ac\.uk\/documents)(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%-/]))?$/
-  const isValidUrl = url => urlRegEx.test(url)
-  const query = isValidUrl(target) ? target : `/documents/${target}`
+// The catalogue's own record URIs, as relationship targets are often stored
+const ownRecord = /^https?:\/\/catalogue\.ceh\.ac\.uk\/(?:id|documents)\/([^/?#]+)$/
 
+/**
+ * Where to fetch a relationship's target from. A target is stored either as a record id or as a URI;
+ * the catalogue's own URIs are fetched from this catalogue, like an id, so that staging and local
+ * stacks don't ask production (which their origin isn't allowed to read) for each one.
+ */
+export function recordUrl (target) {
+  const own = ownRecord.exec(target)
+  if (own) return `/documents/${own[1]}`
+  return /^https?:\/\//.test(target) ? target : `/documents/${target}`
+}
+
+async function generateInformationString (target) {
   try {
-    const data = await $.getJSON(query)
+    const data = await $.getJSON(recordUrl(target))
     return `${data.title} (${data.type}, ${data.id})`
   } catch (error) {
     return target
