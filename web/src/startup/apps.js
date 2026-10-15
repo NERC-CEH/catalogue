@@ -256,7 +256,7 @@ export async function initSearch () {
   const app = new SearchApp()
   const searchAppView = new SearchAppView({ model: app })
   searchAppView.facetsPanelView.createFacetSearch(app)
-  searchAppView.searchResultsView.initSearchShareIcon($('#searchShareIcon'))
+  searchAppView.searchResultsView.initSearchShare($('#searchShare'))
   new SearchRouter({ model: app, location: window.location })
   new MessageView({ model: app })
 }

@@ -80,8 +80,16 @@ describe('Emailing a search', () => {
       $(document.body).empty()
     })
 
+    it('is a button saying what it does', () => {
+      const $share = view.$('#searchShare')
+
+      expect($share.is('button[type=button]')).toBeTrue()
+      expect($share.text().trim()).toBe('Email results')
+      expect($share.find('i.fa-envelope').attr('aria-hidden')).toBe('true')
+    })
+
     it('emails the results shown, under the catalogue\'s name', () => {
-      view.$('#searchShareIcon').trigger('click')
+      view.$('#searchShare').trigger('click')
 
       const { subject, body } = read(opened.calls.mostRecent().args[0])
       expect(subject).toMatch(/^Environmental Information Data Centre search results, \d{1,2} \w+ \d{4}$/)
@@ -92,7 +100,7 @@ describe('Emailing a search', () => {
     it('falls back to the catalogue\'s id when the page doesn\'t name it', () => {
       $('meta[name="og.site_name"]').remove()
 
-      view.$('#searchShareIcon').trigger('click')
+      view.$('#searchShare').trigger('click')
 
       expect(read(opened.calls.mostRecent().args[0]).subject).toMatch(/^EIDC search results, /)
     })

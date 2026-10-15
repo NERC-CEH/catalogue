@@ -151,12 +151,12 @@ export default Backbone.View.extend({
       })
     }
 
-    this.initSearchShareIcon(this.$('#searchShareIcon'))
+    this.initSearchShare(this.$('#searchShare'))
 
     return this
   },
 
-  initSearchShareIcon (el) {
+  initSearchShare (el) {
     el.click(() => this.openMail(shareEmail({
       catalogue: $('meta[name="og.site_name"]').attr('content') || String($('html').data('catalogue') || '').toUpperCase(),
       href: window.location.href,
