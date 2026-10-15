@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import { IdentityPermissionView } from '../src/IdentityPermission/index.js'
 import { Permission, DocumentsTemplate, ServiceAgreementTemplate } from '../src/PermissionApp/index.js'
 
@@ -20,7 +21,7 @@ describe('Test IdentityPermissionView', () => {
       canUpload: false
     })
     const view = new IdentityPermissionView({ model, template: DocumentsTemplate })
-    spyOn(view, 'removePermission')
+    vi.spyOn(view, 'removePermission').mockImplementation(() => {})
     view.initialize()
     view.delegateEvents()
     view.render()
@@ -42,7 +43,7 @@ describe('Test IdentityPermissionView', () => {
       canUpload: false
     })
     const view = new IdentityPermissionView({ model, template: ServiceAgreementTemplate })
-    spyOn(view, 'removePermission')
+    vi.spyOn(view, 'removePermission').mockImplementation(() => {})
     view.initialize()
     view.delegateEvents()
     view.render()
@@ -64,7 +65,7 @@ describe('Test IdentityPermissionView', () => {
       canUpload: false
     })
     const view = new IdentityPermissionView({ model, template: DocumentsTemplate })
-    spyOn(view, 'update')
+    vi.spyOn(view, 'update').mockImplementation(() => {})
     view.initialize()
     view.delegateEvents()
     view.render()

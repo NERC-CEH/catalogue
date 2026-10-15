@@ -1,4 +1,4 @@
-/* global beforeAll, afterAll */
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import SearchApp from '../src/SearchApp'
 import SearchAppView from '../src/SearchAppView'
@@ -19,7 +19,7 @@ describe('Search page', () => {
 
     beforeEach(() => {
       app = new SearchApp()
-      spyOn(app, 'searchNow')
+      vi.spyOn(app, 'searchNow').mockImplementation(() => {})
     })
 
     it('still searches when a non-search setting changes before the debounce fires', () => {
@@ -81,11 +81,11 @@ describe('Search page', () => {
     try {
       $(document.body).html('<div id="search"><span id="num-records">1</span></div>')
       const app = new SearchApp()
-      spyOn(app, 'setState')
-      spyOn(SearchAppView.prototype, 'render') // the map and forms need their full page
+      vi.spyOn(app, 'setState').mockImplementation(() => {})
+      vi.spyOn(SearchAppView.prototype, 'render').mockImplementation(() => {}) // the map and forms need their full page
       new SearchAppView({ model: app }) // eslint-disable-line no-new
 
-      expect(app.setState).toHaveBeenCalledWith(jasmine.objectContaining({ term: 'soil' }), { serverRendered: true })
+      expect(app.setState).toHaveBeenCalledWith(expect.objectContaining({ term: 'soil' }), { serverRendered: true })
     } finally {
       window.history.replaceState(null, '', original)
       $(document.body).empty()
@@ -121,8 +121,8 @@ describe('Search page', () => {
   describe('submitting a typed term', () => {
     it('searches once, not again when the debounce fires', async () => {
       const app = new SearchApp()
-      spyOn(app.results.constructor.prototype, 'fetch') // no requests
-      const searches = spyOn(app, 'createSearchPage').and.callThrough() // one per search, this app's only
+      vi.spyOn(app.results.constructor.prototype, 'fetch').mockImplementation(() => {}) // no requests
+      const searches = vi.spyOn(app, 'createSearchPage') // one per search, this app's only
 
       app.set('term', 'soil')
       app.searchNow()
@@ -137,15 +137,16 @@ describe('Search page', () => {
   describe('the message panel', () => {
     let frame
 
-    beforeAll(done => {
+    beforeAll(async () => {
       frame = document.createElement('iframe')
       frame.style.width = '1200px'
       frame.style.height = '600px'
-      frame.onload = () => done()
-      frame.srcdoc = `<!doctype html><html><head><link rel="stylesheet" href="/base/build/test-css/style-eidc.css"></head>
+      const loaded = new Promise(resolve => { frame.onload = resolve })
+      frame.srcdoc = `<!doctype html><html><head><link rel="stylesheet" href="/build/test-css/style-eidc.css"></head>
         <body><header style="height: 300px">The header</header>
         <div id="message-panel" style="display: block"><div class="alert alert-danger">Search failed</div></div></body></html>`
       document.body.appendChild(frame)
+      await loaded
     })
 
     afterAll(() => frame.remove())

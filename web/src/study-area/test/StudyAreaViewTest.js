@@ -1,3 +1,4 @@
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import L from 'leaflet'
 import { StudyAreaView } from '../src/View'
@@ -19,7 +20,7 @@ describe('Test StudyAreaView', function () {
 
     // Then
     expect(view).toBeDefined()
-    expect(el.hasClass('leaflet-container')).toBeTrue()
+    expect(el.hasClass('leaflet-container')).toBe(true)
   })
 
   it('renders polygon', () => {
@@ -34,7 +35,7 @@ describe('Test StudyAreaView', function () {
 
     // Then
     expect(view).toBeDefined()
-    expect(el.hasClass('leaflet-container')).toBeTrue()
+    expect(el.hasClass('leaflet-container')).toBe(true)
   })
 
   it('renders feature collection', () => {
@@ -49,7 +50,7 @@ describe('Test StudyAreaView', function () {
 
     // Then
     expect(view).toBeDefined()
-    expect(el.hasClass('leaflet-container')).toBeTrue()
+    expect(el.hasClass('leaflet-container')).toBe(true)
   })
 })
 
@@ -59,7 +60,7 @@ describe('Test StudyAreaView', function () {
 // Deliberately a top-level describe rather than nested inside the one above.
 // That one owns a DOM fixture and tears it down with afterEach(() => el?.remove()),
 // which would also run after every test nested within it - and these tests never
-// assign `el`. Jasmine randomises test order, so nesting them made the suite pass
+// assign `el`. The specs run in a random order, so nesting them made the suite pass
 // or fail depending on the seed: green locally, four failures on CI.
 describe('marker styling', () => {
   const styling = Object.create(StudyAreaView.prototype)
@@ -107,7 +108,7 @@ describe('marker styling', () => {
   })
 
   it('shows a linked record title as text in its popup (dri-one #454)', () => {
-    spyOn(L.Layer.prototype, 'bindPopup').and.callThrough()
+    vi.spyOn(L.Layer.prototype, 'bindPopup')
     const feature = {
       type: 'Feature',
       properties: { title: '<img src=x onerror="window.__xss454=1">', link: 'https://example.com/" onmouseover="x' },
@@ -121,7 +122,7 @@ describe('marker styling', () => {
     new StudyAreaView({ el }) // eslint-disable-line no-new
     el.remove()
 
-    const popup = $('<div>').html(L.Layer.prototype.bindPopup.calls.first().args[0])
+    const popup = $('<div>').html(L.Layer.prototype.bindPopup.mock.calls[0][0])
     expect(popup.find('img').length).toBe(0)
     expect(popup.find('a').text()).toBe(feature.properties.title)
     expect(popup.find('a').attr('href')).toBe(feature.properties.link)
@@ -129,7 +130,7 @@ describe('marker styling', () => {
 
   it('links a popup only to an http(s) address (dri-one #454)', () => {
     // Escaping does not stop a javascript: URL from running when the link is clicked
-    spyOn(L.Layer.prototype, 'bindPopup').and.callThrough()
+    vi.spyOn(L.Layer.prototype, 'bindPopup')
     const feature = {
       type: 'Feature',
       properties: { title: 'Site A', link: 'javascript:window.__xss454=1' },
@@ -142,7 +143,7 @@ describe('marker styling', () => {
     new StudyAreaView({ el }) // eslint-disable-line no-new
     el.remove()
 
-    const popup = $('<div>').html(L.Layer.prototype.bindPopup.calls.first().args[0])
+    const popup = $('<div>').html(L.Layer.prototype.bindPopup.mock.calls[0][0])
     expect(popup.find('a').length).toBe(0)
     expect(popup.text()).toContain('Site A')
   })

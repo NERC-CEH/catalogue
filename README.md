@@ -191,22 +191,25 @@ Any changes to `web/src/` or `web/scss/` are rebuilt within a few seconds — re
 browser to see the result; no container restart is needed.
 
 ```bash
-# Run JS tests (single run):
-docker compose exec web npm run test
-# Or on the host:
+# Run JS tests (single run), on the host: the web container has no browser to run them in
 cd web && npm run test
 
 # Lint:
 cd web && npm run lint
 ```
 
-### Test JavaScript using Karma
+### Test JavaScript using Vitest
 
-      npm run test
+      npm run test             # the specs, once
+      npx vitest               # watching, rerunning what a change affects
+      npm run test-coverage    # with the coverage report and floor, as CI runs them
 
-Karma tests are found in each module in `web/src/` if you need to edit or add new tests.
-For example, the tests for the editor module are in `web/src/editor/test/`.
-The Karma tests are configured in `karma.conf.js`.
+The specs run on [Vitest](https://vitest.dev/) in a real browser: Chromium, driven by Playwright,
+using the Chrome Puppeteer installs (`npx puppeteer browsers install chrome` in `web/` if it is
+missing; CI uses its own chromium). They are found in each module in `web/src/` if you need to edit
+or add new tests: for example, the tests for the editor module are in `web/src/editor/test/`.
+Each imports what it uses from `vitest`; `web/src/test/support.js` fakes the server jQuery talks to.
+The runner, and the coverage floor, are configured in `web/vitest.config.mjs`.
 
 ### Java
 

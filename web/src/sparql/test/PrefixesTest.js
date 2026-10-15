@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import prefixes from '../prefixes.json'
 
 // The prefixes the SPARQL page's editor suggests after PREFIX, in place of prefix.cc's (dri-one #470).
@@ -6,7 +7,7 @@ describe('The SPARQL editor\'s prefix list', () => {
   const entries = Object.entries(prefixes)
 
   it('has the namespaces the page and its example queries declare', () => {
-    expect(Object.keys(prefixes)).toEqual(jasmine.arrayContaining(
+    expect(Object.keys(prefixes)).toEqual(expect.arrayContaining(
       ['dcat', 'dcterms', 'foaf', 'frapo', 'prov', 'rdfs', 'schema', 'sd', 'skos', 'void', 'wdt']))
   })
 
@@ -16,8 +17,8 @@ describe('The SPARQL editor\'s prefix list', () => {
 
   it('gives each a full namespace IRI, ending as namespaces do', () => {
     entries.forEach(([name, namespace]) => {
-      expect(new URL(namespace).protocol).withContext(name).toMatch(/^https?:$/)
-      expect(namespace).withContext(name).toMatch(/[#/]$/)
+      expect(new URL(namespace).protocol, name).toMatch(/^https?:$/)
+      expect(namespace, name).toMatch(/[#/]$/)
     })
   })
 })

@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import SpatialFilterView from '../src/views/SpatialFilterView'
 import SearchApp from '../src/SearchApp'
 import $ from 'jquery'

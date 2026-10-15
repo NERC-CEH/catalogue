@@ -8,8 +8,8 @@ module.exports = [
   // Built and generated files (an object holding only ignores applies to every other one)
   { ignores: ['dist/**', 'build/**', 'coverage/**', 'css/**'] },
   ...neostandard({
-    // The application and its specs run in the browser, the specs under Jasmine
-    env: ['browser', 'jasmine']
+    // The application and its specs run in the browser; the specs import what they use from vitest
+    env: ['browser']
   }),
   {
     // The page's jQuery globals are set for Bootstrap's jQuery events and to keep the Jira issue

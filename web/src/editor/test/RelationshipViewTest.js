@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import RelationshipView, { clearRelationshipRules, recordType, resultItem } from '../src/views/RelationshipView.js'
 import { EditorMetadata } from '../src'
 import $ from 'jquery'
@@ -11,7 +12,7 @@ describe('Test RelationshipView', function () {
   beforeEach(function () {
     model = new EditorMetadata({ value: 'http://purl.org/dc/terms/relation', target: '' })
     view = new RelationshipView({ model, options })
-    spyOn($, 'getJSON').and.callFake((url) => {
+    vi.spyOn($, 'getJSON').mockImplementation((url) => {
       return {
         title: 'title',
         id: 'uid-123',
@@ -31,21 +32,21 @@ describe('Test RelationshipView', function () {
     model = new EditorMetadata({ value: 'http://purl.org/dc/terms/relation', target: 'target' })
     view = new RelationshipView({ model, options })
     await view.render()
-    expect(view.$('.relationshipSearch').hasClass('d-none')).toBeTrue()
+    expect(view.$('.relationshipSearch').hasClass('d-none')).toBe(true)
   })
 
   it('should disable relationshipList if target exists', async () => {
     model = new EditorMetadata({ value: 'http://purl.org/dc/terms/relation', target: 'target' })
     view = new RelationshipView({ model, options })
     await view.render()
-    expect(view.$('.relationshipList').prop('disabled')).toBeTrue()
+    expect(view.$('.relationshipList').prop('disabled')).toBe(true)
   })
 
   it('should set relationshipRecord to d-none if target does not exist', async () => {
     model = new EditorMetadata({ value: 'http://purl.org/dc/terms/relation', target: '' })
     view = new RelationshipView({ model, options })
     await view.render()
-    expect(view.$('.relationshipRecord').hasClass('d-none')).toBeTrue()
+    expect(view.$('.relationshipRecord').hasClass('d-none')).toBe(true)
   })
 
   it('should enable autocomplete when relationship selected', async () => {
@@ -55,7 +56,7 @@ describe('Test RelationshipView', function () {
       .val('http://purl.org/dc/terms/relation')
       .trigger('change')
 
-    expect(view.$('.autocomplete').prop('disabled')).toBeFalse()
+    expect(view.$('.autocomplete').prop('disabled')).toBe(false)
   })
 
   it('should do correct http call for uid', async () => {
@@ -87,7 +88,7 @@ describe('Test RelationshipView', function () {
     beforeEach(function () {
       clearRelationshipRules()
       $('html').data('catalogue', 'eidc')
-      $.getJSON.and.callFake(url => url.startsWith('/relationships/rules') ? datasetRules : { results: [] })
+      $.getJSON.mockImplementation(url => url.startsWith('/relationships/rules') ? datasetRules : { results: [] })
     })
 
     async function pickerFor (relation, parent = new EditorMetadata({ id: 'cosmos', type: 'dataset' })) {
@@ -101,7 +102,7 @@ describe('Test RelationshipView', function () {
       return async () => {
         const results = []
         await source({ term: 'rainfall' }, items => results.push(items))
-        return { query: decodeURIComponent($.getJSON.calls.mostRecent().args[0]), results }
+        return { query: decodeURIComponent($.getJSON.mock.lastCall[0]), results }
       }
     }
 
@@ -158,8 +159,8 @@ describe('Test RelationshipView', function () {
     })
 
     it('falls back to an unfiltered search if the rules cannot be fetched', async () => {
-      spyOn(console, 'error')
-      $.getJSON.and.callFake(url => url.startsWith('/relationships/rules') ? Promise.reject(new Error('down')) : { results: [] })
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+      $.getJSON.mockImplementation(url => url.startsWith('/relationships/rules') ? Promise.reject(new Error('down')) : { results: [] })
       const query = await queryFor(REPLACES)
       expect(query).not.toContain('resourceType:')
       expect(console.error).toHaveBeenCalled()
@@ -175,18 +176,18 @@ describe('Test RelationshipView', function () {
     })
 
     it('searches nothing for a restricted relationship with no type to match', async () => {
-      $.getJSON.and.callFake(url => url.startsWith('/relationships/rules') ? { [REPLACES]: {} } : { results: [] })
+      $.getJSON.mockImplementation(url => url.startsWith('/relationships/rules') ? { [REPLACES]: {} } : { results: [] })
       const search = await pickerFor(REPLACES)
-      $.getJSON.calls.reset()
+      $.getJSON.mockClear()
       const { results } = await search()
       expect(results).toEqual([[]])
       // Only the rules are fetched: no record search is made
-      expect($.getJSON.calls.allArgs().map(args => args[0])).toEqual(['/relationships/rules?type=dataset'])
+      expect($.getJSON.mock.calls.map(args => args[0])).toEqual(['/relationships/rules?type=dataset'])
     })
 
     it('answers the autocomplete even when the search fails', async () => {
-      spyOn(console, 'error')
-      $.getJSON.and.callFake(url => url.startsWith('/relationships/rules') ? datasetRules : Promise.reject(new Error('Solr 400')))
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+      $.getJSON.mockImplementation(url => url.startsWith('/relationships/rules') ? datasetRules : Promise.reject(new Error('Solr 400')))
       const search = await pickerFor(REPLACES)
       const { results } = await search()
       expect(results).toEqual([[]])
@@ -216,7 +217,7 @@ describe('Test RelationshipView', function () {
     })
 
     it('says which catalogue a result comes from, by its title', async () => {
-      $.getJSON.and.callFake(url => url === '/catalogues'
+      $.getJSON.mockImplementation(url => url === '/catalogues'
         ? [{ id: 'ukceh', title: 'UKCEH digital assets' }, { id: 'eidc', title: 'EIDC' }]
         : {})
       const item = await resultItem(facility)
@@ -226,14 +227,14 @@ describe('Test RelationshipView', function () {
     })
 
     it('falls back to the catalogue id if the titles cannot be fetched', async () => {
-      spyOn(console, 'error')
-      $.getJSON.and.callFake(url => url === '/catalogues' ? Promise.reject(new Error('down')) : {})
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+      $.getJSON.mockImplementation(url => url === '/catalogues' ? Promise.reject(new Error('down')) : {})
       const item = await resultItem(facility)
       expect(item.html).toContain('ukceh')
     })
 
     it('escapes record titles, which are rendered as HTML', async () => {
-      $.getJSON.and.callFake(() => [])
+      $.getJSON.mockImplementation(() => [])
       const item = await resultItem({ ...facility, title: '<img src=x onerror=alert(1)>' })
       expect(item.html).not.toContain('<img')
       expect(item.html).toContain('&lt;img')

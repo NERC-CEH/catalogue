@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import DepositRequestApp from '../src/model/DepositRequestApp'
 import DepositRequestFormView from '../src/view/DepositRequestFormView'
@@ -47,7 +48,7 @@ describe('DepositRequestFormView', () => {
 
   beforeEach(() => {
     fakeServer.install()
-    spyOn(Element.prototype, 'scrollIntoView')
+    vi.spyOn(Element.prototype, 'scrollIntoView').mockImplementation(() => {})
   })
 
   afterEach(() => {
@@ -62,7 +63,7 @@ describe('DepositRequestFormView', () => {
       change('[data-name="checklist1"]', true)
 
       expect(view.model.get('name')).toBe('Ada Lovelace')
-      expect(view.model.get('checklist1')).toBeTrue()
+      expect(view.model.get('checklist1')).toBe(true)
     })
 
     it('asks which funders only when the funder is "Other", and forgets them otherwise', () => {
@@ -81,18 +82,18 @@ describe('DepositRequestFormView', () => {
     it('asks for a science area only of UKCEH staff', () => {
       form()
       change('[data-name="email"]', 'someone@ceh.ac.uk')
-      expect(view.$('#scienceAreaContainer').hasClass('d-none')).toBeFalse()
+      expect(view.$('#scienceAreaContainer').hasClass('d-none')).toBe(false)
 
       change('[data-name="email"]', 'someone@example.org')
 
-      expect(view.$('#scienceAreaContainer').hasClass('d-none')).toBeTrue()
+      expect(view.$('#scienceAreaContainer').hasClass('d-none')).toBe(true)
       expect(view.model.get('scienceArea')).toBeNull()
     })
 
     it('shows the science area already, for a UKCEH address it opens with', () => {
       form({ email: 'someone@ceh.ac.uk' })
 
-      expect(view.$('#scienceAreaContainer').hasClass('d-none')).toBeFalse()
+      expect(view.$('#scienceAreaContainer').hasClass('d-none')).toBe(false)
     })
 
     it('shows the answers it opens with', () => {
@@ -101,7 +102,7 @@ describe('DepositRequestFormView', () => {
       expect(view.$('[data-name="name"]').val()).toBe('Ada Lovelace')
       expect(view.$('[data-name="funder"]').val()).toBe('Other')
       expect(view.$('[data-name="funderOther"]').val()).toBe('Wellcome')
-      expect(view.$('[data-name="checklist2"]').prop('checked')).toBeTrue()
+      expect(view.$('[data-name="checklist2"]').prop('checked')).toBe(true)
     })
   })
 
@@ -131,9 +132,9 @@ describe('DepositRequestFormView', () => {
       form()
       view.$('.btn-submit').trigger('click')
 
-      expect(view.$('[data-name="name"]').hasClass('is-invalid')).toBeTrue()
+      expect(view.$('[data-name="name"]').hasClass('is-invalid')).toBe(true)
       expect(view.$('[data-name="name"]').siblings('.invalid-feedback').text()).toBe('Name is required')
-      expect(view.$('[data-name="dataResources"]').hasClass('is-invalid')).toBeTrue()
+      expect(view.$('[data-name="dataResources"]').hasClass('is-invalid')).toBe(true)
       expect(Element.prototype.scrollIntoView).toHaveBeenCalled()
       expect(fakeServer.requestCount()).toBe(0)
     })
@@ -144,8 +145,8 @@ describe('DepositRequestFormView', () => {
 
       change('[data-name="name"]', 'Ada Lovelace')
 
-      expect(view.$('[data-name="name"]').hasClass('is-invalid')).toBeFalse()
-      expect(view.$('[data-name="email"]').hasClass('is-invalid')).toBeTrue()
+      expect(view.$('[data-name="name"]').hasClass('is-invalid')).toBe(false)
+      expect(view.$('[data-name="email"]').hasClass('is-invalid')).toBe(true)
     })
 
     it('marks what is missing from a dataset', () => {
@@ -153,7 +154,7 @@ describe('DepositRequestFormView', () => {
       view.$('.add-resource').trigger('click')
       view.$('.btn-submit').trigger('click')
 
-      expect(view.$('.resource-list [data-name="title"]').hasClass('is-invalid')).toBeTrue()
+      expect(view.$('.resource-list [data-name="title"]').hasClass('is-invalid')).toBe(true)
     })
   })
 
@@ -169,12 +170,12 @@ describe('DepositRequestFormView', () => {
 
       expect(request.method).toBe('POST')
       expect(request.url).toBe(window.location.pathname)
-      expect(view.$('.btn-submit').prop('disabled')).toBeTrue()
+      expect(view.$('.btn-submit').prop('disabled')).toBe(true)
     })
 
     it('goes where the server says, once it is accepted', () => {
       const request = submit()
-      spyOn(view, 'navigateTo')
+      vi.spyOn(view, 'navigateTo').mockImplementation(() => {})
 
       request.respondWith({ status: 201, contentType: 'text/plain', responseText: '', responseHeaders: { Location: '/deposit-request/success' } })
 
@@ -187,7 +188,7 @@ describe('DepositRequestFormView', () => {
       request.respondWith({ status: 200, contentType: 'text/plain', responseText: 'Thank you' })
 
       expect(view.$('#message-box').text()).toBe('Thank you')
-      expect(view.$('.btn-submit').prop('disabled')).toBeFalse()
+      expect(view.$('.btn-submit').prop('disabled')).toBe(false)
     })
 
     it('says it was submitted when the server says nothing', () => {
@@ -204,7 +205,7 @@ describe('DepositRequestFormView', () => {
       request.respondWith({ status: 400, contentType: 'text/plain', responseText: 'That email is already waiting for a reply' })
 
       expect(view.$('#message-box').text()).toBe('That email is already waiting for a reply')
-      expect(view.$('.btn-submit').prop('disabled')).toBeFalse()
+      expect(view.$('.btn-submit').prop('disabled')).toBe(false)
     })
 
     it('reports the status when the server gives no reason', () => {

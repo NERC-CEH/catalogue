@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest'
 import { EditorMetadata, SingleView } from '../src'
 
 describe('Test SingleView', () => {
@@ -20,6 +21,6 @@ describe('Test SingleView', () => {
     view.render()
     view.hide()
     // then
-    expect(view.$el.hasClass('visible')).toBeFalse()
+    expect(view.$el.hasClass('visible')).toBe(false)
   })
 })

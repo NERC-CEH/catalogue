@@ -1,12 +1,12 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import { DropzoneView } from '../../src/Upload'
-import { spy } from '../../../test/support'
 
 describe('DropzoneView', function () {
   let view
 
   beforeEach(function () {
-    const dropzoneSuccess = spy('dropzoneSuccess')
+    const dropzoneSuccess = vi.fn()
     $(document.body).html(`
                 <div class ="dropzone-container">
                         <div class="dropzone-files"></div>

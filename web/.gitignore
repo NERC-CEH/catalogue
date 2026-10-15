@@ -19,3 +19,7 @@ coverage
 
 # Ignore generated coverage reports
 coverage
+
+# What Vitest writes for a failing spec in the browser (failure screenshots are off in vitest.config.mjs)
+.vitest-attachments
+__screenshots__

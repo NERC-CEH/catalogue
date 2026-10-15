@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import Backbone from 'backbone'
 import { Permission, PermissionApp } from '../src/PermissionApp'
 
@@ -21,7 +22,7 @@ describe('Test Permission', () => {
     let syncArgs
 
     beforeEach(() => {
-      spyOn(Backbone, 'sync').and.callFake((method, model, options) => {
+      vi.spyOn(Backbone, 'sync').mockImplementation((method, model, options) => {
         syncArgs = { method, options }
         return { done: () => {} }
       })
@@ -68,7 +69,7 @@ describe('Test Permission', () => {
       // (data, status, jqXHR) callback jQuery invokes directly on a
       // successful response - it is not something reached via a separately
       // chained xhr.done(...).
-      spyOn(Backbone, 'sync').and.callFake((method, model, options) => {
+      vi.spyOn(Backbone, 'sync').mockImplementation((method, model, options) => {
         capturedOptions = options
         return { done: () => {} }
       })
@@ -134,7 +135,7 @@ describe('Test Permission', () => {
 
     it('carries the revision captured on read through to the update sent by a cloned model', () => {
       const syncCalls = []
-      spyOn(Backbone, 'sync').and.callFake((method, model, options) => {
+      vi.spyOn(Backbone, 'sync').mockImplementation((method, model, options) => {
         syncCalls.push({ method, options })
         return fakeAjaxSync(method, model, options)
       })

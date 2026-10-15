@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest'
 import { EditorMetadata } from '../src'
 import { SpatialRepresentationTypeView } from '../src/views'
 

@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import { fetchKeywordsFromLegilo } from '../src/views/LegiloFetcher'
@@ -61,7 +62,7 @@ describe('Test LegiloKeywords View', () => {
     view.render()
 
     expect(parentView.find('.no-suggestions-message').text()).toContain('No suggestions available.')
-    expect(parentView.find('.suggestions-table').is(':visible')).toBeFalse()
+    expect(parentView.find('.suggestions-table').is(':visible')).toBe(false)
   })
 
   it('close should hide the table and buttons', () => {
@@ -69,9 +70,9 @@ describe('Test LegiloKeywords View', () => {
     view.render()
 
     view.close()
-    expect(parentView.find('.suggestions-table').is(':visible')).toBeFalse()
-    expect(parentView.find('.suggestions-buttons').is(':visible')).toBeFalse()
-    expect(parentView.find('.suggestions-table-header').is(':visible')).toBeFalse()
+    expect(parentView.find('.suggestions-table').is(':visible')).toBe(false)
+    expect(parentView.find('.suggestions-buttons').is(':visible')).toBe(false)
+    expect(parentView.find('.suggestions-table-header').is(':visible')).toBe(false)
   })
 
   it('toggleSuggestionsSelection should add and remove suggesgtion from selectedKeywords', () => {
@@ -103,7 +104,7 @@ describe('Test LegiloKeywords View', () => {
       { name: 'temperature', confidence: 0.9, matched_url: 'custom-url1' },
       { name: 'pressure', confidence: 0.8, matched_url: 'custom-url2' }
     ]
-    spyOn($, 'getJSON').and.returnValue(Promise.resolve(mockApiResponse))
+    vi.spyOn($, 'getJSON').mockReturnValue(Promise.resolve(mockApiResponse))
 
     legiloButton.trigger('click')
     await new Promise(resolve => setTimeout(resolve, 0))

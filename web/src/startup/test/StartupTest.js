@@ -1,4 +1,4 @@
-/* global window */
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import { load } from '../load'
@@ -7,7 +7,7 @@ import {
   initMetricsReport, initPermission, initSearch, initServiceAgreement, initSimpleUpload, initStudyAreaMap,
   navbarToggle, page, startApps, stickyHeader
 } from '../apps'
-import { fakeServer, spy } from '../../test/support'
+import { fakeServer } from '../../test/support'
 
 // What each page starts, run on a page of the spec's own with the micro-apps' code replaced by
 // recording fakes, so nothing is fetched and nothing happens on import (NERC-CEH/dri-one#473)
@@ -28,7 +28,7 @@ describe('Page start-up', () => {
 
   beforeEach(() => {
     fakeServer.install()
-    spyOn(Backbone.history, 'start')
+    vi.spyOn(Backbone.history, 'start').mockImplementation(() => {})
   })
 
   afterEach(() => {
@@ -41,21 +41,21 @@ describe('Page start-up', () => {
 
     it('starts only the apps whose element is on the page, giving each its elements', async () => {
       pageWith('<div id="search"></div><a class="edit-control"></a><a class="edit-control"></a>')
-      const search = spy('search')
-      const editor = spy('editor')
-      const metrics = spy('metrics')
+      const search = vi.fn()
+      const editor = vi.fn()
+      const metrics = vi.fn()
 
       const report = await startApps(document, [app('#search', search, true), app('.edit-control', editor), app('#metrics-report', metrics, true)])
 
       expect(search).toHaveBeenCalledTimes(1)
-      expect(editor.calls.argsFor(0)[0].length).toBe(2)
+      expect(editor.mock.calls[0][0].length).toBe(2)
       expect(metrics).not.toHaveBeenCalled()
       expect(report).toEqual({ started: ['#search', '.edit-control'], failed: [] })
     })
 
     it('starts each app as the page loads, not a turn later', () => {
       pageWith('<button class="nav-toggle"></button>')
-      const toggle = spy('toggle')
+      const toggle = vi.fn()
 
       startApps(document, [app('.nav-toggle', toggle)])
 
@@ -78,7 +78,7 @@ describe('Page start-up', () => {
     it('doesn\'t hold history back for an app without a router', async () => {
       pageWith('<div id="search"></div><a class="edit-control"></a>')
       let finish
-      const started = startApps(document, [app('#search', spy('search'), true), app('.edit-control', () => new Promise(resolve => { finish = resolve }))])
+      const started = startApps(document, [app('#search', vi.fn(), true), app('.edit-control', () => new Promise(resolve => { finish = resolve }))])
       await settle()
 
       expect(Backbone.history.start).toHaveBeenCalled()
@@ -88,10 +88,10 @@ describe('Page start-up', () => {
 
     it('reports by name an app that failed to load, and starts history for the others', async () => {
       pageWith('<div id="search"></div><div id="metrics-report"></div>')
-      spyOn(console, 'error')
+      vi.spyOn(console, 'error').mockImplementation(() => {})
       const error = new Error('chunk failed')
 
-      const report = await startApps(document, [app('#search', spy('search'), true), app('#metrics-report', () => Promise.reject(error), true)])
+      const report = await startApps(document, [app('#search', vi.fn(), true), app('#metrics-report', () => Promise.reject(error), true)])
 
       expect(report).toEqual({ started: ['#search'], failed: [{ selector: '#metrics-report', reason: error }] })
       expect(console.error).toHaveBeenCalledWith('#metrics-report failed to start:', error)
@@ -100,9 +100,9 @@ describe('Page start-up', () => {
 
     it('reports an app that throws as it starts, and still starts the rest', async () => {
       pageWith('<div id="search"></div><button class="nav-toggle"></button>')
-      spyOn(console, 'error')
+      vi.spyOn(console, 'error').mockImplementation(() => {})
       const error = new TypeError('no element')
-      const search = spy('search')
+      const search = vi.fn()
 
       const report = await startApps(document, [app('.nav-toggle', () => { throw error }), app('#search', search, true)])
 
@@ -117,20 +117,20 @@ describe('Page start-up', () => {
         '.geometry-map', '.permission', '#search', '#simple-upload', '#document-upload', '#studyarea-map',
         '#metrics-report', '#deposit-request', '.clone-control'
       ])
-      APPS.forEach(each => expect(each.start).withContext(each.selector).toEqual(jasmine.any(Function)))
+      APPS.forEach(each => expect(each.start, each.selector).toEqual(expect.any(Function)))
     })
   })
 
   describe('the catalogue dialogs', () => {
     const catalogueApp = () => {
-      const Model = recording(() => ({ setRevision: spy('setRevision') }))
+      const Model = recording(() => ({ setRevision: vi.fn() }))
       return { Model, View: recording(), linkHref: () => '/documents/abc/catalogue' }
     }
 
     it('moves a record: fetches it and the catalogues, then opens the dialog', async () => {
       pageWith('<a class="catalogue-control" href="#">Move</a>')
       const { Model, View, linkHref } = catalogueApp()
-      spyOn(load, 'catalogueApp').and.resolveTo({ Catalogue: Model, CatalogueView: View, linkHref })
+      vi.spyOn(load, 'catalogueApp').mockResolvedValue({ Catalogue: Model, CatalogueView: View, linkHref })
       initCatalogue($('.catalogue-control'))
 
       $('.catalogue-control').trigger('click')
@@ -148,7 +148,7 @@ describe('Page start-up', () => {
     it('changes a record\'s view: fetches it and its catalogues, then opens the dialog', async () => {
       pageWith('<a class="catalogue-view-control" href="#">Views</a>')
       const { Model, View, linkHref } = catalogueApp()
-      spyOn(load, 'catalogueApp').and.resolveTo({ CatalogueViewModel: Model, CatalogueViewView: View, linkHref })
+      vi.spyOn(load, 'catalogueApp').mockResolvedValue({ CatalogueViewModel: Model, CatalogueViewView: View, linkHref })
       initCatalogueView($('.catalogue-view-control'))
 
       $('.catalogue-view-control').trigger('click')
@@ -165,7 +165,7 @@ describe('Page start-up', () => {
   describe('the editor', () => {
     const editorModule = () => {
       const View = recording()
-      const Model = recording(() => ({ setRevision: spy('setRevision') }))
+      const Model = recording(() => ({ setRevision: vi.fn() }))
       return { View, Model, module: { GeminiEditorView: View, GeminiEditorMetadata: Model } }
     }
 
@@ -186,20 +186,20 @@ describe('Page start-up', () => {
     it('opens a new record in the editor, from the search page\'s create menu', async () => {
       pageWith('<div id="editorCreate"></div><a class="edit-control" data-document-type="GEMINI_DOCUMENT">New</a>')
       const { View, Model, module } = editorModule()
-      spyOn(load, 'editor').and.resolveTo(module)
+      vi.spyOn(load, 'editor').mockResolvedValue(module)
       initEditor($('.edit-control'))
 
       $('.edit-control').trigger('click')
       await settle()
 
       expect(View.made[0][0].el).toBe('#search')
-      expect(Model.made[0]).toEqual([null, jasmine.objectContaining({ mediaType: 'application/gemini+json' }), 'GEMINI_DOCUMENT'])
+      expect(Model.made[0]).toEqual([null, expect.objectContaining({ mediaType: 'application/gemini+json' }), 'GEMINI_DOCUMENT'])
     })
 
     it('opens a saved record in the editor, fetched as its media type', async () => {
       pageWith('<div id="metadata" class="alert alert-danger missingResourceType"></div><a class="edit-control" data-document-type="GEMINI_DOCUMENT">Edit</a>')
       const { View, Model, module } = editorModule()
-      spyOn(load, 'editor').and.resolveTo(module)
+      vi.spyOn(load, 'editor').mockResolvedValue(module)
       initEditor($('.edit-control'))
 
       $('.edit-control').trigger('click')
@@ -209,14 +209,14 @@ describe('Page start-up', () => {
       expect(Model.made[0][0]).toEqual({ title: 'Rainfall' })
       expect(View.made[0][0].el).toBe('#metadata')
       expect(View.made[0][0].model.setRevision).toHaveBeenCalledWith('r7')
-      expect($('#metadata').hasClass('missingResourceType')).toBeFalse()
+      expect($('#metadata').hasClass('missingResourceType')).toBe(false)
     })
 
     it('is reported by start-up when its code fails to load, though nothing waits on it', async () => {
       pageWith('<a class="edit-control" data-document-type="GEMINI_DOCUMENT">Edit</a>')
-      spyOn(console, 'error')
+      vi.spyOn(console, 'error').mockImplementation(() => {})
       const error = new Error('Loading chunk editor failed')
-      spyOn(load, 'editor').and.rejectWith(error)
+      vi.spyOn(load, 'editor').mockRejectedValue(error)
 
       const report = await startApps(document)
 
@@ -226,7 +226,7 @@ describe('Page start-up', () => {
   })
 
   describe('the service agreement button', () => {
-    beforeEach(() => spyOn(page, 'navigate'))
+    beforeEach(() => vi.spyOn(page, 'navigate').mockImplementation(() => {}))
 
     it('goes to an existing agreement', () => {
       pageWith('<div id="service-agreement-gemini"></div><a class="service-agreement" data-id="abc">Agreement</a>')
@@ -243,7 +243,7 @@ describe('Page start-up', () => {
       pageWith('<div id="service-agreement-gemini"></div><a class="service-agreement" data-id="abc">Agreement</a>')
       const View = recording()
       const Model = recording()
-      spyOn(load, 'editor').and.resolveTo({ ServiceAgreementEditorView: View, ServiceAgreement: Model })
+      vi.spyOn(load, 'editor').mockResolvedValue({ ServiceAgreementEditorView: View, ServiceAgreement: Model })
       initServiceAgreement($('.service-agreement'))
 
       $('.service-agreement').trigger('click')
@@ -268,21 +268,21 @@ describe('Page start-up', () => {
   describe('the apps that set up routers', () => {
     it('search: the app, its view, facet search, share icon, router and messages', async () => {
       pageWith('<span id="searchShare"></span>')
-      const createFacetSearch = spy('createFacetSearch')
-      const initSearchShare = spy('initSearchShare')
+      const createFacetSearch = vi.fn()
+      const initSearchShare = vi.fn()
       const SearchApp = recording()
       const SearchAppView = recording({ facetsPanelView: { createFacetSearch }, searchResultsView: { initSearchShare } })
       const SearchRouter = recording()
       const MessageView = recording()
-      spyOn(load, 'search').and.resolveTo({ SearchApp, SearchAppView, SearchRouter })
-      spyOn(load, 'messageView').and.resolveTo(MessageView)
+      vi.spyOn(load, 'search').mockResolvedValue({ SearchApp, SearchAppView, SearchRouter })
+      vi.spyOn(load, 'messageView').mockResolvedValue(MessageView)
 
       await initSearch()
 
       const app = SearchAppView.made[0][0].model
-      expect(app).toEqual(jasmine.any(SearchApp))
+      expect(app).toEqual(expect.any(SearchApp))
       expect(createFacetSearch).toHaveBeenCalledWith(app)
-      expect(initSearchShare.calls.argsFor(0)[0][0]).toBe($('#searchShare')[0])
+      expect(initSearchShare.mock.calls[0][0][0]).toBe($('#searchShare')[0])
       expect(SearchRouter.made[0][0]).toEqual({ model: app, location: window.location })
       expect(MessageView.made[0][0].model).toBe(app)
     })
@@ -292,8 +292,8 @@ describe('Page start-up', () => {
       const PermissionAppView = recording()
       const PermissionRouter = recording()
       const MessageView = recording()
-      spyOn(load, 'permission').and.resolveTo({ PermissionApp, PermissionAppView, PermissionRouter })
-      spyOn(load, 'messageView').and.resolveTo(MessageView)
+      vi.spyOn(load, 'permission').mockResolvedValue({ PermissionApp, PermissionAppView, PermissionRouter })
+      vi.spyOn(load, 'messageView').mockResolvedValue(MessageView)
 
       await initPermission()
 
@@ -307,8 +307,8 @@ describe('Page start-up', () => {
       const MetricsReportForm = recording()
       const MetricsReportResults = recording()
       const SearchRouter = recording()
-      spyOn(load, 'metrics').and.resolveTo({ MetricsReportApp, MetricsReportForm, MetricsReportResults })
-      spyOn(load, 'searchRouter').and.resolveTo(SearchRouter)
+      vi.spyOn(load, 'metrics').mockResolvedValue({ MetricsReportApp, MetricsReportForm, MetricsReportResults })
+      vi.spyOn(load, 'searchRouter').mockResolvedValue(SearchRouter)
 
       await initMetricsReport()
 
@@ -321,7 +321,7 @@ describe('Page start-up', () => {
     it('simple upload: to the dropzone\'s address', async () => {
       pageWith('<form id="simple-upload-dropzone" action="/upload/abc"></form>')
       const SimpleUploadView = recording()
-      spyOn(load, 'simpleUpload').and.resolveTo({ SimpleUploadView })
+      vi.spyOn(load, 'simpleUpload').mockResolvedValue({ SimpleUploadView })
 
       await initSimpleUpload()
 
@@ -332,7 +332,7 @@ describe('Page start-up', () => {
       pageWith('<div id="document-upload" data-guid="abc"></div>')
       const UploadModel = recording()
       const UploadView = recording()
-      spyOn(load, 'hubbub').and.resolveTo({ UploadModel, UploadView })
+      vi.spyOn(load, 'hubbub').mockResolvedValue({ UploadModel, UploadView })
 
       await initHubbub($('#document-upload'))
 
@@ -343,17 +343,17 @@ describe('Page start-up', () => {
     it('deposit request: the form on a new request', async () => {
       const DepositRequestApp = recording()
       const DepositRequestFormView = recording()
-      spyOn(load, 'depositRequest').and.resolveTo({ DepositRequestApp, DepositRequestFormView })
+      vi.spyOn(load, 'depositRequest').mockResolvedValue({ DepositRequestApp, DepositRequestFormView })
 
       await initDepositRequest()
 
       expect(DepositRequestFormView.made[0][0].el).toBe('#deposit-request')
-      expect(DepositRequestFormView.made[0][0].model).toEqual(jasmine.any(DepositRequestApp))
+      expect(DepositRequestFormView.made[0][0].model).toEqual(expect.any(DepositRequestApp))
     })
 
     it('maps: the study area view', async () => {
       const StudyAreaView = recording()
-      spyOn(load, 'studyArea').and.resolveTo({ StudyAreaView })
+      vi.spyOn(load, 'studyArea').mockResolvedValue({ StudyAreaView })
 
       await initStudyAreaMap()
 
@@ -367,34 +367,34 @@ describe('Page start-up', () => {
       navbarToggle($('.nav-toggle'))
 
       $('.nav-toggle').trigger('click')
-      expect($('.navigation').hasClass('reveal')).toBeTrue()
-      expect($('.nav-toggle').hasClass('reveal')).toBeTrue()
+      expect($('.navigation').hasClass('reveal')).toBe(true)
+      expect($('.nav-toggle').hasClass('reveal')).toBe(true)
 
       $('.nav-toggle').trigger('click')
-      expect($('.navigation').hasClass('reveal')).toBeFalse()
+      expect($('.navigation').hasClass('reveal')).toBe(false)
     })
 
     it('shrinks once the page scrolls past it', () => {
       pageWith('<div id="header-sentinel"></div><header></header>')
       let report
-      const observe = spy('observe')
-      spyOn(window, 'IntersectionObserver').and.callFake(function (callback) {
+      const observe = vi.fn()
+      vi.spyOn(window, 'IntersectionObserver').mockImplementation(function (callback) {
         report = callback
         this.observe = observe
       })
 
       stickyHeader(document)
       report([{ isIntersecting: false }])
-      expect(document.querySelector('header').classList.contains('stuck')).toBeTrue()
+      expect(document.querySelector('header').classList.contains('stuck')).toBe(true)
       report([{ isIntersecting: true }])
 
       expect(observe).toHaveBeenCalledWith(document.getElementById('header-sentinel'))
-      expect(document.querySelector('header').classList.contains('stuck')).toBeFalse()
+      expect(document.querySelector('header').classList.contains('stuck')).toBe(false)
     })
 
     it('does nothing on a page without one', () => {
       pageWith('<div></div>')
-      spyOn(window, 'IntersectionObserver')
+      vi.spyOn(window, 'IntersectionObserver').mockImplementation(() => {})
 
       stickyHeader(document)
 
@@ -405,10 +405,10 @@ describe('Page start-up', () => {
   describe('copying a record', () => {
     function copyForm (answer) {
       pageWith('<form class="clone-control" action="/documents/abc/clone"></form>')
-      const fire = spy('fire').and.resolveTo({ isConfirmed: answer })
-      spyOn(load, 'swal').and.resolveTo({ fire })
+      const fire = vi.fn().mockResolvedValue({ isConfirmed: answer })
+      vi.spyOn(load, 'swal').mockResolvedValue({ fire })
       const form = $('.clone-control')[0]
-      spyOn(form, 'submit')
+      vi.spyOn(form, 'submit').mockImplementation(() => {})
       initClone($('.clone-control'))
       return { form, fire }
     }
@@ -419,7 +419,7 @@ describe('Page start-up', () => {
       $('.clone-control').trigger('submit')
       await settle()
 
-      expect(fire).toHaveBeenCalledWith(jasmine.objectContaining({ title: 'Are you sure?' }))
+      expect(fire).toHaveBeenCalledWith(expect.objectContaining({ title: 'Are you sure?' }))
       expect(form.submit).toHaveBeenCalled()
     })
 

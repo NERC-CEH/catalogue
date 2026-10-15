@@ -1,9 +1,9 @@
+import { describe, expect, it, vi } from 'vitest'
 import Backbone from 'backbone'
 import { EditorMetadata } from '../src'
 import { SingleObjectView, ResourceTypeView } from '../src/views'
 import { ResourceType } from '../src/models'
 import { BoundingBox, BoundingBoxView } from '../src/geometryMap'
-import { spy } from '../../test/support'
 
 /**
  * A single-object field (resource type, bounding box, access limitation…) is edited through its own
@@ -29,13 +29,13 @@ describe('SingleObjectView', () => {
 
     expect(record.get('resourceType') instanceof Backbone.Model).toBe(false)
     // ResourceType also fills in the matching INSPIRE uri
-    expect(record.get('resourceType')).toEqual(jasmine.objectContaining({ value: 'service' }))
+    expect(record.get('resourceType')).toEqual(expect.objectContaining({ value: 'service' }))
   })
 
   it('reports every edit as a change to the record', () => {
     const record = new EditorMetadata({ resourceType: { value: 'dataset' } })
     const view = resourceTypeField(record)
-    const changes = spy('change:resourceType')
+    const changes = vi.fn()
     record.on('change:resourceType', changes)
 
     view.inputModel.set('value', 'service')

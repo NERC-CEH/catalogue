@@ -1,8 +1,9 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import MetricsReportApp from '../src/MetricsReportApp'
 import MetricsReportForm from '../src/MetricsReportForm'
 import MetricsReportResults from '../src/MetricsReportResults'
-import { fakeServer, spyObject } from '../../test/support'
+import { fakeServer } from '../../test/support'
 
 /**
  * A metrics filter could not be cleared, one submit fetched once per changed field, and a failed
@@ -25,23 +26,23 @@ describe('Metrics report', () => {
   afterEach(() => $(document.body).empty())
 
   it('clears a filter emptied on the form', () => {
-    spyOn(app, 'fetch')
+    vi.spyOn(app, 'fetch').mockImplementation(() => {})
     const form = new MetricsReportForm({ el: '#mf', model: app })
-    form.onSubmit(spyObject('event', ['preventDefault']))
+    form.onSubmit({ preventDefault: vi.fn() })
     expect(app.getState().docId).toBe('abc')
 
     $('input[name=docId]').val('')
-    form.onSubmit(spyObject('event', ['preventDefault']))
+    form.onSubmit({ preventDefault: vi.fn() })
 
     expect(app.getState().docId).toBeUndefined()
-    expect(app.fetch.calls.mostRecent().args[0].data.docId).toBeUndefined()
+    expect(app.fetch.mock.lastCall[0].data.docId).toBeUndefined()
   })
 
   it('makes one request for one submit, however many fields changed', () => {
-    spyOn(app, 'fetch')
+    vi.spyOn(app, 'fetch').mockImplementation(() => {})
     const form = new MetricsReportForm({ el: '#mf', model: app })
 
-    form.onSubmit(spyObject('event', ['preventDefault']))
+    form.onSubmit({ preventDefault: vi.fn() })
 
     expect(app.fetch).toHaveBeenCalledTimes(1)
   })

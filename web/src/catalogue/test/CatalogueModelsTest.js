@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import Catalogue from '../src/CatalogueApp/Catalogue'
 import CatalogueViewModel from '../src/CatalogueApp/CatalogueViewModel'
 import Backbone from 'backbone'
@@ -13,7 +14,7 @@ describe('Catalogue model', () => {
     let syncArgs
 
     beforeEach(() => {
-      spyOn(Backbone, 'sync').and.callFake((method, model, options) => {
+      vi.spyOn(Backbone, 'sync').mockImplementation((method, model, options) => {
         syncArgs = { method, options }
         return { done: () => {} }
       })
@@ -47,7 +48,7 @@ describe('Catalogue model', () => {
     let doneCallback
 
     beforeEach(() => {
-      spyOn(Backbone, 'sync').and.callFake(() => {
+      vi.spyOn(Backbone, 'sync').mockImplementation(() => {
         return {
           done: (cb) => { doneCallback = cb }
         }
@@ -79,7 +80,7 @@ describe('CatalogueViewModel', () => {
     let syncArgs
 
     beforeEach(() => {
-      spyOn(Backbone, 'sync').and.callFake((method, model, options) => {
+      vi.spyOn(Backbone, 'sync').mockImplementation((method, model, options) => {
         syncArgs = { method, options }
         return { done: () => {} }
       })
@@ -113,7 +114,7 @@ describe('CatalogueViewModel', () => {
     let doneCallback
 
     beforeEach(() => {
-      spyOn(Backbone, 'sync').and.callFake(() => {
+      vi.spyOn(Backbone, 'sync').mockImplementation(() => {
         return {
           done: (cb) => { doneCallback = cb }
         }

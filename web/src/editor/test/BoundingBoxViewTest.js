@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest'
 import { BoundingBoxView, BoundingBox } from '../src/geometryMap'
 import template from '../src/geometryMap/geometryTemplate'
 

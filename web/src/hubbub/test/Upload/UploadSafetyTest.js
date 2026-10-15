@@ -1,7 +1,8 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import { UploadModel, UploadView, DropzoneView } from '../../src/Upload'
 import { File } from '../../src/File'
-import { fakeClock, fakeServer } from '../../../test/support'
+import { fakeServer } from '../../../test/support'
 
 /**
  * The upload page could lose a depositor's work (NERC-CEH/dri-one#459): "Finish uploading" aborted
@@ -29,8 +30,8 @@ describe('Upload page safety', () => {
 
     it('refuses while files are still uploading', () => {
       view.dropzoneView = { dropzone: { getUploadingFiles: () => [{}], getQueuedFiles: () => [{}, {}] } }
-      spyOn(window, 'alert')
-      spyOn(window, 'confirm')
+      vi.spyOn(window, 'alert').mockImplementation(() => {})
+      vi.spyOn(window, 'confirm').mockImplementation(() => {})
 
       view.$('.finish').trigger('click')
 
@@ -40,7 +41,7 @@ describe('Upload page safety', () => {
     })
 
     it('asks first, and does nothing if the depositor says no', () => {
-      spyOn(window, 'confirm').and.returnValue(false)
+      vi.spyOn(window, 'confirm').mockReturnValue(false)
 
       view.$('.finish').trigger('click')
 
@@ -49,7 +50,7 @@ describe('Upload page safety', () => {
     })
 
     it('finishes once confirmed', () => {
-      spyOn(window, 'confirm').and.returnValue(true)
+      vi.spyOn(window, 'confirm').mockReturnValue(true)
 
       view.$('.finish').trigger('click')
 
@@ -59,7 +60,7 @@ describe('Upload page safety', () => {
 
   it('asks before moving every file to the datastore', () => {
     build('<button class="move-all"><i class="fa-solid fa-arrow-right"></i></button>')
-    spyOn(window, 'confirm').and.returnValue(false)
+    vi.spyOn(window, 'confirm').mockReturnValue(false)
 
     view.$('.move-all').trigger('click')
 
@@ -70,7 +71,7 @@ describe('Upload page safety', () => {
   it('reloads after a zip only once the whole queue has finished', () => {
     build('')
     view.dropbox.reset([])
-    spyOn(view, 'reloadPage')
+    vi.spyOn(view, 'reloadPage').mockImplementation(() => {})
 
     view.uploaded({ name: 'Data.zip', size: 10 })
     view.uploaded({ name: 'other.csv', size: 10 })
@@ -83,22 +84,22 @@ describe('Upload page safety', () => {
   describe('refreshing', () => {
     beforeEach(() => {
       build('<button class="validate-all"><i class="fa-solid fa-check"></i></button><div class="data-files"></div>')
-      fakeClock.install()
+      vi.useFakeTimers()
     })
-    afterEach(() => fakeClock.uninstall())
+    afterEach(() => vi.useRealTimers())
 
     it('shows an error when the refresh after an action fails', () => {
-      spyOn(view, 'showInError')
+      vi.spyOn(view, 'showInError').mockImplementation(() => {})
 
       view.collectionSuccess({ currentTarget: view.$('.validate-all')[0] }, 'fa-solid fa-check', 'dropbox', 'dropbox', view.dropbox)
-      fakeClock.tick(7000)
+      vi.advanceTimersByTime(7000)
       fakeServer.lastRequest().respondWith({ status: 500 })
 
       expect(view.showInError).toHaveBeenCalled()
     })
 
     it('stops spinning when there is nothing to validate', () => {
-      spyOn(view, 'showNormal')
+      vi.spyOn(view, 'showNormal').mockImplementation(() => {})
 
       view.validate({ currentTarget: view.$('.validate-all')[0] }, 'dropbox', 'dropbox', view.dropbox, 'fa-solid fa-check')
       fakeServer.lastRequest().respondWith({ status: 400 })

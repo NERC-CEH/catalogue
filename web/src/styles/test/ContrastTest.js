@@ -1,4 +1,4 @@
-/* global beforeAll, afterAll */
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 /**
  * Every catalogue theme must give text a contrast of at least 4.5:1 and controls 3:1 (WCAG 2.1 AA).
  * Several fell short: an invisible search button on white-header catalogues, #999 headings, links
@@ -31,8 +31,8 @@ function loadTheme (theme) {
     frame.onerror = reject
     // As a page does: the shared stylesheet, then the catalogue's theme
     frame.srcdoc = `<!doctype html><html><head>
-      <link rel="stylesheet" href="/base/build/test-css/base.css">
-      <link rel="stylesheet" href="/base/build/test-css/style-${theme}.css">
+      <link rel="stylesheet" href="/build/test-css/base.css">
+      <link rel="stylesheet" href="/build/test-css/style-${theme}.css">
       </head><body>${MARKUP}</body></html>`
     document.body.appendChild(frame)
   })

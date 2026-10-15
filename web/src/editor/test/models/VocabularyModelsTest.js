@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import {
   AccessLimitation, EnvironmentalDomain, FacilityType, InfrastructureCategory, InfrastructureChallenge, InspireTheme,
   KeywordTheme, PurposeOfCollection, SaPhysicalState, SaSpecimenType, SaTaxa, SaTissue, TopicCategory
@@ -22,7 +23,7 @@ describe('Vocabulary models', () => {
         const model = new Model()
         terms.forEach(term => {
           model.set(attribute, term)
-          expect(model.get('uri')).withContext(term).toBe(Model.prototype.uris[term])
+          expect(model.get('uri'), term).toBe(Model.prototype.uris[term])
         })
       })
 
@@ -47,7 +48,7 @@ describe('Vocabulary models', () => {
 
     it('has a URI and an availability for every limitation it offers', () => {
       const { uris, availability } = AccessLimitation.prototype
-      Object.keys(uris).forEach(value => expect(availability[value]).withContext(value).toBeDefined())
+      Object.keys(uris).forEach(value => expect(availability[value], value).toBeDefined())
     })
 
     it('clears them for a limitation it doesn\'t know', () => {

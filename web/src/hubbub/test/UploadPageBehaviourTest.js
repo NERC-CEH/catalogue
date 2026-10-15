@@ -1,6 +1,7 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import { UploadModel, UploadView } from '../src/Upload'
-import { fakeClock, fakeServer } from '../../test/support'
+import { fakeServer } from '../../test/support'
 
 // The data upload page as an EIDC administrator sees it (templates/html/upload/hubbub/upload.ftlh):
 // each store's files in a table, what each file can have done to it, those actions carried out and
@@ -63,12 +64,12 @@ describe('The upload page', () => {
 
   beforeEach(() => {
     fakeServer.install()
-    fakeClock.install()
+    vi.useFakeTimers()
   })
 
   afterEach(() => {
     view.dropzoneView?.dropzone.destroy()
-    fakeClock.uninstall()
+    vi.useRealTimers()
     fakeServer.uninstall()
     $(document.body).empty()
   })
@@ -100,9 +101,9 @@ describe('The upload page', () => {
     it('marks a file with a problem, and explains it', () => {
       const $missing = row('data', 'rain/old.csv')
 
-      expect($missing.hasClass('table-danger')).toBeTrue()
+      expect($missing.hasClass('table-danger')).toBe(true)
       expect($missing.find('.file-status-message').text()).toBe('THIS FILE IS MISSING')
-      expect(row('data', 'rain/2020.csv').hasClass('table-danger')).toBeFalse()
+      expect(row('data', 'rain/2020.csv').hasClass('table-danger')).toBe(false)
     })
 
     it('offers each file what can be done to it', () => {
@@ -137,7 +138,7 @@ describe('The upload page', () => {
 
     $('.data-files thead tr').first().find('th').eq(1).trigger('click')
     // DataTables redraws for a header click on the next turn
-    fakeClock.tick(1)
+    vi.advanceTimersByTime(1)
 
     expect(paths('data')).toEqual(['a.csv', 'c.csv', 'b.csv'])
   })
@@ -152,12 +153,12 @@ describe('The upload page', () => {
       expect(row('data', 'rain/2021.csv').find('.spinner-border').css('display')).not.toBe('none')
       fakeServer.lastRequest().respondWith(json({}))
 
-      fakeClock.tick(3000)
+      vi.advanceTimersByTime(3000)
       expect(fakeServer.lastRequest().url).toBe(`${base}/dropbox?path=rain%2F2021.csv`)
       fakeServer.lastRequest().respondWith(json({ data: [file('rain/2021.csv', 'dropbox', 'VALID', { sha256: 'def456' })] }))
 
       const $row = row('data', 'rain/2021.csv')
-      expect($row.hasClass('table-danger')).toBeFalse()
+      expect($row.hasClass('table-danger')).toBe(false)
       expect(actions($row)).toEqual(['Validate', 'Move to datastore', 'Move to metadata', 'Delete'])
     })
 
@@ -165,7 +166,7 @@ describe('The upload page', () => {
       act(row('data', 'rain/2020.csv'), 'Move to datastore')
       expect(fakeServer.lastRequest().url).toBe(`${base}/dropbox/move?path=rain%2F2020.csv&to=eidchub`)
       fakeServer.lastRequest().respondWith(json({}))
-      fakeClock.tick(3000)
+      vi.advanceTimersByTime(3000)
       expect(fakeServer.lastRequest().url).toBe(`${base}/eidchub?path=rain%2F2020.csv`)
       fakeServer.lastRequest().respondWith(json({ data: [file('rain/2020.csv', 'eidchub', 'VALID')] }))
 
@@ -179,7 +180,7 @@ describe('The upload page', () => {
       act(row('data', 'rain/2020.csv'), 'Move to metadata')
       expect(fakeServer.lastRequest().url).toBe(`${base}/dropbox/move?path=rain%2F2020.csv&to=supporting-documents`)
       fakeServer.lastRequest().respondWith(json({}))
-      fakeClock.tick(3000)
+      vi.advanceTimersByTime(3000)
       fakeServer.lastRequest().respondWith(json({ data: [file('rain/2020.csv', 'supporting-documents', 'VALID')] }))
 
       expect(paths('metadata')).toEqual(['rain/2020.csv'])
@@ -188,12 +189,12 @@ describe('The upload page', () => {
     })
 
     it('deletes a file once confirmed, and not otherwise', () => {
-      const confirm = spyOn(window, 'confirm').and.returnValue(false)
+      const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false)
       act(row('data', 'rain/old.csv'), 'Delete')
       expect(confirm).toHaveBeenCalledWith('Delete file: rain/old.csv?')
       expect(fakeServer.requestCount()).toBe(0)
 
-      confirm.and.returnValue(true)
+      confirm.mockReturnValue(true)
       act(row('data', 'rain/old.csv'), 'Delete')
       expect(fakeServer.lastRequest().method).toBe('DELETE')
       expect(fakeServer.lastRequest().url).toBe(`${base}/dropbox?path=rain%2Fold.csv`)
@@ -204,7 +205,7 @@ describe('The upload page', () => {
     })
 
     it('unregisters a file it is told to ignore', () => {
-      spyOn(window, 'confirm').and.returnValue(true)
+      vi.spyOn(window, 'confirm').mockReturnValue(true)
 
       act(row('data', 'rain/old.csv'), 'Ignore')
       expect(fakeServer.lastRequest().url).toBe(`${base}/dropbox/unregister?path=rain%2Fold.csv`)
@@ -214,7 +215,7 @@ describe('The upload page', () => {
     })
 
     it('cancels a move once confirmed', () => {
-      spyOn(window, 'confirm').and.returnValue(true)
+      vi.spyOn(window, 'confirm').mockReturnValue(true)
 
       act(row('data', 'rain/2022.csv'), 'Cancel')
 
@@ -229,14 +230,14 @@ describe('The upload page', () => {
 
       expect($row.find('.action-fail').css('display')).not.toBe('none')
       expect($row.find('.spinner-border').css('display')).toBe('none')
-      expect($row.find('.dropdown-toggle').prop('disabled')).toBeFalse()
+      expect($row.find('.dropdown-toggle').prop('disabled')).toBe(false)
     })
 
     it('shows a warning when Hubbub no longer has the file afterwards', () => {
       const $row = row('data', 'rain/2021.csv')
       act($row, 'Validate')
       fakeServer.lastRequest().respondWith(json({}))
-      fakeClock.tick(3000)
+      vi.advanceTimersByTime(3000)
 
       fakeServer.lastRequest().respondWith(json({ data: [] }))
 
@@ -248,7 +249,7 @@ describe('The upload page', () => {
   describe('totals', () => {
     it('says "0 files" once the last file has gone', () => {
       open({ dropbox: store([file('only.csv', 'dropbox', 'MISSING')]) })
-      spyOn(window, 'confirm').and.returnValue(true)
+      vi.spyOn(window, 'confirm').mockReturnValue(true)
 
       act(row('data', 'only.csv'), 'Delete')
       fakeServer.lastRequest().respondWith({ status: 204, contentType: 'application/json', responseText: '' })
@@ -277,7 +278,7 @@ describe('The upload page', () => {
       $('.load.data').trigger('click')
       fakeServer.lastRequest().respondWith({ status: 502, contentType: 'text/plain', responseText: '' })
 
-      expect(isWarning($('.load.data'))).toBeTrue()
+      expect(isWarning($('.load.data'))).toBe(true)
     })
   })
 
@@ -288,7 +289,7 @@ describe('The upload page', () => {
       $('.validate-all').trigger('click')
 
       expect(fakeServer.requestCount()).toBe(3)
-      expect($('.validate-all').prop('disabled')).toBeTrue()
+      expect($('.validate-all').prop('disabled')).toBe(true)
     })
 
     it('keeps the warning when one store fails to validate, though the others succeed', () => {
@@ -300,19 +301,19 @@ describe('The upload page', () => {
       requests[0].request.respondWith({ status: 500, contentType: 'text/plain', responseText: '' })
       requests[1].request.respondWith({ status: 400, contentType: 'text/plain', responseText: '' })
       requests[2].request.respondWith(json({}))
-      fakeClock.tick(7000)
+      vi.advanceTimersByTime(7000)
       findRequest(`${base}/eidchub?page=1&size=20`).respondWith(json({ data: [file('rain/2019.csv', 'eidchub', 'VALID')], meta: { currentPage: 1, lastPage: 1, totalFiles: 1 } }))
 
-      expect(isWarning($button)).toBeTrue()
+      expect(isWarning($button)).toBe(true)
     })
 
     it('moves every arrival to the datastore once confirmed, and says the arrivals are empty as the page does', () => {
-      spyOn(window, 'confirm').and.returnValue(true)
+      vi.spyOn(window, 'confirm').mockReturnValue(true)
 
       $('.move-all').trigger('click')
       expect(fakeServer.lastRequest().url).toBe(`${base}/dropbox/move?to=eidchub`)
       fakeServer.lastRequest().respondWith(json({}))
-      fakeClock.tick(7000)
+      vi.advanceTimersByTime(7000)
       fakeServer.lastRequest().respondWith(json({ data: [file('rain/2019.csv', 'eidchub', 'VALID'), file('rain/2020.csv', 'eidchub', 'VALID')], meta: { currentPage: 1, lastPage: 1, totalFiles: 2 } }))
 
       expect(paths('data')).toEqual([])
@@ -324,11 +325,11 @@ describe('The upload page', () => {
     it('says the arrivals are empty as the page does, when moving all from an empty store', () => {
       $(document.body).empty()
       open({ dropbox: store([]) })
-      spyOn(window, 'confirm').and.returnValue(true)
+      vi.spyOn(window, 'confirm').mockReturnValue(true)
 
       $('.move-all').trigger('click')
       fakeServer.lastRequest().respondWith(json({}))
-      fakeClock.tick(7000)
+      vi.advanceTimersByTime(7000)
       fakeServer.lastRequest().respondWith(json({ data: [file('rain/2019.csv', 'eidchub', 'VALID')], meta: { currentPage: 1, lastPage: 1, totalFiles: 1 } }))
 
       expect($('.data-files .no-documents').map((i, message) => message.textContent).get()).toEqual(['NO FILES IN DATA'])
@@ -338,7 +339,7 @@ describe('The upload page', () => {
       $('.hash-dropbox').trigger('click')
       expect(fakeServer.lastRequest().url).toBe(`${base}/hash`)
       fakeServer.lastRequest().respondWith(json({}))
-      fakeClock.tick(7000)
+      vi.advanceTimersByTime(7000)
 
       expect(fakeServer.lastRequest().url).toBe(`${base}/dropbox?page=1&size=20`)
     })
@@ -361,7 +362,7 @@ describe('The upload page', () => {
   // The fake server's requests in the order they were made, to answer one that isn't the latest
   function findRequest (url) {
     const request = fakeServer.requests().find(each => each.url === url)
-    expect(request).withContext(url).toBeDefined()
+    expect(request, url).toBeDefined()
     return request
   }
 })

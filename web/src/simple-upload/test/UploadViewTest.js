@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import { FileCollection, UploadView } from '../src/File'

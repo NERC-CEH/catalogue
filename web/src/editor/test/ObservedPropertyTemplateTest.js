@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import template from '../src/templates/ObservedProperty'
 
 describe('ObservedProperty template', () => {

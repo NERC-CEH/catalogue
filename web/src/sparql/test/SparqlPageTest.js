@@ -1,7 +1,8 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Yasgui from '@triply/yasgui'
 import { examples, startSparql } from '../index'
 import prefixes from '../prefixes.json'
-import { fakeServer, spy } from '../../test/support'
+import { fakeServer } from '../../test/support'
 
 // The public SPARQL page: YASGUI on the catalogue's endpoint, our own prefix list, and example queries
 // loaded into the editor on click (dri-one #473)
@@ -30,7 +31,7 @@ describe('The SPARQL page', () => {
     }
 
     beforeEach(() => {
-      yasqe = { addPrefixes: spy('addPrefixes'), setValue: spy('setValue') }
+      yasqe = { addPrefixes: vi.fn(), setValue: vi.fn() }
       startSparql(element, list, FakeYasgui)
     })
 
@@ -47,7 +48,7 @@ describe('The SPARQL page', () => {
     })
 
     it('declares the namespaces the examples use', () => {
-      expect(yasqe.addPrefixes).toHaveBeenCalledWith(jasmine.objectContaining({
+      expect(yasqe.addPrefixes).toHaveBeenCalledWith(expect.objectContaining({
         dcterms: 'http://purl.org/dc/terms/',
         skos: 'http://www.w3.org/2004/02/skos/core#',
         prov: 'http://www.w3.org/ns/prov#',
@@ -65,7 +66,7 @@ describe('The SPARQL page', () => {
     it('loads an example into the editor when it is clicked, on the page\'s own graph', () => {
       list.querySelector('button').click()
 
-      const query = yasqe.setValue.calls.mostRecent().args[0]
+      const query = yasqe.setValue.mock.lastCall[0]
       expect(query).toBe(examples('https://catalogue.ceh.ac.uk/graph/eidc')[0].query.join('\n'))
       expect(query).toContain('GRAPH <https://catalogue.ceh.ac.uk/graph/eidc>')
     })
@@ -79,7 +80,7 @@ describe('The SPARQL page', () => {
       const request = fakeServer.lastRequest()
       expect(new URL(request.url, window.location.href).origin).toBe(window.location.origin)
       request.respondWith({ status: 200, contentType: 'application/json', responseText: JSON.stringify(prefixes) })
-      expect(yasgui.getTab().yasqe.getPrefixesFromQuery()).toEqual(jasmine.objectContaining({ dcat: 'http://www.w3.org/ns/dcat#' }))
+      expect(yasgui.getTab().yasqe.getPrefixesFromQuery()).toEqual(expect.objectContaining({ dcat: 'http://www.w3.org/ns/dcat#' }))
 
       list.querySelectorAll('button')[1].click()
 

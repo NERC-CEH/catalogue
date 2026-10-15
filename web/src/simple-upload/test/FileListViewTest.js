@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import { FileListView, FileCollection } from '../src/File'
@@ -22,9 +23,9 @@ describe('Test FileListView', function () {
       files,
       messages
     })
-    spyOn(view, 'addAll').and.callThrough()
-    spyOn(view, 'selectAll').and.callThrough()
-    spyOn(view, 'deleteSelected').and.callThrough()
+    vi.spyOn(view, 'addAll')
+    vi.spyOn(view, 'selectAll')
+    vi.spyOn(view, 'deleteSelected')
   })
 
   afterEach(() => el.remove())

@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { wktToGeoJson } from '../src/wkt'
 
 // A search result's locations, as the catalogue's geometry classes write them for Solr

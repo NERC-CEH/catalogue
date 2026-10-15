@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import MetricsReportApp from '../src/MetricsReportApp'
 
 describe('MetricsReportApp', function () {
@@ -27,7 +28,7 @@ describe('MetricsReportApp', function () {
   describe('setState', function () {
     it('applies the given attributes', function () {
       const model = new MetricsReportApp()
-      spyOn(model, 'fetch')
+      vi.spyOn(model, 'fetch').mockImplementation(() => {})
 
       model.setState({ recordType: 'service' })
 
@@ -38,12 +39,12 @@ describe('MetricsReportApp', function () {
   describe('search wiring', function () {
     it('fetches with the current state when a search field changes', function () {
       const model = new MetricsReportApp()
-      spyOn(model, 'fetch')
+      vi.spyOn(model, 'fetch').mockImplementation(() => {})
 
       model.set('startDate', '2021-05-05')
 
       expect(model.fetch).toHaveBeenCalled()
-      const options = model.fetch.calls.mostRecent().args[0]
+      const options = model.fetch.mock.lastCall[0]
       expect(options.data).toEqual({ startDate: '2021-05-05' })
     })
 

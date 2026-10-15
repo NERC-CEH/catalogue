@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import DataTable from 'datatables.net-bs5'
@@ -65,7 +66,7 @@ describe('TableView', function () {
       view.render()
 
       // A DataTables API on the view's own table (DataTables 3 has no $.fn.DataTable to spy on)
-      expect(view.dataTable instanceof DataTable.Api).toBeTrue()
+      expect(view.dataTable instanceof DataTable.Api).toBe(true)
       expect(view.dataTable.table().node()).toBe(view.$('#filetable')[0])
     })
   })
@@ -119,7 +120,7 @@ describe('TableView', function () {
       collection.reset(testModels)
       view.render()
 
-      ajaxSpy = spyOn($, 'ajax').and.callFake(function (options) {
+      ajaxSpy = vi.spyOn($, 'ajax').mockImplementation(function (options) {
         if (options.success) {
           options.success({ status: 'PENDING' })
         }
@@ -128,13 +129,13 @@ describe('TableView', function () {
           message: 'Operation completed'
         }).promise()
       })
-      spyOn(view, 'getServerState').and.callFake((self, timeout, $dropdown, model, callback) => {
+      vi.spyOn(view, 'getServerState').mockImplementation((self, timeout, $dropdown, model, callback) => {
         if (callback) {
           model.set({ status: 'VALID' })
           callback(model)
         }
       })
-      confirmSpy = spyOn(window, 'confirm').and.returnValue(true)
+      confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
     })
 
     function triggerAction (action) {
@@ -151,8 +152,8 @@ describe('TableView', function () {
       expect(ajaxSpy).toHaveBeenCalledWith({
         url: `${view.model.url()}/${model.get('datastore')}/validate?path=${encodeURIComponent(model.get('path'))}`,
         type: 'POST',
-        success: jasmine.any(Function),
-        error: jasmine.any(Function)
+        success: expect.any(Function),
+        error: expect.any(Function)
       })
 
       expect(view.getServerState).toHaveBeenCalledTimes(1)
@@ -166,8 +167,8 @@ describe('TableView', function () {
       expect(ajaxSpy).toHaveBeenCalledWith({
         url: `${view.model.url()}/${model.get('datastore')}/cancel?path=${encodeURIComponent(model.get('path'))}`,
         type: 'POST',
-        success: jasmine.any(Function),
-        error: jasmine.any(Function)
+        success: expect.any(Function),
+        error: expect.any(Function)
       })
 
       expect(view.getServerState).toHaveBeenCalledTimes(1)
@@ -181,8 +182,8 @@ describe('TableView', function () {
       expect(ajaxSpy).toHaveBeenCalledWith({
         url: `${view.model.url()}/${model.get('datastore')}?path=${encodeURIComponent(model.get('path'))}`,
         type: 'DELETE',
-        success: jasmine.any(Function),
-        error: jasmine.any(Function)
+        success: expect.any(Function),
+        error: expect.any(Function)
       })
 
       expect(view.getServerState).toHaveBeenCalledTimes(0)

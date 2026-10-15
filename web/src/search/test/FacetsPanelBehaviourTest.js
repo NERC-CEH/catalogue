@@ -1,7 +1,7 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import { FacetsPanelView } from '../src/views'
-import { spy } from '../../test/support'
 
 // The search page's facet filters: each facet's choices as a multi-select box (select2), and choosing
 // or removing one moves the search to that choice's address (dri-one #473)
@@ -24,7 +24,7 @@ describe('FacetsPanelView', () => {
   beforeEach(() => {
     model = new Backbone.Model()
     model.getResults = () => new Backbone.Model({ facets })
-    model.setState = spy('setState')
+    model.setState = vi.fn()
     view = new FacetsPanelView({ el: $('<div>').appendTo(document.body), model })
   })
 
@@ -70,14 +70,14 @@ describe('FacetsPanelView', () => {
     $select.trigger(opening)
 
     expect(model.setState).toHaveBeenCalledWith({ facet: 'licence|OGL', page: 2 })
-    expect(opening.isDefaultPrevented()).toBeTrue()
+    expect(opening.isDefaultPrevented()).toBe(true)
     const nextOpening = $.Event('select2:opening')
     $select.trigger(nextOpening)
-    expect(nextOpening.isDefaultPrevented()).toBeFalse()
+    expect(nextOpening.isDefaultPrevented()).toBe(false)
   })
 
   it('clears the search state for an address with no query', () => {
-    expect(view.handleMultiSelect('/eidc/documents', model)).toBeFalse()
+    expect(view.handleMultiSelect('/eidc/documents', model)).toBe(false)
     expect(model.setState).toHaveBeenCalledWith({})
   })
 

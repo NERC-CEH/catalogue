@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Geometry, GeometryView } from '../src/geometryMap'
 
 describe('Test GeometryView', function () {
@@ -59,28 +60,28 @@ describe('Test GeometryView', function () {
   it('records the flag without touching a point geometry', () => {
     // given
     const confidential = confidentialView(POINT)
-    spyOn(window, 'confirm').and.returnValue(true)
+    vi.spyOn(window, 'confirm').mockReturnValue(true)
 
     // when
     confidential.$('#locationConfidential').prop('checked', true)
     confidential.handleLocationConfidentialCheckbox()
 
     // then
-    expect(confidential.model.get('locationConfidential')).toBeTrue()
+    expect(confidential.model.get('locationConfidential')).toBe(true)
     expect(confidential.model.get('geometryString')).toBe(POINT)
   })
 
   it('records the flag without touching a polygon geometry', () => {
     // given
     const confidential = confidentialView(POLYGON)
-    spyOn(window, 'confirm').and.returnValue(true)
+    vi.spyOn(window, 'confirm').mockReturnValue(true)
 
     // when
     confidential.$('#locationConfidential').prop('checked', true)
     confidential.handleLocationConfidentialCheckbox()
 
     // then
-    expect(confidential.model.get('locationConfidential')).toBeTrue()
+    expect(confidential.model.get('locationConfidential')).toBe(true)
     expect(confidential.model.get('geometryString')).toBe(POLYGON)
   })
 
@@ -89,7 +90,7 @@ describe('Test GeometryView', function () {
   it('warns before enabling confidentiality on a polygon', () => {
     // given
     const confidential = confidentialView(POLYGON)
-    spyOn(window, 'confirm').and.returnValue(true)
+    vi.spyOn(window, 'confirm').mockReturnValue(true)
 
     // when
     confidential.$('#locationConfidential').prop('checked', true)
@@ -102,22 +103,22 @@ describe('Test GeometryView', function () {
   it('does not enable confidentiality if the confirmation is cancelled', () => {
     // given
     const confidential = confidentialView(POINT)
-    spyOn(window, 'confirm').and.returnValue(false)
+    vi.spyOn(window, 'confirm').mockReturnValue(false)
 
     // when
     confidential.$('#locationConfidential').prop('checked', true)
     confidential.handleLocationConfidentialCheckbox()
 
     // then
-    expect(confidential.model.get('locationConfidential')).not.toBeTrue()
-    expect(confidential.$('#locationConfidential').is(':checked')).toBeFalse()
+    expect(confidential.model.get('locationConfidential')).not.toBe(true)
+    expect(confidential.$('#locationConfidential').is(':checked')).toBe(false)
   })
 
   it('clears the flag without confirmation when unticked', () => {
     // given
     const confidential = confidentialView(POINT)
     confidential.model.set('locationConfidential', true)
-    spyOn(window, 'confirm')
+    vi.spyOn(window, 'confirm').mockImplementation(() => {})
 
     // when
     confidential.$('#locationConfidential').prop('checked', false)
@@ -125,7 +126,7 @@ describe('Test GeometryView', function () {
 
     // then
     expect(window.confirm).not.toHaveBeenCalled()
-    expect(confidential.model.get('locationConfidential')).toBeFalse()
+    expect(confidential.model.get('locationConfidential')).toBe(false)
   })
 
   it('restores the ticked state from a saved record', () => {
@@ -136,6 +137,6 @@ describe('Test GeometryView', function () {
     })
 
     // then
-    expect(saved.$('#locationConfidential').is(':checked')).toBeTrue()
+    expect(saved.$('#locationConfidential').is(':checked')).toBe(true)
   })
 })

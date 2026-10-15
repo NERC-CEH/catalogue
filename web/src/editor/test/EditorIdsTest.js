@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import $ from 'jquery'
 import * as editors from '../src/editors'
 import { EditorMetadata } from '../src'

@@ -1,6 +1,9 @@
+import { afterEach, describe, expect, it } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import L from 'leaflet'
+import iconUrl from 'leaflet/dist/images/marker-icon.png'
+import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
 import { BoundingBox, BoundingBoxView, Geometry, GeometryView } from '../src/geometryMap'
 
 // The editor's maps, as an editor draws on them or types coordinates (dri-one #473)
@@ -33,8 +36,8 @@ describe('Editor maps', () => {
 
       expect(view.drawnItems.getLayers().length).toBe(1)
       expect(bounds(view.boundingBox)).toBe('-8.6,49.8,1.7,60.8')
-      expect(view.map.getBounds().contains(view.boundingBox.getBounds())).toBeTrue()
-      expect(toolbar().draw.rectangle).toBeFalse()
+      expect(view.map.getBounds().contains(view.boundingBox.getBounds())).toBe(true)
+      expect(toolbar().draw.rectangle).toBe(false)
       expect(toolbar().edit.remove).toBeTruthy()
     })
 
@@ -67,7 +70,7 @@ describe('Editor maps', () => {
 
       expect(model.toJSON()).toEqual({ westBoundLongitude: '-4.988', eastBoundLongitude: '1.750', southBoundLatitude: '50.123', northBoundLatitude: '58.600' })
       expect(input('westBoundLongitude').val()).toBe('-4.988')
-      expect(toolbar().draw.rectangle).toBeFalse()
+      expect(toolbar().draw.rectangle).toBe(false)
     })
 
     it('keeps one box: another drawn is ignored', () => {
@@ -97,7 +100,7 @@ describe('Editor maps', () => {
 
       view.map.fire(L.Draw.Event.DELETED)
 
-      expect(model.isEmpty()).toBeTrue()
+      expect(model.isEmpty()).toBe(true)
       expect(model.toJSON()).toEqual({})
       expect(input('northBoundLatitude').val()).toBe('')
       expect(toolbar().draw.rectangle).toBeTruthy()
@@ -130,8 +133,8 @@ describe('Editor maps', () => {
       geometry({ geometryString: polygon })
 
       expect(view.drawnItems.getLayers().length).toBe(1)
-      expect(view.map.getBounds().contains(view.drawnItems.getBounds())).toBeTrue()
-      expect(toolbar().draw.polygon).toBeFalse()
+      expect(view.map.getBounds().contains(view.drawnItems.getBounds())).toBe(true)
+      expect(toolbar().draw.polygon).toBe(false)
       expect(toolbar().edit.remove).toBeTruthy()
     })
 
@@ -140,7 +143,7 @@ describe('Editor maps', () => {
 
       expect(toolbar().draw.polygon).toBeTruthy()
       expect(toolbar().draw.marker).toBeTruthy()
-      expect(toolbar().edit.remove).toBeFalse()
+      expect(toolbar().edit.remove).toBe(false)
     })
 
     it('keeps a point drawn on the map as GeoJSON, to five places', () => {
@@ -158,17 +161,18 @@ describe('Editor maps', () => {
 
       view.map.fire(L.Draw.Event.DELETED)
 
-      expect(model.hasGeometry()).toBeFalse()
+      expect(model.hasGeometry()).toBe(false)
       expect(toolbar().draw.marker).toBeTruthy()
     })
 
     it('draws a point with Leaflet\'s marker, from the bundled images', () => {
       geometry({ geometryString: '{"type":"Point","coordinates":[-2.7,54.1]}' })
 
+      // The images as bundled, whatever the bundler names them, not the bare marker-icon.png Leaflet
+      // would otherwise fetch beside the page
       const icon = view.drawnItems.getLayers()[0].getLayers()[0].getIcon()
-      const url = name => new URL(icon._getIconUrl(name), window.location.href).pathname
-      expect(url('icon')).toMatch(/\/marker-icon\.[0-9a-f]+\.png$|\/[0-9a-f]+\.png$/)
-      expect(url('shadow')).not.toMatch(/\/marker-shadow\.png$/)
+      expect(icon._getIconUrl('icon')).toBe(iconUrl)
+      expect(icon._getIconUrl('shadow')).toBe(shadowUrl)
     })
 
     it('redraws the GeoJSON typed in', () => {
@@ -185,7 +189,7 @@ describe('Editor maps', () => {
 
       view.$('#box').val('').trigger('change')
 
-      expect(model.hasGeometry()).toBeFalse()
+      expect(model.hasGeometry()).toBe(false)
       expect(view.drawnItems.getLayers().length).toBe(0)
     })
 

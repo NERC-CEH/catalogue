@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import { Permission, PermissionApp, PermissionAppView } from '../src/PermissionApp'
 import template from '../src/PermissionApp/PermissionsTemplate'
 
@@ -26,7 +27,7 @@ describe('Test PermissionAppView', () => {
     })
     const view = new PermissionAppView({ model })
     view.template = template
-    spyOn(view, 'render')
+    vi.spyOn(view, 'render').mockImplementation(() => {})
     view.initialize()
     view.delegateEvents()
 

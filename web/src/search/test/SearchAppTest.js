@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import SearchApp from '../src/SearchApp'
 import SearchPage from '../src/models/SearchPage'
 
@@ -56,7 +57,7 @@ describe('SearchApp semantic search guard', () => {
 
   beforeEach(() => {
     model = new SearchApp()
-    spyOn(SearchPage.prototype, 'fetch')
+    vi.spyOn(SearchPage.prototype, 'fetch').mockImplementation(() => {})
   })
 
   it('does not search when semantic mode is switched on with no term', () => {
