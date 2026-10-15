@@ -1,5 +1,6 @@
 import L from 'leaflet'
 import 'leaflet-draw'
+import '../../../map/markerIcons'
 import { ObjectInputView } from '../views'
 import template from './geometryTemplate'
 
@@ -26,9 +27,16 @@ export default ObjectInputView.extend({
   },
 
   handleInput () {
-    this.model.setGeometry(this.$('#box').val())
-
-    // Redraw shape
+    const typed = this.$('#box').val().trim()
+    if (!typed) {
+      this.model.clearGeometry()
+      this.drawnItems.clearLayers()
+      return
+    }
+    this.model.setGeometry(typed)
+    // Redrawn only from GeoJSON that reads: the model's validation says what is wrong with the rest,
+    // and the shape stays as it was meanwhile
+    if (!this.model.isValid()) return
     this.drawnItems.clearLayers()
     this.drawnItems.addLayer(this.getGeometry())
   },
