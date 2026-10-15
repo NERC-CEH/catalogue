@@ -15,7 +15,10 @@ export function shareUrl (href) {
 export default Backbone.View.extend({
 
   events: {
-    'change .sort-search': 'handleSortChange'
+    'change .sort-search': 'handleSortChange',
+    // Its location is picked out on the map
+    'mouseenter .result': 'hover',
+    'mouseleave .result': 'unhover'
   },
 
   initialize () {
@@ -65,8 +68,18 @@ export default Backbone.View.extend({
      */
   updateSelected () {
     this.$('.result').removeClass('selected')
-    this.$(`#${this.model.getResults().get('selected')}`)
-      .addClass('selected')
+    const selected = this.$('.result').filter((i, result) => result.id === this.model.getResults().get('selected'))
+    selected.addClass('selected')
+    // Picked on the map, perhaps further down the page
+    selected[0]?.scrollIntoView({ block: 'nearest' })
+  },
+
+  hover (event) {
+    this.model.getResults()?.set('hovered', event.currentTarget.id)
+  },
+
+  unhover () {
+    this.model.getResults()?.unset('hovered')
   },
 
   /*

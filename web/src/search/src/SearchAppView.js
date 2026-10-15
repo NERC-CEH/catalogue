@@ -6,9 +6,8 @@ import { FacetsPanelView, SearchFormView, SearchPageView, SpatialFilterView } fr
 export default Backbone.View.extend({
   el: '#search',
 
-  events: {
-    'click .search-tab': 'updateMapsearch'
-  },
+  // initialize adds the links back into this search
+  events: {},
 
   initialize (options) {
     this.appUrl = window.location.href.split('#')[0].split('?')[0]
@@ -30,6 +29,13 @@ export default Backbone.View.extend({
     this.delegateEvents() // Register the mutated events object
 
     this.render()
+
+    // The map is made, or fitted to its tab, once the tab is showing. Bootstrap names the event
+    // shown.bs.tab, which jQuery (and so Backbone's events hash) would read as "shown" with two
+    // namespaces, and with no global jQuery Bootstrap raises no jQuery copy of it: so a plain listener
+    this.el.addEventListener('shown.bs.tab', event => {
+      if (event.target.closest('.map-tab')) this.spatialFilterView.showMap()
+    })
   },
 
   /*
@@ -49,12 +55,6 @@ export default Backbone.View.extend({
   defaultState (e) {
     this.model.setState({})
     return false
-  },
-
-  updateMapsearch (e) {
-    const targetClass = 'map-tab'
-    const isMapSearch = e.currentTarget.classList.contains(targetClass)
-    this.model.set('mapsearch', isMapSearch)
   },
 
   /*

@@ -32,10 +32,13 @@ describe('Test SpatialFilterView', () => {
     })
   })
 
-  describe('bbox from the model is drawn on init', () => {
+  describe('bbox from the model is drawn once the map is shown', () => {
     it('draws the rectangle when the model already has a bbox (direct URL load)', () => {
       // given a model constructed with a bbox already set, as on a fresh URL load
       const view = newView({ bbox: '-5.032,0.286,61.260,59.255' })
+
+      // when its tab is first shown
+      view.showMap()
 
       // then the rectangle has been drawn without waiting for a change event
       expect(view.drawnItems.getLayers().length).toEqual(1)
@@ -44,6 +47,9 @@ describe('Test SpatialFilterView', () => {
     it('draws nothing when the model has no bbox', () => {
       // given
       const view = newView({})
+
+      // when
+      view.showMap()
 
       // then
       expect(view.drawnItems.getLayers().length).toEqual(0)
