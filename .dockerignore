@@ -14,7 +14,8 @@
 !web/src
 !web/package.json
 !web/package-lock.json
-!web/webpack.js
+!web/vite.config.mjs
+!web/scripts/vite-plugins.mjs
 !web/scripts/sass-options.js
 !web/scripts/font-awesome-icons.js
 !web/scripts/babel-plugin-precompile-templates.js

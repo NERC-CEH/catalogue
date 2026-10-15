@@ -9,49 +9,29 @@
         "node": ">=24"
     },
     "scripts": {
-        "build": "webpack --config webpack.js --mode production",
-        "build-dev": "webpack --config webpack.js --mode development",
+        "build": "vite build",
+        "build-dev": "vite build --mode development",
         "lint": "eslint .",
         "lint-fix": "eslint --fix .",
         "pretest": "node scripts/check-template-escaping.js && node scripts/build-test-css.js",
         "test": "vitest run",
         "pretest-coverage": "npm run pretest",
         "test-coverage": "vitest run --coverage",
-        "watch": "webpack --config webpack.js --mode development --watch"
-    },
-    "browserslist": [
-        "defaults"
-    ],
-    "babel": {
-        "presets": [
-            "@babel/preset-env"
-        ],
-        "plugins": [
-            "./scripts/babel-plugin-precompile-templates"
-        ]
+        "watch": "vite build --mode development --watch"
     },
     "devDependencies": {
         "@babel/core": "^8.0.7",
-        "@babel/preset-env": "^8.0.7",
         "@vitest/browser-playwright": "4.1.11",
         "@vitest/coverage-istanbul": "4.1.11",
-        "babel-loader": "^10.1.1",
-        "css-loader": "^7.1.5",
-        "css-minimizer-webpack-plugin": "^8.0.0",
         "eslint": "^10.12.0",
         "globals": "^17.13.0",
-        "mini-css-extract-plugin": "^2.10.2",
         "neostandard": "^0.14.1",
         "nise": "6.1.5",
         "playwright": "1.63.0",
-        "postcss": "^8.5.30",
         "puppeteer": "^25.13.0",
         "sass": "^1.105.1",
-        "sass-loader": "^17.0.1",
         "vite": "8.3.1",
-        "vitest": "4.1.11",
-        "webpack": "^5.111.1",
-        "webpack-cli": "^7.2.3"
+        "vitest": "4.1.11"
     },
     "dependencies": {
         "@fontsource-variable/inter": "5.3.0",

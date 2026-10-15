@@ -1,7 +1,7 @@
 /*
  * The Font Awesome icons the catalogue uses, so the build can drop the CSS for the other ~2,400
  * (NERC-CEH/dri-one#362). Font Awesome's Sass emits a `.fa-<name>::before` rule for every icon and
- * can't be configured with a subset, so webpack.js removes the unused rules after compiling.
+ * can't be configured with a subset, so vite.config.mjs removes the unused rules after compiling.
  *
  * An icon counts as used when its class, `fa-<name>`, appears anywhere in the templates, the
  * JavaScript or the Sass, or when a template passes its bare name to a macro that adds the `fa-`

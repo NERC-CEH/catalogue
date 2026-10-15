@@ -1,11 +1,12 @@
 # syntax=docker/dockerfile:1
-# Build webpack (javascript & css)
+# Build the JavaScript and stylesheets with Vite (dri-one #474)
 FROM node:24-alpine AS build-web
 WORKDIR /web
 RUN apk --no-cache upgrade
-COPY web/package.json web/package-lock.json web/webpack.js ./
-COPY web/scripts/sass-options.js web/scripts/font-awesome-icons.js web/scripts/babel-plugin-precompile-templates.js ./scripts/
+COPY web/package.json web/package-lock.json ./
 RUN --mount=type=cache,target=/web/.npm npm ci --cache /web/.npm --no-audit
+COPY web/vite.config.mjs ./
+COPY web/scripts/vite-plugins.mjs web/scripts/sass-options.js web/scripts/font-awesome-icons.js web/scripts/babel-plugin-precompile-templates.js ./scripts/
 COPY web/img ./img
 COPY web/scss ./scss
 COPY web/src ./src
@@ -46,7 +47,7 @@ COPY --chown=spring:spring --from=build-java /app/build/libs/app/snapshot-depend
 COPY --chown=spring:spring --from=build-java /app/build/libs/app/application/ ./
 COPY --chown=spring:spring templates /opt/ceh-catalogue/templates
 COPY --chown=spring:spring --from=build-web /web/img /opt/ceh-catalogue/static/img
-# webpack's scripts/, css/ and assets/, each file named by a hash of its content, and the
+# The build's scripts/, css/ and assets/, each file named by a hash of its content, and the
 # manifest.json the templates find them by (dri-one #364)
 COPY --chown=spring:spring --from=build-web /web/dist /opt/ceh-catalogue/static
 RUN chown spring:spring -R /var/ceh-catalogue && chown spring:spring -R /var/upload

@@ -13,12 +13,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The URLs of the scripts and stylesheets webpack builds, shared with templates as {@code assets}:
- * <pre>{@code <#list assets.files("main") as src><script defer src="${src}"></script></#list>}</pre>
+ * The URLs of the scripts and stylesheets the build writes (Vite, {@code web/vite.config.mjs}), shared
+ * with templates as {@code assets}:
+ * <pre>{@code <#list assets.files("main") as src><script type="module" src="${src}"></script></#list>}</pre>
  *
  * <p>Each file name carries a hash of its content, so the files can be cached for a year
  * ({@code StaticAssetsCacheConfig}) and a deploy is still seen at once: a changed file is a new URL.
- * webpack lists them in {@code manifest.json}, beside them, per entry and in the order a page loads
+ * The build lists them in {@code manifest.json}, beside them, per entry and in the order a page loads
  * them (NERC-CEH/dri-one#364). The manifest is read again whenever it changes, as it does on every
  * rebuild under {@code npm run watch}.
  */
@@ -42,7 +43,7 @@ public class StaticAssets {
         return new StaticAssets(new DefaultResourceLoader().getResource(directory + "manifest.json"));
     }
 
-    /** The URLs of an entry's files, in the order to load them, or none if webpack didn't build it. */
+    /** The URLs of an entry's files, in the order to load them, or none if the build didn't write it. */
     public List<String> files(String entry) {
         refresh();
         return files.getOrDefault(entry, List.of());
@@ -58,7 +59,7 @@ public class StaticAssets {
                 return;
             }
             if (modified == MISSING) {
-                log.warn("No {}: pages link no scripts or stylesheets until webpack has built them", manifest);
+                log.warn("No {}: pages link no scripts or stylesheets until the build has written them", manifest);
                 files = Map.of();
             } else {
                 try (InputStream in = manifest.getInputStream()) {

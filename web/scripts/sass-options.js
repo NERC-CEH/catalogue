@@ -1,5 +1,5 @@
 /*
- * The Sass options every build of the catalogue stylesheets uses: webpack (webpack.js) and the test
+ * The Sass options every build of the catalogue stylesheets uses: Vite's (vite.config.mjs) and the test
  * build for the contrast specs.
  *
  * Bootstrap and Font Awesome are loaded through loadPaths, so quietDeps silences their warnings and
