@@ -7,7 +7,10 @@ export default Backbone.View.extend({
   el: '#search',
 
   events: {
-    'click .search-tab': 'updateMapsearch'
+    // The map is made, or fitted to its tab, once the tab is showing. A jQuery event: Bootstrap raises
+    // one because the page's jQuery is global (index.js)
+    'shown.bs.tab .map-tab a': 'showMap'
+    // initialize adds the links back into this search
   },
 
   initialize (options) {
@@ -32,6 +35,10 @@ export default Backbone.View.extend({
     this.render()
   },
 
+  showMap () {
+    this.spatialFilterView.showMap()
+  },
+
   /*
      * Grab the query state from the anchors clicked href. Use this to update the
      * models state
@@ -49,12 +56,6 @@ export default Backbone.View.extend({
   defaultState (e) {
     this.model.setState({})
     return false
-  },
-
-  updateMapsearch (e) {
-    const targetClass = 'map-tab'
-    const isMapSearch = e.currentTarget.classList.contains(targetClass)
-    this.model.set('mapsearch', isMapSearch)
   },
 
   /*

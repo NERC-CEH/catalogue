@@ -12,8 +12,9 @@ module.exports = [
     env: ['browser', 'jasmine']
   }),
   {
-    // The page's jQuery globals belong to nobody: the catalogue imports jQuery, and on EIDC pages the
-    // Jira issue collector has its own (see index.js). Bare `$`/`jQuery` are already caught by no-undef.
+    // The page's jQuery globals are set for Bootstrap's jQuery events and to keep the Jira issue
+    // collector's jQuery to itself (see index.js). The catalogue's code imports jQuery instead, so a
+    // module says what it uses. Bare `$`/`jQuery` are already caught by no-undef.
     rules: {
       'no-restricted-properties': ['error', ...['window', 'globalThis'].flatMap(object => ['jQuery', '$'].map(property => ({
         object,

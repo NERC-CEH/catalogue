@@ -6,7 +6,6 @@ export default Backbone.Model.extend({
 
   defaults: {
     drawing: false,
-    mapsearch: false,
     bbox: undefined,
     op: 'intersects',
     facet: [],
@@ -28,8 +27,8 @@ export default Backbone.Model.extend({
     this.on('change', this.jumpToPageOne)
     this.on('change', this.disableDrawing)
     // Search once things settle, for every search field that changed meanwhile: the debounced
-    // performSearch used to see only the last change, so a search was lost when, say, the map tab
-    // changed mapsearch within the second (dri-one #460)
+    // performSearch used to see only the last change, so a search was lost when, say, another
+    // setting changed within the second (dri-one #460)
     this.pendingChanges = {}
     this.debouncedFlush = _.debounce(() => this.flushSearch(), 1_000 /* ms */)
     this.on('change', this.queueSearch)
@@ -74,7 +73,11 @@ export default Backbone.Model.extend({
      * method is fired from an event listener which is registered before any other
      * listeners, then catch all 'change' listeners will only fire once.
      */
-  jumpToPageOne (evt) { if (!evt.changed.page) { this.set('page', this.defaults.page) } },
+  jumpToPageOne (evt) {
+    // Only for a change to the search: opening the map tab, say, went back to page one and searched
+    const searchChanged = _.chain(evt.changed).keys().intersection(this.searchFields).value().length > 0
+    if (searchChanged && !evt.changed.page) { this.set('page', this.defaults.page) }
+  },
 
   /*
      * If any aspect of the model is updated we will want to disable drawing.

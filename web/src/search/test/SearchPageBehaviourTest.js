@@ -1,10 +1,11 @@
 import $ from 'jquery'
 import L from 'leaflet'
+import { Tab } from 'bootstrap'
 import SearchApp from '../src/SearchApp'
 import SearchAppView from '../src/SearchAppView'
 import SearchRouter from '../src/SearchRouter'
 import { MessageView } from '../src/views'
-import { fakeClock, fakeServer, spy } from '../../test/support'
+import { fakeServer, spy } from '../../test/support'
 
 // The search page as initSearch puts it together, on the markup templates/html/search.ftlh renders:
 // what a visitor's changes search for, what comes back on the page, the address bar kept in step,
@@ -68,6 +69,8 @@ describe('The search page', () => {
   const requested = () => new URL(fakeServer.lastRequest().url, window.location.href).searchParams
   const searchRuns = () => app.flushSearch()
   const wait = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))
+  // The jQuery event Bootstrap raises once a tab is showing, the page's jQuery being global
+  const showMapTab = () => $('.map-tab a').trigger('shown.bs.tab')
   const shown = () => $('.results .result__title').map((i, title) => title.textContent.trim()).get()
 
   // As initSearch does, with the address the visitor arrived at
@@ -85,9 +88,7 @@ describe('The search page', () => {
 
   afterEach(() => {
     view.facetsPanelView.destroyFacetSearch()
-    // Opening the map tab fits the map to it a moment later, which would find the map removed
-    view.spatialFilterView.map.invalidateSize = () => {}
-    view.spatialFilterView.map.remove()
+    view.spatialFilterView.map?.remove()
     app.debouncedFlush.cancel()
     fakeServer.uninstall()
     window.history.replaceState(null, '', original)
@@ -127,13 +128,14 @@ describe('The search page', () => {
       expect(requested().has('page')).toBeFalse()
     })
 
-    it('doesn\'t search for a change that isn\'t part of the search', () => {
-      open()
+    it('doesn\'t search, or go back to the first page, for a change that isn\'t part of the search', () => {
+      open('?term=rain&page=3', markup.replace('<div class="results"></div>', '<div class="results"><input type="hidden" id="num-records" value="60"></div>'))
 
-      $('.map-tab').trigger('click')
+      app.set('drawing', true)
+      showMapTab()
       searchRuns()
 
-      expect(app.get('mapsearch')).toBeTrue()
+      expect(app.get('page')).toBe(3)
       expect(fakeServer.requestCount()).toBe(0)
     })
 
@@ -270,23 +272,63 @@ describe('The search page', () => {
   describe('the map', () => {
     const rectangle = () => L.rectangle([[50, -3.5], [53, 1.8]])
 
-    it('fits itself to its tab once the tab is shown', () => {
+    it('isn\'t made until its tab is shown, then fits itself to the tab each time it is', () => {
       open()
-      const invalidateSize = spyOn(view.spatialFilterView.map, 'invalidateSize')
-      fakeClock.install()
-      try {
-        $('.map-tab').trigger('click')
-        expect(invalidateSize).not.toHaveBeenCalled()
-        fakeClock.tick(1)
+      const spatial = view.spatialFilterView
+      expect(spatial.map).toBeUndefined()
+      expect($('.mapsearch .leaflet-container').length).toBe(0)
+      expect($('.mapsearch #opIntersects').prop('checked')).toBeTrue()
 
-        expect(invalidateSize).toHaveBeenCalled()
-      } finally {
-        fakeClock.uninstall()
-      }
+      showMapTab()
+      expect($('.mapsearch .leaflet-container').length).toBe(1)
+      const map = spatial.map
+      const invalidateSize = spyOn(map, 'invalidateSize')
+      showMapTab()
+
+      expect(spatial.map).toBe(map)
+      expect(invalidateSize).toHaveBeenCalled()
+    })
+
+    // Bootstrap itself, with the page's jQuery global as index.js makes it
+    describe('shown by Bootstrap', () => {
+      let previous
+
+      beforeEach(() => { previous = window.jQuery }) // eslint-disable-line no-restricted-properties
+      afterEach(() => { window.jQuery = previous }) // eslint-disable-line no-restricted-properties
+
+      it('is made when Bootstrap shows its tab', () => {
+        window.jQuery = $ // eslint-disable-line no-restricted-properties
+        open()
+
+        new Tab($('.map-tab a')[0]).show()
+
+        expect($('#spatial-tab').hasClass('active')).toBeTrue()
+        expect(view.spatialFilterView.map).toBeDefined()
+      })
+
+      it('isn\'t made without the global, as Bootstrap then raises only the native event', () => {
+        window.jQuery = undefined // eslint-disable-line no-restricted-properties
+        open()
+
+        new Tab($('.map-tab a')[0]).show()
+
+        expect($('#spatial-tab').hasClass('active')).toBeTrue()
+        expect(view.spatialFilterView.map).toBeUndefined()
+      })
+    })
+
+    it('isn\'t made for another tab', () => {
+      open()
+
+      $('#facet-tab').closest('.tab-content').before('<a id="other" href="#facet-tab"></a>')
+      $('#other').trigger('shown.bs.tab')
+
+      expect(view.spatialFilterView.map).toBeUndefined()
     })
 
     it('searches the area drawn on it, then offers to delete it instead of drawing another', () => {
       open()
+      showMapTab()
       const spatial = view.spatialFilterView
       const before = spatial.drawControl
 
@@ -303,6 +345,7 @@ describe('The search page', () => {
 
     it('searches without the area once it is deleted, and offers drawing again', () => {
       open('?bbox=-3.5,1.8,53,50&op=iswithin')
+      showMapTab()
       const spatial = view.spatialFilterView
       expect(spatial.drawnItems.getLayers().length).toBe(1)
       expect($('#opWithin').prop('checked')).toBeTrue()
@@ -326,6 +369,16 @@ describe('The search page', () => {
       expect(requested().get('op')).toBe('iswithin')
     })
 
+    it('filters by an area from the address straight away, and draws it once the map is shown', () => {
+      open('?bbox=-3.5,1.8,53,50')
+      searchRuns()
+      expect(requested().get('bbox')).toBe('-3.5,1.8,53,50')
+
+      showMapTab()
+
+      expect(view.spatialFilterView.drawnItems.getLayers()[0].getBounds().toBBoxString()).toBe('-3.5,50,1.8,53')
+    })
+
     it('shows the operation chosen elsewhere, such as from the address', () => {
       open()
 
@@ -333,6 +386,91 @@ describe('The search page', () => {
 
       expect($('#opWithin').prop('checked')).toBeTrue()
       expect($('#opIntersects').prop('checked')).toBeFalse()
+    })
+  })
+
+  describe('the results on the map', () => {
+    const located = (titles, locations) => answer(titles, {
+      results: titles.map((title, i) => ({ identifier: `record-${i}`, title, state: 'published', locations: locations[i] }))
+    })
+    const boxes = () => view.spatialFilterView.resultLayers.getLayers()
+    const box = identifier => boxes().find(layer => layer.identifier === identifier)
+    const style = layer => layer.getLayers()[0].options
+
+    function searchWithResults (titles, locations) {
+      app.set('term', 'rain')
+      searchRuns()
+      respond(fakeServer.lastRequest(), located(titles, locations))
+    }
+
+    it('shows where each result on this page is, a point as a circle', () => {
+      open()
+      showMapTab()
+
+      searchWithResults(['Rainfall', 'Rain gauge', 'No location'], [
+        ['POLYGON((-8.6 49.8, -8.6 60.8, 1.7 60.8, 1.7 49.8, -8.6 49.8))'],
+        ['POINT(-1.2 51.6)'],
+        undefined
+      ])
+
+      expect(boxes().map(layer => layer.identifier)).toEqual(['record-0', 'record-1'])
+      expect(box('record-0').getBounds().toBBoxString()).toBe('-8.6,49.8,1.7,60.8')
+      expect(box('record-1').getLayers()[0] instanceof L.CircleMarker).toBeTrue()
+    })
+
+    it('shows the results already on the page when the map is first shown', () => {
+      open()
+      searchWithResults(['Rainfall'], [['POLYGON((-3 54, -3 55, -2 55, -2 54, -3 54))']])
+
+      showMapTab()
+
+      expect(boxes().length).toBe(1)
+    })
+
+    it('shows only the latest page\'s results, and none while it is searching', () => {
+      open()
+      showMapTab()
+      searchWithResults(['Rainfall'], [['POINT(-1 51)']])
+
+      app.set('term', 'river')
+      searchRuns()
+      expect(boxes().length).toBe(0)
+      respond(fakeServer.lastRequest(), located(['River flows', 'River levels'], [['POINT(0 52)'], ['POINT(1 53)']]))
+
+      expect(boxes().length).toBe(2)
+    })
+
+    it('names a result on its box, as text', () => {
+      open()
+      showMapTab()
+
+      searchWithResults(['Rivers <img src=x>'], [['POINT(-1 51)']])
+
+      expect(box('record-0').getTooltip().getContent()).toBe('Rivers &lt;img src=x&gt;')
+    })
+
+    it('picks out a result in the list when its box is clicked', () => {
+      open()
+      showMapTab()
+      searchWithResults(['Rainfall', 'Rain gauge'], [['POINT(-1 51)'], ['POINT(0 52)']])
+
+      box('record-1').fire('click')
+
+      expect($('.result.selected').attr('id')).toBe('record-1')
+      expect(style(box('record-1')).weight).toBe(3)
+      expect(style(box('record-0')).weight).toBe(1)
+    })
+
+    it('picks out a result\'s box while the result is hovered in the list', () => {
+      open()
+      showMapTab()
+      searchWithResults(['Rainfall', 'Rain gauge'], [['POINT(-1 51)'], ['POINT(0 52)']])
+
+      $('#record-0').trigger('mouseenter')
+      expect(style(box('record-0')).weight).toBe(3)
+
+      $('#record-0').trigger('mouseleave')
+      expect(style(box('record-0')).weight).toBe(1)
     })
   })
 

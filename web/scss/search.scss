@@ -337,7 +337,8 @@ main {
             transform: scale(99%);
 
             &:hover,
-            &:focus-visible {
+            &:focus-visible,
+            &.selected {
                 background-color: rgb(0 0 0 / 0.06);
                 outline: 2px solid var(--link-hover-colour);
                 text-decoration: none;
