@@ -21,6 +21,33 @@ main {
             flex: 1;
         }
 
+        // Between the filters and the results: dragged, or moved with the arrow keys, to set
+        // --filter-width (FiltersResizeView). It sits in the gap beside the filters' border.
+        >.filters-resize {
+            display: none;
+            flex: 0 0 8px;
+            margin-inline-start: -0.65rem;
+            overflow: visible;
+            cursor: col-resize;
+            touch-action: none;
+            border-radius: 4px;
+
+            &:hover,
+            &:focus-visible {
+                background-color: var(--filter-border-colour);
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--bs-focus-ring-color, currentColor);
+            }
+        }
+
+        // While the handle is dragged, the page's text isn't selected under it
+        &.resizing-filters {
+            cursor: col-resize;
+            user-select: none;
+        }
+
         .filters {
             display: none;
             flex: 0 0 var(--filter-width);
@@ -38,10 +65,27 @@ main {
                 }
             }
 
+            // The tabs fill the column, and the spatial search map what is left of it below the tabs
+            // and its form, so the column never scrolls for the map. The facets, which can be taller,
+            // still stretch their tab and scroll the column.
             .filter-tabs {
                 margin-block-start: 0.5rem;
                 background-color: var(--filter-background-colour);
-                min-height: calc(100dcvh - 0.5rem - var(--header-height));
+                flex: 1 0 auto;
+                display: flex;
+                flex-direction: column;
+
+                >.tab-content {
+                    flex: 1 0 auto;
+                    display: flex;
+                    flex-direction: column;
+
+                    >#spatial-tab.active {
+                        flex: 1 0 auto;
+                        display: flex;
+                        flex-direction: column;
+                    }
+                }
 
                 .nav-tabs {
                     >li {
@@ -187,6 +231,12 @@ main {
     main {
         .search {
             .filters {
+                display: flex;
+                flex-direction: column;
+                height: calc(100dvh - var(--header-height));
+            }
+
+            >.filters-resize {
                 display: block;
             }
         }
@@ -267,7 +317,9 @@ main {
 
         .mapsearch {
             position: relative;
-            height: calc(100vh - (var(--header-height) + var(--search-map-header-height)));
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
             width: 100%;
 
             ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Save changes"],
@@ -277,7 +329,9 @@ main {
 
             .map {
                 position: relative;
-                height: 100%;
+                flex: 1 0 auto;
+                // In a very short window the column scrolls rather than the map vanishing
+                min-height: 300px;
 
                 .leaflet-control-zoom {
                     a {

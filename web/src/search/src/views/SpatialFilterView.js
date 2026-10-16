@@ -5,6 +5,12 @@ import template from '../templates/spatialFilterTemplate'
 import { wktToGeoJson } from '../wkt'
 import Backbone from 'backbone'
 
+// The extent of a result's shapes, in square degrees: enough to say which of two is the larger
+const area = layer => {
+  const bounds = layer.getBounds()
+  return (bounds.getEast() - bounds.getWest()) * (bounds.getNorth() - bounds.getSouth())
+}
+
 // The current page's results on the map, and the one hovered or chosen in the list
 const RESULT = { color: '#1c5b8a', weight: 1, fillOpacity: 0.08 }
 const HIGHLIGHTED = { color: '#c2410c', weight: 3, fillOpacity: 0.25 }
@@ -59,33 +65,36 @@ export default Backbone.View.extend({
     }
 
     this.map = new L.Map(this.$('.map')[0], { center: new L.LatLng(55, -3), zoom: 5 })
+    // Fitted to its box whenever that changes size, as the filters are dragged wider or narrower
+    // (FiltersResizeView) or the window is resized: Leaflet measures the map only when it is told to
+    new ResizeObserver(() => this.map.invalidateSize()).observe(this.$('.map')[0])
     this.map.addLayer(baseMaps.Map)
     this.resultLayers = L.featureGroup().addTo(this.map)
     this.drawnItems = L.featureGroup()
     this.drawControl = this.createToolbar()
     this.drawnItems.addTo(this.map)
-    L.control.layers(baseMaps, { Drawlayer: this.drawnItems, Results: this.resultLayers }, { position: 'topright', collapsed: false }).addTo(this.map)
+    L.control.layers(baseMaps, { 'Search area': this.drawnItems, Results: this.resultLayers }, { position: 'topright', collapsed: false }).addTo(this.map)
     this.map.addControl(this.drawControl)
     baseMaps.Map.addTo(this.map)
 
     this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
       this.boundingBox = event.layer
-      this.drawnItems.addLayer(this.boundingBox)
+      this.drawnItems.addLayer(this.boundingBox).bringToBack()
       this.map.removeControl(this.drawControl)
       this.drawControl = this.deleteToolbar()
       this.map.addControl(this.drawControl)
       this.setBbox(this.boundingBox)
     })
 
-    // The results are put aside while a box is drawn: they hid where it was being dragged, and a
-    // press on one picked that record instead of starting the box. Only if they were showing, as the
-    // layer control can turn them off.
-    this.listenTo(this.map, L.Draw.Event.DRAWSTART, function () {
+    // The results are put aside while a box is drawn or deleted: they hid where it was being dragged,
+    // and lying over the box, a press on one picked that record instead. Only if they were showing,
+    // as the layer control can turn them off.
+    this.listenTo(this.map, `${L.Draw.Event.DRAWSTART} ${L.Draw.Event.DELETESTART}`, function () {
       this.resultsHiddenForDrawing = this.map.hasLayer(this.resultLayers)
       this.map.removeLayer(this.resultLayers)
     })
 
-    this.listenTo(this.map, L.Draw.Event.DRAWSTOP, function () {
+    this.listenTo(this.map, `${L.Draw.Event.DRAWSTOP} ${L.Draw.Event.DELETESTOP}`, function () {
       if (this.resultsHiddenForDrawing) this.map.addLayer(this.resultLayers)
       this.resultsHiddenForDrawing = false
     })
@@ -100,15 +109,18 @@ export default Backbone.View.extend({
 
   /*
    * Each result's locations on the current page, as a layer that names the record and, clicked,
-   * picks it out in the list. Drawn behind the area being searched, which stays on top to be edited.
+   * picks it out in the list. A shape drawn later is drawn over an earlier one, and takes the mouse
+   * where they overlap, so they are added from the largest to the smallest: a small box inside a large
+   * one can still be hovered and clicked. All of them are over the area being searched, for the same
+   * reason.
    */
   showResults () {
     if (!this.map) return
     this.resultLayers.clearLayers()
     const results = this.model.getResults()?.get('results') || []
-    results.forEach(result => {
+    const layers = results.flatMap(result => {
       const geometries = (result.locations || []).map(wktToGeoJson).filter(Boolean)
-      if (!geometries.length) return
+      if (!geometries.length) return []
       const layer = L.geoJSON(geometries, {
         style: RESULT,
         // A point as a circle, which can be highlighted as a box is
@@ -118,9 +130,10 @@ export default Backbone.View.extend({
       // Leaflet writes a tooltip's string as HTML, and titles come from depositors
       layer.bindTooltip(_.escape(result.title), { sticky: true })
       layer.on('click', () => this.model.getResults().set('selected', result.identifier))
-      this.resultLayers.addLayer(layer)
+      return [layer]
     })
-    this.drawnItems.bringToFront()
+    layers.sort((a, b) => area(b) - area(a)).forEach(layer => this.resultLayers.addLayer(layer))
+    this.drawnItems.bringToBack()
     this.highlightResults()
   },
 
@@ -134,8 +147,8 @@ export default Backbone.View.extend({
     const picked = new Set([page?.get('selected'), page?.get('hovered')].filter(Boolean))
     this.resultLayers.eachLayer(layer => {
       const highlighted = picked.has(layer.identifier)
+      // Not brought to the front: a large box would then cover the smaller ones until another was picked
       layer.setStyle(highlighted ? HIGHLIGHTED : RESULT)
-      if (highlighted) layer.bringToFront()
     })
   },
 
@@ -151,7 +164,7 @@ export default Backbone.View.extend({
     if ((bbox !== undefined) && (this.drawnItems.getLayers().length === 0)) {
       const coords = bbox.split(',')
       const bounds = [[coords[3], coords[0]], [coords[2], coords[1]]]
-      this.drawnItems.addLayer(L.rectangle(bounds))
+      this.drawnItems.addLayer(L.rectangle(bounds)).bringToBack()
 
       this.map.removeControl(this.drawControl)
       this.drawControl = this.deleteToolbar()

@@ -462,6 +462,53 @@ describe('The search page', () => {
       expect(style(box('record-0')).weight).toBe(1)
     })
 
+    // Which of two shapes is on top, and so gets the mouse where they overlap, is the order of their
+    // paths in the map's SVG: the later one is drawn over the earlier
+    const path = layer => layer.getLayers ? layer.getLayers()[0]._path : layer._path
+    const isBelow = (lower, upper) => Boolean(path(lower).compareDocumentPosition(path(upper)) & Node.DOCUMENT_POSITION_FOLLOWING)
+    const big = 'POLYGON((-8 50, -8 58, 1 58, 1 50, -8 50))'
+    const small = 'POLYGON((-3 54, -3 55, -2 55, -2 54, -3 54))'
+
+    it('stacks the boxes from the largest up, so a small one inside a large one can still be pointed at', () => {
+      open()
+      showMapTab()
+
+      searchWithResults(['Small catchment', 'Whole country'], [[small], [big]])
+
+      expect(isBelow(box('record-1'), box('record-0'))).toBe(true)
+    })
+
+    it('keeps the small box on top when the large one is picked out', () => {
+      open()
+      showMapTab()
+      searchWithResults(['Small catchment', 'Whole country'], [[small], [big]])
+
+      box('record-1').fire('click')
+
+      expect(style(box('record-1')).weight).toBe(3)
+      expect(isBelow(box('record-1'), box('record-0'))).toBe(true)
+    })
+
+    it('keeps the search area beneath the results, so it doesn\'t take their hovering and clicks', () => {
+      open()
+      showMapTab()
+      searchWithResults(['Small catchment'], [[small]])
+
+      const searchArea = L.rectangle([[50, -5], [56, 0]])
+      view.spatialFilterView.map.fire(L.Draw.Event.CREATED, { layer: searchArea })
+
+      expect(isBelow(searchArea, box('record-0'))).toBe(true)
+    })
+
+    it('names the search area in the layer control', () => {
+      open()
+      showMapTab()
+
+      const overlays = $('.leaflet-control-layers-overlays label').map((i, label) => label.textContent.trim()).get()
+
+      expect(overlays).toEqual(['Search area', 'Results'])
+    })
+
     it('picks out a result\'s box while the result is hovered in the list', () => {
       open()
       showMapTab()
