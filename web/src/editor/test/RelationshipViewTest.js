@@ -180,7 +180,8 @@ describe('Test RelationshipView', function () {
       const search = await pickerFor(REPLACES)
       $.getJSON.mockClear()
       const { results } = await search()
-      expect(results).toEqual([[]])
+      // Said in the menu, as an empty one looked like no search had been made
+      expect(results).toEqual([[{ notice: 'No matching records' }]])
       // Only the rules are fetched: no record search is made
       expect($.getJSON.mock.calls.map(args => args[0])).toEqual(['/relationships/rules?type=dataset'])
     })
@@ -190,7 +191,7 @@ describe('Test RelationshipView', function () {
       $.getJSON.mockImplementation(url => url.startsWith('/relationships/rules') ? datasetRules : Promise.reject(new Error('Solr 400')))
       const search = await pickerFor(REPLACES)
       const { results } = await search()
-      expect(results).toEqual([[]])
+      expect(results).toEqual([[{ notice: 'The search failed. Try again.' }]])
     })
   })
 

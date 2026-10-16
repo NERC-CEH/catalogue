@@ -39,19 +39,31 @@ async function generateInformationString (target) {
 // which also enforces them on save. Fetched once per record type.
 const rulesByType = new Map()
 
+// The rules couldn't be fetched. The search isn't sent unfiltered then: it offered records the save
+// rejects, from the record's own catalogue only, and hid that the rules were missing (on staging and
+// production the proxy had no route for them)
+export const RULES_UNAVAILABLE = Symbol('rules unavailable')
+
 export function relationshipRules (type) {
   const key = type || ''
   if (!rulesByType.has(key)) {
     const rules = Promise.resolve($.getJSON(`/relationships/rules?type=${encodeURIComponent(key)}`))
       .catch(error => {
-        // Fall back to an unfiltered search; the save-time check still applies
         console.error('Error fetching relationship rules:', error)
+        // Asked for again on the next search
         rulesByType.delete(key)
-        return {}
+        return RULES_UNAVAILABLE
       })
     rulesByType.set(key, rules)
   }
   return rulesByType.get(key)
+}
+
+// What the menu says when it has nothing to offer. Shown as an item that can't be chosen.
+const NOTICES = {
+  [RULES_UNAVAILABLE]: 'What this relationship can link to couldn\'t be loaded. Try again, or reload the page.',
+  none: 'No matching records',
+  failed: 'The search failed. Try again.'
 }
 
 // Catalogue titles by id, for showing where each search result comes from. Fetched once.
@@ -105,10 +117,13 @@ export function recordType (model) {
  * which Solr holds as the case-sensitive codelist label (e.g. "Dataset", not "dataset"), and may
  * search other catalogues than the record's own through the cross-catalogue endpoint. Link
  * documents are never offered, whatever the relationship. Null when a
- * restricted relationship has no type it could match. The rules leave out empty lists.
+ * restricted relationship has no type it could match, and RULES_UNAVAILABLE when the rules couldn't
+ * be fetched. The rules leave out empty lists.
  */
 export async function searchQuery ({ catalogue, relation, sourceType, currentId, searchTerm }) {
-  const targets = (await relationshipRules(sourceType))[relation]
+  const rules = await relationshipRules(sourceType)
+  if (rules === RULES_UNAVAILABLE) return RULES_UNAVAILABLE
+  const targets = rules[relation]
   const clauses = []
   if (targets) {
     const labels = targets.resourceTypes ?? []
@@ -164,23 +179,33 @@ export default ObjectInputView.extend({
           searchTerm: request.term.trim()
         })
 
+        if (query === RULES_UNAVAILABLE) {
+          response([{ notice: NOTICES[RULES_UNAVAILABLE] }])
+          return
+        }
         if (!query) {
-          response([])
+          response([{ notice: NOTICES.none }])
           return
         }
 
         try {
           const options = await $.getJSON(query)
+          const items = await Promise.all(_.map(options.results, resultItem))
 
-          response(await Promise.all(_.map(options.results, resultItem)))
+          // An empty menu looked like no search had been made
+          response(items.length ? items : [{ notice: NOTICES.none }])
         } catch (error) {
           console.error('Error fetching data:', error)
           // Always answer, or the autocomplete stays in its loading state
-          response([])
+          response([{ notice: NOTICES.failed }])
         }
       },
 
       select: async (event, ui) => {
+        if (ui.item.notice) {
+          event.preventDefault()
+          return
+        }
         const infoString = await generateInformationString(ui.item.value)
 
         this.$('.title').val(ui.item.label)
@@ -197,6 +222,10 @@ export default ObjectInputView.extend({
       .addClass('relationship-autocomplete')
 
     autocomplete.autocomplete('instance')._renderItem = function (ul, item) {
+      // jQuery UI's menu skips a disabled item, so a notice can't be chosen
+      if (item.notice) {
+        return $('<li class="ui-state-disabled relationship-notice">').append($('<div>').text(item.notice)).appendTo(ul)
+      }
       return $('<li>')
         .append($('<div>').html(item.html))
         .appendTo(ul)
