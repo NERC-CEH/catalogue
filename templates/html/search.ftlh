@@ -27,6 +27,8 @@
       </div>
 
     </div>
+    <#-- Dragged to give the filters, and the spatial search map, more or less of the page -->
+    <div class="filters-resize"></div>
 
     <div>
 

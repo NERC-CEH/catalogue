@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import Backbone from 'backbone'
 import deparam from 'deparam.js'
-import { FacetsPanelView, SearchFormView, SearchPageView, SpatialFilterView } from './views'
+import { FacetsPanelView, FiltersResizeView, SearchFormView, SearchPageView, SpatialFilterView } from './views'
 
 export default Backbone.View.extend({
   el: '#search',
@@ -78,6 +78,7 @@ export default Backbone.View.extend({
       model: this.model,
       el: this.$('.mapsearch')
     })
+    this.filtersResizeView = new FiltersResizeView({ el: this.$('.filters-resize') })
 
     // Pass initial state e.g. (search term) so they render correctly on page load.
     // The form view owns both term controls (keyword input and semantic textarea),

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import SpatialFilterView from '../src/views/SpatialFilterView'
 import SearchApp from '../src/SearchApp'
 import $ from 'jquery'
@@ -93,6 +93,25 @@ describe('Test SpatialFilterView', () => {
       expect(view.map.hasLayer(view.resultLayers)).toBe(true)
     })
 
+    it('hides the results while the delete tool is picked, as they lie over the box to delete', () => {
+      // given a box drawn
+      const view = newView({ bbox: '-5.000,1.000,55.000,50.000' })
+      view.showMap()
+      const deleteTool = view.drawControl._toolbars.edit._modes.remove.handler
+
+      // when
+      deleteTool.enable()
+
+      // then
+      expect(view.map.hasLayer(view.resultLayers)).toBe(false)
+
+      // when it is put down
+      deleteTool.disable()
+
+      // then
+      expect(view.map.hasLayer(view.resultLayers)).toBe(true)
+    })
+
     it('leaves the results hidden if they were turned off before drawing', () => {
       // given the results layer turned off in the layer control
       const view = newView({})
@@ -106,6 +125,40 @@ describe('Test SpatialFilterView', () => {
       // then
       expect(view.map.hasLayer(view.resultLayers)).toBe(false)
     })
+  })
+
+  it('fits the map to its box when the box is resized, as the filters are dragged wider', async () => {
+    // given
+    const view = newView({})
+    view.$('.map').css({ width: '300px', height: '300px' })
+    view.showMap()
+    const fitted = vi.spyOn(view.map, 'invalidateSize')
+
+    // when
+    view.$('.map').css('width', '600px')
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+
+    // then
+    expect(fitted).toHaveBeenCalled()
+    expect(view.map.getSize().x).toBe(600)
+  })
+
+  it('stops fitting the map once it has been removed', async () => {
+    // given a map shown, then removed
+    const view = newView({})
+    view.$('.map').css({ width: '300px', height: '300px' })
+    view.showMap()
+    const map = view.map
+    map.remove()
+    const fitted = vi.spyOn(map, 'invalidateSize')
+
+    // when its box changes size, as when the page around it is emptied. A removed map has no panes
+    // left to measure, and fitting it threw (CI, !1315)
+    view.$('.map').css('width', '600px')
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+
+    // then
+    expect(fitted).not.toHaveBeenCalled()
   })
 
   describe('bbox from the model is drawn once the map is shown', () => {
