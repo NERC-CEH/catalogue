@@ -150,15 +150,35 @@ describe('EditorView', () => {
     expect(view.$('#editorSave').prop('disabled')).toBe(false)
   })
 
-  it('shows the ajax spinner only while a request is in flight', () => {
-    // #editorAjax is hidden until a request starts, then hidden again on completion
-    expect(view.$('#editorAjax').hasClass('visible')).toBe(false)
+  // A save showed a second spinner beside the buttons, on every request the record made, as well as
+  // the one in the Save button. The button that started the request is the only one now.
+  const spinners = () => view.$('.editor-buttons .fa-spinner')
 
+  it('shows a save in progress in the Save button only', () => {
+    vi.spyOn(view.model, 'save').mockReturnValue({})
+
+    view.save()
     view.model.trigger('request')
-    expect(view.$('#editorAjax').hasClass('visible')).toBe(true)
 
-    view.model.trigger('sync')
-    expect(view.$('#editorAjax').hasClass('visible')).toBe(false)
+    expect(spinners().length).toBe(1)
+    expect(spinners().closest('#editorSave').length).toBe(1)
+  })
+
+  it('shows a delete in progress in the Delete button, and gives the button back if it fails', () => {
+    vi.spyOn(view.model, 'destroy').mockReturnValue({})
+
+    view.delete()
+    view.model.trigger('request')
+
+    expect(spinners().length).toBe(1)
+    expect(view.$('#editorDelete').prop('disabled')).toBe(true)
+    expect(view.$('#editorDelete').text()).toContain('Deleting')
+
+    view.model.destroy.mock.lastCall[0].error()
+
+    expect(spinners().length).toBe(0)
+    expect(view.$('#editorDelete').prop('disabled')).toBe(false)
+    expect(view.$('#editorDelete').text()).toContain('Delete')
   })
 
   it('shows a conflict banner and preserves edits on 409', () => {

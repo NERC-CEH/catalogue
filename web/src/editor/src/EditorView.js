@@ -24,8 +24,6 @@ export default Backbone.View.extend({
 
     const that = this
     this.listenTo(this.model, 'error', function (model, response) {
-      that.$('#editorAjax').toggleClass('visible')
-
       if (response && response.status === 409) {
         // The model still holds the user's unsaved edits (Backbone does not revert on error), and
         // with no explicit attrs passed to save() this is exactly the JSON body that was PUT. Show it
@@ -72,16 +70,12 @@ export default Backbone.View.extend({
     })
 
     this.listenTo(this.model, 'sync', function () {
-      that.$('#editorAjax').toggleClass('visible')
       that.saveRequired = false
     })
     this.listenTo(this.model, 'change save:required', function () {
       that.saveRequired = true
     })
 
-    this.listenTo(this.model, 'request', function () {
-      that.$('#editorAjax').toggleClass('visible')
-    })
     this.listenTo(this.model, 'invalid', function (model, errors) {
       let errorString = ''
       _.each(errors, function (error) {
@@ -119,8 +113,17 @@ export default Backbone.View.extend({
     })
   },
 
+  // Shown in progress in its own button, as a save is
   delete () {
+    this.$('#editorDelete')
+      .prop('disabled', true)
+      .html('Deleting… <i class="fa-solid fa-spinner fa-spin"></i>')
     this.model.destroy({
+      error: () => {
+        this.$('#editorDelete')
+          .prop('disabled', false)
+          .html('Delete <i class="fa-solid fa-times"></i>')
+      },
       success: () => {
         _.invoke(this.sections, 'remove')
         this.remove()
