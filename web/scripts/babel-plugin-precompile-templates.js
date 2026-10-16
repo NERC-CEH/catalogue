@@ -19,13 +19,10 @@
  */
 const underscore = require('underscore')
 
-// Globals a template may use that its data never shadows; left as plain references
-const BUILTINS = new Set([
-  'undefined', 'NaN', 'Infinity', 'arguments', 'globalThis', 'window', 'document',
-  'Math', 'JSON', 'Array', 'Object', 'String', 'Number', 'Boolean', 'Date', 'RegExp',
-  'encodeURIComponent', 'decodeURIComponent', 'encodeURI', 'decodeURI', 'parseInt', 'parseFloat',
-  'isNaN', 'isFinite'
-])
+// Left as plain references: the compiled function's own arguments, which aren't a global to fall back
+// on. Every other name is looked up on the data first, as `with` did, globals included: a metrics row's
+// `document` is its id, and taking the global document for it showed [object HTMLDocument].
+const BUILTINS = new Set(['arguments'])
 
 // The source underscore compiles, without its `with`, as a function of (obj, _)
 function unwrap (text) {
@@ -43,7 +40,8 @@ function unwrap (text) {
 
 // Rewrites the names `with (obj)` would have looked up on the data
 function freeNames ({ types: t }) {
-  const free = path => !BUILTINS.has(path.node.name) && !path.scope.hasBinding(path.node.name)
+  // noGlobals: otherwise Babel counts JavaScript's built-ins (Date, Math, JSON...) as declared
+  const free = path => !BUILTINS.has(path.node.name) && !path.scope.hasBinding(path.node.name, { noGlobals: true })
   return {
     visitor: {
       ReferencedIdentifier (path) {
