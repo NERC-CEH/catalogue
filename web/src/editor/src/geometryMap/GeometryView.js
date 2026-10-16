@@ -13,7 +13,6 @@ export default ObjectInputView.extend({
 
   initialize (options) {
     this.template = template
-    this.resizeFrame = null
 
     ObjectInputView.prototype.initialize.apply(this, arguments)
 
@@ -85,23 +84,12 @@ export default ObjectInputView.extend({
       this.drawButtons = false
       this.drawnItems.addLayer(this.geometryString)
 
-      if (this.model.hasGeometry()) {
-        this.resizeFrame = requestAnimationFrame(() => {
-          // Map may have been removed before this callback runs
-          if (!this.map || !this.map._mapPane) {
-            return
-          }
-
-          this.map.invalidateSize()
-
-          const bounds = this.drawnItems.getBounds()
-
-          if (bounds.isValid()) {
-            this.map.fitBounds(bounds, {
-              padding: [20, 20]
-            })
-          }
-        })
+      // Not until the map can be seen: one made before its section is shown has no size to fit, and
+      // is made again when it is (SingleObjectView.show). A point has no extent, so it would be fitted
+      // at the closest zoom there is; the cap leaves the country around it in view.
+      const bounds = this.drawnItems.getBounds()
+      if (bounds.isValid() && this.map.getSize().x > 0) {
+        this.map.fitBounds(bounds, { padding: [20, 20], maxZoom: 12, animate: false })
       }
     } else {
       this.drawButtons = true
@@ -186,11 +174,6 @@ export default ObjectInputView.extend({
   },
 
   viewMap () {
-    if (this.resizeFrame) {
-      cancelAnimationFrame(this.resizeFrame)
-      this.resizeFrame = null
-    }
-
     if (this.map) {
       this.map.off()
       this.map.remove()

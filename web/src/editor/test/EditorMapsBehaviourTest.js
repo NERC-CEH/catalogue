@@ -5,6 +5,7 @@ import L from 'leaflet'
 import iconUrl from 'leaflet/dist/images/marker-icon.png'
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
 import { BoundingBox, BoundingBoxView, Geometry, GeometryView } from '../src/geometryMap'
+import SingleObjectView from '../src/views/SingleObjectView'
 
 // The editor's maps, as an editor draws on them or types coordinates (dri-one #473)
 describe('Editor maps', () => {
@@ -113,6 +114,59 @@ describe('Editor maps', () => {
 
       expect(view.$('.validation').text()).toContain('West Bounding Longitude should be between -180')
       expect(view.$('.validation').css('display')).not.toBe('none')
+    })
+  })
+
+  // As the editor builds one: before its section is in the page, which is hidden until it is shown.
+  // Leaflet measured its map there as 0x0 and kept that size, so the map came up grey, and once
+  // shown it was never measured again (dri-one #475).
+  describe('a geometry in a section of the editor', () => {
+    const polygon = '{"type":"Polygon","coordinates":[[[-3,54],[-2,54],[-2,55],[-3,55],[-3,54]]]}'
+    const point = '{"type":"Point","coordinates":[-2.7,54.1]}'
+    let section
+
+    function field (geometryString) {
+      const record = new Backbone.Model(geometryString ? { geometry: { geometryString } } : {})
+      section = new SingleObjectView({
+        model: record,
+        modelAttribute: 'geometry',
+        ModelType: Geometry,
+        label: 'Geometry',
+        ObjectInputView: GeometryView
+      })
+      $(document.body).append(section.el)
+      return section
+    }
+    const map = () => section.objectInputView.map
+
+    afterEach(() => map()?.remove())
+
+    it('is sized to its section once that is shown', () => {
+      field()
+
+      section.show()
+
+      expect(map().getSize().x).toBeGreaterThan(0)
+      expect(map().getSize().y).toBeGreaterThan(0)
+    })
+
+    it('is fitted to a saved polygon once shown', () => {
+      field(polygon)
+
+      section.show()
+
+      expect(map().getZoom()).toBeGreaterThan(4)
+      expect(map().getBounds().contains(section.objectInputView.drawnItems.getBounds())).toBe(true)
+    })
+
+    it('centres on a saved point, near enough to see what is around it', () => {
+      field(point)
+
+      section.show()
+
+      expect(map().getCenter().lat).toBeCloseTo(54.1, 3)
+      expect(map().getCenter().lng).toBeCloseTo(-2.7, 3)
+      expect(map().getZoom()).toBe(12)
     })
   })
 
