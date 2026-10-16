@@ -143,6 +143,24 @@ describe('Test SpatialFilterView', () => {
     expect(view.map.getSize().x).toBe(600)
   })
 
+  it('stops fitting the map once it has been removed', async () => {
+    // given a map shown, then removed
+    const view = newView({})
+    view.$('.map').css({ width: '300px', height: '300px' })
+    view.showMap()
+    const map = view.map
+    map.remove()
+    const fitted = vi.spyOn(map, 'invalidateSize')
+
+    // when its box changes size, as when the page around it is emptied. A removed map has no panes
+    // left to measure, and fitting it threw (CI, !1315)
+    view.$('.map').css('width', '600px')
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+
+    // then
+    expect(fitted).not.toHaveBeenCalled()
+  })
+
   describe('bbox from the model is drawn once the map is shown', () => {
     it('draws the rectangle when the model already has a bbox (direct URL load)', () => {
       // given a model constructed with a bbox already set, as on a fresh URL load

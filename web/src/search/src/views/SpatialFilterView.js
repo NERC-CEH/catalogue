@@ -66,8 +66,11 @@ export default Backbone.View.extend({
 
     this.map = new L.Map(this.$('.map')[0], { center: new L.LatLng(55, -3), zoom: 5 })
     // Fitted to its box whenever that changes size, as the filters are dragged wider or narrower
-    // (FiltersResizeView) or the window is resized: Leaflet measures the map only when it is told to
-    new ResizeObserver(() => this.map.invalidateSize()).observe(this.$('.map')[0])
+    // (FiltersResizeView) or the window is resized: Leaflet measures the map only when it is told to.
+    // Not once the map is removed, which leaves it nothing to measure.
+    const resized = new ResizeObserver(() => this.map.invalidateSize())
+    resized.observe(this.$('.map')[0])
+    this.map.on('unload', () => resized.disconnect())
     this.map.addLayer(baseMaps.Map)
     this.resultLayers = L.featureGroup().addTo(this.map)
     this.drawnItems = L.featureGroup()
