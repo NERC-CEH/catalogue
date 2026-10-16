@@ -6,9 +6,6 @@ import { startApps } from './startup/apps'
 // - Bootstrap, which finding window.jQuery raises each of its events as a jQuery event too. Only that
 //   copy reaches a Backbone events hash: the native event's dotted name (shown.bs.tab) is read by
 //   jQuery as an event with namespaces. Listened for in SearchAppView ('shown.bs.tab .map-tab a').
-// - The Jira issue collector on EIDC pages, which brings its own jQuery (3.x, with jQuery Migrate):
-//   finding the globals taken it keeps that to itself, its noConflict(true) putting ours back. So they
-//   are set here, before the collector's scripts, which are deferred after this one.
 // The catalogue's own code imports jQuery rather than use the global (eslint.config.js).
 window.jQuery = window.$ = $ // eslint-disable-line no-restricted-properties
 
