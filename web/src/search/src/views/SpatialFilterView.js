@@ -77,6 +77,19 @@ export default Backbone.View.extend({
       this.setBbox(this.boundingBox)
     })
 
+    // The results are put aside while a box is drawn: they hid where it was being dragged, and a
+    // press on one picked that record instead of starting the box. Only if they were showing, as the
+    // layer control can turn them off.
+    this.listenTo(this.map, L.Draw.Event.DRAWSTART, function () {
+      this.resultsHiddenForDrawing = this.map.hasLayer(this.resultLayers)
+      this.map.removeLayer(this.resultLayers)
+    })
+
+    this.listenTo(this.map, L.Draw.Event.DRAWSTOP, function () {
+      if (this.resultsHiddenForDrawing) this.map.addLayer(this.resultLayers)
+      this.resultsHiddenForDrawing = false
+    })
+
     this.listenTo(this.map, L.Draw.Event.DELETED, function () {
       this.map.removeControl(this.drawControl)
       this.drawControl = this.createToolbar()

@@ -33,7 +33,10 @@ export const templates = {
 //   jQuery UI widget falls back on a jQuery with no $.widget, and select2 on its CommonJS form, which
 //   exports a function to call with jQuery rather than adding itself to it.
 // - leaflet-draw adds itself to a global L, which nothing promises is there when it runs, so it is
-//   given Leaflet's as an import.
+//   given Leaflet's as an import. Two of its functions also assign to variables they never declare
+//   (`type` working out an area, `radius` resizing a circle), which made a global of each as webpack
+//   ran it, but throws in an ES module, which is strict: dragging out a rectangle stopped after the
+//   first move of the mouse. Declared here, they are the module's own.
 // The code is added ahead of the library's first line and after its last, so the lines in between
 // keep their numbers and need no source map of their own.
 const AMD = /[\\/]node_modules[\\/](jquery-ui[\\/]ui|select2[\\/]dist[\\/]js)[\\/][^\\/]+(?:[\\/][^\\/]+)?\.js$/
@@ -45,7 +48,7 @@ export const legacyModules = {
     // In development, a dependency's id ends in a version (?v=...)
     const file = id.split('?')[0]
     if (LEAFLET_PLUGIN.test(file)) {
-      return { code: "import L from 'leaflet';" + code, map: null }
+      return { code: "import L from 'leaflet';var type,radius;" + code, map: null }
     }
     if (!AMD.test(file)) return null
     const define = code.match(/\bdefine\(\s*\[([^\]]*)\]\s*,\s*factory\s*\)/)
