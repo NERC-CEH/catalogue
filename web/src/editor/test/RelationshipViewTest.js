@@ -59,18 +59,21 @@ describe('Test RelationshipView', function () {
     expect(view.$('.autocomplete').prop('disabled')).toBe(false)
   })
 
-  it('should do correct http call for uid', async () => {
+  it('should fetch a record id\'s details as JSON, never JSONP', async () => {
+    const ajax = vi.spyOn($, 'ajax').mockResolvedValue({ title: 'Example', type: 'dataset', id: 'exampleUid' })
     model = new EditorMetadata({ value: 'http://purl.org/dc/terms/relation', target: 'exampleUid' })
     view = new RelationshipView({ model, options })
     await view.render()
-    expect($.getJSON).toHaveBeenCalledWith('/documents/exampleUid')
+    expect(ajax).toHaveBeenCalledWith({ url: '/documents/exampleUid', dataType: 'json', jsonp: false })
   })
 
-  it('should do correct http call for uri', async () => {
+  it('should not fetch another site\'s URI at all (dri-one #441)', async () => {
+    const ajax = vi.spyOn($, 'ajax')
     model = new EditorMetadata({ value: 'http://purl.org/dc/terms/relation', target: 'http://exampleUri' })
     view = new RelationshipView({ model, options })
     await view.render()
-    expect($.getJSON).toHaveBeenCalledWith('http://exampleUri')
+    expect(ajax.mock.calls.map(([request]) => request?.url ?? request)).not.toContain('http://exampleUri')
+    expect($.getJSON).not.toHaveBeenCalledWith('http://exampleUri')
   })
 
   describe('relationship-specific search filters', function () {

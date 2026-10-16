@@ -204,6 +204,7 @@ describe('Relationships in the editor', () => {
 
     it('is named from this catalogue when stored as an id', async () => {
       expect(await shows('abc', /^\/documents\/abc$/)).toBe('Rainfall (dataset, abc)')
+      expect($('.target-problem').prop('hidden')).toBe(true)
     })
 
     it('is named from this catalogue when stored as the catalogue\'s /id/ URI', async () => {
@@ -214,17 +215,93 @@ describe('Relationships in the editor', () => {
       expect(await shows('https://catalogue.ceh.ac.uk/documents/abc', /^\/documents\/abc$/)).toBe('Rainfall (dataset, abc)')
     })
 
-    it('is shown as stored when it can\'t be fetched', async () => {
-      const view = new RelationshipView({
-        el: $('<div>').appendTo(document.body),
-        model: new EditorMetadata({ relation: PART_OF, target: 'gone' }),
-        options: [{ value: PART_OF, label: 'Part of' }]
-      })
-      await settle()
-      fakeServer.lastRequest().respondWith({ status: 404, contentType: 'application/json', responseText: '{}' })
-      await settle()
+    // A target is stored as given, through the API too, so it can be any URL. Fetched with $.getJSON,
+    // one with `=?` in it became JSONP, and ran as script in the editor of whoever opened the record
+    // (dri-one #441). Only this catalogue's own records are looked up.
+    describe('on another site', () => {
+      const stored = async target => {
+        const before = fakeServer.requests().length
+        const view = new RelationshipView({
+          el: $('<div>').appendTo(document.body),
+          model: new EditorMetadata({ relation: PART_OF, target }),
+          options: [{ value: PART_OF, label: 'Part of' }]
+        })
+        await settle()
+        await settle()
+        return { view, requested: fakeServer.requests().slice(before).map(request => request.url) }
+      }
+      const scripts = () => $('script[src*="evil.example"]').length
 
-      expect(view.$('.read-only-identifier').val()).toBe('gone')
+      it('is shown as stored, without asking that site for it', async () => {
+        const { view, requested } = await stored('https://doi.org/10.5285/abc')
+
+        expect(requested).toEqual([])
+        expect(view.$('.read-only-identifier').val()).toBe('https://doi.org/10.5285/abc')
+        expect(view.$('.target-problem').prop('hidden')).toBe(true)
+      })
+
+      it('is never loaded as a script, whatever its address asks for', async () => {
+        const { requested } = await stored('https://evil.example/x.js?callback=?')
+
+        expect(requested).toEqual([])
+        expect(scripts()).toBe(0)
+      })
+
+      it('is never loaded as a script when made to look like one of this catalogue\'s own', async () => {
+        const { requested } = await stored('https://catalogue.ceh.ac.uk/id/abc?callback=?')
+
+        expect(requested).toEqual([])
+        expect(scripts()).toBe(0)
+      })
+    })
+
+    // Shown only as its id, a link to a missing record looked like any other (dri-one #465). The
+    // stored target is kept, so the record can still be saved or the relationship removed.
+    describe('that can\'t be fetched', () => {
+      const failing = async (target, fetched, status) => {
+        const model = new EditorMetadata({ relation: PART_OF, target })
+        const view = new RelationshipView({
+          el: $('<div>').appendTo(document.body),
+          model,
+          options: [{ value: PART_OF, label: 'Part of' }]
+        })
+        await settle()
+        expect(url()).toMatch(fetched)
+        fakeServer.lastRequest().respondWith({ status, contentType: 'application/json', responseText: '{}' })
+        await settle()
+        return { field: view.$('.read-only-identifier'), problem: view.$('.target-problem'), model }
+      }
+
+      it('says the record isn\'t there, or can\'t be seen, when stored as an id', async () => {
+        const { field, problem, model } = await failing('c70f2c9a', /^\/documents\/c70f2c9a$/, 404)
+
+        // Beneath the field, which a narrow column cut short: the id stays in it
+        expect(field.val()).toBe('c70f2c9a')
+        expect(problem.text()).toBe('Record not found, or you don\'t have access to it')
+        expect(problem.prop('hidden')).toBe(false)
+        expect(field.hasClass('is-invalid')).toBe(true)
+        expect(model.get('target')).toBe('c70f2c9a')
+      })
+
+      it('says the same when it can\'t be seen, stored as a URI, as the save check does', async () => {
+        // One message for both, as RelationshipTargets doesn't say which a target is
+        const { field, problem, model } = await failing('https://catalogue.ceh.ac.uk/id/c70f2c9a', /^\/documents\/c70f2c9a$/, 403)
+
+        expect(field.val()).toBe('https://catalogue.ceh.ac.uk/id/c70f2c9a')
+        expect(problem.text()).toBe('Record not found, or you don\'t have access to it')
+        expect(field.hasClass('is-invalid')).toBe(true)
+        expect(model.get('target')).toBe('https://catalogue.ceh.ac.uk/id/c70f2c9a')
+      })
+
+      it('says only that its details couldn\'t be loaded when the server fails, not that the link is broken', async () => {
+        const { field, problem, model } = await failing('c70f2c9a', /^\/documents\/c70f2c9a$/, 500)
+
+        expect(field.val()).toBe('c70f2c9a')
+        expect(problem.text()).toBe('Couldn\'t load the record\'s details')
+        expect(problem.prop('hidden')).toBe(false)
+        expect(field.hasClass('is-invalid')).toBe(false)
+        expect(model.get('target')).toBe('c70f2c9a')
+      })
     })
   })
 
@@ -235,8 +312,11 @@ describe('Relationships in the editor', () => {
       expect(recordUrl('http://catalogue.ceh.ac.uk/documents/abc')).toBe('/documents/abc')
     })
 
-    it('fetches another site\'s record from that site', () => {
-      expect(recordUrl('https://doi.org/10.5285/abc')).toBe('https://doi.org/10.5285/abc')
+    it('fetches nothing for another site\'s record, or for a value that isn\'t an id (dri-one #441)', () => {
+      expect(recordUrl('https://doi.org/10.5285/abc')).toBeNull()
+      expect(recordUrl('https://evil.example/x.js?callback=?')).toBeNull()
+      expect(recordUrl('https://catalogue.ceh.ac.uk/id/abc?callback=?')).toBeNull()
+      expect(recordUrl('../maintenance')).toBeNull()
     })
   })
 

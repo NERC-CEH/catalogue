@@ -16,22 +16,38 @@ if ($.ui && $.ui.autocomplete && $.ui.autocomplete.prototype) {
 const ownRecord = /^https?:\/\/catalogue\.ceh\.ac\.uk\/(?:id|documents)\/([^/?#]+)$/
 
 /**
- * Where to fetch a relationship's target from. A target is stored either as a record id or as a URI;
- * the catalogue's own URIs are fetched from this catalogue, like an id, so that staging and local
- * stacks don't ask production (which their origin isn't allowed to read) for each one.
+ * Where to fetch a relationship's target from, or null when it isn't fetched. A target is stored as a
+ * record id or as a URI. The catalogue's own URIs are fetched from this catalogue, like an id, so that
+ * staging and local stacks don't ask production (which their origin isn't allowed to read).
+ *
+ * Any other URL is shown as stored and never requested. A target is saved as given, through the API
+ * too, so it can be any address, and fetching it ran that site's script in the editor of whoever
+ * opened the record: jQuery makes a JSON request to a URL with `=?` in it JSONP (dri-one #441).
  */
 export function recordUrl (target) {
   const own = ownRecord.exec(target)
-  if (own) return `/documents/${own[1]}`
-  return /^https?:\/\//.test(target) ? target : `/documents/${target}`
+  if (own) return `/documents/${encodeURIComponent(own[1])}`
+  return /^[\w-]+$/.test(target) ? `/documents/${target}` : null
 }
 
-async function generateInformationString (target) {
+/**
+ * What the read-only field says about a relationship's target: its title, type and id, or, when they
+ * can't be shown, the target as stored and why. A missing record and one the editor can't see get one
+ * message, as the save check (RelationshipTargets) gives, so as not to say which; any other failure
+ * isn't reported as a broken link (dri-one #465). The stored target is kept, to be saved or removed.
+ */
+export async function describeTarget (target) {
+  const url = recordUrl(target)
+  if (!url) return { text: target }
   try {
-    const data = await $.getJSON(recordUrl(target))
-    return `${data.title} (${data.type}, ${data.id})`
+    // Never JSONP, whatever the address: $.getJSON would turn `=?` into a script
+    const data = await $.ajax({ url, dataType: 'json', jsonp: false })
+    return { text: `${data.title} (${data.type}, ${data.id})` }
   } catch (error) {
-    return target
+    if (error?.status === 404 || error?.status === 403) {
+      return { text: target, problem: 'Record not found, or you don\'t have access to it', missing: true }
+    }
+    return { text: target, problem: 'Couldn\'t load the record\'s details' }
   }
 }
 
@@ -206,11 +222,9 @@ export default ObjectInputView.extend({
           event.preventDefault()
           return
         }
-        const infoString = await generateInformationString(ui.item.value)
-
         this.$('.title').val(ui.item.label)
         this.$('.identifier').val(ui.item.value)
-        this.$('.read-only-identifier').val(infoString)
+        this.showTarget(await describeTarget(ui.item.value))
 
         this.$('.relationshipList').prop('disabled', true)
         this.$('.relationshipSearch').addClass('d-none')
@@ -251,15 +265,26 @@ export default ObjectInputView.extend({
     }
   },
 
+  // Set with .val(), which raises no change event, so the stored target isn't touched. The title
+  // gives the whole text, which a narrow field cuts short; a problem goes beneath it, as the field's
+  // own text would be cut off. A missing record is marked as Bootstrap marks an invalid field.
+  showTarget ({ text, problem, missing = false }) {
+    this.$('.read-only-identifier').val(text).attr('title', text).toggleClass('is-invalid', missing)
+    this.$('.target-problem')
+      .text(problem || '')
+      .prop('hidden', !problem)
+      .toggleClass('invalid-feedback d-block', missing)
+      .toggleClass('form-text', Boolean(problem) && !missing)
+  },
+
   async render () {
     ObjectInputView.prototype.render.apply(this)
 
     if (this.existingRecord) {
-      const infoString =
-        await generateInformationString(this.model.get('target'))
+      const description = await describeTarget(this.model.get('target'))
 
       this.$('.relationshipList').prop('disabled', true)
-      this.$('.read-only-identifier').val(infoString)
+      this.showTarget(description)
       this.$('.relationshipRecord').removeClass('d-none')
       this.$('.relationshipSearch').addClass('d-none')
     }

@@ -14,6 +14,7 @@ export default _.template(`
     </div>
     <div class="relationshipRecord col-md-7 d-none">
         <input data-name="target" class="editor-input read-only-identifier" value="<%- data.target %>" disabled>
+        <div class="target-problem" hidden></div>
     </div>
 </div>
 `)
