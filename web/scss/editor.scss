@@ -585,7 +585,10 @@ textarea.editor-textarea {
 
                 option {
                     display: grid;
-                    grid-template-columns: 3ch auto;
+                    // The text wraps within the picker, which is as wide as the select: an option is
+                    // nowrap by default, and an auto column as wide as its longest line
+                    grid-template-columns: 3ch minmax(0, 1fr);
+                    white-space: normal;
                     grid-template-rows: auto auto;
                     border: 1px solid #dddddd;
                     gap: 0;

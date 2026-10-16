@@ -136,8 +136,10 @@ export async function searchQuery ({ catalogue, relation, sourceType, currentId,
 
 export default ObjectInputView.extend({
 
+  // What a relationship means goes beneath its name, in a span the styled select sets on a second
+  // line and leaves out of the closed select. Each is escaped on its own, the span being markup.
   optionTemplate: _.template(
-    '<option value="<%- value %>" <%-selected%>><%- label %></option>'
+    '<option value="<%- value %>" <%-selected%>><%- label %><% if (description) { %><span><%- description %></span><% } %></option>'
   ),
 
   async initialize (options) {
@@ -250,16 +252,7 @@ export default ObjectInputView.extend({
           ? 'selected'
           : ''
 
-      const label = option.description
-        ? `${option.label}<span>${option.description}</span>`
-        : option.label
-
-      this.$('.relationshipList').append(
-        this.optionTemplate({
-          ...option,
-          label
-        })
-      )
+      this.$('.relationshipList').append(this.optionTemplate({ description: '', ...option }))
     })
 
     return this
