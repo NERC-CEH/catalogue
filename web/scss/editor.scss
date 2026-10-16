@@ -207,6 +207,13 @@ textarea.editor-textarea {
                 }
             }
 
+            // In a floating field the label sits where the placeholder is, so it is shown only once the
+            // label has moved up for the field to be typed in. Bootstrap hides it there, but the colour
+            // above outweighs that.
+            .form-floating > .editor-input:not(:focus)::placeholder {
+                color: transparent;
+            }
+
             textarea.editor-textarea {
                 color: #000;
                 field-sizing: content;
