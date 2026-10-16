@@ -162,14 +162,6 @@
           </#if>
         </footer>
       </#if>
-      <#-- EIDC's Jira feedback collector. defer, so it no longer holds up parsing. Deferred scripts and
-           module scripts run in the order they appear, so the catalogue's run first, and the collector's
-           jQuery (which it makes window.jQuery) still loads before the collector. The catalogue's code
-           imports its own and never reads the global. -->
-      <#if catalogue?has_content && catalogue.id == "eidc">
-        <script defer src="https://jira.ceh.ac.uk/s/d41d8cd98f00b204e9800998ecf8427e-CDN/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/2.2.4.7/_/download/batch/com.atlassian.plugins.jquery:jquery/com.atlassian.plugins.jquery:jquery.js?collectorId=1977b77c"></script>
-        <script defer src="https://jira.ceh.ac.uk/s/743f218046d73ea8e8033c2a0fad57f5-T/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/4.0.4/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-UK&collectorId=1977b77c"></script>
-      </#if>
     </body>
   </html>
   </#compress>

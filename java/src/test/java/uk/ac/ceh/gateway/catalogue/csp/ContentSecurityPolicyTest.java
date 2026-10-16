@@ -75,6 +75,16 @@ class ContentSecurityPolicyTest {
     }
 
     @Test
+    @DisplayName("no longer allows the Jira issue collector's scripts or styles")
+    void noJiraIssueCollector() {
+        // Removed: jira.ceh.ac.uk won't let its form be framed by another site (dri-one #477)
+        Map<String, String> directives = directives("n");
+
+        assertThat(directives.get("script-src"), not(containsString("jira.ceh.ac.uk")));
+        assertThat(directives.get("style-src"), not(containsString("jira.ceh.ac.uk")));
+    }
+
+    @Test
     @DisplayName("refuses plugins, foreign base URLs and framing by other sites, and says where to report")
     void lockedDownDefaults() {
         Map<String, String> directives = directives("n");

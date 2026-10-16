@@ -16,20 +16,19 @@ import java.util.stream.Collectors;
  *   Inline scripts would need the per-request nonce ({@code <script nonce="${csp.nonce}">}); there are
  *   none at present. There is no {@code 'unsafe-eval'}: the front-end templates are compiled at build
  *   time (web/scripts/babel-plugin-precompile-templates.js, dri-one #464) rather than by underscore's
- *   {@code _.template} with {@code new Function}. jira.ceh.ac.uk is the EIDC issue collector.
+ *   {@code _.template} with {@code new Function}.
  *   www.googletagmanager.com is Google Analytics: on EIDC the proxy adds a cookie banner to every page,
  *   and once a visitor accepts analytics cookies it loads Tag Manager (via /sso/static/gtm-loader.js),
  *   which loads gtag.js.</li>
  *   <li>{@code style-src}: {@code 'unsafe-inline'} because templates set {@code style} attributes and
- *   the SPARQL page has an inline stylesheet; styles can't run code. jira.ceh.ac.uk styles the issue
- *   collector.</li>
+ *   the SPARQL page has an inline stylesheet; styles can't run code.</li>
  *   <li>{@code font-src}: the fonts, Inter included, are served from /static (#367).</li>
  *   <li>{@code img-src https:}: a record's browse graphic and the map tiles can come from any host.</li>
  *   <li>{@code connect-src}: the SPARQL page queries the Fuseki endpoint, which is a different host.
  *   Google Analytics 4 sends its hits to the google-analytics.com, analytics.google.com and
  *   googletagmanager.com hosts Google documents for a CSP.</li>
  *   <li>{@code frame-src https:}: a dataset's spatial explorer is embedded from the URL its record
- *   gives, and the issue collector opens in a frame.</li>
+ *   gives.</li>
  * </ul>
  */
 public class ContentSecurityPolicy {
@@ -47,8 +46,8 @@ public class ContentSecurityPolicy {
         Map<String, List<String>> directives = new LinkedHashMap<>();
         directives.put("default-src", List.of("'self'"));
         directives.put("script-src", List.of("'self'", "'nonce-" + NONCE + "'",
-            "https://jira.ceh.ac.uk", "https://www.googletagmanager.com"));
-        directives.put("style-src", List.of("'self'", "'unsafe-inline'", "https://jira.ceh.ac.uk"));
+            "https://www.googletagmanager.com"));
+        directives.put("style-src", List.of("'self'", "'unsafe-inline'"));
         directives.put("font-src", List.of("'self'", "data:"));
         directives.put("img-src", List.of("'self'", "data:", "https:"));
         directives.put("connect-src", List.of("'self'", origin(sparqlEndpoint),
