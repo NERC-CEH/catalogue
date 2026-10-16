@@ -3,12 +3,11 @@
 // adds the coverage report and the floor below, as CI does.
 import { createRequire } from 'node:module'
 import { existsSync } from 'node:fs'
-import { transformAsync } from '@babel/core'
 import { defineConfig } from 'vitest/config'
 import { playwright } from '@vitest/browser-playwright'
+import { legacyModulePackages, legacyModules, templates } from './scripts/vite-plugins.mjs'
 
 const require = createRequire(import.meta.url)
-const precompileTemplates = require('./scripts/babel-plugin-precompile-templates')
 
 // The Chrome Puppeteer installs (`npx puppeteer browsers install chrome`), or CI's own chromium
 const chrome = process.env.PUPPETEER_EXECUTABLE_PATH || await require('puppeteer').executablePath()
@@ -16,34 +15,11 @@ if (!existsSync(chrome)) {
   throw new Error(`No Chrome at ${chrome} for the specs: run \`npx puppeteer browsers install chrome\` in web/`)
 }
 
-// The catalogue's templates are compiled at build time (scripts/babel-plugin-precompile-templates.js,
-// dri-one #464); the specs run the same compiled functions. Only that plugin: Chrome needs no preset.
-const templates = {
-  name: 'precompile-templates',
-  enforce: 'pre',
-  async transform (code, id) {
-    if (!/\/src\/.*\.js$/.test(id) || id.includes('/node_modules/') || !code.includes('template')) return null
-    const result = await transformAsync(code, {
-      filename: id,
-      babelrc: false,
-      configFile: false,
-      sourceMaps: true,
-      plugins: [precompileTemplates]
-    })
-    return { code: result.code, map: result.map }
-  }
-}
-
 export default defineConfig({
-  plugins: [templates],
-  resolve: {
-    alias: [
-      // jQuery UI's widgets are AMD modules naming what they need (../widget, ../version...) in their
-      // define(). webpack loads those; Vite's dependency bundling doesn't, so each widget fell back on a
-      // jQuery with no $.widget. Its complete build defines everything in order, for the specs.
-      { find: /^jquery-ui\/ui\/.*$/, replacement: 'jquery-ui/dist/jquery-ui.js' }
-    ]
-  },
+  // The build's own plugins (vite.config.mjs), so the specs run the code as the page does: the
+  // templates compiled, and jQuery UI, select2 and leaflet-draw wired up as the build wires them
+  plugins: [templates, legacyModules],
+  optimizeDeps: { exclude: legacyModulePackages },
   test: {
     include: ['src/**/test/**/*.js'],
     // The specs' own support, not specs

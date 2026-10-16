@@ -118,7 +118,7 @@ You need to create an `scss` file in the `scss` folder with a name starting with
 
 `web/scss/style-yourId.scss`
 
-webpack picks up every `style-*.scss` file, so it is compiled by `npm run build-dev` (and by the
+The Vite build (`web/vite.config.mjs`) picks up every `style-*.scss` file, so it is compiled by `npm run build-dev` (and by the
 `npm run watch` that docker compose runs). Restart the watcher to pick up a new file.
 
 Every page loads the shared `base.css` (Bootstrap, Font Awesome and the catalogue components, from

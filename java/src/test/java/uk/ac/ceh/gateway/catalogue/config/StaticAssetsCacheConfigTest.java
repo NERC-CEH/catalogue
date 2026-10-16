@@ -62,7 +62,7 @@ class StaticAssetsCacheConfigTest {
     }
 
     @Test
-    @DisplayName("lets browsers keep webpack's hashed scripts, stylesheets and assets for a year")
+    @DisplayName("lets browsers keep the build's hashed scripts, stylesheets and assets for a year")
     void cachesHashedFilesForAYear() throws Exception {
         for (String path : new String[]{
             "/static/scripts/main.5e6f7a8b.js", "/static/css/base.9c0d1e2f.css", "/static/assets/fa-solid-900.93f719f4.woff2"

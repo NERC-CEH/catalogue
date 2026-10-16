@@ -31,7 +31,7 @@ fi
 mkdir -p /app/static /app/mapfiles /app/metrics-db /app/dropbox /app/web/dist
 
 [ -L /app/static/img ]        || ln -sf /app/web/img /app/static/img
-# webpack's output, laid out as it is served (dri-one #364). -n replaces a link left by an earlier
+# The build's output, laid out as it is served (dri-one #364). -n replaces a link left by an earlier
 # layout (static/scripts was web/dist, static/css web/css) rather than adding one inside it.
 for asset in scripts css assets manifest.json; do
   ln -sfn "/app/web/dist/$asset" "/app/static/$asset"

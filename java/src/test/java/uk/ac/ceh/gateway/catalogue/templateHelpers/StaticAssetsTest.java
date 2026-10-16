@@ -30,7 +30,7 @@ class StaticAssetsTest {
     }
 
     @Test
-    @DisplayName("lists an entry's files from webpack's manifest, in order")
+    @DisplayName("lists an entry's files from the build's manifest, in order")
     void listsAnEntrysFiles() throws IOException {
         manifest("""
             {"main": ["/static/scripts/vendor.1a2b3c4d.js", "/static/scripts/main.5e6f7a8b.js"],
@@ -43,7 +43,7 @@ class StaticAssetsTest {
     }
 
     @Test
-    @DisplayName("lists nothing for an entry webpack didn't build")
+    @DisplayName("lists nothing for an entry the build didn't write")
     void nothingForAnUnknownEntry() throws IOException {
         manifest("{\"main\": [\"/static/scripts/main.5e6f7a8b.js\"]}", Instant.parse("2026-10-14T09:00:00Z"));
 
@@ -51,13 +51,13 @@ class StaticAssetsTest {
     }
 
     @Test
-    @DisplayName("lists nothing, rather than failing the page, before webpack has built anything")
+    @DisplayName("lists nothing, rather than failing the page, before the build has run")
     void nothingWithoutAManifest() {
         assertThat(assets().files("main"), empty());
     }
 
     @Test
-    @DisplayName("reads the manifest again when webpack rebuilds")
+    @DisplayName("reads the manifest again when the build reruns")
     void readsARebuild() throws IOException {
         StaticAssets assets = assets();
         manifest("{\"main\": [\"/static/scripts/main.11111111.js\"]}", Instant.parse("2026-10-14T09:00:00Z"));

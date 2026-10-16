@@ -26,7 +26,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Run the full application
 
 The primary development workflow uses Docker Compose — a single command starts all services
-including the Java application and webpack watcher:
+including the Java application and the Vite build watcher:
 
 ```bash
 # First run, or after changing the Dockerfile or entrypoint script:
@@ -47,8 +47,8 @@ The application is available at http://localhost:8080.
 |---|---|---|
 | `.java` source | `./gradlew :java:compileJava` (on host) | ~5–15s |
 | `templates/` | Refresh browser (Freemarker cache off) | instant |
-| `web/src/` JS | webpack watch rebuilds automatically | ~3–10s |
-| `web/scss/` CSS | webpack watch rebuilds automatically (a new `style-*.scss` needs `docker compose restart web`) | ~2–5s |
+| `web/src/` JS | Vite build watch rebuilds automatically | ~4–6s |
+| `web/scss/` CSS | Vite build watch rebuilds automatically (a new `style-*.scss` needs `docker compose restart web`) | ~4–6s |
 | `nginx.conf` | `docker compose restart nginx` | ~1s |
 | `build.gradle` / `libs.versions.toml` | automatic with `docker compose watch` | rebuild |
 | `web/package.json` / `package-lock.json` | `docker compose restart web` | ~rebuild |
