@@ -38,9 +38,11 @@ export default SingleView.extend({
     }
   },
 
+  // A map is made again once its section is shown: Leaflet can't size one it can't see, and keeps
+  // the size it found when it was made, before the section was in the page (dri-one #475)
   show () {
     SingleView.prototype.show.apply(this)
-    if (this.data.modelAttribute === 'boundingBox') {
+    if (typeof this.objectInputView.viewMap === 'function') {
       this.objectInputView.viewMap()
     }
   }
