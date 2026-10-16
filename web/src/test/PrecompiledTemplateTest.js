@@ -35,6 +35,16 @@ describe('A template compiled at build time', () => {
     expect(precompiled({ precompiledTemplateGlobal: 'data' })).toEqual('data')
   })
 
+  it('takes a name from the data even when a global has it too, as `with` did', () => {
+    // A metrics row's `document` is its id: the global document showed as [object HTMLDocument]
+    const precompiled = _.template('<%- document %>|<%- window %>|<%- Date %>|<%- Math.max(1, 2) %>')
+    const compiled = runtime('<%- document %>|<%- window %>|<%- Date %>|<%- Math.max(1, 2) %>')
+    const data = { document: 'abc123', window: 'w', Date: '2026-10-16' }
+
+    expect(precompiled(data)).toEqual(compiled(data))
+    expect(precompiled(data)).toEqual('abc123|w|2026-10-16|2')
+  })
+
   it('treats a missing name, or no data at all, as underscore does', () => {
     const precompiled = _.template('<% if (typeof absent === "undefined") { %>none<% } %><%= Math.max(1, 2) %>')
     const compiled = runtime('<% if (typeof absent === "undefined") { %>none<% } %><%= Math.max(1, 2) %>')

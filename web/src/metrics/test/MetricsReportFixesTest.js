@@ -47,6 +47,22 @@ describe('Metrics report', () => {
     expect(app.fetch).toHaveBeenCalledTimes(1)
   })
 
+  it('shows each fetched row\'s document id', () => {
+    fakeServer.install()
+    try {
+      const results = new MetricsReportResults({ el: '#mt', model: app })
+      app.set('docId', 'abc')
+      fakeServer.lastRequest().respondWith({
+        status: 200,
+        responseText: JSON.stringify({ metricsReport: [{ document: 'abc123', docTitle: 'Rainfall', recordType: 'dataset', views: '3', downloads: '1' }] })
+      })
+
+      expect(results.$('tbody td').map((i, td) => td.textContent).get()).toEqual(['abc123', 'Rainfall', 'dataset', '3', '1'])
+    } finally {
+      fakeServer.uninstall()
+    }
+  })
+
   it('replaces the old rows with the reason when the report fails', () => {
     fakeServer.install()
     try {
