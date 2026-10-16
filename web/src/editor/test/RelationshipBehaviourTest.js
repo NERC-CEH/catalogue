@@ -79,6 +79,61 @@ describe('Relationships in the editor', () => {
       expect(url()).toContain('NOT identifier:cosmos')
     })
 
+    // A menu that can't be chosen from, saying why: the search's outcome either way, where an empty
+    // menu looked like no search at all
+    const notice = () => $('.relationship-autocomplete li')
+
+    it('says so when what the relationship can link to can\'t be loaded, rather than offering anything', async () => {
+      // Unfiltered, the search offered records the save then rejected, from the record's own
+      // catalogue only: on staging and production the proxy had no route for the rules
+      view.$('.relationshipList').val(UTILISES).trigger('change')
+      $search.val('blue lough').autocomplete('search')
+      await settle()
+      expect(url()).toMatch(/^\/relationships\/rules/)
+      fakeServer.lastRequest().respondWith({ status: 404, responseText: 'Not Found' })
+      await settle()
+
+      expect(url()).toMatch(/^\/relationships\/rules/) // no search sent
+      expect(notice().length).toBe(1)
+      expect(notice().text()).toContain('couldn\'t be loaded')
+      expect(notice().hasClass('ui-state-disabled')).toBe(true)
+    })
+
+    it('asks again for what the relationship can link to on the next search', async () => {
+      view.$('.relationshipList').val(UTILISES).trigger('change')
+      $search.val('blue lough').autocomplete('search')
+      await settle()
+      fakeServer.lastRequest().respondWith({ status: 404, responseText: 'Not Found' })
+      await settle()
+
+      $search.val('blue lough 2').autocomplete('search')
+      await answer(/^\/relationships\/rules/, { [UTILISES]: { resourceTypes: ['Monitoring facility'], catalogues: ['eidc', 'ukceh'] } })
+
+      expect(url()).toMatch(/^\/documents\?term=/)
+    })
+
+    it('says when nothing matches', async () => {
+      view.$('.relationshipList').val(PART_OF).trigger('change')
+      $search.val('nothing like this').autocomplete('search')
+      await answer(/^\/relationships\/rules/, { [PART_OF]: { resourceTypes: ['Aggregation'] } })
+      await answer(/^\/eidc\/documents\?term=/, { results: [] })
+
+      expect(notice().length).toBe(1)
+      expect(notice().text()).toBe('No matching records')
+      expect(notice().hasClass('ui-state-disabled')).toBe(true)
+    })
+
+    it('says when the search itself fails', async () => {
+      view.$('.relationshipList').val(PART_OF).trigger('change')
+      $search.val('rain').autocomplete('search')
+      await answer(/^\/relationships\/rules/, { [PART_OF]: { resourceTypes: ['Aggregation'] } })
+      fakeServer.lastRequest().respondWith({ status: 500, responseText: 'boom' })
+      await settle()
+
+      expect(notice().text()).toContain('The search failed')
+      expect(notice().hasClass('ui-state-disabled')).toBe(true)
+    })
+
     it('offers what the search finds, saying where each comes from, and shows the one chosen', async () => {
       view.$('.relationshipList').val(UTILISES).trigger('change')
       $search.val('cosmos').autocomplete('search')

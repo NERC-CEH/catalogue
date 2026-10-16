@@ -732,6 +732,19 @@ textarea.editor-textarea {
             font-size: .9rem;
         }
     }
+
+    // What the menu says when it has nothing to offer: can't be chosen, but is there to be read,
+    // which jQuery UI's .35 opacity for a disabled item made hard
+    .relationship-notice.ui-state-disabled {
+        opacity: 1;
+        margin: 0;
+
+        div {
+            padding: .5rem;
+            color: #4a4a4a;
+            font-style: italic;
+        }
+    }
 }
 
 @media only screen and (min-width: 600px) {
