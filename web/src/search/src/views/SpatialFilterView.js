@@ -168,10 +168,7 @@ export default Backbone.View.extend({
         remove: false
       },
       draw: {
-        // Without the area its tooltip would show: Leaflet.draw 1.0.4 works it out by assigning an
-        // undeclared variable, which throws in the strict mode of the ES module it is bundled into, so
-        // the box stopped growing after the first move of the mouse
-        rectangle: { showArea: false },
+        rectangle: true,
         polygon: false,
         polyline: false,
         marker: false,

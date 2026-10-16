@@ -73,6 +73,24 @@ describe('Editor maps', () => {
       expect(toolbar().draw.rectangle).toBe(false)
     })
 
+    it('takes its coordinates from a box dragged out with the rectangle tool', () => {
+      // given the tool picked
+      box()
+      collection.trigger('visible')
+      view.drawControl._toolbars.draw._modes.rectangle.handler.enable()
+
+      // when the editor drags from one corner to the other. Leaflet.draw shows the box's area from
+      // the second move, and the code doing it threw once bundled as a strict ES module
+      const at = latlng => ({ latlng, originalEvent: { clientX: 0, clientY: 0 } })
+      view.map.fire('mousedown', at(L.latLng(50, -5)))
+      view.map.fire('mousemove', at(L.latLng(52, -3)))
+      view.map.fire('mousemove', at(L.latLng(55, 1)))
+      document.dispatchEvent(new MouseEvent('mouseup'))
+
+      // then
+      expect(model.toJSON()).toEqual({ westBoundLongitude: '-5.000', eastBoundLongitude: '1.000', southBoundLatitude: '50.000', northBoundLatitude: '55.000' })
+    })
+
     it('keeps one box: another drawn is ignored', () => {
       box()
       collection.trigger('visible')
@@ -144,6 +162,31 @@ describe('Editor maps', () => {
       expect(toolbar().draw.polygon).toBeTruthy()
       expect(toolbar().draw.marker).toBeTruthy()
       expect(toolbar().edit.remove).toBe(false)
+    })
+
+    // With Leaflet.draw's own tools, as an editor uses them, rather than its draw:created event alone
+    const tool = name => view.drawControl._toolbars.draw._modes[name].handler
+
+    it('keeps a polygon drawn point by point with the polygon tool', () => {
+      geometry()
+      const polygonTool = tool('polygon')
+      polygonTool.enable()
+
+      for (const latlng of [[54, -3], [54, -2], [55, -2]]) polygonTool.addVertex(L.latLng(latlng))
+      polygonTool.completeShape()
+
+      expect(JSON.parse(model.get('geometryString')).geometry).toEqual({ type: 'Polygon', coordinates: [[[-3, 54], [-2, 54], [-2, 55], [-3, 54]]] })
+    })
+
+    it('keeps a point placed with the marker tool', () => {
+      geometry()
+      const markerTool = tool('marker')
+      markerTool.enable()
+
+      view.map.fire('mousemove', { latlng: L.latLng(54.1, -2.7) })
+      markerTool._mouseMarker.fire('click')
+
+      expect(JSON.parse(model.get('geometryString')).geometry).toEqual({ type: 'Point', coordinates: [-2.7, 54.1] })
     })
 
     it('keeps a point drawn on the map as GeoJSON, to five places', () => {
