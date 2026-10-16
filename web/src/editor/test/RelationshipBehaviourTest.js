@@ -103,6 +103,39 @@ describe('Relationships in the editor', () => {
     })
   })
 
+  // Each kind of relationship is offered with what it means beneath its name, which the styled
+  // select sets on a second line and leaves out of the closed select. Both are escaped, but the
+  // line between them is markup, and escaping the two as one showed its <span> as text.
+  describe('the kinds of relationship offered', () => {
+    let view
+    const option = value => view.$(`.relationshipList option[value="${value}"]`)
+
+    beforeEach(async () => {
+      view = new RelationshipView({
+        el: $('<div>').appendTo(document.body),
+        model: new EditorMetadata({ target: '' }),
+        options: [
+          { value: PART_OF, label: 'Part of', description: 'This dataset is one of a series' },
+          { value: UTILISES, label: 'Produced <at>' }
+        ]
+      })
+      await settle()
+    })
+
+    it('set what each means beneath its name', () => {
+      const $description = option(PART_OF).children('span')
+
+      expect($description.length).toBe(1)
+      expect($description.text()).toBe('This dataset is one of a series')
+      expect(option(PART_OF).text()).toBe('Part ofThis dataset is one of a series')
+    })
+
+    it('escape the name and what it means', () => {
+      expect(option(UTILISES).text()).toBe('Produced <at>')
+      expect(option(UTILISES).children().length).toBe(0)
+    })
+  })
+
   describe('a record already chosen', () => {
     const shows = async (target, fetched) => {
       const view = new RelationshipView({
