@@ -609,6 +609,15 @@ body {
             flex: 1 1 100%;
         }
 
+        // Joined to the map as one shape, and never taller than it: a long layer list scrolls
+        .wms-layers {
+            background: var(--bs-tertiary-bg);
+            margin-top: -1rem; // undo the gap, so it hangs from the map's bottom edge
+            max-height: var(--map-height, 400px);
+            overflow-y: auto;
+            padding: 0.5rem 0.75rem;
+        }
+
         // The heading sits inline so the disclosure marker stays beside it
         .wms-gis-help > summary {
             margin-bottom: 0.5rem;
@@ -643,6 +652,9 @@ body {
         }
 
         @include media-breakpoint-up(md) {
+            // Only the map and the layer list share a row, so this joins just those two
+            column-gap: 0;
+
             .wms-map {
                 flex: 1 1 0;
                 width: auto;
@@ -650,6 +662,8 @@ body {
 
             .wms-layers {
                 flex: 0 0 14rem;
+                height: var(--map-height, 400px);
+                margin-top: 0;
             }
         }
     }
