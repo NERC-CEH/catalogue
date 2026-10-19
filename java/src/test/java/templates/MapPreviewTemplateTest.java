@@ -14,11 +14,13 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
+import uk.ac.ceh.gateway.catalogue.wms.LegendEntry;
 import uk.ac.ceh.gateway.catalogue.wms.WmsMap;
 import uk.ac.ceh.gateway.catalogue.wms.WmsMapService;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -80,7 +82,7 @@ class MapPreviewTemplateTest {
 
     private WmsMap map(String... layers) {
         return new WmsMap("abc", "Land cover", CAPABILITIES,
-            "https://catalogue.ceh.ac.uk/maps/abc", "/maps/abc", List.of(layers));
+            "https://catalogue.ceh.ac.uk/maps/abc", "/maps/abc", List.of(layers), Map.of());
     }
 
     private void stub(WmsMap... maps) {
@@ -168,8 +170,28 @@ class MapPreviewTemplateTest {
     @Test
     void mapWithoutTitleStillRenders() {
         stub(new WmsMap("abc", null, CAPABILITIES,
-            "https://catalogue.ceh.ac.uk/maps/abc", "/maps/abc", List.of()));
+            "https://catalogue.ceh.ac.uk/maps/abc", "/maps/abc", List.of(), Map.of()));
 
         assertThat(render(SECTION, document()), containsString("data-title=\"\""));
+    }
+
+    @Test
+    void rendersLegendEntriesByLayerEscaped() {
+        stub(new WmsMap("abc", "Land cover", CAPABILITIES, "https://catalogue.ceh.ac.uk/maps/abc", "/maps/abc", List.of(),
+            Map.of("LC.A", List.of(new LegendEntry("Broadleaved & <yew>", "#ff0000", "area")))));
+
+        val actual = render(SECTION, document());
+
+        assertThat(actual, containsString("<span class=\"wms-legend-layer\" data-layer=\"LC.A\">"));
+        assertThat(actual, containsString(
+            "<span class=\"wms-legend-class\" data-colour=\"#ff0000\" data-shape=\"area\">Broadleaved &amp; &lt;yew&gt;</span>"));
+    }
+
+    @Test
+    void legendEntryWithoutColourRendersBlankColour() {
+        stub(new WmsMap("abc", "Land cover", CAPABILITIES, "https://catalogue.ceh.ac.uk/maps/abc", "/maps/abc", List.of(),
+            Map.of("LC.A", List.of(new LegendEntry("Unstyled", null, "line")))));
+
+        assertThat(render(SECTION, document()), containsString("data-colour=\"\" data-shape=\"line\">Unstyled</span>"));
     }
 }

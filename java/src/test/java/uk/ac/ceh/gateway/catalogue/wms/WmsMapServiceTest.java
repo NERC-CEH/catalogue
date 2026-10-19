@@ -16,6 +16,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import uk.ac.ceh.gateway.catalogue.document.CatalogueRecordIds;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
+import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource;
+import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource.Attribute;
+import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource.Attribute.Value;
+import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.Style;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.Service.CoupledResource;
@@ -28,6 +33,7 @@ import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
@@ -36,6 +42,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -107,6 +114,26 @@ class WmsMapServiceTest {
         return document;
     }
 
+    // A raster source whose attribute LC.A has one class, as the mapfile template would build it
+    private static MapDataDefinition definition() {
+        Style style = new Style();
+        style.setColour("#ff0000");
+        Value value = new Value();
+        value.setLabel("Woodland");
+        value.setStyle(style);
+        Attribute attribute = new Attribute();
+        attribute.setName("LC.A");
+        attribute.setValues(List.of(value));
+        DataSource source = new DataSource();
+        source.setType("RASTER");
+        source.setAttributes(List.of(attribute));
+        MapDataDefinition definition = new MapDataDefinition();
+        definition.setData(List.of(source));
+        return definition;
+    }
+
+    private static final LegendEntry WOODLAND = new LegendEntry("Woodland", "#ff0000", "area");
+
     private void servicePermitted(GeminiDocument svc) throws Exception {
         when(permissionService.toAccess(user, "svc1", "VIEW")).thenReturn(true);
         when(reader.readBundle("svc1")).thenReturn(svc);
@@ -124,6 +151,59 @@ class WmsMapServiceTest {
         assertThat(map.getPublicMapUrl(), is("https://catalogue.ceh.ac.uk/maps/abc"));
         assertThat(map.getLocalPath(), is("/maps/abc"));
         assertThat(map.getLayerNames(), is(empty()));
+    }
+
+    @Test
+    void serviceRecordGetsLegendsFromItsOwnStoredDefinition() throws Exception {
+        GeminiDocument stored = serviceRecord("svc1", CAPABILITIES);
+        stored.setMapDataDefinition(definition());
+        when(reader.readBundle("svc1")).thenReturn(stored);
+
+        List<WmsMap> maps = service.forRecord(serviceRecord("svc1", CAPABILITIES));
+
+        assertThat(maps.get(0).getLegends().get("LC.A"), contains(WOODLAND));
+    }
+
+    @Test
+    void serviceRecordWithTwoLocalWmsReadsItsDefinitionOnce() throws Exception {
+        GeminiDocument document = serviceRecord("svc1", CAPABILITIES);
+        document.setOnlineResources(List.of(
+            wms(CAPABILITIES),
+            wms("https://catalogue.ceh.ac.uk/maps/def?request=GetCapabilities&service=WMS")
+        ));
+
+        service.forRecord(document);
+
+        verify(reader, times(1)).readBundle("svc1");
+    }
+
+    @Test
+    void serviceRecordWithoutLocalWmsReadsNothing() throws Exception {
+        service.forRecord(serviceRecord("svc1", "https://example.com/maps/abc?request=GetCapabilities&service=WMS"));
+
+        verify(reader, never()).readBundle(anyString());
+    }
+
+    @Test
+    void serviceRecordStillGetsItsMapWhenTheDefinitionCannotBeRead() throws Exception {
+        when(reader.readBundle("svc1")).thenThrow(new IllegalStateException("datastore down"));
+
+        List<WmsMap> maps = service.forRecord(serviceRecord("svc1", CAPABILITIES));
+
+        assertThat(maps, hasSize(1));
+        assertThat(maps.get(0).getLegends(), is(anEmptyMap()));
+    }
+
+    @Test
+    void datasetGetsLegendsFromTheLinkedService() throws Exception {
+        GeminiDocument svc = serviceRecord("svc1", CAPABILITIES);
+        svc.setMapDataDefinition(definition());
+        servicePermitted(svc);
+
+        List<WmsMap> maps = service.forRecord(dataset());
+
+        assertThat(maps.get(0).getLegends().get("LC.A"), contains(WOODLAND));
+        verify(reader, times(1)).readBundle("svc1");
     }
 
     @Test

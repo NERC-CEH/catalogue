@@ -15,14 +15,29 @@ const allowedLayers = (layers, allowedNames) => {
   return allowed.length ? allowed : layers
 }
 
-// The selected layer's GetLegendGraphic, on the map; hidden while the image fails to load
+const SWATCH_SHAPES = ['area', 'line', 'point']
+
+// Legend entries by WMS layer name, from the service's map data definition (see WmsLegends.java)
+const legendsOf = $service => new Map($service.find('.wms-legend-layer').map((i, layer) => [[
+  $(layer).attr('data-layer'),
+  $(layer).find('.wms-legend-class').map((j, entry) => ({
+    label: $(entry).text().trim(),
+    colour: $(entry).attr('data-colour'),
+    shape: $(entry).attr('data-shape')
+  })).get()
+]]).get())
+
+// The selected layer's legend, on the map and collapsible from its title: the layer's entries when the
+// service defines them, else its GetLegendGraphic, which is hidden while it fails to load
 const LegendControl = L.Control.extend({
   options: { position: 'bottomright' },
 
   onAdd () {
-    const container = L.DomUtil.create('div', 'leaflet-control leaflet-bar wms-legend')
+    const container = L.DomUtil.create('details', 'leaflet-control leaflet-bar wms-legend')
+    container.open = true
     $(container).append(
-      $('<div class="wms-control-title">Legend</div>'),
+      $('<summary class="wms-control-title">Legend</summary>'),
+      $('<ul class="wms-legend-entries list-unstyled mb-0"></ul>'),
       $('<img>').on('error', () => $(container).addClass('d-none'))
     )
     L.DomEvent.disableClickPropagation(container)
@@ -58,7 +73,8 @@ export default Backbone.View.extend({
         localPath: $service.attr('data-local-path'),
         publicUrl: $service.attr('data-public-url'),
         capabilitiesUrl: $service.attr('data-capabilities-url'),
-        allowedNames: $service.find('.wms-layer-name').map((j, name) => $(name).text().trim()).get()
+        allowedNames: $service.find('.wms-layer-name').map((j, name) => $(name).text().trim()).get(),
+        legends: legendsOf($service)
       }
     }).get()
 
@@ -131,7 +147,8 @@ export default Backbone.View.extend({
     // Into the section, which Leaflet keeps when it rebuilds the radio list
     $(basemaps.getContainer()).find('.leaflet-control-layers-list')
       .prepend('<div class="wms-control-title">Basemap</div>')
-    new LegendControl().addTo(this.map)
+    // A closed legend has no widths to measure, so cut-off entries are found again when it opens
+    $(new LegendControl().addTo(this.map).getContainer()).on('toggle', () => this.titleCutOffEntries())
     this.map.fitBounds(this.initialBounds())
     this.map.on('moveend zoomend resize', () => this.updateGetMap())
   },
@@ -161,13 +178,43 @@ export default Backbone.View.extend({
       version: '1.3.0',
       pane: WMS_PANE
     }).addTo(this.map)
-    this.$('.wms-legend').removeClass('d-none').find('img').attr({
-      src: getLegendUrl(service.localPath, layer.name),
-      alt: `Legend for ${layer.title || layer.name}`
-    })
+    this.showLegend(service, layer)
     this.$('.wms-layer-label').text(layer.name)
     this.$('.wms-capabilities-url').val(service.capabilitiesUrl)
     this.updateGetMap()
+  },
+
+  showLegend (service, layer) {
+    const entries = service.legends.get(layer.name) || []
+    const $legend = this.$('.wms-legend').removeClass('d-none')
+    const $entries = $legend.find('.wms-legend-entries').empty().toggleClass('d-none', !entries.length)
+    const $image = $legend.find('img').toggleClass('d-none', entries.length > 0)
+    if (!entries.length) {
+      $image.attr({ src: getLegendUrl(service.localPath, layer.name), alt: `Legend for ${layer.title || layer.name}` })
+      return
+    }
+    // Removing src, unlike emptying it, does not fire the image's error handler
+    $image.removeAttr('src')
+    entries.forEach(({ label, colour, shape }) => $entries.append($('<li class="wms-legend-entry"></li>').append(
+      $('<span class="wms-legend-swatch"></span>')
+        .addClass(`wms-legend-swatch-${SWATCH_SHAPES.includes(shape) ? shape : 'area'}`)
+        // Set through the CSSOM, so a stored value that is not a colour is simply dropped
+        .css('background-color', colour || ''),
+      $('<span class="wms-legend-label"></span>').text(label)
+    )))
+    this.titleCutOffEntries()
+  },
+
+  // Only entries the legend's width cuts short get their full label as a tooltip
+  titleCutOffEntries () {
+    this.$('.wms-legend-entry').each((i, entry) => {
+      const label = $(entry).find('.wms-legend-label')[0]
+      if (label.scrollWidth > label.clientWidth) {
+        entry.title = label.textContent
+      } else {
+        entry.removeAttribute('title')
+      }
+    })
   },
 
   // The CRS follows the view and the layer's capabilities, so it is chosen afresh on every update

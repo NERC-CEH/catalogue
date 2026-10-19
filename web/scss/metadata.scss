@@ -646,8 +646,55 @@ body {
             max-width: 16rem;
             overflow: auto;
 
+            > summary {
+                cursor: pointer;
+            }
+
+            &:not([open]) {
+                padding-bottom: 0.25rem;
+
+                > summary {
+                    margin-bottom: 0;
+                }
+            }
+
             img {
                 display: block;
+            }
+
+            // Labels end in an ellipsis rather than widen the legend; the view titles the cut-off ones
+            .wms-legend-entry {
+                align-items: center;
+                display: flex;
+                font-size: 0.8125rem;
+                gap: 0.4rem;
+                line-height: 1.4;
+                min-width: 0;
+            }
+
+            .wms-legend-label {
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .wms-legend-swatch {
+                border: 1px solid rgb(0 0 0 / 25%);
+                flex: 0 0 auto;
+                height: 0.75rem;
+                width: 1rem;
+            }
+
+            .wms-legend-swatch-line {
+                border: 0;
+                height: 3px;
+            }
+
+            .wms-legend-swatch-point {
+                border-radius: 50%;
+                height: 0.65rem;
+                width: 0.65rem;
             }
         }
 

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.document.CatalogueRecordIds;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.Service.CoupledResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -18,8 +19,10 @@ import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Builds the WMS maps a record page can preview. Used from FreeMarker as
@@ -66,7 +69,7 @@ public class WmsMapService {
         List<OnlineResource> onlineResources, List<Link> relIsRequiredBy
     ) {
         if ("service".equalsIgnoreCase(resourceType)) {
-            return mapsOf(id, title, onlineResources, Collections.emptyList());
+            return mapsOf(id, title, onlineResources, Collections.emptyList(), () -> definitionOf(id));
         }
         if (relIsRequiredBy == null || relIsRequiredBy.isEmpty()) {
             return Collections.emptyList();
@@ -92,7 +95,8 @@ public class WmsMapService {
                 return Collections.emptyList();
             }
             if (documentReader.readBundle(serviceId) instanceof GeminiDocument service) {
-                return mapsOf(service.getId(), service.getTitle(), service.getOnlineResources(), layerNamesFor(service, datasetId));
+                return mapsOf(service.getId(), service.getTitle(), service.getOnlineResources(),
+                    layerNamesFor(service, datasetId), service::getMapDataDefinition);
             }
         } catch (PermissionDeniedException e) {
             log.debug("Skipping WMS preview of service {}: {}", serviceId, e.toString());
@@ -118,24 +122,46 @@ public class WmsMapService {
             .toList();
     }
 
-    private List<WmsMap> mapsOf(String serviceId, String serviceTitle, List<OnlineResource> onlineResources, List<String> layerNames) {
+    // The definition is fetched only once the service is known to have a local WMS
+    private List<WmsMap> mapsOf(
+        String serviceId, String serviceTitle, List<OnlineResource> onlineResources,
+        List<String> layerNames, Supplier<MapDataDefinition> definition
+    ) {
         if (onlineResources == null) {
             return Collections.emptyList();
         }
         String title = serviceTitle == null || serviceTitle.isBlank() ? serviceId : serviceTitle;
         List<WmsMap> maps = new ArrayList<>();
+        Map<String, List<LegendEntry>> legends = null;
         for (OnlineResource resource : onlineResources) {
             Optional<String> mapId = mapServerDetailsService.getLocalMapId(resource);
-            mapId.ifPresent(id -> maps.add(new WmsMap(
+            if (mapId.isEmpty()) {
+                continue;
+            }
+            if (legends == null) {
+                legends = WmsLegends.of(definition.get());
+            }
+            maps.add(new WmsMap(
                 serviceId,
                 title,
                 resource.getUrl(),
                 withoutQuery(resource.getUrl()),
-                "/maps/" + id,
-                layerNames
-            )));
+                "/maps/" + mapId.get(),
+                layerNames,
+                legends
+            ));
         }
         return maps;
+    }
+
+    // A service page's own record, re-read (cache-backed) for the definition FreeMarker cannot pass
+    private MapDataDefinition definitionOf(String id) {
+        try {
+            return documentReader.readBundle(id) instanceof GeminiDocument service ? service.getMapDataDefinition() : null;
+        } catch (Exception e) {
+            log.debug("No legend entries for service {}: {}", id, e.toString());
+            return null;
+        }
     }
 
     private static String withoutQuery(String url) {

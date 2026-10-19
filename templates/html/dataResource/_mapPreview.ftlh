@@ -11,6 +11,13 @@
           <#list m.layerNames as layerName>
             <span class="wms-layer-name">${layerName}</span>
           </#list>
+          <#list m.legends as layerName, entries>
+            <span class="wms-legend-layer" data-layer="${layerName}">
+              <#list entries as entry>
+                <span class="wms-legend-class" data-colour="${entry.colour!}" data-shape="${entry.shape}">${entry.label}</span>
+              </#list>
+            </span>
+          </#list>
         </div>
       </#list>
       <div class="wms-map-unavailable d-none">Map preview unavailable.</div>

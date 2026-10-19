@@ -73,6 +73,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.containsString;
@@ -332,7 +333,7 @@ class DocumentControllerTest extends AbstractMvcTest {
             .willReturn(List.of(link));
         given(wmsMapService.forRecord(any(), any(), any(), any(), any()))
             .willReturn(List.of(new WmsMap("svc1", "Svc", "https://example.com/maps/abc?request=GetCapabilities",
-                "https://example.com/maps/abc", "/maps/abc", List.of("LC.A"))));
+                "https://example.com/maps/abc", "/maps/abc", List.of("LC.A"), Map.of())));
 
         //when
         val result = mvc.perform(get("/documents/{id}", id).accept(TEXT_HTML))

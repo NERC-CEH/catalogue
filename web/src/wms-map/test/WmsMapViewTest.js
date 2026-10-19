@@ -11,11 +11,17 @@ import { fakeServer } from '../../test/support'
 vi.mock('../../clipboard/copyText', () => ({ copyText: vi.fn() }))
 
 // The markup templates/html/dataResource/_mapPreview.ftlh renders
-const service = ({ id = 'abc', title = 'Land cover', layerNames = [] } = {}) => `
+// legends: { layerName: [[label, colour, shape], ...] }
+const service = ({ id = 'abc', title = 'Land cover', layerNames = [], legends = {} } = {}) => `
   <div class="wms-service" data-title="${title}" data-local-path="/maps/${id}"
        data-public-url="https://catalogue.ceh.ac.uk/maps/${id}"
        data-capabilities-url="https://catalogue.ceh.ac.uk/maps/${id}?SERVICE=WMS&amp;REQUEST=GetCapabilities">
     ${layerNames.map(name => `<span class="wms-layer-name">${name}</span>`).join('')}
+    ${Object.entries(legends).map(([layer, entries]) => `
+      <span class="wms-legend-layer" data-layer="${layer}">
+        ${entries.map(([label, colour, shape = 'area']) =>
+          `<span class="wms-legend-class" data-colour="${colour}" data-shape="${shape}">${label}</span>`).join('')}
+      </span>`).join('')}
   </div>`
 
 const preview = ({ services = [service()], extents = '', style = '' } = {}) => `
@@ -185,6 +191,69 @@ describe('WmsMapView', () => {
     expect(view.$('.wms-gis-help').prop('open')).toBe(false)
     expect(getMap()).toContain('LAYERS=LC.A')
     expect(view.$('.wms-layer-label').text()).toBe('LC.A')
+  })
+
+  it('lists the layer\'s legend entries when the service defines them, instead of the legend image', async () => {
+    await start(preview({ services: [service({ legends: { 'LC.A': [['Woodland', '#ff0000'], ['Rivers', '#0000ff', 'line'], ['Sites', 'not a colour', 'point']] } })] }))
+
+    const $entries = view.$('.wms-legend .wms-legend-entry')
+    expect($entries.map((i, entry) => $(entry).text()).get()).toEqual(['Woodland', 'Rivers', 'Sites'])
+    const swatches = $entries.find('.wms-legend-swatch')
+    expect(swatches.eq(0).css('background-color')).toBe('rgb(255, 0, 0)')
+    expect(swatches.eq(1).hasClass('wms-legend-swatch-line')).toBe(true)
+    expect(swatches.eq(2).hasClass('wms-legend-swatch-point')).toBe(true)
+    expect(swatches[2].style.backgroundColor).toBe('')
+    expect(view.$('.wms-legend img').hasClass('d-none')).toBe(true)
+    expect(view.$('.wms-legend img').attr('src')).toBeUndefined()
+  })
+
+  it('switches between entries and the legend image as the layer changes', async () => {
+    await start(preview({ services: [service({ legends: { 'LC.A': [['Woodland', '#ff0000']] } })] }))
+    const radios = () => view.$('.wms-layers input[type=radio]')
+
+    radios().eq(1).prop('checked', true).trigger('change')
+    expect(view.$('.wms-legend .wms-legend-entries').hasClass('d-none')).toBe(true)
+    expect(view.$('.wms-legend img').hasClass('d-none')).toBe(false)
+    expect(view.$('.wms-legend img').attr('src')).toBe(getLegendUrl('/maps/abc', 'LC.B'))
+
+    radios().eq(0).prop('checked', true).trigger('change')
+    expect(view.$('.wms-legend .wms-legend-entry').length).toBe(1)
+    expect(view.$('.wms-legend img').hasClass('d-none')).toBe(true)
+  })
+
+  it('opens collapsible from its title, keeping the choice across layer changes', async () => {
+    await start(preview())
+    const legend = view.$('.wms-legend')[0]
+    expect(legend.tagName).toBe('DETAILS')
+    expect(legend.open).toBe(true)
+    expect($(legend).children('summary').text()).toBe('Legend')
+
+    $(legend).children('summary')[0].click()
+    expect(legend.open).toBe(false)
+    view.$('.wms-layers input[type=radio]').eq(1).prop('checked', true).trigger('change')
+    expect(legend.open).toBe(false)
+  })
+
+  it('gives only cut-off entries their full label as a tooltip, measured again when the legend opens', async () => {
+    // The page's stylesheet truncates labels; specs have none, so give the legend a narrow, truncating width
+    const $css = $('<style>.wms-legend { width: 8rem } .wms-legend-entry { display: flex } .wms-legend-label { overflow: hidden; white-space: nowrap; min-width: 0 }</style>')
+      .appendTo(document.head)
+    onTestFinished(() => $css.remove())
+    const long = 'Broadleaved, mixed and yew woodland'
+    await start(preview({ services: [service({ legends: { 'LC.A': [[long, '#ff0000'], ['Bog', '#000000']] } })] }))
+    const titles = () => view.$('.wms-legend .wms-legend-entry').map((i, entry) => entry.getAttribute('title')).get()
+
+    expect(titles()).toEqual([long])
+
+    // Some browsers lay out nothing inside a closed <details>, so opening it must measure again
+    const legend = view.$('.wms-legend')[0]
+    const toggled = () => new Promise(resolve => $(legend).one('toggle', resolve))
+    legend.open = false
+    await toggled()
+    view.$('.wms-legend .wms-legend-entry').removeAttr('title')
+    legend.open = true
+    await toggled()
+    expect(titles()).toEqual([long])
   })
 
   it('hides the legend when it fails to load, and shows it again for the next layer', async () => {
