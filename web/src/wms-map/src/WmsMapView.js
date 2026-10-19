@@ -7,6 +7,7 @@ import { chooseCrs, crsLabel, getCapabilitiesUrl, getLegendUrl, getMapUrl, parse
 
 const GREAT_BRITAIN = [[49.8, -8.7], [60.9, 1.8]]
 const COPIED_FOR_MS = 2000
+const WMS_PANE = 'wms'
 
 // A service's named layers, kept to those the record names unless none of those is offered
 const allowedLayers = (layers, allowedNames) => {
@@ -14,13 +15,30 @@ const allowedLayers = (layers, allowedNames) => {
   return allowed.length ? allowed : layers
 }
 
+// The selected layer's GetLegendGraphic, on the map; hidden while the image fails to load
+const LegendControl = L.Control.extend({
+  options: { position: 'bottomright' },
+
+  onAdd () {
+    const container = L.DomUtil.create('div', 'leaflet-control leaflet-bar wms-legend')
+    $(container).append(
+      $('<div class="wms-control-title">Legend</div>'),
+      $('<img>').on('error', () => $(container).addClass('d-none'))
+    )
+    L.DomEvent.disableClickPropagation(container)
+    L.DomEvent.disableScrollPropagation(container)
+    return container
+  }
+})
+
 const unionOf = boundsList => boundsList.reduce(
   (union, bounds) => union ? union.extend(bounds) : L.latLngBounds(bounds), null)
 
 /**
- * The Map section of a record page: the record's own WMS on a Leaflet map, a picker for its layers, the
- * layer's legend, and the GetCapabilities and GetMap addresses to use it in a GIS. The browser asks
- * only for same-origin /maps/{id}; the copyable addresses use the record's public host.
+ * The Map section of a record page: the record's own WMS on a Leaflet map, with the selected layer's
+ * legend and a basemap choice as map controls, a picker for its layers, and the GetCapabilities and
+ * GetMap addresses to use it in a GIS. The browser asks only for same-origin /maps/{id}; the copyable
+ * addresses use the record's public host.
  * `ready` resolves once the capabilities have been fetched and the map (or its unavailable notice) shown;
  * it never rejects.
  */
@@ -91,12 +109,13 @@ export default Backbone.View.extend({
         $('<label class="form-check-label"></label>').attr('for', id).text(layer.title || layer.name)
       ))
     })
-    const $legend = $('<div class="wms-legend mt-2"><img alt="Legend"></div>').appendTo($layers)
-    $legend.find('img').on('error', () => $legend.addClass('d-none'))
   },
 
   createMap () {
     this.map = new L.Map(this.$('.wms-map')[0])
+    // Above the basemaps' tilePane (200), below overlays (400). In the tilePane a basemap re-added by the
+    // layers control would come later in the DOM, or get a higher z-index from it, and cover the WMS layer
+    this.map.createPane(WMS_PANE).style.zIndex = 250
     const baseMaps = {
       Map: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
@@ -104,9 +123,15 @@ export default Backbone.View.extend({
       }).addTo(this.map),
       Satellite: L.tileLayer('https://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
         attribution: 'google'
-      })
+      }),
+      // An empty base layer, so choosing it leaves only the WMS layer on the map
+      None: L.layerGroup()
     }
-    L.control.layers(baseMaps, {}, { position: 'topright', collapsed: false }).addTo(this.map)
+    const basemaps = L.control.layers(baseMaps, {}, { position: 'topright', collapsed: false }).addTo(this.map)
+    // Into the section, which Leaflet keeps when it rebuilds the radio list
+    $(basemaps.getContainer()).find('.leaflet-control-layers-list')
+      .prepend('<div class="wms-control-title">Basemap</div>')
+    new LegendControl().addTo(this.map)
     this.map.fitBounds(this.initialBounds())
     this.map.on('moveend zoomend resize', () => this.updateGetMap())
   },
@@ -133,9 +158,13 @@ export default Backbone.View.extend({
       layers: layer.name,
       format: 'image/png',
       transparent: true,
-      version: '1.3.0'
+      version: '1.3.0',
+      pane: WMS_PANE
     }).addTo(this.map)
-    this.$('.wms-legend').removeClass('d-none').find('img').attr('src', getLegendUrl(service.localPath, layer.name))
+    this.$('.wms-legend').removeClass('d-none').find('img').attr({
+      src: getLegendUrl(service.localPath, layer.name),
+      alt: `Legend for ${layer.title || layer.name}`
+    })
     this.$('.wms-layer-label').text(layer.name)
     this.$('.wms-capabilities-url').val(service.capabilitiesUrl)
     this.updateGetMap()

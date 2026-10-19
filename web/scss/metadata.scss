@@ -618,8 +618,28 @@ body {
             }
         }
 
-        .wms-legend img {
-            max-width: 100%;
+        .wms-control-title {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        // Leaflet's layer list is a <section>, so base.scss gives it a page section's padding
+        .leaflet-control-layers-list {
+            padding: 0;
+        }
+
+        // Fixed caps: Leaflet's control corners shrink to fit, so percentages here resolve against the
+        // legend itself and squash the image. A larger legend scrolls instead.
+        .wms-legend {
+            background: var(--bs-body-bg, #fff);
+            padding: 0.25rem 0.5rem 0.5rem;
+            max-height: calc(var(--map-height, 400px) * 0.6);
+            max-width: 16rem;
+            overflow: auto;
+
+            img {
+                display: block;
+            }
         }
 
         @include media-breakpoint-up(md) {

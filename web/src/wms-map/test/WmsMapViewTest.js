@@ -1,5 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest'
 import $ from 'jquery'
+import L from 'leaflet'
+import leafletCss from 'leaflet/dist/leaflet.css?raw'
 import { WmsMapView } from '../src'
 import { getLegendUrl } from '../src/wmsRequests'
 import { copyText } from '../../clipboard/copyText'
@@ -117,6 +119,64 @@ describe('WmsMapView', () => {
     expect(view.$('.wms-legend img').attr('src')).toBe(getLegendUrl('/maps/def', 'LC.B'))
     expect(view.$('.wms-layer-label').text()).toBe('LC.B')
     expect(view.$('.wms-capabilities-url').val()).toBe('https://catalogue.ceh.ac.uk/maps/def?SERVICE=WMS&REQUEST=GetCapabilities')
+  })
+
+  it('shows the legend in a map control titled Legend, not in the picker', async () => {
+    await start(preview())
+
+    const $legend = view.$('.wms-legend')
+    expect($legend.closest('.leaflet-control-container').length).toBe(1)
+    expect(view.$('.wms-layers .wms-legend').length).toBe(0)
+    expect($legend.find('.wms-control-title').text()).toBe('Legend')
+    expect($legend.find('img').attr('src')).toBe(getLegendUrl('/maps/abc', 'LC.A'))
+    expect($legend.find('img').attr('alt')).toBe('Legend for Woodland')
+  })
+
+  it('offers the basemaps under a Basemap title, and None takes the basemap off', async () => {
+    await start(preview())
+
+    const $control = view.$('.leaflet-control-layers')
+    const basemapLabels = () => $control.find('.leaflet-control-layers-base label').map((i, label) => $(label).text().trim()).get()
+    const tileLayers = () => Object.values(view.map._layers).filter(layer => layer instanceof L.TileLayer && !(layer instanceof L.TileLayer.WMS))
+    expect($control.find('.wms-control-title').text()).toBe('Basemap')
+    expect(basemapLabels()).toEqual(['Map', 'Satellite', 'None'])
+    expect(tileLayers().length).toBe(1)
+
+    $control.find('.leaflet-control-layers-base input').eq(2).trigger('click')
+
+    expect(tileLayers()).toEqual([])
+    expect(view.map.hasLayer(view.wmsLayer)).toBe(true)
+    expect($control.find('.wms-control-title').text()).toBe('Basemap')
+  })
+
+  it('keeps the WMS layer drawn above whichever basemap is chosen, however often it changes', async () => {
+    // The page has Leaflet's stylesheet (via the SCSS bundle), which sets the panes' stacking; specs do not
+    const $leafletCss = $('<style>').text(leafletCss).appendTo(document.head)
+    onTestFinished(() => $leafletCss.remove())
+    await start(preview())
+    const basemapInputs = () => view.$('.leaflet-control-layers-base input')
+    const zIndexOf = pane => Number(getComputedStyle(pane).zIndex)
+    // Panes stack by z-index; layers within one pane by their own z-index, then by DOM order
+    const wmsDrawnAboveBasemap = () => {
+      const wms = view.wmsLayer.getContainer()
+      const basemaps = Object.values(view.map._layers)
+        .filter(layer => layer instanceof L.TileLayer && layer !== view.wmsLayer)
+        .map(layer => layer.getContainer())
+      return basemaps.every(basemap => {
+        if (wms.parentElement !== basemap.parentElement) {
+          return zIndexOf(wms.parentElement) > zIndexOf(basemap.parentElement)
+        }
+        const byZ = Number(wms.style.zIndex) - Number(basemap.style.zIndex)
+        return byZ > 0 || (byZ === 0 && !!(basemap.compareDocumentPosition(wms) & Node.DOCUMENT_POSITION_FOLLOWING))
+      })
+    }
+
+    for (const choice of [1, 2, 0, 2, 1, 0]) {
+      basemapInputs().eq(choice).trigger('click')
+      expect(wmsDrawnAboveBasemap()).toBe(true)
+    }
+    view.$('.wms-layers input[type=radio]').eq(1).prop('checked', true).trigger('change')
+    expect(wmsDrawnAboveBasemap()).toBe(true)
   })
 
   it('leaves the GIS help collapsed, still kept up to date for when it is opened', async () => {
