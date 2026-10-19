@@ -4,6 +4,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import uk.ac.ceh.gateway.catalogue.document.CatalogueRecordIds;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 
@@ -98,7 +99,7 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .stream()
             .filter(r -> !r.isEmpty())
             .forEach(r ->
-                toReturn.add(createStatement(me, DCTERMS_REQUIRES, createResource(r)))
+                toReturn.add(createStatement(me, DCTERMS_REQUIRES, requiredResource(r)))
             );
         Optional.ofNullable(document.getPublicationDate())
             .ifPresent(publicationDate -> {
@@ -111,5 +112,11 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
 
         toReturn.add(createStatement(me, RESOURCE_STATUS, createTypedLiteral(document.getAvailability())));
         return toReturn;
+    }
+
+    private Resource requiredResource(String identifier) {
+        return CatalogueRecordIds.recordId(identifier, baseUri)
+            .map(generator::resource)
+            .orElseGet(() -> createResource(identifier));
     }
 }

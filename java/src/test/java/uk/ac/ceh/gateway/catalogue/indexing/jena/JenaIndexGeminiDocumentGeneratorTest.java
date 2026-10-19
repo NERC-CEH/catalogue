@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.gemini.Service;
 import uk.ac.ceh.gateway.catalogue.model.Fileset;
 import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 
@@ -19,6 +20,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
@@ -185,5 +187,43 @@ class JenaIndexGeminiDocumentGeneratorTest {
             );
 
         assertThat("ObservedProperty should handle empty fields", hasObservedProperty);
+    }
+
+    private String requiresObject(String coupledResource) {
+        val document = new GeminiDocument();
+        document.setId("t");
+        document.setService(Service.builder()
+            .coupledResources(List.of(Service.CoupledResource.builder().identifier(coupledResource).build()))
+            .build());
+        given(service.generateUri("t")).willReturn("https://example.com/id/t");
+        lenient().when(service.generateUri("abc")).thenReturn("https://example.com/id/abc");
+
+        return generator.generateIndex(document).stream()
+            .filter(s -> s.getPredicate().equals(Ontology.DCTERMS_REQUIRES))
+            .findFirst()
+            .orElseThrow()
+            .getObject()
+            .asResource()
+            .getURI();
+    }
+
+    @Test
+    void coupledResourceOnProductionHttpIsNormalised() {
+        assertThat(requiresObject("http://catalogue.ceh.ac.uk/id/abc"), equalTo("https://example.com/id/abc"));
+    }
+
+    @Test
+    void coupledResourceOnBaseUriHostIsNormalised() {
+        assertThat(requiresObject("http://example.com/id/abc"), equalTo("https://example.com/id/abc"));
+    }
+
+    @Test
+    void bareCoupledResourceIdIsNormalised() {
+        assertThat(requiresObject("abc"), equalTo("https://example.com/id/abc"));
+    }
+
+    @Test
+    void externalCoupledResourceIsUntouched() {
+        assertThat(requiresObject("https://data.example.org/thing/1"), equalTo("https://data.example.org/thing/1"));
     }
 }
