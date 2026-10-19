@@ -23,7 +23,8 @@ const preview = ({ services = [service()], extents = '', style = '' } = {}) => `
     <div class="wms-map-unavailable d-none">Map preview unavailable.</div>
     <div class="wms-map" style="height: 300px; width: 400px"></div>
     <div class="wms-layers"></div>
-    <div class="wms-gis-help">
+    <details class="wms-gis-help">
+      <summary><h3 class="h5">Use this map in your GIS</h3></summary>
       <strong class="wms-layer-label"></strong>
       <div class="input-group">
         <input id="wms-capabilities-url" type="text" readonly class="wms-capabilities-url" value="https://catalogue.ceh.ac.uk/maps/abc?SERVICE=WMS&amp;REQUEST=GetCapabilities">
@@ -34,7 +35,7 @@ const preview = ({ services = [service()], extents = '', style = '' } = {}) => `
         <input id="wms-getmap-url" type="text" readonly class="wms-getmap-url">
         <button type="button" class="btn">Copy</button>
       </div>
-    </div>
+    </details>
   </div>`
 
 describe('WmsMapView', () => {
@@ -116,6 +117,14 @@ describe('WmsMapView', () => {
     expect(view.$('.wms-legend img').attr('src')).toBe(getLegendUrl('/maps/def', 'LC.B'))
     expect(view.$('.wms-layer-label').text()).toBe('LC.B')
     expect(view.$('.wms-capabilities-url').val()).toBe('https://catalogue.ceh.ac.uk/maps/def?SERVICE=WMS&REQUEST=GetCapabilities')
+  })
+
+  it('leaves the GIS help collapsed, still kept up to date for when it is opened', async () => {
+    await start(preview())
+
+    expect(view.$('.wms-gis-help').prop('open')).toBe(false)
+    expect(getMap()).toContain('LAYERS=LC.A')
+    expect(view.$('.wms-layer-label').text()).toBe('LC.A')
   })
 
   it('hides the legend when it fails to load, and shows it again for the next layer', async () => {

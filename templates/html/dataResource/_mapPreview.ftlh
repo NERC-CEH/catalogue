@@ -16,8 +16,9 @@
       <div class="wms-map-unavailable d-none">Map preview unavailable.</div>
       <div class="wms-map"></div>
       <div class="wms-layers"></div>
-      <div class="wms-gis-help">
-        <h3 class="h5">Use this map in your GIS</h3>
+      <#-- Collapsed until asked for; the summary's disclosure marker shows it can be opened -->
+      <details class="wms-gis-help">
+        <summary><h3 class="h5">Use this map in your GIS</h3></summary>
         <p>This map is a Web Map Service (WMS). In QGIS choose <em>Layer ▸ Add Layer ▸ Add WMS/WMTS Layer…</em>, click <em>New</em>, paste the GetCapabilities address below into <em>URL</em>, then <em>Connect</em> and add the layer <strong class="wms-layer-label"></strong>. Other GIS tools and web maps can use the same address.</p>
         <div class="mb-3">
           <label class="form-label" for="wms-capabilities-url">GetCapabilities</label>
@@ -33,7 +34,7 @@
             <button type="button" class="btn btn-outline-secondary">Copy</button>
           </div>
         </div>
-      </div>
+      </details>
     </div>
   </div>
 </#if>

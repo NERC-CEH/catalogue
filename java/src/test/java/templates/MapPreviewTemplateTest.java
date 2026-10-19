@@ -129,7 +129,8 @@ class MapPreviewTemplateTest {
 
         val actual = render(SECTION, document());
 
-        assertThat(actual, containsString("Use this map in your GIS"));
+        assertThat(actual, containsString(
+            "<details class=\"wms-gis-help\">\n        <summary><h3 class=\"h5\">Use this map in your GIS</h3></summary>"));
         assertThat(actual, containsString("wms-capabilities-url"));
         assertThat(actual, containsString("wms-getmap-url"));
         assertThat(actual, containsString(

@@ -609,6 +609,15 @@ body {
             flex: 1 1 100%;
         }
 
+        // The heading sits inline so the disclosure marker stays beside it
+        .wms-gis-help > summary {
+            margin-bottom: 0.5rem;
+
+            h3 {
+                display: inline;
+            }
+        }
+
         .wms-legend img {
             max-width: 100%;
         }
