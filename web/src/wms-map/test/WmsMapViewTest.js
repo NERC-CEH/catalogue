@@ -181,6 +181,17 @@ describe('WmsMapView', () => {
     expect(getMapLabel()).toBe('GetMap for this view (EPSG:3035)')
   })
 
+  it('keeps British National Grid for Great Britain in a wide map', async () => {
+    await start(preview())
+    view.$('.wms-map').css({ width: '1600px', height: '300px' })
+    view.map.invalidateSize()
+    view.map.fitBounds([[49.8, -8.7], [60.9, 1.8]], { animate: false })
+    view.map.fire('moveend')
+
+    expect(view.map.getBounds().getWest()).toBeLessThan(-9.01)
+    expect(getMap()).toContain('&CRS=EPSG:27700&')
+  })
+
   it('leaves GetMap empty when the layer lists no supported CRS', async () => {
     await start(preview(), { status: 200, contentType: 'text/xml', responseText: capabilitiesXml({ crs: ['EPSG:4258'] }) })
 
@@ -190,15 +201,19 @@ describe('WmsMapView', () => {
   })
 
   it('shows the map is unavailable if drawing it fails', async () => {
-    const createMap = vi.spyOn(WmsMapView.prototype, 'createMap').mockImplementation(() => { throw new Error('boom') })
+    const error = new Error('boom')
+    const createMap = vi.spyOn(WmsMapView.prototype, 'createMap').mockImplementation(() => { throw error })
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     try {
       await expect(start(preview())).resolves.toBeUndefined()
 
+      expect(consoleError).toHaveBeenCalledWith(error)
       expect(view.$('.wms-map-unavailable').hasClass('d-none')).toBe(false)
       expect(view.$('.wms-map').hasClass('d-none')).toBe(true)
       expect(view.$('.wms-layers').hasClass('d-none')).toBe(true)
     } finally {
       createMap.mockRestore()
+      consoleError.mockRestore()
     }
   })
 

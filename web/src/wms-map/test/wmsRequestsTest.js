@@ -43,9 +43,10 @@ describe('wmsRequests', () => {
 
   describe('chooseCrs', () => {
     const gb = { south: 52, west: -3, north: 54, east: 0 }
+    // Centred on -6.25, 53.35
     const dublin = { south: 53.2, west: -6.5, north: 53.5, east: -6 }
-    // West of BNG's area of use (west -9.01). Dublin itself lies inside BNG's bounding box.
-    const galway = { south: 53, west: -9.6, north: 53.5, east: -8.5 }
+    const london = { south: 51.3, west: -0.4, north: 51.7, east: 0.2 }
+    const belfast = { south: 54.5, west: -6.03, north: 54.7, east: -5.83 }
     const france = { south: 46, west: 1, north: 48, east: 4 }
     const world = { south: -85, west: -180, north: 85, east: 180 }
 
@@ -53,16 +54,27 @@ describe('wmsRequests', () => {
       expect(chooseCrs(MAPSERVER_CRS, gb)).toBe('EPSG:27700')
     })
 
-    it('uses Irish Transverse Mercator over Ireland when the layer has no BNG', () => {
-      expect(chooseCrs(['EPSG:3035', 'EPSG:2157'], dublin)).toBe('EPSG:2157')
+    it('keeps British National Grid for London', () => {
+      expect(chooseCrs(MAPSERVER_CRS, london)).toBe('EPSG:27700')
+    })
+
+    it('keeps British National Grid for a wide view centred on Great Britain', () => {
+      expect(chooseCrs(MAPSERVER_CRS, { south: 49, west: -21, north: 61, east: 14 })).toBe('EPSG:27700')
+    })
+
+    it('uses Irish Transverse Mercator over Ireland', () => {
+      expect(chooseCrs(['EPSG:2157'], dublin)).toBe('EPSG:2157')
+      expect(chooseCrs(['EPSG:3035', 'EPSG:2157', 'EPSG:27700'], dublin)).toBe('EPSG:2157')
     })
 
     it('uses Irish Grid when that is the only Irish CRS offered', () => {
       expect(chooseCrs(['EPSG:29903', 'EPSG:3035'], dublin)).toBe('EPSG:29903')
     })
 
-    it('uses ETRS89 LAEA when the view leaves BNG\'s area', () => {
-      expect(chooseCrs(['EPSG:27700', 'EPSG:3035'], galway)).toBe('EPSG:3035')
+    it('never uses British National Grid for a view centred on Ireland', () => {
+      expect(chooseCrs(MAPSERVER_CRS, dublin)).toBe('EPSG:3035')
+      expect(chooseCrs(['EPSG:27700', 'EPSG:29903'], belfast)).toBe('EPSG:29903')
+      expect(chooseCrs(['EPSG:27700', 'CRS:84'], belfast)).toBe('CRS:84')
     })
 
     it('uses ETRS89 LAEA for France from the standard MapServer list', () => {
@@ -134,12 +146,22 @@ describe('wmsRequests', () => {
       expect(maxN).toBeLessThan(600000)
     })
 
-    it('gives ETRS89 LAEA northing first', () => {
-      const galway = { south: 53, west: -9.6, north: 53.5, east: -8.5 }
-      const [x, y] = proj4('EPSG:4326', LAEA, [-9.05, 53.25])
+    it('keeps the part of a view beyond British National Grid\'s area of use', () => {
+      // Centred at 2E, inside BNG's area, but reaching 7E, well past its 2.01E edge. The map is tall,
+      // so the width is not widened: the east edge must be the view's own (about 1044 km at 50N, 7E),
+      // not the area of use's (about 687 km at 50N, 2.01E).
+      const url = getMapUrl({ baseUrl: base, layer: 'l', crs: 'EPSG:27700', south: 50, west: -3, north: 58, east: 7, width: 400, height: 1600 })
+      const [minE, , maxE] = bboxOf(url).map(Number)
+      expect(Math.abs(maxE - 1044651)).toBeLessThan(1000)
+      expect(Math.abs(minE - 328427)).toBeLessThan(1000)
+    })
+
+    it('gives ETRS89 LAEA northing first for Dublin', () => {
+      const dublin = { south: 53.3, west: -6.31, north: 53.4, east: -6.21 }
+      const [x, y] = proj4('EPSG:4326', LAEA, [-6.26, 53.35])
       expect(Math.abs(x - y)).toBeGreaterThan(100000)
 
-      const url = getMapUrl({ baseUrl: base, layer: 'l', crs: 'EPSG:3035', ...galway, width: 400, height: 300 })
+      const url = getMapUrl({ baseUrl: base, layer: 'l', crs: 'EPSG:3035', ...dublin, width: 400, height: 300 })
       const [first, second, third, fourth] = bboxOf(url).map(Number)
       expect(crsOf(url)).toBe('EPSG:3035')
       expect(Math.abs((first + third) / 2 - y)).toBeLessThan(5000)
@@ -157,6 +179,17 @@ describe('wmsRequests', () => {
       expect(maxLon).toBe(180)
       expect(minLat).toBeGreaterThanOrEqual(-90)
       expect(maxLat).toBeLessThanOrEqual(90)
+    })
+
+    it('keeps a near-world square view within valid latitudes', () => {
+      const url = getMapUrl({ baseUrl: base, layer: 'l', crs: 'CRS:84', south: -85, west: -180, north: 85, east: 180, width: 400, height: 400 })
+      expect(bboxOf(url)).toEqual(['-180', '-90', '180', '90'])
+      const lat = getMapUrl({ baseUrl: base, layer: 'l', crs: 'EPSG:4326', south: -10, west: -180, north: 10, east: 180, width: 100, height: 400 })
+      const [minLat, minLon, maxLat, maxLon] = bboxOf(lat).map(Number)
+      expect(minLat).toBe(-90)
+      expect(maxLat).toBe(90)
+      expect(minLon).toBe(-180)
+      expect(maxLon).toBe(180)
     })
 
     it('rounds degrees outwards to six decimals', () => {

@@ -46,7 +46,10 @@ export default Backbone.View.extend({
 
     this.ready = Promise.all(this.services.map(service => this.fetchLayers(service)))
       .then(() => this.render())
-      .catch(() => this.showUnavailable())
+      .catch(error => {
+        console.error(error)
+        this.showUnavailable()
+      })
   },
 
   // A service whose capabilities fail to load or parse offers no layers
