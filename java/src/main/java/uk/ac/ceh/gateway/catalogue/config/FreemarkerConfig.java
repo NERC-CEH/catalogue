@@ -18,6 +18,7 @@ import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.*;
 import uk.ac.ceh.gateway.catalogue.userdetails.SecurityUserInfo;
 import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
+import uk.ac.ceh.gateway.catalogue.wms.WmsMapService;
 
 @Configuration
 @RequiredArgsConstructor
@@ -41,6 +42,7 @@ public class FreemarkerConfig {
     private final FileDetailsService fileDetailsService;
     private final FileListService fileListService;
     private final UriNormaliser uriNormaliser;
+    private final WmsMapService wmsMapService;
     @Nullable private final ServiceAgreementQualityService serviceAgreementQualityService;
     @Nullable private final MetricsService metricsService;
     @Value("${access-button.collection.link}") private String collectionAccessButtonLink;
@@ -67,6 +69,7 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("permission", permissionService);
         freemarkerConfiguration.setSharedVariable("profile", profileService);
         freemarkerConfiguration.setSharedVariable("uriNormaliser", uriNormaliser);
+        freemarkerConfiguration.setSharedVariable("wmsMaps", wmsMapService);
         freemarkerConfiguration.setSharedVariable("userInfo", new SecurityUserInfo());
         freemarkerConfiguration.setSharedVariable("fileDetails", fileDetailsService);
         freemarkerConfiguration.setSharedVariable("downloadUrlRegexes", downloadUrlProperties);
