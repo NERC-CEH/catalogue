@@ -27,7 +27,7 @@
           </div>
         </div>
         <div class="mb-3">
-          <label class="form-label" for="wms-getmap-url">GetMap for this view (British National Grid, EPSG:27700)</label>
+          <label class="form-label wms-getmap-label" for="wms-getmap-url">GetMap for this view (British National Grid, EPSG:27700)</label>
           <div class="input-group">
             <input id="wms-getmap-url" type="text" readonly class="form-control font-monospace wms-getmap-url">
             <button type="button" class="btn btn-outline-secondary">Copy</button>

@@ -1,10 +1,49 @@
 import proj4 from 'proj4'
 
-const BNG = '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs'
 const WGS84 = 'EPSG:4326'
 const WMS_PARAMS = 'SERVICE=WMS&VERSION=1.3.0'
+const WORLD = [-180, -85.06, 180, 85.06]
+
+/**
+ * The CRSs a copyable GetMap can use. Each has its proj4 definition (null for plain longitude and
+ * latitude), area of use as [west, south, east, north] in degrees, whether WMS 1.3.0 puts its
+ * northing (or latitude) first in BBOX, and whether its units are degrees rather than metres.
+ */
+const CRS = {
+  'EPSG:27700': {
+    proj: '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs',
+    area: [-9.01, 49.75, 2.01, 61.01]
+  },
+  'EPSG:2157': {
+    proj: '+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=0.99982 +x_0=600000 +y_0=750000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs',
+    area: [-10.56, 51.39, -5.34, 55.43]
+  },
+  'EPSG:29903': {
+    proj: '+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +ellps=mod_airy +towgs84=482.5,-130.6,564.6,-1.042,-0.214,-0.631,8.15 +units=m +no_defs',
+    area: [-10.56, 51.39, -5.34, 55.43]
+  },
+  'EPSG:3035': {
+    proj: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs',
+    area: [-35.58, 24.60, 44.83, 84.73],
+    northFirst: true
+  },
+  'CRS:84': { proj: null, area: [-180, -90, 180, 90], degrees: true },
+  'EPSG:4326': { proj: null, area: [-180, -90, 180, 90], degrees: true, northFirst: true },
+  'EPSG:3857': { proj: 'EPSG:3857', area: WORLD }
+}
+const PREFERRED = ['EPSG:27700', 'EPSG:2157', 'EPSG:29903', 'EPSG:3035', 'CRS:84']
+const FALLBACK = ['CRS:84', 'EPSG:4326', 'EPSG:3857']
+// Points along each edge of the view, as projected edges curve
+const EDGE_STEPS = 8
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
+
+const clampTo = ([west, south, east, north], view) => ({
+  west: clamp(view.west, west, east),
+  east: clamp(view.east, west, east),
+  south: clamp(view.south, south, north),
+  north: clamp(view.north, south, north)
+})
 
 const childText = (element, tagName) => {
   const child = Array.from(element.children).find(c => c.localName === tagName)
@@ -19,62 +58,105 @@ const boundsOf = (layer) => {
   return [west, east, south, north].every(Number.isFinite) ? [[south, west], [north, east]] : null
 }
 
+const isLayer = element => element?.localName === 'Layer'
+const isNamed = layer => childText(layer, 'Name') !== null
+
+// WMS 1.3.0: a layer offers its own CRSs and those of every ancestor layer
+const crsOf = (layer) => {
+  const codes = new Set()
+  for (let el = layer; isLayer(el); el = el.parentElement) {
+    Array.from(el.children).filter(c => c.localName === 'CRS').forEach(c => codes.add(c.textContent.trim()))
+  }
+  return [...codes]
+}
+
 /**
- * Named layers of a WMS 1.3.0 capabilities document, in document order.
- * @returns {{name: string, title: string, bounds: number[][]|null}[]}
+ * The leaf named layers of a WMS 1.3.0 capabilities document, in document order. A named group
+ * holding named layers (such as MapServer's root layer) is left out.
+ * @returns {{name: string, title: string, bounds: number[][]|null, crs: string[]}[]}
  */
 export function parseCapabilities (xmlText) {
   const doc = new DOMParser().parseFromString(xmlText, 'application/xml')
   return Array.from(doc.getElementsByTagNameNS('*', 'Layer'))
-    .filter(layer => childText(layer, 'Name') !== null)
+    .filter(isNamed)
+    .filter(layer => !Array.from(layer.getElementsByTagNameNS('*', 'Layer')).some(isNamed))
     .map(layer => ({
       name: childText(layer, 'Name'),
       title: childText(layer, 'Title'),
-      bounds: boundsOf(layer)
+      bounds: boundsOf(layer),
+      crs: crsOf(layer)
     }))
 }
 
-/**
- * British National Grid bounding box (whole metres) of a WGS84 view, clamped to the area around Great Britain.
- */
-export function toBng ({ south, west, north, east }) {
-  const lats = [south, north].map(v => clamp(v, 48, 62))
-  const lons = [west, east].map(v => clamp(v, -10, 4))
-  const points = lons.flatMap(lon => lats.map(lat => proj4(WGS84, BNG, [lon, lat])))
-  const eastings = points.map(p => p[0])
-  const northings = points.map(p => p[1])
-  return {
-    minE: Math.floor(Math.min(...eastings)),
-    minN: Math.floor(Math.min(...northings)),
-    maxE: Math.ceil(Math.max(...eastings)),
-    maxN: Math.ceil(Math.max(...northings))
-  }
+/** How the GetMap field names a CRS. */
+export function crsLabel (crs) {
+  return crs === 'EPSG:27700' ? 'British National Grid, EPSG:27700' : crs
 }
 
-// Widens the narrower dimension about the centre so the bbox has the pixels' aspect ratio.
-const withAspect = ({ minE, minN, maxE, maxN }, aspect) => {
-  const centreE = (minE + maxE) / 2
-  const centreN = (minN + maxN) / 2
-  let halfWidth = (maxE - minE) / 2
-  let halfHeight = (maxN - minN) / 2
+/**
+ * The CRS for a copyable GetMap of this view: the first preferred CRS the layer lists whose area of
+ * use holds the whole view, else the first world CRS it lists, else null.
+ */
+export function chooseCrs (layerCrs = [], view) {
+  const { west, south, east, north } = clampTo(WORLD, view)
+  const contains = ([w, s, e, n]) => west >= w && east <= e && south >= s && north <= n
+  return PREFERRED.find(crs => layerCrs.includes(crs) && contains(CRS[crs].area)) ||
+    FALLBACK.find(crs => layerCrs.includes(crs)) ||
+    null
+}
+
+/**
+ * Bounding box of a WGS84 view in a CRS's own units, x easting (or longitude) and y northing
+ * (or latitude), the view first clamped to the CRS's area of use.
+ */
+export function toBbox (crs, view) {
+  const { proj, area } = CRS[crs]
+  const { west, south, east, north } = clampTo(area, view)
+  const lons = Array.from({ length: EDGE_STEPS + 1 }, (_, i) => west + (east - west) * i / EDGE_STEPS)
+  const lats = Array.from({ length: EDGE_STEPS + 1 }, (_, i) => south + (north - south) * i / EDGE_STEPS)
+  const edges = [
+    ...lons.flatMap(lon => [[lon, south], [lon, north]]),
+    ...lats.flatMap(lat => [[west, lat], [east, lat]])
+  ]
+  const points = proj ? edges.map(point => proj4(WGS84, proj, point)) : edges
+  const xs = points.map(p => p[0])
+  const ys = points.map(p => p[1])
+  return { minX: Math.min(...xs), minY: Math.min(...ys), maxX: Math.max(...xs), maxY: Math.max(...ys) }
+}
+
+// Widens the narrower dimension about the centre so the bbox has the pixels' aspect ratio
+const withAspect = ({ minX, minY, maxX, maxY }, aspect) => {
+  const centreX = (minX + maxX) / 2
+  const centreY = (minY + maxY) / 2
+  let halfWidth = (maxX - minX) / 2
+  let halfHeight = (maxY - minY) / 2
   if (halfWidth / halfHeight < aspect) halfWidth = halfHeight * aspect
   else halfHeight = halfWidth / aspect
-  return {
-    minE: Math.floor(centreE - halfWidth),
-    minN: Math.floor(centreN - halfHeight),
-    maxE: Math.ceil(centreE + halfWidth),
-    maxN: Math.ceil(centreN + halfHeight)
-  }
+  return { minX: centreX - halfWidth, minY: centreY - halfHeight, maxX: centreX + halfWidth, maxY: centreY + halfHeight }
 }
 
-export function getMapUrl ({ baseUrl, layer, south, west, north, east, width, height, maxSize = 2048 }) {
-  if (!(width > 0) || !(height > 0)) return ''
-  const { minE, minN, maxE, maxN } = withAspect(toBng({ south, west, north, east }), width / height)
+// Rounds outwards: whole metres, or degrees to six decimals
+const rounded = ({ minX, minY, maxX, maxY }, degrees) => {
+  const factor = degrees ? 1e6 : 1
+  const down = v => Math.floor(v * factor) / factor
+  const up = v => Math.ceil(v * factor) / factor
+  return { minX: down(minX), minY: down(minY), maxX: up(maxX), maxY: up(maxY) }
+}
+
+/**
+ * A WMS 1.3.0 GetMap URL for the view in the given CRS (see chooseCrs), or '' when the CRS is not
+ * supported or the map has no size.
+ */
+export function getMapUrl ({ baseUrl, layer, crs, south, west, north, east, width, height, maxSize = 2048 }) {
+  if (!CRS[crs] || !(width > 0) || !(height > 0)) return ''
+  const { northFirst, degrees } = CRS[crs]
+  const { minX, minY, maxX, maxY } = rounded(withAspect(toBbox(crs, { south, west, north, east }), width / height), degrees)
+  const bbox = northFirst ? [minY, minX, maxY, maxX] : [minX, minY, maxX, maxY]
   const scale = Math.min(1, maxSize / Math.max(width, height))
   const w = Math.round(width * scale)
   const h = Math.round(height * scale)
-  return `${baseUrl}?${WMS_PARAMS}&REQUEST=GetMap&LAYERS=${encodeURIComponent(layer)}&STYLES=&CRS=EPSG:27700` +
-    `&BBOX=${minE},${minN},${maxE},${maxN}&WIDTH=${w}&HEIGHT=${h}&FORMAT=image/png&TRANSPARENT=TRUE`
+  return `${baseUrl}?${WMS_PARAMS}&REQUEST=GetMap&LAYERS=${encodeURIComponent(layer)}&STYLES=&CRS=${crs}` +
+    `&BBOX=${bbox.join(',')}&WIDTH=${w}&HEIGHT=${h}&FORMAT=image/png&TRANSPARENT=TRUE`
 }
 
 export function getLegendUrl (localPath, layer) {

@@ -3,7 +3,7 @@ import Backbone from 'backbone'
 import L from 'leaflet'
 import '../../map/markerIcons'
 import { copyText } from '../../clipboard/copyText'
-import { getCapabilitiesUrl, getLegendUrl, getMapUrl, parseCapabilities } from './wmsRequests'
+import { chooseCrs, crsLabel, getCapabilitiesUrl, getLegendUrl, getMapUrl, parseCapabilities } from './wmsRequests'
 
 const GREAT_BRITAIN = [[49.8, -8.7], [60.9, 1.8]]
 const COPIED_FOR_MS = 2000
@@ -132,16 +132,18 @@ export default Backbone.View.extend({
     this.updateGetMap()
   },
 
+  // The CRS follows the view and the layer's capabilities, so it is chosen afresh on every update
   updateGetMap () {
     const bounds = this.map.getBounds()
     const size = this.map.getSize()
+    const view = { south: bounds.getSouth(), west: bounds.getWest(), north: bounds.getNorth(), east: bounds.getEast() }
+    const crs = chooseCrs(this.selected.layer.crs, view)
+    this.$('.wms-getmap-label').text(crs ? `GetMap for this view (${crsLabel(crs)})` : 'GetMap for this view')
     this.$('.wms-getmap-url').val(getMapUrl({
       baseUrl: this.selected.service.publicUrl,
       layer: this.selected.layer.name,
-      south: bounds.getSouth(),
-      west: bounds.getWest(),
-      north: bounds.getNorth(),
-      east: bounds.getEast(),
+      crs,
+      ...view,
       width: size.x,
       height: size.y
     }))

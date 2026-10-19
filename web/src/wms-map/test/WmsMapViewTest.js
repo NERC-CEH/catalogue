@@ -3,7 +3,7 @@ import $ from 'jquery'
 import { WmsMapView } from '../src'
 import { getLegendUrl } from '../src/wmsRequests'
 import { copyText } from '../../clipboard/copyText'
-import { CAPABILITIES_XML } from './capabilitiesFixture'
+import { CAPABILITIES_XML, capabilitiesXml } from './capabilitiesFixture'
 import { fakeServer } from '../../test/support'
 
 vi.mock('../../clipboard/copyText', () => ({ copyText: vi.fn() }))
@@ -29,6 +29,7 @@ const preview = ({ services = [service()], extents = '', style = '' } = {}) => `
         <input id="wms-capabilities-url" type="text" readonly class="wms-capabilities-url" value="https://catalogue.ceh.ac.uk/maps/abc?SERVICE=WMS&amp;REQUEST=GetCapabilities">
         <button type="button" class="btn">Copy</button>
       </div>
+      <label class="wms-getmap-label" for="wms-getmap-url">GetMap for this view (British National Grid, EPSG:27700)</label>
       <div class="input-group">
         <input id="wms-getmap-url" type="text" readonly class="wms-getmap-url">
         <button type="button" class="btn">Copy</button>
@@ -59,6 +60,8 @@ describe('WmsMapView', () => {
   }
   const radioLabels = () => view.$('.wms-layers label').map((i, label) => $(label).text()).get()
   const getMap = () => view.$('.wms-getmap-url').val()
+  const getMapLabel = () => view.$('.wms-getmap-label').text()
+  const headings = () => view.$('.wms-layers .wms-service-title').map((i, h) => $(h).text()).get()
 
   it('builds the picker from the capabilities, first layer drawn', async () => {
     await start(preview())
@@ -88,14 +91,14 @@ describe('WmsMapView', () => {
   it('groups the layers by service when there are several', async () => {
     await start(preview({ services: [service({ title: 'First' }), service({ id: 'def', title: 'Second' })] }))
 
-    expect(view.$('.wms-layers .wms-service-title').map((i, h) => $(h).text()).get()).toEqual(['First', 'Second'])
+    expect(headings()).toEqual(['First', 'Second'])
     expect(radioLabels()).toEqual(['Woodland', 'Conifer', 'Woodland', 'Conifer'])
   })
 
   it('leaves out a service whose capabilities fail when another has layers', async () => {
     await start(preview({ services: [service({ title: 'First' }), service({ id: 'def', title: 'Second' })] }), { status: 500, responseText: '' })
 
-    expect(view.$('.wms-layers .wms-service-title').map((i, h) => $(h).text()).get()).toEqual(['Second'])
+    expect(headings()).toEqual(['Second'])
     expect(view.wmsLayer._url).toBe('/maps/def')
     expect(view.$('.wms-map-unavailable').hasClass('d-none')).toBe(true)
   })
@@ -160,6 +163,29 @@ describe('WmsMapView', () => {
 
     expect(getMap().match(/BBOX=[^&]+/)[0]).not.toBe(before)
     expect(getMap()).toContain('WIDTH=400&HEIGHT=300')
+  })
+
+  it('names the CRS in the label and switches CRS when panning from Great Britain to France', async () => {
+    await start(preview())
+    view.map.setView([52, -1], 8, { animate: false })
+    view.map.fire('moveend')
+
+    expect(getMap()).toContain('&CRS=EPSG:27700&')
+    expect(getMapLabel()).toBe('GetMap for this view (British National Grid, EPSG:27700)')
+
+    view.map.setView([47, 2.5], 8, { animate: false })
+    view.map.fire('moveend')
+
+    expect(getMap()).toContain('&CRS=EPSG:3035&')
+    expect(getMapLabel()).toBe('GetMap for this view (EPSG:3035)')
+  })
+
+  it('leaves GetMap empty when the layer lists no supported CRS', async () => {
+    await start(preview(), { status: 200, contentType: 'text/xml', responseText: capabilitiesXml({ crs: ['EPSG:4258'] }) })
+
+    expect(view.wmsLayer.wmsParams.layers).toBe('LC.A')
+    expect(getMap()).toBe('')
+    expect(getMapLabel()).toBe('GetMap for this view')
   })
 
   it('leaves GetMap empty while the map has no size', async () => {
