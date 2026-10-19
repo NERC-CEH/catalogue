@@ -3,6 +3,7 @@
  * Bundled rather than loaded from unpkg, where it was unversioned, so whatever unpkg served as latest
  * ran on the catalogue's origin (NERC-CEH/dri-one#367).
  */
+import './regenerator-global'
 import Yasgui from '@triply/yasgui'
 import '@triply/yasgui/build/yasgui.min.css'
 
