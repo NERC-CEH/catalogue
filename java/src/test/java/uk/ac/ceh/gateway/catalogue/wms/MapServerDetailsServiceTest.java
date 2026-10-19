@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.wms;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource.Attribute.Bucket;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.Projection;
@@ -11,6 +12,7 @@ import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService.MapBucketDetails;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -263,5 +265,65 @@ public class MapServerDetailsServiceTest {
 
         //Then
         assertNull(details);
+    }
+
+    private Optional<String> localMapId(String url) {
+        MapServerDetailsService devService = new MapServerDetailsService(
+            "http://localhost:8080",
+            "http://mapserver/mapserver/{id}"
+        );
+        return devService.getLocalMapId(OnlineResource.builder().url(url).build());
+    }
+
+    @Test
+    public void localMapIdRecognisedForProductionHost() {
+        assertThat(
+            localMapId("https://catalogue.ceh.ac.uk/maps/abc?service=WMS&request=GetCapabilities"),
+            is(Optional.of("abc"))
+        );
+    }
+
+    @Test
+    public void localMapIdRecognisedForConfiguredHostIgnoringPortAndCase() {
+        assertThat(
+            localMapId("http://LOCALHOST:8080/maps/abc?request=getCapabilities&service=wms"),
+            is(Optional.of("abc"))
+        );
+    }
+
+    @Test
+    public void localMapIdEmptyForOtherHost() {
+        assertThat(localMapId("https://other.org/maps/abc?service=WMS&request=GetCapabilities"), is(Optional.empty()));
+    }
+
+    @Test
+    public void localMapIdEmptyForExtraPathSegment() {
+        assertThat(
+            localMapId("https://catalogue.ceh.ac.uk/maps/abc/extra?service=WMS&request=GetCapabilities"),
+            is(Optional.empty())
+        );
+    }
+
+    @Test
+    public void localMapIdEmptyForWrongFirstSegment() {
+        assertThat(
+            localMapId("https://catalogue.ceh.ac.uk/other/abc?service=WMS&request=GetCapabilities"),
+            is(Optional.empty())
+        );
+    }
+
+    @Test
+    public void localMapIdEmptyWithoutGetCapabilities() {
+        assertThat(localMapId("https://catalogue.ceh.ac.uk/maps/abc"), is(Optional.empty()));
+    }
+
+    @Test
+    public void localMapIdEmptyForNullUrl() {
+        assertThat(localMapId(null), is(Optional.empty()));
+    }
+
+    @Test
+    public void localMapIdEmptyForUnparseableUrl() {
+        assertThat(localMapId("http://[bad/maps/abc?service=WMS&request=GetCapabilities"), is(Optional.empty()));
     }
 }

@@ -12,9 +12,11 @@ import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource.Attribute.Bucket;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.Projection;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.nonNull;
+import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 
 /**
  * The following service is a 'helper' which produces text which is useful in
@@ -32,6 +35,7 @@ import static java.util.Objects.nonNull;
 @ToString
 @Service
 public class MapServerDetailsService {
+    private static final String PRODUCTION_HOST = "catalogue.ceh.ac.uk";
     private final String hostUrl;
     private final String mapserverUrl;
 
@@ -133,6 +137,45 @@ public class MapServerDetailsService {
             return getLocalWMSRequest(pathSegments.get(1), uri.getQuery());
         }
         return wmsUrl;
+    }
+
+    /**
+     * If the online resource is a GetCapabilities request to this catalogue's
+     * own WMS at /maps/{id} (on the production host or the configured host,
+     * either scheme, any port), return that id.
+     * @param resource online resource to inspect
+     * @return the map id, or empty if the resource is not a local WMS
+     */
+    public Optional<String> getLocalMapId(OnlineResource resource) {
+        if (resource == null || resource.getType() != WMS_GET_CAPABILITIES) {
+            return Optional.empty();
+        }
+        try {
+            UriComponents uri = UriComponentsBuilder.fromUriString(resource.getUrl()).build();
+            List<String> pathSegments = uri.getPathSegments();
+            if (pathSegments.size() == 2
+                && "maps".equals(pathSegments.get(0))
+                && isCatalogueHost(uri.getHost())) {
+                return Optional.of(pathSegments.get(1));
+            }
+        } catch (IllegalArgumentException e) {
+            log.debug("Unparseable online resource url {}", resource.getUrl());
+        }
+        return Optional.empty();
+    }
+
+    private boolean isCatalogueHost(String host) {
+        if (host == null) {
+            return false;
+        }
+        if (PRODUCTION_HOST.equalsIgnoreCase(host)) {
+            return true;
+        }
+        try {
+            return host.equalsIgnoreCase(URI.create(hostUrl).getHost());
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
     /**
