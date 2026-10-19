@@ -23,7 +23,7 @@ export default defineConfig({
   test: {
     include: ['src/**/test/**/*.js'],
     // The specs' own support, not specs
-    exclude: ['src/test/support.js', 'src/test/setup.js', '**/node_modules/**'],
+    exclude: ['src/test/support.js', 'src/test/setup.js', 'src/wms-map/test/capabilitiesFixture.js', '**/node_modules/**'],
     setupFiles: ['src/test/setup.js'],
     // Each spec's spies and fakes are undone after it, as Jasmine did
     restoreMocks: true,
