@@ -586,6 +586,45 @@ body {
         width: var(--map-width, 300px);
     }
 
+    .wms-map-preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+
+        // Data for the view, not for reading
+        .wms-service,
+        .wms-extent {
+            display: none;
+        }
+
+        .wms-map {
+            flex: 1 1 100%;
+            height: var(--map-height, 400px);
+            width: 100%;
+        }
+
+        .wms-layers,
+        .wms-gis-help,
+        .wms-map-unavailable {
+            flex: 1 1 100%;
+        }
+
+        .wms-legend img {
+            max-width: 100%;
+        }
+
+        @include media-breakpoint-up(md) {
+            .wms-map {
+                flex: 1 1 0;
+                width: auto;
+            }
+
+            .wms-layers {
+                flex: 0 0 14rem;
+            }
+        }
+    }
+
     .mintDOI {
         margin: 0 1em;
     }

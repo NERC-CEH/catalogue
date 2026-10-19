@@ -1,0 +1,227 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import $ from 'jquery'
+import { WmsMapView } from '../src'
+import { getLegendUrl } from '../src/wmsRequests'
+import { copyText } from '../../clipboard/copyText'
+import { CAPABILITIES_XML } from './capabilitiesFixture'
+import { fakeServer } from '../../test/support'
+
+vi.mock('../../clipboard/copyText', () => ({ copyText: vi.fn() }))
+
+// The markup templates/html/dataResource/_mapPreview.ftlh renders
+const service = ({ id = 'abc', title = 'Land cover', layerNames = [] } = {}) => `
+  <div class="wms-service" data-title="${title}" data-local-path="/maps/${id}"
+       data-public-url="https://catalogue.ceh.ac.uk/maps/${id}"
+       data-capabilities-url="https://catalogue.ceh.ac.uk/maps/${id}?SERVICE=WMS&amp;REQUEST=GetCapabilities">
+    ${layerNames.map(name => `<span class="wms-layer-name">${name}</span>`).join('')}
+  </div>`
+
+const preview = ({ services = [service()], extents = '', style = '' } = {}) => `
+  <div class="wms-map-preview" style="${style}">
+    ${extents}
+    ${services.join('')}
+    <div class="wms-map-unavailable d-none">Map preview unavailable.</div>
+    <div class="wms-map" style="height: 300px; width: 400px"></div>
+    <div class="wms-layers"></div>
+    <div class="wms-gis-help">
+      <strong class="wms-layer-label"></strong>
+      <div class="input-group">
+        <input id="wms-capabilities-url" type="text" readonly class="wms-capabilities-url" value="https://catalogue.ceh.ac.uk/maps/abc?SERVICE=WMS&amp;REQUEST=GetCapabilities">
+        <button type="button" class="btn">Copy</button>
+      </div>
+      <div class="input-group">
+        <input id="wms-getmap-url" type="text" readonly class="wms-getmap-url">
+        <button type="button" class="btn">Copy</button>
+      </div>
+    </div>
+  </div>`
+
+describe('WmsMapView', () => {
+  let $el
+  let view
+
+  beforeEach(() => fakeServer.install())
+
+  afterEach(() => {
+    view?.remove()
+    view = null
+    $el?.remove()
+    fakeServer.uninstall()
+    vi.mocked(copyText).mockReset()
+  })
+
+  // Starts the view and answers each capabilities request in turn
+  const start = (html, ...responses) => {
+    $el = $(html).appendTo(document.body)
+    view = new WmsMapView({ el: $el[0] })
+    fakeServer.requests().forEach((request, i) => request.respondWith(responses[i] || { status: 200, contentType: 'text/xml', responseText: CAPABILITIES_XML }))
+    return view.ready
+  }
+  const radioLabels = () => view.$('.wms-layers label').map((i, label) => $(label).text()).get()
+  const getMap = () => view.$('.wms-getmap-url').val()
+
+  it('builds the picker from the capabilities, first layer drawn', async () => {
+    await start(preview())
+
+    expect(fakeServer.requests()[0].url).toContain('/maps/abc?')
+    expect(fakeServer.requests()[0].url).toContain('REQUEST=GetCapabilities')
+    expect(radioLabels()).toEqual(['Woodland', 'Conifer'])
+    expect(view.$('.wms-layers input[type=radio]').first().prop('checked')).toBe(true)
+    expect(view.wmsLayer.wmsParams.layers).toBe('LC.A')
+    expect(view.wmsLayer._url).toBe('/maps/abc')
+    expect(view.map.hasLayer(view.wmsLayer)).toBe(true)
+  })
+
+  it('lists only the layers the record allows', async () => {
+    await start(preview({ services: [service({ layerNames: ['LC.B'] })] }))
+
+    expect(radioLabels()).toEqual(['Conifer'])
+    expect(view.wmsLayer.wmsParams.layers).toBe('LC.B')
+  })
+
+  it('lists every layer when none the record names is offered', async () => {
+    await start(preview({ services: [service({ layerNames: ['NOPE'] })] }))
+
+    expect(radioLabels()).toEqual(['Woodland', 'Conifer'])
+  })
+
+  it('groups the layers by service when there are several', async () => {
+    await start(preview({ services: [service({ title: 'First' }), service({ id: 'def', title: 'Second' })] }))
+
+    expect(view.$('.wms-layers .wms-service-title').map((i, h) => $(h).text()).get()).toEqual(['First', 'Second'])
+    expect(radioLabels()).toEqual(['Woodland', 'Conifer', 'Woodland', 'Conifer'])
+  })
+
+  it('leaves out a service whose capabilities fail when another has layers', async () => {
+    await start(preview({ services: [service({ title: 'First' }), service({ id: 'def', title: 'Second' })] }), { status: 500, responseText: '' })
+
+    expect(view.$('.wms-layers .wms-service-title').map((i, h) => $(h).text()).get()).toEqual(['Second'])
+    expect(view.wmsLayer._url).toBe('/maps/def')
+    expect(view.$('.wms-map-unavailable').hasClass('d-none')).toBe(true)
+  })
+
+  it('updates the layer, GetMap, legend, label and capabilities on a layer change', async () => {
+    await start(preview({ services: [service({ title: 'First' }), service({ id: 'def', title: 'Second' })] }))
+
+    view.$('.wms-layers input[type=radio]').eq(3).prop('checked', true).trigger('change')
+
+    expect(view.wmsLayer.wmsParams.layers).toBe('LC.B')
+    expect(view.wmsLayer._url).toBe('/maps/def')
+    expect(getMap().startsWith('https://catalogue.ceh.ac.uk/maps/def?')).toBe(true)
+    expect(getMap()).toContain('LAYERS=LC.B')
+    expect(view.$('.wms-legend img').attr('src')).toBe(getLegendUrl('/maps/def', 'LC.B'))
+    expect(view.$('.wms-layer-label').text()).toBe('LC.B')
+    expect(view.$('.wms-capabilities-url').val()).toBe('https://catalogue.ceh.ac.uk/maps/def?SERVICE=WMS&REQUEST=GetCapabilities')
+  })
+
+  it('hides the legend when it fails to load, and shows it again for the next layer', async () => {
+    await start(preview())
+
+    view.$('.wms-legend img').trigger('error')
+    expect(view.$('.wms-legend').hasClass('d-none')).toBe(true)
+
+    view.$('.wms-layers input[type=radio]').eq(1).prop('checked', true).trigger('change')
+    expect(view.$('.wms-legend').hasClass('d-none')).toBe(false)
+  })
+
+  it('starts on the record extent', async () => {
+    const extent = '<span class="wms-extent" data-west="-3" data-east="-2" data-south="54" data-north="55"></span>'
+    await start(preview({ extents: extent }))
+
+    const centre = view.map.getCenter()
+    expect(centre.lat).toBeCloseTo(54.5, 0)
+    expect(centre.lng).toBeCloseTo(-2.5, 0)
+  })
+
+  it('starts on the layer bounds when the record has no extent', async () => {
+    await start(preview())
+
+    const centre = view.map.getCenter()
+    expect(centre.lat).toBeCloseTo(55, 0)
+    expect(centre.lng).toBeCloseTo(-3, 0)
+  })
+
+  it('starts on Great Britain when neither has bounds', async () => {
+    await start(preview({ services: [service({ layerNames: ['LC.B'] })] }))
+
+    const centre = view.map.getCenter()
+    expect(centre.lat).toBeGreaterThan(49.8)
+    expect(centre.lat).toBeLessThan(60.9)
+    expect(centre.lng).toBeGreaterThan(-8.7)
+    expect(centre.lng).toBeLessThan(1.8)
+  })
+
+  it('updates the GetMap bounding box when the map moves', async () => {
+    await start(preview())
+    const before = getMap().match(/BBOX=[^&]+/)[0]
+
+    view.map.setView([52, -1], 10, { animate: false })
+    view.map.fire('moveend')
+
+    expect(getMap().match(/BBOX=[^&]+/)[0]).not.toBe(before)
+    expect(getMap()).toContain('WIDTH=400&HEIGHT=300')
+  })
+
+  it('leaves GetMap empty while the map has no size', async () => {
+    await start(preview({ style: 'display: none' }))
+
+    expect(getMap()).toBe('')
+  })
+
+  it('shows the map is unavailable when the capabilities fail', async () => {
+    await start(preview(), { status: 500, responseText: '' })
+
+    expect(view.$('.wms-map-unavailable').hasClass('d-none')).toBe(false)
+    expect(view.$('.wms-map').hasClass('d-none')).toBe(true)
+    expect(view.$('.wms-layers').hasClass('d-none')).toBe(true)
+    expect(view.$('.wms-capabilities-url').val()).toBe('https://catalogue.ceh.ac.uk/maps/abc?SERVICE=WMS&REQUEST=GetCapabilities')
+    expect(view.map).toBeUndefined()
+  })
+
+  it('shows the map is unavailable when the capabilities name no layers', async () => {
+    await start(preview(), { status: 200, contentType: 'text/xml', responseText: '<WMS_Capabilities/>' })
+
+    expect(view.$('.wms-map-unavailable').hasClass('d-none')).toBe(false)
+  })
+
+  it('copies with the clipboard helper and says so', async () => {
+    vi.mocked(copyText).mockResolvedValue(true)
+    await start(preview({ style: 'display: none' }), { status: 500, responseText: '' })
+    const $copy = view.$('.wms-capabilities-url').siblings('button')
+
+    $copy.trigger('click')
+    await vi.waitFor(() => expect($copy.text()).toBe('Copied'))
+
+    expect(copyText).toHaveBeenCalledWith(view.$('.wms-capabilities-url')[0])
+  })
+
+  it('copies the GetMap URL, then says Copy again', async () => {
+    vi.mocked(copyText).mockResolvedValue(true)
+    await start(preview())
+    vi.useFakeTimers()
+    try {
+      const $copy = view.$('.wms-getmap-url').siblings('button')
+
+      $copy.trigger('click')
+      await vi.waitFor(() => expect($copy.text()).toBe('Copied'))
+      vi.advanceTimersByTime(2000)
+
+      expect(copyText).toHaveBeenCalledWith(view.$('.wms-getmap-url')[0])
+      expect($copy.text()).toBe('Copy')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('does not claim a copy that failed', async () => {
+    vi.mocked(copyText).mockResolvedValue(false)
+    await start(preview())
+    const $copy = view.$('.wms-getmap-url').siblings('button')
+
+    $copy.trigger('click')
+    await vi.waitFor(() => expect(copyText).toHaveBeenCalled())
+    await Promise.resolve()
+
+    expect($copy.text()).toBe('Copy')
+  })
+})
