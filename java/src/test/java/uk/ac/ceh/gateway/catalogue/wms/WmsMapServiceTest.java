@@ -94,6 +94,21 @@ class WmsMapServiceTest {
     }
 
     @Test
+    void forRecordIdReadsTheRecordThenBuildsItsMaps() throws Exception {
+        when(reader.readBundle("svc1")).thenReturn(serviceRecord("svc1", CAPABILITIES));
+
+        assertThat(service.forRecordId("svc1"), hasSize(1));
+    }
+
+    @Test
+    void forRecordIdOfAnUnreadableRecordHasNoMaps() throws Exception {
+        when(reader.readBundle("gone")).thenThrow(new RuntimeException("deleted"));
+
+        assertThat(service.forRecordId("gone"), is(empty()));
+        assertThat(service.forRecordId(null), is(empty()));
+    }
+
+    @Test
     void serviceRecordGetsAllLayers() {
         List<WmsMap> maps = service.forRecord(serviceRecord("svc1", CAPABILITIES));
 

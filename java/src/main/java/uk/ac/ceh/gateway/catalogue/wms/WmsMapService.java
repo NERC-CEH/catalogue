@@ -48,6 +48,25 @@ public class WmsMapService {
         this.baseUri = baseUri;
     }
 
+    /**
+     * FreeMarker cannot hand a template its own data-model root to a Java method (it is
+     * a merged hash view, not the bean), so templates look the record up by id. The read is
+     * cache-backed, and anything unreadable or not a Gemini record has no maps.
+     */
+    public List<WmsMap> forRecordId(String recordId) {
+        if (recordId == null || recordId.isBlank()) {
+            return Collections.emptyList();
+        }
+        try {
+            if (documentReader.readBundle(recordId) instanceof GeminiDocument document) {
+                return forRecord(document);
+            }
+        } catch (Exception e) {
+            log.warn("Skipping WMS preview of record {}", recordId, e);
+        }
+        return Collections.emptyList();
+    }
+
     public List<WmsMap> forRecord(GeminiDocument document) {
         if (document == null) {
             return Collections.emptyList();

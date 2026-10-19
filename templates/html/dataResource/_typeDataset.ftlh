@@ -1,3 +1,5 @@
+<#assign wmsMapList = wmsMaps.forRecordId(id)>
+
 <#if isLinkedDoc>
   <#include "_linked.ftlh">
 </#if>
@@ -57,6 +59,7 @@
 
       <#include "_formats.ftlh">
       <#if resourceType.value !='nonGeographicDataset'><#include "_spatial.ftlh"></#if>
+      <#include "_mapPreview.ftlh">
       <#include "_temporal.ftlh">
       <#include "_dataquality.ftlh">
       <#include "_constraints.ftlh">

@@ -60,6 +60,7 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FileDetailsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.wms.WmsMapService;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.io.ByteArrayInputStream;
@@ -107,6 +108,7 @@ class DocumentControllerTest extends AbstractMvcTest {
     @MockitoBean private CodeLookupService codeLookupService;
     @MockitoBean private DocumentRepository documentRepository;
     @MockitoBean private JenaLookupService jenaLookupService;
+    @MockitoBean private WmsMapService wmsMapService;
     @MockitoBean(name="permission") private PermissionService permissionService;
     @MockitoBean private ProfileService profileService;
     @MockitoBean private MetricsService metricsService;
@@ -156,6 +158,7 @@ class DocumentControllerTest extends AbstractMvcTest {
         configuration.setSharedVariable("catalogues", catalogueService);
         configuration.setSharedVariable("codes", codeLookupService);
         configuration.setSharedVariable("jena", jenaLookupService);
+        configuration.setSharedVariable("wmsMaps", wmsMapService);
         configuration.setSharedVariable("permission", permissionService);
         configuration.setSharedVariable("profile", profileService);
         configuration.setSharedVariable("downloadOrderDetails", downloadOrderDetailsService);
