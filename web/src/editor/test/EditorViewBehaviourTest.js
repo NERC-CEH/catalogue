@@ -210,7 +210,7 @@ describe('EditorView behaviour', () => {
       expect($('#conflictCopy').text()).toBe('Copied!')
     })
 
-    it('falls back to copying the selected text where the clipboard API is missing', () => {
+    it('falls back to copying the selected text where the clipboard API is missing', async () => {
       editor()
       const clipboard = Object.getOwnPropertyDescriptor(Navigator.prototype, 'clipboard')
       Object.defineProperty(navigator, 'clipboard', { value: undefined, configurable: true })
@@ -222,6 +222,7 @@ describe('EditorView behaviour', () => {
         $(document.body).append(options.html)
         options.didOpen()
         $('#conflictCopy').trigger('click')
+        await settle()
 
         expect(document.execCommand).toHaveBeenCalledWith('copy')
         expect($('#conflictCopy').text()).toBe('Copied!')
