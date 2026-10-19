@@ -20,7 +20,8 @@ services:
     ports:
       - "9000:80"
     volumes:
-      - mapfiles:/maps
+      # The catalogue writes its mapfiles to MAPS_LOCATION (/app/mapfiles), i.e. ./mapfiles
+      - ./mapfiles:/maps:ro
       - ./fixtures/mapserver-data:/data
   hubbub-db:
     image: postgres:14.1-alpine
@@ -208,7 +209,6 @@ services:
     command: sh -c "npm install && npm run watch"
 volumes:
   dropbox:
-  mapfiles:
   datastore:
   jena-data:
   gradle-cache:
