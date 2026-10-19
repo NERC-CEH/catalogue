@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import uk.ac.ceh.gateway.catalogue.document.CatalogueRecordIds;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
@@ -47,6 +48,8 @@ class WmsMapServiceTest {
     @Mock private BundledReaderService<MetadataDocument> reader;
     @Mock private PermissionService permissionService;
     private final CatalogueUser user = new CatalogueUser("someone", "someone@example.com");
+    private final CatalogueRecordIds recordIds =
+        new CatalogueRecordIds("http://localhost:8080", "https://catalogue.ceh.ac.uk");
     private WmsMapService service;
     private final Logger logger = (Logger) LoggerFactory.getLogger(WmsMapService.class);
     private final ListAppender<ILoggingEvent> logs = new ListAppender<>();
@@ -63,8 +66,8 @@ class WmsMapServiceTest {
         service = new WmsMapService(
             reader,
             permissionService,
-            new MapServerDetailsService("http://localhost:8080", "http://mapserver/{id}"),
-            "http://localhost:8080"
+            new MapServerDetailsService("http://localhost:8080", "http://mapserver/{id}", recordIds),
+            recordIds
         );
     }
 

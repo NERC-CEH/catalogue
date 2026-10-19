@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+import uk.ac.ceh.gateway.catalogue.document.CatalogueRecordIds;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource;
@@ -16,7 +17,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 import java.math.BigDecimal;
-import java.net.URI;
 import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
@@ -35,16 +35,18 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
 @ToString
 @Service
 public class MapServerDetailsService {
-    private static final String PRODUCTION_HOST = "catalogue.ceh.ac.uk";
     private final String hostUrl;
     private final String mapserverUrl;
+    private final CatalogueRecordIds catalogueRecordIds;
 
     public MapServerDetailsService(
         @Value("${documents.baseUri}") String hostUrl,
-        @Value("${mapserver.url:http://mapserver/{id}}") String mapserverUrl
+        @Value("${mapserver.url:http://mapserver/{id}}") String mapserverUrl,
+        CatalogueRecordIds catalogueRecordIds
     ) {
         this.hostUrl = hostUrl;
         this.mapserverUrl = mapserverUrl;
+        this.catalogueRecordIds = catalogueRecordIds;
         log.info("Creating");
     }
 
@@ -141,7 +143,7 @@ public class MapServerDetailsService {
 
     /**
      * If the online resource is a GetCapabilities request to this catalogue's
-     * own WMS at /maps/{id} (on the production host or the configured host,
+     * own WMS at /maps/{id} (on the canonical host or the configured host,
      * either scheme, any port), return that id.
      * @param resource online resource to inspect
      * @return the map id, or empty if the resource is not a local WMS
@@ -155,27 +157,13 @@ public class MapServerDetailsService {
             List<String> pathSegments = uri.getPathSegments();
             if (pathSegments.size() == 2
                 && "maps".equals(pathSegments.get(0))
-                && isCatalogueHost(uri.getHost())) {
+                && catalogueRecordIds.isCatalogueHost(uri.getHost())) {
                 return Optional.of(pathSegments.get(1));
             }
         } catch (IllegalArgumentException e) {
             log.debug("Unparseable online resource url {}", resource.getUrl());
         }
         return Optional.empty();
-    }
-
-    private boolean isCatalogueHost(String host) {
-        if (host == null) {
-            return false;
-        }
-        if (PRODUCTION_HOST.equalsIgnoreCase(host)) {
-            return true;
-        }
-        try {
-            return host.equalsIgnoreCase(URI.create(hostUrl).getHost());
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
     }
 
     /**

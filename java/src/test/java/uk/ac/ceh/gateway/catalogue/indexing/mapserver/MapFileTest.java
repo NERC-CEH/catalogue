@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.StreamUtils;
+import uk.ac.ceh.gateway.catalogue.document.CatalogueRecordIds;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
 import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
@@ -54,7 +55,8 @@ class MapFileTest {
 
         MapServerDetailsService mapServerDetailsService = new MapServerDetailsService(
             "https://example.com",
-            "http://mapserver/mapserver/{id}"
+            "http://mapserver/mapserver/{id}",
+            new CatalogueRecordIds("https://example.com", "https://catalogue.ceh.ac.uk")
         );
         val mapDataDefinition = new MapDataDefinition();
 

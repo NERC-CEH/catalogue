@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.ac.ceh.gateway.catalogue.document.CatalogueRecordIds;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
@@ -31,8 +32,8 @@ class JenaIndexGeminiDocumentGeneratorTest {
 
     @BeforeEach
     public void setup() {
-        String baseURI = "https://example.com";
-        generator = new JenaIndexGeminiDocumentGenerator(new JenaIndexMetadataDocumentGenerator(service), baseURI);
+        CatalogueRecordIds recordIds = new CatalogueRecordIds("https://example.com", "https://catalogue.ceh.ac.uk");
+        generator = new JenaIndexGeminiDocumentGenerator(new JenaIndexMetadataDocumentGenerator(service), recordIds);
     }
 
     @Test

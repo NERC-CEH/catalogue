@@ -26,11 +26,11 @@ import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 @ToString
 public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, List<Statement>> {
     private final JenaIndexMetadataDocumentGenerator generator;
-    private final String baseUri;
+    private final CatalogueRecordIds catalogueRecordIds;
 
-    public JenaIndexGeminiDocumentGenerator(JenaIndexMetadataDocumentGenerator generator, String baseUri) {
+    public JenaIndexGeminiDocumentGenerator(JenaIndexMetadataDocumentGenerator generator, CatalogueRecordIds catalogueRecordIds) {
         this.generator = generator;
-        this.baseUri = baseUri;
+        this.catalogueRecordIds = catalogueRecordIds;
         log.info("Creating");
     }
 
@@ -115,7 +115,7 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
     }
 
     private Resource requiredResource(String identifier) {
-        return CatalogueRecordIds.recordId(identifier, baseUri)
+        return catalogueRecordIds.recordId(identifier)
             .map(generator::resource)
             .orElseGet(() -> createResource(identifier));
     }

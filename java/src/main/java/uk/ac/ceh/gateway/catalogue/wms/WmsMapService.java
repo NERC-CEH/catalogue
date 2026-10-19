@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.wms;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -36,18 +35,18 @@ public class WmsMapService {
     private final BundledReaderService<MetadataDocument> documentReader;
     private final PermissionService permissionService;
     private final MapServerDetailsService mapServerDetailsService;
-    private final String baseUri;
+    private final CatalogueRecordIds catalogueRecordIds;
 
     public WmsMapService(
         BundledReaderService<MetadataDocument> documentReader,
         PermissionService permissionService,
         MapServerDetailsService mapServerDetailsService,
-        @Value("${documents.baseUri}") String baseUri
+        CatalogueRecordIds catalogueRecordIds
     ) {
         this.documentReader = documentReader;
         this.permissionService = permissionService;
         this.mapServerDetailsService = mapServerDetailsService;
-        this.baseUri = baseUri;
+        this.catalogueRecordIds = catalogueRecordIds;
     }
 
     public List<WmsMap> forRecord(GeminiDocument document) {
@@ -108,7 +107,7 @@ public class WmsMapService {
             return Collections.emptyList();
         }
         return service.getService().getCoupledResources().stream()
-            .filter(cr -> CatalogueRecordIds.recordId(cr.getIdentifier(), baseUri)
+            .filter(cr -> catalogueRecordIds.recordId(cr.getIdentifier())
                 .filter(id -> id.equals(datasetId))
                 .isPresent())
             .map(CoupledResource::getLayerName)

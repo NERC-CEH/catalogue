@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.wms;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.ac.ceh.gateway.catalogue.document.CatalogueRecordIds;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource;
@@ -28,7 +29,8 @@ public class MapServerDetailsServiceTest {
     public void init() {
         service = new MapServerDetailsService(
             "https://catalogue.ceh.ac.uk",
-            "http://mapserver/mapserver/{id}"
+            "http://mapserver/mapserver/{id}",
+            new CatalogueRecordIds("https://catalogue.ceh.ac.uk", "https://catalogue.ceh.ac.uk")
         );
     }
 
@@ -270,13 +272,14 @@ public class MapServerDetailsServiceTest {
     private Optional<String> localMapId(String url) {
         MapServerDetailsService devService = new MapServerDetailsService(
             "http://localhost:8080",
-            "http://mapserver/mapserver/{id}"
+            "http://mapserver/mapserver/{id}",
+            new CatalogueRecordIds("http://localhost:8080", "https://catalogue.ceh.ac.uk")
         );
         return devService.getLocalMapId(OnlineResource.builder().url(url).build());
     }
 
     @Test
-    public void localMapIdRecognisedForProductionHost() {
+    public void localMapIdRecognisedForCanonicalHost() {
         assertThat(
             localMapId("https://catalogue.ceh.ac.uk/maps/abc?service=WMS&request=GetCapabilities"),
             is(Optional.of("abc"))
