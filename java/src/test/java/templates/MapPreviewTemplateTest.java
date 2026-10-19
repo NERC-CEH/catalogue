@@ -162,4 +162,12 @@ class MapPreviewTemplateTest {
 
         verify(wmsMaps, times(1)).forRecord("rec-1", "A dataset", "dataset", List.of(), List.of(LINK));
     }
+
+    @Test
+    void mapWithoutTitleStillRenders() {
+        stub(new WmsMap("abc", null, CAPABILITIES,
+            "https://catalogue.ceh.ac.uk/maps/abc", "/maps/abc", List.of()));
+
+        assertThat(render(SECTION, document()), containsString("data-title=\"\""));
+    }
 }

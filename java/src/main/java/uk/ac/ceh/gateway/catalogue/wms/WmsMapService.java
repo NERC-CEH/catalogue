@@ -13,6 +13,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Service.CoupledResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import java.util.Optional;
 @Service
 public class WmsMapService {
     private static final String LAYER_PLACEHOLDER = "-";
+    private static final String DELETED = "Deleted";
 
     private final BundledReaderService<MetadataDocument> documentReader;
     private final PermissionService permissionService;
@@ -79,6 +81,9 @@ public class WmsMapService {
     }
 
     private List<WmsMap> mapsForLinkedService(Link link, String datasetId, CatalogueUser user) {
+        if (DELETED.equalsIgnoreCase(link.getAvailability())) {
+            return Collections.emptyList();
+        }
         String serviceId = lastSegment(link.getHref());
         if (serviceId.isEmpty()) {
             return Collections.emptyList();
@@ -90,8 +95,10 @@ public class WmsMapService {
             if (documentReader.readBundle(serviceId) instanceof GeminiDocument service) {
                 return mapsOf(service.getId(), service.getTitle(), service.getOnlineResources(), layerNamesFor(service, datasetId));
             }
+        } catch (PermissionDeniedException e) {
+            log.debug("Skipping WMS preview of service {}: {}", serviceId, e.toString());
         } catch (Exception e) {
-            log.warn("Skipping WMS preview of service {}", serviceId, e);
+            log.warn("Skipping WMS preview of service {}: {}", serviceId, e.toString());
         }
         return Collections.emptyList();
     }
@@ -116,12 +123,13 @@ public class WmsMapService {
         if (onlineResources == null) {
             return Collections.emptyList();
         }
+        String title = serviceTitle == null || serviceTitle.isBlank() ? serviceId : serviceTitle;
         List<WmsMap> maps = new ArrayList<>();
         for (OnlineResource resource : onlineResources) {
             Optional<String> mapId = mapServerDetailsService.getLocalMapId(resource);
             mapId.ifPresent(id -> maps.add(new WmsMap(
                 serviceId,
-                serviceTitle,
+                title,
                 resource.getUrl(),
                 withoutQuery(resource.getUrl()),
                 "/maps/" + id,

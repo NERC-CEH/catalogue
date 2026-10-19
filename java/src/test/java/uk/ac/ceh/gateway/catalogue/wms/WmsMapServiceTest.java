@@ -1,11 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.wms;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
@@ -16,6 +21,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Service.CoupledResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 
 import java.util.List;
@@ -25,6 +31,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
@@ -41,9 +48,16 @@ class WmsMapServiceTest {
     @Mock private PermissionService permissionService;
     private final CatalogueUser user = new CatalogueUser("someone", "someone@example.com");
     private WmsMapService service;
+    private final Logger logger = (Logger) LoggerFactory.getLogger(WmsMapService.class);
+    private final ListAppender<ILoggingEvent> logs = new ListAppender<>();
+    private Level loggerLevel;
 
     @BeforeEach
     void setUp() {
+        loggerLevel = logger.getLevel();
+        logger.setLevel(Level.DEBUG);
+        logs.start();
+        logger.addAppender(logs);
         SecurityContextHolder.getContext()
             .setAuthentication(new TestingAuthenticationToken(user, "n/a"));
         service = new WmsMapService(
@@ -57,6 +71,8 @@ class WmsMapServiceTest {
     @AfterEach
     void tearDown() {
         SecurityContextHolder.clearContext();
+        logger.detachAppender(logs);
+        logger.setLevel(loggerLevel);
     }
 
     private static OnlineResource wms(String url) {
@@ -194,5 +210,65 @@ class WmsMapServiceTest {
 
         assertThat(service.forRecord(document), is(empty()));
         verifyNoInteractions(reader, permissionService);
+    }
+
+    @Test
+    void serviceRecordWithoutTitleIsTitledByItsId() {
+        GeminiDocument document = serviceRecord("svc1", CAPABILITIES);
+        document.setTitle(null);
+
+        assertThat(service.forRecord(document).get(0).getTitle(), is("svc1"));
+    }
+
+    @Test
+    void linkedServiceWithoutTitleIsTitledByItsId() throws Exception {
+        GeminiDocument svc = serviceRecord("svc1", CAPABILITIES);
+        svc.setTitle(null);
+        servicePermitted(svc);
+
+        assertThat(service.forRecord(dataset()).get(0).getTitle(), is("svc1"));
+    }
+
+    @Test
+    void linkedServiceWithBlankTitleIsTitledByItsId() throws Exception {
+        GeminiDocument svc = serviceRecord("svc1", CAPABILITIES);
+        svc.setTitle("  ");
+        servicePermitted(svc);
+
+        assertThat(service.forRecord(dataset()).get(0).getTitle(), is("svc1"));
+    }
+
+    @Test
+    void deletedServiceIsSkippedBeforeAnyCheckOrRead() {
+        GeminiDocument document = dataset();
+        document.setRelIsRequiredBy(List.of(
+            Link.builder().href("https://catalogue.ceh.ac.uk/id/svc1").availability("deleted").build()
+        ));
+
+        assertThat(service.forRecord(document), is(empty()));
+        verifyNoInteractions(reader, permissionService);
+    }
+
+    @Test
+    void forbiddenReadIsLoggedAtDebug() throws Exception {
+        when(permissionService.toAccess(user, "svc1", "VIEW")).thenReturn(true);
+        when(reader.readBundle("svc1")).thenThrow(new PermissionDeniedException("no"));
+
+        assertThat(service.forRecord(dataset()), is(empty()));
+        assertThat(logs.list, hasSize(1));
+        assertThat(logs.list.get(0).getLevel(), is(Level.DEBUG));
+    }
+
+    @Test
+    void unreadableServiceIsLoggedAtWarnWithoutStackTrace() throws Exception {
+        when(permissionService.toAccess(user, "svc1", "VIEW")).thenReturn(true);
+        when(reader.readBundle("svc1")).thenThrow(new IllegalStateException("gone"));
+
+        assertThat(service.forRecord(dataset()), is(empty()));
+        assertThat(logs.list, hasSize(1));
+        ILoggingEvent event = logs.list.get(0);
+        assertThat(event.getLevel(), is(Level.WARN));
+        assertThat(event.getThrowableProxy(), is(nullValue()));
+        assertThat(event.getFormattedMessage(), is("Skipping WMS preview of service svc1: java.lang.IllegalStateException: gone"));
     }
 }

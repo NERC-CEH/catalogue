@@ -7,7 +7,7 @@
         <span class="wms-extent" data-west="${extent.westBoundLongitude?c}" data-east="${extent.eastBoundLongitude?c}" data-south="${extent.southBoundLatitude?c}" data-north="${extent.northBoundLatitude?c}"></span>
       </#list>
       <#list wmsMapList as m>
-        <div class="wms-service" data-title="${m.title}" data-local-path="${m.localPath}" data-public-url="${m.publicMapUrl}" data-capabilities-url="${m.capabilitiesUrl}">
+        <div class="wms-service" data-title="${m.title!}" data-local-path="${m.localPath}" data-public-url="${m.publicMapUrl}" data-capabilities-url="${m.capabilitiesUrl}">
           <#list m.layerNames as layerName>
             <span class="wms-layer-name">${layerName}</span>
           </#list>
