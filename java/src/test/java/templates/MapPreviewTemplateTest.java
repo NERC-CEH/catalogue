@@ -101,6 +101,7 @@ class MapPreviewTemplateTest {
         val actual = render(SECTION, document());
 
         assertThat(actual, containsString("id=\"segment-map\""));
+        assertThat(actual, containsString("<h2>Data Preview</h2>"));
         assertThat(actual, containsString("data-local-path=\"/maps/abc\""));
         assertThat(actual, containsString("data-public-url=\"https://catalogue.ceh.ac.uk/maps/abc\""));
         assertThat(actual, containsString(
@@ -149,7 +150,7 @@ class MapPreviewTemplateTest {
     @Test
     void tocLinksToMapOnlyWhenThereIsOne() {
         stub(map());
-        assertThat(render(TOC, document()), containsString("href=\"#segment-map\">Map</a>"));
+        assertThat(render(TOC, document()), containsString("href=\"#segment-map\">Data Preview</a>"));
 
         stub();
         assertThat(render(TOC, document()), not(containsString("#segment-map")));

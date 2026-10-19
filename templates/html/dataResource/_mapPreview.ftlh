@@ -1,7 +1,7 @@
 <#if wmsMapList?has_content>
   <#assign wmsPrimary = wmsMapList?first>
   <div id="segment-map">
-    <h2>Map</h2>
+    <h2>Data Preview</h2>
     <div class="wms-map-preview">
       <#list boundingBoxes![] as extent>
         <span class="wms-extent" data-west="${extent.westBoundLongitude?c}" data-east="${extent.eastBoundLongitude?c}" data-south="${extent.southBoundLatitude?c}" data-north="${extent.northBoundLatitude?c}"></span>
