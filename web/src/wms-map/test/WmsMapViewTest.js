@@ -95,10 +95,11 @@ describe('WmsMapView', () => {
     expect(radioLabels()).toEqual(['Woodland', 'Conifer', 'Woodland', 'Conifer'])
   })
 
-  it('leaves out a service whose capabilities fail when another has layers', async () => {
+  it('leaves out a service whose capabilities fail, without headings for the one left', async () => {
     await start(preview({ services: [service({ title: 'First' }), service({ id: 'def', title: 'Second' })] }), { status: 500, responseText: '' })
 
-    expect(headings()).toEqual(['Second'])
+    expect(headings()).toEqual([])
+    expect(radioLabels()).toEqual(['Woodland', 'Conifer'])
     expect(view.wmsLayer._url).toBe('/maps/def')
     expect(view.$('.wms-map-unavailable').hasClass('d-none')).toBe(true)
   })
@@ -186,6 +187,19 @@ describe('WmsMapView', () => {
     expect(view.wmsLayer.wmsParams.layers).toBe('LC.A')
     expect(getMap()).toBe('')
     expect(getMapLabel()).toBe('GetMap for this view')
+  })
+
+  it('shows the map is unavailable if drawing it fails', async () => {
+    const createMap = vi.spyOn(WmsMapView.prototype, 'createMap').mockImplementation(() => { throw new Error('boom') })
+    try {
+      await expect(start(preview())).resolves.toBeUndefined()
+
+      expect(view.$('.wms-map-unavailable').hasClass('d-none')).toBe(false)
+      expect(view.$('.wms-map').hasClass('d-none')).toBe(true)
+      expect(view.$('.wms-layers').hasClass('d-none')).toBe(true)
+    } finally {
+      createMap.mockRestore()
+    }
   })
 
   it('leaves GetMap empty while the map has no size', async () => {

@@ -21,7 +21,8 @@ const unionOf = boundsList => boundsList.reduce(
  * The Map section of a record page: the record's own WMS on a Leaflet map, a picker for its layers, the
  * layer's legend, and the GetCapabilities and GetMap addresses to use it in a GIS. The browser asks
  * only for same-origin /maps/{id}; the copyable addresses use the record's public host.
- * `ready` resolves once the capabilities have been fetched and the map (or its unavailable notice) shown.
+ * `ready` resolves once the capabilities have been fetched and the map (or its unavailable notice) shown;
+ * it never rejects.
  */
 export default Backbone.View.extend({
   events: {
@@ -45,6 +46,7 @@ export default Backbone.View.extend({
 
     this.ready = Promise.all(this.services.map(service => this.fetchLayers(service)))
       .then(() => this.render())
+      .catch(() => this.showUnavailable())
   },
 
   // A service whose capabilities fail to load or parse offers no layers
@@ -57,8 +59,7 @@ export default Backbone.View.extend({
   render () {
     this.choices = this.services.flatMap(service => service.layers.map(layer => ({ service, layer })))
     if (!this.choices.length) {
-      this.$('.wms-map-unavailable').removeClass('d-none')
-      this.$('.wms-map, .wms-layers').addClass('d-none')
+      this.showUnavailable()
       return this
     }
     this.renderPicker()
@@ -67,9 +68,14 @@ export default Backbone.View.extend({
     return this
   },
 
+  showUnavailable () {
+    this.$('.wms-map-unavailable').removeClass('d-none')
+    this.$('.wms-map, .wms-layers').addClass('d-none')
+  },
+
   renderPicker () {
     const $layers = this.$('.wms-layers').empty()
-    const grouped = this.services.length > 1
+    const grouped = this.services.filter(service => service.layers.length).length > 1
     this.choices.forEach(({ service, layer }, i) => {
       if (grouped && service.layers[0] === layer) {
         $layers.append($('<h3 class="h6 wms-service-title"></h3>').text(service.title))
