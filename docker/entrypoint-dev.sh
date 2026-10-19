@@ -16,6 +16,12 @@ if [ "$(id -u)" = 0 ]; then
   if [ "$(stat -c '%u' /var/ceh-catalogue/metrics-db)" != "1000" ]; then
     chown -R gradle:gradle /var/ceh-catalogue/metrics-db
   fi
+  # mapserver bind-mounts ./mapfiles too; if it started first, Docker created the
+  # directory as root, which the catalogue (gradle) could then not write its mapfiles into.
+  mkdir -p /app/mapfiles
+  if [ "$(stat -c '%u' /app/mapfiles)" != "1000" ]; then
+    chown -R gradle:gradle /app/mapfiles
+  fi
   # Repair any root-owned Gradle build output left in the bind-mounted project by an
   # earlier root-context invocation (e.g. `docker compose run --entrypoint`), so that
   # host-side Gradle can overwrite it. `find` only touches mis-owned entries, so this is
