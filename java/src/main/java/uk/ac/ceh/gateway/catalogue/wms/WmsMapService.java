@@ -48,40 +48,32 @@ public class WmsMapService {
         this.baseUri = baseUri;
     }
 
-    /**
-     * FreeMarker cannot hand a template its own data-model root to a Java method (it is
-     * a merged hash view, not the bean), so templates look the record up by id. The read is
-     * cache-backed, and anything unreadable or not a Gemini record has no maps.
-     */
-    public List<WmsMap> forRecordId(String recordId) {
-        if (recordId == null || recordId.isBlank()) {
-            return Collections.emptyList();
-        }
-        try {
-            if (documentReader.readBundle(recordId) instanceof GeminiDocument document) {
-                return forRecord(document);
-            }
-        } catch (Exception e) {
-            log.warn("Skipping WMS preview of record {}", recordId, e);
-        }
-        return Collections.emptyList();
-    }
-
     public List<WmsMap> forRecord(GeminiDocument document) {
         if (document == null) {
             return Collections.emptyList();
         }
-        if ("service".equalsIgnoreCase(document.getType())) {
-            return mapsOf(document, Collections.emptyList());
+        return forRecord(document.getId(), document.getTitle(), document.getType(),
+            document.getOnlineResources(), document.getRelIsRequiredBy());
+    }
+
+    /**
+     * Takes the record's parts rather than the document because FreeMarker cannot pass its
+     * data-model root to a Java method; templates pass the (Jena-populated) page values.
+     */
+    public List<WmsMap> forRecord(
+        String id, String title, String resourceType,
+        List<OnlineResource> onlineResources, List<Link> relIsRequiredBy
+    ) {
+        if ("service".equalsIgnoreCase(resourceType)) {
+            return mapsOf(id, title, onlineResources, Collections.emptyList());
         }
-        List<Link> services = document.getRelIsRequiredBy();
-        if (services == null || services.isEmpty()) {
+        if (relIsRequiredBy == null || relIsRequiredBy.isEmpty()) {
             return Collections.emptyList();
         }
         CatalogueUser user = currentUser();
         List<WmsMap> maps = new ArrayList<>();
-        for (Link link : services) {
-            maps.addAll(mapsForLinkedService(link, document.getId(), user));
+        for (Link link : relIsRequiredBy) {
+            maps.addAll(mapsForLinkedService(link, id, user));
         }
         return maps;
     }
@@ -96,7 +88,7 @@ public class WmsMapService {
                 return Collections.emptyList();
             }
             if (documentReader.readBundle(serviceId) instanceof GeminiDocument service) {
-                return mapsOf(service, layerNamesFor(service, datasetId));
+                return mapsOf(service.getId(), service.getTitle(), service.getOnlineResources(), layerNamesFor(service, datasetId));
             }
         } catch (Exception e) {
             log.warn("Skipping WMS preview of service {}", serviceId, e);
@@ -120,16 +112,16 @@ public class WmsMapService {
             .toList();
     }
 
-    private List<WmsMap> mapsOf(GeminiDocument service, List<String> layerNames) {
-        if (service.getOnlineResources() == null) {
+    private List<WmsMap> mapsOf(String serviceId, String serviceTitle, List<OnlineResource> onlineResources, List<String> layerNames) {
+        if (onlineResources == null) {
             return Collections.emptyList();
         }
         List<WmsMap> maps = new ArrayList<>();
-        for (OnlineResource resource : service.getOnlineResources()) {
+        for (OnlineResource resource : onlineResources) {
             Optional<String> mapId = mapServerDetailsService.getLocalMapId(resource);
             mapId.ifPresent(id -> maps.add(new WmsMap(
-                service.getId(),
-                service.getTitle(),
+                serviceId,
+                serviceTitle,
                 resource.getUrl(),
                 withoutQuery(resource.getUrl()),
                 "/maps/" + id,

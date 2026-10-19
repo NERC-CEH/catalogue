@@ -1,4 +1,4 @@
-<#assign wmsMapList = wmsMaps.forRecordId(id)>
+<#assign wmsMapList = wmsMaps.forRecord(id, title, resourceType.value, onlineResources![], relIsRequiredBy![])>
 
 <#if isLinkedDoc>
   <#include "_linked.ftlh">

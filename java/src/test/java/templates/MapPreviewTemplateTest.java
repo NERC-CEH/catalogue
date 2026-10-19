@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.wms.WmsMap;
 import uk.ac.ceh.gateway.catalogue.wms.WmsMapService;
@@ -22,7 +23,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,6 +40,8 @@ class MapPreviewTemplateTest {
     private static final String CAPABILITIES =
         "https://catalogue.ceh.ac.uk/maps/abc?service=WMS&request=GetCapabilities";
 
+    private static final Link LINK = Link.builder().href("https://catalogue.ceh.ac.uk/id/svc1").build();
+
     Configuration configuration;
     WmsMapService wmsMaps;
 
@@ -47,11 +50,11 @@ class MapPreviewTemplateTest {
     void init() {
         val strings = new StringTemplateLoader();
         strings.putTemplate(SECTION, """
-            <#assign wmsMapList = wmsMaps.forRecordId(id)>
+            <#assign wmsMapList = wmsMaps.forRecord(id, title, resourceType.value, onlineResources![], relIsRequiredBy![])>
             <#include "html/dataResource/_mapPreview.ftlh">
             """);
         strings.putTemplate(TOC, """
-            <#assign wmsMapList = wmsMaps.forRecordId(id)>
+            <#assign wmsMapList = wmsMaps.forRecord(id, title, resourceType.value, onlineResources![], relIsRequiredBy![])>
             <#include "html/dataResource/_toc.ftlh">
             """);
         configuration = new Configuration(Configuration.VERSION_2_3_33);
@@ -69,7 +72,10 @@ class MapPreviewTemplateTest {
     }
 
     private GeminiDocument document() {
-        return (GeminiDocument) new GeminiDocument().setType("dataset").setId("rec-1");
+        GeminiDocument gemini = (GeminiDocument) new GeminiDocument().setType("dataset").setId("rec-1");
+        gemini.setTitle("A dataset");
+        gemini.setRelIsRequiredBy(List.of(LINK));
+        return gemini;
     }
 
     private WmsMap map(String... layers) {
@@ -78,7 +84,7 @@ class MapPreviewTemplateTest {
     }
 
     private void stub(WmsMap... maps) {
-        when(wmsMaps.forRecordId(anyString())).thenReturn(List.of(maps));
+        when(wmsMaps.forRecord(any(), any(), any(), any(), any())).thenReturn(List.of(maps));
     }
 
     @Test
@@ -149,11 +155,11 @@ class MapPreviewTemplateTest {
     }
 
     @Test
-    void lookupHappensOncePerAssign() {
+    void lookupPassesThePageValuesOnce() {
         stub(map());
 
         render(SECTION, document());
 
-        verify(wmsMaps, times(1)).forRecordId("rec-1");
+        verify(wmsMaps, times(1)).forRecord("rec-1", "A dataset", "dataset", List.of(), List.of(LINK));
     }
 }
