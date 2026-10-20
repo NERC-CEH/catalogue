@@ -67,7 +67,8 @@ class PreviewContentReaderCacheTest {
             PreviewFileResolver resolver, CsvSampler csvSampler, DocumentConverter documentConverter
         ) {
             DataPreviewProperties properties = new DataPreviewProperties(
-                true, null, null, 10, 50, 262144, 20971520, 200000, Duration.ofSeconds(20));
+                true, null, null, 10, 50, 262144, 20971520, 200000, Duration.ofSeconds(20),
+                Duration.ofSeconds(3), Duration.ofSeconds(10));
             return new PreviewContentReader(resolver, csvSampler, documentConverter, properties);
         }
     }

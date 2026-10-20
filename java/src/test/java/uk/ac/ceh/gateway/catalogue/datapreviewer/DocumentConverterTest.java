@@ -35,7 +35,8 @@ class DocumentConverterTest {
 
     private static DataPreviewProperties properties(long maxDocumentBytes, int maxDocumentChars, Duration timeout) {
         return new DataPreviewProperties(
-            true, null, null, 10, 50, 262144, maxDocumentBytes, maxDocumentChars, timeout);
+            true, null, null, 10, 50, 262144, maxDocumentBytes, maxDocumentChars, timeout,
+            Duration.ofSeconds(3), Duration.ofSeconds(10));
     }
 
     private final List<DocumentConverter> converters = new ArrayList<>();

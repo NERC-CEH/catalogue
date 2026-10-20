@@ -50,7 +50,7 @@ class DataPreviewOfferTest {
         when(properties.getRegexOrderManDownload()).thenReturn("http(s?)://catalogue\\.ceh\\.ac\\.uk/download\\?fileIdentifier=.*");
         when(properties.getRegexOrder()).thenReturn("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*");
         var dataPreview = new DataPreviewProperties(enabled, null, null, 10, 50, 262144, 20971520L, 200000,
-            Duration.ofSeconds(20));
+            Duration.ofSeconds(20), Duration.ofSeconds(3), Duration.ofSeconds(10));
         return new DataPreviewOffer(dataPreview, repository, openDataAccess,
             new DownloadOrderDetailsService(properties));
     }

@@ -8,7 +8,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.ac.ceh.gateway.catalogue.datapreviewer.PreviewManifest.PreviewFile;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.HubbubResponse;
@@ -19,7 +18,6 @@ import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
  * Builds a record's {@link PreviewManifest} from Hubbub. Makes no access check: callers go through
  * {@link DataPreviewService}, which checks access before this cache is consulted.
  */
-@Component
 public class PreviewListing {
 
     public static final String DATA_PREVIEW_MANIFEST_CACHE = "data-preview-manifest";

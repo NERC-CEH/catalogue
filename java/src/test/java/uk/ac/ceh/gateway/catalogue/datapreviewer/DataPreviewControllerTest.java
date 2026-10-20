@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.client.ResourceAccessException;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 import uk.ac.ceh.gateway.catalogue.datapreviewer.DocumentPreview.Kind;
 
@@ -130,6 +132,18 @@ class DataPreviewControllerTest extends AbstractMvcTest {
             .andExpect(content().string(not(containsString("hubbub"))));
         mvc.perform(get(BASE + "/csv").param("path", "x.csv"))
             .andExpect(status().isInternalServerError())
+            .andExpect(content().string(not(containsString("hubbub"))));
+    }
+
+    @Test
+    void hubbubTimeoutIsGenericFailure() throws Exception {
+        when(service.manifest("abc")).thenThrow(new ResourceAccessException(
+            "I/O error on GET request for \"https://hubbub.ceh.ac.uk/v7/abc/eidchub\": Read timed out",
+            new SocketTimeoutException("Read timed out")));
+
+        mvc.perform(get(BASE))
+            .andExpect(status().isInternalServerError())
+            .andExpect(jsonPath("$.error", is("Preview unavailable")))
             .andExpect(content().string(not(containsString("hubbub"))));
     }
 }

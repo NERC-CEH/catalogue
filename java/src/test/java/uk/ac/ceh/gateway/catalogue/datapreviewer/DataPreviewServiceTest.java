@@ -66,7 +66,8 @@ class DataPreviewServiceTest {
         uploadService = mock(UploadService.class);
         documentRepository = mock(DocumentRepository.class);
         DataPreviewProperties properties = new DataPreviewProperties(
-            true, tmp, tmp, 10, 50, 262144, 20971520, 200000, Duration.ofSeconds(20));
+            true, tmp, tmp, 10, 50, 262144, 20971520, 200000, Duration.ofSeconds(20),
+            Duration.ofSeconds(3), Duration.ofSeconds(10));
         CsvSampler sampler = new CsvSampler();
         documentConverter = new DocumentConverter(sampler, properties);
         contentReader = spy(new PreviewContentReader(new PreviewFileResolver(), sampler, documentConverter, properties));
@@ -322,7 +323,8 @@ class DataPreviewServiceTest {
         DocumentConverter busy = mock(DocumentConverter.class);
         when(busy.convert(any())).thenThrow(new PreviewBusyException());
         DataPreviewProperties properties = new DataPreviewProperties(
-            true, tmp, tmp, 10, 50, 262144, 20971520, 200000, Duration.ofSeconds(20));
+            true, tmp, tmp, 10, 50, 262144, 20971520, 200000, Duration.ofSeconds(20),
+            Duration.ofSeconds(3), Duration.ofSeconds(10));
         Files.createDirectories(tmp.resolve(ID));
         Files.writeString(tmp.resolve(ID).resolve("notes.txt"), "Notes");
         DataPreviewService busyService = new DataPreviewService(documentRepository, new OpenDataAccess(),
