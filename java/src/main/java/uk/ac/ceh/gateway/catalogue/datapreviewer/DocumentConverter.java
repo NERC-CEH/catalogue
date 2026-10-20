@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.datapreviewer;
 
+import jakarta.annotation.PreDestroy;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,14 +13,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tika.exception.TikaException;
 import org.apache.tika.exception.WriteLimitReachedException;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
@@ -28,32 +28,71 @@ import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.xml.sax.SAXException;
 
 /**
  * Turns a supporting document into something the documents pane can show: text for RTF, Word,
  * PDF and plain text, a table for CSV, or a reason it cannot be shown.
+ *
+ * <p>Tika conversions run on a shared pool of {@value #WORKERS} workers. PDFBox and POI ignore
+ * interruption, so a conversion that times out keeps its worker until the parse finishes; the pool
+ * size is therefore the bound on CPU and memory spent converting. When every worker is busy,
+ * {@link #convert} throws {@link PreviewBusyException} rather than queueing.
  */
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class DocumentConverter {
+
+    static final int WORKERS = 2;
 
     private static final Set<String> TIKA_EXTENSIONS = Set.of("rtf", "doc", "docx", "pdf");
     private static final Parser PARSER = new AutoDetectParser();
-    private static final ThreadFactory THREADS = Thread.ofPlatform().name("document-converter").daemon().factory();
 
     // Tika's RTF parser drops table structure: every \cell ends a paragraph, so a dictionary table
     // comes out one cell per line and the columns can no longer be told apart. Rewriting \cell to
     // \tab and \row to \par before parsing puts each row on one line with tab-separated cells.
     // An escaped backslash (\\) is matched first so that literal text such as "\\cell" is left alone.
-    private static final Pattern RTF_TABLE_WORDS = Pattern.compile("\\\\\\\\|\\\\(cell|row)(?![a-zA-Z])-?\\d* ?");
+    private static final Pattern RTF_TABLE_WORDS = Pattern.compile("\\\\\\\\|\\\\(cell|row)(?![a-zA-Z])(?:-?\\d+)?( ?)");
     private static final Pattern TRAILING_TABS = Pattern.compile("\\t+$", Pattern.MULTILINE);
+
+    /** Extracts the text of a document Tika can read; replaceable in tests. */
+    @FunctionalInterface
+    interface Extractor {
+        DocumentPreview extract(Path file, boolean rtf) throws Exception;
+    }
 
     private final CsvSampler csvSampler;
     private final DataPreviewProperties properties;
+    private final Extractor extractor;
+    // Permits are taken before submitting and given back when the parse itself ends, so a parse that
+    // outlives its timeout still counts against the bound. The pool's queue can therefore hold at
+    // most the few tasks between a permit being taken and a worker picking them up.
+    private final Semaphore permits = new Semaphore(WORKERS);
+    private final ExecutorService executor = Executors.newFixedThreadPool(
+        WORKERS, Thread.ofPlatform().name("document-converter-", 1).daemon().factory());
 
+    @Autowired
+    public DocumentConverter(CsvSampler csvSampler, DataPreviewProperties properties) {
+        this.csvSampler = csvSampler;
+        this.properties = properties;
+        this.extractor = this::extract;
+    }
+
+    DocumentConverter(CsvSampler csvSampler, DataPreviewProperties properties, Extractor extractor) {
+        this.csvSampler = csvSampler;
+        this.properties = properties;
+        this.extractor = extractor;
+    }
+
+    @PreDestroy
+    void shutdown() {
+        executor.shutdownNow();
+    }
+
+    /**
+     * @throws PreviewBusyException when every conversion worker is busy; try again later
+     */
     public DocumentPreview convert(Path file) {
         String extension = extension(file);
         try {
@@ -73,6 +112,8 @@ public class DocumentConverter {
                 return truncate(CsvSampler.decode(Files.readAllBytes(file)));
             }
             return extractWithTimeout(file, extension.equals("rtf"));
+        } catch (PreviewBusyException e) {
+            throw e;
         } catch (IOException | RuntimeException e) {
             log.warn("Could not convert supporting document {}: {}", file, e.toString());
             return DocumentPreview.notPreviewable();
@@ -90,37 +131,59 @@ public class DocumentConverter {
     }
 
     private DocumentPreview extractWithTimeout(Path file, boolean rtf) {
-        // One executor per conversion, so a parse that ignores interruption cannot hold up the next.
-        ExecutorService executor = Executors.newSingleThreadExecutor(THREADS);
-        Future<DocumentPreview> future = executor.submit(() -> extract(file, rtf));
+        if (!permits.tryAcquire()) {
+            throw new PreviewBusyException();
+        }
+        // Whoever claims the task first gives the permit back: the worker when it starts, or this
+        // thread when the timeout cancels a task that never started.
+        AtomicBoolean claimed = new AtomicBoolean();
+        Future<DocumentPreview> future;
+        try {
+            future = executor.submit(() -> {
+                if (!claimed.compareAndSet(false, true)) {
+                    return null;
+                }
+                try {
+                    return extractor.extract(file, rtf);
+                } finally {
+                    permits.release();
+                }
+            });
+        } catch (RuntimeException e) {
+            permits.release();
+            throw e;
+        }
         try {
             return future.get(properties.conversionTimeout().toNanos(), TimeUnit.NANOSECONDS);
         } catch (TimeoutException e) {
-            future.cancel(true);
+            cancel(future, claimed);
             log.warn("Converting supporting document {} took longer than {}", file, properties.conversionTimeout());
             return DocumentPreview.notPreviewable();
         } catch (ExecutionException e) {
             log.warn("Could not convert supporting document {}: {}", file, e.getCause().toString());
             return DocumentPreview.notPreviewable();
         } catch (InterruptedException e) {
-            future.cancel(true);
+            cancel(future, claimed);
             Thread.currentThread().interrupt();
             return DocumentPreview.notPreviewable();
-        } finally {
-            executor.shutdownNow();
         }
     }
 
-    private DocumentPreview extract(Path file, boolean rtf) throws IOException, SAXException, TikaException {
+    private void cancel(Future<DocumentPreview> future, AtomicBoolean claimed) {
+        future.cancel(true);
+        if (claimed.compareAndSet(false, true)) {
+            permits.release();
+        }
+    }
+
+    private DocumentPreview extract(Path file, boolean rtf) throws Exception {
         Metadata metadata = new Metadata();
         metadata.set(TikaCoreProperties.RESOURCE_NAME_KEY, file.getFileName().toString());
         BodyContentHandler handler = new BodyContentHandler(properties.maxDocumentChars());
         boolean truncated = false;
-        try (InputStream in = rtf
-            ? TikaInputStream.get(new ByteArrayInputStream(rewriteRtfTables(Files.readAllBytes(file))))
-            : TikaInputStream.get(file, metadata)) {
+        try (InputStream in = rtf ? rtfWithTables(file) : TikaInputStream.get(file, metadata)) {
             PARSER.parse(in, handler, metadata, new ParseContext());
-        } catch (IOException | SAXException | TikaException e) {
+        } catch (Exception e) {
             if (!WriteLimitReachedException.isWriteLimitReached(e)) {
                 throw e;
             }
@@ -134,17 +197,64 @@ public class DocumentConverter {
         return DocumentPreview.text(text, truncated);
     }
 
-    private static byte[] rewriteRtfTables(byte[] rtf) {
-        // RTF is 7-bit text with escapes, so a Latin-1 round trip leaves every other byte unchanged.
-        String source = new String(rtf, StandardCharsets.ISO_8859_1);
-        String rewritten = RTF_TABLE_WORDS.matcher(source).replaceAll(match -> {
-            String word = match.group();
-            if (word.equals("\\\\")) {
-                return Matcher.quoteReplacement(word);
+    private static InputStream rtfWithTables(Path file) throws IOException {
+        byte[] rtf = Files.readAllBytes(file);
+        return TikaInputStream.get(new ByteArrayInputStream(rtf, 0, rewriteRtfTables(rtf)));
+    }
+
+    /**
+     * Rewrites the table control words in place, so the file is held only once, and returns the new
+     * length. A replacement is never longer than what it replaces: {@code \cell} becomes
+     * {@code \tab}, {@code \row} becomes {@code \par}, each keeping its delimiting space.
+     */
+    private static int rewriteRtfTables(byte[] rtf) {
+        // The matcher only ever reads ahead of the write position, so writing behind it is safe.
+        Matcher m = RTF_TABLE_WORDS.matcher(new Latin1Chars(rtf));
+        int read = 0;
+        int write = 0;
+        while (m.find()) {
+            if (m.group(1) == null) {
+                continue;
             }
-            return Matcher.quoteReplacement(word.startsWith("\\row") ? "\\par " : "\\tab ");
-        });
-        return rewritten.getBytes(StandardCharsets.ISO_8859_1);
+            int length = m.start() - read;
+            System.arraycopy(rtf, read, rtf, write, length);
+            write += length;
+            String replacement = (m.group(1).equals("row") ? "\\par" : "\\tab") + m.group(2);
+            for (int i = 0; i < replacement.length(); i++) {
+                rtf[write++] = (byte) replacement.charAt(i);
+            }
+            read = m.end();
+        }
+        System.arraycopy(rtf, read, rtf, write, rtf.length - read);
+        return write + rtf.length - read;
+    }
+
+    /** RTF bytes seen as characters without copying them; RTF is 7-bit text with escapes. */
+    private record Latin1Chars(byte[] bytes, int start, int end) implements CharSequence {
+
+        Latin1Chars(byte[] bytes) {
+            this(bytes, 0, bytes.length);
+        }
+
+        @Override
+        public int length() {
+            return end - start;
+        }
+
+        @Override
+        public char charAt(int index) {
+            return (char) (bytes[start + index] & 0xff);
+        }
+
+        @Override
+        public CharSequence subSequence(int from, int to) {
+            return new Latin1Chars(bytes, start + from, start + to);
+        }
+
+        @Override
+        public String toString() {
+            return new String(bytes, start, end - start, StandardCharsets.ISO_8859_1);
+        }
     }
 
     private static String extension(Path file) {

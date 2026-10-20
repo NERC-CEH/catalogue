@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -13,8 +14,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -30,11 +38,42 @@ class DocumentConverterTest {
             true, null, null, 10, 50, 262144, maxDocumentBytes, maxDocumentChars, timeout);
     }
 
-    private static DocumentConverter converter(long maxDocumentBytes, int maxDocumentChars, Duration timeout) {
-        return new DocumentConverter(new CsvSampler(), properties(maxDocumentBytes, maxDocumentChars, timeout));
+    private final List<DocumentConverter> converters = new ArrayList<>();
+
+    @AfterEach
+    void shutDownConverters() {
+        converters.forEach(DocumentConverter::shutdown);
     }
 
-    private static DocumentConverter converter() {
+    private DocumentConverter converter(long maxDocumentBytes, int maxDocumentChars, Duration timeout) {
+        return track(new DocumentConverter(new CsvSampler(), properties(maxDocumentBytes, maxDocumentChars, timeout)));
+    }
+
+    private DocumentConverter converter(Duration timeout, DocumentConverter.Extractor extractor) {
+        return track(new DocumentConverter(new CsvSampler(), properties(20971520, 200000, timeout), extractor));
+    }
+
+    private DocumentConverter track(DocumentConverter converter) {
+        converters.add(converter);
+        return converter;
+    }
+
+    // Stands in for a PDFBox or POI parse, which carries on regardless of interruption.
+    private static DocumentConverter.Extractor blockingUntil(CountDownLatch started, CountDownLatch release) {
+        return (file, rtf) -> {
+            started.countDown();
+            while (true) {
+                try {
+                    release.await();
+                    return DocumentPreview.text("released", false);
+                } catch (InterruptedException ignored) {
+                    // keep going, as the real parsers do
+                }
+            }
+        };
+    }
+
+    private DocumentConverter converter() {
         return converter(20971520, 200000, Duration.ofSeconds(20));
     }
 
@@ -168,5 +207,57 @@ class DocumentConverterTest {
         DocumentPreview preview = converter().convert(pdf);
 
         assertThat(preview.kind(), is(DocumentPreview.Kind.NOT_PREVIEWABLE));
+    }
+
+    @Test
+    void rejectsWhenAllWorkersBusy() throws Exception {
+        CountDownLatch started = new CountDownLatch(DocumentConverter.WORKERS);
+        CountDownLatch release = new CountDownLatch(1);
+        DocumentConverter converter = converter(Duration.ofSeconds(20), blockingUntil(started, release));
+        Path rtf = fixture("dictionary.rtf");
+        List<Future<DocumentPreview>> running = new ArrayList<>();
+        try (ExecutorService callers = Executors.newFixedThreadPool(DocumentConverter.WORKERS)) {
+            try {
+                for (int i = 0; i < DocumentConverter.WORKERS; i++) {
+                    running.add(callers.submit(() -> converter.convert(rtf)));
+                }
+                assertThat(started.await(5, TimeUnit.SECONDS), is(true));
+
+                assertThrows(PreviewBusyException.class, () -> converter.convert(rtf));
+            } finally {
+                release.countDown();
+            }
+            for (Future<DocumentPreview> conversion : running) {
+                assertThat(conversion.get(5, TimeUnit.SECONDS).text(), is("released"));
+            }
+        }
+    }
+
+    @Test
+    void timedOutParseKeepsItsWorkerUntilItFinishes() throws Exception {
+        CountDownLatch started = new CountDownLatch(DocumentConverter.WORKERS);
+        CountDownLatch release = new CountDownLatch(1);
+        DocumentConverter converter = converter(Duration.ofMillis(200), blockingUntil(started, release));
+        Path rtf = fixture("dictionary.rtf");
+        try {
+            for (int i = 0; i < DocumentConverter.WORKERS; i++) {
+                assertThat(converter.convert(rtf).kind(), is(DocumentPreview.Kind.NOT_PREVIEWABLE));
+            }
+            assertThat(started.await(5, TimeUnit.SECONDS), is(true));
+
+            assertThrows(PreviewBusyException.class, () -> converter.convert(rtf));
+        } finally {
+            release.countDown();
+        }
+    }
+
+    @Test
+    void freesWorkerAfterConversion() throws Exception {
+        DocumentConverter converter = converter();
+        Path rtf = fixture("dictionary.rtf");
+
+        for (int i = 0; i < DocumentConverter.WORKERS + 1; i++) {
+            assertThat(converter.convert(rtf).kind(), is(DocumentPreview.Kind.TEXT));
+        }
     }
 }
