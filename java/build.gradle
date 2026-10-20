@@ -66,6 +66,9 @@ dependencies {
     implementation libs.spring.ai.mcp
     implementation libs.spring.ai.tika    // PDF/Word/RTF supporting document extraction
 
+    // CSV parsing for the data preview
+    implementation libs.commons.csv
+
     // CEH Components
     implementation(libs.bundles.ukceh)
 
