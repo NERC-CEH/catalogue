@@ -24,9 +24,6 @@ public class DataPreviewerService {
     private final DocumentRepository documentRepository;
     private final JenaLookupService jenaLookupService;
 
-    private static final String OPEN_ACCESS_URI =
-        "http://purl.org/coar/access_right/c_abf2";
-
     public Object preview(String id) throws DocumentRepositoryException {
         GeminiDocument doc = (GeminiDocument) documentRepository.read(id);
 
@@ -101,9 +98,7 @@ public class DataPreviewerService {
 
         boolean isFreelyAvailable =
             document.getAccessLimitation() != null &&
-                OPEN_ACCESS_URI.equals(
-                    document.getAccessLimitation().getUri()
-                );
+                document.getAccessLimitation().grantsOpenAccess();
 
         if (!(hasPublicView && isAvailable && isFreelyAvailable)) {
             throw new SecurityException("Dataset not publicly accessible");
