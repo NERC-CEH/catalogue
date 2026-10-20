@@ -276,4 +276,43 @@ class MapPreviewTemplateTest {
         assertThat(render(SECTION, previewDocument()), containsString(
             "data-package-url=\"/download/abc?url=https://data-package.ceh.ac.uk/data/abc?a=1&amp;b=2\""));
     }
+
+    @Test
+    void nonEidcDownloadGivesNoPackageUrl() {
+        stub();
+        when(dataPreview.offered("abc")).thenReturn(true);
+        val gemini = previewDocument();
+        gemini.setOnlineResources(List.of(
+            OnlineResource.builder().url("https://example.org/data/abc.zip").function("download").build(),
+            OnlineResource.builder().url("https://data-package.ceh.ac.uk/sd/abc.zip").function("information").build()));
+
+        assertThat(render(SECTION, gemini), containsString("data-package-url=\"\""));
+    }
+
+    @Test
+    void eidcFileAccessIsChosenOverDownload() {
+        stub();
+        when(dataPreview.offered("abc")).thenReturn(true);
+        val gemini = previewDocument();
+        gemini.setOnlineResources(List.of(
+            OnlineResource.builder().url("https://data-package.ceh.ac.uk/data/abc.zip").function("download").build(),
+            OnlineResource.builder().url("https://catalogue.ceh.ac.uk/datastore/eidchub/abc").function("fileAccess").build(),
+            OnlineResource.builder().url("https://data-package.ceh.ac.uk/sd/abc.zip").function("information").build()));
+
+        assertThat(render(SECTION, gemini), containsString(
+            "data-package-url=\"/download/abc?url=https://catalogue.ceh.ac.uk/datastore/eidchub/abc\""));
+    }
+
+    @Test
+    void eidcDownloadIsChosenOverNonEidcFileAccess() {
+        stub();
+        when(dataPreview.offered("abc")).thenReturn(true);
+        val gemini = previewDocument();
+        gemini.setOnlineResources(List.of(
+            OnlineResource.builder().url("https://example.org/files/abc").function("fileAccess").build(),
+            OnlineResource.builder().url("https://data-package.ceh.ac.uk/data/abc.zip").function("download").build()));
+
+        assertThat(render(SECTION, gemini), containsString(
+            "data-package-url=\"/download/abc?url=https://data-package.ceh.ac.uk/data/abc.zip\""));
+    }
 }

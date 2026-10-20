@@ -337,8 +337,10 @@ them from `fixtures/upload/eidchub` and `fixtures/upload/supporting-documents`, 
 into the catalogue, so it needs the Hubbub set-up above. It appears only for an openly accessible
 record: publicly viewable, with an access limitation of `availability` `Available` and an open-access
 URI (`http://vocab.nerc.ac.uk/collection/N07/current/UNRS/`). No fixture record is open as shipped;
-`2d023ce9-6dbe-4b4f-a0cd-34768e1455ae` has the files, so give it that access limitation (and a
-`download` online resource for the download links) to see the preview.
+`2d023ce9-6dbe-4b4f-a0cd-34768e1455ae` has the files, so give it that access limitation (and an
+EIDC `download` or `fileAccess` online resource, such as
+`https://data-package.ceh.ac.uk/data/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae.zip`, for the download
+links) to see the preview.
 
 ### Hubbub Javascript development
 

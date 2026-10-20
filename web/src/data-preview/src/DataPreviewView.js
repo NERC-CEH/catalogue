@@ -1,10 +1,14 @@
 import $ from 'jquery'
 import Backbone from 'backbone'
+import { filesize } from 'filesize'
 import { render as renderTable } from './csvTable'
 
 const SECTION = '#segment-map'
 
 const plural = (count, word) => `${count} ${word}${count === 1 ? '' : 's'}`
+
+// "384 KB", "1.2 KB": binary multiples with the familiar unit names
+const size = bytes => filesize(bytes, { standard: 'jedec' })
 
 /**
  * The record page's Data Preview section: the first rows of the record's CSV files, one tab per file,
@@ -39,8 +43,8 @@ export default Backbone.View.extend({
     try {
       this.manifest = await this.fetchJson(this.endpoint())
     } catch {
-      this.$data.empty().append(this.unavailable())
-      this.$documents.empty()
+      this.$data.empty().append(this.unavailable()).removeClass('col-lg-7').addClass('col-lg-12')
+      this.$documents.remove()
       return
     }
     const csvFiles = this.manifest.csvFiles || []
@@ -129,9 +133,12 @@ export default Backbone.View.extend({
     }
     const rows = sample.rows || []
     const columns = Math.max((sample.header || []).length, ...rows.map(row => row.length))
-    const note = `${sample.moreRows ? 'First' : 'All'} ${plural(rows.length, 'row')} · ${plural(columns, 'column')}`
+    const of = entry.bytes > 0 ? ` of a ${size(entry.bytes)} file` : ''
+    const note = `${sample.moreRows ? 'First' : 'All'} ${plural(rows.length, 'row')}${of} · ${plural(columns, 'column')}`
+    const $note = $('<p class="data-preview-note small text-muted mb-1"></p>').text(note)
+    if (this.packageUrl) $note.append(document.createTextNode(' · '), $('<a></a>').attr('href', this.packageUrl).text('Download the data'))
     return $('<div></div>').append(
-      $('<p class="small text-muted mb-1"></p>').text(note),
+      $note,
       $('<div class="data-preview-scroll"></div>').append(renderTable(sample)))
   },
 
@@ -140,7 +147,7 @@ export default Backbone.View.extend({
     if (!(csvCount > csvFiles.length || csvCountIsMinimum)) return $()
     const count = `${csvCountIsMinimum ? 'at least ' : ''}${csvCount} CSV files`
     const text = `Showing ${csvFiles.length} of ${count} · ${totalFiles} files in this dataset, all in the full download`
-    const $note = $('<p class="small text-muted mt-2 mb-0"></p>')
+    const $note = $('<p class="data-preview-footer small text-muted mt-2 mb-0"></p>')
     return this.packageUrl ? $note.append($('<a></a>').attr('href', this.packageUrl).text(text)) : $note.text(text)
   },
 

@@ -47,7 +47,10 @@
     </#if>
     <#if dataPreviewOffered!false>
       <#assign previewAccess = downloadOrderDetails.from(onlineResources![])>
-      <#assign previewPackage = previewAccess.dataAccessResources?filter(r -> r.function == "fileAccess" || r.function == "download")>
+      <#-- Only an EIDC distribution passes /download's URL checks; another host's link would 404 there.
+           Direct file access is preferred to the whole-dataset zip. -->
+      <#assign previewEidc = previewAccess.dataAccessResources?filter(r -> r.eidcDistribution)>
+      <#assign previewPackage = previewEidc?filter(r -> r.function == "fileAccess") + previewEidc?filter(r -> r.function == "download")>
       <div class="data-preview" data-record-id="${id}" data-package-url="<#if previewPackage?has_content>/download/${id}?url=${previewPackage?first.url}</#if>" data-supporting-documents-url="${previewAccess.supportingDocumentsUrl!}">
         <div class="row g-3">
           <div class="col-lg-7 data-preview-data"></div>

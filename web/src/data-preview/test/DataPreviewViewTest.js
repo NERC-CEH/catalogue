@@ -120,23 +120,54 @@ describe('DataPreviewView', () => {
     expect(second().attr('aria-selected')).toBe('true')
   })
 
-  it('says how many rows and columns when there are more rows', async () => {
-    await manifestThen(manifest(), sample({ moreRows: true, rows: Array.from({ length: 50 }, () => ['1', '2', '3', '4', '5', '6']) }))
+  const row = ['1', '2', '3', '4', '5', '6']
+  const sized = bytes => manifest({ csvFiles: [{ ...entry('a.csv'), bytes }], csvCount: 1, totalFiles: 1 })
+  const note = () => text('.data-preview-data .data-preview-note')
 
-    expect(text('.data-preview-data')).toContain('First 50 rows · 6 columns')
+  it('says how many rows and columns, and the file size, when there are more rows', async () => {
+    await manifestThen(sized(393216), sample({ moreRows: true, rows: Array.from({ length: 50 }, () => row) }))
+
+    expect(note()).toContain('First 50 rows of a 384 KB file · 6 columns')
   })
 
-  it('says how many rows and columns when it has them all', async () => {
-    await manifestThen(manifest(), sample({ rows: [['1', '2', '3', '4', '5', '6'], ['1', '2', '3', '4', '5', '6'], ['1', '2', '3', '4', '5', '6']] }))
+  it('says how many rows and columns, and the file size, when it has them all', async () => {
+    await manifestThen(sized(1229), sample({ rows: Array.from({ length: 6 }, () => row) }))
 
-    expect(text('.data-preview-data')).toContain('All 3 rows · 6 columns')
+    expect(note()).toContain('All 6 rows of a 1.2 KB file · 6 columns')
+  })
+
+  it('leaves the size out when the listing gives none', async () => {
+    await manifestThen(sized(0), sample({ rows: [row, row, row] }))
+
+    expect(note()).toContain('All 3 rows · 6 columns')
+  })
+
+  it('links the record\'s download beside a table', async () => {
+    await manifestThen(manifest())
+
+    const $link = $page.find('.data-preview-data .data-preview-note a')
+    expect($link.text()).toBe('Download the data')
+    expect($link.attr('href')).toBe(PACKAGE)
+  })
+
+  it('has no download link beside a table when there is no package link', async () => {
+    $page = $(page({ packageUrl: '' })).appendTo(document.body)
+    view = new DataPreviewView({ el: $page.find('.data-preview')[0] })
+    answer('/documents/abc/data-preview', json(manifest()))
+    await vi.waitFor(() => expect(urls().some(url => url.includes('/csv?'))).toBe(true))
+    answer('/csv?', json(sample()))
+    await view.ready
+
+    expect($page.find('.data-preview-data table').length).toBe(1)
+    expect(note()).toContain('All 1 row')
+    expect($page.find('.data-preview-data a').length).toBe(0)
   })
 
   it('links the full download when there are more CSV files than tabs', async () => {
     const csvFiles = Array.from({ length: 10 }, (i, n) => entry(`f${n}.csv`))
     await manifestThen(manifest({ csvFiles, csvCount: 54, totalFiles: 54 }))
 
-    const $link = $page.find('.data-preview-data a')
+    const $link = $page.find('.data-preview-data .data-preview-footer a')
     expect($link.text()).toBe('Showing 10 of 54 CSV files · 54 files in this dataset, all in the full download')
     expect($link.attr('href')).toBe(PACKAGE)
   })
@@ -145,13 +176,14 @@ describe('DataPreviewView', () => {
     const csvFiles = Array.from({ length: 10 }, (i, n) => entry(`f${n}.csv`))
     await manifestThen(manifest({ csvFiles, csvCount: 54, csvCountIsMinimum: true, totalFiles: 54 }))
 
-    expect(text('.data-preview-data a')).toContain('Showing 10 of at least 54 CSV files')
+    expect(text('.data-preview-data .data-preview-footer a')).toContain('Showing 10 of at least 54 CSV files')
   })
 
   it('has no footer when every CSV file has a tab', async () => {
     await manifestThen(manifest())
 
-    expect($page.find('.data-preview-data a').length).toBe(0)
+    expect($page.find('.data-preview-data .data-preview-footer').length).toBe(0)
+    expect(text('.data-preview-data')).not.toContain('Showing')
   })
 
   it('shows the footer as plain text when there is no package link', async () => {
@@ -208,6 +240,16 @@ describe('DataPreviewView', () => {
     expect(text('.data-preview')).toContain('Preview unavailable')
     expect($page.find('.data-preview-data a').attr('href')).toBe(PACKAGE)
     expect(text('.data-preview')).not.toContain('Loading')
+  })
+
+  it('leaves no blank documents column when the manifest fails, widening the data pane', async () => {
+    start()
+    answer('/documents/abc/data-preview', json({ error: 'x' }, 500))
+    await view.ready
+
+    expect($page.find('.data-preview-documents').length).toBe(0)
+    expect($page.find('.data-preview-data').hasClass('col-lg-12')).toBe(true)
+    expect($page.find('.data-preview-data').hasClass('col-lg-7')).toBe(false)
   })
 
   describe('with no files', () => {
