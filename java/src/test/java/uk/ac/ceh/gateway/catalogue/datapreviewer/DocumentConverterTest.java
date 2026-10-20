@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -24,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import org.apache.tika.exception.TikaException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -280,6 +282,54 @@ class DocumentConverterTest {
         DocumentPreview preview = converter(20971520, 200000, Duration.ZERO).convert(fixture("dictionary.rtf"));
 
         assertThat(preview.kind(), is(DocumentPreview.Kind.NOT_PREVIEWABLE));
+    }
+
+    @Test
+    void readFailureOfTxtPropagates() {
+        Path missing = tmp.resolve("gone.txt");
+
+        assertThrows(UncheckedIOException.class, () -> converter().convert(missing));
+    }
+
+    @Test
+    void readFailureOfCsvPropagates() {
+        Path missing = tmp.resolve("gone.csv");
+
+        assertThrows(UncheckedIOException.class, () -> converter().convert(missing));
+    }
+
+    @Test
+    void readFailureDuringConversionPropagates() throws Exception {
+        DocumentConverter converter = converter(Duration.ofSeconds(20), (file, rtf) -> {
+            throw new IOException("Host is down");
+        });
+
+        assertThrows(UncheckedIOException.class, () -> converter.convert(fixture("tiny.pdf")));
+    }
+
+    @Test
+    void contentFailureDuringConversionIsNotPreviewable() throws Exception {
+        DocumentConverter converter = converter(Duration.ofSeconds(20), (file, rtf) -> {
+            throw new TikaException("Unexpected end of file");
+        });
+
+        assertThat(converter.convert(fixture("tiny.pdf")).kind(), is(DocumentPreview.Kind.NOT_PREVIEWABLE));
+    }
+
+    @Test
+    void interruptedWaitPropagatesAndKeepsTheInterrupt() throws Exception {
+        CountDownLatch started = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        DocumentConverter converter = converter(Duration.ofSeconds(20), blockingUntil(started, release));
+        Path rtf = fixture("dictionary.rtf");
+        try {
+            Thread.currentThread().interrupt();
+
+            assertThrows(IllegalStateException.class, () -> converter.convert(rtf));
+            assertThat(Thread.interrupted(), is(true));
+        } finally {
+            release.countDown();
+        }
     }
 
     @Test

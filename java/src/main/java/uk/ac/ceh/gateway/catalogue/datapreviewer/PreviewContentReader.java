@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +14,9 @@ import org.springframework.stereotype.Component;
  *
  * <p>Results are cached on the Hubbub checksum, so a replaced file is read afresh; a file Hubbub
  * reports no checksum for is never cached. CSV and document keys carry their kind, as one file can
- * be listed as both and the two results share a cache. Exceptions are never cached, so a {@link PreviewBusyException} or a share fault is retried on the next request.
+ * be listed as both and the two results share a cache. Exceptions are never cached, so a
+ * {@link PreviewBusyException}, a listed file missing from the share or a read fault is retried on
+ * the next request.
  */
 @Component
 public class PreviewContentReader {
@@ -42,11 +43,8 @@ public class PreviewContentReader {
     @Cacheable(cacheNames = DATA_PREVIEW_CONTENT_CACHE, key = "'csv|' + #recordId + '|' + #path + '|' + #sha256",
         condition = "#sha256 != null")
     public CsvSample csv(String recordId, String path, String sha256) {
-        Optional<Path> file = resolver.resolve(properties.dataLocation(), recordId, path);
-        if (file.isEmpty()) {
-            return CsvSample.notPreviewable();
-        }
-        try (InputStream in = Files.newInputStream(file.get())) {
+        Path file = resolve(properties.dataLocation(), recordId, path);
+        try (InputStream in = Files.newInputStream(file)) {
             return csvSampler.sample(in, properties.maxCsvBytes(), properties.previewRows());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -56,8 +54,15 @@ public class PreviewContentReader {
     @Cacheable(cacheNames = DATA_PREVIEW_CONTENT_CACHE, key = "'doc|' + #recordId + '|' + #path + '|' + #sha256",
         condition = "#sha256 != null")
     public DocumentPreview document(String recordId, String path, String sha256) {
-        return resolver.resolve(properties.supportingDocumentsLocation(), recordId, path)
-            .map(file -> documentConverter.convert(file, path))
-            .orElseGet(DocumentPreview::notPreviewable);
+        return documentConverter.convert(resolve(properties.supportingDocumentsLocation(), recordId, path), path);
+    }
+
+    /**
+     * A listed file that cannot be found on the share may be there again shortly, as after a share
+     * fault, so this throws rather than giving a result that would be cached.
+     */
+    private Path resolve(Path location, String recordId, String path) {
+        return resolver.resolve(location, recordId, path).orElseThrow(() -> new IllegalStateException(
+            "Listed file " + path + " of " + recordId + " cannot be read from the share"));
     }
 }

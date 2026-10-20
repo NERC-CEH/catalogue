@@ -109,9 +109,14 @@ public class CacheConfig implements CachingConfigurer {
         // so a replaced file misses the cache instead of showing old content, and a file Hubbub
         // reports no checksum for is not cached at all; the TTL is therefore only a memory bound.
         // CSV and document entries share the cache under kind-prefixed keys, since one file can be
-        // listed in both the data and the supporting-documents datastores. Entries are capped by the preview limits (rows and characters), but
-        // a document's text can reach a few hundred KB, so the entry count is kept modest.
-        // Exceptions (a busy converter, a share fault) are never cached, so they are retried.
+        // listed in both the data and the supporting-documents datastores. Entries are capped by
+        // the preview limits (rows and characters), but a document's text can reach a few hundred
+        // KB, so the entry count is kept modest.
+        // Cached: what a file's content decides. That is a sample or text, a CSV with no rows to
+        // show, an unsupported format, a document over the size limit, one the parser rejects as
+        // corrupt, and one whose conversion ran out of time.
+        // Not cached, as they are thrown and retried on the next request: a busy converter, a
+        // listed file missing from the share, a read fault on the share and an interrupt.
         cacheManager.registerCustomCache(PreviewContentReader.DATA_PREVIEW_CONTENT_CACHE,
             expireAfterWrite(2000, Duration.ofHours(6)).build());
 

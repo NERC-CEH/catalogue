@@ -4,6 +4,7 @@ import jakarta.annotation.PreDestroy;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,6 +41,11 @@ import org.springframework.stereotype.Component;
  * interruption, so a conversion that times out keeps its worker until the parse finishes; the pool
  * size is therefore the bound on CPU and memory spent converting. When every worker is busy,
  * {@link #convert} throws {@link PreviewBusyException} rather than queueing.
+ *
+ * <p>A result describes the document, so it may be cached: an unsupported format, a file over the
+ * size limit, content the parser rejects and a conversion that runs out of time all come back as
+ * results. A fault that may clear by itself, reading the file or being interrupted, is thrown
+ * instead, so it is never cached.
  */
 @Slf4j
 @Component
@@ -123,11 +129,8 @@ public class DocumentConverter {
                 return readText(file);
             }
             return extractWithTimeout(file, extension.equals("rtf"));
-        } catch (PreviewBusyException e) {
-            throw e;
-        } catch (IOException | RuntimeException e) {
-            log.warn("Could not convert supporting document {}: {}", file, e.toString());
-            return DocumentPreview.notPreviewable();
+        } catch (IOException e) {
+            throw new UncheckedIOException("Could not read supporting document " + file, e);
         }
     }
 
@@ -206,12 +209,18 @@ public class DocumentConverter {
             log.warn("Converting supporting document {} took longer than {}", file, properties.conversionTimeout());
             return DocumentPreview.notPreviewable();
         } catch (ExecutionException e) {
+            // Tika passes on an IOException only when reading the file failed; a parser's own
+            // IOException, as on a corrupt file, reaches us as a TikaException. Opening the file
+            // and the RTF rewrite read it outside Tika, so their IOExceptions are read faults too.
+            if (e.getCause() instanceof IOException io) {
+                throw new UncheckedIOException("Could not read supporting document " + file, io);
+            }
             log.warn("Could not convert supporting document {}: {}", file, e.getCause().toString());
             return DocumentPreview.notPreviewable();
         } catch (InterruptedException e) {
             cancel(future, claimed);
             Thread.currentThread().interrupt();
-            return DocumentPreview.notPreviewable();
+            throw new IllegalStateException("Interrupted while converting supporting document " + file, e);
         }
     }
 

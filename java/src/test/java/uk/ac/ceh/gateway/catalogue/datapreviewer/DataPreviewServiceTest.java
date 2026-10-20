@@ -273,11 +273,12 @@ class DataPreviewServiceTest {
     }
 
     @Test
-    void csvListedButAbsentFromShareIsNotPreviewable() throws Exception {
+    void csvListedButAbsentFromShareFails() throws Exception {
         record("UNRS");
         data(List.of(csv("gone.csv")), 1, 1);
 
-        assertThat(service.csv(ID, "gone.csv").orElseThrow(), is(CsvSample.notPreviewable()));
+        // Not a "cannot be previewed" result, which would be cached: the share may be back shortly.
+        assertThrows(IllegalStateException.class, () -> service.csv(ID, "gone.csv"));
     }
 
     @Test
@@ -326,13 +327,13 @@ class DataPreviewServiceTest {
     }
 
     @Test
-    void documentListedButAbsentFromShareIsNotPreviewable() throws Exception {
+    void documentListedButAbsentFromShareFails() throws Exception {
         record("UNRS");
         data(List.of(), 1, 0);
         when(uploadService.get(eq(ID), eq(DOCS), anyInt(), anyInt()))
             .thenReturn(response(List.of(file("gone.pdf", "application/pdf", "VALID")), 1, 1));
 
-        assertThat(service.document(ID, "gone.pdf").orElseThrow().kind(), is(DocumentPreview.Kind.NOT_PREVIEWABLE));
+        assertThrows(IllegalStateException.class, () -> service.document(ID, "gone.pdf"));
     }
 
     @Test

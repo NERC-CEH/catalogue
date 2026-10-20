@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.datapreviewer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -12,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -86,12 +88,13 @@ class PreviewContentReaderCacheTest {
 
     private final CsvSample sample = new CsvSample(List.of("name"), List.of(List.of("x")), false, true);
     private final DocumentPreview preview = DocumentPreview.text("Units", false);
+    private Path file;
 
     @BeforeEach
     void setUp() throws IOException {
         reset(resolver, csvSampler, documentConverter);
         cacheManager.getCache(PreviewContentReader.DATA_PREVIEW_CONTENT_CACHE).clear();
-        Path file = Files.createTempFile("preview-cache", ".csv");
+        file = Files.createTempFile("preview-cache", ".csv");
         file.toFile().deleteOnExit();
         when(resolver.resolve(any(), anyString(), anyString())).thenReturn(Optional.of(file));
         when(csvSampler.sample(any(), anyInt(), anyInt())).thenReturn(sample);
@@ -113,6 +116,31 @@ class PreviewContentReaderCacheTest {
         reader.csv(ID, PATH, SHA);
 
         verify(csvSampler, times(1)).sample(any(), anyInt(), anyInt());
+    }
+
+    @Test
+    void unresolvableFileIsNotCached() {
+        when(resolver.resolve(any(), anyString(), anyString())).thenReturn(Optional.empty());
+
+        assertThrows(IllegalStateException.class, () -> reader.csv(ID, PATH, SHA));
+        assertThrows(IllegalStateException.class, () -> reader.document(ID, PATH, SHA));
+        reset(resolver);
+        when(resolver.resolve(any(), anyString(), anyString())).thenReturn(Optional.of(file));
+
+        assertThat(reader.csv(ID, PATH, SHA), is(sample));
+        assertThat(reader.document(ID, PATH, SHA), is(preview));
+    }
+
+    @Test
+    void converterFailureIsNotCached() {
+        when(documentConverter.convert(any(), any()))
+            .thenThrow(new UncheckedIOException(new IOException("Host is down")))
+            .thenReturn(preview);
+
+        assertThrows(UncheckedIOException.class, () -> reader.document(ID, PATH, SHA));
+
+        assertThat(reader.document(ID, PATH, SHA), is(preview));
+        verify(documentConverter, times(2)).convert(any(), any());
     }
 
     @Test
