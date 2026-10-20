@@ -4,6 +4,16 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.247.0] - 2026-10-20
+
+The Data Preview section on dataset record pages can now also show tabular data. For an openly downloadable dataset, it shows the first 50 rows of up to ten of its spreadsheet (CSV) files, next to the dataset's supporting documents, which can be read in place. Visitors can therefore check whether the columns, values and units suit their work before downloading anything. Larger datasets say how many more files the full download holds, and each table gives the file's size and a link to the existing download. The section now sits directly below the description. The preview reads only the start of each file, never shows data that isn't already openly downloadable, and limits how many documents it converts at once, so the record page stays fast. It is switched on in staging and ready to switch on in production.
+
+The usage figures behind record views and downloads have been corrected (DRI-ONE-248). The counts recorded in the first hour after each restart were dated 1 January 1970, and the service can now repair those records.
+
+## [3.246.0] - 2026-10-20
+
+The public file-list and dataset-preview services, which other tools use to see a dataset's files, had been refusing every dataset since June's change to how access restrictions are recorded. They now recognise openly available datasets again, while still refusing ones that need registration or are restricted (DRI-ONE-489).
+
 ## [3.245.0] - 2026-10-20
 
 Service and dataset record pages now have a "Data Preview" section that shows the record's web map layers (WMS) on an interactive map. Each map has its legend and a choice of basemap, a layer list beside it, and a collapsible "Use this map in your GIS" panel with ready-to-copy requests for desktop mapping software. Maps are drawn in British National Grid where that suits the area being viewed, with Ireland kept on a projection that fits it, and a map that fails to draw is clearly marked as unavailable. Datasets are now also linked to the services that publish them more reliably.
