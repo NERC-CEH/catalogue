@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.245.0] - 2026-10-20
+
+Service and dataset record pages now have a "Data Preview" section that shows the record's web map layers (WMS) on an interactive map. Each map has its legend and a choice of basemap, a layer list beside it, and a collapsible "Use this map in your GIS" panel with ready-to-copy requests for desktop mapping software. Maps are drawn in British National Grid where that suits the area being viewed, with Ireland kept on a projection that fits it, and a map that fails to draw is clearly marked as unavailable. Datasets are now also linked to the services that publish them more reliably.
+
+The SPARQL query page now works under the stricter browser security policy that was introduced in report-only mode in the last release, clearing the way to switch that policy on (DRI-ONE-454). Behind the scenes, the catalogue's own web address is now configurable and the local development setup serves map files correctly.
+
 ## [3.244.0] - 2026-10-16
 
 This release is mostly about the website's pages themselves: how safe they are, how well they work and how quickly they load. On security, record data is now escaped wherever pages display it, so text typed into a record can no longer be run as code in a visitor's browser (DRI-ONE-454). File uploads are kept inside their own record's folder (DRI-ONE-453), and map pop-ups only link to ordinary web addresses. The site now also sends a Content-Security-Policy (a list of the places a page may load scripts and other content from) in "report-only" mode. For now it blocks nothing: it only records what it would have blocked, so the policy can be checked against real use before it is switched on (DRI-ONE-454).
