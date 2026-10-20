@@ -56,7 +56,7 @@ class DatasetFilesControllerTest extends AbstractMvcTest {
         Mockito.when(metadata.getPermissions()).thenReturn(permissions);
         Mockito.when(document.getAvailability()).thenReturn("Available");
         Mockito.when(document.getAccessLimitation())
-            .thenReturn(new AccessLimitation("Open", "", "", "http://purl.org/coar/access_right/c_abf2"));
+            .thenReturn(new AccessLimitation("noLimitations", "", "", "http://vocab.nerc.ac.uk/collection/N07/current/UNRS/"));
         Mockito.when(documentRepository.read("abc123")).thenReturn(document);
 
         var fileInfo = new HubbubResponse.FileInfo(
@@ -108,6 +108,22 @@ class DatasetFilesControllerTest extends AbstractMvcTest {
     }
 
     @Test
+    void shouldReturnForbiddenWhenRegistrationRequired() throws Exception {
+        Multimap<Permission, String> permissions = ArrayListMultimap.create();
+        permissions.put(Permission.VIEW, "public");
+
+        Mockito.when(metadata.getPermissions()).thenReturn(permissions);
+        Mockito.when(document.getAvailability()).thenReturn("Available");
+        Mockito.when(document.getAccessLimitation())
+            .thenReturn(new AccessLimitation("registrationRequired", "", "", "http://vocab.nerc.ac.uk/collection/N07/current/RACC/"));
+        Mockito.when(documentRepository.read("abc123")).thenReturn(document);
+
+        mvc.perform(get("/documents/abc123/files"))
+            .andExpect(status().isForbidden())
+            .andExpect(content().string(containsString("Dataset not publicly accessible")));
+    }
+
+    @Test
     void shouldReturnNotFoundWhenDatasetMissing() throws Exception {
         Mockito.when(documentRepository.read("missing")).thenReturn(null);
 
@@ -124,7 +140,7 @@ class DatasetFilesControllerTest extends AbstractMvcTest {
         Mockito.when(metadata.getPermissions()).thenReturn(permissions);
         Mockito.when(document.getAvailability()).thenReturn("Available");
         Mockito.when(document.getAccessLimitation())
-            .thenReturn(new AccessLimitation("Open", "", "", "http://purl.org/coar/access_right/c_abf2"));
+            .thenReturn(new AccessLimitation("noLimitations", "", "", "http://vocab.nerc.ac.uk/collection/N07/current/UNRS/"));
         Mockito.when(documentRepository.read("abc123")).thenReturn(document);
 
         // Return HubbubResponse with null data

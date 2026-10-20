@@ -28,8 +28,6 @@ public class DatasetFilesController {
     private final UploadService uploadService;
     private final DocumentRepository documentRepository;
 
-    private static final String OPEN_ACCESS_URI = "http://purl.org/coar/access_right/c_abf2";
-
     @GetMapping("/{datasetId}/files")
     public ResponseEntity<?> listDatasetFiles(
         @PathVariable String datasetId,
@@ -52,8 +50,7 @@ public class DatasetFilesController {
 
             boolean hasPublicView = permissions.containsEntry(Permission.VIEW, "public");
             boolean isAvailable = "Available".equalsIgnoreCase(availability);
-            boolean isFreelyAvailable =
-                limitation != null && OPEN_ACCESS_URI.equals(limitation.getUri());
+            boolean isFreelyAvailable = limitation != null && limitation.grantsOpenAccess();
 
             log.debug("Access check for {} -> public={}, available={}, open={}",
                 datasetId, hasPublicView, isAvailable, isFreelyAvailable);

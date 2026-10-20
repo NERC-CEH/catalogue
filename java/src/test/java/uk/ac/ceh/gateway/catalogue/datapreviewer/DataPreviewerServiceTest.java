@@ -27,6 +27,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -84,7 +85,7 @@ class DataPreviewerServiceTest {
         when(dataset.getAvailability()).thenReturn("Available");
         when(dataset.getAccessLimitation()).thenReturn(
             new AccessLimitation(
-                "Open", "", "", "http://purl.org/coar/access_right/c_abf2"
+                "noLimitations", "", "", "http://vocab.nerc.ac.uk/collection/N07/current/UNRS/"
             )
         );
         when(metadata.getPermissions()).thenReturn(perms);
@@ -124,6 +125,28 @@ class DataPreviewerServiceTest {
     }
 
     @Test
+    void previewDatasetRefusesRegistrationRequiredDataset() throws Exception {
+        GeminiDocument dataset = mock(GeminiDocument.class);
+        MetadataInfo metadata = mock(MetadataInfo.class);
+
+        Multimap<Permission, String> perms = ArrayListMultimap.create();
+        perms.put(Permission.VIEW, "public");
+
+        when(dataset.getType()).thenReturn("dataset");
+        when(dataset.getMetadata()).thenReturn(metadata);
+        when(dataset.getAvailability()).thenReturn("Available");
+        when(dataset.getAccessLimitation()).thenReturn(
+            new AccessLimitation(
+                "registrationRequired", "", "", "http://vocab.nerc.ac.uk/collection/N07/current/RACC/"
+            )
+        );
+        when(metadata.getPermissions()).thenReturn(perms);
+        when(documentRepository.read("ds1")).thenReturn(dataset);
+
+        assertThrows(SecurityException.class, () -> service.preview("ds1"));
+    }
+
+    @Test
     void previewCollectionReturnsDatasets() throws Exception {
         GeminiDocument collection = mock(GeminiDocument.class);
         GeminiDocument dataset = mock(GeminiDocument.class);
@@ -144,7 +167,7 @@ class DataPreviewerServiceTest {
         when(dataset.getAvailability()).thenReturn("Available");
         when(dataset.getAccessLimitation()).thenReturn(
             new AccessLimitation(
-                "Open", "", "", "http://purl.org/coar/access_right/c_abf2"
+                "noLimitations", "", "", "http://vocab.nerc.ac.uk/collection/N07/current/UNRS/"
             )
         );
         when(dataset.getFileset()).thenReturn(filesetList);
@@ -231,7 +254,7 @@ class DataPreviewerServiceTest {
         when(dataset.getAvailability()).thenReturn("Available");
         when(dataset.getAccessLimitation()).thenReturn(
             new AccessLimitation(
-                "Open", "", "", "http://purl.org/coar/access_right/c_abf2"
+                "noLimitations", "", "", "http://vocab.nerc.ac.uk/collection/N07/current/UNRS/"
             )
         );
         when(dataset.getFileset()).thenReturn(List.of());
