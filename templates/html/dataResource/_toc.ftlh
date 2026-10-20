@@ -2,9 +2,9 @@
     <div class="list-group list-group-flush sticky-top">
       <a class="list-group-item list-group-item-action text-body-tertiary" href="#top"><i class="fa-solid fa-angle-up fa-xs"></i> Top</a>
       <#if description?? && description?has_content><a class="list-group-item list-group-item-action" href="#segment-description">Description</a></#if>
+      <#if wmsMapList?has_content || (dataPreviewOffered!false)><a class="list-group-item list-group-item-action" href="#segment-map">Data Preview</a></#if>
       <#if distributionFormats?? && distributionFormats?has_content><a class="list-group-item list-group-item-action" href="#segment-formats">Format</a></#if>
       <#if boundingBoxes?has_content || spatialRepresentationTypes?? || spatialReferenceSystems??><a class="list-group-item list-group-item-action" href="#segment-spatial">Spatial information</a></#if>
-      <#if wmsMapList?has_content || (dataPreviewOffered!false)><a class="list-group-item list-group-item-action" href="#segment-map">Data Preview</a></#if>
       <#if temporalExtents?? || temporalResolution?? ><a class="list-group-item list-group-item-action" href="#segment-temporal">Temporal information</a></#if>
       <#if lineage?? && lineage?has_content><a class="list-group-item list-group-item-action" href="#segment-quality">Provenance &amp; quality</a></#if>
       <#if lineage?? && lineage?has_content><a class="list-group-item list-group-item-action" href="#segment-constraints">Licensing &amp; constraints</a></#if>
