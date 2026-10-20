@@ -3,6 +3,8 @@ package uk.ac.ceh.gateway.catalogue.metrics;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.jspecify.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationListener;
@@ -18,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.*;
 import javax.sql.DataSource;
@@ -33,7 +36,9 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
     @NonNull private final SimpleJdbcInsert viewInserter;
     @NonNull private final SimpleJdbcInsert downloadInserter;
     @NonNull private final JdbcTemplate jdbcTemplate;
-    private long lastRun;
+    private volatile long lastRun;
+    private final Clock clock;
+    private boolean repairEpochZeroPending;
     private final DocumentRepository documentRepository;
 
     /**
@@ -76,6 +81,8 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
      */
     private static final String INDEX_STATEMENT =
         "CREATE INDEX IF NOT EXISTS idx_%1$s_document_amount ON %1$s (document, amount)";
+    private static final String REPAIR_EPOCH0_STATEMENT =
+        "UPDATE %s SET start_timestamp = (end_timestamp - 3600) WHERE start_timestamp = 0";
     private static final String TOTAL_STATEMENT = "SELECT coalesce(sum(amount), 0) FROM %s WHERE document = ?";
     private static final String UPDATE_STATEMENT = "UPDATE %s SET doc_title = ?, record_type = ? WHERE document = ?";
     private static final String DISTINCT_DOCS_QUERY = "SELECT DISTINCT document FROM %s";
@@ -97,10 +104,36 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
      * database failed bean creation and took the whole context down with it — Hikari's
      * {@code initialization-fail-timeout=-1} only makes building the pool lazy, it cannot help a
      * consumer that runs SQL while the context is starting. The DDL now runs from {@link #ensureSchema}.
+     *
+     * <p>Annotated because there are two constructors and Spring will not choose between them.</p>
      */
+    @Autowired
+    public JDBCMetricsService(@NonNull DataSource dataSource,
+                              DocumentRepository documentRepository,
+                              @Value("${metrics.repair-epoch0.enabled:false}") boolean repairEpochZero) {
+        this(dataSource, documentRepository, Clock.systemUTC(), repairEpochZero);
+    }
+
     public JDBCMetricsService(@NonNull DataSource dataSource,
                               DocumentRepository documentRepository) {
-        log.info("Creating");
+        this(dataSource, documentRepository, false);
+    }
+
+    /** For tests, which need to control the window timestamps. */
+    JDBCMetricsService(@NonNull DataSource dataSource,
+                       DocumentRepository documentRepository,
+                       @NonNull Clock clock) {
+        this(dataSource, documentRepository, clock, false);
+    }
+
+    JDBCMetricsService(@NonNull DataSource dataSource,
+                       DocumentRepository documentRepository,
+                       @NonNull Clock clock,
+                       boolean repairEpochZero) {
+        log.info("Creating{}", repairEpochZero ? " with the epoch-0 window repair enabled" : "");
+        this.clock = clock;
+        this.repairEpochZeroPending = repairEpochZero;
+        this.lastRun = clock.instant().getEpochSecond();
         this.documentRepository = documentRepository;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.viewInserter = new SimpleJdbcInsert(dataSource).withTableName(VIEW_TABLE);
@@ -164,7 +197,23 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
             } catch (DataAccessException ex) {
                 log.warn("Metrics database schema could not be ensured, will retry on next use: {}", ex.getMessage());
             }
+            if (schemaReady && repairEpochZeroPending) {
+                repairEpochZeroRows();
+            }
             return schemaReady;
+        }
+    }
+
+    private void repairEpochZeroRows() {
+        repairEpochZeroPending = false;
+        try {
+            for (val table : List.of(VIEW_TABLE, DOWNLOAD_TABLE)) {
+                val startedAt = System.currentTimeMillis();
+                val repaired = jdbcTemplate.update(REPAIR_EPOCH0_STATEMENT.formatted(table));
+                log.info("Corrected {} epoch-0 rows in {} in {}ms", repaired, table, System.currentTimeMillis() - startedAt);
+            }
+        } catch (DataAccessException ex) {
+            log.warn("Epoch-0 metrics rows could not be corrected, will retry on next start: {}", ex.getMessage());
         }
     }
 
@@ -271,12 +320,13 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
             return;
         }
         val windowStart = lastRun;
-        lastRun = Instant.now().getEpochSecond();
-        syncTable(viewed, viewInserter, windowStart);
-        syncTable(downloaded, downloadInserter, windowStart);
+        val windowEnd = clock.instant().getEpochSecond();
+        lastRun = windowEnd;
+        syncTable(viewed, viewInserter, windowStart, windowEnd);
+        syncTable(downloaded, downloadInserter, windowStart, windowEnd);
     }
 
-    private void syncTable(Map<String, Set<String>> tableMap, SimpleJdbcInsert inserter, long windowStart) {
+    private void syncTable(Map<String, Set<String>> tableMap, SimpleJdbcInsert inserter, long windowStart, long windowEnd) {
         Map<String, Integer> drained = new HashMap<>();
         synchronized (tableMap) {
             tableMap.forEach((doc, addrs) -> drained.put(doc, addrs.size()));
@@ -285,7 +335,7 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         if (drained.isEmpty()) {
             return;
         }
-        syncDBHelper(drained, inserter, windowStart);
+        syncDBHelper(drained, inserter, windowStart, windowEnd);
     }
 
     @Scheduled(cron = "0 0 1 * * *")
@@ -331,14 +381,14 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
     }
 
     /** Runs outside the monitor — see {@link #syncDB}. */
-    private void syncDBHelper(Map<String, Integer> drained, SimpleJdbcInsert inserter, long windowStart) {
+    private void syncDBHelper(Map<String, Integer> drained, SimpleJdbcInsert inserter, long windowStart, long windowEnd) {
         drained.forEach((doc, amount) -> {
             MetadataDocument document;
             try {
                 document = documentRepository.read(doc);
                 inserter.execute(Map.of(
                     "start_timestamp", windowStart,
-                    "end_timestamp", Instant.now().getEpochSecond(),
+                    "end_timestamp", windowEnd,
                     "amount", amount,
                     "document", doc,
                     "doc_title", document.getTitle(),

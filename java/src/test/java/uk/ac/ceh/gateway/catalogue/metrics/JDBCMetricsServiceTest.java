@@ -25,7 +25,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -322,6 +326,167 @@ class JDBCMetricsServiceTest {
         } finally {
             freshDb.shutdown();
         }
+    }
+
+    /**
+     * Regression test for the epoch-0 window. {@code lastRun} used to be set only at the end of a sync,
+     * so the first sync after every start wrote {@code start_timestamp = 0}: a window opening on
+     * 1 January 1970 for one hour of activity. Date-filtered reports then dropped those rows while the
+     * record-page totals counted them. The first window must open when the service was created.
+     */
+    @SneakyThrows
+    @Test
+    void firstSyncAfterConstructionWritesATruthfulWindowNotTheEpoch() {
+        //given a service created at a known instant, and a view recorded during its first hour
+        val bootedAt = Instant.parse("2026-10-19T09:00:00Z");
+        val clock = new MutableClock(bootedAt);
+        val freshService = new JDBCMetricsService(dataSource, documentRepository, clock);
+        assertThat(freshService.ensureSchema(), is(true));
+        given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
+        freshService.recordView(TEST_DOCUMENT, TEST_IP1);
+
+        //when the first hourly sync runs
+        clock.advance(Duration.ofHours(1));
+        freshService.syncDB();
+
+        //then the row covers exactly that hour, starting at construction, not at 0
+        assertThat(getWindows("views"), contains(
+            contains(bootedAt.getEpochSecond(), bootedAt.plus(Duration.ofHours(1)).getEpochSecond())));
+    }
+
+    /**
+     * The fix must not stop at the first window: each sync's window starts where the previous one ended,
+     * so the windows tile the process's lifetime with no gaps and no overlaps, and every row in a batch
+     * shares one end timestamp.
+     */
+    @SneakyThrows
+    @Test
+    void consecutiveSyncWindowsAreContiguous() {
+        //given
+        val bootedAt = Instant.parse("2026-10-19T09:00:00Z");
+        val clock = new MutableClock(bootedAt);
+        val freshService = new JDBCMetricsService(dataSource, documentRepository, clock);
+        assertThat(freshService.ensureSchema(), is(true));
+        given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
+
+        //when two hourly syncs run, each with a view recorded before it
+        freshService.recordView(TEST_DOCUMENT, TEST_IP1);
+        clock.advance(Duration.ofHours(1));
+        freshService.syncDB();
+        freshService.recordView(TEST_DOCUMENT, TEST_IP2);
+        clock.advance(Duration.ofHours(1));
+        freshService.syncDB();
+
+        //then
+        val t0 = bootedAt.getEpochSecond();
+        assertThat(getWindows("views"), contains(
+            contains(t0, t0 + 3600),
+            contains(t0 + 3600, t0 + 7200)));
+    }
+
+    /**
+     * When the database is down at the first sync the counts stay in memory and the next sync writes
+     * them as one longer window. That window must still open at construction, not at 0 -- the outage
+     * path is the other way a first write after boot can happen.
+     */
+    @SneakyThrows
+    @Test
+    void windowHeldOverAnOutageStillStartsAtConstruction() {
+        //given a service that started while its database was down
+        val freshDb = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).generateUniqueName(true).build();
+        try {
+            val severed = new SeverableDataSource(freshDb);
+            severed.sever();
+            val bootedAt = Instant.parse("2026-10-19T09:00:00Z");
+            val clock = new MutableClock(bootedAt);
+            val startingService = new JDBCMetricsService(severed, documentRepository, clock);
+            startingService.initialiseSchemaOnStartup();
+            startingService.recordView(TEST_DOCUMENT, TEST_IP1);
+
+            //when the first sync is skipped, and the second runs once the database is back
+            clock.advance(Duration.ofHours(1));
+            startingService.syncDB();
+            given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
+            severed.restore();
+            clock.advance(Duration.ofHours(1));
+            startingService.syncDB();
+
+            //then one row spans both hours, from construction
+            val rows = new ArrayList<List<Long>>();
+            try (Connection connection = freshDb.getConnection();
+                 Statement stmt = connection.createStatement();
+                 ResultSet rs = stmt.executeQuery("SELECT start_timestamp, end_timestamp FROM views")) {
+                while (rs.next()) {
+                    rows.add(List.of(rs.getLong(1), rs.getLong(2)));
+                }
+            }
+            val t0 = bootedAt.getEpochSecond();
+            assertThat(rows, contains(contains(t0, t0 + 7200)));
+        } finally {
+            freshDb.shutdown();
+        }
+    }
+
+    /**
+     * The one-off repair for rows written before the fix: with the flag on, startup moves every
+     * {@code start_timestamp = 0} to {@code end_timestamp - 3600}, leaves genuine rows alone and does not
+     * change any total.
+     */
+    @SneakyThrows
+    @Test
+    void epochZeroRowsAreCorrectedOnStartupWhenTheRepairIsEnabled() {
+        //given rows as the old code wrote them: one epoch-0 batch, then a genuine window
+        seedWindow("views", 0, 1779152401, 5);
+        seedWindow("views", 1779152401, 1779156001, 3);
+        seedWindow("downloads", 0, 1779152401, 2);
+        val totalBefore = service.totalViews(TEST_DOCUMENT);
+
+        //when a service starts with the repair enabled
+        val repairing = new JDBCMetricsService(dataSource, documentRepository, Clock.systemUTC(), true);
+        repairing.initialiseSchemaOnStartup();
+
+        //then
+        assertThat(getWindows("views"), contains(
+            contains(1779152401L - 3600, 1779152401L),
+            contains(1779152401L, 1779156001L)));
+        assertThat(getWindows("downloads"), contains(contains(1779152401L - 3600, 1779152401L)));
+        assertThat(repairing.totalViews(TEST_DOCUMENT), is(totalBefore));
+    }
+
+    @SneakyThrows
+    @Test
+    void epochZeroRowsAreLeftAloneWhenTheRepairIsDisabled() {
+        //given
+        seedWindow("views", 0, 1779152401, 5);
+
+        //when the default constructor's service starts (flag off)
+        val plain = new JDBCMetricsService(dataSource, documentRepository, Clock.systemUTC(), false);
+        plain.initialiseSchemaOnStartup();
+
+        //then
+        assertThat(getWindows("views"), contains(contains(0L, 1779152401L)));
+    }
+
+    /**
+     * A database that is down at startup must not lose the repair, nor be blocked by it: it runs once the
+     * schema can be ensured, and only once.
+     */
+    @SneakyThrows
+    @Test
+    void epochZeroRepairRunsOnceTheDatabaseComesBack() {
+        //given
+        seedWindow("views", 0, 1779152401, 5);
+        val repairing = new JDBCMetricsService(dataSource, documentRepository, Clock.systemUTC(), true);
+        dataSource.sever();
+        repairing.initialiseSchemaOnStartup();
+        assertThat(getWindows("views"), contains(contains(0L, 1779152401L)));
+
+        //when
+        dataSource.restore();
+        assertThat(repairing.ensureSchema(), is(true));
+
+        //then
+        assertThat(getWindows("views"), contains(contains(1779152401L - 3600, 1779152401L)));
     }
 
     /**
@@ -665,6 +830,56 @@ class JDBCMetricsServiceTest {
         assertThat(recording.preparedSql(), contains(
             org.hamcrest.Matchers.endsWith("ORDER BY document LIMIT 100"),
             org.hamcrest.Matchers.endsWith("ORDER BY views DESC, document LIMIT 100")));
+    }
+
+    void seedWindow(String table, long start, long end, int amount) throws SQLException {
+        try (Connection connection = db.getConnection();
+             Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate("INSERT INTO " + table
+                + " (start_timestamp, end_timestamp, amount, document, doc_title, record_type) VALUES ("
+                + start + ", " + end + ", " + amount + ", '" + TEST_DOCUMENT + "', 'title', 'dataset')");
+        }
+    }
+
+    List<List<Long>> getWindows(String table) throws SQLException {
+        val rows = new ArrayList<List<Long>>();
+        try (Connection connection = db.getConnection();
+             Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT start_timestamp, end_timestamp FROM " + table
+                 + " ORDER BY start_timestamp")) {
+            while (rs.next()) {
+                rows.add(List.of(rs.getLong(1), rs.getLong(2)));
+            }
+        }
+        return rows;
+    }
+
+    /** A clock the test moves by hand, so window timestamps can be asserted exactly. */
+    private static class MutableClock extends Clock {
+        private Instant now;
+
+        MutableClock(Instant start) {
+            this.now = start;
+        }
+
+        void advance(Duration by) {
+            now = now.plus(by);
+        }
+
+        @Override
+        public ZoneId getZone() {
+            return ZoneOffset.UTC;
+        }
+
+        @Override
+        public Clock withZone(ZoneId zone) {
+            return this;
+        }
+
+        @Override
+        public Instant instant() {
+            return now;
+        }
     }
 
     List<List<Object>> getTitleAndType(String table) throws SQLException {

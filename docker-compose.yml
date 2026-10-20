@@ -137,6 +137,7 @@ services:
       METRICS_DATASOURCE_URL: jdbc:postgresql://metrics-db:5432/metrics
       METRICS_DATASOURCE_USERNAME: *metrics_db_user
       METRICS_DATASOURCE_PASSWORD: *metrics_db_password
+      METRICS_REPAIR_EPOCH0_ENABLED: false
       SERVER_PORT: "8090"
       SPRING_FREEMARKER_CACHE: "false"
       SPRING_FREEMARKER_TEMPLATE_LOADER_PATH: file:/app/templates
@@ -147,6 +148,7 @@ services:
       # The local legilo container is not behind a proxy and checks no credentials;
       # any non-blank token satisfies the catalogue's start-up check.
       LEGILO_TOKEN: local-dev-token
+      HUBBUB_TOKEN: local-dev-token
       FUSEKI_SPARQL_ENDPOINT: http://fuseki:3030/ds/sparql
       FUSEKI_DATASET_URL: http://fuseki:3030/ds
       # "metrics" (Spring profile, unrelated to the compose profile above) is active: without it
