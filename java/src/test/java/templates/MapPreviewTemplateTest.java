@@ -10,7 +10,11 @@ import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import uk.ac.ceh.gateway.catalogue.config.DownloadUrlProperties;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.DataPreviewOffer;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
@@ -46,6 +50,15 @@ class MapPreviewTemplateTest {
 
     Configuration configuration;
     WmsMapService wmsMaps;
+    DataPreviewOffer dataPreview;
+
+    private DownloadOrderDetailsService downloadOrderDetails() {
+        val properties = mock(DownloadUrlProperties.class);
+        when(properties.getRegexSupportingDocs()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/sd/.*");
+        when(properties.getRegexOrderManDownload()).thenReturn("http(s?)://catalogue\\.ceh\\.ac\\.uk/download\\?fileIdentifier=.*");
+        when(properties.getRegexOrder()).thenReturn("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*");
+        return new DownloadOrderDetailsService(properties);
+    }
 
     @SneakyThrows
     @BeforeEach
@@ -53,10 +66,12 @@ class MapPreviewTemplateTest {
         val strings = new StringTemplateLoader();
         strings.putTemplate(SECTION, """
             <#assign wmsMapList = wmsMaps.forRecord(id, title, resourceType.value, onlineResources![], relIsRequiredBy![])>
+            <#assign dataPreviewOffered = dataPreview.offered(id)>
             <#include "html/dataResource/_mapPreview.ftlh">
             """);
         strings.putTemplate(TOC, """
             <#assign wmsMapList = wmsMaps.forRecord(id, title, resourceType.value, onlineResources![], relIsRequiredBy![])>
+            <#assign dataPreviewOffered = dataPreview.offered(id)>
             <#include "html/dataResource/_toc.ftlh">
             """);
         configuration = new Configuration(Configuration.VERSION_2_3_33);
@@ -66,6 +81,9 @@ class MapPreviewTemplateTest {
         wmsMaps = mock(WmsMapService.class);
         configuration.setSharedVariable("wmsMaps", wmsMaps);
         configuration.setSharedVariable("permission", mock(PermissionService.class));
+        dataPreview = mock(DataPreviewOffer.class);
+        configuration.setSharedVariable("dataPreview", dataPreview);
+        configuration.setSharedVariable("downloadOrderDetails", downloadOrderDetails());
     }
 
     @SneakyThrows
@@ -193,5 +211,108 @@ class MapPreviewTemplateTest {
             Map.of("LC.A", List.of(new LegendEntry("Unstyled", null, "line")))));
 
         assertThat(render(SECTION, document()), containsString("data-colour=\"\" data-shape=\"line\">Unstyled</span>"));
+    }
+
+    private GeminiDocument previewDocument() {
+        val gemini = document();
+        gemini.setId("abc");
+        gemini.setOnlineResources(List.of(
+            OnlineResource.builder().url("https://data-package.ceh.ac.uk/data/abc?a=1&b=2").function("download").build(),
+            OnlineResource.builder().url("https://data-package.ceh.ac.uk/sd/abc.zip").function("information").build()));
+        return gemini;
+    }
+
+    @Test
+    void sectionRendersForDataPreviewWithoutMaps() {
+        stub();
+        when(dataPreview.offered("abc")).thenReturn(true);
+
+        val actual = render(SECTION, previewDocument());
+
+        assertThat(actual, containsString("id=\"segment-map\""));
+        assertThat(actual, containsString("Data Preview"));
+        assertThat(actual, containsString("class=\"data-preview\""));
+        assertThat(actual, containsString("data-record-id=\"abc\""));
+        assertThat(actual, containsString(
+            "data-supporting-documents-url=\"https://data-package.ceh.ac.uk/sd/abc.zip\""));
+        assertThat(actual, containsString("data-preview-data"));
+        assertThat(actual, containsString("data-preview-documents"));
+        assertThat(actual, not(containsString("wms-map-preview")));
+    }
+
+    @Test
+    void sectionKeepsMapAndAddsDataPreview() {
+        stub(map("LC.A"));
+        when(dataPreview.offered("abc")).thenReturn(true);
+
+        val actual = render(SECTION, previewDocument());
+
+        assertThat(actual, containsString("wms-map-preview"));
+        assertThat(actual, containsString("class=\"data-preview\""));
+    }
+
+    @Test
+    void tocLinksDataPreviewWithoutMaps() {
+        stub();
+        when(dataPreview.offered("abc")).thenReturn(true);
+
+        assertThat(render(TOC, previewDocument()), containsString("href=\"#segment-map\">Data Preview</a>"));
+    }
+
+    @Test
+    void noSectionWhenNeitherOffered() {
+        stub();
+        when(dataPreview.offered("abc")).thenReturn(false);
+
+        assertThat(render(SECTION, previewDocument()), not(containsString("segment-map")));
+        assertThat(render(TOC, previewDocument()), not(containsString("#segment-map")));
+    }
+
+    @Test
+    void packageUrlGoesThroughDownloadEndpoint() {
+        stub();
+        when(dataPreview.offered("abc")).thenReturn(true);
+
+        assertThat(render(SECTION, previewDocument()), containsString(
+            "data-package-url=\"/download/abc?url=https://data-package.ceh.ac.uk/data/abc?a=1&amp;b=2\""));
+    }
+
+    @Test
+    void nonEidcDownloadGivesNoPackageUrl() {
+        stub();
+        when(dataPreview.offered("abc")).thenReturn(true);
+        val gemini = previewDocument();
+        gemini.setOnlineResources(List.of(
+            OnlineResource.builder().url("https://example.org/data/abc.zip").function("download").build(),
+            OnlineResource.builder().url("https://data-package.ceh.ac.uk/sd/abc.zip").function("information").build()));
+
+        assertThat(render(SECTION, gemini), containsString("data-package-url=\"\""));
+    }
+
+    @Test
+    void eidcFileAccessIsChosenOverDownload() {
+        stub();
+        when(dataPreview.offered("abc")).thenReturn(true);
+        val gemini = previewDocument();
+        gemini.setOnlineResources(List.of(
+            OnlineResource.builder().url("https://data-package.ceh.ac.uk/data/abc.zip").function("download").build(),
+            OnlineResource.builder().url("https://catalogue.ceh.ac.uk/datastore/eidchub/abc").function("fileAccess").build(),
+            OnlineResource.builder().url("https://data-package.ceh.ac.uk/sd/abc.zip").function("information").build()));
+
+        assertThat(render(SECTION, gemini), containsString(
+            "data-package-url=\"/download/abc?url=https://catalogue.ceh.ac.uk/datastore/eidchub/abc\""));
+    }
+
+    @Test
+    void eidcDownloadIsChosenOverNonEidcFileAccess() {
+        stub();
+        when(dataPreview.offered("abc")).thenReturn(true);
+        val gemini = previewDocument();
+        gemini.setOnlineResources(List.of(
+            OnlineResource.builder().url("https://example.org/files/abc").function("fileAccess").build(),
+            OnlineResource.builder().url("https://data-package.ceh.ac.uk/data/abc.zip").function("download").build()));
+
+        assertThat(render(SECTION, gemini), containsString(
+            "data-package-url=\"/download/abc?url=https://data-package.ceh.ac.uk/data/abc.zip\""));
     }
 }

@@ -241,7 +241,7 @@ The catalogue contains the following Spring profiles:
 ##### development
 The development profile runs code that is only available when developing such as the `DevelopmentUserStoreConfig.java` which makes testing code locally easier as it allows the user access to more user permissions.
 ##### upload-simple / upload-hubbub
-Allows the user to upload their documents using `FileSystemStorageService.java` when `upload-simple` is active or the Hubbub API which `UploadService.java` interfaces with when `upload-hubbub` is active (enabled with the `-b` flag).
+Allows the user to upload their documents using `FileSystemStorageService.java` when `upload-simple` is active or the Hubbub API which `UploadService.java` interfaces with when `upload-hubbub` is active (enabled with the `-b` flag). Only one can be active. Under `docker compose` the upload profile comes from `UPLOAD_PROFILE` (default `upload-simple`); `upload-hubbub` needs the `hubbub` compose profile too, see [Developing Upload - Hubbub API](#developing-upload---hubbub-api).
 ##### keyword-suggestions
 Enables the Legilo keyword suggestion service (enabled with the `-l` flag).
 ##### server-eidc / server-datalabs / server-inms
@@ -313,25 +313,34 @@ Other users are configured in [DevelopmentUserStoreConfig](java/src/main/java/uk
 ## Developing Upload - Hubbub API
 Getting everything running
 
-Start with the Hubbub profile:
+Start with the Hubbub compose profile and the `upload-hubbub` Spring profile, which replaces
+`upload-simple`, and turn on the [data preview](#data-preview), which is off by default (put
+`COMPOSE_PROFILES=hubbub`, `UPLOAD_PROFILE=upload-hubbub` and `DATA_PREVIEW_ENABLED=true` in `.env`
+to make them the default):
 
 ```bash
-docker compose --profile hubbub up --build
+UPLOAD_PROFILE=upload-hubbub DATA_PREVIEW_ENABLED=true docker compose --profile hubbub up --build
 ```
 ### Populate the database
 
-Postgres database needs the schema creating.
+A new `hubbub-db` container creates the schema and status rows from `fixtures/hubbub/init`, and
+registers the fixture files the data preview lists (`seed_files.sql`). Postgres runs these only on an
+empty data directory, so for a database created before them run
+`UPLOAD_PROFILE=upload-hubbub docker compose --profile hubbub up -V hubbub-db` (`-V` starts it with a
+fresh volume, discarding its data). For the upload page fixtures, import `fixtures/upload/file.csv`
+into the `file` table.
 
-1. Checkout the Hubbub git repo, there is a script to create the schema.
+### Data preview
 
-2. In the Hubbub repo project directory
-    ```commandline
-    source venv/bin/activate
-    python -m migration.schema --user gardener --password cabbages
-    ```
-
-3. Import the `migration/status.csv` file into the database
-4. Back in the Catalogue project import `fixtures/upload/file.csv`
+The Data Preview section of a dataset record page lists the record's files through Hubbub and reads
+them from `fixtures/upload/eidchub` and `fixtures/upload/supporting-documents`, mounted read-only
+into the catalogue, so it needs the Hubbub set-up above. It appears only for an openly accessible
+record: publicly viewable, with an access limitation of `availability` `Available` and an open-access
+URI (`http://vocab.nerc.ac.uk/collection/N07/current/UNRS/`). No fixture record is open as shipped;
+`2d023ce9-6dbe-4b4f-a0cd-34768e1455ae` has the files, so give it that access limitation (and an
+EIDC `download` or `fileAccess` online resource, such as
+`https://data-package.ceh.ac.uk/data/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae.zip`, for the download
+links) to see the preview.
 
 ### Hubbub Javascript development
 

@@ -9,6 +9,8 @@ import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import uk.ac.ceh.gateway.catalogue.datapreviewer.PreviewContentReader;
+import uk.ac.ceh.gateway.catalogue.datapreviewer.PreviewListing;
 import uk.ac.ceh.gateway.catalogue.metrics.JDBCMetricsService;
 import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 
@@ -91,6 +93,32 @@ public class CacheConfig implements CachingConfigurer {
         // count because the key is arbitrary depositor text, not a member of a known set.
         cacheManager.registerCustomCache(EXACT_LABEL_CACHE,
             expireAfterWrite(20000, Duration.ofHours(24)).build());
+
+        // A record's data-preview file listing, built from two Hubbub calls when the record page's
+        // preview section loads, and consulted again for every tab the visitor opens (each CSV or
+        // document request is checked against it). Without this each tab click re-lists a dataset
+        // that can hold 10,000 files. Access is checked before this cache is read, so a record that
+        // closes is refused at once. Staleness only matters when a dataset's files change, which
+        // happens on (re)deposit; an hour is short enough that a new file shows the same day.
+        // Bounded on entry count, sized like the datastore caches to cover the whole corpus.
+        cacheManager.registerCustomCache(PreviewListing.DATA_PREVIEW_MANIFEST_CACHE,
+            expireAfterWrite(6000, Duration.ofHours(1)).build());
+        // A CSV's first rows or a supporting document's text, read off the CIFS share and, for a
+        // document, converted by Tika: the expensive part of the preview, and the same few hot
+        // records' files are asked for repeatedly. Keyed on the Hubbub sha256 as well as the path,
+        // so a replaced file misses the cache instead of showing old content, and a file Hubbub
+        // reports no checksum for is not cached at all; the TTL is therefore only a memory bound.
+        // CSV and document entries share the cache under kind-prefixed keys, since one file can be
+        // listed in both the data and the supporting-documents datastores. Entries are capped by
+        // the preview limits (rows and characters), but a document's text can reach a few hundred
+        // KB, so the entry count is kept modest.
+        // Cached: what a file's content decides. That is a sample or text, a CSV with no rows to
+        // show, an unsupported format, a document over the size limit, one the parser rejects as
+        // corrupt, and one whose conversion ran out of time.
+        // Not cached, as they are thrown and retried on the next request: a busy converter, a
+        // listed file missing from the share, a read fault on the share and an interrupt.
+        cacheManager.registerCustomCache(PreviewContentReader.DATA_PREVIEW_CONTENT_CACHE,
+            expireAfterWrite(2000, Duration.ofHours(6)).build());
 
         return cacheManager;
     }

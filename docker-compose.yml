@@ -31,6 +31,11 @@ services:
       POSTGRES_DB: hubbub
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      # Run only on an empty data directory: the schema and status rows, then seed_files.sql, which
+      # registers the fixture files the local data preview lists. The image keeps its data in an
+      # anonymous volume that survives a recreate, so after `docker compose down` or with
+      # `docker compose --profile hubbub up -V hubbub-db` for a database that predates this mount.
+      - ./fixtures/hubbub/init:/docker-entrypoint-initdb.d:ro
     ports:
       - "5432:5432"
     profiles: [hubbub]
@@ -104,18 +109,30 @@ services:
       - jena-data:/var/ceh-catalogue/jena
       - gradle-cache:/home/gradle/.gradle
       - metrics-db:/var/ceh-catalogue/metrics-db
+      # The same fixture shares Hubbub lists (see the hubbub service), read by the data preview
+      - ./fixtures/upload/eidchub:/var/ceh-catalogue/data-package:ro
+      - ./fixtures/upload/supporting-documents:/var/ceh-catalogue/supporting-documents:ro
     environment:
       DOCUMENTS_BASEURI: http://localhost:8080
       DOI_API: https://api.test.datacite.org/dois
       GEMET_LOCAL: /app/fixtures/vocabs/gemet.json
       ROR_LOCAL: /app/fixtures/solr/ror
       HUBBUB_LOCATION: /app/dropbox
-      HUBBUB_URL: http://localhost:8082/v7
+      # Over the compose network: inside this container localhost is the catalogue itself, and 8082
+      # is only the port published to the host.
+      HUBBUB_URL: http://hubbub:8080/v7
       JENA_LOCATION: /var/ceh-catalogue/jena
       JIRA_SERVICEAGREEMENT_PREFIX: "CT-"
       JIRA_DEPOSITREQUEST_PROJECT: CT
       LOGGING_LEVEL_ROOT: info
       MAPS_LOCATION: /app/mapfiles
+      # Data preview on dataset record pages, off unless DATA_PREVIEW_ENABLED=true. Its endpoints
+      # exist only under the upload-hubbub Spring profile and list files through Hubbub, so turn it
+      # on together with UPLOAD_PROFILE=upload-hubbub and the hubbub compose profile (see
+      # SPRING_PROFILES_ACTIVE below); under upload-simple the section would show but never load.
+      CATALOGUE_DATA_PREVIEW_ENABLED: ${DATA_PREVIEW_ENABLED:-false}
+      CATALOGUE_DATA_PREVIEW_DATA_LOCATION: /var/ceh-catalogue/data-package
+      CATALOGUE_DATA_PREVIEW_SUPPORTING_DOCUMENTS_LOCATION: /var/ceh-catalogue/supporting-documents
       # Interpolated, defaulting to sqlite to match the application default, so that a plain
       # `docker compose up` -- which does not start metrics-db -- is self-consistent rather than
       # pointing at a database that is not running.
@@ -156,7 +173,19 @@ services:
       # brings local dev closer to what actually runs. Left on unconditionally: under the default
       # sqlite engine it needs nothing external, and under postgres the catalogue still starts if
       # metrics-db is not running (see the depends_on comment below).
-      SPRING_PROFILES_ACTIVE: development,server-eidc,search-basic,service-agreement,upload-simple,metrics
+      #
+      # The upload profile is interpolated, defaulting to upload-simple, which needs nothing external.
+      # upload-hubbub (Hubbub uploads and the data preview) needs the hubbub compose profile running;
+      # the two upload profiles cannot both be active. As with the metrics engine, set them in .env,
+      # with DATA_PREVIEW_ENABLED for the data preview:
+      #
+      #     COMPOSE_PROFILES=hubbub
+      #     UPLOAD_PROFILE=upload-hubbub
+      #     DATA_PREVIEW_ENABLED=true
+      #
+      # or, one-off:
+      #     UPLOAD_PROFILE=upload-hubbub DATA_PREVIEW_ENABLED=true docker compose --profile hubbub up
+      SPRING_PROFILES_ACTIVE: development,server-eidc,search-basic,service-agreement,${UPLOAD_PROFILE:-upload-simple},metrics
     env_file:
       - path: secrets.env
         required: false

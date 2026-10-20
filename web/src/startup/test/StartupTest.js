@@ -5,7 +5,7 @@ import { load } from '../load'
 import {
   APPS, editorLookup, initCatalogue, initCatalogueView, initClone, initDepositRequest, initEditor, initHubbub,
   initMetricsReport, initPermission, initSearch, initServiceAgreement, initSimpleUpload, initStudyAreaMap,
-  initWmsMap, navbarToggle, page, startApps, stickyHeader
+  initDataPreview, initWmsMap, navbarToggle, page, startApps, stickyHeader
 } from '../apps'
 import { fakeServer } from '../../test/support'
 
@@ -115,7 +115,7 @@ describe('Page start-up', () => {
       expect(APPS.map(each => each.selector)).toEqual([
         '.catalogue-control', '.catalogue-view-control', '.edit-control', '.nav-toggle', '.service-agreement',
         '.geometry-map', '.permission', '#search', '#simple-upload', '#document-upload', '#studyarea-map',
-        '#metrics-report', '#deposit-request', '.clone-control', '.wms-map-preview'
+        '#metrics-report', '#deposit-request', '.clone-control', '.wms-map-preview', '.data-preview'
       ])
       APPS.forEach(each => expect(each.start, each.selector).toEqual(expect.any(Function)))
     })
@@ -368,6 +368,16 @@ describe('Page start-up', () => {
       await initWmsMap($('.wms-map-preview'))
 
       expect(WmsMapView.made[0][0]).toEqual({ el: $('.wms-map-preview')[0] })
+    })
+
+    it('data preview: a view for each Data Preview section', async () => {
+      pageWith('<div class="data-preview"></div>')
+      const DataPreviewView = recording()
+      vi.spyOn(load, 'dataPreview').mockResolvedValue({ DataPreviewView })
+
+      await initDataPreview($('.data-preview'))
+
+      expect(DataPreviewView.made[0][0]).toEqual({ el: $('.data-preview')[0] })
     })
   })
 
