@@ -5,9 +5,11 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -183,6 +185,85 @@ class DocumentConverterTest {
         assertThat(preview.kind(), is(DocumentPreview.Kind.TEXT));
         assertThat(preview.text(), is("Notes on t"));
         assertThat(preview.truncated(), is(true));
+    }
+
+    @Test
+    void longTxtIsTruncated() throws Exception {
+        Path txt = Files.writeString(tmp.resolve("long.txt"), "a".repeat(1_000_000));
+
+        DocumentPreview preview = converter(20971520, 10, Duration.ofSeconds(20)).convert(txt);
+
+        assertThat(preview.kind(), is(DocumentPreview.Kind.TEXT));
+        assertThat(preview.text(), is("a".repeat(10)));
+        assertThat(preview.truncated(), is(true));
+    }
+
+    @Test
+    void txtIsReadNoFurtherThanFourBytesPerCharacter() throws Exception {
+        // Three characters may take up to twelve bytes. A byte that is not UTF-8 beyond that point
+        // would, if read, send the whole text to the Latin-1 fallback.
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bytes.write("€€€€".getBytes(StandardCharsets.UTF_8));
+        bytes.write(0xff);
+        Path txt = Files.write(tmp.resolve("tail.txt"), bytes.toByteArray());
+
+        DocumentPreview preview = converter(20971520, 3, Duration.ofSeconds(20)).convert(txt);
+
+        assertThat(preview.text(), is("€€€"));
+        assertThat(preview.truncated(), is(true));
+    }
+
+    @Test
+    void txtCutMidCharacterDecodesAsUtf8() throws Exception {
+        // Two characters allow eight bytes, which ends one byte into the third "€".
+        Path txt = Files.writeString(tmp.resolve("euro.txt"), "€€€", StandardCharsets.UTF_8);
+
+        DocumentPreview preview = converter(20971520, 2, Duration.ofSeconds(20)).convert(txt);
+
+        assertThat(preview.text(), is("€€"));
+        assertThat(preview.text(), not(containsString("\uFFFD")));
+        assertThat(preview.truncated(), is(true));
+    }
+
+    @Test
+    void txtCutMidCharacterAfterAsciiKeepsWholeCharacters() throws Exception {
+        // Eight bytes end two bytes into the "€", whose start is then dropped as well.
+        Path txt = Files.writeString(tmp.resolve("mixed.txt"), "abcdef€gh", StandardCharsets.UTF_8);
+
+        DocumentPreview preview = converter(20971520, 2, Duration.ofSeconds(20)).convert(txt);
+
+        assertThat(preview.text(), is("ab"));
+        assertThat(preview.truncated(), is(true));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3})
+    void utf8BoundaryDropsAnIncompleteFourByteSequence(int kept) {
+        byte[] emoji = "\uD83C\uDF0D".getBytes(StandardCharsets.UTF_8);
+        byte[] bytes = new byte[2 + kept];
+        bytes[0] = 'a';
+        bytes[1] = 'b';
+        System.arraycopy(emoji, 0, bytes, 2, kept);
+
+        assertThat(DocumentConverter.utf8Boundary(bytes), is(2));
+    }
+
+    @Test
+    void utf8BoundaryKeepsCompleteAndNonUtf8Endings() {
+        assertThat(DocumentConverter.utf8Boundary("ab\uD83C\uDF0D".getBytes(StandardCharsets.UTF_8)), is(6));
+        assertThat(DocumentConverter.utf8Boundary("ab€".getBytes(StandardCharsets.UTF_8)), is(5));
+        assertThat(DocumentConverter.utf8Boundary(new byte[] {'a', (byte) 0xb0}), is(2));
+        assertThat(DocumentConverter.utf8Boundary(new byte[0]), is(0));
+    }
+
+    @Test
+    void txtExactlyAtByteLimitIsNotTruncated() throws Exception {
+        Path txt = Files.writeString(tmp.resolve("exact.txt"), "€€", StandardCharsets.UTF_8);
+
+        DocumentPreview preview = converter(20971520, 2, Duration.ofSeconds(20)).convert(txt);
+
+        assertThat(preview.text(), is("€€"));
+        assertThat(preview.truncated(), is(false));
     }
 
     @Test

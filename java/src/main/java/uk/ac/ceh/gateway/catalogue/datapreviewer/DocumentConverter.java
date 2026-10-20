@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -119,7 +120,7 @@ public class DocumentConverter {
                 return DocumentPreview.tooLarge();
             }
             if (extension.equals("txt")) {
-                return truncate(CsvSampler.decode(Files.readAllBytes(file)));
+                return readText(file);
             }
             return extractWithTimeout(file, extension.equals("rtf"));
         } catch (PreviewBusyException e) {
@@ -130,10 +131,45 @@ public class DocumentConverter {
         }
     }
 
-    private DocumentPreview truncate(String text) {
+    /**
+     * Reads no more of a text file than {@code maxDocumentChars} characters can take, at four
+     * bytes each in UTF-8, so a large file is not held whole on the request thread.
+     */
+    private DocumentPreview readText(Path file) throws IOException {
+        int limit = (int) Math.min(Integer.MAX_VALUE - 8, (long) properties.maxDocumentChars() * 4);
+        byte[] bytes;
+        boolean cut;
+        try (InputStream in = Files.newInputStream(file)) {
+            bytes = in.readNBytes(limit);
+            cut = in.read() != -1;
+        }
+        int length = cut ? utf8Boundary(bytes) : bytes.length;
+        return truncate(CsvSampler.decode(Arrays.copyOf(bytes, length)), cut);
+    }
+
+    /**
+     * The length of {@code bytes} without a UTF-8 sequence left incomplete at the end. Bytes that
+     * are not UTF-8 at all are left alone, for the Latin-1 fallback to decode.
+     */
+    static int utf8Boundary(byte[] bytes) {
+        int end = bytes.length;
+        // Step back over at most three continuation bytes (10xxxxxx) to the byte that leads them.
+        int lead = end - 1;
+        while (lead >= 0 && lead > end - 4 && (bytes[lead] & 0xc0) == 0x80) {
+            lead--;
+        }
+        if (lead < 0) {
+            return end;
+        }
+        int b = bytes[lead] & 0xff;
+        int needed = b >= 0xf0 ? 4 : b >= 0xe0 ? 3 : b >= 0xc0 ? 2 : 1;
+        return end - lead < needed ? lead : end;
+    }
+
+    private DocumentPreview truncate(String text, boolean cut) {
         int max = properties.maxDocumentChars();
         if (text.length() <= max) {
-            return DocumentPreview.text(text, false);
+            return DocumentPreview.text(text, cut);
         }
         // Never end on half of a surrogate pair.
         int end = max > 0 && Character.isHighSurrogate(text.charAt(max - 1)) ? max - 1 : max;
