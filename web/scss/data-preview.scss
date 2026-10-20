@@ -9,6 +9,16 @@
         white-space: nowrap;
 
         // A missing-value marker (NA, -999...) reads as absent; a blank cell is just empty
+        // A blank cell keeps empty text; the marker is drawn by CSS
+        .cell-empty {
+            background-color: var(--bs-tertiary-bg);
+
+            &::after {
+                content: "–";
+                color: var(--bs-secondary-color);
+            }
+        }
+
         .cell-missing {
             color: var(--bs-secondary-color);
             font-style: italic;

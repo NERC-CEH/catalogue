@@ -76,6 +76,21 @@ describe('DataPreviewView', () => {
     expect(text('.data-preview')).toContain('Loading preview…')
   })
 
+  it('shows Loading preview… in the documents pane during the manifest load too', () => {
+    start()
+
+    expect(text('.data-preview-documents')).toBe('Loading preview…')
+  })
+
+  it('shows a placeholder, not the previous file, while an uncached tab loads', async () => {
+    await manifestThen(manifest())
+
+    $page.find('.data-preview-data [role=tab]').eq(1).trigger('click')
+
+    expect(text('.data-preview-data .data-preview-panel')).toBe('Loading preview…')
+    expect($page.find('.data-preview-data table').length).toBe(0)
+  })
+
   it('makes a tab per CSV file, selects the first and fetches it', async () => {
     await manifestThen(manifest())
 
@@ -289,6 +304,7 @@ describe('DataPreviewView', () => {
       answer('/document?', json({ error: 'busy' }, 503))
       await vi.waitFor(() => expect(text('.data-preview-documents')).toContain('The preview is busy, try again shortly'))
 
+      expect($page.find('.data-preview-documents a').attr('href')).toBe(DOCUMENTS)
       expect(text('.data-preview-data')).not.toContain('busy')
       expect($page.find('.data-preview-data table').length).toBe(1)
     })
@@ -297,6 +313,8 @@ describe('DataPreviewView', () => {
       await withDocuments()
       answer('/document?', json({ error: 'x' }, 500))
       await vi.waitFor(() => expect(text('.data-preview-documents')).toContain('Preview unavailable'))
+
+      expect($page.find('.data-preview-documents a').attr('href')).toBe(DOCUMENTS)
     })
 
     it('leaves the documents pane out when there are none, widening the data pane', async () => {

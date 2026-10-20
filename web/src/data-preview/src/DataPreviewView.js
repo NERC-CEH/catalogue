@@ -19,6 +19,7 @@ export default Backbone.View.extend({
     this.$data = this.$('.data-preview-data')
     this.$documents = this.$('.data-preview-documents')
     this.$data.text('Loading preview…')
+    this.$documents.text('Loading preview…')
     this.ready = this.loadManifest()
   },
 
@@ -39,12 +40,14 @@ export default Backbone.View.extend({
       this.manifest = await this.fetchJson(this.endpoint())
     } catch {
       this.$data.empty().append(this.unavailable())
+      this.$documents.empty()
       return
     }
     const csvFiles = this.manifest.csvFiles || []
     const documents = this.manifest.documents || []
     if (!csvFiles.length && !documents.length) return this.removeSection()
     this.$data.empty()
+    this.$documents.empty()
     if (csvFiles.length) {
       this.csvPane = this.tabbedPane(this.$data, csvFiles, (entry) => this.csvContent(entry))
       this.$data.append(this.csvFooter(csvFiles))
@@ -85,6 +88,7 @@ export default Backbone.View.extend({
         $(tab).toggleClass('active', i === index).attr('aria-selected', String(i === index))
       })
       if (!cache.has(index)) {
+        $panel.empty().text('Loading preview…')
         cache.set(index, build(entries[index]).catch(failure => { cache.delete(index); return failure.content }))
       }
       const content = await cache.get(index)
@@ -100,6 +104,12 @@ export default Backbone.View.extend({
 
   packageLink () {
     return this.packageUrl ? $('<a></a>').attr('href', this.packageUrl).text('Download the full dataset') : $()
+  },
+
+  documentsLink () {
+    return this.documentsUrl
+      ? $('<a></a>').attr('href', this.documentsUrl).text('In the supporting documents download')
+      : $()
   },
 
   unavailable () {
@@ -141,8 +151,8 @@ export default Backbone.View.extend({
     } catch (status) {
       throw Object.assign(new Error(`Document ${status}`), {
         content: $('<p class="text-muted"></p>').text(status === 503
-          ? 'The preview is busy, try again shortly'
-          : 'Preview unavailable')
+          ? 'The preview is busy, try again shortly. '
+          : 'Preview unavailable. ').append(this.documentsLink())
       })
     }
     if (result.kind === 'TEXT') {
@@ -154,7 +164,6 @@ export default Backbone.View.extend({
       return $('<div class="data-preview-scroll"></div>').append(renderTable(result.table))
     }
     const $note = $('<p class="text-muted"></p>').append($('<strong></strong>').text(entry.label), $('<br>'))
-    const text = 'In the supporting documents download'
-    return $note.append(this.documentsUrl ? $('<a></a>').attr('href', this.documentsUrl).text(text) : document.createTextNode(text))
+    return $note.append(this.documentsUrl ? this.documentsLink() : document.createTextNode('In the supporting documents download'))
   }
 })

@@ -27,6 +27,16 @@ describe('csvTable', () => {
       expect($(table).find('td.cell-empty').length).toBe(1)
     })
 
+    it('marks a blank cell as empty and leaves a real value unmarked', () => {
+      const cells = $(render({ header: ['a', 'b', 'c'], rows: [[' ', 'NA', 'x']] })).find('td')
+
+      expect(cells.eq(0).hasClass('cell-empty')).toBe(true)
+      expect(cells.eq(0).text()).toBe(' ')
+      expect(cells.eq(1).hasClass('cell-missing')).toBe(true)
+      expect(cells.eq(1).hasClass('cell-empty')).toBe(false)
+      expect(cells.eq(2).hasClass('cell-empty') || cells.eq(2).hasClass('cell-missing')).toBe(false)
+    })
+
     it('renders markup as literal text', () => {
       const table = render({ header: ['<b>h</b>'], rows: [['<img src=x onerror=alert(1)>']] })
 
