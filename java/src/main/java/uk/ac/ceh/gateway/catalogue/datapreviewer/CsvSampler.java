@@ -98,7 +98,8 @@ public class CsvSampler {
         return -1;
     }
 
-    private static String decode(byte[] bytes) {
+    // Package-private so DocumentConverter decodes plain text the same way.
+    static String decode(byte[] bytes) {
         try {
             return StandardCharsets.UTF_8.newDecoder()
                 .onMalformedInput(CodingErrorAction.REPORT)
