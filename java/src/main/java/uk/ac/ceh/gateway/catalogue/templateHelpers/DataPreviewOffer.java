@@ -4,11 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.ac.ceh.gateway.catalogue.datapreviewer.DataPreviewProperties;
 import uk.ac.ceh.gateway.catalogue.datapreviewer.OpenDataAccess;
+import uk.ac.ceh.gateway.catalogue.gemini.DistributionInfo;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Decides, for the record page, whether to render the Data Preview container. It reads only the
@@ -53,8 +56,11 @@ public class DataPreviewOffer {
     }
 
     private boolean hasCsvFormat(GeminiDocument gemini) {
-        return gemini.getDistributionFormats().stream()
-            .anyMatch(format -> format.getName().toUpperCase(Locale.ROOT).contains("CSV"));
+        List<DistributionInfo> formats = gemini.getDistributionFormats();
+        return formats != null && formats.stream()
+            .filter(Objects::nonNull)
+            .map(DistributionInfo::getName)
+            .anyMatch(name -> name != null && name.toUpperCase(Locale.ROOT).contains("CSV"));
     }
 
     private boolean hasSupportingDocuments(GeminiDocument gemini) {

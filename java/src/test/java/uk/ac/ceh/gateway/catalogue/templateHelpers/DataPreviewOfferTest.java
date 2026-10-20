@@ -14,6 +14,7 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -73,6 +74,34 @@ class DataPreviewOfferTest {
             OnlineResource.builder().url(SUPPORTING_DOCS).function("information").build()));
 
         assertThat(offer(true).offered(ID), is(true));
+    }
+
+    @Test
+    void nullNamedFormatDoesNotStopSupportingDocsOffer() {
+        DistributionInfo format = nullNamed();
+        when(document.getDistributionFormats()).thenReturn(List.of(format));
+        when(document.getOnlineResources()).thenReturn(List.of(
+            OnlineResource.builder().url(SUPPORTING_DOCS).function("information").build()));
+
+        assertThat(offer(true).offered(ID), is(true));
+    }
+
+    @Test
+    void nullNamedFormatDoesNotHideALaterCsv() {
+        List<DistributionInfo> formats = new ArrayList<>();
+        formats.add(null);
+        formats.add(nullNamed());
+        formats.add(DistributionInfo.builder().name("CSV").build());
+        when(document.getDistributionFormats()).thenReturn(formats);
+
+        assertThat(offer(true).offered(ID), is(true));
+    }
+
+    // The constructor turns a missing name into "", but the getter is not otherwise guarded.
+    private static DistributionInfo nullNamed() {
+        DistributionInfo format = mock(DistributionInfo.class);
+        when(format.getName()).thenReturn(null);
+        return format;
     }
 
     @Test
