@@ -1,0 +1,25 @@
+// The record page's Data Preview section (src/data-preview): what Bootstrap's utilities don't cover
+.data-preview {
+    .data-preview-scroll {
+        overflow-x: auto;
+        max-height: 24rem;
+    }
+
+    .data-preview-table {
+        white-space: nowrap;
+
+        // A missing-value marker (NA, -999...) reads as absent; a blank cell is just empty
+        .cell-missing {
+            color: var(--bs-secondary-color);
+            font-style: italic;
+        }
+    }
+
+    // Supporting documents arrive as lines of tab-separated cells, so tabs and newlines are kept
+    .data-preview-text {
+        white-space: pre-wrap;
+        tab-size: 8ch;
+        max-height: 24rem;
+        overflow: auto;
+    }
+}

@@ -249,6 +249,12 @@ export async function initWmsMap ($previews) {
   $previews.each((i, el) => { new WmsMapView({ el }) })
 }
 
+// The record page's Data Preview section: CSV rows beside the supporting documents
+export async function initDataPreview ($previews) {
+  const { DataPreviewView } = await load.dataPreview()
+  $previews.each((i, el) => { new DataPreviewView({ el }) })
+}
+
 export async function initPermission () {
   const [{ PermissionApp, PermissionAppView, PermissionRouter }, MessageView] = await Promise.all([load.permission(), load.messageView()])
   const app = new PermissionApp()
@@ -358,7 +364,8 @@ export const APPS = [
   { selector: '#metrics-report', start: initMetricsReport, router: true },
   { selector: '#deposit-request', start: initDepositRequest, router: true },
   { selector: '.clone-control', start: initClone },
-  { selector: '.wms-map-preview', start: initWmsMap }
+  { selector: '.wms-map-preview', start: initWmsMap },
+  { selector: '.data-preview', start: initDataPreview }
 ]
 
 // Starts each app whose element is on the page, then Backbone history once the apps with routers have

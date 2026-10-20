@@ -9,6 +9,7 @@ describe('Micro-app loaders', () => {
     catalogueApp: ['Catalogue', 'CatalogueView', 'CatalogueViewModel', 'CatalogueViewView', 'linkHref'],
     studyArea: ['StudyAreaView'],
     wmsMap: ['WmsMapView'],
+    dataPreview: ['DataPreviewView'],
     permission: ['PermissionApp', 'PermissionAppView', 'PermissionRouter'],
     search: ['SearchApp', 'SearchAppView', 'SearchRouter'],
     simpleUpload: ['SimpleUploadView'],
