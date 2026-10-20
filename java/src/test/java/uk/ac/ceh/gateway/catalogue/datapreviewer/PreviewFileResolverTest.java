@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -75,6 +76,44 @@ class PreviewFileResolverTest {
     void refusesNullOrBlankPath() {
         assertThat(resolver.resolve(base, RECORD, null), is(Optional.empty()));
         assertThat(resolver.resolve(base, RECORD, "  "), is(Optional.empty()));
+    }
+
+    @Test
+    void refusesSymlinkPointingOutsideRecordDirectory() {
+        Path link = symlink(base.resolve(RECORD).resolve("escape.csv"), base.resolve("other").resolve("c.csv"));
+
+        assertThat(resolver.resolve(base, RECORD, link.getFileName().toString()), is(Optional.empty()));
+    }
+
+    @Test
+    void refusesSymlinkedDirectoryPointingOutsideRecordDirectory() {
+        symlink(base.resolve(RECORD).resolve("elsewhere"), base.resolve("other"));
+
+        assertThat(resolver.resolve(base, RECORD, "elsewhere/c.csv"), is(Optional.empty()));
+    }
+
+    @Test
+    void allowsSymlinkToAnotherFileInRecordDirectory() {
+        symlink(base.resolve(RECORD).resolve("alias.csv"), base.resolve(RECORD).resolve("sub").resolve("b.csv"));
+
+        assertThat(resolver.resolve(base, RECORD, "alias.csv"),
+            is(Optional.of(base.resolve(RECORD).resolve("alias.csv"))));
+    }
+
+    @Test
+    void refusesBrokenSymlink() {
+        symlink(base.resolve(RECORD).resolve("dangling.csv"), base.resolve(RECORD).resolve("gone.csv"));
+
+        assertThat(resolver.resolve(base, RECORD, "dangling.csv"), is(Optional.empty()));
+    }
+
+    private static Path symlink(Path link, Path target) {
+        try {
+            return Files.createSymbolicLink(link, target);
+        } catch (IOException | UnsupportedOperationException e) {
+            Assumptions.abort("Symbolic links are not supported here: " + e);
+            return link;
+        }
     }
 
     @Test
