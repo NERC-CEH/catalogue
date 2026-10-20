@@ -106,8 +106,10 @@ public class CacheConfig implements CachingConfigurer {
         // A CSV's first rows or a supporting document's text, read off the CIFS share and, for a
         // document, converted by Tika: the expensive part of the preview, and the same few hot
         // records' files are asked for repeatedly. Keyed on the Hubbub sha256 as well as the path,
-        // so a replaced file misses the cache instead of showing old content; the TTL is therefore
-        // only a memory bound. Entries are capped by the preview limits (rows and characters), but
+        // so a replaced file misses the cache instead of showing old content, and a file Hubbub
+        // reports no checksum for is not cached at all; the TTL is therefore only a memory bound.
+        // CSV and document entries share the cache under kind-prefixed keys, since one file can be
+        // listed in both the data and the supporting-documents datastores. Entries are capped by the preview limits (rows and characters), but
         // a document's text can reach a few hundred KB, so the entry count is kept modest.
         // Exceptions (a busy converter, a share fault) are never cached, so they are retried.
         cacheManager.registerCustomCache(PreviewContentReader.DATA_PREVIEW_CONTENT_CACHE,

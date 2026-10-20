@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -368,10 +369,11 @@ class DataPreviewServiceTest {
 
     @Test
     void otherRepositoryFailurePropagates() throws Exception {
-        when(documentRepository.read(ID)).thenThrow(
-            new DocumentRepositoryException("Cannot read file: " + ID, new IOException("share down")));
+        DocumentRepositoryException failure =
+            new DocumentRepositoryException("Cannot read file: " + ID, new IOException("share down"));
+        when(documentRepository.read(ID)).thenThrow(failure);
 
-        RuntimeException thrown = assertThrows(RuntimeException.class, () -> service.manifest(ID));
-        assertThat(thrown instanceof NoSuchElementException, is(false));
+        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> service.manifest(ID));
+        assertThat(thrown.getCause(), is(sameInstance(failure)));
     }
 }
