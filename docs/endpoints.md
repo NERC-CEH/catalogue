@@ -31,6 +31,13 @@ Goes to `cig-prod:7100` (this catalogue), search page of each catalogue
 
 Goes to `cig-prod:7100` (this catalogue), metadata record
 
+The data preview on the dataset record page reads three further paths under it, all `GET`, public
+and only registered when `catalogue.data-preview.enabled` is true:
+
+- `{catalogue}/documents/{id}/data-preview` lists the CSV files and supporting documents that can be previewed
+- `{catalogue}/documents/{id}/data-preview/csv?path=...` returns the first rows of one listed CSV file
+- `{catalogue}/documents/{id}/data-preview/document?path=...` returns one listed supporting document as text
+
 ### {catalogue}/maintenance/**
 
 Goes to `cig-prod:7100` (this catalogue), maintenance operations e.g. reindex
