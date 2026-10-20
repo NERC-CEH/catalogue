@@ -586,6 +586,135 @@ body {
         width: var(--map-width, 300px);
     }
 
+    .wms-map-preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+
+        // Data for the view, not for reading
+        .wms-service,
+        .wms-extent {
+            display: none;
+        }
+
+        .wms-map {
+            flex: 1 1 100%;
+            height: var(--map-height, 400px);
+            width: 100%;
+        }
+
+        .wms-layers,
+        .wms-gis-help,
+        .wms-map-unavailable {
+            flex: 1 1 100%;
+        }
+
+        // Joined to the map as one shape, and never taller than it: a long layer list scrolls
+        .wms-layers {
+            background: var(--bs-tertiary-bg);
+            margin-top: -1rem; // undo the gap, so it hangs from the map's bottom edge
+            max-height: var(--map-height, 400px);
+            overflow-y: auto;
+            padding: 0.5rem 0.75rem;
+        }
+
+        // The heading sits inline so the disclosure marker stays beside it
+        .wms-gis-help > summary {
+            margin-bottom: 0.5rem;
+
+            h3 {
+                display: inline;
+            }
+        }
+
+        .wms-control-title {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        // Leaflet's layer list is a <section>, so base.scss gives it a page section's padding
+        .leaflet-control-layers-list {
+            padding: 0;
+        }
+
+        // Fixed caps: Leaflet's control corners shrink to fit, so percentages here resolve against the
+        // legend itself and squash the image. A larger legend scrolls instead.
+        .wms-legend {
+            background: var(--bs-body-bg, #fff);
+            padding: 0.25rem 0.5rem 0.5rem;
+            max-height: calc(var(--map-height, 400px) * 0.6);
+            max-width: 16rem;
+            overflow: auto;
+
+            > summary {
+                cursor: pointer;
+            }
+
+            &:not([open]) {
+                padding-bottom: 0.25rem;
+
+                > summary {
+                    margin-bottom: 0;
+                }
+            }
+
+            img {
+                display: block;
+            }
+
+            // Labels end in an ellipsis rather than widen the legend; the view titles the cut-off ones
+            .wms-legend-entry {
+                align-items: center;
+                display: flex;
+                font-size: 0.8125rem;
+                gap: 0.4rem;
+                line-height: 1.4;
+                min-width: 0;
+            }
+
+            .wms-legend-label {
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .wms-legend-swatch {
+                border: 1px solid rgb(0 0 0 / 25%);
+                flex: 0 0 auto;
+                height: 0.75rem;
+                width: 1rem;
+            }
+
+            .wms-legend-swatch-line {
+                border: 0;
+                height: 3px;
+            }
+
+            .wms-legend-swatch-point {
+                border-radius: 50%;
+                height: 0.65rem;
+                width: 0.65rem;
+            }
+        }
+
+        @include media-breakpoint-up(md) {
+            // Only the map and the layer list share a row, so this joins just those two
+            column-gap: 0;
+
+            .wms-map {
+                flex: 1 1 0;
+                width: auto;
+            }
+
+            .wms-layers {
+                flex: 0 0 14rem;
+                height: var(--map-height, 400px);
+                margin-top: 0;
+            }
+        }
+    }
+
     .mintDOI {
         margin: 0 1em;
     }

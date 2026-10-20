@@ -3,6 +3,7 @@ import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import template from './editorTemplate'
+import { copyText } from '../../clipboard/copyText'
 
 export default Backbone.View.extend({
 
@@ -44,14 +45,7 @@ export default Backbone.View.extend({
             const payload = document.getElementById('conflictPayload')
             if (copyButton && payload) {
               copyButton.addEventListener('click', () => {
-                payload.select()
-                const done = () => { copyButton.textContent = 'Copied!' }
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                  navigator.clipboard.writeText(submitted).then(done, () => document.execCommand('copy'))
-                } else {
-                  document.execCommand('copy')
-                  done()
-                }
+                copyText(payload).then(ok => { if (ok) copyButton.textContent = 'Copied!' })
               })
             }
           }

@@ -4,6 +4,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import uk.ac.ceh.gateway.catalogue.document.CatalogueRecordIds;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 
@@ -25,11 +26,11 @@ import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 @ToString
 public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, List<Statement>> {
     private final JenaIndexMetadataDocumentGenerator generator;
-    private final String baseUri;
+    private final CatalogueRecordIds catalogueRecordIds;
 
-    public JenaIndexGeminiDocumentGenerator(JenaIndexMetadataDocumentGenerator generator, String baseUri) {
+    public JenaIndexGeminiDocumentGenerator(JenaIndexMetadataDocumentGenerator generator, CatalogueRecordIds catalogueRecordIds) {
         this.generator = generator;
-        this.baseUri = baseUri;
+        this.catalogueRecordIds = catalogueRecordIds;
         log.info("Creating");
     }
 
@@ -98,7 +99,7 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .stream()
             .filter(r -> !r.isEmpty())
             .forEach(r ->
-                toReturn.add(createStatement(me, DCTERMS_REQUIRES, createResource(r)))
+                toReturn.add(createStatement(me, DCTERMS_REQUIRES, requiredResource(r)))
             );
         Optional.ofNullable(document.getPublicationDate())
             .ifPresent(publicationDate -> {
@@ -111,5 +112,11 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
 
         toReturn.add(createStatement(me, RESOURCE_STATUS, createTypedLiteral(document.getAvailability())));
         return toReturn;
+    }
+
+    private Resource requiredResource(String identifier) {
+        return catalogueRecordIds.recordId(identifier)
+            .map(generator::resource)
+            .orElseGet(() -> createResource(identifier));
     }
 }

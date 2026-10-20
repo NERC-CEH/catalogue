@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
+import uk.ac.ceh.gateway.catalogue.document.CatalogueRecordIds;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
@@ -73,6 +74,7 @@ public class IndexingServicesConfig {
     @Bean @Qualifier("jena-index")
     public JenaIndexingService jenaIndexingService(
             @Value("${documents.baseUri}") String baseUri,
+            CatalogueRecordIds catalogueRecordIds,
             BundledReaderService<MetadataDocument> bundledReaderService,
             DataRepository<CatalogueUser> dataRepository,
             DocumentIdentifierService documentIdentifierService,
@@ -82,7 +84,7 @@ public class IndexingServicesConfig {
         JenaIndexMetadataDocumentGenerator documentGenerator = new JenaIndexMetadataDocumentGenerator(documentIdentifierService);
 
         ClassMap<IndexGenerator<?, List<Statement>>> mappings = new PrioritisedClassMap<IndexGenerator<?, List<Statement>>>()
-            .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(documentGenerator, baseUri))
+            .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(documentGenerator, catalogueRecordIds))
             .register(CodeDocument.class, new JenaIndexCodeDocumentGenerator(documentGenerator, baseUri))
             .register(InfrastructureRecord.class, new JenaIndexInfrastructureRecordGenerator(documentGenerator, baseUri))
             .register(LinkDocument.class, new JenaIndexLinkDocumentGenerator(documentGenerator))

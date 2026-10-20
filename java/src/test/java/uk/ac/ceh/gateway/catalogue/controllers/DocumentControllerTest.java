@@ -60,6 +60,9 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FileDetailsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.wms.WmsMap;
+import uk.ac.ceh.gateway.catalogue.model.Link;
+import uk.ac.ceh.gateway.catalogue.wms.WmsMapService;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.io.ByteArrayInputStream;
@@ -70,6 +73,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.containsString;
@@ -80,6 +84,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -107,6 +112,7 @@ class DocumentControllerTest extends AbstractMvcTest {
     @MockitoBean private CodeLookupService codeLookupService;
     @MockitoBean private DocumentRepository documentRepository;
     @MockitoBean private JenaLookupService jenaLookupService;
+    @MockitoBean private WmsMapService wmsMapService;
     @MockitoBean(name="permission") private PermissionService permissionService;
     @MockitoBean private ProfileService profileService;
     @MockitoBean private MetricsService metricsService;
@@ -156,6 +162,7 @@ class DocumentControllerTest extends AbstractMvcTest {
         configuration.setSharedVariable("catalogues", catalogueService);
         configuration.setSharedVariable("codes", codeLookupService);
         configuration.setSharedVariable("jena", jenaLookupService);
+        configuration.setSharedVariable("wmsMaps", wmsMapService);
         configuration.setSharedVariable("permission", permissionService);
         configuration.setSharedVariable("profile", profileService);
         configuration.setSharedVariable("downloadOrderDetails", downloadOrderDetailsService);
@@ -304,6 +311,40 @@ class DocumentControllerTest extends AbstractMvcTest {
             Arguments.of(new SampleArchive(), TEXT_HTML, HTML, null),
             Arguments.of(new SampleArchive(), APPLICATION_JSON, JSON, null)
         );
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("The Map lookup sees the relIsRequiredBy links populated from Jena")
+    void mapLookupSeesJenaPopulatedServiceLinks() {
+        //given
+        val document = new GeminiDocument();
+        document.setType("dataset");
+        givenUserIsPermittedToView();
+        givenMetadataDocument(document);
+        givenCatalogue();
+        givenDefaultCatalogue();
+        givenFreemarkerConfiguration();
+        givenProfileNotActive();
+        givenCodeLookup();
+        givenMetadataQuality();
+        val link = Link.builder().href("https://example.com/svc1").build();
+        given(jenaService.inverseRelationships("https://example.com/" + id, "http://purl.org/dc/terms/requires"))
+            .willReturn(List.of(link));
+        given(wmsMapService.forRecord(any(), any(), any(), any(), any()))
+            .willReturn(List.of(new WmsMap("svc1", "Svc", "https://example.com/maps/abc?request=GetCapabilities",
+                "https://example.com/maps/abc", "/maps/abc", List.of("LC.A"), Map.of())));
+
+        //when
+        val result = mvc.perform(get("/documents/{id}", id).accept(TEXT_HTML))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        //then
+        verify(wmsMapService).forRecord(eq(id), eq("Test title"), eq("dataset"), any(), eq(List.of(link)));
+        assertThat(result, containsString("id=\"segment-map\""));
     }
 
     @Test

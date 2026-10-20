@@ -5,7 +5,7 @@ import { load } from '../load'
 import {
   APPS, editorLookup, initCatalogue, initCatalogueView, initClone, initDepositRequest, initEditor, initHubbub,
   initMetricsReport, initPermission, initSearch, initServiceAgreement, initSimpleUpload, initStudyAreaMap,
-  navbarToggle, page, startApps, stickyHeader
+  initWmsMap, navbarToggle, page, startApps, stickyHeader
 } from '../apps'
 import { fakeServer } from '../../test/support'
 
@@ -115,7 +115,7 @@ describe('Page start-up', () => {
       expect(APPS.map(each => each.selector)).toEqual([
         '.catalogue-control', '.catalogue-view-control', '.edit-control', '.nav-toggle', '.service-agreement',
         '.geometry-map', '.permission', '#search', '#simple-upload', '#document-upload', '#studyarea-map',
-        '#metrics-report', '#deposit-request', '.clone-control'
+        '#metrics-report', '#deposit-request', '.clone-control', '.wms-map-preview'
       ])
       APPS.forEach(each => expect(each.start, each.selector).toEqual(expect.any(Function)))
     })
@@ -358,6 +358,16 @@ describe('Page start-up', () => {
       await initStudyAreaMap()
 
       expect(StudyAreaView.made[0][0]).toEqual({ el: '#studyarea-map' })
+    })
+
+    it('maps: a WMS preview for each Map section', async () => {
+      pageWith('<div class="wms-map-preview"></div>')
+      const WmsMapView = recording()
+      vi.spyOn(load, 'wmsMap').mockResolvedValue({ WmsMapView })
+
+      await initWmsMap($('.wms-map-preview'))
+
+      expect(WmsMapView.made[0][0]).toEqual({ el: $('.wms-map-preview')[0] })
     })
   })
 

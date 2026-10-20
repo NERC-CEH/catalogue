@@ -8,6 +8,7 @@ describe('Micro-app loaders', () => {
     editor: ['GeminiEditorView', 'EditorMetadata', 'ServiceAgreementEditorView', 'ServiceAgreement'],
     catalogueApp: ['Catalogue', 'CatalogueView', 'CatalogueViewModel', 'CatalogueViewView', 'linkHref'],
     studyArea: ['StudyAreaView'],
+    wmsMap: ['WmsMapView'],
     permission: ['PermissionApp', 'PermissionAppView', 'PermissionRouter'],
     search: ['SearchApp', 'SearchAppView', 'SearchRouter'],
     simpleUpload: ['SimpleUploadView'],

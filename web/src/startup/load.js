@@ -13,6 +13,8 @@ export const load = {
 
   studyArea: () => import('../study-area/src/View'),
 
+  wmsMap: () => import('../wms-map/src'),
+
   messageView: () => import('../search/src/views/MessageView')
     .then(module => module.default),
 

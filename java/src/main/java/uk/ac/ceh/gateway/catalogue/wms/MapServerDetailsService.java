@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+import uk.ac.ceh.gateway.catalogue.document.CatalogueRecordIds;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource.Attribute.Bucket;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.Projection;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 import java.math.BigDecimal;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.nonNull;
+import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 
 /**
  * The following service is a 'helper' which produces text which is useful in
@@ -34,13 +37,16 @@ import static java.util.Objects.nonNull;
 public class MapServerDetailsService {
     private final String hostUrl;
     private final String mapserverUrl;
+    private final CatalogueRecordIds catalogueRecordIds;
 
     public MapServerDetailsService(
         @Value("${documents.baseUri}") String hostUrl,
-        @Value("${mapserver.url:http://mapserver/{id}}") String mapserverUrl
+        @Value("${mapserver.url:http://mapserver/{id}}") String mapserverUrl,
+        CatalogueRecordIds catalogueRecordIds
     ) {
         this.hostUrl = hostUrl;
         this.mapserverUrl = mapserverUrl;
+        this.catalogueRecordIds = catalogueRecordIds;
         log.info("Creating");
     }
 
@@ -133,6 +139,31 @@ public class MapServerDetailsService {
             return getLocalWMSRequest(pathSegments.get(1), uri.getQuery());
         }
         return wmsUrl;
+    }
+
+    /**
+     * If the online resource is a GetCapabilities request to this catalogue's
+     * own WMS at /maps/{id} (on the canonical host or the configured host,
+     * either scheme, any port), return that id.
+     * @param resource online resource to inspect
+     * @return the map id, or empty if the resource is not a local WMS
+     */
+    public Optional<String> getLocalMapId(OnlineResource resource) {
+        if (resource == null || resource.getType() != WMS_GET_CAPABILITIES) {
+            return Optional.empty();
+        }
+        try {
+            UriComponents uri = UriComponentsBuilder.fromUriString(resource.getUrl()).build();
+            List<String> pathSegments = uri.getPathSegments();
+            if (pathSegments.size() == 2
+                && "maps".equals(pathSegments.get(0))
+                && catalogueRecordIds.isCatalogueHost(uri.getHost())) {
+                return Optional.of(pathSegments.get(1));
+            }
+        } catch (IllegalArgumentException e) {
+            log.debug("Unparseable online resource url {}", resource.getUrl());
+        }
+        return Optional.empty();
     }
 
     /**
