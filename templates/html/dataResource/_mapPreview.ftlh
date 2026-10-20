@@ -1,7 +1,8 @@
-<#if wmsMapList?has_content>
-  <#assign wmsPrimary = wmsMapList?first>
+<#if wmsMapList?has_content || (dataPreviewOffered!false)>
   <div id="segment-map">
     <h2>Data Preview</h2>
+    <#if wmsMapList?has_content>
+    <#assign wmsPrimary = wmsMapList?first>
     <div class="wms-map-preview">
       <#list boundingBoxes![] as extent>
         <span class="wms-extent" data-west="${extent.westBoundLongitude?c}" data-east="${extent.eastBoundLongitude?c}" data-south="${extent.southBoundLatitude?c}" data-north="${extent.northBoundLatitude?c}"></span>
@@ -43,5 +44,16 @@
         </div>
       </details>
     </div>
+    </#if>
+    <#if dataPreviewOffered!false>
+      <#assign previewAccess = downloadOrderDetails.from(onlineResources![])>
+      <#assign previewPackage = previewAccess.dataAccessResources?filter(r -> r.function == "fileAccess" || r.function == "download")>
+      <div class="data-preview" data-record-id="${id}" data-package-url="<#if previewPackage?has_content>/download/${id}?url=${previewPackage?first.url}</#if>" data-supporting-documents-url="${previewAccess.supportingDocumentsUrl!}">
+        <div class="row g-3">
+          <div class="col-lg-7 data-preview-data"></div>
+          <div class="col-lg-5 data-preview-documents"></div>
+        </div>
+      </div>
+    </#if>
   </div>
 </#if>

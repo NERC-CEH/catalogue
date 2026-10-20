@@ -1,4 +1,5 @@
 <#assign wmsMapList = wmsMaps.forRecord(id, title, resourceType.value, onlineResources![], relIsRequiredBy![])>
+<#assign dataPreviewOffered = dataPreview.offered(id)>
 
 <#if isLinkedDoc>
   <#include "_linked.ftlh">

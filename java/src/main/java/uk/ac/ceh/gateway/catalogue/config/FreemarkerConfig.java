@@ -43,6 +43,7 @@ public class FreemarkerConfig {
     private final FileListService fileListService;
     private final UriNormaliser uriNormaliser;
     private final WmsMapService wmsMapService;
+    private final DataPreviewOffer dataPreviewOffer;
     @Nullable private final ServiceAgreementQualityService serviceAgreementQualityService;
     @Nullable private final MetricsService metricsService;
     @Value("${access-button.collection.link}") private String collectionAccessButtonLink;
@@ -72,6 +73,7 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("wmsMaps", wmsMapService);
         freemarkerConfiguration.setSharedVariable("userInfo", new SecurityUserInfo());
         freemarkerConfiguration.setSharedVariable("fileDetails", fileDetailsService);
+        freemarkerConfiguration.setSharedVariable("dataPreview", dataPreviewOffer);
         freemarkerConfiguration.setSharedVariable("downloadUrlRegexes", downloadUrlProperties);
         freemarkerConfiguration.setSharedVariable("fileListService", fileListService);
         freemarkerConfiguration.setSharedVariable("collectionAccessButtonLink", collectionAccessButtonLink);
