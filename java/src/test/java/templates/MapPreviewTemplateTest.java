@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import uk.ac.ceh.gateway.catalogue.config.DownloadUrlProperties;
+import uk.ac.ceh.gateway.catalogue.gemini.DistributionInfo;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.DataPreviewOffer;
@@ -23,11 +24,14 @@ import uk.ac.ceh.gateway.catalogue.wms.WmsMap;
 import uk.ac.ceh.gateway.catalogue.wms.WmsMapService;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -249,6 +253,38 @@ class MapPreviewTemplateTest {
 
         assertThat(actual, containsString("wms-map-preview"));
         assertThat(actual, containsString("class=\"data-preview\""));
+    }
+
+    @Test
+    void tocListsDataPreviewDirectlyAfterDescription() {
+        stub();
+        when(dataPreview.offered("abc")).thenReturn(true);
+        val gemini = previewDocument();
+        gemini.setDescription("What the dataset is");
+        gemini.setDistributionFormats(List.of(DistributionInfo.builder().name("Comma-separated values (CSV)").build()));
+
+        val toc = render(TOC, gemini);
+        int description = toc.indexOf("href=\"#segment-description\"");
+        int preview = toc.indexOf("href=\"#segment-map\"");
+        int formats = toc.indexOf("href=\"#segment-formats\"");
+
+        assertThat(description, greaterThan(-1));
+        assertThat(preview, greaterThan(description));
+        assertThat(formats, greaterThan(preview));
+    }
+
+    @SneakyThrows
+    @Test
+    void pageIncludesDataPreviewDirectlyAfterDescription() {
+        // The record page itself needs too many helpers to render here, so check the include order
+        val page = Files.readString(Path.of("../templates/html/dataResource/_typeDataset.ftlh"));
+        int description = page.indexOf("<#include \"_description.ftlh\">");
+        int preview = page.indexOf("<#include \"_mapPreview.ftlh\">");
+
+        assertThat(description, greaterThan(-1));
+        assertThat(preview, greaterThan(description));
+        assertThat(page.indexOf("<#include \"_uploadData.ftlh\">"), greaterThan(preview));
+        assertThat(page.indexOf("<#include \"_formats.ftlh\">"), greaterThan(preview));
     }
 
     @Test

@@ -46,6 +46,8 @@
         <#include "_description.ftlh">
       </#if>
 
+      <#include "_mapPreview.ftlh">
+
       <#if !isLinkedDoc>
         <#include "_uploadData.ftlh">
 
@@ -60,7 +62,6 @@
 
       <#include "_formats.ftlh">
       <#if resourceType.value !='nonGeographicDataset'><#include "_spatial.ftlh"></#if>
-      <#include "_mapPreview.ftlh">
       <#include "_temporal.ftlh">
       <#include "_dataquality.ftlh">
       <#include "_constraints.ftlh">
