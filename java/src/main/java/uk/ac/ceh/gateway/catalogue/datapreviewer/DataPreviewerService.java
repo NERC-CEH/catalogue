@@ -1,12 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.datapreviewer;
 
-import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
@@ -23,6 +20,7 @@ public class DataPreviewerService {
     private final UploadService uploadService;
     private final DocumentRepository documentRepository;
     private final JenaLookupService jenaLookupService;
+    private final OpenDataAccess openDataAccess;
 
     public Object preview(String id) throws DocumentRepositoryException {
         GeminiDocument doc = (GeminiDocument) documentRepository.read(id);
@@ -86,21 +84,7 @@ public class DataPreviewerService {
     }
 
     private void enforcePublicAccess(GeminiDocument document) {
-        MetadataInfo metadataInfo = document.getMetadata();
-        Multimap<Permission, String> permissions =
-            metadataInfo.getPermissions();
-
-        boolean hasPublicView =
-            permissions.containsEntry(Permission.VIEW, "public");
-
-        boolean isAvailable =
-            "Available".equalsIgnoreCase(document.getAvailability());
-
-        boolean isFreelyAvailable =
-            document.getAccessLimitation() != null &&
-                document.getAccessLimitation().grantsOpenAccess();
-
-        if (!(hasPublicView && isAvailable && isFreelyAvailable)) {
+        if (!openDataAccess.isOpen(document)) {
             throw new SecurityException("Dataset not publicly accessible");
         }
     }

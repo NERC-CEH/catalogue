@@ -1,16 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
-import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
+import uk.ac.ceh.gateway.catalogue.datapreviewer.OpenDataAccess;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.HubbubResponse;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
@@ -27,6 +24,7 @@ public class DatasetFilesController {
 
     private final UploadService uploadService;
     private final DocumentRepository documentRepository;
+    private final OpenDataAccess openDataAccess;
 
     @GetMapping("/{datasetId}/files")
     public ResponseEntity<?> listDatasetFiles(
@@ -43,19 +41,7 @@ public class DatasetFilesController {
                     .body("Dataset not found: " + datasetId);
             }
 
-            MetadataInfo metadataInfo = document.getMetadata();
-            Multimap<Permission, String> permissions = metadataInfo.getPermissions();
-            String availability = document.getAvailability();
-            AccessLimitation limitation = document.getAccessLimitation();
-
-            boolean hasPublicView = permissions.containsEntry(Permission.VIEW, "public");
-            boolean isAvailable = "Available".equalsIgnoreCase(availability);
-            boolean isFreelyAvailable = limitation != null && limitation.grantsOpenAccess();
-
-            log.debug("Access check for {} -> public={}, available={}, open={}",
-                datasetId, hasPublicView, isAvailable, isFreelyAvailable);
-
-            if (!(hasPublicView && isAvailable && isFreelyAvailable)) {
+            if (!openDataAccess.isOpen(document)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("Dataset not publicly accessible");
             }
