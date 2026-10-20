@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -296,6 +297,26 @@ class DataPreviewServiceTest {
     }
 
     @Test
+    void documentKindFollowsListedNameNotLinkTarget() throws Exception {
+        record("UNRS");
+        data(List.of(), 1, 0);
+        when(uploadService.get(eq(ID), eq(DOCS), anyInt(), anyInt()))
+            .thenReturn(response(List.of(file("notes.txt", "text/plain", "VALID")), 1, 1));
+        Files.createDirectories(tmp.resolve(ID));
+        Path target = Files.writeString(tmp.resolve(ID).resolve("notes.data"), "Notes on the survey");
+        try {
+            Files.createSymbolicLink(tmp.resolve(ID).resolve("notes.txt"), target);
+        } catch (IOException | UnsupportedOperationException e) {
+            Assumptions.abort("Symbolic links are not supported here: " + e);
+        }
+
+        DocumentPreview preview = service.document(ID, "notes.txt").orElseThrow();
+
+        assertThat(preview.kind(), is(DocumentPreview.Kind.TEXT));
+        assertThat(preview.text(), containsString("Notes on the survey"));
+    }
+
+    @Test
     void documentRefusesPathNotInManifest() throws Exception {
         record("UNRS");
         data(List.of(csv("a.csv")), 1, 1);
@@ -321,7 +342,7 @@ class DataPreviewServiceTest {
         when(uploadService.get(eq(ID), eq(DOCS), anyInt(), anyInt()))
             .thenReturn(response(List.of(file("notes.txt", "text/plain", "VALID")), 1, 1));
         DocumentConverter busy = mock(DocumentConverter.class);
-        when(busy.convert(any())).thenThrow(new PreviewBusyException());
+        when(busy.convert(any(), any())).thenThrow(new PreviewBusyException());
         DataPreviewProperties properties = new DataPreviewProperties(
             true, tmp, tmp, 10, 50, 262144, 20971520, 200000, Duration.ofSeconds(20),
             Duration.ofSeconds(3), Duration.ofSeconds(10));

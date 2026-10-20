@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * Maps a record id and a Hubbub-relative path onto a file under a share, refusing anything that
  * would escape {@code <base>/<recordId>/}, whether by the path itself or through a symbolic link.
  * Uses the same lexical containment idiom as {@code SupportingDocumentExtractor.extractText}, then
- * checks the real path.
+ * repeats it on the real paths and returns the file's real path.
  */
 @Component
 public class PreviewFileResolver {
@@ -31,15 +31,21 @@ public class PreviewFileResolver {
             if (!file.startsWith(recordDirectory)) {
                 return Optional.empty();
             }
-            if (!Files.isRegularFile(file) || !Files.isReadable(file)) {
+            // The checks above are lexical, and the file system follows links, so a symbolic link on
+            // the share, for the record directory or the file, could still lead anywhere the
+            // container can read. Repeat them on the real paths.
+            Path realBase = normalisedBase.toRealPath();
+            Path realRecord = recordDirectory.toRealPath();
+            if (!realRecord.startsWith(realBase) || realRecord.equals(realBase)) {
                 return Optional.empty();
             }
-            // The checks above are lexical, and isRegularFile follows links, so a symbolic link on
-            // the share could still lead anywhere the container can read. Compare real paths too. The
-            // listed path, not the real one, is returned, as its extension decides how it is shown.
-            return file.toRealPath().startsWith(recordDirectory.toRealPath())
-                ? Optional.of(file)
-                : Optional.empty();
+            Path real = file.toRealPath();
+            if (!real.startsWith(realRecord) || !Files.isRegularFile(real) || !Files.isReadable(real)) {
+                return Optional.empty();
+            }
+            // The real path is returned so the caller opens exactly what was checked; its name may
+            // differ from the listed one, so callers decide how to show a file by the listed name.
+            return Optional.of(real);
         } catch (InvalidPathException | IOException e) {
             return Optional.empty();
         }

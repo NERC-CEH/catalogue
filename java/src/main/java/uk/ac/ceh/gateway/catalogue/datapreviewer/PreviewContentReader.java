@@ -57,7 +57,7 @@ public class PreviewContentReader {
         condition = "#sha256 != null")
     public DocumentPreview document(String recordId, String path, String sha256) {
         return resolver.resolve(properties.supportingDocumentsLocation(), recordId, path)
-            .map(documentConverter::convert)
+            .map(file -> documentConverter.convert(file, path))
             .orElseGet(DocumentPreview::notPreviewable);
     }
 }

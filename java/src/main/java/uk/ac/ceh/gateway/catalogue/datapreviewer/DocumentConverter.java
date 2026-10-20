@@ -94,7 +94,17 @@ public class DocumentConverter {
      * @throws PreviewBusyException when every conversion worker is busy; try again later
      */
     public DocumentPreview convert(Path file) {
-        String extension = extension(file);
+        return convert(file, file.getFileName().toString());
+    }
+
+    /**
+     * Converts {@code file}, choosing how by the extension of {@code listedName}: the file may be
+     * the real path behind a symbolic link whose own name differs from the one Hubbub lists.
+     *
+     * @throws PreviewBusyException when every conversion worker is busy; try again later
+     */
+    public DocumentPreview convert(Path file, String listedName) {
+        String extension = extension(listedName);
         try {
             if (extension.equals("csv")) {
                 try (InputStream in = Files.newInputStream(file)) {
@@ -257,8 +267,10 @@ public class DocumentConverter {
         }
     }
 
-    private static String extension(Path file) {
-        String name = file.getFileName().toString().toLowerCase(Locale.ROOT);
+    private static String extension(String listedName) {
+        String name = listedName.toLowerCase(Locale.ROOT);
+        int slash = name.lastIndexOf('/');
+        name = name.substring(slash + 1);
         int dot = name.lastIndexOf('.');
         return dot < 0 ? "" : name.substring(dot + 1);
     }

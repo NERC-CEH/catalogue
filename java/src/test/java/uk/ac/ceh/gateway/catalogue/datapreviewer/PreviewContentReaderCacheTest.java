@@ -95,7 +95,7 @@ class PreviewContentReaderCacheTest {
         file.toFile().deleteOnExit();
         when(resolver.resolve(any(), anyString(), anyString())).thenReturn(Optional.of(file));
         when(csvSampler.sample(any(), anyInt(), anyInt())).thenReturn(sample);
-        when(documentConverter.convert(any())).thenReturn(preview);
+        when(documentConverter.convert(any(), any())).thenReturn(preview);
     }
 
     @Test
@@ -123,6 +123,6 @@ class PreviewContentReaderCacheTest {
         reader.document(ID, PATH, null);
 
         verify(csvSampler, times(2)).sample(any(), anyInt(), anyInt());
-        verify(documentConverter, times(2)).convert(any());
+        verify(documentConverter, times(2)).convert(any(), any());
     }
 }

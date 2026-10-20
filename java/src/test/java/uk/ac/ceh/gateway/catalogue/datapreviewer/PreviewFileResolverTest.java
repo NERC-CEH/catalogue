@@ -32,9 +32,9 @@ class PreviewFileResolverTest {
     }
 
     @Test
-    void resolvesFileInRecordDirectory() {
+    void resolvesFileInRecordDirectory() throws IOException {
         assertThat(resolver.resolve(base, RECORD, "a.csv"),
-            is(Optional.of(base.resolve(RECORD).resolve("a.csv"))));
+            is(Optional.of(base.resolve(RECORD).resolve("a.csv").toRealPath())));
     }
 
     @Test
@@ -96,8 +96,31 @@ class PreviewFileResolverTest {
     void allowsSymlinkToAnotherFileInRecordDirectory() {
         symlink(base.resolve(RECORD).resolve("alias.csv"), base.resolve(RECORD).resolve("sub").resolve("b.csv"));
 
+        assertThat(resolver.resolve(base, RECORD, "alias.csv").isPresent(), equalTo(true));
+    }
+
+    @Test
+    void returnsRealPath() throws IOException {
+        symlink(base.resolve(RECORD).resolve("alias.csv"), base.resolve(RECORD).resolve("a.csv"));
+
         assertThat(resolver.resolve(base, RECORD, "alias.csv"),
-            is(Optional.of(base.resolve(RECORD).resolve("alias.csv"))));
+            is(Optional.of(base.resolve(RECORD).resolve("a.csv").toRealPath())));
+    }
+
+    @Test
+    void refusesSymlinkedRecordDirectoryOutsideBase(@TempDir Path outside) throws IOException {
+        Files.writeString(outside.resolve("d.csv"), "secret\n");
+        symlink(base.resolve("linked-record"), outside);
+
+        assertThat(resolver.resolve(base, "linked-record", "d.csv"), is(Optional.empty()));
+    }
+
+    @Test
+    void refusesRecordDirectoryLinkedToBase() throws IOException {
+        Files.writeString(base.resolve("top.csv"), "secret\n");
+        symlink(base.resolve("loop"), base);
+
+        assertThat(resolver.resolve(base, "loop", "top.csv"), is(Optional.empty()));
     }
 
     @Test
