@@ -126,11 +126,11 @@ services:
       JIRA_DEPOSITREQUEST_PROJECT: CT
       LOGGING_LEVEL_ROOT: info
       MAPS_LOCATION: /app/mapfiles
-      # Data preview on dataset record pages. Its endpoints exist only under the upload-hubbub Spring
-      # profile and list files through Hubbub, so it needs UPLOAD_PROFILE=upload-hubbub and the hubbub
-      # compose profile (see SPRING_PROFILES_ACTIVE below); under the default upload-simple, record
-      # pages still show the section but it cannot load.
-      CATALOGUE_DATA_PREVIEW_ENABLED: "true"
+      # Data preview on dataset record pages, off unless DATA_PREVIEW_ENABLED=true. Its endpoints
+      # exist only under the upload-hubbub Spring profile and list files through Hubbub, so turn it
+      # on together with UPLOAD_PROFILE=upload-hubbub and the hubbub compose profile (see
+      # SPRING_PROFILES_ACTIVE below); under upload-simple the section would show but never load.
+      CATALOGUE_DATA_PREVIEW_ENABLED: ${DATA_PREVIEW_ENABLED:-false}
       CATALOGUE_DATA_PREVIEW_DATA_LOCATION: /var/ceh-catalogue/data-package
       CATALOGUE_DATA_PREVIEW_SUPPORTING_DOCUMENTS_LOCATION: /var/ceh-catalogue/supporting-documents
       # Interpolated, defaulting to sqlite to match the application default, so that a plain
@@ -176,12 +176,15 @@ services:
       #
       # The upload profile is interpolated, defaulting to upload-simple, which needs nothing external.
       # upload-hubbub (Hubbub uploads and the data preview) needs the hubbub compose profile running;
-      # the two upload profiles cannot both be active. As with the metrics engine, set both in .env:
+      # the two upload profiles cannot both be active. As with the metrics engine, set them in .env,
+      # with DATA_PREVIEW_ENABLED for the data preview:
       #
       #     COMPOSE_PROFILES=hubbub
       #     UPLOAD_PROFILE=upload-hubbub
+      #     DATA_PREVIEW_ENABLED=true
       #
-      # or, one-off:  UPLOAD_PROFILE=upload-hubbub docker compose --profile hubbub up
+      # or, one-off:
+      #     UPLOAD_PROFILE=upload-hubbub DATA_PREVIEW_ENABLED=true docker compose --profile hubbub up
       SPRING_PROFILES_ACTIVE: development,server-eidc,search-basic,service-agreement,${UPLOAD_PROFILE:-upload-simple},metrics
     env_file:
       - path: secrets.env

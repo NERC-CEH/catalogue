@@ -314,11 +314,12 @@ Other users are configured in [DevelopmentUserStoreConfig](java/src/main/java/uk
 Getting everything running
 
 Start with the Hubbub compose profile and the `upload-hubbub` Spring profile, which replaces
-`upload-simple` (put `COMPOSE_PROFILES=hubbub` and `UPLOAD_PROFILE=upload-hubbub` in `.env` to make
-it the default):
+`upload-simple`, and turn on the [data preview](#data-preview), which is off by default (put
+`COMPOSE_PROFILES=hubbub`, `UPLOAD_PROFILE=upload-hubbub` and `DATA_PREVIEW_ENABLED=true` in `.env`
+to make them the default):
 
 ```bash
-UPLOAD_PROFILE=upload-hubbub docker compose --profile hubbub up --build
+UPLOAD_PROFILE=upload-hubbub DATA_PREVIEW_ENABLED=true docker compose --profile hubbub up --build
 ```
 ### Populate the database
 
