@@ -486,8 +486,6 @@ public class DocumentController extends AbstractDocumentController {
         MetadataDocument document = documentRepository.read(file);
         if(metricsService != null && !metricsExcludedUsers.contains(user.getUsername()) && !document.getState().equals(GitRepoServiceAgreementService.DRAFT)) {
             metricsService.recordView(file, request.getRemoteAddr());
-            log.info("X-Client-IP {} is used for metrics count of {}", request.getHeader("X-Client-IP"), file);
-            log.info("getRemoteAddr() {} is used for metrics count of {}", request.getRemoteAddr(), file);
         }
         MetadataDocument body = postProcessLinkDocument(addJenaRelationships(document));
         String revision = cachedDataRepository.getDocumentRevisionToken(file);
