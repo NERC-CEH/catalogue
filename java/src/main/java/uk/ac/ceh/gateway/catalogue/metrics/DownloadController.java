@@ -61,7 +61,11 @@ public class DownloadController {
         }
         if(!excludedUsers.contains(user.getUsername()) && this.metricsService != null) {
             log.debug(String.format("Redirecting to %s", redirectUrl));
-            this.metricsService.recordDownload(uuid, request.getRemoteAddr());
+            String xClientIP = request.getHeader("X-Client-IP");
+            String clientId = (xClientIP != null && !xClientIP.isBlank()) ? xClientIP : request.getRemoteAddr();
+            if (clientId != null && !clientId.isBlank()) {
+                this.metricsService.recordDownload(uuid, clientId);
+            }
         }
         return "redirect:" + redirectUrl;
     }
