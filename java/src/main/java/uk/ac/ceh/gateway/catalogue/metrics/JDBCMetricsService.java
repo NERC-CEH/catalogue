@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationListener;
@@ -38,7 +37,6 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
     @NonNull private final JdbcTemplate jdbcTemplate;
     private volatile long lastRun;
     private final Clock clock;
-    private boolean repairEpochZeroPending;
     private final DocumentRepository documentRepository;
 
     /**
@@ -81,8 +79,6 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
      */
     private static final String INDEX_STATEMENT =
         "CREATE INDEX IF NOT EXISTS idx_%1$s_document_amount ON %1$s (document, amount)";
-    private static final String REPAIR_EPOCH0_STATEMENT =
-        "UPDATE %s SET start_timestamp = (end_timestamp - 3600) WHERE start_timestamp = 0";
     private static final String TOTAL_STATEMENT = "SELECT coalesce(sum(amount), 0) FROM %s WHERE document = ?";
     private static final String UPDATE_STATEMENT = "UPDATE %s SET doc_title = ?, record_type = ? WHERE document = ?";
     private static final String DISTINCT_DOCS_QUERY = "SELECT DISTINCT document FROM %s";
@@ -109,30 +105,16 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
      */
     @Autowired
     public JDBCMetricsService(@NonNull DataSource dataSource,
-                              DocumentRepository documentRepository,
-                              @Value("${metrics.repair-epoch0.enabled:false}") boolean repairEpochZero) {
-        this(dataSource, documentRepository, Clock.systemUTC(), repairEpochZero);
-    }
-
-    public JDBCMetricsService(@NonNull DataSource dataSource,
                               DocumentRepository documentRepository) {
-        this(dataSource, documentRepository, false);
+        this(dataSource, documentRepository, Clock.systemUTC());
     }
 
     /** For tests, which need to control the window timestamps. */
     JDBCMetricsService(@NonNull DataSource dataSource,
                        DocumentRepository documentRepository,
                        @NonNull Clock clock) {
-        this(dataSource, documentRepository, clock, false);
-    }
-
-    JDBCMetricsService(@NonNull DataSource dataSource,
-                       DocumentRepository documentRepository,
-                       @NonNull Clock clock,
-                       boolean repairEpochZero) {
-        log.info("Creating{}", repairEpochZero ? " with the epoch-0 window repair enabled" : "");
+        log.info("Creating");
         this.clock = clock;
-        this.repairEpochZeroPending = repairEpochZero;
         this.lastRun = clock.instant().getEpochSecond();
         this.documentRepository = documentRepository;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -197,23 +179,7 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
             } catch (DataAccessException ex) {
                 log.warn("Metrics database schema could not be ensured, will retry on next use: {}", ex.getMessage());
             }
-            if (schemaReady && repairEpochZeroPending) {
-                repairEpochZeroRows();
-            }
             return schemaReady;
-        }
-    }
-
-    private void repairEpochZeroRows() {
-        repairEpochZeroPending = false;
-        try {
-            for (val table : List.of(VIEW_TABLE, DOWNLOAD_TABLE)) {
-                val startedAt = System.currentTimeMillis();
-                val repaired = jdbcTemplate.update(REPAIR_EPOCH0_STATEMENT.formatted(table));
-                log.info("Corrected {} epoch-0 rows in {} in {}ms", repaired, table, System.currentTimeMillis() - startedAt);
-            }
-        } catch (DataAccessException ex) {
-            log.warn("Epoch-0 metrics rows could not be corrected, will retry on next start: {}", ex.getMessage());
         }
     }
 
