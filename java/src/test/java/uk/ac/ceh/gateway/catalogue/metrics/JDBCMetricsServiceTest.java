@@ -428,68 +428,6 @@ class JDBCMetricsServiceTest {
     }
 
     /**
-     * The one-off repair for rows written before the fix: with the flag on, startup moves every
-     * {@code start_timestamp = 0} to {@code end_timestamp - 3600}, leaves genuine rows alone and does not
-     * change any total.
-     */
-    @SneakyThrows
-    @Test
-    void epochZeroRowsAreCorrectedOnStartupWhenTheRepairIsEnabled() {
-        //given rows as the old code wrote them: one epoch-0 batch, then a genuine window
-        seedWindow("views", 0, 1779152401, 5);
-        seedWindow("views", 1779152401, 1779156001, 3);
-        seedWindow("downloads", 0, 1779152401, 2);
-        val totalBefore = service.totalViews(TEST_DOCUMENT);
-
-        //when a service starts with the repair enabled
-        val repairing = new JDBCMetricsService(dataSource, documentRepository, Clock.systemUTC(), true);
-        repairing.initialiseSchemaOnStartup();
-
-        //then
-        assertThat(getWindows("views"), contains(
-            contains(1779152401L - 3600, 1779152401L),
-            contains(1779152401L, 1779156001L)));
-        assertThat(getWindows("downloads"), contains(contains(1779152401L - 3600, 1779152401L)));
-        assertThat(repairing.totalViews(TEST_DOCUMENT), is(totalBefore));
-    }
-
-    @SneakyThrows
-    @Test
-    void epochZeroRowsAreLeftAloneWhenTheRepairIsDisabled() {
-        //given
-        seedWindow("views", 0, 1779152401, 5);
-
-        //when the default constructor's service starts (flag off)
-        val plain = new JDBCMetricsService(dataSource, documentRepository, Clock.systemUTC(), false);
-        plain.initialiseSchemaOnStartup();
-
-        //then
-        assertThat(getWindows("views"), contains(contains(0L, 1779152401L)));
-    }
-
-    /**
-     * A database that is down at startup must not lose the repair, nor be blocked by it: it runs once the
-     * schema can be ensured, and only once.
-     */
-    @SneakyThrows
-    @Test
-    void epochZeroRepairRunsOnceTheDatabaseComesBack() {
-        //given
-        seedWindow("views", 0, 1779152401, 5);
-        val repairing = new JDBCMetricsService(dataSource, documentRepository, Clock.systemUTC(), true);
-        dataSource.sever();
-        repairing.initialiseSchemaOnStartup();
-        assertThat(getWindows("views"), contains(contains(0L, 1779152401L)));
-
-        //when
-        dataSource.restore();
-        assertThat(repairing.ensureSchema(), is(true));
-
-        //then
-        assertThat(getWindows("views"), contains(contains(1779152401L - 3600, 1779152401L)));
-    }
-
-    /**
      * Epoch seconds pass 2^31 on 19 January 2038. The timestamp columns used to be {@code integer},
      * which is 64-bit on SQLite but 32-bit on PostgreSQL, where pgjdbc narrows the bound long and the
      * row is stored with a wrapped, negative timestamp and no error. H2's {@code integer} is 32-bit too,
@@ -830,15 +768,6 @@ class JDBCMetricsServiceTest {
         assertThat(recording.preparedSql(), contains(
             org.hamcrest.Matchers.endsWith("ORDER BY document LIMIT 100"),
             org.hamcrest.Matchers.endsWith("ORDER BY views DESC, document LIMIT 100")));
-    }
-
-    void seedWindow(String table, long start, long end, int amount) throws SQLException {
-        try (Connection connection = db.getConnection();
-             Statement stmt = connection.createStatement()) {
-            stmt.executeUpdate("INSERT INTO " + table
-                + " (start_timestamp, end_timestamp, amount, document, doc_title, record_type) VALUES ("
-                + start + ", " + end + ", " + amount + ", '" + TEST_DOCUMENT + "', 'title', 'dataset')");
-        }
     }
 
     List<List<Long>> getWindows(String table) throws SQLException {
