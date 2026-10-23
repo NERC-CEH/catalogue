@@ -16,17 +16,17 @@
 
 <#macro base>
   <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
-    <div id="metadata" class="metadata metadata-monitoring ${metadata.state?lower_case} <#if operationalStatus?? && operationalStatus == "Inactive">inactive</#if>">
+    <div id="metadata" class="metadata metadata-monitoring ${metadata.state?lower_case} <#if operationalStatus??>status-${operationalStatus?lower_case}</#if>">
     <#if !type??>
     <#else>
       <section class="section">
         <div class="container">
           <@admin />
 
-          <#if operationalStatus?? && operationalStatus == "Inactive">
+          <#if operationalStatus?? && operationalStatus != "Active">
             <div class="p-3 mb-5 bg-danger-subtle border border-2 border-danger-subtle rounded-3">
               <i class="text-danger fa-solid fa-circle-info fa-xl mx-2"></i>
-              <b>This ${(facilityType.value)!codes.lookup('metadata.resourceType', type)?lower_case!''} is inactive</b>
+              <b>This ${(facilityType.value)!codes.lookup('metadata.resourceType', type)?lower_case!''} is ${operationalStatus?lower_case}</b>
             </div>
           </#if>
 
@@ -43,8 +43,8 @@
                 </div>
                 <div>
                   ${title}
-                  <#if operationalStatus?? && operationalStatus == "Inactive">
-                    <span class="fw-bolder px-2 py-1 ms-3 text-bg-danger fs-6 text-uppercase">inactive</span>
+                  <#if operationalStatus?? && operationalStatus != "Active">
+                    <span class="fw-bolder px-2 py-1 ms-3 text-bg-danger fs-6 text-uppercase">${operationalStatus?lower_case}</span>
                   </#if>
                 </div>
 
@@ -380,9 +380,6 @@ Symmetrical relationships
           link
         </#if>
       </a>
-      <#if link.availability?has_content && link.availability == "Inactive">
-        <small class="text-body-tertiary small"> (INACTIVE)</small>
-      </#if>
   </div>
 </#macro>
 
@@ -539,7 +536,3 @@ Symmetrical relationships
 
   </#if>
 </#macro>
-
-
-
-
