@@ -1,9 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.metrics;
 
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationListener;
@@ -15,13 +17,14 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.jspecify.annotations.NonNull;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -46,6 +49,9 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
      */
     private volatile boolean schemaReady;
     private final Object schemaLock = new Object();
+
+    private final ReentrantLock syncLock = new ReentrantLock();
+    private volatile long shutdownFlushTimeoutMillis;
 
     // SQLite has no built-in datetime type, so we store dates as Unix timestamps (seconds since 1 Jan 1970).
     // bigint, not integer: SQLite's integer is 64-bit, but PostgreSQL's is 32-bit and would overflow in
@@ -122,6 +128,14 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         this.downloadInserter = new SimpleJdbcInsert(dataSource).withTableName(DOWNLOAD_TABLE);
         this.viewed = Collections.synchronizedMap(new HashMap<>());
         this.downloaded = Collections.synchronizedMap(new HashMap<>());
+    }
+
+    @Autowired
+    void setShutdownFlushTimeoutMillis(@Value("${metrics.shutdown-flush.timeout-millis}") long millis) {
+        if (millis <= 0) {
+            throw new IllegalArgumentException("metrics.shutdown-flush.timeout-millis must be positive, was " + millis);
+        }
+        this.shutdownFlushTimeoutMillis = millis;
     }
 
     /**
@@ -278,30 +292,90 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
      * check is a volatile read, so an outage after that is handled as above, by losing that hour's
      * counts.
      */
-    @Scheduled(initialDelay=TimeConstants.ONE_HOUR, fixedDelay=TimeConstants.ONE_HOUR)
+    @Scheduled(
+        initialDelayString = "${metrics.sync.interval-millis}",
+        fixedDelayString = "${metrics.sync.interval-millis}"
+    )
     public void syncDB() {
+        syncLock.lock();
+        try {
+            writePendingCounts(Deadline.NONE);
+        } finally {
+            syncLock.unlock();
+        }
+    }
+
+    /**
+     * Flush the accumulated metrics count(s) from memory to database during application shutdown
+     */
+    @PreDestroy
+    public void flushOnShutdown() {
+        val pendingViews = viewed.size();
+        val pendingDownloads = downloaded.size();
+        if (pendingViews == 0 && pendingDownloads == 0) {
+            log.info("Shutdown: no metric counts pending since the last sync, nothing to flush");
+            return;
+        }
+        val budgetMillis = shutdownFlushTimeoutMillis;
+        val deadline = Deadline.after(budgetMillis);
+        val startedAt = System.nanoTime();
+        log.info("Shutdown: flushing metric counts for {} viewed and {} downloaded document(s) (budget {}ms)",
+            pendingViews, pendingDownloads, budgetMillis);
+
+        boolean locked;
+        try {
+            locked = syncLock.tryLock(deadline.remainingNanos(), TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            locked = false;
+        }
+        if (!locked) {
+            log.warn("Shutdown: the scheduled metrics sync was still running after {}ms; counts for {} viewed "
+                + "and {} downloaded document(s) were not flushed and are lost",
+                budgetMillis, viewed.size(), downloaded.size());
+            return;
+        }
+        try {
+            val complete = writePendingCounts(deadline);
+            val tookMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startedAt);
+            if (complete) {
+                log.info("Shutdown: metric counts flushed in {}ms", tookMillis);
+            } else {
+                log.warn("Shutdown: metric counts flush incomplete after {}ms, see the warnings above for "
+                    + "what was not written", tookMillis);
+            }
+        } catch (RuntimeException e) {
+            log.error("Shutdown: metric counts flush failed", e);
+        } finally {
+            syncLock.unlock();
+        }
+    }
+
+    private boolean writePendingCounts(Deadline deadline) {
         log.info("Exporting metric counts");
         if (!ensureSchema()) {
             log.warn("Metrics database unavailable, keeping counts in memory until the next sync");
-            return;
+            return false;
         }
         val windowStart = lastRun;
         val windowEnd = clock.instant().getEpochSecond();
         lastRun = windowEnd;
-        syncTable(viewed, viewInserter, windowStart, windowEnd);
-        syncTable(downloaded, downloadInserter, windowStart, windowEnd);
+        val viewsComplete = syncTable(VIEW_TABLE, viewed, viewInserter, windowStart, windowEnd, deadline);
+        val downloadsComplete = syncTable(DOWNLOAD_TABLE, downloaded, downloadInserter, windowStart, windowEnd, deadline);
+        return viewsComplete && downloadsComplete;
     }
 
-    private void syncTable(Map<String, Set<String>> tableMap, SimpleJdbcInsert inserter, long windowStart, long windowEnd) {
+    private boolean syncTable(String table, Map<String, Set<String>> tableMap, SimpleJdbcInsert inserter,
+                              long windowStart, long windowEnd, Deadline deadline) {
         Map<String, Integer> drained = new HashMap<>();
         synchronized (tableMap) {
             tableMap.forEach((doc, addrs) -> drained.put(doc, addrs.size()));
             tableMap.clear();
         }
         if (drained.isEmpty()) {
-            return;
+            return true;
         }
-        syncDBHelper(drained, inserter, windowStart, windowEnd);
+        return syncDBHelper(table, drained, inserter, windowStart, windowEnd, deadline);
     }
 
     @Scheduled(cron = "0 0 1 * * *")
@@ -346,9 +420,18 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         });
     }
 
-    /** Runs outside the monitor — see {@link #syncDB}. */
-    private void syncDBHelper(Map<String, Integer> drained, SimpleJdbcInsert inserter, long windowStart, long windowEnd) {
-        drained.forEach((doc, amount) -> {
+    private boolean syncDBHelper(String table, Map<String, Integer> drained, SimpleJdbcInsert inserter,
+                                 long windowStart, long windowEnd, Deadline deadline) {
+        int skippedDocuments = 0;
+        int skippedAmount = 0;
+        for (val entry : drained.entrySet()) {
+            val doc = entry.getKey();
+            val amount = entry.getValue();
+            if (deadline.hasPassed()) {
+                skippedDocuments++;
+                skippedAmount += amount;
+                continue;
+            }
             MetadataDocument document;
             try {
                 document = documentRepository.read(doc);
@@ -363,7 +446,32 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
             } catch (Exception e) {
                 log.error("Error reading document from repository {}", doc, e);
             }
-        });
+        }
+        if (skippedDocuments > 0) {
+            log.warn("Metrics flush ran out of time: {} {} across {} of {} document(s) were not written",
+                skippedAmount, table, skippedDocuments, drained.size());
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Check if the preset time {@code atNanos} has passed
+     */
+    private record Deadline(long atNanos, boolean bounded) {
+        static final Deadline NONE = new Deadline(0, false);
+
+        static Deadline after(long millis) {
+            return new Deadline(System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(millis), true);
+        }
+
+        boolean hasPassed() {
+            return bounded && System.nanoTime() - atNanos >= 0;
+        }
+
+        long remainingNanos() {
+            return bounded ? Math.max(0, atNanos - System.nanoTime()) : Long.MAX_VALUE;
+        }
     }
 
     /**

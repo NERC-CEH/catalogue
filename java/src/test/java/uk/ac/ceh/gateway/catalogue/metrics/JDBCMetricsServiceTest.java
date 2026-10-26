@@ -770,6 +770,105 @@ class JDBCMetricsServiceTest {
             org.hamcrest.Matchers.endsWith("ORDER BY views DESC, document LIMIT 100")));
     }
 
+    /**
+     * Counts recorded since the last hourly sync must be written at shutdown
+     */
+    @SneakyThrows
+    @Test
+    void shutdownFlushWritesCountsAccumulatedSinceTheLastSync() {
+        //given a service that has synced once, then recorded more activity
+        val bootedAt = Instant.parse("2026-10-19T09:00:00Z");
+        val clock = new MutableClock(bootedAt);
+        val freshService = new JDBCMetricsService(dataSource, documentRepository, clock);
+        freshService.setShutdownFlushTimeoutMillis(8_000);
+        assertThat(freshService.ensureSchema(), is(true));
+        given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
+        freshService.recordView(TEST_DOCUMENT, TEST_IP1);
+        clock.advance(Duration.ofHours(1));
+        freshService.syncDB();
+        freshService.recordView(TEST_DOCUMENT, TEST_IP1);
+        freshService.recordView(TEST_DOCUMENT, TEST_IP2);
+        freshService.recordDownload(TEST_DOCUMENT, TEST_IP1);
+
+        //when the context closes 20 minutes into the next window
+        clock.advance(Duration.ofMinutes(20));
+        freshService.flushOnShutdown();
+
+        //then the partial window was written rather than dropped, contiguous with the hourly one
+        val t0 = bootedAt.getEpochSecond();
+        assertThat(getWindows("views"), contains(
+            contains(t0, t0 + 3600),
+            contains(t0 + 3600, t0 + 3600 + 1200)));
+        assertThat(getWindows("downloads"), contains(contains(t0 + 3600, t0 + 3600 + 1200)));
+        assertThat(freshService.totalViews(TEST_DOCUMENT), equalTo(3));
+        assertThat(freshService.totalDownloads(TEST_DOCUMENT), equalTo(1));
+    }
+
+    /** The common case at shutdown is a clean map; it must not cost a connection to the database. */
+    @Test
+    void shutdownFlushWithNothingPendingDoesNotTouchTheDatabase() {
+        //given nothing recorded since the last sync
+        service.setShutdownFlushTimeoutMillis(8_000);
+        val attemptsBefore = dataSource.connectionAttempts();
+
+        //when
+        service.flushOnShutdown();
+
+        //then
+        assertThat(dataSource.connectionAttempts(), is(attemptsBefore));
+        verifyNoInteractions(documentRepository);
+    }
+
+    /**
+     * Against a slow database the flush must give up before the grace period runs out and the pod is
+     * SIGKILLed, and must stop between documents, never mid-row.
+     */
+    @SneakyThrows
+    @Test
+    void shutdownFlushStopsStartingWritesOnceItsBudgetIsSpent() {
+        //given three documents pending, each slower to read than the whole budget
+        List.of(TEST_DOCUMENT, "doc-2", "doc-3").forEach(d -> service.recordView(d, TEST_IP1));
+        given(documentRepository.read(anyString())).willAnswer(invocation -> {
+            Thread.sleep(150);
+            return doc;
+        });
+        service.setShutdownFlushTimeoutMillis(100);
+
+        //when
+        service.flushOnShutdown();
+
+        //then the first was written, and nothing was started after the deadline
+        verify(documentRepository, times(1)).read(anyString());
+        assertThat(getDocumentsAndAmounts("views"), hasSize(1));
+    }
+
+    /** Never throws: a broken metrics database must not interfere with destroying the rest of the context. */
+    @Test
+    void shutdownFlushAgainstAnUnreachableDatabaseDoesNotThrow() {
+        //given a service whose database has been down since it started
+        val freshDb = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).generateUniqueName(true).build();
+        try {
+            val severed = new SeverableDataSource(freshDb);
+            severed.sever();
+            val startingService = new JDBCMetricsService(severed, documentRepository);
+            startingService.setShutdownFlushTimeoutMillis(8_000);
+            startingService.recordView(TEST_DOCUMENT, TEST_IP1);
+
+            //when / then
+            startingService.flushOnShutdown();
+            verifyNoInteractions(documentRepository);
+        } finally {
+            freshDb.shutdown();
+        }
+    }
+
+    /** The property has no in-code default, so a nonsense value must stop startup rather than drop every count. */
+    @Test
+    void shutdownFlushTimeoutMustBePositive() {
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
+            () -> service.setShutdownFlushTimeoutMillis(0));
+    }
+
     List<List<Long>> getWindows(String table) throws SQLException {
         val rows = new ArrayList<List<Long>>();
         try (Connection connection = db.getConnection();
