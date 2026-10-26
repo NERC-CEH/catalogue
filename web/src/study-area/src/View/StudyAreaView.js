@@ -87,7 +87,7 @@ export default Backbone.View.extend({
     }
   },
 
-  createCircleMarker(feature, latlng, map) {
+  createCircleMarker (feature, latlng, map) {
     return L.circleMarker(latlng, this.getPointStyle(feature, map.getZoom()))
   },
 

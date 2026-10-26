@@ -23,12 +23,7 @@
         <div class="container">
           <@admin />
 
-          <#if operationalStatus?? && operationalStatus != "Active">
-            <div class="p-3 mb-5 bg-danger-subtle border border-2 border-danger-subtle rounded-3">
-              <i class="text-danger fa-solid fa-circle-info fa-xl mx-2"></i>
-              <b>This ${(facilityType.value)!codes.lookup('metadata.resourceType', type)?lower_case!''} is ${operationalStatus?lower_case}</b>
-            </div>
-          </#if>
+          <@opStatus />
 
           <hgroup>
             <#if title?? && title?has_content>
@@ -44,7 +39,7 @@
                 <div>
                   ${title}
                   <#if operationalStatus?? && operationalStatus != "Active">
-                    <span class="fw-bolder px-2 py-1 ms-3 text-bg-danger fs-6 text-uppercase">${operationalStatus?lower_case}</span>
+                    <span class="fw-bolder px-2 py-1 ms-3 text-bg-danger fs-6 text-uppercase">${operationalStatus}</span>
                   </#if>
                 </div>
 
@@ -184,6 +179,23 @@
     </div>
 
     </#if>
+</#macro>
+
+<#macro opStatus>
+  <#if operationalStatus?? && operationalStatus != "Active">
+    
+    <#local opClass="danger" />
+    <#local opText=operationalStatus?lower_case />
+    <#if operationalStatus == "Pending">
+      <#local opClass="warning" />
+      <#local opText="not yet in operation" />
+    </#if>
+
+    <div class="p-3 mb-5 bg-${opClass}-subtle border border-2 border-${opClass}-subtle rounded-3">
+      <i class="fa-solid fa-circle-info fa-xl mx-2"></i>
+      <b>This ${(facilityType.value)!codes.lookup('metadata.resourceType', type)?lower_case!''} is ${opText}</b>
+    </div>
+  </#if>
 </#macro>
 
 <#macro editButton>
