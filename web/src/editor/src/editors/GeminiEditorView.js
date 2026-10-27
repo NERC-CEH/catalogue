@@ -123,10 +123,12 @@ export default EditorView.extend({
           label: 'Reference dates',
           ObjectInputView: DatasetReferenceDateView,
           helpText: `\
-<p><b>Created</b> is the date on which the data resource was originally created.</p>
-<p><b>Published</b> is the date when this metadata record is made available publicly.</p>
-<p>For embargoed resources, <b>Release(d)</b> is the date on which the embargo was lifted <i class='text-red'><b>or is due to be lifted</b></i>.</p>
-<p><b>Superseded</b> is the date on which the resource was superseded by another resource (where relevant).</p>\
+<p><b>Created</b> - The date on which the data resource was originally created.</p>
+<p><b>Published</b> - The date on which this metadata record was first made publicly available.
+</p>
+<p><b>Release(d)</b> - For embargoed resources, the date on which the embargo was lifted or is scheduled to be lifted.</p>
+<p><b>Superseded</b> - (where applicable) The date on which the resource was replaced by another resource (e.g., a newer version).</p>\
+<p><b>Last updated</b> – The date on which the resource was most recently updated. This field is only relevant for dynamic resources that are periodically modified or expanded after publication.</p>\
 `
         }),
 

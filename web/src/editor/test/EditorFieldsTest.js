@@ -203,7 +203,7 @@ describe('Editor fields', () => {
 
   describe('a date field', () => {
     [
-      ['reference dates', DatasetReferenceDateView, ['creationDate', 'publicationDate', 'unavailableDate', 'releasedDate', 'supersededDate']],
+      ['reference dates', DatasetReferenceDateView, ['creationDate', 'publicationDate', 'lastUpdate', 'unavailableDate', 'releasedDate', 'supersededDate']],
       ['provenance', DataTypeProvenanceView, ['creationDate', 'modificationDate']]
     ].forEach(([fields, View, names]) => {
       names.forEach(name => {

@@ -9,6 +9,7 @@ export default Backbone.Model.extend({
       creationDate: 'Creation date',
       publicationDate: 'Publication date',
       revisionDate: 'Revision date',
+      lastUpdate: 'Date last updated',
       supersededDate: 'Date superseded',
       unavailableDate: 'Date withdrawn',
       modificationDate: 'Modification date',
