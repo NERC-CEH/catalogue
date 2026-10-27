@@ -77,7 +77,8 @@ export default EditorView.extend({
           options: [
             { value: 'Unknown', label: 'Unknown' },
             { value: 'Active', label: 'Active' },
-            { value: 'Inactive', label: 'Inactive' }
+            { value: 'Inactive', label: 'Inactive' },
+            { value: 'Pending', label: 'Pending' }
           ]
         }),
 
