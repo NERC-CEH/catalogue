@@ -65,19 +65,6 @@ describe('Test StudyAreaView', function () {
 describe('marker styling', () => {
   const styling = Object.create(StudyAreaView.prototype)
 
-  it('gives an active point a heavier outline than an inactive one', () => {
-    // When
-    const active = styling.getPointStyle({ properties: { availability: 'Active' } })
-    const inactive = styling.getPointStyle({ properties: { availability: 'Inactive' } })
-
-    // Then
-    // `null` does not fall back to Leaflet's default of 3 - setOptions copies it
-    // over the prototype default and the SVG renderer emits stroke-width="null",
-    // which the browser discards, leaving 1px on the *active* marker.
-    expect(typeof active.weight).toBe('number')
-    expect(active.weight).toBeGreaterThan(inactive.weight)
-  })
-
   it('tolerates a feature with no properties', () => {
     // Then
     expect(() => styling.getPointStyle({})).not.toThrow()

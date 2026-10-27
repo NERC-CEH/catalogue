@@ -62,27 +62,52 @@ export default Backbone.View.extend({
     }
   },
 
-  getPointStyle (feature) {
+  getPointStyle (feature, zoom) {
     const inactive = feature.properties?.availability === 'Inactive'
+    const pending = feature.properties?.availability === 'Pending'
+    const radius = zoom < 8
+      ? 10
+      : zoom < 11
+        ? 12
+        : 16
+
+    const colour = inactive
+      ? '#999999'
+      : pending
+        ? '#cc7a00'
+        : '#0000DD'
 
     return {
-      radius: 10,
-      color: '#000000',
-      fillColor: inactive ? '#999999' : '#0000DD',
-      // A number, not null: null overwrites Leaflet's Path default rather than
-      // falling back to it, and the renderer then emits stroke-width="null".
-      weight: inactive ? 2 : 3,
+      radius,
+      color: colour,
+      fillColor: colour,
+      weight: 1,
       opacity: 1,
       fillOpacity: inactive ? 0.75 : 1
     }
   },
 
-  createCircleMarker (feature, latlng) {
-    return L.circleMarker(latlng, this.getPointStyle(feature))
+  createCircleMarker (feature, latlng, map) {
+    return L.circleMarker(latlng, this.getPointStyle(feature, map.getZoom()))
   },
 
   pointDisplay (feature, studyArea, map) {
     map.setZoom(9)
+  },
+
+  getPolygonStyle (feature) {
+    const inactive = feature.properties?.availability === 'Inactive'
+    const pending = feature.properties?.availability === 'Pending'
+
+    return {
+      interactive: true,
+      color: inactive ? '#444444' : pending ? '#885508' : '#0000DD',
+      fillColor: inactive ? '#999999' : pending ? '#cc7a00' : '#0000DD',
+      weight: 1,
+      opacity: 1,
+      dashArray: pending ? '10,5' : null,
+      fillOpacity: 0.2
+    }
   },
 
   addFeatureToMap (featureLayer, features, studyArea, map, style, enableZoomThreshold = false) {
@@ -92,7 +117,7 @@ export default Backbone.View.extend({
       style,
 
       pointToLayer: (feature, latlng) => {
-        return this.createCircleMarker(feature, latlng)
+        return this.createCircleMarker(feature, latlng, map)
       },
 
       onEachFeature: (feature, layer) => {
@@ -100,15 +125,18 @@ export default Backbone.View.extend({
         const availability = feature.properties.availability
 
         // Leaflet sets popup content as HTML; the title comes from a linked record
-        let content = `<p>${_.escape(title)}</p>`
+        let content = `<div>${_.escape(title)}</div>`
         // Only http(s) links: escaping doesn't stop a javascript: URL from running when clicked
         const link = feature.properties.link
         if (typeof link === 'string' && /^https?:\/\//i.test(link)) {
-          content = `<p><a href="${_.escape(link)}">${_.escape(title)}</a></p>`
+          content = `<div><a href="${_.escape(link)}">${_.escape(title)}</a></div>`
         }
 
         if (availability === 'Inactive') {
-          content = content + '<p class="text-body-tertiary">(INACTIVE)</p>'
+          content = content + '<div class="text-body-tertiary">(INACTIVE)</div>'
+        }
+        if (availability === 'Pending') {
+          content = content + '<div class="text-body-secondary">(PENDING)</div>'
         }
 
         layer.bindPopup(content, { offset: [0, -5] })
@@ -118,7 +146,7 @@ export default Backbone.View.extend({
         if (enableZoomThreshold && ['polygon', 'multipolygon'].includes(geomType)) {
           const centroidLayer = L.geoJSON(this.centerPointOfPolygon(layer), {
             pointToLayer: (feature, latlng) =>
-              this.createCircleMarker(feature, latlng)
+              this.createCircleMarker(feature, latlng, map)
           })
 
           centroidLayer.bindPopup(content)
@@ -158,7 +186,7 @@ export default Backbone.View.extend({
 
     const centroid = L.geoJson(this.centerPointOfPolygon(feature), {
       pointToLayer: (feature, latlng) =>
-        this.createCircleMarker(feature, latlng)
+        this.createCircleMarker(feature, latlng, map)
     })
 
     map.on('zoomend', function () {
@@ -180,7 +208,7 @@ export default Backbone.View.extend({
 
     const centroid = L.geoJson(this.centerPointOfPolygon(feature), {
       pointToLayer: (feature, latlng) =>
-        this.createCircleMarker(feature, latlng)
+        this.createCircleMarker(feature, latlng, map)
     })
 
     map.on('zoomend', function () {
@@ -198,48 +226,55 @@ export default Backbone.View.extend({
 
   featureCollectionDisplay (feature, studyArea, map) {
     const parentFeatures = []
-    const childFeatures = []
+    const childPolygons = []
+    const childPoints = []
 
     studyArea.features.forEach(feature => {
-      if (
-        (feature.geometry.type === 'Polygon' ||
-          feature.geometry.type === 'MultiPolygon') &&
-        feature.properties.showPolygon
-      ) {
+      const isPolygon =
+        feature.geometry.type === 'Polygon' ||
+        feature.geometry.type === 'MultiPolygon'
+
+      if (isPolygon && feature.properties.showPolygon) {
         parentFeatures.push(feature)
+      } else if (isPolygon) {
+        childPolygons.push(feature)
       } else {
-        childFeatures.push(feature)
+        childPoints.push(feature)
       }
     })
 
-    if (childFeatures.length > 0) {
+    if (childPoints.length > 0) {
       this.addFeatureToMap(
         feature,
-        parentFeatures,
+        childPoints,
         studyArea,
         map,
-        { interactive: false },
-        false
-      )
-
-      this.addFeatureToMap(
-        feature,
-        childFeatures,
-        studyArea,
-        map,
-        {
-          interactive: true,
-          color: '#89A1FA'
-        },
+        {},
         true
       )
-    } else {
+    }
+
+    if (childPolygons.length > 0) {
+      this.addFeatureToMap(
+        feature,
+        childPolygons,
+        studyArea,
+        map,
+        (feature) => this.getPolygonStyle(feature),
+        true
+      )
+    }
+
+    if (parentFeatures.length > 0) {
       this.addFeatureToMap(
         feature,
         parentFeatures,
         studyArea,
         map,
-        { interactive: false },
+        (feature) => ({
+          ...this.getPolygonStyle(feature),
+          interactive: false
+        }),
         true
       )
     }

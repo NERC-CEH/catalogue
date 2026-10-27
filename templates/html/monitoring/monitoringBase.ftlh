@@ -16,19 +16,14 @@
 
 <#macro base>
   <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
-    <div id="metadata" class="metadata metadata-monitoring ${metadata.state?lower_case} <#if operationalStatus?? && operationalStatus == "Inactive">inactive</#if>">
+    <div id="metadata" class="metadata metadata-monitoring ${metadata.state?lower_case} <#if operationalStatus??>status-${operationalStatus?lower_case}</#if>">
     <#if !type??>
     <#else>
       <section class="section">
         <div class="container">
           <@admin />
 
-          <#if operationalStatus?? && operationalStatus == "Inactive">
-            <div class="p-3 mb-5 bg-danger-subtle border border-2 border-danger-subtle rounded-3">
-              <i class="text-danger fa-solid fa-circle-info fa-xl mx-2"></i>
-              <b>This ${(facilityType.value)!codes.lookup('metadata.resourceType', type)?lower_case!''} is inactive</b>
-            </div>
-          </#if>
+          <@opStatus />
 
           <hgroup>
             <#if title?? && title?has_content>
@@ -43,8 +38,8 @@
                 </div>
                 <div>
                   ${title}
-                  <#if operationalStatus?? && operationalStatus == "Inactive">
-                    <span class="fw-bolder px-2 py-1 ms-3 text-bg-danger fs-6 text-uppercase">inactive</span>
+                  <#if operationalStatus?? && operationalStatus != "Active">
+                    <span class="fw-bolder px-2 py-1 ms-3 text-bg-danger fs-6 text-uppercase">${operationalStatus}</span>
                   </#if>
                 </div>
 
@@ -184,6 +179,23 @@
     </div>
 
     </#if>
+</#macro>
+
+<#macro opStatus>
+  <#if operationalStatus?? && operationalStatus != "Active">
+    
+    <#local opClass="danger" />
+    <#local opText=operationalStatus?lower_case />
+    <#if operationalStatus == "Pending">
+      <#local opClass="warning" />
+      <#local opText="not yet in operation" />
+    </#if>
+
+    <div class="p-3 mb-5 bg-${opClass}-subtle border border-2 border-${opClass}-subtle rounded-3">
+      <i class="fa-solid fa-circle-info fa-xl mx-2"></i>
+      <b>This ${(facilityType.value)!codes.lookup('metadata.resourceType', type)?lower_case!''} is ${opText}</b>
+    </div>
+  </#if>
 </#macro>
 
 <#macro editButton>
@@ -380,9 +392,6 @@ Symmetrical relationships
           link
         </#if>
       </a>
-      <#if link.availability?has_content && link.availability == "Inactive">
-        <small class="text-body-tertiary small"> (INACTIVE)</small>
-      </#if>
   </div>
 </#macro>
 
@@ -539,7 +548,3 @@ Symmetrical relationships
 
   </#if>
 </#macro>
-
-
-
-
