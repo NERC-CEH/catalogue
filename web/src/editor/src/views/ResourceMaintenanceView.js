@@ -29,24 +29,24 @@ export default ObjectInputView.extend({
     this.model.set('frequencyOfUpdate', frequencyOfUpdate)
 
     this.model.set(
-        'note',
-        this.$('textarea[data-name="note"]').val()
-    );
+      'note',
+      this.$('textarea[data-name="note"]').val()
+    )
 
     this.model.set(
-        'lastUpdate',
-        this.$('[data-name="lastUpdate"]').val()
-    );
+      'lastUpdate',
+      this.$('[data-name="lastUpdate"]').val()
+    )
 
     if (!frequencyOfUpdate || frequencyOfUpdate === 'notPlanned') {
-        this.model.unset('scope');
+      this.model.unset('scope')
     } else {
-        this.model.set('scope', {
-          attribute: this.$('.scopeAttribute').prop('checked'),
-          feature: this.$('.scopeFeature').prop('checked'),
-          attributeInstance: this.$('.scopeAttributeInstance').prop('checked'),
-          featureInstance: this.$('.scopeFeatureInstance').prop('checked')
-        });
+      this.model.set('scope', {
+        attribute: this.$('.scopeAttribute').prop('checked'),
+        feature: this.$('.scopeFeature').prop('checked'),
+        attributeInstance: this.$('.scopeAttributeInstance').prop('checked'),
+        featureInstance: this.$('.scopeFeatureInstance').prop('checked')
+      })
     }
 
     this.frequencyChanged()
