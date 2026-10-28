@@ -81,6 +81,7 @@ body {
                 height: auto;
                 max-width: min(100%, 400px);
                 max-height: 350px;
+
                 @include media-breakpoint-up(md) {
                     float: right;
                 }
@@ -527,8 +528,8 @@ body {
             --_ukcehcard-padding: 0.35em;
             --_ukcehcard-icon-width: 50px;
             --_ukcehcard-minsize: 290px;
-            line-height:1.35;
-            gap:0.5em;
+            line-height: 1.35;
+            gap: 0.5em;
         }
 
     }
@@ -619,7 +620,7 @@ body {
         }
 
         // The heading sits inline so the disclosure marker stays beside it
-        .wms-gis-help > summary {
+        .wms-gis-help>summary {
             margin-bottom: 0.5rem;
 
             h3 {
@@ -646,14 +647,14 @@ body {
             max-width: 16rem;
             overflow: auto;
 
-            > summary {
+            >summary {
                 cursor: pointer;
             }
 
             &:not([open]) {
                 padding-bottom: 0.25rem;
 
-                > summary {
+                >summary {
                     margin-bottom: 0;
                 }
             }
@@ -796,19 +797,18 @@ body {
     }
 
     #segment-associations {
+
+        >div {
+            margin-block-start: 2em;
+        }
+
         div {
-            margin-block-end: 2.5em;
+            &.draft {
+                display: var(--display-draft-data, none);
 
-            p {
-                margin: 0 0 0.4em 3em;
-
-                &.draft {
-                    display: var(--display-draft-data, none);
-
-                    a {
-                        color: RGBA(var(--bs-secondary-rgb), var(--bs-link-opacity, 1));
-                        text-decoration-color: RGBA(var(--bs-secondary-rgb), var(--bs-link-underline-opacity, 1));
-                    }
+                a {
+                    color: RGBA(var(--bs-secondary-rgb), var(--bs-link-opacity, 1));
+                    text-decoration-color: RGBA(var(--bs-secondary-rgb), var(--bs-link-underline-opacity, 1));
                 }
             }
         }

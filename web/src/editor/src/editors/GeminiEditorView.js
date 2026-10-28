@@ -136,7 +136,6 @@ export default EditorView.extend({
 </p>
 <p><b>Release(d)</b> - For embargoed resources, the date on which the embargo was lifted or is scheduled to be lifted.</p>
 <p><b>Superseded</b> - (where applicable) The date on which the resource was replaced by another resource (e.g., a newer version).</p>\
-<p><b>Last updated</b> – The date on which the resource was most recently updated. This field is only relevant for dynamic resources that are periodically modified or expanded after publication.</p>\
 `
         }),
 
