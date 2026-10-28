@@ -22,12 +22,6 @@ export default _.template(`
             <input type="date" data-name="releasedDate" id="input-releasedDate" class="editor-input" autocomplete="off">
         </div>
         <div class="text-end">
-            <label for="input-lastUpdate">Last updated</label>
-        </div>
-        <div>
-            <input type="date" data-name="lastUpdate" id="input-lastUpdate" class="editor-input" autocomplete="off">
-        </div>
-        <div class="text-end">
             <label for="input-unavailableDate">Withdrawn</label>
         </div>
         <div>

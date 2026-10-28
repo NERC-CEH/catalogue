@@ -104,6 +104,14 @@ export default EditorView.extend({
 `
         }),
 
+        new TextareaView({
+          model: this.model,
+          modelAttribute: 'lineage',
+          label: 'Lineage<small>Information about the source data used in the construction of this data resource</small>',
+          rows: 5,
+          helpText: '<p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>'
+        }),
+
         new SingleObjectView({
           model: this.model,
           modelAttribute: 'accessLimitation',
@@ -570,7 +578,7 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'ID & relationships',
+      label: 'IDs & relationships',
       title: 'Identifiers and links to related resources',
       views: [
         new ParentView({
@@ -754,21 +762,13 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'Quality',
-      title: 'Quality',
+      label: 'Updates',
+      title: 'Updates',
       views: [
         new TextareaView({
           model: this.model,
-          modelAttribute: 'lineage',
-          label: 'Lineage<small>Information about the source data used in the construction of this data resource</small>',
-          rows: 5,
-          helpText: '<p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>'
-        }),
-
-        new TextareaView({
-          model: this.model,
           modelAttribute: 'reasonChanged',
-          label: 'Reason for change<small>If this record is being retracted, the reasons for withdrawal or replacement should be explained</small>',
+          label: 'Reason for change<small>If this record is being superseded/retracted, the reasons for withdrawal or replacement should be explained</small>',
           rows: 5
         }),
 
@@ -851,8 +851,8 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'Web service',
-      title: 'Web service details',
+      label: 'Web map service',
+      title: 'Web map service details',
       views: [
         new ServiceView({
           model: this.model,

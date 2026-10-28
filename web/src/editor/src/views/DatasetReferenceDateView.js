@@ -11,14 +11,12 @@ export default ObjectInputView.extend({
 
     const creationDate = formatDateForInput(this.model.get('creationDate'))
     const publicationDate = formatDateForInput(this.model.get('publicationDate'))
-    const lastUpdate = formatDateForInput(this.model.get('lastUpdate'))
     const unavailableDate = formatDateForInput(this.model.get('unavailableDate'))
     const releasedDate = formatDateForInput(this.model.get('releasedDate'))
     const supersededDate = formatDateForInput(this.model.get('supersededDate'))
 
     this.$('#input-creationDate').val(creationDate)
     this.$('#input-publicationDate').val(publicationDate)
-    this.$('#input-lastUpdate').val(lastUpdate)
     this.$('#input-unavailableDate').val(unavailableDate)
     this.$('#input-releasedDate').val(releasedDate)
     this.$('#input-supersededDate').val(supersededDate)

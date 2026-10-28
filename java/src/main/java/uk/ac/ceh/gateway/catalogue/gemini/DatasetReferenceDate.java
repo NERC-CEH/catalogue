@@ -14,7 +14,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateSerializer;
 public class DatasetReferenceDate {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    LocalDate creationDate, publicationDate, revisionDate, lastUpdate, unavailableDate, supersededDate, deprecatedDate, releasedDate;
+    LocalDate creationDate, publicationDate, revisionDate, unavailableDate, supersededDate, deprecatedDate, releasedDate;
 
     @Builder
     @JsonCreator
@@ -22,7 +22,6 @@ public class DatasetReferenceDate {
         @JsonProperty("creationDate") LocalDate creationDate,
         @JsonProperty("publicationDate") LocalDate publicationDate,
         @JsonProperty("revisionDate") LocalDate revisionDate,
-        @JsonProperty("lastUpdate") LocalDate lastUpdate,
         @JsonProperty("unavailableDate") LocalDate unavailableDate,
         @JsonProperty("supersededDate") LocalDate supersededDate,
         @JsonProperty("deprecatedDate") LocalDate deprecatedDate,
@@ -31,7 +30,6 @@ public class DatasetReferenceDate {
         this.creationDate = creationDate;
         this.publicationDate = publicationDate;
         this.revisionDate = revisionDate;
-        this.lastUpdate = lastUpdate;
         this.unavailableDate = unavailableDate;
         this.supersededDate = supersededDate;
         this.deprecatedDate = deprecatedDate;
