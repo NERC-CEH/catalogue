@@ -183,11 +183,6 @@ textarea.editor-textarea {
                 }
             }
 
-            /* Opt-out rather than opt-in: selects are added by ~30 templates and a
-               new one should be styled by default. .styledSelect opts into the
-               appearance: base-select treatment further down instead. */
-            select:not(.styledSelect) {}
-
             .editor-input {
                 color: #000;
                 appearance: auto;
@@ -679,6 +674,15 @@ textarea.editor-textarea {
                 visibility: hidden;
                 width: 0;
                 padding: 0;
+            }
+
+            @media only screen and (min-width: 2040px) {
+                /* Fixes a bug where the options of select elements
+               are offset and hidden when the viewport is larger than c2040px.
+               I think this might be a bootstrap bug */
+                select {
+                    max-width: 1260px;
+                }
             }
         }
 

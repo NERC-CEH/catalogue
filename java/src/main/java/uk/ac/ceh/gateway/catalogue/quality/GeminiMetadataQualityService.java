@@ -85,7 +85,8 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
                     checkTemporalExtents(parsedDoc).stream(),
                     checkDownloadAndOrderLinks(parsedDoc).stream(),
                     checkEmbargo(parsedDoc).stream(),
-                    checkUris(parsedDoc).stream()
+                    checkUris(parsedDoc).stream(),
+                    checkResourceMaintenance(parsedDoc).stream()
                 ).flatMap(s -> s).toList();
                 return new Results(checks, id);
             } else {
@@ -554,6 +555,23 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             return Collections.singletonList(new MetadataCheck("Format version is empty", ERROR));
         }
         return Collections.emptyList();
+    }
+
+    List<MetadataCheck> checkResourceMaintenance(DocumentContext parsed) {
+
+        if (notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
+            return Collections.emptyList();
+        }
+       
+        val resourceMaintenance = parsed.read("$.resourceMaintenance[*]", typeRefStringString);
+        if (resourceMaintenance.isEmpty()) {
+            return Collections.singletonList(new MetadataCheck("Resource maintenance (frequency of update) is missing", WARNING));
+        }
+        if (resourceMaintenance.stream().anyMatch(rm -> fieldIsMissing(rm, "frequencyOfUpdate"))) {
+            return Collections.singletonList(new MetadataCheck("Resource maintenance (frequency of update) is empty", WARNING));
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     List<MetadataCheck> checkRelatedRecords(DocumentContext parsed) {

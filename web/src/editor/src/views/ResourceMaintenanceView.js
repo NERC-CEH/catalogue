@@ -23,37 +23,37 @@ export default ObjectInputView.extend({
     return this
   },
 
-  modify(event) {
-      const frequencyOfUpdate = this.$('.frequencyOfUpdate').val();
+  modify (event) {
+    const frequencyOfUpdate = this.$('.frequencyOfUpdate').val()
 
-      this.model.set('frequencyOfUpdate', frequencyOfUpdate);
+    this.model.set('frequencyOfUpdate', frequencyOfUpdate)
 
-      this.model.set(
-          'note',
-          this.$('textarea[data-name="note"]').val()
-      );
+    this.model.set(
+        'note',
+        this.$('textarea[data-name="note"]').val()
+    );
 
-      this.model.set(
-          'lastUpdate',
-          this.$('[data-name="lastUpdate"]').val()
-      );
+    this.model.set(
+        'lastUpdate',
+        this.$('[data-name="lastUpdate"]').val()
+    );
 
-      if (!frequencyOfUpdate || frequencyOfUpdate === 'notPlanned') {
-          this.model.unset('scope');
-      } else {
-          this.model.set('scope', {
-              attribute: this.$('.scopeAttribute').prop('checked'),
-              feature: this.$('.scopeFeature').prop('checked'),
-              attributeInstance: this.$('.scopeAttributeInstance').prop('checked'),
-              featureInstance: this.$('.scopeFeatureInstance').prop('checked')
-          });
-      }
+    if (!frequencyOfUpdate || frequencyOfUpdate === 'notPlanned') {
+        this.model.unset('scope');
+    } else {
+        this.model.set('scope', {
+          attribute: this.$('.scopeAttribute').prop('checked'),
+          feature: this.$('.scopeFeature').prop('checked'),
+          attributeInstance: this.$('.scopeAttributeInstance').prop('checked'),
+          featureInstance: this.$('.scopeFeatureInstance').prop('checked')
+        });
+    }
 
-      this.frequencyChanged();
-      console.log(this.model.get('lastUpdate'));
-      console.log(this.model.toJSON());
+    this.frequencyChanged()
   },
 
+  // If frequency is empty or equal to 'notPlanned',
+  // the date and scope are irrelevant so can be hidden
   frequencyChanged () {
     const value = this.$('.frequencyOfUpdate').val()
 
