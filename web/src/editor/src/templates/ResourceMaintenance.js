@@ -8,7 +8,7 @@ export default _.template(`
     <div class="col-xl-8 col-xxl-9">
         <select data-name="frequencyOfUpdate" class="frequencyOfUpdate" id="resourceMaintenance<%- data.index %>Frequency">
             <option value="" selected>- Select frequency of updates -</option>
-            <option value="notPlanned">Not Planned</option>
+            <option value="notPlanned">Not planned</option>
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
             <option value="fortnightly">Fortnightly</option>
@@ -41,28 +41,28 @@ export default _.template(`
             <input class="scopeAttribute form-check-input" <% if(scope.attribute) { %>checked<% } %> type="checkbox" id="resourceMaintenance<%- data.index %>_scopeAttribute">
             <label class="form-check-label" for="resourceMaintenance<%- data.index %>_scopeAttribute">
                 Attributes
-                <span class="text-body-tertiary">(e.g., parameters added/removed)</span>
+                <span class="text-body-tertiary fw-normal ms-2">(e.g., parameters added or removed)</span>
             </label>
         </div>
         <div class="form-check">
             <input class="scopeFeature form-check-input" <% if(scope.feature) { %>checked<% } %> type="checkbox" id="resourceMaintenance<%- data.index %>_scopeFeature">
             <label class="form-check-label" for="resourceMaintenance<%- data.index %>_scopeFeature">
                 Features
-                <span class="text-body-tertiary">(e.g., monitoring sites added/removed)</span>
+                <span class="text-body-tertiary fw-normal ms-2">(e.g., monitoring sites added or removed)</span>
             </label>
         </div>
         <div class="form-check">
             <input class="scopeAttributeInstance form-check-input" <% if(scope.attributeInstance) { %>checked<% } %> type="checkbox" id="resourceMaintenance<%- data.index %>_scopeAttributeInstance">
             <label class="form-check-label" for="resourceMaintenance<%- data.index %>_scopeAttributeInstance">
                 Attribute instances
-                <span class="text-body-tertiary">(e.g., data values added/removed)</span>
+                <span class="text-body-tertiary fw-normal ms-2">(e.g., data values changed, added or removed)</span>
             </label>
         </div>
         <div class="form-check">
             <input class="scopeFeatureInstance form-check-input" <% if(scope.featureInstance) { %>checked<% } %> type="checkbox" id="resourceMaintenance<%- data.index %>_scopeFeatureInstance">
             <label class="form-check-label" for="resourceMaintenance<%- data.index %>_scopeFeatureInstance">
                 Feature instances
-                <span class="text-body-tertiary">(e.g., data for monitoring sites added/removed)</span>
+                <span class="text-body-tertiary fw-normal ms-2">(e.g., data for monitoring sites changed, added or removed)</span>
             </label>
         </div>
     </div>

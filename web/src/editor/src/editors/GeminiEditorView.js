@@ -777,7 +777,10 @@ export default EditorView.extend({
           label: 'Resource maintenance',
           ObjectInputView: ResourceMaintenanceView,
           helpText: `
-<p>This states how often the updated data resource is made available to the user.  For the vast majority of EIDC data, this value will be "not planned".</p>
+<p>This describes how often THIS data resource is updated.</p>
+<p>For the vast majority of EIDC data, this value will be 'Not planned'.</p>
+<p><b>Note</b>: Annual releases such as UKBMS or LCM are typically published as distinct resources with their own metadata record and DOI.
+The existing version remains unchanged once published, so its update frequency is 'Not planned'.</p>
 `
         })
       ]
