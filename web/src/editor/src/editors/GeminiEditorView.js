@@ -104,6 +104,14 @@ export default EditorView.extend({
 `
         }),
 
+        new TextareaView({
+          model: this.model,
+          modelAttribute: 'lineage',
+          label: 'Lineage<small>Information about the source data used in the construction of this data resource</small>',
+          rows: 5,
+          helpText: '<p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>'
+        }),
+
         new SingleObjectView({
           model: this.model,
           modelAttribute: 'accessLimitation',
@@ -123,10 +131,11 @@ export default EditorView.extend({
           label: 'Reference dates',
           ObjectInputView: DatasetReferenceDateView,
           helpText: `\
-<p><b>Created</b> is the date on which the data resource was originally created.</p>
-<p><b>Published</b> is the date when this metadata record is made available publicly.</p>
-<p>For embargoed resources, <b>Release(d)</b> is the date on which the embargo was lifted <i class='text-red'><b>or is due to be lifted</b></i>.</p>
-<p><b>Superseded</b> is the date on which the resource was superseded by another resource (where relevant).</p>\
+<p><b>Created</b> - The date on which the data resource was originally created.</p>
+<p><b>Published</b> - The date on which this metadata record was first made publicly available.
+</p>
+<p><b>Release(d)</b> - For embargoed resources, the date on which the embargo was lifted or is scheduled to be lifted.</p>
+<p><b>Superseded</b> - (where applicable) The date on which the resource was replaced by another resource (e.g., a newer version).</p>\
 `
         }),
 
@@ -568,7 +577,7 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'ID & relationships',
+      label: 'IDs & relationships',
       title: 'Identifiers and links to related resources',
       views: [
         new ParentView({
@@ -752,21 +761,13 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'Quality',
-      title: 'Quality',
+      label: 'Updates',
+      title: 'Updates',
       views: [
         new TextareaView({
           model: this.model,
-          modelAttribute: 'lineage',
-          label: 'Lineage<small>Information about the source data used in the construction of this data resource</small>',
-          rows: 5,
-          helpText: '<p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>'
-        }),
-
-        new TextareaView({
-          model: this.model,
           modelAttribute: 'reasonChanged',
-          label: 'Reason for change<small>If this record is being retracted, the reasons for withdrawal or replacement should be explained</small>',
+          label: 'Reason for change<small>If this record is being superseded/retracted, the reasons for withdrawal or replacement should be explained</small>',
           rows: 5
         }),
 
@@ -776,7 +777,10 @@ export default EditorView.extend({
           label: 'Resource maintenance',
           ObjectInputView: ResourceMaintenanceView,
           helpText: `
-<p>This states how often the updated data resource is made available to the user.  For the vast majority of EIDC data, this value will be "not planned".</p>
+<p>This describes how often THIS data resource is updated.</p>
+<p>For the vast majority of EIDC data, this value will be 'Not planned'.</p>
+<p><b>Note</b>: Annual releases such as UKBMS or LCM are typically published as distinct resources with their own metadata record and DOI.
+The existing version remains unchanged once published, so its update frequency is 'Not planned'.</p>
 `
         })
       ]
@@ -849,8 +853,8 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'Web service',
-      title: 'Web service details',
+      label: 'Web map service',
+      title: 'Web map service details',
       views: [
         new ServiceView({
           model: this.model,

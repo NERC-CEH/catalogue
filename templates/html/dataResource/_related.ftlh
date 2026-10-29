@@ -4,9 +4,9 @@
     <#macro displayRelatives id title array>
       <#if array?has_content && array?size gt 0>
         <div id="associations-${id}">
-            <h4>${title}</h4>
+            <div class="fw-semibold mb-0 mt-2">${title}:</div>
             <#list array as item>
-                <p class="${item.publicationStatus}"><a href="${item.href}">${item.title}</a></p>
+                <div class="${item.publicationStatus}"><a href="${item.href}">${item.title}</a></div>
             </#list>
         </div>
       </#if>
