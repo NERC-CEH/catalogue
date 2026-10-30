@@ -192,8 +192,9 @@ public class JenaLookupService {
 
     public List<Link> programmeFeatures(String uri) {
         String sparql = PREFIXES + " SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom (GROUP_CONCAT(?code; separator='|') AS ?codes) " +
-            "WHERE {{?me doo:utilises ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type;sf:Geometry ?geom} " +
-            "UNION {?me doo:utilises ?network. ?node dcterms:isPartOf ?network; dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; sf:Geometry ?geom. BIND(doo:utilises as ?rel)}" +
+            "WHERE {?me (doo:hasChildProgramme)* ?prog ." +
+            "{?prog doo:utilises ?node. ?node dcterms:title ?title ; pso:PublicationStatus ?publicationStatus ; dcterms:type ?type ; sf:Geometry ?geom.}" + 
+            "UNION {?prog doo:utilises ?network .?node dcterms:isPartOf ?network ; dcterms:title ?title ; pso:PublicationStatus ?publicationStatus ; dcterms:type ?type ; sf:Geometry ?geom .BIND(doo:utilises AS ?rel)}" +
             "OPTIONAL {?node eidc:availability ?availability} " +
             "OPTIONAL {?node doo:operationalStatus ?availability} " +
             "OPTIONAL {?node dcterms:identifier ?code}} " +
