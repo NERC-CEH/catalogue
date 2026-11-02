@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.util;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpHeaders;
 
@@ -39,5 +40,11 @@ public class Headers {
         // otherwise surface as an IllegalArgumentException / 500 at request time.
         headers.setBearerAuth(token.strip());
         return headers;
+    }
+
+    public static String getClientId(HttpServletRequest request) {
+        String xClientIP = request.getHeader("X-Client-IP");
+        String clientId = (xClientIP != null && !xClientIP.isBlank()) ? xClientIP : request.getRemoteAddr();
+        return (clientId != null && !clientId.isBlank()) ? clientId : null;
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.util.Headers;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -61,7 +62,10 @@ public class DownloadController {
         }
         if(!excludedUsers.contains(user.getUsername()) && this.metricsService != null) {
             log.debug(String.format("Redirecting to %s", redirectUrl));
-            this.metricsService.recordDownload(uuid, request.getRemoteAddr());
+            String clientId = Headers.getClientId(request);
+            if (clientId != null) {
+                this.metricsService.recordDownload(uuid, clientId);
+            }
         }
         return "redirect:" + redirectUrl;
     }

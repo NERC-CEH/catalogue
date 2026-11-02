@@ -809,6 +809,7 @@ class DocumentControllerTest extends AbstractMvcTest {
         document.setMetadata(info);
         given(documentRepository.read(file))
             .willReturn(document);
+        given(request.getRemoteAddr()).willReturn("192.168.1.1");
 
         //When
         controller.readMetadata(user, file, request);
@@ -829,6 +830,92 @@ class DocumentControllerTest extends AbstractMvcTest {
         document.setMetadata(info);
         given(documentRepository.read(file))
             .willReturn(document);
+
+        //When
+        controller.readMetadata(user, file, request);
+
+        //Then
+        verify(metricsService, never()).recordView(any(), any());
+    }
+
+    @Test
+    @SneakyThrows
+    public void metricsServiceUsesXClientIpHeaderWhenPresent() {
+        //Given
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        CatalogueUser user = new CatalogueUser("any_old_user", "test@example.com");
+        String file = "myFile";
+        String clientIp = "203.0.113.46";
+        MetadataInfo info = MetadataInfo.builder().state(GitRepoServiceAgreementService.PUBLISHED).build();
+        MetadataDocument document = new GeminiDocument();
+        document.setMetadata(info);
+        given(documentRepository.read(file)).willReturn(document);
+        given(request.getHeader("X-Client-IP")).willReturn(clientIp);
+
+        //When
+        controller.readMetadata(user, file, request);
+
+        //Then
+        verify(metricsService).recordView(eq(file), eq(clientIp));
+    }
+
+    @Test
+    @SneakyThrows
+    public void metricsServiceUsesRemoteAddrWhenXClientIpHeaderNotPresent() {
+        //Given
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        CatalogueUser user = new CatalogueUser("any_old_user", "test@example.com");
+        String file = "myFile";
+        String remoteAddr = "192.168.1.100";
+        MetadataInfo info = MetadataInfo.builder().state(GitRepoServiceAgreementService.PUBLISHED).build();
+        MetadataDocument document = new GeminiDocument();
+        document.setMetadata(info);
+        given(documentRepository.read(file)).willReturn(document);
+        given(request.getHeader("X-Client-IP")).willReturn(null);
+        given(request.getRemoteAddr()).willReturn(remoteAddr);
+
+        //When
+        controller.readMetadata(user, file, request);
+
+        //Then
+        verify(metricsService).recordView(eq(file), eq(remoteAddr));
+    }
+
+    @Test
+    @SneakyThrows
+    public void metricsServiceUsesRemoteAddrWhenXClientIpHeaderIsBlank() {
+        //Given
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        CatalogueUser user = new CatalogueUser("any_old_user", "test@example.com");
+        String file = "myFile";
+        String remoteAddr = "192.168.1.100";
+        MetadataInfo info = MetadataInfo.builder().state(GitRepoServiceAgreementService.PUBLISHED).build();
+        MetadataDocument document = new GeminiDocument();
+        document.setMetadata(info);
+        given(documentRepository.read(file)).willReturn(document);
+        given(request.getHeader("X-Client-IP")).willReturn("");
+        given(request.getRemoteAddr()).willReturn(remoteAddr);
+
+        //When
+        controller.readMetadata(user, file, request);
+
+        //Then
+        verify(metricsService).recordView(eq(file), eq(remoteAddr));
+    }
+
+    @Test
+    @SneakyThrows
+    public void metricsServiceNotCalledWhenRemoteAddrIsBlank() {
+        //Given
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        CatalogueUser user = new CatalogueUser("any_old_user", "test@example.com");
+        String file = "myFile";
+        MetadataInfo info = MetadataInfo.builder().state(GitRepoServiceAgreementService.PUBLISHED).build();
+        MetadataDocument document = new GeminiDocument();
+        document.setMetadata(info);
+        given(documentRepository.read(file)).willReturn(document);
+        given(request.getHeader("X-Client-IP")).willReturn(null);
+        given(request.getRemoteAddr()).willReturn("");
 
         //When
         controller.readMetadata(user, file, request);

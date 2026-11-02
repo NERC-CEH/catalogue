@@ -116,4 +116,64 @@ class DownloadControllerTest extends AbstractMvcTest {
         assertThat("No urls should be valid", actual.size(), equalTo(0));
     }
 
+    @Test
+    @SneakyThrows
+    public void metricsServiceUsesXClientIpHeaderWhenPresent() {
+        //given
+        String uuid = "f36ecc5f-d6cc-4d00-b89a-9fea8f396d33";
+        String url = "https://data-package.ceh.ac.uk/data/" + uuid + ".zip";
+        String clientIp = "203.0.113.46";
+
+        //when
+        mvc.perform(
+                get("/download/{uuid}", uuid)
+                    .param("url", URLEncoder.encode(url, StandardCharsets.UTF_8))
+                    .header("X-Client-IP", clientIp)
+            )
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl(url));
+
+        //then
+        verify(metricsService).recordDownload(uuid, clientIp);
+    }
+
+    @Test
+    @SneakyThrows
+    public void metricsServiceUsesRemoteAddrWhenXClientIpHeaderNotPresent() {
+        //given
+        String uuid = "f36ecc5f-d6cc-4d00-b89a-9fea8f396d33";
+        String url = "https://data-package.ceh.ac.uk/data/" + uuid + ".zip";
+
+        //when
+        mvc.perform(
+                get("/download/{uuid}", uuid)
+                    .param("url", URLEncoder.encode(url, StandardCharsets.UTF_8))
+            )
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl(url));
+
+        //then
+        verify(metricsService).recordDownload(uuid, "127.0.0.1");
+    }
+
+    @Test
+    @SneakyThrows
+    public void metricsServiceUsesRemoteAddrWhenXClientIpHeaderIsBlank() {
+        //given
+        String uuid = "f36ecc5f-d6cc-4d00-b89a-9fea8f396d33";
+        String url = "https://data-package.ceh.ac.uk/data/" + uuid + ".zip";
+
+        //when
+        mvc.perform(
+                get("/download/{uuid}", uuid)
+                    .param("url", URLEncoder.encode(url, StandardCharsets.UTF_8))
+                    .header("X-Client-IP", "")
+            )
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl(url));
+
+        //then
+        verify(metricsService).recordDownload(uuid, "127.0.0.1");
+    }
+
 }
