@@ -733,7 +733,32 @@ class DocumentConverterTest {
             }
         });
 
-        assertThrows(XlsxSampler.TooLargeException.class, () -> XlsxSampler.sample(xlsx, 50, 1024));
-        assertThat(XlsxSampler.sample(xlsx, 50, XlsxSampler.MAX_PART_BYTES).previewable(), is(true));
+        assertThrows(XlsxSampler.TooLargeException.class,
+            () -> XlsxSampler.sample(xlsx, 50, 1024, XlsxSampler.MAX_STYLES_BYTES));
+        assertThat(XlsxSampler.sample(xlsx, 50, XlsxSampler.MAX_STRINGS_BYTES, XlsxSampler.MAX_STYLES_BYTES).previewable(),
+            is(true));
+    }
+
+    @Test
+    void stylesExpandingBeyondTheLimitAreTooLargeThoughXmlBeansWrapsTheFailure() throws Exception {
+        Path xlsx = workbook("styled.xlsx", wb -> row(wb.createSheet("S"), 0, "site"));
+
+        assertThrows(XlsxSampler.TooLargeException.class,
+            () -> XlsxSampler.sample(xlsx, 50, XlsxSampler.MAX_STRINGS_BYTES, 100));
+    }
+
+    @Test
+    void repeatedAndOutOfOrderCellsCannotWidenARow() {
+        XlsxSampler.Rows rows = new XlsxSampler.Rows(50);
+        rows.startRow(0);
+        rows.cell("B1", "b", null);
+        for (int i = 0; i < 100_000; i++) {
+            rows.cell("B1", "again", null);
+            rows.cell("A1", "earlier", null);
+            rows.cell(null, "unplaced", null);
+        }
+        rows.endRow(0);
+
+        assertThat(rows.sample().header().size(), is(XlsxSampler.MAX_COLUMNS));
     }
 }

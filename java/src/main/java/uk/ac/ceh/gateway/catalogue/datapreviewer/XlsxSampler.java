@@ -36,8 +36,13 @@ import org.xml.sax.XMLReader;
  */
 public class XlsxSampler {
 
-    /** The most uncompressed bytes read from the shared strings part, and from the styles part. */
-    static final long MAX_PART_BYTES = 64L * 1024 * 1024;
+    /** The most uncompressed bytes read from the shared strings part, held as a list of strings. */
+    static final long MAX_STRINGS_BYTES = 64L * 1024 * 1024;
+    /**
+     * The most uncompressed bytes read from the styles part. It is parsed into an XmlBeans tree
+     * several times its size, so the limit is far lower; real workbooks' styles are well under 1 MiB.
+     */
+    static final long MAX_STYLES_BYTES = 4L * 1024 * 1024;
     /** Columns beyond this are left out of the preview. */
     static final int MAX_COLUMNS = 1000;
     /** Rows read, blank ones included, before giving up on a sheet that has not filled the preview. */
@@ -53,20 +58,20 @@ public class XlsxSampler {
     }
 
     /**
-     * @throws TooLargeException when a part the sampler must hold whole expands beyond
-     *                           {@link #MAX_PART_BYTES}
+     * @throws TooLargeException when a part the sampler must hold whole expands beyond its limit,
+     *                           {@link #MAX_STRINGS_BYTES} or {@link #MAX_STYLES_BYTES}
      * @throws IOException       when the file cannot be read; a file that is not a workbook is a
      *                           not-previewable result instead
      */
     public static CsvSample sample(Path file, int maxRows) throws IOException {
-        return sample(file, maxRows, MAX_PART_BYTES);
+        return sample(file, maxRows, MAX_STRINGS_BYTES, MAX_STYLES_BYTES);
     }
 
-    static CsvSample sample(Path file, int maxRows, long maxPartBytes) throws IOException {
+    static CsvSample sample(Path file, int maxRows, long maxStringsBytes, long maxStylesBytes) throws IOException {
         try (OPCPackage workbook = OPCPackage.open(file.toFile(), PackageAccess.READ)) {
             XSSFReader reader = new XSSFReader(workbook);
-            ReadOnlySharedStringsTable strings = sharedStrings(workbook, maxPartBytes);
-            StylesTable styles = styles(workbook, maxPartBytes);
+            ReadOnlySharedStringsTable strings = sharedStrings(workbook, maxStringsBytes);
+            StylesTable styles = styles(workbook, maxStylesBytes);
             XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator) reader.getSheetsData();
             List<String> names = new ArrayList<>();
             CsvSample shown = null;
@@ -105,8 +110,14 @@ public class XlsxSampler {
         if (parts.isEmpty()) {
             return new ReadOnlySharedStringsTable(InputStream.nullInputStream());
         }
-        try (InputStream in = limited(parts.getFirst(), maxPartBytes, "shared strings")) {
+        LimitedInputStream in = limited(parts.getFirst(), maxPartBytes, "shared strings");
+        try (in) {
             return new ReadOnlySharedStringsTable(in);
+        } catch (IOException | SAXException | RuntimeException e) {
+            if (in.exceeded()) {
+                throw in.tooLarge();
+            }
+            throw e;
         }
     }
 
@@ -115,12 +126,19 @@ public class XlsxSampler {
         if (parts.isEmpty()) {
             return new StylesTable();
         }
-        try (InputStream in = limited(parts.getFirst(), maxPartBytes, "styles")) {
+        LimitedInputStream in = limited(parts.getFirst(), maxPartBytes, "styles");
+        try (in) {
             return new StylesTable(in);
+        } catch (IOException | RuntimeException e) {
+            // StylesTable wraps what XmlBeans throws, so the limit is told apart by the stream itself.
+            if (in.exceeded()) {
+                throw in.tooLarge();
+            }
+            throw e;
         }
     }
 
-    private static InputStream limited(PackagePart part, long limit, String name) throws IOException {
+    private static LimitedInputStream limited(PackagePart part, long limit, String name) throws IOException {
         return new LimitedInputStream(part.getInputStream(), limit, name);
     }
 
@@ -169,8 +187,16 @@ public class XlsxSampler {
         private void count(int n) throws TooLargeException {
             read += n;
             if (read > limit) {
-                throw new TooLargeException("Workbook " + name + " expands beyond " + limit + " bytes");
+                throw tooLarge();
             }
+        }
+
+        boolean exceeded() {
+            return read > limit;
+        }
+
+        TooLargeException tooLarge() {
+            return new TooLargeException("Workbook " + name + " expands beyond " + limit + " bytes");
         }
     }
 
@@ -219,7 +245,9 @@ public class XlsxSampler {
         @Override
         public void cell(String reference, String value, XSSFComment comment) {
             int column = reference == null ? current.size() : new CellReference(reference).getCol();
-            if (column < 0 || column >= MAX_COLUMNS) {
+            // Each cell takes its own column once, so a row never grows past MAX_COLUMNS however many
+            // cells, repeated or out of order, the sheet gives it.
+            if (column < 0 || column >= MAX_COLUMNS || column < current.size()) {
                 return;
             }
             while (current.size() < column) {
