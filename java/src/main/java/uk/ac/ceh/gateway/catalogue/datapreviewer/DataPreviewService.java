@@ -12,8 +12,8 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 /**
- * What a record's data preview shows: its file listing, a CSV's first rows and a supporting
- * document's content.
+ * What a record's data preview shows: its file listing, a data file's first rows and a
+ * supporting document's content.
  *
  * <p>Every call checks the record is open before any cache is consulted, so a record closed since
  * its listing was cached shows nothing. The listing and the content are cached by
@@ -50,13 +50,15 @@ public class DataPreviewService {
     }
 
     /**
-     * @return the CSV's first rows, or empty when the path is not one of the record's listed CSVs
+     * @return the data file's first rows (or, for plain text that is not a table, its start), or
+     *         empty when the path is not one of the record's listed data files
      * @throws NoSuchElementException  when the record does not exist
      * @throws PreviewNotOpenException when the record's data is not openly accessible
+     * @throws PreviewBusyException    when every conversion worker is busy
      */
-    public Optional<CsvSample> csv(String recordId, String path) {
-        return find(manifest(recordId).csvFiles(), path)
-            .map(file -> contentReader.csv(recordId, file.path(), file.sha256()));
+    public Optional<DocumentPreview> data(String recordId, String path) {
+        return find(manifest(recordId).dataFiles(), path)
+            .map(file -> contentReader.data(recordId, file.path(), file.sha256()));
     }
 
     /**

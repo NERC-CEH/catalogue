@@ -41,12 +41,12 @@ public class PreviewListing {
     @Cacheable(cacheNames = DATA_PREVIEW_MANIFEST_CACHE, key = "#recordId")
     public PreviewManifest manifest(String recordId) {
         // Only the first page is read: a record with more than DATA_PAGE_SIZE files is reported as
-        // having "at least" the CSVs found there, rather than walking a listing of unbounded length.
+        // having "at least" the data files found there, rather than walking a listing of unbounded length.
         HubbubResponse data = list(recordId, DATA_DATASTORE, DATA_PAGE_SIZE);
         List<FileInfo> dataFiles = data == null ? List.of() : files(data);
-        List<FileInfo> csvs = dataFiles.stream()
+        List<FileInfo> previewable = dataFiles.stream()
             .filter(PreviewListing::reliable)
-            .filter(PreviewListing::isCsv)
+            .filter(PreviewListing::isPreviewableData)
             .sorted(Comparator.comparing(FileInfo::getPath))
             .toList();
         HubbubResponse.Meta meta = data == null ? null : data.getMeta();
@@ -60,8 +60,8 @@ public class PreviewListing {
             .toList();
 
         return new PreviewManifest(
-            entries(csvs.subList(0, Math.min(csvs.size(), properties.maxCsvFiles()))),
-            csvs.size(),
+            entries(previewable.subList(0, Math.min(previewable.size(), properties.maxDataFiles()))),
+            previewable.size(),
             minimum,
             totalFiles,
             entries(documents));
@@ -125,10 +125,12 @@ public class PreviewListing {
         return file.getStatus() == null || !UNRELIABLE.contains(file.getStatus().toUpperCase(Locale.ROOT));
     }
 
-    private static boolean isCsv(FileInfo file) {
-        String mimeType = file.getMimeType();
-        return file.getPath().toLowerCase(Locale.ROOT).endsWith(".csv")
-            || (mimeType != null && mimeType.toLowerCase(Locale.ROOT).startsWith("text/csv"));
+    /** Delimited text or an Excel workbook, by extension, or CSV or TSV by the MIME type Hubbub gives. */
+    private static boolean isPreviewableData(FileInfo file) {
+        String mimeType = file.getMimeType() == null ? "" : file.getMimeType().toLowerCase(Locale.ROOT);
+        return DocumentConverter.DATA_EXTENSIONS.contains(DocumentConverter.extension(file.getPath()))
+            || mimeType.startsWith("text/csv")
+            || mimeType.startsWith("text/tab-separated-values");
     }
 
     private static List<PreviewFile> entries(List<FileInfo> files) {

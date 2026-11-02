@@ -25,14 +25,16 @@ const page = ({ map = false, packageUrl = PACKAGE, documentsUrl = DOCUMENTS } = 
 
 const entry = (path, label = path) => ({ path, label, bytes: 10, sha256: 'x' })
 const manifest = (overrides = {}) => ({
-  csvFiles: [entry('a.csv'), entry('fish_biometry .csv', 'fish_biometry')],
-  csvCount: 2,
-  csvCountIsMinimum: false,
+  dataFiles: [entry('a.csv'), entry('fish_biometry .csv', 'fish_biometry')],
+  dataCount: 2,
+  dataCountIsMinimum: false,
   totalFiles: 2,
   documents: [],
   ...overrides
 })
 const sample = (overrides = {}) => ({ header: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], rows: [['1', '2', '3', '4', '5', '6']], moreRows: false, previewable: true, ...overrides })
+// The data endpoint's answer for a table: a DocumentPreview of kind TABLE
+const dataTable = (overrides = {}) => ({ kind: 'TABLE', text: null, table: sample(overrides), truncated: false })
 const json = (body, status = 200) => ({ status, responseText: JSON.stringify(body) })
 
 describe('DataPreviewView', () => {
@@ -60,11 +62,11 @@ describe('DataPreviewView', () => {
   }
   const text = selector => $page.find(selector).text()
   const tabs = selector => $page.find(`${selector} [role=tab]`).map((i, tab) => $(tab).text()).get()
-  const manifestThen = async (manifestBody, csvBody = sample()) => {
+  const manifestThen = async (manifestBody, dataBody = dataTable()) => {
     start()
     answer('/documents/abc/data-preview', json(manifestBody))
-    await vi.waitFor(() => expect(urls().some(url => url.includes('/csv?'))).toBe(true))
-    answer('/csv?', json(csvBody))
+    await vi.waitFor(() => expect(urls().some(url => url.includes('/data?'))).toBe(true))
+    answer('/data?', json(dataBody))
     // Not view.ready: that waits for the first document too, which a spec answers itself
     await vi.waitFor(() => expect($page.find('.data-preview-data table, .data-preview-data p').length).toBeGreaterThan(0))
   }
@@ -97,7 +99,7 @@ describe('DataPreviewView', () => {
     expect(tabs('.data-preview-data')).toEqual(['a.csv', 'fish_biometry'])
     expect($page.find('.data-preview-data [role=tab]').first().attr('aria-selected')).toBe('true')
     expect($page.find('.data-preview-data [role=tab]').last().attr('aria-selected')).toBe('false')
-    expect(urls()).toContain('/documents/abc/data-preview/csv?path=a.csv')
+    expect(urls()).toContain('/documents/abc/data-preview/data?path=a.csv')
     expect($page.find('.data-preview-data table th').length).toBe(6)
   })
 
@@ -107,8 +109,8 @@ describe('DataPreviewView', () => {
     const first = () => $page.find('.data-preview-data [role=tab]').eq(0)
 
     second().trigger('click')
-    expect(urls()).toContain('/documents/abc/data-preview/csv?path=fish_biometry%20.csv')
-    answer('fish_biometry%20.csv', json(sample({ header: ['only'], rows: [['x']] })))
+    expect(urls()).toContain('/documents/abc/data-preview/data?path=fish_biometry%20.csv')
+    answer('fish_biometry%20.csv', json(dataTable({ header: ['only'], rows: [['x']] })))
     await vi.waitFor(() => expect($page.find('.data-preview-data table th').length).toBe(1))
     first().trigger('click')
     await vi.waitFor(() => expect($page.find('.data-preview-data table th').length).toBe(6))
@@ -121,23 +123,23 @@ describe('DataPreviewView', () => {
   })
 
   const row = ['1', '2', '3', '4', '5', '6']
-  const sized = bytes => manifest({ csvFiles: [{ ...entry('a.csv'), bytes }], csvCount: 1, totalFiles: 1 })
+  const sized = bytes => manifest({ dataFiles: [{ ...entry('a.csv'), bytes }], dataCount: 1, totalFiles: 1 })
   const note = () => text('.data-preview-data .data-preview-note')
 
   it('says how many rows and columns, and the file size, when there are more rows', async () => {
-    await manifestThen(sized(393216), sample({ moreRows: true, rows: Array.from({ length: 50 }, () => row) }))
+    await manifestThen(sized(393216), dataTable({ moreRows: true, rows: Array.from({ length: 50 }, () => row) }))
 
     expect(note()).toContain('First 50 rows of a 384 KB file · 6 columns')
   })
 
   it('says how many rows and columns, and the file size, when it has them all', async () => {
-    await manifestThen(sized(1229), sample({ rows: Array.from({ length: 6 }, () => row) }))
+    await manifestThen(sized(1229), dataTable({ rows: Array.from({ length: 6 }, () => row) }))
 
     expect(note()).toContain('All 6 rows of a 1.2 KB file · 6 columns')
   })
 
   it('leaves the size out when the listing gives none', async () => {
-    await manifestThen(sized(0), sample({ rows: [row, row, row] }))
+    await manifestThen(sized(0), dataTable({ rows: [row, row, row] }))
 
     expect(note()).toContain('All 3 rows · 6 columns')
   })
@@ -154,8 +156,8 @@ describe('DataPreviewView', () => {
     $page = $(page({ packageUrl: '' })).appendTo(document.body)
     view = new DataPreviewView({ el: $page.find('.data-preview')[0] })
     answer('/documents/abc/data-preview', json(manifest()))
-    await vi.waitFor(() => expect(urls().some(url => url.includes('/csv?'))).toBe(true))
-    answer('/csv?', json(sample()))
+    await vi.waitFor(() => expect(urls().some(url => url.includes('/data?'))).toBe(true))
+    answer('/data?', json(dataTable()))
     await view.ready
 
     expect($page.find('.data-preview-data table').length).toBe(1)
@@ -164,19 +166,19 @@ describe('DataPreviewView', () => {
   })
 
   it('links the full download when there are more CSV files than tabs', async () => {
-    const csvFiles = Array.from({ length: 10 }, (i, n) => entry(`f${n}.csv`))
-    await manifestThen(manifest({ csvFiles, csvCount: 54, totalFiles: 54 }))
+    const dataFiles = Array.from({ length: 10 }, (i, n) => entry(`f${n}.csv`))
+    await manifestThen(manifest({ dataFiles, dataCount: 54, totalFiles: 54 }))
 
     const $link = $page.find('.data-preview-data .data-preview-footer a')
-    expect($link.text()).toBe('Showing 10 of 54 CSV files · 54 files in this dataset, all in the full download')
+    expect($link.text()).toBe('Showing 10 of 54 previewable files · 54 files in this dataset, all in the full download')
     expect($link.attr('href')).toBe(PACKAGE)
   })
 
   it('says at least when the count is a minimum', async () => {
-    const csvFiles = Array.from({ length: 10 }, (i, n) => entry(`f${n}.csv`))
-    await manifestThen(manifest({ csvFiles, csvCount: 54, csvCountIsMinimum: true, totalFiles: 54 }))
+    const dataFiles = Array.from({ length: 10 }, (i, n) => entry(`f${n}.csv`))
+    await manifestThen(manifest({ dataFiles, dataCount: 54, dataCountIsMinimum: true, totalFiles: 54 }))
 
-    expect(text('.data-preview-data .data-preview-footer a')).toContain('Showing 10 of at least 54 CSV files')
+    expect(text('.data-preview-data .data-preview-footer a')).toContain('Showing 10 of at least 54 previewable files')
   })
 
   it('has no footer when every CSV file has a tab', async () => {
@@ -189,29 +191,67 @@ describe('DataPreviewView', () => {
   it('shows the footer as plain text when there is no package link', async () => {
     $page = $(page({ packageUrl: '' })).appendTo(document.body)
     view = new DataPreviewView({ el: $page.find('.data-preview')[0] })
-    answer('/documents/abc/data-preview', json(manifest({ csvCount: 5, totalFiles: 5 })))
-    await vi.waitFor(() => expect(urls().some(url => url.includes('/csv?'))).toBe(true))
-    answer('/csv?', json(sample()))
+    answer('/documents/abc/data-preview', json(manifest({ dataCount: 5, totalFiles: 5 })))
+    await vi.waitFor(() => expect(urls().some(url => url.includes('/data?'))).toBe(true))
+    answer('/data?', json(dataTable()))
     await view.ready
 
-    expect(text('.data-preview-data')).toContain('Showing 2 of 5 CSV files')
+    expect(text('.data-preview-data')).toContain('Showing 2 of 5 previewable files')
     expect($page.find('.data-preview a').length).toBe(0)
   })
 
   it('says a file can\'t be previewed, with the package link, not an empty table', async () => {
-    await manifestThen(manifest(), sample({ previewable: false, header: [], rows: [] }))
+    await manifestThen(manifest(), { kind: 'NOT_PREVIEWABLE', text: null, table: null, truncated: false })
 
     expect($page.find('.data-preview-data table').length).toBe(0)
     expect(text('.data-preview-data')).toContain('This file can\'t be previewed')
     expect($page.find('.data-preview-data a').attr('href')).toBe(PACKAGE)
   })
 
+  it('shows a plain-text data file that is not a table as text, escaped', async () => {
+    await manifestThen(manifest(), { kind: 'TEXT', text: 'Read me <b>first</b>', table: null, truncated: true })
+
+    const $pre = $page.find('.data-preview-data pre')
+    expect($pre.text()).toBe('Read me <b>first</b>')
+    expect($pre.find('b').length).toBe(0)
+    expect(text('.data-preview-data')).toContain('Showing the start of this file')
+    expect($page.find('.data-preview-data table').length).toBe(0)
+  })
+
+  it('names the sheet shown and the others for a workbook', async () => {
+    await manifestThen(manifest(), dataTable({ sheet: 'Data', sheets: ['Cover', 'Data', 'Notes'] }))
+
+    expect(text('.data-preview-data .data-preview-sheets')).toBe('Sheet “Data” · also in this workbook: Cover, Notes')
+    expect($page.find('.data-preview-data table').length).toBe(1)
+  })
+
+  it('has no sheet note for a workbook of one sheet, or a text table', async () => {
+    await manifestThen(manifest(), dataTable({ sheet: 'Data', sheets: ['Data'] }))
+    expect($page.find('.data-preview-sheets').length).toBe(0)
+  })
+
+  it('says the preview is busy on a 503 in the data pane', async () => {
+    start()
+    answer('/documents/abc/data-preview', json(manifest()))
+    await vi.waitFor(() => expect(urls().some(url => url.includes('/data?'))).toBe(true))
+    answer('/data?', json({ error: 'busy' }, 503))
+    await vi.waitFor(() => expect(text('.data-preview-data')).toContain('The preview is busy, try again shortly'))
+
+    expect($page.find('.data-preview-data a').attr('href')).toBe(PACKAGE)
+  })
+
+  it('shows a table result that is not previewable as can\'t be previewed', async () => {
+    await manifestThen(manifest(), dataTable({ previewable: false, header: [], rows: [] }))
+
+    expect(text('.data-preview-data')).toContain('This file can\'t be previewed')
+  })
+
   it('omits the package link rather than render an empty href', async () => {
     $page = $(page({ packageUrl: '' })).appendTo(document.body)
     view = new DataPreviewView({ el: $page.find('.data-preview')[0] })
-    answer('/documents/abc/data-preview', json({ ...manifest(), csvFiles: [entry('a.csv')] }))
-    await vi.waitFor(() => expect(urls().some(url => url.includes('/csv?'))).toBe(true))
-    answer('/csv?', json({}, 500))
+    answer('/documents/abc/data-preview', json({ ...manifest(), dataFiles: [entry('a.csv')] }))
+    await vi.waitFor(() => expect(urls().some(url => url.includes('/data?'))).toBe(true))
+    answer('/data?', json({}, 500))
     await view.ready
 
     expect(text('.data-preview-data')).toContain('Preview unavailable')
@@ -253,7 +293,7 @@ describe('DataPreviewView', () => {
   })
 
   describe('with no files', () => {
-    const empty = { csvFiles: [], csvCount: 0, csvCountIsMinimum: false, totalFiles: 0, documents: [] }
+    const empty = { dataFiles: [], dataCount: 0, dataCountIsMinimum: false, totalFiles: 0, documents: [] }
 
     it('removes the section and its contents entry', async () => {
       start()
@@ -327,6 +367,15 @@ describe('DataPreviewView', () => {
       await vi.waitFor(() => expect(text('.data-preview-documents')).toContain('Showing the start of this document'))
     })
 
+    it('names the sheet for a workbook document', async () => {
+      await withDocuments()
+      documentTab(1).trigger('click')
+      answer('path=t.xlsx', json({ kind: 'TABLE', text: null, table: { header: ['x'], rows: [['1']], moreRows: false, previewable: true, sheet: 'Units', sheets: ['Units', 'Codes'] }, truncated: false }))
+      await vi.waitFor(() => expect($page.find('.data-preview-documents table').length).toBe(1))
+
+      expect(text('.data-preview-documents .data-preview-sheets')).toBe('Sheet “Units” · also in this workbook: Codes')
+    })
+
     it('shows TABLE with csvTable', async () => {
       await withDocuments()
       documentTab(1).trigger('click')
@@ -351,7 +400,7 @@ describe('DataPreviewView', () => {
       start(page({ documentsUrl: '' }))
       answer('/documents/abc/data-preview', json(manifest({ documents: [entry('x.bin', 'Binary')] })))
       await vi.waitFor(() => expect(urls().some(url => url.includes('/document?'))).toBe(true))
-      answer('/csv?', json(sample()))
+      answer('/data?', json(dataTable()))
       answer('/document?', json({ kind: 'NOT_PREVIEWABLE', text: null, table: null, truncated: false }))
       await view.ready
 

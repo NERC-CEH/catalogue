@@ -9,6 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class CsvSamplerTest {
@@ -118,5 +119,113 @@ class CsvSamplerTest {
     @Test
     void emptyFileIsNotPreviewable() {
         assertThat(sample(new byte[0], BIG, 50).previewable(), is(false));
+    }
+
+    // Delimiter detection
+
+    private static Optional<CsvSampler.Delimiter> detect(String text) {
+        return CsvSampler.detect(text);
+    }
+
+    @Test
+    void detectsComma() {
+        assertThat(detect("a,b,c\n1,2,3\n4,5,6\n"), is(Optional.of(CsvSampler.Delimiter.COMMA)));
+    }
+
+    @Test
+    void detectsTab() {
+        assertThat(detect("site\tdate\tcount\nA1\t2020-01-01\t3\n"), is(Optional.of(CsvSampler.Delimiter.TAB)));
+    }
+
+    @Test
+    void detectsSemicolonOverDecimalCommas() {
+        assertThat(detect("site;value\nA1;1,5\nB2;2,25\n"), is(Optional.of(CsvSampler.Delimiter.of(';'))));
+    }
+
+    @Test
+    void detectsPipe() {
+        assertThat(detect("a|b\n1|2\n"), is(Optional.of(CsvSampler.Delimiter.PIPE)));
+    }
+
+    @Test
+    void detectsRunsOfSpacesWhenNoCharacterSplits() {
+        assertThat(detect("year   month  rain\n1990   1      85.2\n1990   2      60.1\n"),
+            is(Optional.of(CsvSampler.Delimiter.WHITESPACE)));
+    }
+
+    @Test
+    void ignoresDelimitersInsideQuotes() {
+        assertThat(detect("\"name\",\"note\"\n\"A\",\"x; y; z\"\n\"B\",\"p; q; r\"\n"),
+            is(Optional.of(CsvSampler.Delimiter.COMMA)));
+    }
+
+    @Test
+    void quotedLineBreakDoesNotEndARecord() {
+        assertThat(detect("a,b\n\"line one\nline two\",2\n3,4\n"), is(Optional.of(CsvSampler.Delimiter.COMMA)));
+    }
+
+    @Test
+    void proseIsNotATable() {
+        assertThat(detect("This folder holds the survey data, collected in 2019.\n"
+            + "Files are named by site.\nSee the guide, the dictionary and the licence for details.\n"), is(Optional.empty()));
+    }
+
+    @Test
+    void linesOfProseWithTheSameWordCountAreNotSpaceAligned() {
+        assertThat(detect("Notes on the survey.\nSecond line of notes.\nThird and final line.\n"), is(Optional.empty()));
+    }
+
+    @Test
+    void twoSpaceAlignedRecordsAreNotEnough() {
+        assertThat(detect("year rain\n1990 85.2\n"), is(Optional.empty()));
+    }
+
+    @Test
+    void singleColumnIsNotDetected() {
+        assertThat(detect("count\n1\n2\n"), is(Optional.empty()));
+    }
+
+    @Test
+    void oneRecordIsNotEnoughToDetect() {
+        assertThat(detect("a,b,c\n"), is(Optional.empty()));
+    }
+
+    @Test
+    void samplesTabDelimitedFile() {
+        CsvSample s = sample("site\tcount\nA1\t3\nB2\t5\n");
+        assertThat(s.header(), contains("site", "count"));
+        assertThat(s.rows(), contains(List.of("A1", "3"), List.of("B2", "5")));
+    }
+
+    @Test
+    void samplesSemicolonFileWithDecimalCommas() {
+        CsvSample s = sample("site;value\nA1;1,5\n");
+        assertThat(s.header(), contains("site", "value"));
+        assertThat(s.rows().get(0), contains("A1", "1,5"));
+    }
+
+    @Test
+    void splitsOnRunsOfSpaces() {
+        CsvSampler.Text text = new CsvSampler.Text("  year   rain\n  1990   85.2\n\n  1991   60.1\n", false);
+
+        CsvSample s = sampler.table(text, CsvSampler.Delimiter.WHITESPACE, 50);
+
+        assertThat(s.header(), contains("year", "rain"));
+        assertThat(s.rows(), contains(List.of("1990", "85.2"), List.of("1991", "60.1")));
+    }
+
+    @Test
+    void readGivesWholeLinesAndSaysWhenCapped() {
+        byte[] bytes = "a,b\n1,2\n3,4\n".getBytes(StandardCharsets.UTF_8);
+
+        CsvSampler.Text text = sampler.read(new ByteArrayInputStream(bytes), 10).orElseThrow();
+
+        assertThat(text.text(), is("a,b\n1,2\n"));
+        assertThat(text.capped(), is(true));
+    }
+
+    @Test
+    void readOfBinaryIsEmpty() {
+        assertThat(sampler.read(new ByteArrayInputStream(new byte[] {'a', 0, 'b'}), BIG), is(Optional.empty()));
     }
 }

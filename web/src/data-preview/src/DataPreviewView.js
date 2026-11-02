@@ -11,9 +11,10 @@ const plural = (count, word) => `${count} ${word}${count === 1 ? '' : 's'}`
 const size = bytes => filesize(bytes, { standard: 'jedec' })
 
 /**
- * The record page's Data Preview section: the first rows of the record's CSV files, one tab per file,
- * beside its supporting documents, one tab per document. The documents are shown only beside data: a
- * record with no CSV files has no preview. Everything from the server is set as text.
+ * The record page's Data Preview section: the first rows of the record's data files (delimited text
+ * and Excel workbooks, or the start of a plain-text file that isn't a table), one tab per file, beside
+ * its supporting documents, one tab per document. The documents are shown only beside data: a record
+ * with no data files to show has no preview. Everything from the server is set as text.
  * A pane that fails shows why in itself and leaves the other alone.
  */
 export default Backbone.View.extend({
@@ -48,20 +49,20 @@ export default Backbone.View.extend({
       this.$documents.remove()
       return
     }
-    const csvFiles = this.manifest.csvFiles || []
+    const dataFiles = this.manifest.dataFiles || []
     const documents = this.manifest.documents || []
-    if (!csvFiles.length) return this.removeSection()
+    if (!dataFiles.length) return this.removeSection()
     this.$data.empty()
     this.$documents.empty()
-    this.csvPane = this.tabbedPane(this.$data, csvFiles, (entry) => this.csvContent(entry))
-    this.$data.append(this.csvFooter(csvFiles))
+    this.dataPane = this.tabbedPane(this.$data, dataFiles, (entry) => this.dataContent(entry))
+    this.$data.append(this.dataFooter(dataFiles))
     if (documents.length) {
       this.documentPane = this.tabbedPane(this.$documents, documents, (entry) => this.documentContent(entry))
     } else {
       this.$documents.remove()
     }
     if (!documents.length) this.$data.removeClass('col-lg-7').addClass('col-lg-12')
-    await Promise.all([this.csvPane?.select(0), this.documentPane?.select(0)])
+    await Promise.all([this.dataPane.select(0), this.documentPane?.select(0)])
   },
 
   removeSection () {
@@ -117,16 +118,23 @@ export default Backbone.View.extend({
   },
 
   // Resolves to content for the panel, or rejects with an error whose `content` says what to show
-  async csvContent (entry) {
-    let sample
+  async dataContent (entry) {
+    let result
     try {
-      sample = await this.fetchJson(this.endpoint('csv', entry.path))
+      result = await this.fetchJson(this.endpoint('data', entry.path))
     } catch (status) {
-      throw Object.assign(new Error(`CSV ${status}`), { content: this.unavailable() })
+      throw Object.assign(new Error(`Data ${status}`), {
+        content: status === 503
+          ? $('<p class="text-muted"></p>').text('The preview is busy, try again shortly. ').append(this.packageLink())
+          : this.unavailable()
+      })
     }
-    if (!sample.previewable) {
-      return $('<p class="text-muted"></p>').text('This file can\'t be previewed. ').append(this.packageLink())
-    }
+    if (result.kind === 'TABLE' && result.table?.previewable) return this.dataTable(entry, result.table)
+    if (result.kind === 'TEXT') return this.text(result, 'file')
+    return $('<p class="text-muted"></p>').text('This file can\'t be previewed. ').append(this.packageLink())
+  },
+
+  dataTable (entry, sample) {
     const rows = sample.rows || []
     const columns = Math.max((sample.header || []).length, ...rows.map(row => row.length))
     const of = entry.bytes > 0 ? ` of a ${size(entry.bytes)} file` : ''
@@ -135,14 +143,30 @@ export default Backbone.View.extend({
     if (this.packageUrl) $note.append(document.createTextNode(' · '), $('<a></a>').attr('href', this.packageUrl).text('Download the data'))
     return $('<div></div>').append(
       $note,
+      this.sheetNote(sample),
       $('<div class="data-preview-scroll"></div>').append(renderTable(sample)))
   },
 
-  csvFooter (csvFiles) {
-    const { csvCount, csvCountIsMinimum, totalFiles } = this.manifest
-    if (!(csvCount > csvFiles.length || csvCountIsMinimum)) return $()
-    const count = `${csvCountIsMinimum ? 'at least ' : ''}${csvCount} CSV files`
-    const text = `Showing ${csvFiles.length} of ${count} · ${totalFiles} files in this dataset, all in the full download`
+  // For a workbook of several sheets, which one is shown and what the others are called
+  sheetNote (sample) {
+    const sheets = sample.sheets || []
+    if (!sample.sheet || sheets.length < 2) return $()
+    const others = sheets.filter(name => name !== sample.sheet)
+    return $('<p class="data-preview-sheets small text-muted mb-1"></p>')
+      .text(`Sheet “${sample.sheet}” · also in this workbook: ${others.join(', ')}`)
+  },
+
+  text (result, what) {
+    const $content = $('<div></div>').append($('<pre class="data-preview-text"></pre>').text(result.text || ''))
+    if (result.truncated) $content.append($('<p class="small text-muted mb-0"></p>').text(`Showing the start of this ${what}`))
+    return $content
+  },
+
+  dataFooter (dataFiles) {
+    const { dataCount, dataCountIsMinimum, totalFiles } = this.manifest
+    if (!(dataCount > dataFiles.length || dataCountIsMinimum)) return $()
+    const count = `${dataCountIsMinimum ? 'at least ' : ''}${dataCount} previewable files`
+    const text = `Showing ${dataFiles.length} of ${count} · ${totalFiles} files in this dataset, all in the full download`
     const $note = $('<p class="data-preview-footer small text-muted mt-2 mb-0"></p>')
     return this.packageUrl ? $note.append($('<a></a>').attr('href', this.packageUrl).text(text)) : $note.text(text)
   },
@@ -158,13 +182,11 @@ export default Backbone.View.extend({
           : 'Preview unavailable. ').append(this.documentsLink())
       })
     }
-    if (result.kind === 'TEXT') {
-      const $content = $('<div></div>').append($('<pre class="data-preview-text"></pre>').text(result.text || ''))
-      if (result.truncated) $content.append($('<p class="small text-muted mb-0"></p>').text('Showing the start of this document'))
-      return $content
-    }
+    if (result.kind === 'TEXT') return this.text(result, 'document')
     if (result.kind === 'TABLE' && result.table) {
-      return $('<div class="data-preview-scroll"></div>').append(renderTable(result.table))
+      return $('<div></div>').append(
+        this.sheetNote(result.table),
+        $('<div class="data-preview-scroll"></div>').append(renderTable(result.table)))
     }
     const $note = $('<p class="text-muted"></p>').append($('<strong></strong>').text(entry.label), $('<br>'))
     return $note.append(this.documentsUrl ? this.documentsLink() : document.createTextNode('In the supporting documents download'))

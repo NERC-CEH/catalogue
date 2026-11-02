@@ -71,7 +71,7 @@ class DataPreviewServiceTest {
             Duration.ofSeconds(3), Duration.ofSeconds(10));
         CsvSampler sampler = new CsvSampler();
         documentConverter = new DocumentConverter(sampler, properties);
-        contentReader = spy(new PreviewContentReader(new PreviewFileResolver(), sampler, documentConverter, properties));
+        contentReader = spy(new PreviewContentReader(new PreviewFileResolver(), documentConverter, properties));
         service = new DataPreviewService(
             documentRepository, new OpenDataAccess(), new PreviewListing(uploadService, properties), contentReader);
         when(uploadService.get(eq(ID), eq(DOCS), anyInt(), anyInt())).thenReturn(response(List.of(), 1, 0));
@@ -125,14 +125,14 @@ class DataPreviewServiceTest {
 
         PreviewManifest manifest = service.manifest(ID);
 
-        assertThat(manifest.csvFiles(), hasSize(10));
-        assertThat(manifest.csvFiles().get(0).path(), is("a.csv"));
-        assertThat(manifest.csvFiles().get(9).path(), is("j.csv"));
-        assertThat(manifest.csvFiles().get(0).label(), is("a.csv"));
-        assertThat(manifest.csvFiles().get(0).bytes(), is(123L));
-        assertThat(manifest.csvFiles().get(0).sha256(), is("sha-a.csv"));
-        assertThat(manifest.csvCount(), is(14));
-        assertThat(manifest.csvCountIsMinimum(), is(false));
+        assertThat(manifest.dataFiles(), hasSize(10));
+        assertThat(manifest.dataFiles().get(0).path(), is("a.csv"));
+        assertThat(manifest.dataFiles().get(9).path(), is("j.csv"));
+        assertThat(manifest.dataFiles().get(0).label(), is("a.csv"));
+        assertThat(manifest.dataFiles().get(0).bytes(), is(123L));
+        assertThat(manifest.dataFiles().get(0).sha256(), is("sha-a.csv"));
+        assertThat(manifest.dataCount(), is(14));
+        assertThat(manifest.dataCountIsMinimum(), is(false));
         assertThat(manifest.totalFiles(), is(16));
         verify(uploadService).get(ID, DATA, 1, 10000);
     }
@@ -144,8 +144,31 @@ class DataPreviewServiceTest {
 
         PreviewManifest manifest = service.manifest(ID);
 
-        assertThat(manifest.csvCount(), is(1));
-        assertThat(manifest.csvFiles().get(0).path(), is("X.CSV"));
+        assertThat(manifest.dataCount(), is(1));
+        assertThat(manifest.dataFiles().get(0).path(), is("X.CSV"));
+    }
+
+    @Test
+    void manifestListsDelimitedTextAndWorkbooksButNotOtherFormats() throws Exception {
+        record("UNRS");
+        data(List.of(
+            file("a.tsv", null, "VALID"),
+            file("b.tab", null, "VALID"),
+            file("c.psv", null, "VALID"),
+            file("d.txt", "text/plain", "VALID"),
+            file("e.dat", null, "VALID"),
+            file("f.xlsx", null, "VALID"),
+            file("g.xls", null, "VALID"),
+            file("h.nc", null, "VALID"),
+            file("i.shp", null, "VALID"),
+            file("j", "text/tab-separated-values", "VALID")), 1, 10);
+
+        PreviewManifest manifest = service.manifest(ID);
+
+        assertThat(manifest.dataFiles().stream().map(PreviewManifest.PreviewFile::path).toList(),
+            contains("a.tsv", "b.tab", "c.psv", "d.txt", "e.dat", "f.xlsx", "j"));
+        assertThat(manifest.dataCount(), is(7));
+        assertThat(manifest.totalFiles(), is(10));
     }
 
     @Test
@@ -153,7 +176,7 @@ class DataPreviewServiceTest {
         record("UNRS");
         data(List.of(new FileInfo(null, ID, DATA, null, null, null, null, null, "a.csv", "VALID", "s", "text/csv")), 1, 1);
 
-        assertThat(service.manifest(ID).csvFiles().get(0).bytes(), is(0L));
+        assertThat(service.manifest(ID).dataFiles().get(0).bytes(), is(0L));
     }
 
     @Test
@@ -169,8 +192,8 @@ class DataPreviewServiceTest {
 
         PreviewManifest manifest = service.manifest(ID);
 
-        assertThat(manifest.csvFiles().stream().map(PreviewManifest.PreviewFile::path).toList(), contains("good.csv"));
-        assertThat(manifest.csvCount(), is(1));
+        assertThat(manifest.dataFiles().stream().map(PreviewManifest.PreviewFile::path).toList(), contains("good.csv"));
+        assertThat(manifest.dataCount(), is(1));
     }
 
     @Test
@@ -180,7 +203,7 @@ class DataPreviewServiceTest {
 
         PreviewManifest manifest = service.manifest(ID);
 
-        assertThat(manifest.csvCountIsMinimum(), is(true));
+        assertThat(manifest.dataCountIsMinimum(), is(true));
         assertThat(manifest.totalFiles(), is(25000));
         verify(uploadService).get(ID, DATA, 1, 10000);
         verify(uploadService, never()).get(eq(ID), eq(DATA), eq(2), anyInt());
@@ -196,7 +219,7 @@ class DataPreviewServiceTest {
         PreviewManifest manifest = service.manifest(ID);
 
         assertThat(manifest.totalFiles(), is(2));
-        assertThat(manifest.csvCountIsMinimum(), is(false));
+        assertThat(manifest.dataCountIsMinimum(), is(false));
     }
 
     @Test
@@ -230,7 +253,7 @@ class DataPreviewServiceTest {
 
         assertThat(manifest.documents().stream().map(PreviewManifest.PreviewFile::path).toList(),
             contains("dictionary.rtf", "guide.pdf"));
-        assertThat(manifest.csvFiles(), is(empty()));
+        assertThat(manifest.dataFiles(), is(empty()));
         verify(uploadService).get(ID, DOCS, 1, 1000);
     }
 
@@ -247,38 +270,52 @@ class DataPreviewServiceTest {
     }
 
     @Test
-    void csvRefusesPathNotInManifest() throws Exception {
+    void dataRefusesPathNotInManifest() throws Exception {
         record("UNRS");
         data(List.of(csv("a.csv")), 1, 1);
         Files.createDirectories(tmp.resolve(ID));
         Files.writeString(tmp.resolve(ID).resolve("secret.csv"), "h\n1\n");
 
-        assertThat(service.csv(ID, "secret.csv").isPresent(), is(false));
-        verify(contentReader, never()).csv(anyString(), anyString(), any());
+        assertThat(service.data(ID, "secret.csv").isPresent(), is(false));
+        verify(contentReader, never()).data(anyString(), anyString(), any());
     }
 
     @Test
-    void csvReadsListedFile() throws Exception {
+    void dataReadsListedFile() throws Exception {
         record("UNRS");
         data(List.of(csv("dir/a.csv")), 1, 1);
         Files.createDirectories(tmp.resolve(ID).resolve("dir"));
         Files.writeString(tmp.resolve(ID).resolve("dir/a.csv"), "name,value\nx,1\ny,2\n");
 
-        CsvSample sample = service.csv(ID, "dir/a.csv").orElseThrow();
+        DocumentPreview preview = service.data(ID, "dir/a.csv").orElseThrow();
 
-        assertThat(sample.previewable(), is(true));
+        assertThat(preview.kind(), is(DocumentPreview.Kind.TABLE));
+        CsvSample sample = preview.table();
         assertThat(sample.header(), contains("name", "value"));
         assertThat(sample.rows(), contains(List.of("x", "1"), List.of("y", "2")));
-        verify(contentReader).csv(ID, "dir/a.csv", "sha-dir/a.csv");
+        verify(contentReader).data(ID, "dir/a.csv", "sha-dir/a.csv");
     }
 
     @Test
-    void csvListedButAbsentFromShareFails() throws Exception {
+    void dataShowsNonTabularTextAsText() throws Exception {
+        record("UNRS");
+        data(List.of(file("readme.txt", "text/plain", "VALID")), 1, 1);
+        Files.createDirectories(tmp.resolve(ID));
+        Files.writeString(tmp.resolve(ID).resolve("readme.txt"), "This folder holds the survey data.\nSee the guide.\n");
+
+        DocumentPreview preview = service.data(ID, "readme.txt").orElseThrow();
+
+        assertThat(preview.kind(), is(DocumentPreview.Kind.TEXT));
+        assertThat(preview.text(), containsString("survey data"));
+    }
+
+    @Test
+    void dataListedButAbsentFromShareFails() throws Exception {
         record("UNRS");
         data(List.of(csv("gone.csv")), 1, 1);
 
         // Not a "cannot be previewed" result, which would be cached: the share may be back shortly.
-        assertThrows(IllegalStateException.class, () -> service.csv(ID, "gone.csv"));
+        assertThrows(IllegalStateException.class, () -> service.data(ID, "gone.csv"));
     }
 
     @Test
@@ -351,7 +388,7 @@ class DataPreviewServiceTest {
         Files.writeString(tmp.resolve(ID).resolve("notes.txt"), "Notes");
         DataPreviewService busyService = new DataPreviewService(documentRepository, new OpenDataAccess(),
             new PreviewListing(uploadService, properties),
-            new PreviewContentReader(new PreviewFileResolver(), new CsvSampler(), busy, properties));
+            new PreviewContentReader(new PreviewFileResolver(), busy, properties));
 
         assertThrows(PreviewBusyException.class, () -> busyService.document(ID, "notes.txt"));
     }
@@ -361,7 +398,7 @@ class DataPreviewServiceTest {
         record("RACC");
 
         assertThrows(PreviewNotOpenException.class, () -> service.manifest(ID));
-        assertThrows(PreviewNotOpenException.class, () -> service.csv(ID, "a.csv"));
+        assertThrows(PreviewNotOpenException.class, () -> service.data(ID, "a.csv"));
         assertThrows(PreviewNotOpenException.class, () -> service.document(ID, "a.pdf"));
         verify(uploadService, never()).get(anyString(), eq(DATA), anyInt(), anyInt());
         verifyNoInteractions(contentReader);
@@ -380,7 +417,7 @@ class DataPreviewServiceTest {
             new DocumentRepositoryException("Cannot read file: " + ID, new GitFileNotFoundException("absent")));
 
         assertThrows(NoSuchElementException.class, () -> service.manifest(ID));
-        assertThrows(NoSuchElementException.class, () -> service.csv(ID, "a.csv"));
+        assertThrows(NoSuchElementException.class, () -> service.data(ID, "a.csv"));
         assertThrows(NoSuchElementException.class, () -> service.document(ID, "a.pdf"));
     }
 
