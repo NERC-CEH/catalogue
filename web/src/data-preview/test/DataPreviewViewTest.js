@@ -264,6 +264,26 @@ describe('DataPreviewView', () => {
       expect($('a[href="#segment-map"]').length).toBe(0)
     })
 
+    // Supporting documents are shown beside the data, never on their own
+    it('removes the section when there are supporting documents but no CSV files', async () => {
+      start()
+      answer('/documents/abc/data-preview', json({ ...empty, documents: [entry('dict.txt', 'Dictionary')] }))
+      await view.ready
+
+      expect($('#segment-map').length).toBe(0)
+      expect($('a[href="#segment-map"]').length).toBe(0)
+      expect(urls().some(url => url.includes('/document?'))).toBe(false)
+    })
+
+    it('removes only the preview, keeping the map, when there are documents but no CSV files', async () => {
+      start(page({ map: true }))
+      answer('/documents/abc/data-preview', json({ ...empty, documents: [entry('dict.txt', 'Dictionary')] }))
+      await view.ready
+
+      expect($('.data-preview').length).toBe(0)
+      expect($('#segment-map .wms-map-preview').length).toBe(1)
+    })
+
     it('removes only the preview when the section has a map', async () => {
       start(page({ map: true }))
       answer('/documents/abc/data-preview', json(empty))
@@ -328,17 +348,15 @@ describe('DataPreviewView', () => {
     })
 
     it('shows the note without a link when there is no supporting documents URL', async () => {
-      $page = $(page({ documentsUrl: '' })).appendTo(document.body)
-      view = new DataPreviewView({ el: $page.find('.data-preview')[0] })
-      answer('/documents/abc/data-preview', json(manifest({ csvFiles: [], documents: [entry('x.bin', 'Binary')] })))
+      start(page({ documentsUrl: '' }))
+      answer('/documents/abc/data-preview', json(manifest({ documents: [entry('x.bin', 'Binary')] })))
       await vi.waitFor(() => expect(urls().some(url => url.includes('/document?'))).toBe(true))
+      answer('/csv?', json(sample()))
       answer('/document?', json({ kind: 'NOT_PREVIEWABLE', text: null, table: null, truncated: false }))
       await view.ready
 
       expect(text('.data-preview-documents')).toContain('In the supporting documents download')
       expect($page.find('.data-preview-documents a').length).toBe(0)
-      expect($page.find('.data-preview-data').length).toBe(0)
-      expect($page.find('.data-preview-documents').hasClass('col-lg-12')).toBe(true)
     })
 
     it('says the preview is busy on a 503, in the documents pane only', async () => {

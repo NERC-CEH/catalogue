@@ -12,7 +12,8 @@ const size = bytes => filesize(bytes, { standard: 'jedec' })
 
 /**
  * The record page's Data Preview section: the first rows of the record's CSV files, one tab per file,
- * beside its supporting documents, one tab per document. Everything from the server is set as text.
+ * beside its supporting documents, one tab per document. The documents are shown only beside data: a
+ * record with no CSV files has no preview. Everything from the server is set as text.
  * A pane that fails shows why in itself and leaves the other alone.
  */
 export default Backbone.View.extend({
@@ -49,21 +50,16 @@ export default Backbone.View.extend({
     }
     const csvFiles = this.manifest.csvFiles || []
     const documents = this.manifest.documents || []
-    if (!csvFiles.length && !documents.length) return this.removeSection()
+    if (!csvFiles.length) return this.removeSection()
     this.$data.empty()
     this.$documents.empty()
-    if (csvFiles.length) {
-      this.csvPane = this.tabbedPane(this.$data, csvFiles, (entry) => this.csvContent(entry))
-      this.$data.append(this.csvFooter(csvFiles))
-    } else {
-      this.$data.remove()
-    }
+    this.csvPane = this.tabbedPane(this.$data, csvFiles, (entry) => this.csvContent(entry))
+    this.$data.append(this.csvFooter(csvFiles))
     if (documents.length) {
       this.documentPane = this.tabbedPane(this.$documents, documents, (entry) => this.documentContent(entry))
     } else {
       this.$documents.remove()
     }
-    if (!csvFiles.length) this.$documents.removeClass('col-lg-5').addClass('col-lg-12')
     if (!documents.length) this.$data.removeClass('col-lg-7').addClass('col-lg-12')
     await Promise.all([this.csvPane?.select(0), this.documentPane?.select(0)])
   },
