@@ -34,6 +34,7 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.util.Headers;
 
 import java.io.IOException;
 import java.net.URI;
@@ -485,9 +486,8 @@ public class DocumentController extends AbstractDocumentController {
         ) throws DocumentRepositoryException, IOException {
         MetadataDocument document = documentRepository.read(file);
         if(metricsService != null && !metricsExcludedUsers.contains(user.getUsername()) && !document.getState().equals(GitRepoServiceAgreementService.DRAFT)) {
-            String xClientIP = request.getHeader("X-Client-IP");
-            String clientId = (xClientIP != null && !xClientIP.isBlank()) ? xClientIP : request.getRemoteAddr();
-            if (clientId != null && !clientId.isBlank()) {
+            String clientId = Headers.getClientId(request);
+            if (clientId != null) {
                 metricsService.recordView(file, clientId);
             }
         }
