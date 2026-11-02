@@ -321,6 +321,16 @@ class DocumentConverterTest {
     }
 
     @Test
+    void outOfMemoryDuringConversionIsNotPreviewable() throws Exception {
+        // One oversized allocation in a parser fails that conversion only, not the request.
+        DocumentConverter converter = converter(Duration.ofSeconds(20), (file, rtf) -> {
+            throw new OutOfMemoryError("Java heap space");
+        });
+
+        assertThat(converter.convert(fixture("tiny.pdf")).kind(), is(DocumentPreview.Kind.NOT_PREVIEWABLE));
+    }
+
+    @Test
     void interruptedWaitPropagatesAndKeepsTheInterrupt() throws Exception {
         CountDownLatch started = new CountDownLatch(1);
         CountDownLatch release = new CountDownLatch(1);

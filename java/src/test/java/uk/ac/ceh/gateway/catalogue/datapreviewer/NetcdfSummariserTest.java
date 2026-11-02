@@ -124,4 +124,14 @@ class NetcdfSummariserTest {
             "rainfall", "Monthly rainfall", null, "mm", "time y x", "float", false)));
         assertThat(summary.variablesTruncated(), is(false));
     }
+
+    @Test
+    void coordinateInAnOversizedChunkIsNotRead() throws Exception {
+        // Reading one value decompresses its whole chunk: here 32 MiB for a three-value time axis.
+        NetcdfSummary summary = summarise(fixture("bigchunk4.nc"));
+
+        assertThat(summary.time(), is(org.hamcrest.Matchers.nullValue()));
+        assertThat(summary.extents(), contains(new NetcdfSummary.Extent("lat", "latitude", "degrees_north", 50, 51)));
+        assertThat(summary.variables().stream().map(NetcdfSummary.Variable::name).toList(), hasItem("time"));
+    }
 }

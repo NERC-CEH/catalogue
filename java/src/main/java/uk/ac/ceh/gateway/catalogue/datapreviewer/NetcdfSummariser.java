@@ -52,6 +52,11 @@ public final class NetcdfSummariser {
     private static final Set<String> LATITUDE_UNITS = Set.of("degrees_north", "degree_north", "degree_n", "degrees_n");
     private static final Set<String> LONGITUDE_UNITS = Set.of("degrees_east", "degree_east", "degree_e", "degrees_e");
     private static final int MAX_EXTENTS = 4;
+    /**
+     * The largest chunk a coordinate value is read from. Reading one value of a chunked (NetCDF-4)
+     * variable decompresses its whole chunk, whose size the file sets.
+     */
+    static final long MAX_CHUNK_BYTES = 4L * 1024 * 1024;
 
     private NetcdfSummariser() {}
 
@@ -222,8 +227,14 @@ public final class NetcdfSummariser {
         return v.getRank() == 1 && v.getDataType().isNumeric() && v.getSize() > 0;
     }
 
-    /** The first and last values, or null when either is not a finite number. */
+    /**
+     * The first and last values, or null when either is not a finite number or reading them would
+     * mean decompressing a chunk over {@link #MAX_CHUNK_BYTES}.
+     */
     private static double[] firstAndLast(Variable v) throws IOException {
+        if (chunkBytes(v) > MAX_CHUNK_BYTES) {
+            return null;
+        }
         int last = (int) v.getSize() - 1;
         try {
             double first = v.read(new int[] {0}, new int[] {1}).getDouble(0);
@@ -231,6 +242,30 @@ public final class NetcdfSummariser {
             return Double.isFinite(first) && Double.isFinite(end) ? new double[] {first, end} : null;
         } catch (InvalidRangeException e) {
             return null;
+        }
+    }
+
+    /**
+     * The bytes in one chunk of {@code v}, from the {@code _ChunkSizes} netcdf-java reports for a
+     * chunked variable; 0 for contiguous storage (all of NetCDF-3), where a value is read alone.
+     */
+    private static long chunkBytes(Variable v) {
+        Attribute sizes = v.findAttribute("_ChunkSizes");
+        if (sizes == null) {
+            return 0;
+        }
+        try {
+            long bytes = Math.max(1, v.getElementSize());
+            for (int i = 0; i < sizes.getLength(); i++) {
+                Number size = sizes.getNumericValue(i);
+                if (size == null || size.longValue() <= 0) {
+                    return Long.MAX_VALUE;
+                }
+                bytes = Math.multiplyExact(bytes, size.longValue());
+            }
+            return bytes;
+        } catch (ArithmeticException overflow) {
+            return Long.MAX_VALUE;
         }
     }
 
