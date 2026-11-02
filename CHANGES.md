@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.248.0] - 2026-10-30
+
+Monitoring programme pages now group their facilities into three lists: active, not yet in operation, and inactive. Each list shows a count, so readers can see at a glance what a programme is running now and what is still planned (DRI-ONE-491). Facilities, networks and activities that haven't started yet are marked "not yet in operation" with an amber notice, rather than looking either live or closed. A programme's map and facility list now also include facilities used by its sub-programmes, so a parent programme shows its full reach (DRI-ONE-497).
+
+Dataset editors can now record when a resource was last updated, and which parts of it are being maintained, alongside how often it is updated (DRI-ONE-495). The quality checker now warns when a dataset or application has no update frequency. Behind the scenes, the one-off repair for the misdated usage figures has been removed now that its job is done (DRI-ONE-248), as has some temporary diagnostic logging (DRI-ONE-247).
+
 ## [3.247.0] - 2026-10-20
 
 The Data Preview section on dataset record pages can now also show tabular data. For an openly downloadable dataset, it shows the first 50 rows of up to ten of its spreadsheet (CSV) files, next to the dataset's supporting documents, which can be read in place. Visitors can therefore check whether the columns, values and units suit their work before downloading anything. Larger datasets say how many more files the full download holds, and each table gives the file's size and a link to the existing download. The section now sits directly below the description. The preview reads only the start of each file, never shows data that isn't already openly downloadable, and limits how many documents it converts at once, so the record page stays fast. It is switched on in staging and ready to switch on in production.
