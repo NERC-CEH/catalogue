@@ -12,13 +12,16 @@ import java.util.List;
  *                           a lower bound
  * @param totalFiles         how many data files the dataset holds, of any format
  * @param documents          the supporting documents in path order
+ * @param netcdfCount        how many NetCDF files were listed; only the first, in path order, is
+ *                           among {@code dataFiles}, as a dataset's NetCDF files are usually alike
  */
 public record PreviewManifest(
     List<PreviewFile> dataFiles,
     int dataCount,
     boolean dataCountIsMinimum,
     int totalFiles,
-    List<PreviewFile> documents
+    List<PreviewFile> documents,
+    int netcdfCount
 ) {
 
     public PreviewManifest {
@@ -27,7 +30,7 @@ public record PreviewManifest(
     }
 
     public static PreviewManifest empty() {
-        return new PreviewManifest(List.of(), 0, false, 0, List.of());
+        return new PreviewManifest(List.of(), 0, false, 0, List.of(), 0);
     }
 
     /**

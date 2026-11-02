@@ -246,6 +246,89 @@ describe('DataPreviewView', () => {
     expect(text('.data-preview-data')).toContain('This file can\'t be previewed')
   })
 
+  describe('NetCDF summary', () => {
+    const summary = (overrides = {}) => ({
+      kind: 'SUMMARY',
+      text: null,
+      table: null,
+      truncated: false,
+      summary: {
+        format: 'NetCDF-4 (HDF5)',
+        attributes: [{ name: 'title', value: 'Daily <b>air</b> temperature' }, { name: 'Conventions', value: 'CF-1.8' }],
+        attributesTruncated: false,
+        dimensions: [{ name: 'time', length: 365, unlimited: true }, { name: 'lat', length: 2, unlimited: false }],
+        variables: [
+          { name: 'lat', longName: null, standardName: 'latitude', units: 'degrees_north', dimensions: 'lat', type: 'float', coordinate: true },
+          { name: 'tas', longName: 'Air temperature', standardName: 'air_temperature', units: 'K', dimensions: 'time lat', type: 'float', coordinate: false }
+        ],
+        variablesTruncated: false,
+        time: { variable: 'time', start: '2000-01-01T00:00:00Z', end: '2000-12-30T12:00:00Z', calendar: '360_day' },
+        extents: [{ variable: 'lat', axis: 'latitude', units: 'degrees_north', min: 50.142877723, max: 52 }],
+        ...overrides
+      }
+    })
+    const ncManifest = (netcdfCount = 20) => manifest({ dataFiles: [{ ...entry('met/2000.nc', '2000.nc'), bytes: 1048576 }], dataCount: 1, totalFiles: 20, netcdfCount })
+
+    it('says which of the NetCDF files it summarises, with format and size', async () => {
+      await manifestThen(ncManifest(), summary())
+
+      expect(text('.data-preview-data .data-preview-note')).toBe('Summary of the first of 20 NetCDF files · NetCDF-4 (HDF5) · 1 MB file · Download the data')
+    })
+
+    it('says the NetCDF file when there is only one', async () => {
+      await manifestThen(ncManifest(1), summary())
+
+      expect(text('.data-preview-data .data-preview-note')).toContain('Summary of the NetCDF file · ')
+    })
+
+    it('shows the title as text, and the time, extent and dimensions', async () => {
+      await manifestThen(ncManifest(), summary())
+
+      const $netcdf = $page.find('.data-preview-netcdf')
+      expect($netcdf.find('p.fw-semibold').text()).toBe('Daily <b>air</b> temperature')
+      expect($netcdf.find('b').length).toBe(0)
+      const facts = $netcdf.find('ul li').map((i, li) => $(li).text()).get()
+      expect(facts).toEqual([
+        'Time: 2000-01-01 to 2000-12-30T12:00:00Z (360_day calendar)',
+        'Latitude: 50.1429 to 52 degrees_north',
+        'Dimensions: time 365 (unlimited) · lat 2'
+      ])
+    })
+
+    it('lists data variables before coordinates', async () => {
+      await manifestThen(ncManifest(), summary())
+
+      const rows = $page.find('.data-preview-variables tbody tr').map((i, tr) => $(tr).find('td').map((j, td) => $(td).text()).get().join('|')).get()
+      expect(rows).toEqual([
+        'tas|Air temperature|K|time lat|float',
+        'lat (coordinate)|latitude|degrees_north|lat|float'
+      ])
+    })
+
+    it('keeps the global attributes in a collapsed list', async () => {
+      await manifestThen(ncManifest(), summary({ attributesTruncated: true }))
+
+      const $details = $page.find('.data-preview-attributes')
+      expect($details.prop('open')).toBe(false)
+      expect($details.find('summary').text()).toBe('Global attributes (2, first shown)')
+      expect($details.find('dt').map((i, dt) => $(dt).text()).get()).toEqual(['title', 'Conventions'])
+    })
+
+    it('omits time, extent and attributes it does not have, and says when variables are cut', async () => {
+      await manifestThen(ncManifest(), summary({ time: null, extents: [], attributes: [], variablesTruncated: true }))
+
+      expect($page.find('.data-preview-netcdf ul li').map((i, li) => $(li).text()).get()).toEqual(['Dimensions: time 365 (unlimited) · lat 2'])
+      expect($page.find('.data-preview-attributes').length).toBe(0)
+      expect(text('.data-preview-netcdf')).toContain('Showing the first 2 variables')
+    })
+
+    it('gives a standard calendar no note', async () => {
+      await manifestThen(ncManifest(), summary({ time: { variable: 't', start: '2000-01-01T00:00:00Z', end: '2001-01-01T00:00:00Z', calendar: 'standard' } }))
+
+      expect(text('.data-preview-netcdf ul li:first')).toBe('Time: 2000-01-01 to 2001-01-01')
+    })
+  })
+
   it('omits the package link rather than render an empty href', async () => {
     $page = $(page({ packageUrl: '' })).appendTo(document.body)
     view = new DataPreviewView({ el: $page.find('.data-preview')[0] })

@@ -149,7 +149,7 @@ class DataPreviewServiceTest {
     }
 
     @Test
-    void manifestListsDelimitedTextAndWorkbooksButNotOtherFormats() throws Exception {
+    void manifestListsDelimitedTextWorkbooksAndNetcdfButNotOtherFormats() throws Exception {
         record("UNRS");
         data(List.of(
             file("a.tsv", null, "VALID"),
@@ -166,9 +166,35 @@ class DataPreviewServiceTest {
         PreviewManifest manifest = service.manifest(ID);
 
         assertThat(manifest.dataFiles().stream().map(PreviewManifest.PreviewFile::path).toList(),
-            contains("a.tsv", "b.tab", "c.psv", "d.txt", "e.dat", "f.xlsx", "j"));
-        assertThat(manifest.dataCount(), is(7));
+            contains("a.tsv", "b.tab", "c.psv", "d.txt", "e.dat", "f.xlsx", "h.nc", "j"));
+        assertThat(manifest.dataCount(), is(8));
         assertThat(manifest.totalFiles(), is(10));
+    }
+
+    @Test
+    void manifestListsOnlyTheFirstNetcdfFileAndCountsThemAll() throws Exception {
+        record("UNRS");
+        data(List.of(
+            file("met/2001.nc", "application/x-netcdf", "VALID"),
+            file("met/2000.nc", "application/x-netcdf", "VALID"),
+            file("met/2002.nc4", null, "VALID"),
+            file("met/2002.nc", "application/x-netcdf", "MISSING"),
+            csv("sites.csv")), 1, 5);
+
+        PreviewManifest manifest = service.manifest(ID);
+
+        assertThat(manifest.dataFiles().stream().map(PreviewManifest.PreviewFile::path).toList(),
+            contains("met/2000.nc", "sites.csv"));
+        assertThat(manifest.netcdfCount(), is(3));
+        assertThat(manifest.dataCount(), is(2));
+    }
+
+    @Test
+    void manifestWithoutNetcdfCountsNone() throws Exception {
+        record("UNRS");
+        data(List.of(csv("a.csv")), 1, 1);
+
+        assertThat(service.manifest(ID).netcdfCount(), is(0));
     }
 
     @Test

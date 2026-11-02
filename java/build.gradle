@@ -12,6 +12,18 @@ repositories {
         // https://gitlab.ceh.ac.uk/commons/java-commons (public)
         url = "https://gitlab.ceh.ac.uk/api/v4/projects/10/packages/maven"
     }
+    // Unidata's netcdf-java is not on Maven Central. Only its own group may resolve from here, so
+    // no other dependency can be served by this repository.
+    exclusiveContent {
+        forRepository {
+            maven {
+                url = "https://artifacts.unidata.ucar.edu/repository/unidata-all/"
+            }
+        }
+        filter {
+            includeGroup "edu.ucar"
+        }
+    }
 }
 
 configurations {
@@ -68,6 +80,8 @@ dependencies {
 
     // CSV parsing for the data preview
     implementation libs.commons.csv
+    // NetCDF-3 and NetCDF-4 (HDF5) headers for the data preview, in pure Java
+    implementation libs.netcdf.cdm.core
 
     // CEH Components
     implementation(libs.bundles.ukceh)

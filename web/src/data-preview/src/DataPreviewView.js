@@ -10,9 +10,18 @@ const plural = (count, word) => `${count} ${word}${count === 1 ? '' : 's'}`
 // "384 KB", "1.2 KB": binary multiples with the familiar unit names
 const size = bytes => filesize(bytes, { standard: 'jedec' })
 
+// A CF time as the server gives it (ISO 8601), without a midnight time of day: "2000-01-01"
+const when = iso => String(iso).replace(/T00:00:00(\.0+)?Z$/, '')
+
+// A coordinate value to at most four decimal places: 50.5, -3, 51.1429
+const number = value => String(Number(Number(value).toFixed(4)))
+
+const capitalise = text => text.charAt(0).toUpperCase() + text.slice(1)
+
 /**
  * The record page's Data Preview section: the first rows of the record's data files (delimited text
- * and Excel workbooks, or the start of a plain-text file that isn't a table), one tab per file, beside
+ * and Excel workbooks, or the start of a plain-text file that isn't a table), or the header summary of
+ * its first NetCDF file, one tab per file, beside
  * its supporting documents, one tab per document. The documents are shown only beside data: a record
  * with no data files to show has no preview. Everything from the server is set as text.
  * A pane that fails shows why in itself and leaves the other alone.
@@ -131,6 +140,7 @@ export default Backbone.View.extend({
     }
     if (result.kind === 'TABLE' && result.table?.previewable) return this.dataTable(entry, result.table)
     if (result.kind === 'TEXT') return this.text(result, 'file')
+    if (result.kind === 'SUMMARY' && result.summary) return this.netcdfSummary(entry, result.summary)
     return $('<p class="text-muted"></p>').text('This file can\'t be previewed. ').append(this.packageLink())
   },
 
@@ -145,6 +155,64 @@ export default Backbone.View.extend({
       $note,
       this.sheetNote(sample),
       $('<div class="data-preview-scroll"></div>').append(renderTable(sample)))
+  },
+
+  // A NetCDF file's header: what it holds, over what time and area, in which variables
+  netcdfSummary (entry, summary) {
+    const count = this.manifest.netcdfCount || 1
+    const parts = [count > 1 ? `Summary of the first of ${count} NetCDF files` : 'Summary of the NetCDF file', summary.format]
+    if (entry.bytes > 0) parts.push(`${size(entry.bytes)} file`)
+    const $note = $('<p class="data-preview-note small text-muted mb-1"></p>').text(parts.join(' · '))
+    if (this.packageUrl) $note.append(document.createTextNode(' · '), $('<a></a>').attr('href', this.packageUrl).text('Download the data'))
+
+    const attributes = summary.attributes || []
+    const title = attributes.find(a => a.name === 'title')
+    const $content = $('<div class="data-preview-netcdf"></div>').append($note)
+    if (title) $content.append($('<p class="fw-semibold mb-1"></p>').text(title.value))
+
+    const $facts = $('<ul class="list-unstyled small mb-2"></ul>')
+    if (summary.time) {
+      const calendar = summary.time.calendar && summary.time.calendar !== 'standard' ? ` (${summary.time.calendar} calendar)` : ''
+      $facts.append($('<li></li>').text(`Time: ${when(summary.time.start)} to ${when(summary.time.end)}${calendar}`))
+    }
+    ;(summary.extents || []).forEach(e => {
+      const units = e.units ? ` ${e.units}` : ''
+      $facts.append($('<li></li>').text(`${capitalise(e.axis)}: ${number(e.min)} to ${number(e.max)}${units}`))
+    })
+    const dimensions = (summary.dimensions || []).map(d => `${d.name} ${d.length}${d.unlimited ? ' (unlimited)' : ''}`)
+    if (dimensions.length) $facts.append($('<li></li>').text(`Dimensions: ${dimensions.join(' · ')}`))
+    $content.append($facts)
+
+    // Data variables first: they are what the file is for
+    const variables = [...(summary.variables || [])].sort((a, b) => Number(a.coordinate) - Number(b.coordinate))
+    const $head = $('<tr></tr>')
+    ;['Variable', 'Description', 'Units', 'Dimensions', 'Type'].forEach(h => $head.append($('<th scope="col"></th>').text(h)))
+    const $body = $('<tbody></tbody>')
+    variables.forEach(v => {
+      const $name = $('<td></td>').text(v.name)
+      if (v.coordinate) $name.append($('<span class="text-muted"></span>').text(' (coordinate)'))
+      $body.append($('<tr></tr>').append(
+        $name,
+        $('<td></td>').text(v.longName || v.standardName || ''),
+        $('<td></td>').text(v.units || ''),
+        $('<td></td>').text(v.dimensions || ''),
+        $('<td></td>').text(v.type || '')))
+    })
+    $content.append($('<div class="data-preview-scroll"></div>').append(
+      $('<table class="table table-sm table-striped data-preview-table data-preview-variables"></table>')
+        .append($('<thead></thead>').append($head), $body)))
+    if (summary.variablesTruncated) {
+      $content.append($('<p class="small text-muted mb-1"></p>').text(`Showing the first ${variables.length} variables`))
+    }
+
+    if (attributes.length) {
+      const $list = $('<dl class="small mb-0"></dl>')
+      attributes.forEach(a => $list.append($('<dt></dt>').text(a.name), $('<dd></dd>').text(a.value)))
+      const more = summary.attributesTruncated ? ', first shown' : ''
+      $content.append($('<details class="data-preview-attributes mt-2"></details>').append(
+        $('<summary class="small"></summary>').text(`Global attributes (${attributes.length}${more})`), $list))
+    }
+    return $content
   },
 
   // For a workbook of several sheets, which one is shown and what the others are called

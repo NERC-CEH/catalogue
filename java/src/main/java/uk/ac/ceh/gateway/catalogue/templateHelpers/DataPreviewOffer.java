@@ -19,18 +19,19 @@ import java.util.Set;
  * record (served from the datastore read cache) and never calls Hubbub or touches a file share, so
  * rendering the page stays cheap. The browser fetches the preview itself afterwards.
  * <p>
- * Only a record declaring tabular data (delimited text, plain text or Excel) is offered: its
+ * Only a record declaring data the preview can show (delimited text, plain text, Excel or NetCDF) is
+ * offered: its
  * supporting documents are previewed beside the data, never on their own. A declared format is only
  * a hint; the browser removes the section when the listing holds no data file it can show.
  */
 @Slf4j
 @Component
 public class DataPreviewOffer {
-    // Upper-cased words in a declared format name that mean the data may be previewable as a table,
-    // as in "Comma-separated values (CSV)", "Comma separated values", "Tab delimited text", "Plain text"
-    // or "Microsoft Excel".
+    // Upper-cased words in a declared format name that mean the data may be previewable, as in
+    // "Comma-separated values (CSV)", "Comma separated values", "Tab delimited text", "Plain text",
+    // "Microsoft Excel" or "NetCDF".
     private static final List<String> TABULAR_WORDS =
-        List.of("CSV", "TSV", "SEPARATED", "DELIMITED", "TEXT", "EXCEL", "XLSX");
+        List.of("CSV", "TSV", "SEPARATED", "DELIMITED", "TEXT", "EXCEL", "XLSX", "NETCDF");
     // Whole format names, matched exactly, too short to look for inside others.
     private static final Set<String> TABULAR_NAMES = Set.of("DAT", "TXT", "ASCII");
     // Names containing a tabular word that are not tables.

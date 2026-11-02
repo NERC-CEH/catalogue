@@ -44,10 +44,17 @@ public class PreviewListing {
         // having "at least" the data files found there, rather than walking a listing of unbounded length.
         HubbubResponse data = list(recordId, DATA_DATASTORE, DATA_PAGE_SIZE);
         List<FileInfo> dataFiles = data == null ? List.of() : files(data);
-        List<FileInfo> previewable = dataFiles.stream()
+        List<FileInfo> listed = dataFiles.stream()
             .filter(PreviewListing::reliable)
             .filter(PreviewListing::isPreviewableData)
             .sorted(Comparator.comparing(FileInfo::getPath))
+            .toList();
+        // A dataset's NetCDF files are usually alike (one per year, say), so only the first is
+        // summarised, in its place in path order; the rest are only counted.
+        int netcdfCount = (int) listed.stream().filter(PreviewListing::isNetcdf).count();
+        FileInfo firstNetcdf = listed.stream().filter(PreviewListing::isNetcdf).findFirst().orElse(null);
+        List<FileInfo> previewable = listed.stream()
+            .filter(file -> !isNetcdf(file) || file == firstNetcdf)
             .toList();
         HubbubResponse.Meta meta = data == null ? null : data.getMeta();
         boolean minimum = meta != null && meta.getLastPage() > 1;
@@ -64,7 +71,8 @@ public class PreviewListing {
             previewable.size(),
             minimum,
             totalFiles,
-            entries(documents));
+            entries(documents),
+            netcdfCount);
     }
 
     /**
@@ -125,12 +133,19 @@ public class PreviewListing {
         return file.getStatus() == null || !UNRELIABLE.contains(file.getStatus().toUpperCase(Locale.ROOT));
     }
 
-    /** Delimited text or an Excel workbook, by extension, or CSV or TSV by the MIME type Hubbub gives. */
+    /**
+     * Delimited text, an Excel workbook or NetCDF, by extension, or CSV or TSV by the MIME type Hubbub
+     * gives.
+     */
     private static boolean isPreviewableData(FileInfo file) {
         String mimeType = file.getMimeType() == null ? "" : file.getMimeType().toLowerCase(Locale.ROOT);
         return DocumentConverter.DATA_EXTENSIONS.contains(DocumentConverter.extension(file.getPath()))
             || mimeType.startsWith("text/csv")
             || mimeType.startsWith("text/tab-separated-values");
+    }
+
+    private static boolean isNetcdf(FileInfo file) {
+        return DocumentConverter.NETCDF_EXTENSIONS.contains(DocumentConverter.extension(file.getPath()));
     }
 
     private static List<PreviewFile> entries(List<FileInfo> files) {

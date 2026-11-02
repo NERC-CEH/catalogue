@@ -38,11 +38,13 @@ import org.springframework.stereotype.Component;
 
 /**
  * Turns a supporting document or a data file into something the preview can show: text for RTF,
- * Word, PDF and plain text, a table for delimited text and Excel workbooks, or a reason it cannot be
- * shown.
+ * Word, PDF and plain text, a table for delimited text and Excel workbooks, a header summary for
+ * NetCDF, or a reason it cannot be shown.
  *
- * <p>Tika conversions and workbook reads run on a shared pool of {@value #WORKERS} workers. PDFBox and POI ignore
- * interruption, so a conversion that times out keeps its worker until the parse finishes; the pool
+ * <p>Tika conversions, workbook reads and NetCDF header reads run on a shared pool of
+ * {@value #WORKERS} workers. PDFBox and POI ignore interruption (netcdf-java is told to stop through
+ * its cancel hook instead), so a conversion that times out keeps its worker until the parse
+ * finishes; the pool
  * size is therefore the bound on CPU and memory spent converting. When every worker is busy,
  * {@link #convert} throws {@link PreviewBusyException} rather than queueing.
  *
@@ -70,8 +72,12 @@ public class DocumentConverter {
     // Rows below the header that plain text must have to be shown as a table.
     private static final int MIN_SNIFFED_ROWS = 2;
 
+    /** NetCDF data files, summarised from their header rather than shown as rows. */
+    public static final Set<String> NETCDF_EXTENSIONS = Set.of("nc", "nc4", "netcdf");
+
     /** The extensions a data file may have for the preview to show it. */
-    public static final Set<String> DATA_EXTENSIONS = Set.of("csv", "tsv", "tab", "psv", "txt", "dat", "xlsx");
+    public static final Set<String> DATA_EXTENSIONS =
+        Set.of("csv", "tsv", "tab", "psv", "txt", "dat", "xlsx", "nc", "nc4", "netcdf");
     private static final Parser PARSER = new AutoDetectParser();
 
     // Tika's RTF parser drops table structure: every \cell ends a paragraph, so a dictionary table
@@ -171,6 +177,9 @@ public class DocumentConverter {
             if (MAYBE_TABLE_EXTENSIONS.contains(extension)) {
                 return tableOrText(file);
             }
+            if (NETCDF_EXTENSIONS.contains(extension)) {
+                return netcdf(file);
+            }
             return DocumentPreview.notPreviewable();
         } catch (IOException e) {
             throw new UncheckedIOException("Could not read data file " + file, e);
@@ -207,6 +216,16 @@ public class DocumentConverter {
             }
         }
         return truncate(read.text(), read.capped());
+    }
+
+    /**
+     * No size limit applies: only the header and the ends of the coordinates are read, and NetCDF
+     * files run to many gigabytes. The parse stops when the conversion times out.
+     */
+    private DocumentPreview netcdf(Path file) {
+        return bounded(file, () -> NetcdfSummariser.summarise(file, Thread.currentThread()::isInterrupted)
+            .map(DocumentPreview::summary)
+            .orElseGet(DocumentPreview::notPreviewable));
     }
 
     private DocumentPreview workbook(Path file) throws IOException {
