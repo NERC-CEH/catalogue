@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.templateHelpers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.ac.ceh.gateway.catalogue.config.DownloadUrlProperties;
 import uk.ac.ceh.gateway.catalogue.datapreviewer.DataPreviewProperties;
 import uk.ac.ceh.gateway.catalogue.datapreviewer.OpenDataAccess;
 import uk.ac.ceh.gateway.catalogue.gemini.DistributionInfo;
@@ -46,14 +45,9 @@ class DataPreviewOfferTest {
     }
 
     private DataPreviewOffer offer(boolean enabled) {
-        var properties = mock(DownloadUrlProperties.class);
-        when(properties.getRegexSupportingDocs()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/sd/.*");
-        when(properties.getRegexOrderManDownload()).thenReturn("http(s?)://catalogue\\.ceh\\.ac\\.uk/download\\?fileIdentifier=.*");
-        when(properties.getRegexOrder()).thenReturn("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*");
         var dataPreview = new DataPreviewProperties(enabled, null, null, 10, 50, 262144, 20971520L, 200000,
             Duration.ofSeconds(20), Duration.ofSeconds(3), Duration.ofSeconds(10));
-        return new DataPreviewOffer(dataPreview, repository, openDataAccess,
-            new DownloadOrderDetailsService(properties));
+        return new DataPreviewOffer(dataPreview, repository, openDataAccess);
     }
 
     private void csv() {
@@ -68,18 +62,28 @@ class DataPreviewOfferTest {
         assertThat(offer(true).offered(ID), is(true));
     }
 
+    // Supporting documents are shown beside the data, never on their own
     @Test
-    void offeredForOpenRecordWithOnlySupportingDocs() {
+    void notOfferedForOpenRecordWithOnlySupportingDocs() {
         when(document.getOnlineResources()).thenReturn(List.of(
             OnlineResource.builder().url(SUPPORTING_DOCS).function("information").build()));
 
-        assertThat(offer(true).offered(ID), is(true));
+        assertThat(offer(true).offered(ID), is(false));
     }
 
     @Test
-    void nullNamedFormatDoesNotStopSupportingDocsOffer() {
+    void nullNamedFormatIsNotCsv() {
         DistributionInfo format = nullNamed();
         when(document.getDistributionFormats()).thenReturn(List.of(format));
+        when(document.getOnlineResources()).thenReturn(List.of(
+            OnlineResource.builder().url(SUPPORTING_DOCS).function("information").build()));
+
+        assertThat(offer(true).offered(ID), is(false));
+    }
+
+    @Test
+    void offeredForCsvRecordWithSupportingDocs() {
+        csv();
         when(document.getOnlineResources()).thenReturn(List.of(
             OnlineResource.builder().url(SUPPORTING_DOCS).function("information").build()));
 
@@ -120,7 +124,7 @@ class DataPreviewOfferTest {
     }
 
     @Test
-    void notOfferedWithoutCsvOrDocs() {
+    void notOfferedWithoutCsv() {
         when(document.getDistributionFormats()).thenReturn(
             List.of(DistributionInfo.builder().name("GeoTIFF").build()));
 

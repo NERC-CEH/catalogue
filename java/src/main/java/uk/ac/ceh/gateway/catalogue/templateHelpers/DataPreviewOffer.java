@@ -17,6 +17,9 @@ import java.util.Objects;
  * Decides, for the record page, whether to render the Data Preview container. It reads only the
  * record (served from the datastore read cache) and never calls Hubbub or touches a file share, so
  * rendering the page stays cheap. The browser fetches the preview itself afterwards.
+ * <p>
+ * Only a record declaring CSV data is offered: its supporting documents are previewed beside the data,
+ * never on their own.
  */
 @Slf4j
 @Component
@@ -24,18 +27,15 @@ public class DataPreviewOffer {
     private final DataPreviewProperties properties;
     private final DocumentRepository documentRepository;
     private final OpenDataAccess openDataAccess;
-    private final DownloadOrderDetailsService downloadOrderDetails;
 
     public DataPreviewOffer(
         DataPreviewProperties properties,
         DocumentRepository documentRepository,
-        OpenDataAccess openDataAccess,
-        DownloadOrderDetailsService downloadOrderDetails
+        OpenDataAccess openDataAccess
     ) {
         this.properties = properties;
         this.documentRepository = documentRepository;
         this.openDataAccess = openDataAccess;
-        this.downloadOrderDetails = downloadOrderDetails;
     }
 
     /** Never throws: a record page must not fail because of the preview. */
@@ -48,7 +48,7 @@ public class DataPreviewOffer {
             if (!(document instanceof GeminiDocument gemini) || !openDataAccess.isOpen(gemini)) {
                 return false;
             }
-            return hasCsvFormat(gemini) || hasSupportingDocuments(gemini);
+            return hasCsvFormat(gemini);
         } catch (Exception e) {
             log.debug("Data preview not offered for {}: record could not be read", recordId, e);
             return false;
@@ -61,10 +61,5 @@ public class DataPreviewOffer {
             .filter(Objects::nonNull)
             .map(DistributionInfo::getName)
             .anyMatch(name -> name != null && name.toUpperCase(Locale.ROOT).contains("CSV"));
-    }
-
-    private boolean hasSupportingDocuments(GeminiDocument gemini) {
-        String url = downloadOrderDetails.from(gemini.getOnlineResources()).getSupportingDocumentsUrl();
-        return url != null && !url.isBlank();
     }
 }
