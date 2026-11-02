@@ -214,7 +214,13 @@ public class DocumentConverter {
             return DocumentPreview.tooLarge();
         }
         return bounded(file, () -> {
-            CsvSample sample = XlsxSampler.sample(file, properties.previewRows());
+            CsvSample sample;
+            try {
+                sample = XlsxSampler.sample(file, properties.previewRows());
+            } catch (XlsxSampler.TooLargeException e) {
+                log.info("Not previewing workbook {}: {}", file, e.getMessage());
+                return DocumentPreview.tooLarge();
+            }
             return sample.previewable() ? DocumentPreview.table(sample) : DocumentPreview.notPreviewable();
         });
     }

@@ -668,4 +668,72 @@ class DocumentConverterTest {
 
         assertThrows(UncheckedIOException.class, () -> converter().convertData(missing, "gone.tsv"));
     }
+
+    // Limits that hold against a crafted workbook
+
+    @Test
+    void workbookColumnsBeyondTheCapAreLeftOut() throws Exception {
+        Path xlsx = workbook("wide.xlsx", wb -> {
+            Sheet sheet = wb.createSheet("S");
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("a");
+            header.createCell(16_000).setCellValue("far");
+            row(sheet, 1, "1");
+        });
+
+        DocumentPreview preview = converter().convertData(xlsx, "wide.xlsx");
+
+        assertThat(preview.table().header(), contains("a"));
+    }
+
+    @Test
+    void cellReferenceFarBeyondExcelIsIgnoredWithoutPadding() {
+        XlsxSampler.Rows rows = new XlsxSampler.Rows(50);
+        rows.startRow(0);
+        rows.cell("A1", "a", null);
+        rows.cell("ZZZZZZ1", "far", null);
+        rows.endRow(0);
+        rows.startRow(1);
+        rows.cell("A2", "1", null);
+        rows.endRow(1);
+
+        CsvSample sample = rows.sample();
+
+        assertThat(sample.header(), contains("a"));
+        assertThat(sample.rows(), contains(List.of("1")));
+    }
+
+    @Test
+    void blankRowsCountTowardsTheScanLimit() {
+        XlsxSampler.Rows rows = new XlsxSampler.Rows(50);
+        rows.startRow(0);
+        rows.cell("A1", "a", null);
+        rows.endRow(0);
+
+        assertThrows(XlsxSampler.EnoughRows.class, () -> {
+            for (int i = 1; ; i++) {
+                rows.startRow(i);
+                rows.endRow(i);
+            }
+        });
+
+        CsvSample sample = rows.sample();
+        assertThat(sample.header(), contains("a"));
+        assertThat(sample.rows(), is(List.of()));
+        assertThat(sample.moreRows(), is(true));
+    }
+
+    @Test
+    void sharedStringsExpandingBeyondTheLimitAreTooLarge() throws Exception {
+        Path xlsx = workbook("strings.xlsx", wb -> {
+            Sheet sheet = wb.createSheet("S");
+            row(sheet, 0, "site");
+            for (int i = 1; i < 200; i++) {
+                row(sheet, i, "a long distinct value number " + i);
+            }
+        });
+
+        assertThrows(XlsxSampler.TooLargeException.class, () -> XlsxSampler.sample(xlsx, 50, 1024));
+        assertThat(XlsxSampler.sample(xlsx, 50, XlsxSampler.MAX_PART_BYTES).previewable(), is(true));
+    }
 }
