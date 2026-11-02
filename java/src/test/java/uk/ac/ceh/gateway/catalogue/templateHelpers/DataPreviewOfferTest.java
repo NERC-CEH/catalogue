@@ -129,7 +129,7 @@ class DataPreviewOfferTest {
     @ValueSource(strings = {
         "Comma separated values", "Tab separated values", "Semi-colon delimited text",
         "Tab delimited text", "Pipe-delimited text", "Plain text", "Microsoft Excel", "xlsx",
-        "dat", ".dat", "ASCII", "TSV"})
+        "dat", ".dat", "ASCII", "TSV", "NetCDF", "netCDF-4"})
     void offeredForOtherTabularFormats(String name) {
         when(document.getDistributionFormats()).thenReturn(List.of(DistributionInfo.builder().name(name).build()));
 
@@ -137,7 +137,7 @@ class DataPreviewOfferTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Rich text format", "ASCII grid", "NetCDF", "Shapefile", "TIFF", "database"})
+    @ValueSource(strings = {"Rich text format", "ASCII grid", "Shapefile", "TIFF", "database"})
     void notOfferedForFormatsThatAreNotTables(String name) {
         when(document.getDistributionFormats()).thenReturn(List.of(DistributionInfo.builder().name(name).build()));
 

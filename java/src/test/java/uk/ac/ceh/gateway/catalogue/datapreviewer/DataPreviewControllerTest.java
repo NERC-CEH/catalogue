@@ -37,7 +37,7 @@ class DataPreviewControllerTest extends AbstractMvcTest {
     void manifestReturnsJson() throws Exception {
         var file = new PreviewManifest.PreviewFile("data/x.csv", "x.csv", 12L, "abcd");
         when(service.manifest("abc"))
-            .thenReturn(new PreviewManifest(List.of(file), 1, false, 3, List.of()));
+            .thenReturn(new PreviewManifest(List.of(file), 1, false, 3, List.of(), 0));
 
         mvc.perform(get(BASE))
             .andExpect(status().isOk())
@@ -71,6 +71,34 @@ class DataPreviewControllerTest extends AbstractMvcTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.table.sheet", is("Sites")))
             .andExpect(jsonPath("$.table.sheets[0]", is("Notes")));
+    }
+
+    @Test
+    void dataReturnsNetcdfSummary() throws Exception {
+        var summary = new NetcdfSummary("NetCDF-4 (HDF5)",
+            List.of(new NetcdfSummary.Attribute("title", "Rain")), false,
+            List.of(new NetcdfSummary.Dimension("time", 12, true)),
+            List.of(new NetcdfSummary.Variable("rain", "Rainfall", null, "mm", "time", "float", false)), false,
+            new NetcdfSummary.TimeCoverage("time", "2000-01-01T00:00:00Z", "2000-12-01T00:00:00Z", "standard"),
+            List.of(new NetcdfSummary.Extent("lat", "latitude", "degrees_north", 50, 52)));
+        when(service.data("abc", "met/x.nc")).thenReturn(Optional.of(DocumentPreview.summary(summary)));
+
+        mvc.perform(get(BASE + "/data").param("path", "met/x.nc"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.kind", is("SUMMARY")))
+            .andExpect(jsonPath("$.summary.format", is("NetCDF-4 (HDF5)")))
+            .andExpect(jsonPath("$.summary.dimensions[0].unlimited", is(true)))
+            .andExpect(jsonPath("$.summary.variables[0].units", is("mm")))
+            .andExpect(jsonPath("$.summary.time.start", is("2000-01-01T00:00:00Z")))
+            .andExpect(jsonPath("$.summary.extents[0].max", is(52.0)));
+    }
+
+    @Test
+    void manifestReportsNetcdfCount() throws Exception {
+        var file = new PreviewManifest.PreviewFile("met/2000.nc", "2000.nc", 12L, "abcd");
+        when(service.manifest("abc")).thenReturn(new PreviewManifest(List.of(file), 1, false, 20, List.of(), 20));
+
+        mvc.perform(get(BASE)).andExpect(jsonPath("$.netcdfCount", is(20)));
     }
 
     @Test

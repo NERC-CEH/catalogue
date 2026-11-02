@@ -321,6 +321,16 @@ class DocumentConverterTest {
     }
 
     @Test
+    void outOfMemoryDuringConversionIsNotPreviewable() throws Exception {
+        // One oversized allocation in a parser fails that conversion only, not the request.
+        DocumentConverter converter = converter(Duration.ofSeconds(20), (file, rtf) -> {
+            throw new OutOfMemoryError("Java heap space");
+        });
+
+        assertThat(converter.convert(fixture("tiny.pdf")).kind(), is(DocumentPreview.Kind.NOT_PREVIEWABLE));
+    }
+
+    @Test
     void interruptedWaitPropagatesAndKeepsTheInterrupt() throws Exception {
         CountDownLatch started = new CountDownLatch(1);
         CountDownLatch release = new CountDownLatch(1);
@@ -760,5 +770,57 @@ class DocumentConverterTest {
         rows.endRow(0);
 
         assertThat(rows.sample().header().size(), is(XlsxSampler.MAX_COLUMNS));
+    }
+
+    // NetCDF
+
+    @Test
+    void netcdfDataBecomesASummary() throws Exception {
+        DocumentPreview preview = converter().convertData(fixture("climate4.nc"), "climate4.nc");
+
+        assertThat(preview.kind(), is(DocumentPreview.Kind.SUMMARY));
+        assertThat(preview.summary().format(), is("NetCDF-4 (HDF5)"));
+        assertThat(preview.table(), is(nullValue()));
+    }
+
+    @Test
+    void netcdfIsNotHeldToTheDocumentSizeLimit() throws Exception {
+        // NetCDF files run to gigabytes; only the header is read.
+        DocumentPreview preview = converter(10, 200000, Duration.ofSeconds(20)).convertData(fixture("rain3.nc"), "rain3.nc");
+
+        assertThat(preview.kind(), is(DocumentPreview.Kind.SUMMARY));
+    }
+
+    @Test
+    void fileNamedNetcdfThatIsNotIsNotPreviewable() throws Exception {
+        Path nc = Files.writeString(tmp.resolve("fake.nc"), "not netcdf");
+
+        assertThat(converter().convertData(nc, "fake.nc").kind(), is(DocumentPreview.Kind.NOT_PREVIEWABLE));
+    }
+
+    @Test
+    void netcdfReadWaitsForAWorker() throws Exception {
+        CountDownLatch started = new CountDownLatch(DocumentConverter.WORKERS);
+        CountDownLatch release = new CountDownLatch(1);
+        DocumentConverter converter = converter(Duration.ofSeconds(20), blockingUntil(started, release));
+        Path rtf = fixture("dictionary.rtf");
+        Path nc = fixture("climate4.nc");
+        try (ExecutorService callers = Executors.newFixedThreadPool(DocumentConverter.WORKERS)) {
+            try {
+                for (int i = 0; i < DocumentConverter.WORKERS; i++) {
+                    callers.submit(() -> converter.convert(rtf));
+                }
+                assertThat(started.await(5, TimeUnit.SECONDS), is(true));
+
+                assertThrows(PreviewBusyException.class, () -> converter.convertData(nc, "climate4.nc"));
+            } finally {
+                release.countDown();
+            }
+        }
+    }
+
+    @Test
+    void supportingNetcdfIsNotSummarised() throws Exception {
+        assertThat(converter().convert(fixture("rain3.nc"), "rain3.nc").kind(), is(DocumentPreview.Kind.NOT_PREVIEWABLE));
     }
 }
