@@ -16,6 +16,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -43,6 +44,7 @@ import static uk.ac.ceh.gateway.catalogue.metrics.JDBCMetricsService.VIEW_TOTALS
  */
 @ExtendWith(SpringExtension.class)
 @SpringJUnitConfig(MetricsCountCachingTest.Config.class)
+@TestPropertySource(properties = "metrics.shutdown-flush.timeout-millis=8000")
 class MetricsCountCachingTest {
 
     private static final String TEST_DOCUMENT = "123e4567-e89b-12d3-a456-426614174000";
