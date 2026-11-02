@@ -167,9 +167,7 @@ class MetricsCountCachingTest {
 
         @Bean
         MetricsService metricsService(EmbeddedDatabase db, DocumentRepository documentRepository) {
-            // Outside a Spring Boot application there is no ApplicationReadyEvent, so the schema is
-            // ensured here rather than by the service's startup listener.
-            val service = new JDBCMetricsService(db, documentRepository);
+            val service = new SqliteMetricsService(db, documentRepository);
             service.ensureSchema();
             return service;
         }

@@ -2,136 +2,185 @@ package uk.ac.ceh.gateway.catalogue.metrics;
 
 import lombok.SneakyThrows;
 import lombok.val;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.jdbc.core.ConnectionCallback;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.AbstractDataSource;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.testcontainers.DockerClientFactory;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import javax.sql.DataSource;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Proxy;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
+/**
+ * {@link JDBCMetricsService} against a real PostgreSQL whose schema is created by the Flyway
+ */
 @ExtendWith(MockitoExtension.class)
 class JDBCMetricsServiceTest {
-    private EmbeddedDatabase db;
-    private SeverableDataSource dataSource;
-    private JDBCMetricsService service;
+    private static final String IMAGE = "postgres:14.24-alpine";
 
     private static final String TEST_DOCUMENT = "123e4567-e89b-12d3-a456-426614174000";
+    private static final String OTHER_DOCUMENT = "123e4567-e89b-12d3-a456-426614174999";
+    private static final String DOC1 = "abcd0001-0000-4000-8000-000000000001";
+    private static final String DOC2 = "abcd0002-0000-4000-8000-000000000002";
+    private static final String DOC3 = "abcd0003-0000-4000-8000-000000000003";
+    private static final String DOC4 = "abcd0004-0000-4000-8000-000000000004";
     private static final String TEST_IP1 = "192.0.2.1";
     private static final String TEST_IP2 = "192.0.2.2";
+
+    private static PostgreSQLContainer postgres;
+    private static DataSource postgresDataSource;
+
     @Mock private DocumentRepository documentRepository;
     private final MetadataDocument doc = new GeminiDocument();
+    private SeverableDataSource dataSource;
+    private JDBCMetricsService service;
+    private JdbcTemplate jdbc;
 
-    /**
-     * The service is given a datasource that can be severed after construction rather than the embedded
-     * database directly, so that the unavailable-database case can be reproduced honestly — see
-     * {@link #totalsAreAbsentRatherThanThrowingWhenTheDatabaseIsUnavailable}. Every other test is
-     * unaffected: until it is severed the wrapper is a pass-through.
-     *
-     * <p>The schema is ensured explicitly because the constructor no longer touches the database; in the
-     * application that is done by the service's {@code ApplicationReadyEvent} listener.</p>
-     */
+    @BeforeAll
+    static void startPostgres() {
+        val externalUrl = System.getenv("METRICS_TEST_POSTGRES_URL");
+        if (externalUrl != null) {
+            postgresDataSource = new DriverManagerDataSource(externalUrl, "catalogue", "catalogue");
+        } else {
+            assertThat("METRICS_TEST_POSTGRES_URL must be set in CI; see the class javadoc",
+                System.getenv("CI"), is(nullValue()));
+            assumeTrue(DockerClientFactory.instance().isDockerAvailable(), "Docker is not available");
+            postgres = new PostgreSQLContainer(IMAGE)
+                .withDatabaseName("catalogue")
+                .withUsername("catalogue")
+                .withPassword("catalogue");
+            postgres.start();
+            postgresDataSource = new DriverManagerDataSource(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+        }
+        // Only the metrics schema: anything else in a shared CI database is left alone.
+        new JdbcTemplate(postgresDataSource).execute("DROP SCHEMA IF EXISTS metrics CASCADE");
+    }
+
+    @AfterAll
+    static void stopPostgres() {
+        if (postgres != null) {
+            postgres.stop();
+        }
+    }
+
     @BeforeEach
     void setup() {
-        db = new EmbeddedDatabaseBuilder()
-            .setType(EmbeddedDatabaseType.H2)
-            .generateUniqueName(true)
-            .build();
-        dataSource = new SeverableDataSource(db);
+        dataSource = new SeverableDataSource(postgresDataSource);
         service = new JDBCMetricsService(dataSource, documentRepository);
         assertThat(service.ensureSchema(), is(true));
+        jdbc = new JdbcTemplate(postgresDataSource);
+        jdbc.execute("TRUNCATE metrics.metric_counts, metrics.documents");
         doc.setTitle("default Test Title");
         doc.setType("default dataset");
     }
 
-    @AfterEach
-    void teardown() {
-        db.shutdown();
+    // ---------------------------------------------------------------- schema
+
+    @Test
+    void flywayCreatedTheSchemaFromV1() {
+        assertThat(jdbc.queryForList(
+                "SELECT version FROM metrics.flyway_schema_history WHERE success AND type = 'SQL' ORDER BY installed_rank",
+                String.class),
+            contains(equalTo("1")));
+    }
+
+    /** The database is shared: everything Flyway creates is in "metrics", nothing in "public". */
+    @Test
+    void everythingIsCreatedInTheMetricsSchemaAndNothingInPublic() {
+        assertThat(jdbc.queryForList(
+                "SELECT table_name FROM information_schema.tables WHERE table_schema = 'metrics' ORDER BY table_name",
+                String.class),
+            contains("documents", "flyway_schema_history", "metric_counts"));
+        assertThat(jdbc.queryForObject(
+                "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'", Integer.class),
+            is(0));
+    }
+
+    /** The one catalogue login sees every schema, so a same-named table elsewhere must be ignored. */
+    @Test
+    void aSameNamedTableInAnotherSchemaIsIgnored() {
+        jdbc.execute("CREATE SCHEMA IF NOT EXISTS other");
+        jdbc.execute("CREATE TABLE IF NOT EXISTS other.metric_counts (document_id uuid, metric_type text, amount integer)");
+        jdbc.update("INSERT INTO other.metric_counts VALUES (?, 'view', 99)", UUID.fromString(DOC1));
+        try {
+            insert("view", 1721952000L, 1722038399L, DOC1, 1, "t", "a");
+
+            assertThat(service.totalViews(DOC1), is(1));
+        } finally {
+            jdbc.execute("DROP SCHEMA other CASCADE");
+        }
     }
 
     @Test
-    void testCreatedTables() throws SQLException {
-        //given
-
-        //when
-
-        //then
-        val tables = new ArrayList<String>();
-        try (Connection connection = db.getConnection()) {
-            DatabaseMetaData metaData = connection.getMetaData();
-            try (ResultSet rs = metaData.getTables(null, null, "%", null)) {
-                while (rs.next()) {
-                    tables.add(rs.getString(3));
-                }
-            }
-        }
-
-        assertThat(tables, hasItems(equalToIgnoringCase("views"), equalToIgnoringCase("downloads")));
+    void bothTablesHaveAPrimaryKey() {
+        assertThat(primaryKeyColumns("documents"), contains(equalTo("document_id")));
+        assertThat(primaryKeyColumns("metric_counts"), contains(equalTo("id")));
     }
 
-    /**
-     * Both count queries filter on {@code document}. Without an index that is a full table scan, which
-     * in production means scanning a 1.1 GB SQLite file across a CIFS mount — measured at roughly 7
-     * seconds per scan, twice per record page render. Asserting the index exists rather than trusting
-     * the DDL, because it was absent from the live database for the table's entire lifetime.
-     *
-     * <p>{@code amount} is asserted too: it is what makes the index covering for
-     * {@code sum(amount) ... WHERE document = ?}, so dropping it would quietly reintroduce a table
-     * lookup per matching row while still leaving this test's {@code document} assertion satisfied.</p>
-     */
-    @SneakyThrows
+    /** Safe for every pod to migrate on startup: an up-to-date schema is a no-op. */
     @Test
-    void countTablesCarryACoveringIndexForTheTotalsQuery() {
-        //given/when the service has initialised its schema
-
-        //then each count table's index covers both the filter column and the summed column
-        assertThat(indexedColumnsOf("views"),
-            hasItems(equalToIgnoringCase("document"), equalToIgnoringCase("amount")));
-        assertThat(indexedColumnsOf("downloads"),
-            hasItems(equalToIgnoringCase("document"), equalToIgnoringCase("amount")));
+    void migratingAnUpToDateDatabaseIsANoOp() {
+        assertThat(JDBCMetricsService.flyway(postgresDataSource).load().migrate().migrationsExecuted, is(0));
     }
 
-    private List<String> indexedColumnsOf(String table) throws SQLException {
-        val columns = new ArrayList<String>();
-        try (Connection connection = db.getConnection()) {
-            DatabaseMetaData metaData = connection.getMetaData();
-            try (ResultSet rs = metaData.getIndexInfo(null, null, table.toUpperCase(Locale.ROOT), false, false)) {
-                while (rs.next()) {
-                    columns.add(rs.getString("COLUMN_NAME"));
-                }
-            }
-        }
-        return columns;
+    // ---------------------------------------------------------------- query plans
+
+    @Test
+    void totalsSumIsAnIndexOnlyScan() {
+        seedBackgroundRows();
+        insert("view", 1721952000L, 1722038399L, DOC1, 1, "t", "a");
+        jdbc.execute("VACUUM ANALYZE metrics.metric_counts");
+
+        val plan = explain(JDBCMetricsService.TOTAL_STATEMENT, UUID.fromString(DOC1), "view");
+
+        assertThat(plan, containsString("Index Only Scan using idx_metric_counts_document_type"));
     }
+
+    @Test
+    void reportDateRangeUsesTheCountedFromIndex() {
+        seedBackgroundRows();
+        insert("view", 1721952000L, 1722038399L, DOC1, 1, "t", "a");
+        jdbc.execute("VACUUM ANALYZE metrics.metric_counts");
+
+        val plan = explain("""
+            SELECT m.document_id FROM metrics.metric_counts m
+            WHERE m.counted_from >= ? AND m.counted_until <= ? AND m.counted_from <= ?
+            """, at(1721952000L), at(1722124800L), at(1722124800L));
+
+        assertThat(plan, containsString("idx_metric_counts_counted_from"));
+    }
+
+    // ---------------------------------------------------------------- recording and totals
 
     @SneakyThrows
     @Test
@@ -145,8 +194,7 @@ class JDBCMetricsServiceTest {
         service.syncDB();
 
         //then
-        val rows = getDocumentsAndAmounts("views");
-        assertThat(rows, contains(contains(TEST_DOCUMENT, 2)));
+        assertThat(getDocumentsAndAmounts("view"), contains(contains(TEST_DOCUMENT, 2)));
     }
 
     @SneakyThrows
@@ -161,8 +209,7 @@ class JDBCMetricsServiceTest {
         service.syncDB();
 
         //then
-        val rows = getDocumentsAndAmounts("downloads");
-        assertThat(rows, contains(contains(TEST_DOCUMENT, 2)));
+        assertThat(getDocumentsAndAmounts("download"), contains(contains(TEST_DOCUMENT, 2)));
     }
 
     @SneakyThrows
@@ -203,19 +250,58 @@ class JDBCMetricsServiceTest {
         assertThat(amount, equalTo(2 * howMany));
     }
 
+    /** {@code doc_title} NULL means "never resolved"; the nightly refresh fills it in. */
+    @SneakyThrows
+    @Test
+    void aCountIsKeptWhenTheRecordCannotBeReadAndItsTitleIsResolvedLater() {
+        given(documentRepository.read(TEST_DOCUMENT))
+            .willThrow(new RuntimeException("repository down"))
+            .willReturn(document("resolved", "dataset"));
+        service.recordView(TEST_DOCUMENT, TEST_IP1);
+
+        service.syncDB();
+        assertThat(service.totalViews(TEST_DOCUMENT), equalTo(1));
+        assertThat(jdbc.queryForObject("SELECT doc_title IS NULL FROM metrics.documents", Boolean.class), is(true));
+
+        service.updateDB();
+        assertThat(jdbc.queryForList("SELECT doc_title FROM metrics.documents", String.class), containsInAnyOrder("resolved"));
+    }
+
+    /** The upsert's coalesce: a failed repository read never replaces a known title with NULL. */
+    @SneakyThrows
+    @Test
+    void anUnresolvedTitleNeverOverwritesAKnownOne() {
+        given(documentRepository.read(TEST_DOCUMENT))
+            .willReturn(document("known", "dataset"))
+            .willThrow(new RuntimeException("repository down"));
+        service.recordView(TEST_DOCUMENT, TEST_IP1);
+        service.syncDB();
+        service.recordView(TEST_DOCUMENT, TEST_IP2);
+        service.syncDB();
+
+        assertThat(jdbc.queryForList("SELECT doc_title FROM metrics.documents", String.class), containsInAnyOrder("known"));
+        assertThat(service.totalViews(TEST_DOCUMENT), equalTo(2));
+    }
+
+    /** {@code document_id} is uuid. The UUID check comes before the repository read, so it is never called. */
+    @Test
+    void nonUuidDocumentIdsReadAsEmptyAndAreNotWritten() {
+        service.recordView("not-a-uuid", TEST_IP1);
+
+        service.syncDB();
+
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM metrics.metric_counts", Integer.class), is(0));
+        assertThat(service.totalViews("not-a-uuid"), equalTo(0));
+        assertThat(service.hasMetricsFor("not-a-uuid"), is(false));
+        assertThat(service.deleteMetricsFor("not-a-uuid"), is(false));
+        verifyNoInteractions(documentRepository);
+    }
+
+    // ---------------------------------------------------------------- outages
+
     /**
-     * A view counter is decorative, but it is read while rendering a record page, so a failure here
-     * used to propagate out through FreeMarker and 500 the whole page. In production that happened
-     * whenever a read met the hourly sync's lock on the SQLite file (SQLITE_BUSY); now the database is
-     * remote it will happen on an unreachable host, an exhausted pool or a failover instead. The count
-     * must come back absent either way, leaving the page to render without it.
-     *
-     * <p>The connection is severed rather than the embedded database shut down.
-     * {@code EmbeddedDatabaseBuilder} sets {@code DB_CLOSE_DELAY=-1}, so after a shutdown the next
-     * connection succeeds against a fresh, empty database: that exercises a missing-table
-     * {@code BadSqlGrammarException}, not the unreachable-database path this test is named for. Both are
-     * {@code DataAccessException}s, so the test passed regardless of whether the catch actually covered
-     * the case that matters.</p>
+     * A view counter is read while rendering a record page, so a database failure must come back as an
+     * absent count, leaving the page to render without it, rather than 500ing the page.
      */
     @Test
     void totalsAreAbsentRatherThanThrowingWhenTheDatabaseIsUnavailable() {
@@ -228,111 +314,81 @@ class JDBCMetricsServiceTest {
     }
 
     /**
-     * The startup-failure policy: the catalogue must start when the metrics database is down. The schema
-     * used to be created in the constructor, so an unreachable database failed bean creation and the
-     * whole context with it, whatever Hikari's {@code initialization-fail-timeout} said. Constructing the
-     * service and running its startup hook against a severed datasource must therefore neither throw nor
-     * — for the constructor — even try to connect.
+     * The startup-failure policy: the catalogue must start when the metrics database is down.
      */
     @Test
     void serviceStartsWhenTheDatabaseIsUnreachable() {
         //given a database that is down before the service is created
-        val freshDb = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).generateUniqueName(true).build();
-        try {
-            val severed = new SeverableDataSource(freshDb);
-            severed.sever();
+        val severed = new SeverableDataSource(postgresDataSource);
+        severed.sever();
 
-            //when the service is constructed and the startup hook runs
-            val startingService = new JDBCMetricsService(severed, documentRepository);
-            val attemptsDuringConstruction = severed.connectionAttempts();
-            startingService.initialiseSchemaOnStartup();
+        //when the service is constructed and the startup hook runs
+        val startingService = new JDBCMetricsService(severed, documentRepository);
+        val attemptsDuringConstruction = severed.connectionAttempts();
+        startingService.initialiseSchemaOnStartup();
 
-            //then neither threw, the constructor did no I/O, and the schema is reported as not ready
-            assertThat(attemptsDuringConstruction, is(0));
-            assertThat(startingService.ensureSchema(), is(false));
-            assertThat(startingService.totalViews(TEST_DOCUMENT), is(nullValue()));
-        } finally {
-            freshDb.shutdown();
-        }
+        //then neither threw, the constructor did no I/O, and the schema is reported as not ready
+        assertThat(attemptsDuringConstruction, is(0));
+        assertThat(startingService.ensureSchema(), is(false));
+        assertThat(startingService.totalViews(TEST_DOCUMENT), is(nullValue()));
     }
 
     /**
-     * A database that was down at startup must get its schema once it is back, without a restart. The
-     * hourly sync is the path guaranteed to run, so recovery is asserted through it: the view is recorded
-     * while the database is down, and written once it returns.
+     * A database that was down at startup must be migrated once it is back, without a restart. The
+     * hourly sync is the path guaranteed to run, so recovery is asserted through it.
      */
     @SneakyThrows
     @Test
-    void schemaIsCreatedOnFirstUseAfterTheDatabaseComesBack() {
+    void schemaIsMigratedOnFirstUseAfterTheDatabaseComesBack() {
         //given the service started while the database was down
-        val freshDb = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).generateUniqueName(true).build();
-        try {
-            val severed = new SeverableDataSource(freshDb);
-            severed.sever();
-            val recoveringService = new JDBCMetricsService(severed, documentRepository);
-            recoveringService.initialiseSchemaOnStartup();
-            given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
-            recoveringService.recordView(TEST_DOCUMENT, TEST_IP1);
+        val severed = new SeverableDataSource(postgresDataSource);
+        severed.sever();
+        val recoveringService = new JDBCMetricsService(severed, documentRepository);
+        recoveringService.initialiseSchemaOnStartup();
+        given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
+        recoveringService.recordView(TEST_DOCUMENT, TEST_IP1);
 
-            //when the database comes back and the hourly sync runs
-            severed.restore();
-            recoveringService.syncDB();
+        //when the database comes back and the hourly sync runs
+        severed.restore();
+        recoveringService.syncDB();
 
-            //then the schema now exists and the count was written
-            assertThat(recoveringService.ensureSchema(), is(true));
-            assertThat(recoveringService.totalViews(TEST_DOCUMENT), equalTo(1));
-        } finally {
-            freshDb.shutdown();
-        }
+        //then the schema is ready and the count was written
+        assertThat(recoveringService.ensureSchema(), is(true));
+        assertThat(recoveringService.totalViews(TEST_DOCUMENT), equalTo(1));
     }
 
-    /**
-     * A sync that runs before the schema could ever be created — the database has been down since
-     * startup — must keep the hour's counts rather than drain them: nothing can be written, and draining
-     * would throw every count away after a connection timeout per document. It also must not touch the
-     * inserters, which on PostgreSQL would resolve the missing {@code views} table to
-     * {@code information_schema.views} and stay bound to it. The counts are written by the next sync once
-     * the database is back, as a single longer window.
-     */
     @SneakyThrows
     @Test
-    void syncKeepsCountsInMemoryUntilTheSchemaCanBeCreated() {
+    void syncKeepsCountsInMemoryUntilTheSchemaCanBeMigrated() {
         //given a service that started while the database was down, and has recorded a view and a download
-        val freshDb = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).generateUniqueName(true).build();
-        try {
-            val severed = new SeverableDataSource(freshDb);
-            severed.sever();
-            val startingService = new JDBCMetricsService(severed, documentRepository);
-            startingService.initialiseSchemaOnStartup();
-            startingService.recordView(TEST_DOCUMENT, TEST_IP1);
-            startingService.recordDownload(TEST_DOCUMENT, TEST_IP1);
+        val severed = new SeverableDataSource(postgresDataSource);
+        severed.sever();
+        val startingService = new JDBCMetricsService(severed, documentRepository);
+        startingService.initialiseSchemaOnStartup();
+        startingService.recordView(TEST_DOCUMENT, TEST_IP1);
+        startingService.recordDownload(TEST_DOCUMENT, TEST_IP1);
 
-            //when the hourly sync runs with the database still down
-            val attemptsBefore = severed.connectionAttempts();
-            startingService.syncDB();
+        //when the hourly sync runs with the database still down
+        startingService.syncDB();
 
-            //then it gave up after the schema attempt alone, without reading any documents
-            assertThat(severed.connectionAttempts() - attemptsBefore, is(1));
-            verifyNoInteractions(documentRepository);
+        //then it gave up at the migration attempt, without reading any documents
+        verifyNoInteractions(documentRepository);
 
-            //when the database comes back and the next sync runs
-            given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
-            severed.restore();
-            startingService.syncDB();
+        //when the database comes back and the next sync runs
+        given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
+        severed.restore();
+        startingService.syncDB();
 
-            //then the counts recorded during the outage were written
-            assertThat(startingService.totalViews(TEST_DOCUMENT), equalTo(1));
-            assertThat(startingService.totalDownloads(TEST_DOCUMENT), equalTo(1));
-        } finally {
-            freshDb.shutdown();
-        }
+        //then the counts recorded during the outage were written
+        assertThat(startingService.totalViews(TEST_DOCUMENT), equalTo(1));
+        assertThat(startingService.totalDownloads(TEST_DOCUMENT), equalTo(1));
     }
 
+    // ---------------------------------------------------------------- sync windows
+
     /**
-     * Regression test for the epoch-0 window. {@code lastRun} used to be set only at the end of a sync,
-     * so the first sync after every start wrote {@code start_timestamp = 0}: a window opening on
-     * 1 January 1970 for one hour of activity. Date-filtered reports then dropped those rows while the
-     * record-page totals counted them. The first window must open when the service was created.
+     * Regression test for the epoch-0 window: the first sync after every start used to write a window
+     * opening on 1 January 1970. The first window must open when the service was created.
      */
     @SneakyThrows
     @Test
@@ -350,15 +406,11 @@ class JDBCMetricsServiceTest {
         freshService.syncDB();
 
         //then the row covers exactly that hour, starting at construction, not at 0
-        assertThat(getWindows("views"), contains(
+        assertThat(getWindows("view"), contains(
             contains(bootedAt.getEpochSecond(), bootedAt.plus(Duration.ofHours(1)).getEpochSecond())));
     }
 
-    /**
-     * The fix must not stop at the first window: each sync's window starts where the previous one ended,
-     * so the windows tile the process's lifetime with no gaps and no overlaps, and every row in a batch
-     * shares one end timestamp.
-     */
+    /** Each sync's window starts where the previous one ended: no gaps, no overlaps. */
     @SneakyThrows
     @Test
     void consecutiveSyncWindowsAreContiguous() {
@@ -379,88 +431,61 @@ class JDBCMetricsServiceTest {
 
         //then
         val t0 = bootedAt.getEpochSecond();
-        assertThat(getWindows("views"), contains(
+        assertThat(getWindows("view"), contains(
             contains(t0, t0 + 3600),
             contains(t0 + 3600, t0 + 7200)));
     }
 
-    /**
-     * When the database is down at the first sync the counts stay in memory and the next sync writes
-     * them as one longer window. That window must still open at construction, not at 0 -- the outage
-     * path is the other way a first write after boot can happen.
-     */
+    /** A window held over an outage must still open at construction, not at 0. */
     @SneakyThrows
     @Test
     void windowHeldOverAnOutageStillStartsAtConstruction() {
         //given a service that started while its database was down
-        val freshDb = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).generateUniqueName(true).build();
-        try {
-            val severed = new SeverableDataSource(freshDb);
-            severed.sever();
-            val bootedAt = Instant.parse("2026-10-19T09:00:00Z");
-            val clock = new MutableClock(bootedAt);
-            val startingService = new JDBCMetricsService(severed, documentRepository, clock);
-            startingService.initialiseSchemaOnStartup();
-            startingService.recordView(TEST_DOCUMENT, TEST_IP1);
+        val severed = new SeverableDataSource(postgresDataSource);
+        severed.sever();
+        val bootedAt = Instant.parse("2026-10-19T09:00:00Z");
+        val clock = new MutableClock(bootedAt);
+        val startingService = new JDBCMetricsService(severed, documentRepository, clock);
+        startingService.initialiseSchemaOnStartup();
+        startingService.recordView(TEST_DOCUMENT, TEST_IP1);
 
-            //when the first sync is skipped, and the second runs once the database is back
-            clock.advance(Duration.ofHours(1));
-            startingService.syncDB();
-            given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
-            severed.restore();
-            clock.advance(Duration.ofHours(1));
-            startingService.syncDB();
+        //when the first sync is skipped, and the second runs once the database is back
+        clock.advance(Duration.ofHours(1));
+        startingService.syncDB();
+        given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
+        severed.restore();
+        clock.advance(Duration.ofHours(1));
+        startingService.syncDB();
 
-            //then one row spans both hours, from construction
-            val rows = new ArrayList<List<Long>>();
-            try (Connection connection = freshDb.getConnection();
-                 Statement stmt = connection.createStatement();
-                 ResultSet rs = stmt.executeQuery("SELECT start_timestamp, end_timestamp FROM views")) {
-                while (rs.next()) {
-                    rows.add(List.of(rs.getLong(1), rs.getLong(2)));
-                }
-            }
-            val t0 = bootedAt.getEpochSecond();
-            assertThat(rows, contains(contains(t0, t0 + 7200)));
-        } finally {
-            freshDb.shutdown();
-        }
+        //then one row spans both hours, from construction
+        val t0 = bootedAt.getEpochSecond();
+        assertThat(getWindows("view"), contains(contains(t0, t0 + 7200)));
     }
 
-    /**
-     * Epoch seconds pass 2^31 on 19 January 2038. The timestamp columns used to be {@code integer},
-     * which is 64-bit on SQLite but 32-bit on PostgreSQL, where pgjdbc narrows the bound long and the
-     * row is stored with a wrapped, negative timestamp and no error. H2's {@code integer} is 32-bit too,
-     * so it rejects the value outright, which is what lets this run without PostgreSQL.
-     */
+    /** Epoch seconds pass 2^31 in January 2038; the timestamptz columns must store later windows intact. */
     @SneakyThrows
     @Test
-    void timestampsAfter2038AreStoredIntact() {
-        //given a window in 2040
-        val start = Instant.parse("2040-01-01T00:00:00Z").getEpochSecond();
-        val end = Instant.parse("2040-01-01T01:00:00Z").getEpochSecond();
+    void windowsAfter2038AreStoredIntact() {
+        //given a service running in 2040
+        val bootedAt = Instant.parse("2040-01-01T00:00:00Z");
+        val clock = new MutableClock(bootedAt);
+        val freshService = new JDBCMetricsService(dataSource, documentRepository, clock);
+        assertThat(freshService.ensureSchema(), is(true));
+        given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
+        freshService.recordView(TEST_DOCUMENT, TEST_IP1);
 
-        //when a row is written with those timestamps
-        try (Connection connection = db.getConnection();
-             PreparedStatement insert = connection.prepareStatement(
-                 "INSERT INTO views (start_timestamp, end_timestamp, amount, document, doc_title, record_type) VALUES (?, ?, 1, ?, 't', 'r')")) {
-            insert.setLong(1, start);
-            insert.setLong(2, end);
-            insert.setString(3, TEST_DOCUMENT);
-            insert.executeUpdate();
-        }
+        //when
+        clock.advance(Duration.ofHours(1));
+        freshService.syncDB();
 
         //then it reads back unchanged, and the report's date filters still find it
-        try (Connection connection = db.getConnection();
-             Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT start_timestamp, end_timestamp FROM views")) {
-            assertThat(rs.next(), is(true));
-            assertThat(rs.getLong(1), equalTo(start));
-            assertThat(rs.getLong(2), equalTo(end));
-        }
-        assertThat(service.getMetricsReport(Instant.ofEpochSecond(start), Instant.ofEpochSecond(end),
+        val t0 = bootedAt.getEpochSecond();
+        assertThat(getWindows("view"), contains(contains(t0, t0 + 3600)));
+        assertThat(freshService.getMetricsReport(bootedAt, bootedAt.plus(Duration.ofHours(1)),
             null, null, null, null, null), hasSize(1));
     }
+
+    // ---------------------------------------------------------------- nightly title refresh
 
     @SneakyThrows
     @Test
@@ -471,16 +496,14 @@ class JDBCMetricsServiceTest {
         //when
         service.recordView(TEST_DOCUMENT, TEST_IP1);
         service.syncDB();
-        val preRows = getTitleAndType("views");
-        assertThat(preRows, contains(contains(doc.getTitle(), doc.getType())));
+        assertThat(getTitleAndType(), contains(contains(doc.getTitle(), doc.getType())));
 
         doc.setTitle("updated Test Title");
         doc.setType("updated dataset");
         service.updateDB();
 
         //then
-        val postRows = getTitleAndType("views");
-        assertThat(postRows, contains(contains(doc.getTitle(), doc.getType())));
+        assertThat(getTitleAndType(), contains(contains(doc.getTitle(), doc.getType())));
     }
 
     @SneakyThrows
@@ -492,25 +515,19 @@ class JDBCMetricsServiceTest {
         //when
         service.recordDownload(TEST_DOCUMENT, TEST_IP1);
         service.syncDB();
-        val preRows = getTitleAndType("downloads");
-        assertThat(preRows, contains(contains(doc.getTitle(), doc.getType())));
+        assertThat(getTitleAndType(), contains(contains(doc.getTitle(), doc.getType())));
 
         doc.setTitle("updated Test Title");
         doc.setType("updated dataset");
         service.updateDB();
 
         //then
-        val postRows = getTitleAndType("downloads");
-        assertThat(postRows, contains(contains(doc.getTitle(), doc.getType())));
+        assertThat(getTitleAndType(), contains(contains(doc.getTitle(), doc.getType())));
     }
 
     /**
      * A repository failure for one document must not abort the nightly title refresh or escape the
-     * scheduler; the row simply keeps the title it already had until the next run.
-     *
-     * <p>Asserted against the table rather than against a mocked {@code JdbcTemplate}. The service builds
-     * its own template from the {@code DataSource}, so a mock of that type is never reached by anything
-     * the service does and {@code verify(..., times(0))} on it holds no matter how the code behaves.</p>
+     * scheduler; the row keeps the title it already had until the next run.
      */
     @SneakyThrows
     @Test
@@ -525,7 +542,7 @@ class JDBCMetricsServiceTest {
 
         //then the failure is swallowed and the existing row is left untouched
         verify(documentRepository, times(2)).read(anyString());
-        assertThat(getTitleAndType("views"), contains(contains("default Test Title", "default dataset")));
+        assertThat(getTitleAndType(), contains(contains("default Test Title", "default dataset")));
     }
 
     @SneakyThrows
@@ -541,14 +558,13 @@ class JDBCMetricsServiceTest {
 
         //then the failure is swallowed and the existing row is left untouched
         verify(documentRepository, times(2)).read(anyString());
-        assertThat(getTitleAndType("downloads"), contains(contains("default Test Title", "default dataset")));
+        assertThat(getTitleAndType(), contains(contains("default Test Title", "default dataset")));
     }
+
+    // ---------------------------------------------------------------- hasMetricsFor / deleteMetricsFor
 
     @Test
     void hasMetricsForIsFalseWhenNothingIsRecorded() {
-        //given/when no view or download has ever been recorded for this document
-
-        //then
         assertThat(service.hasMetricsFor(TEST_DOCUMENT), is(false));
     }
 
@@ -576,20 +592,15 @@ class JDBCMetricsServiceTest {
         assertThat(service.hasMetricsFor(TEST_DOCUMENT), is(true));
     }
 
-    /**
-     * Deletion is by {@code document} only, so a row belonging to a different document must survive —
-     * this is what stops an admin-delete of one orphaned record from wiping every other document's
-     * counts out of the same table.
-     */
+    /** Deletion is by document only: another document's counts and documents row must survive. */
     @SneakyThrows
     @Test
-    void deleteMetricsForRemovesOnlyTheGivenDocumentsRowsFromBothTables() {
+    void deleteMetricsForRemovesOnlyTheGivenDocumentsRows() {
         //given
-        String otherDocument = "123e4567-e89b-12d3-a456-426614174999";
         given(documentRepository.read(anyString())).willReturn(doc);
         service.recordView(TEST_DOCUMENT, TEST_IP1);
         service.recordDownload(TEST_DOCUMENT, TEST_IP1);
-        service.recordView(otherDocument, TEST_IP1);
+        service.recordView(OTHER_DOCUMENT, TEST_IP1);
         service.syncDB();
 
         //when
@@ -597,182 +608,129 @@ class JDBCMetricsServiceTest {
 
         //then
         assertThat(result, is(true));
-        assertThat(getDocumentsAndAmounts("views"), contains(contains(otherDocument, 1)));
-        assertThat(getDocumentsAndAmounts("downloads"), is(empty()));
+        assertThat(getDocumentsAndAmounts("view"), contains(contains(OTHER_DOCUMENT, 1)));
+        assertThat(getDocumentsAndAmounts("download"), is(empty()));
         assertThat(service.hasMetricsFor(TEST_DOCUMENT), is(false));
+        assertThat(jdbc.queryForList("SELECT document_id::text FROM metrics.documents", String.class),
+            contains(equalTo(OTHER_DOCUMENT)));
     }
 
     @Test
     void deleteMetricsForReturnsFalseWhenThereWasNothingToDelete() {
-        //given/when no rows exist for this document
-
-        //then
         assertThat(service.deleteMetricsFor(TEST_DOCUMENT), is(false));
     }
 
-    List<List<Object>> getDocumentsAndAmounts(String table) throws SQLException {
-        val rows = new ArrayList<List<Object>>();
-        try (Connection connection = db.getConnection();
-             Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT document, amount FROM " + table)) {
-            while (rs.next()) {
-                rows.add(List.of(rs.getString(1), rs.getInt(2)));
-            }
-        }
-        return rows;
-    }
+    // ---------------------------------------------------------------- report
 
     @Test
-    void testGetMetricsReport() throws Exception {
-        String sql = "insert into %s (start_timestamp, end_timestamp, document, amount, doc_title, record_type) values ('%s', '%s', '%s', %d, '%s', '%s')";
-        try (Connection connection = db.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.executeUpdate(String.format(sql, "views", "1721952000", "1722038399", "abcd1", 1, "test1", "a")); // 26July2024 timestsmp
-            statement.executeUpdate(String.format(sql, "views", "1722038400", "1722124799", "abcd2", 2, "test2", "b")); // 27July2024 timestsmp
-            statement.executeUpdate(String.format(sql, "views", "1722124800", "1722211199", "abcd3", 3, "test3", "c")); // 28July2024 timestsmp
-
-            statement.executeUpdate(String.format(sql, "downloads", "1721952000", "1722038399", "abcd2", 1, "test2", "b")); // 26July2024 timestsmp
-            statement.executeUpdate(String.format(sql, "downloads", "1722038400", "1722124799", "abcd3", 2, "test3", "c")); // 27July2024 timestsmp
-            statement.executeUpdate(String.format(sql, "downloads", "1722124800", "1722211199", "abcd4", 3, "test4", "d")); // 28July2024 timestsmp
-        }
+    void testGetMetricsReport() {
+        insert("view", 1721952000L, 1722038399L, DOC1, 1, "test1", "a");      // 26 July 2024
+        insert("view", 1722038400L, 1722124799L, DOC2, 2, "test2", "b");      // 27 July 2024
+        insert("view", 1722124800L, 1722211199L, DOC3, 3, "test3", "c");      // 28 July 2024
+        insert("download", 1721952000L, 1722038399L, DOC2, 1, "test2", "b");  // 26 July 2024
+        insert("download", 1722038400L, 1722124799L, DOC3, 2, "test3", "c");  // 27 July 2024
+        insert("download", 1722124800L, 1722211199L, DOC4, 3, "test4", "d");  // 28 July 2024
 
         List<String> recordType = Arrays.asList("a", "c");
         String orderBy = "views";
         String ordering = "descending";
-        String docId = "abcd1";
+        String docId = "abcd0001";
         Integer noOfRecords = 1;
 
-        //when
-        String result = service.getMetricsReport(Instant.parse("2024-07-29T00:00:00Z"), Instant.parse("2024-07-29T23:59:59.00Z"), orderBy, ordering, recordType, docId, noOfRecords).toString();
-        //then
-        assertThat(result, equalTo("[]"));  // no record in supply date
+        //when/then no record in the supplied dates
+        String result = service.getMetricsReport(Instant.parse("2024-07-29T00:00:00Z"), Instant.parse("2024-07-29T23:59:59Z"),
+            orderBy, ordering, recordType, docId, noOfRecords).toString();
+        assertThat(result, equalTo("[]"));
 
-        Instant startDate = Instant.parse("2024-07-26T00:00:00.00Z");
-        Instant endDate = Instant.parse("2024-07-27T23:59:59.00Z");
+        Instant startDate = Instant.parse("2024-07-26T00:00:00Z");
+        Instant endDate = Instant.parse("2024-07-27T23:59:59Z");
         result = service.getMetricsReport(startDate, null, null, null, null, null, null).toString();
         assertThat(result, equalTo("[" +
-            "{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}, " +
-            "{document=abcd2, docTitle=test2, recordType=b, views=2, downloads=1}, " +
-            "{document=abcd3, docTitle=test3, recordType=c, views=3, downloads=2}, " +
-            "{document=abcd4, docTitle=test4, recordType=d, views=0, downloads=3}]"));
+            row(DOC1, "test1", "a", 1, 0) + ", " +
+            row(DOC2, "test2", "b", 2, 1) + ", " +
+            row(DOC3, "test3", "c", 3, 2) + ", " +
+            row(DOC4, "test4", "d", 0, 3) + "]"));
 
         result = service.getMetricsReport(startDate, endDate, null, null, null, null, null).toString();
         assertThat(result, equalTo("[" +
-            "{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}, " +
-            "{document=abcd2, docTitle=test2, recordType=b, views=2, downloads=1}, " +
-            "{document=abcd3, docTitle=test3, recordType=c, views=0, downloads=2}]"));
+            row(DOC1, "test1", "a", 1, 0) + ", " +
+            row(DOC2, "test2", "b", 2, 1) + ", " +
+            row(DOC3, "test3", "c", 0, 2) + "]"));
 
         result = service.getMetricsReport(startDate, endDate, orderBy, null, null, null, null).toString();
         assertThat(result, equalTo("[" +
-            "{document=abcd3, docTitle=test3, recordType=c, views=0, downloads=2}, " +
-            "{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}, " +
-            "{document=abcd2, docTitle=test2, recordType=b, views=2, downloads=1}]"));
+            row(DOC3, "test3", "c", 0, 2) + ", " +
+            row(DOC1, "test1", "a", 1, 0) + ", " +
+            row(DOC2, "test2", "b", 2, 1) + "]"));
 
         result = service.getMetricsReport(startDate, endDate, orderBy, ordering, null, null, null).toString();
         assertThat(result, equalTo("[" +
-            "{document=abcd2, docTitle=test2, recordType=b, views=2, downloads=1}, " +
-            "{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}, " +
-            "{document=abcd3, docTitle=test3, recordType=c, views=0, downloads=2}]"));
+            row(DOC2, "test2", "b", 2, 1) + ", " +
+            row(DOC1, "test1", "a", 1, 0) + ", " +
+            row(DOC3, "test3", "c", 0, 2) + "]"));
 
         orderBy = "downloads";
         result = service.getMetricsReport(startDate, endDate, orderBy, ordering, null, null, null).toString();
         assertThat(result, equalTo("[" +
-            "{document=abcd3, docTitle=test3, recordType=c, views=0, downloads=2}, " +
-            "{document=abcd2, docTitle=test2, recordType=b, views=2, downloads=1}, " +
-            "{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}]"));
+            row(DOC3, "test3", "c", 0, 2) + ", " +
+            row(DOC2, "test2", "b", 2, 1) + ", " +
+            row(DOC1, "test1", "a", 1, 0) + "]"));
 
         result = service.getMetricsReport(startDate, endDate, orderBy, ordering, recordType, null, null).toString();
         assertThat(result, equalTo("[" +
-            "{document=abcd3, docTitle=test3, recordType=c, views=0, downloads=2}, " +
-            "{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}]"));
+            row(DOC3, "test3", "c", 0, 2) + ", " +
+            row(DOC1, "test1", "a", 1, 0) + "]"));
 
         result = service.getMetricsReport(startDate, endDate, orderBy, ordering, recordType, docId, null).toString();
-        assertThat(result, equalTo("[" +
-            "{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}]"));
+        assertThat(result, equalTo("[" + row(DOC1, "test1", "a", 1, 0) + "]"));
 
         docId = "abcd";
         result = service.getMetricsReport(startDate, endDate, orderBy, ordering, recordType, docId, noOfRecords).toString();
-        assertThat(result, equalTo("[" +
-            "{document=abcd3, docTitle=test3, recordType=c, views=0, downloads=2}]"));
-
+        assertThat(result, equalTo("[" + row(DOC3, "test3", "c", 0, 2) + "]"));
     }
 
-    /**
-     * PostgreSQL has no {@code integer >= varchar} operator, and pgjdbc sends {@code setString} values as
-     * {@code varchar}, so binding the epoch-second filters as strings fails there with "operator does not
-     * exist" (SQLSTATE 42883). H2 coerces them silently, so running the report on H2 cannot catch it; this
-     * asserts the bound types directly instead. The report is also run against a real PostgreSQL in
-     * {@code JDBCMetricsServicePostgresTest}, which needs Docker — this test is what guards it when
-     * Docker is not available.
-     */
-    @Test
-    void reportBindsTimestampFiltersAsNumbersNotStrings() {
-        //given a service whose statements record how their parameters were bound
-        val recording = new BindRecordingDataSource(db);
-        val reportService = new JDBCMetricsService(recording, documentRepository);
-        reportService.ensureSchema();
-        val start = Instant.parse("2024-07-26T00:00:00Z");
-        val end = Instant.parse("2024-07-27T23:59:59Z");
-
-        //when the report is filtered by both dates
-        reportService.getMetricsReport(start, end, null, null, null, null, null);
-
-        //then every timestamp parameter, in both halves of the UNION, went over as a Long
-        val expected = List.<Object>of(start.getEpochSecond(), end.getEpochSecond(),
-            start.getEpochSecond(), end.getEpochSecond());
-        assertThat(recording.boundValues(), equalTo(expected));
-        assertThat(recording.stringBinds(), is(0));
-    }
-
-    /**
-     * SQLite's {@code LIKE} ignores ASCII case and PostgreSQL's does not, so a document ID pasted in upper
-     * case used to match on SQLite and would find nothing on PostgreSQL. H2's {@code LIKE} is
-     * case-sensitive, like PostgreSQL's.
-     */
-    @SneakyThrows
+    /** A document ID pasted in upper case must still match (ILIKE). */
     @Test
     void reportDocumentFilterIgnoresCase() {
         //given a view of a lower-case document ID
-        try (Connection connection = db.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.executeUpdate("INSERT INTO views (start_timestamp, end_timestamp, amount, document, doc_title, record_type) "
-                + "VALUES (1721952000, 1722038399, 1, 'abcd1', 'test1', 'a')");
-        }
+        insert("view", 1721952000L, 1722038399L, DOC1, 1, "test1", "a");
 
         //when the report is filtered on part of the ID in upper case
-        val result = service.getMetricsReport(null, null, null, null, null, "ABCD", null);
+        val result = service.getMetricsReport(null, null, null, null, null, "ABCD0001", null);
 
         //then the document is still found
-        assertThat(result.toString(), equalTo("[{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}]"));
+        assertThat(result.toString(), equalTo("[" + row(DOC1, "test1", "a", 1, 0) + "]"));
+    }
+
+    /** LIKE metacharacters in the document filter match literally, not as wildcards. */
+    @Test
+    void reportDocumentFilterTreatsWildcardsLiterally() {
+        insert("view", 1721952000L, 1722038399L, DOC1, 1, "test1", "a");
+
+        assertThat(service.getMetricsReport(null, null, null, null, null, "_", null), is(empty()));
+        assertThat(service.getMetricsReport(null, null, null, null, null, "%", null), is(empty()));
     }
 
     /**
-     * The report always has a {@code LIMIT}, so it must always be ordered, or which rows come back is up
-     * to the engine. SQLite's (and H2's) grouping happens to come out in document order; PostgreSQL's
-     * does not. So with no {@code orderBy} it orders by document, and an ordering on a count is broken by
-     * document so that ties at the limit are decided the same way every time. Asserted on the SQL,
-     * because H2's stable grouping order would hide the difference in the results.
+     * The report always has a LIMIT, and PostgreSQL's grouping order is not defined, so a count ordering
+     * is broken by document: a tie at the limit is decided the same way every time.
      */
     @Test
-    void reportIsAlwaysOrderedEndingOnDocument() {
-        //given a service whose statements are recorded
-        val recording = new BindRecordingDataSource(db);
-        val reportService = new JDBCMetricsService(recording, documentRepository);
-        reportService.ensureSchema();
+    void reportTiesAtTheLimitAreBrokenByDocument() {
+        //given two documents with the same number of views, inserted in reverse document order
+        insert("view", 1721952000L, 1722038399L, DOC2, 1, "test2", "b");
+        insert("view", 1721952000L, 1722038399L, DOC1, 1, "test1", "a");
 
-        //when the report is run without an order, then ordered by a count
-        reportService.getMetricsReport(null, null, null, null, null, null, null);
-        reportService.getMetricsReport(null, null, "views", "descending", null, null, null);
+        //when ordered by views, descending, limited to one
+        val result = service.getMetricsReport(null, null, "views", "descending", null, null, 1);
 
-        //then both are ordered, the count ordering with document as the tie-break
-        assertThat(recording.preparedSql(), contains(
-            org.hamcrest.Matchers.endsWith("ORDER BY document LIMIT 100"),
-            org.hamcrest.Matchers.endsWith("ORDER BY views DESC, document LIMIT 100")));
+        //then the lower document wins the tie
+        assertThat(result.toString(), equalTo("[" + row(DOC1, "test1", "a", 1, 0) + "]"));
     }
 
-    /**
-     * Counts recorded since the last hourly sync must be written at shutdown
-     */
+    // ---------------------------------------------------------------- shutdown flush
+
+    /** Counts recorded since the last hourly sync must be written at shutdown. */
     @SneakyThrows
     @Test
     void shutdownFlushWritesCountsAccumulatedSinceTheLastSync() {
@@ -796,10 +754,10 @@ class JDBCMetricsServiceTest {
 
         //then the partial window was written rather than dropped, contiguous with the hourly one
         val t0 = bootedAt.getEpochSecond();
-        assertThat(getWindows("views"), contains(
+        assertThat(getWindows("view"), contains(
             contains(t0, t0 + 3600),
             contains(t0 + 3600, t0 + 3600 + 1200)));
-        assertThat(getWindows("downloads"), contains(contains(t0 + 3600, t0 + 3600 + 1200)));
+        assertThat(getWindows("download"), contains(contains(t0 + 3600, t0 + 3600 + 1200)));
         assertThat(freshService.totalViews(TEST_DOCUMENT), equalTo(3));
         assertThat(freshService.totalDownloads(TEST_DOCUMENT), equalTo(1));
     }
@@ -827,7 +785,7 @@ class JDBCMetricsServiceTest {
     @Test
     void shutdownFlushStopsStartingWritesOnceItsBudgetIsSpent() {
         //given three documents pending, each slower to read than the whole budget
-        List.of(TEST_DOCUMENT, "doc-2", "doc-3").forEach(d -> service.recordView(d, TEST_IP1));
+        List.of(DOC1, DOC2, DOC3).forEach(d -> service.recordView(d, TEST_IP1));
         given(documentRepository.read(anyString())).willAnswer(invocation -> {
             Thread.sleep(150);
             return doc;
@@ -839,27 +797,22 @@ class JDBCMetricsServiceTest {
 
         //then the first was written, and nothing was started after the deadline
         verify(documentRepository, times(1)).read(anyString());
-        assertThat(getDocumentsAndAmounts("views"), hasSize(1));
+        assertThat(getDocumentsAndAmounts("view"), hasSize(1));
     }
 
     /** Never throws: a broken metrics database must not interfere with destroying the rest of the context. */
     @Test
     void shutdownFlushAgainstAnUnreachableDatabaseDoesNotThrow() {
         //given a service whose database has been down since it started
-        val freshDb = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).generateUniqueName(true).build();
-        try {
-            val severed = new SeverableDataSource(freshDb);
-            severed.sever();
-            val startingService = new JDBCMetricsService(severed, documentRepository);
-            startingService.setShutdownFlushTimeoutMillis(8_000);
-            startingService.recordView(TEST_DOCUMENT, TEST_IP1);
+        val severed = new SeverableDataSource(postgresDataSource);
+        severed.sever();
+        val startingService = new JDBCMetricsService(severed, documentRepository);
+        startingService.setShutdownFlushTimeoutMillis(8_000);
+        startingService.recordView(TEST_DOCUMENT, TEST_IP1);
 
-            //when / then
-            startingService.flushOnShutdown();
-            verifyNoInteractions(documentRepository);
-        } finally {
-            freshDb.shutdown();
-        }
+        //when / then
+        startingService.flushOnShutdown();
+        verifyNoInteractions(documentRepository);
     }
 
     /** The property has no in-code default, so a nonsense value must stop startup rather than drop every count. */
@@ -869,17 +822,89 @@ class JDBCMetricsServiceTest {
             () -> service.setShutdownFlushTimeoutMillis(0));
     }
 
-    List<List<Long>> getWindows(String table) throws SQLException {
-        val rows = new ArrayList<List<Long>>();
-        try (Connection connection = db.getConnection();
-             Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT start_timestamp, end_timestamp FROM " + table
-                 + " ORDER BY start_timestamp")) {
-            while (rs.next()) {
-                rows.add(List.of(rs.getLong(1), rs.getLong(2)));
+    // ---------------------------------------------------------------- helpers
+
+    private List<List<Object>> getDocumentsAndAmounts(String metricType) {
+        return jdbc.query(
+            "SELECT document_id::text, amount FROM metrics.metric_counts WHERE metric_type = ? ORDER BY id",
+            (rs, i) -> List.<Object>of(rs.getString(1), rs.getInt(2)), metricType);
+    }
+
+    private List<List<Long>> getWindows(String metricType) {
+        return jdbc.query("""
+                SELECT extract(epoch FROM counted_from)::bigint, extract(epoch FROM counted_until)::bigint
+                FROM metrics.metric_counts WHERE metric_type = ? ORDER BY counted_from
+                """,
+            (rs, i) -> List.of(rs.getLong(1), rs.getLong(2)), metricType);
+    }
+
+    private List<List<Object>> getTitleAndType() {
+        return jdbc.query("SELECT doc_title, record_type FROM metrics.documents",
+            (rs, i) -> List.<Object>of(rs.getString(1), rs.getString(2)));
+    }
+
+    private void insert(String metricType, long from, long until, String document, int amount, String title, String type) {
+        val id = UUID.fromString(document);
+        jdbc.update("INSERT INTO metrics.documents (document_id, doc_title, record_type) VALUES (?, ?, ?) ON CONFLICT DO NOTHING",
+            id, title, type);
+        jdbc.update("INSERT INTO metrics.metric_counts (document_id, metric_type, counted_from, counted_until, amount) VALUES (?, ?, ?, ?, ?)",
+            id, metricType, at(from), at(until), amount);
+    }
+
+    private void seedBackgroundRows() {
+        jdbc.execute("""
+            WITH d AS (
+                INSERT INTO metrics.documents (document_id, doc_title, record_type)
+                SELECT gen_random_uuid(), 'background', 'dataset' FROM generate_series(1, 200)
+                RETURNING document_id
+            )
+            INSERT INTO metrics.metric_counts (document_id, metric_type, counted_from, counted_until, amount)
+            SELECT d.document_id, t.metric_type, ts, ts + interval '1 hour', 1
+            FROM d
+            CROSS JOIN (VALUES ('view'), ('download')) AS t(metric_type)
+            CROSS JOIN generate_series(timestamptz '2024-01-01', timestamptz '2024-01-02', interval '1 hour') AS ts
+            """);
+    }
+
+    private List<String> primaryKeyColumns(String table) {
+        return jdbc.queryForList("""
+            SELECT a.attname FROM pg_index i
+            JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY (i.indkey)
+            WHERE i.indrelid = ?::regclass AND i.indisprimary
+            """, String.class, "metrics." + table);
+    }
+
+    /** EXPLAIN on one connection with seq scans off, so a tiny table cannot hide a missing index. */
+    private String explain(String sql, Object... args) {
+        return jdbc.execute((ConnectionCallback<String>) connection -> {
+            try (val statement = connection.createStatement()) {
+                statement.execute("SET enable_seqscan = off");
             }
-        }
-        return rows;
+            try {
+                val single = new JdbcTemplate(new SingleConnectionDataSource(connection, true));
+                return String.join("\n", single.queryForList("EXPLAIN " + sql, String.class, args));
+            } finally {
+                try (val statement = connection.createStatement()) {
+                    statement.execute("RESET enable_seqscan");
+                }
+            }
+        });
+    }
+
+    private static OffsetDateTime at(long epochSecond) {
+        return Instant.ofEpochSecond(epochSecond).atOffset(ZoneOffset.UTC);
+    }
+
+    private static String row(String document, String title, String type, int views, int downloads) {
+        return "{document=%s, docTitle=%s, recordType=%s, views=%d, downloads=%d}"
+            .formatted(document, title, type, views, downloads);
+    }
+
+    private static MetadataDocument document(String title, String type) {
+        MetadataDocument document = new GeminiDocument();
+        document.setTitle(title);
+        document.setType(type);
+        return document;
     }
 
     /** A clock the test moves by hand, so window timestamps can be asserted exactly. */
@@ -910,27 +935,13 @@ class JDBCMetricsServiceTest {
         }
     }
 
-    List<List<Object>> getTitleAndType(String table) throws SQLException {
-        val rows = new ArrayList<List<Object>>();
-        try (Connection connection = db.getConnection();
-             Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT doc_title, record_type FROM " + table)) {
-            while (rs.next()) {
-                rows.add(List.of(rs.getString(1), rs.getString(2)));
-            }
-        }
-        return rows;
-    }
-
     /**
-     * Pass-through to the embedded database until {@link #sever()} is called, after which every
-     * connection attempt fails as it would against an unreachable host or an exhausted pool. This is what
-     * lets the read-path guard be tested on the failure it actually exists for, without the connection
-     * simply being re-established against an empty database.
+     * Pass-through to the database until {@link #sever()} is called, after which every connection attempt
+     * fails as it would against an unreachable host or an exhausted pool.
      */
     private static class SeverableDataSource extends AbstractDataSource {
         private final DataSource delegate;
-        private boolean severed;
+        private volatile boolean severed;
         private int connectionAttempts;
 
         SeverableDataSource(DataSource delegate) {
@@ -965,79 +976,6 @@ class JDBCMetricsServiceTest {
                 throw new SQLException("Connection to metrics database refused");
             }
             return delegate.getConnection(username, password);
-        }
-    }
-
-    /**
-     * Pass-through to the embedded database that records, for every {@link PreparedStatement}, the values
-     * bound with {@code setObject}/{@code setLong} and counts any {@code setString} calls — the bind type
-     * is what PostgreSQL resolves operators against, and H2 hides it.
-     */
-    private static class BindRecordingDataSource extends AbstractDataSource {
-        private final DataSource delegate;
-        private final SortedMap<Integer, Object> boundValues = new TreeMap<>();
-        private final List<String> preparedSql = new ArrayList<>();
-        private int stringBinds;
-
-        BindRecordingDataSource(DataSource delegate) {
-            this.delegate = delegate;
-        }
-
-        /** In parameter-index order, regardless of the order they were set in. */
-        List<Object> boundValues() {
-            return new ArrayList<>(boundValues.values());
-        }
-
-        int stringBinds() {
-            return stringBinds;
-        }
-
-        /** The SQL of every statement prepared, in order. */
-        List<String> preparedSql() {
-            return preparedSql;
-        }
-
-        @Override
-        public Connection getConnection() throws SQLException {
-            return recording(delegate.getConnection());
-        }
-
-        @Override
-        public Connection getConnection(String username, String password) throws SQLException {
-            return recording(delegate.getConnection(username, password));
-        }
-
-        private Connection recording(Connection connection) {
-            return proxy(Connection.class, connection, (method, args, result) -> {
-                if (!method.getName().equals("prepareStatement")) {
-                    return result;
-                }
-                preparedSql.add(((String) args[0]).strip());
-                return proxy(PreparedStatement.class, (PreparedStatement) result, (psMethod, psArgs, psResult) -> {
-                    switch (psMethod.getName()) {
-                        case "setObject", "setLong", "setInt" -> boundValues.put((Integer) psArgs[0], psArgs[1]);
-                        case "setString" -> stringBinds++;
-                        default -> { }
-                    }
-                    return psResult;
-                });
-            });
-        }
-
-        @FunctionalInterface
-        private interface AfterCall {
-            Object apply(java.lang.reflect.Method method, Object[] args, Object result);
-        }
-
-        @SuppressWarnings("unchecked")
-        private static <T> T proxy(Class<T> type, T target, AfterCall afterCall) {
-            return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type}, (p, method, args) -> {
-                try {
-                    return afterCall.apply(method, args, method.invoke(target, args));
-                } catch (InvocationTargetException e) {
-                    throw e.getCause();
-                }
-            });
         }
     }
 }
