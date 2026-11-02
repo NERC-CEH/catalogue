@@ -2,6 +2,8 @@ package uk.ac.ceh.gateway.catalogue.templateHelpers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import uk.ac.ceh.gateway.catalogue.datapreviewer.DataPreviewProperties;
 import uk.ac.ceh.gateway.catalogue.datapreviewer.OpenDataAccess;
 import uk.ac.ceh.gateway.catalogue.gemini.DistributionInfo;
@@ -123,8 +125,27 @@ class DataPreviewOfferTest {
         assertThat(offer(true).offered(ID), is(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "Comma separated values", "Tab separated values", "Semi-colon delimited text",
+        "Tab delimited text", "Pipe-delimited text", "Plain text", "Microsoft Excel", "xlsx",
+        "dat", ".dat", "ASCII", "TSV"})
+    void offeredForOtherTabularFormats(String name) {
+        when(document.getDistributionFormats()).thenReturn(List.of(DistributionInfo.builder().name(name).build()));
+
+        assertThat(offer(true).offered(ID), is(true));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Rich text format", "ASCII grid", "NetCDF", "Shapefile", "TIFF", "database"})
+    void notOfferedForFormatsThatAreNotTables(String name) {
+        when(document.getDistributionFormats()).thenReturn(List.of(DistributionInfo.builder().name(name).build()));
+
+        assertThat(offer(true).offered(ID), is(false));
+    }
+
     @Test
-    void notOfferedWithoutCsv() {
+    void notOfferedWithoutTabularFormat() {
         when(document.getDistributionFormats()).thenReturn(
             List.of(DistributionInfo.builder().name("GeoTIFF").build()));
 

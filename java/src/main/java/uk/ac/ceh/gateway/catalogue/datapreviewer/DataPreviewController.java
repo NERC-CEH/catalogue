@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Serves a record's data preview as JSON: the manifest, a CSV sample and a converted supporting
- * document. Failures carry only a generic body; the cause is logged and never sent to the browser.
+ * Serves a record's data preview as JSON: the manifest, a converted data file and a converted
+ * supporting document. Failures carry only a generic body; the cause is logged and never sent to the browser.
  */
 @Slf4j
 @RestController
@@ -35,9 +35,9 @@ public class DataPreviewController {
         return service.manifest(id);
     }
 
-    @GetMapping("/csv")
-    public CsvSample csv(@PathVariable String id, @RequestParam String path) {
-        return orNotFound(service.csv(id, path));
+    @GetMapping("/data")
+    public DocumentPreview data(@PathVariable String id, @RequestParam String path) {
+        return orNotFound(service.data(id, path));
     }
 
     @GetMapping("/document")

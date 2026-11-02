@@ -4,7 +4,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -55,23 +54,18 @@ class PreviewContentReaderCacheTest {
         }
 
         @Bean
-        CsvSampler csvSampler() {
-            return mock(CsvSampler.class);
-        }
-
-        @Bean
         DocumentConverter documentConverter() {
             return mock(DocumentConverter.class);
         }
 
         @Bean
         PreviewContentReader previewContentReader(
-            PreviewFileResolver resolver, CsvSampler csvSampler, DocumentConverter documentConverter
+            PreviewFileResolver resolver, DocumentConverter documentConverter
         ) {
             DataPreviewProperties properties = new DataPreviewProperties(
                 true, null, null, 10, 50, 262144, 20971520, 200000, Duration.ofSeconds(20),
                 Duration.ofSeconds(3), Duration.ofSeconds(10));
-            return new PreviewContentReader(resolver, csvSampler, documentConverter, properties);
+            return new PreviewContentReader(resolver, documentConverter, properties);
         }
     }
 
@@ -80,54 +74,52 @@ class PreviewContentReaderCacheTest {
     @Autowired
     private PreviewFileResolver resolver;
     @Autowired
-    private CsvSampler csvSampler;
-    @Autowired
     private DocumentConverter documentConverter;
     @Autowired
     private CacheManager cacheManager;
 
-    private final CsvSample sample = new CsvSample(List.of("name"), List.of(List.of("x")), false, true);
+    private final DocumentPreview table = DocumentPreview.table(new CsvSample(List.of("name"), List.of(List.of("x")), false, true));
     private final DocumentPreview preview = DocumentPreview.text("Units", false);
     private Path file;
 
     @BeforeEach
     void setUp() throws IOException {
-        reset(resolver, csvSampler, documentConverter);
+        reset(resolver, documentConverter);
         cacheManager.getCache(PreviewContentReader.DATA_PREVIEW_CONTENT_CACHE).clear();
         file = Files.createTempFile("preview-cache", ".csv");
         file.toFile().deleteOnExit();
         when(resolver.resolve(any(), anyString(), anyString())).thenReturn(Optional.of(file));
-        when(csvSampler.sample(any(), anyInt(), anyInt())).thenReturn(sample);
+        when(documentConverter.convertData(any(), any())).thenReturn(table);
         when(documentConverter.convert(any(), any())).thenReturn(preview);
     }
 
     @Test
-    void csvAndDocumentForSamePathAndHashDoNotCollide() {
-        CsvSample csv = reader.csv(ID, PATH, SHA);
+    void dataAndDocumentForSamePathAndHashDoNotCollide() {
+        DocumentPreview data = reader.data(ID, PATH, SHA);
         DocumentPreview document = reader.document(ID, PATH, SHA);
 
-        assertThat(csv, is(sample));
+        assertThat(data, is(table));
         assertThat(document, is(preview));
     }
 
     @Test
-    void secondCsvReadIsServedFromCache() {
-        reader.csv(ID, PATH, SHA);
-        reader.csv(ID, PATH, SHA);
+    void secondDataReadIsServedFromCache() {
+        reader.data(ID, PATH, SHA);
+        reader.data(ID, PATH, SHA);
 
-        verify(csvSampler, times(1)).sample(any(), anyInt(), anyInt());
+        verify(documentConverter, times(1)).convertData(any(), any());
     }
 
     @Test
     void unresolvableFileIsNotCached() {
         when(resolver.resolve(any(), anyString(), anyString())).thenReturn(Optional.empty());
 
-        assertThrows(IllegalStateException.class, () -> reader.csv(ID, PATH, SHA));
+        assertThrows(IllegalStateException.class, () -> reader.data(ID, PATH, SHA));
         assertThrows(IllegalStateException.class, () -> reader.document(ID, PATH, SHA));
         reset(resolver);
         when(resolver.resolve(any(), anyString(), anyString())).thenReturn(Optional.of(file));
 
-        assertThat(reader.csv(ID, PATH, SHA), is(sample));
+        assertThat(reader.data(ID, PATH, SHA), is(table));
         assertThat(reader.document(ID, PATH, SHA), is(preview));
     }
 
@@ -145,12 +137,12 @@ class PreviewContentReaderCacheTest {
 
     @Test
     void nullSha256IsNotCached() {
-        reader.csv(ID, PATH, null);
-        reader.csv(ID, PATH, null);
+        reader.data(ID, PATH, null);
+        reader.data(ID, PATH, null);
         reader.document(ID, PATH, null);
         reader.document(ID, PATH, null);
 
-        verify(csvSampler, times(2)).sample(any(), anyInt(), anyInt());
+        verify(documentConverter, times(2)).convertData(any(), any());
         verify(documentConverter, times(2)).convert(any(), any());
     }
 }

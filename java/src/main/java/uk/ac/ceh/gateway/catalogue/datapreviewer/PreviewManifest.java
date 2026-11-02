@@ -5,23 +5,24 @@ import java.util.List;
 /**
  * What a record's data preview can show, built from its Hubbub listing.
  *
- * @param csvFiles          the first CSV data files in path order, at most {@code maxCsvFiles}
- * @param csvCount          how many CSV data files were listed
- * @param csvCountIsMinimum true when the listing ran beyond the page read, so {@code csvCount} is
- *                          a lower bound
- * @param totalFiles        how many data files the dataset holds, of any format
- * @param documents         the supporting documents in path order
+ * @param dataFiles          the first previewable data files (delimited text and Excel workbooks)
+ *                           in path order, at most {@code maxDataFiles}
+ * @param dataCount          how many previewable data files were listed
+ * @param dataCountIsMinimum true when the listing ran beyond the page read, so {@code dataCount} is
+ *                           a lower bound
+ * @param totalFiles         how many data files the dataset holds, of any format
+ * @param documents          the supporting documents in path order
  */
 public record PreviewManifest(
-    List<PreviewFile> csvFiles,
-    int csvCount,
-    boolean csvCountIsMinimum,
+    List<PreviewFile> dataFiles,
+    int dataCount,
+    boolean dataCountIsMinimum,
     int totalFiles,
     List<PreviewFile> documents
 ) {
 
     public PreviewManifest {
-        csvFiles = List.copyOf(csvFiles);
+        dataFiles = List.copyOf(dataFiles);
         documents = List.copyOf(documents);
     }
 

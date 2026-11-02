@@ -10,7 +10,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,10 +37,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Turns a supporting document into something the documents pane can show: text for RTF, Word,
- * PDF and plain text, a table for CSV, or a reason it cannot be shown.
+ * Turns a supporting document or a data file into something the preview can show: text for RTF,
+ * Word, PDF and plain text, a table for delimited text and Excel workbooks, or a reason it cannot be
+ * shown.
  *
- * <p>Tika conversions run on a shared pool of {@value #WORKERS} workers. PDFBox and POI ignore
+ * <p>Tika conversions and workbook reads run on a shared pool of {@value #WORKERS} workers. PDFBox and POI ignore
  * interruption, so a conversion that times out keeps its worker until the parse finishes; the pool
  * size is therefore the bound on CPU and memory spent converting. When every worker is busy,
  * {@link #convert} throws {@link PreviewBusyException} rather than queueing.
@@ -54,6 +58,20 @@ public class DocumentConverter {
     static final int WORKERS = 2;
 
     private static final Set<String> TIKA_EXTENSIONS = Set.of("rtf", "doc", "docx", "pdf");
+    // Delimited text that is a table by its name, and the delimiter to assume when none is detected.
+    private static final Map<String, CsvSampler.Delimiter> TABLE_EXTENSIONS = Map.of(
+        "csv", CsvSampler.Delimiter.COMMA,
+        "tsv", CsvSampler.Delimiter.TAB,
+        "tab", CsvSampler.Delimiter.TAB,
+        "psv", CsvSampler.Delimiter.PIPE);
+    // Text that may hold a table: shown as one when a delimiter is detected, otherwise as text.
+    private static final Set<String> MAYBE_TABLE_EXTENSIONS = Set.of("txt", "dat");
+    private static final String WORKBOOK_EXTENSION = "xlsx";
+    // Rows below the header that plain text must have to be shown as a table.
+    private static final int MIN_SNIFFED_ROWS = 2;
+
+    /** The extensions a data file may have for the preview to show it. */
+    public static final Set<String> DATA_EXTENSIONS = Set.of("csv", "tsv", "tab", "psv", "txt", "dat", "xlsx");
     private static final Parser PARSER = new AutoDetectParser();
 
     // Tika's RTF parser drops table structure: every \cell ends a paragraph, so a dictionary table
@@ -113,11 +131,11 @@ public class DocumentConverter {
     public DocumentPreview convert(Path file, String listedName) {
         String extension = extension(listedName);
         try {
-            if (extension.equals("csv")) {
-                try (InputStream in = Files.newInputStream(file)) {
-                    CsvSample sample = csvSampler.sample(in, properties.maxCsvBytes(), properties.previewRows());
-                    return sample.previewable() ? DocumentPreview.table(sample) : DocumentPreview.notPreviewable();
-                }
+            if (TABLE_EXTENSIONS.containsKey(extension)) {
+                return table(file, TABLE_EXTENSIONS.get(extension));
+            }
+            if (extension.equals(WORKBOOK_EXTENSION)) {
+                return workbook(file);
             }
             if (!extension.equals("txt") && !TIKA_EXTENSIONS.contains(extension)) {
                 return DocumentPreview.notPreviewable();
@@ -132,6 +150,79 @@ public class DocumentConverter {
         } catch (IOException e) {
             throw new UncheckedIOException("Could not read supporting document " + file, e);
         }
+    }
+
+    /**
+     * Converts a data file, choosing how by the extension of {@code listedName} as for
+     * {@link #convert(Path, String)}. Plain text ({@code .txt}, {@code .dat}) is shown as a table
+     * when a delimiter is detected, and otherwise as the text it starts with, as a readme would be.
+     *
+     * @throws PreviewBusyException when every conversion worker is busy; try again later
+     */
+    public DocumentPreview convertData(Path file, String listedName) {
+        String extension = extension(listedName);
+        try {
+            if (TABLE_EXTENSIONS.containsKey(extension)) {
+                return table(file, TABLE_EXTENSIONS.get(extension));
+            }
+            if (extension.equals(WORKBOOK_EXTENSION)) {
+                return workbook(file);
+            }
+            if (MAYBE_TABLE_EXTENSIONS.contains(extension)) {
+                return tableOrText(file);
+            }
+            return DocumentPreview.notPreviewable();
+        } catch (IOException e) {
+            throw new UncheckedIOException("Could not read data file " + file, e);
+        }
+    }
+
+    private DocumentPreview table(Path file, CsvSampler.Delimiter fallback) throws IOException {
+        Optional<CsvSampler.Text> text;
+        try (InputStream in = Files.newInputStream(file)) {
+            text = csvSampler.read(in, properties.maxTableBytes());
+        }
+        return text
+            .map(t -> csvSampler.table(t, CsvSampler.detect(t.text()).orElse(fallback), properties.previewRows()))
+            .filter(CsvSample::previewable)
+            .map(DocumentPreview::table)
+            .orElseGet(DocumentPreview::notPreviewable);
+    }
+
+    private DocumentPreview tableOrText(Path file) throws IOException {
+        Optional<CsvSampler.Text> text;
+        try (InputStream in = Files.newInputStream(file)) {
+            text = csvSampler.read(in, properties.maxTableBytes());
+        }
+        if (text.isEmpty()) {
+            return DocumentPreview.notPreviewable();
+        }
+        CsvSampler.Text read = text.get();
+        Optional<CsvSampler.Delimiter> delimiter = CsvSampler.detect(read.text());
+        if (delimiter.isPresent()) {
+            CsvSample sample = csvSampler.table(read, delimiter.get(), properties.previewRows());
+            // A header and one row agreeing could as well be two lines of prose.
+            if (sample.previewable() && sample.rows().size() >= MIN_SNIFFED_ROWS) {
+                return DocumentPreview.table(sample);
+            }
+        }
+        return truncate(read.text(), read.capped());
+    }
+
+    private DocumentPreview workbook(Path file) throws IOException {
+        if (Files.size(file) > properties.maxDocumentBytes()) {
+            return DocumentPreview.tooLarge();
+        }
+        return bounded(file, () -> {
+            CsvSample sample;
+            try {
+                sample = XlsxSampler.sample(file, properties.previewRows());
+            } catch (XlsxSampler.TooLargeException e) {
+                log.info("Not previewing workbook {}: {}", file, e.getMessage());
+                return DocumentPreview.tooLarge();
+            }
+            return sample.previewable() ? DocumentPreview.table(sample) : DocumentPreview.notPreviewable();
+        });
     }
 
     /**
@@ -180,6 +271,11 @@ public class DocumentConverter {
     }
 
     private DocumentPreview extractWithTimeout(Path file, boolean rtf) {
+        return bounded(file, () -> extractor.extract(file, rtf));
+    }
+
+    /** Runs {@code task} on the worker pool, within the conversion timeout. */
+    private DocumentPreview bounded(Path file, Callable<DocumentPreview> task) {
         if (!permits.tryAcquire()) {
             throw new PreviewBusyException();
         }
@@ -193,7 +289,7 @@ public class DocumentConverter {
                     return null;
                 }
                 try {
-                    return extractor.extract(file, rtf);
+                    return task.call();
                 } finally {
                     permits.release();
                 }
@@ -206,21 +302,21 @@ public class DocumentConverter {
             return future.get(properties.conversionTimeout().toNanos(), TimeUnit.NANOSECONDS);
         } catch (TimeoutException e) {
             cancel(future, claimed);
-            log.warn("Converting supporting document {} took longer than {}", file, properties.conversionTimeout());
+            log.warn("Converting {} took longer than {}", file, properties.conversionTimeout());
             return DocumentPreview.notPreviewable();
         } catch (ExecutionException e) {
             // Tika passes on an IOException only when reading the file failed; a parser's own
             // IOException, as on a corrupt file, reaches us as a TikaException. Opening the file
             // and the RTF rewrite read it outside Tika, so their IOExceptions are read faults too.
             if (e.getCause() instanceof IOException io) {
-                throw new UncheckedIOException("Could not read supporting document " + file, io);
+                throw new UncheckedIOException("Could not read " + file, io);
             }
-            log.warn("Could not convert supporting document {}: {}", file, e.getCause().toString());
+            log.warn("Could not convert {}: {}", file, e.getCause().toString());
             return DocumentPreview.notPreviewable();
         } catch (InterruptedException e) {
             cancel(future, claimed);
             Thread.currentThread().interrupt();
-            throw new IllegalStateException("Interrupted while converting supporting document " + file, e);
+            throw new IllegalStateException("Interrupted while converting " + file, e);
         }
     }
 
@@ -312,7 +408,7 @@ public class DocumentConverter {
         }
     }
 
-    private static String extension(String listedName) {
+    static String extension(String listedName) {
         String name = listedName.toLowerCase(Locale.ROOT);
         int slash = name.lastIndexOf('/');
         name = name.substring(slash + 1);

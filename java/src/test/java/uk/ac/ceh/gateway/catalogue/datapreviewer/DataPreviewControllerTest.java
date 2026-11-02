@@ -41,23 +41,36 @@ class DataPreviewControllerTest extends AbstractMvcTest {
 
         mvc.perform(get(BASE))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.csvFiles[0].path", is("data/x.csv")))
-            .andExpect(jsonPath("$.csvFiles[0].sha256", is("abcd")))
-            .andExpect(jsonPath("$.csvCount", is(1)))
-            .andExpect(jsonPath("$.csvCountIsMinimum", is(false)))
+            .andExpect(jsonPath("$.dataFiles[0].path", is("data/x.csv")))
+            .andExpect(jsonPath("$.dataFiles[0].sha256", is("abcd")))
+            .andExpect(jsonPath("$.dataCount", is(1)))
+            .andExpect(jsonPath("$.dataCountIsMinimum", is(false)))
             .andExpect(jsonPath("$.totalFiles", is(3)));
     }
 
     @Test
-    void csvReturnsSample() throws Exception {
-        when(service.csv("abc", "data/x.csv")).thenReturn(Optional.of(sample()));
+    void dataReturnsTable() throws Exception {
+        when(service.data("abc", "data/x.csv")).thenReturn(Optional.of(DocumentPreview.table(sample())));
 
-        mvc.perform(get(BASE + "/csv").param("path", "data/x.csv"))
+        mvc.perform(get(BASE + "/data").param("path", "data/x.csv"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.header[1]", is("b")))
-            .andExpect(jsonPath("$.rows[0][0]", is("1")))
-            .andExpect(jsonPath("$.moreRows", is(false)))
-            .andExpect(jsonPath("$.previewable", is(true)));
+            .andExpect(jsonPath("$.kind", is("TABLE")))
+            .andExpect(jsonPath("$.table.header[1]", is("b")))
+            .andExpect(jsonPath("$.table.rows[0][0]", is("1")))
+            .andExpect(jsonPath("$.table.moreRows", is(false)))
+            .andExpect(jsonPath("$.table.previewable", is(true)))
+            .andExpect(jsonPath("$.table.sheet").doesNotExist());
+    }
+
+    @Test
+    void dataReturnsWorkbookSheetNames() throws Exception {
+        CsvSample sheet = sample().inSheet("Sites", List.of("Notes", "Sites"));
+        when(service.data("abc", "data/x.xlsx")).thenReturn(Optional.of(DocumentPreview.table(sheet)));
+
+        mvc.perform(get(BASE + "/data").param("path", "data/x.xlsx"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.table.sheet", is("Sites")))
+            .andExpect(jsonPath("$.table.sheets[0]", is("Notes")));
     }
 
     @Test
@@ -74,18 +87,18 @@ class DataPreviewControllerTest extends AbstractMvcTest {
 
     @Test
     void unlistedPathIs404() throws Exception {
-        when(service.csv(anyString(), anyString())).thenReturn(Optional.empty());
+        when(service.data(anyString(), anyString())).thenReturn(Optional.empty());
         when(service.document(anyString(), anyString())).thenReturn(Optional.empty());
 
         for (var path : List.of("nope.csv", "../../etc/passwd")) {
-            mvc.perform(get(BASE + "/csv").param("path", path)).andExpect(status().isNotFound());
+            mvc.perform(get(BASE + "/data").param("path", path)).andExpect(status().isNotFound());
             mvc.perform(get(BASE + "/document").param("path", path)).andExpect(status().isNotFound());
         }
     }
 
     @Test
     void missingPathIs400() throws Exception {
-        mvc.perform(get(BASE + "/csv")).andExpect(status().isBadRequest());
+        mvc.perform(get(BASE + "/data")).andExpect(status().isBadRequest());
         mvc.perform(get(BASE + "/document")).andExpect(status().isBadRequest());
     }
 
@@ -93,11 +106,11 @@ class DataPreviewControllerTest extends AbstractMvcTest {
     void closedRecordIs403OnAllThree() throws Exception {
         var closed = new PreviewNotOpenException("abc");
         when(service.manifest("abc")).thenThrow(closed);
-        when(service.csv(anyString(), anyString())).thenThrow(closed);
+        when(service.data(anyString(), anyString())).thenThrow(closed);
         when(service.document(anyString(), anyString())).thenThrow(closed);
 
         mvc.perform(get(BASE)).andExpect(status().isForbidden());
-        mvc.perform(get(BASE + "/csv").param("path", "x.csv")).andExpect(status().isForbidden());
+        mvc.perform(get(BASE + "/data").param("path", "x.csv")).andExpect(status().isForbidden());
         mvc.perform(get(BASE + "/document").param("path", "x.pdf")).andExpect(status().isForbidden());
     }
 
@@ -123,14 +136,14 @@ class DataPreviewControllerTest extends AbstractMvcTest {
     void unexpectedFailureHidesCause() throws Exception {
         when(service.manifest("abc"))
             .thenThrow(new RuntimeException("https://hubbub.ceh.ac.uk/secret"));
-        when(service.csv("abc", "x.csv"))
+        when(service.data("abc", "x.csv"))
             .thenThrow(new IllegalStateException("repo", new RuntimeException("hubbub")));
 
         mvc.perform(get(BASE))
             .andExpect(status().isInternalServerError())
             .andExpect(jsonPath("$.error", is("Preview unavailable")))
             .andExpect(content().string(not(containsString("hubbub"))));
-        mvc.perform(get(BASE + "/csv").param("path", "x.csv"))
+        mvc.perform(get(BASE + "/data").param("path", "x.csv"))
             .andExpect(status().isInternalServerError())
             .andExpect(content().string(not(containsString("hubbub"))));
     }

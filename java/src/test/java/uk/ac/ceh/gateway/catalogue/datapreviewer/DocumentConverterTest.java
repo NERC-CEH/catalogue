@@ -25,6 +25,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.io.OutputStream;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.tika.exception.TikaException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -161,7 +165,7 @@ class DocumentConverterTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"script.py", "archive.zip", "sheet.xlsx", "photo.jpg", "README"})
+    @ValueSource(strings = {"script.py", "archive.zip", "old.xls", "photo.jpg", "README"})
     void unknownExtensionIsNotPreviewable(String name) throws IOException {
         Path file = Files.writeString(tmp.resolve(name), "content");
 
@@ -391,5 +395,370 @@ class DocumentConverterTest {
         for (int i = 0; i < DocumentConverter.WORKERS + 1; i++) {
             assertThat(converter.convert(rtf).kind(), is(DocumentPreview.Kind.TEXT));
         }
+    }
+
+    // Delimited text and workbooks
+
+    @ParameterizedTest
+    @ValueSource(strings = {"table.tsv", "table.tab"})
+    void tabDelimitedBecomesTable(String name) throws Exception {
+        Path tsv = Files.writeString(tmp.resolve(name), "site\tcount\nA1\t3\n");
+
+        DocumentPreview preview = converter().convertData(tsv, name);
+
+        assertThat(preview.kind(), is(DocumentPreview.Kind.TABLE));
+        assertThat(preview.table().header(), contains("site", "count"));
+    }
+
+    @Test
+    void pipeDelimitedBecomesTable() throws Exception {
+        Path psv = Files.writeString(tmp.resolve("t.psv"), "site|count\nA1|3\n");
+
+        assertThat(converter().convertData(psv, "t.psv").table().rows(), contains(List.of("A1", "3")));
+    }
+
+    @Test
+    void semicolonCsvIsSplitOnSemicolons() throws Exception {
+        Path csv = Files.writeString(tmp.resolve("eu.csv"), "site;value\nA1;1,5\n");
+
+        assertThat(converter().convertData(csv, "eu.csv").table().rows(), contains(List.of("A1", "1,5")));
+    }
+
+    @Test
+    void singleColumnCsvIsStillATable() throws Exception {
+        Path csv = Files.writeString(tmp.resolve("one.csv"), "count\n1\n2\n");
+
+        DocumentPreview preview = converter().convertData(csv, "one.csv");
+
+        assertThat(preview.kind(), is(DocumentPreview.Kind.TABLE));
+        assertThat(preview.table().rows(), contains(List.of("1"), List.of("2")));
+    }
+
+    @Test
+    void tabularTxtDataBecomesTable() throws Exception {
+        Path txt = Files.writeString(tmp.resolve("rain.txt"), "year\train\n1990\t85.2\n1991\t60.1\n");
+
+        DocumentPreview preview = converter().convertData(txt, "rain.txt");
+
+        assertThat(preview.kind(), is(DocumentPreview.Kind.TABLE));
+        assertThat(preview.table().rows(), contains(List.of("1990", "85.2"), List.of("1991", "60.1")));
+    }
+
+    @Test
+    void spaceAlignedDatBecomesTable() throws Exception {
+        Path dat = Files.writeString(tmp.resolve("rain.dat"), "year  rain\n1990  85.2\n1991  60.1\n");
+
+        DocumentPreview preview = converter().convertData(dat, "rain.dat");
+
+        assertThat(preview.kind(), is(DocumentPreview.Kind.TABLE));
+        assertThat(preview.table().header(), contains("year", "rain"));
+    }
+
+    @Test
+    void txtWithOneAgreeingRowIsShownAsText() throws Exception {
+        Path txt = Files.writeString(tmp.resolve("hello.txt"), "Hello, world.\nGoodbye, moon.\n");
+
+        assertThat(converter().convertData(txt, "hello.txt").kind(), is(DocumentPreview.Kind.TEXT));
+    }
+
+    @Test
+    void readmeTxtDataIsShownAsText() throws Exception {
+        DocumentPreview preview = converter().convertData(fixture("notes.txt"), "notes.txt");
+
+        assertThat(preview.kind(), is(DocumentPreview.Kind.TEXT));
+        assertThat(preview.text(), is("Notes on the survey.\nSecond line of notes.\n"));
+        assertThat(preview.truncated(), is(false));
+    }
+
+    @Test
+    void longReadmeTxtDataIsTruncated() throws Exception {
+        Path txt = Files.writeString(tmp.resolve("long.txt"), "word ".repeat(100) + "\n");
+
+        DocumentPreview preview = converter(20971520, 10, Duration.ofSeconds(20)).convertData(txt, "long.txt");
+
+        assertThat(preview.kind(), is(DocumentPreview.Kind.TEXT));
+        assertThat(preview.text(), is("word word "));
+        assertThat(preview.truncated(), is(true));
+    }
+
+    @Test
+    void binaryTxtDataIsNotPreviewable() throws Exception {
+        Path txt = Files.write(tmp.resolve("odd.txt"), new byte[] {'a', 0, 'b'});
+
+        assertThat(converter().convertData(txt, "odd.txt").kind(), is(DocumentPreview.Kind.NOT_PREVIEWABLE));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"guide.pdf", "notes.docx", "map.shp", "old.xls"})
+    void dataOfOtherFormatsIsNotPreviewable(String name) throws Exception {
+        Path file = Files.writeString(tmp.resolve(name), "content");
+
+        assertThat(converter().convertData(file, name).kind(), is(DocumentPreview.Kind.NOT_PREVIEWABLE));
+    }
+
+    @Test
+    void supportingTxtStaysTextEvenWhenDelimited() throws Exception {
+        // A data dictionary is read as a document; only data files are sniffed for tables.
+        Path txt = Files.writeString(tmp.resolve("dict.txt"), "name\tunits\nrain\tmm\n");
+
+        assertThat(converter().convert(txt, "dict.txt").kind(), is(DocumentPreview.Kind.TEXT));
+    }
+
+    @Test
+    void supportingTsvBecomesTable() throws Exception {
+        Path tsv = Files.writeString(tmp.resolve("dict.tsv"), "name\tunits\nrain\tmm\n");
+
+        assertThat(converter().convert(tsv, "dict.tsv").table().rows(), contains(List.of("rain", "mm")));
+    }
+
+    private Path workbook(String name, WorkbookBuilder build) throws IOException {
+        Path file = tmp.resolve(name);
+        try (XSSFWorkbook workbook = new XSSFWorkbook(); OutputStream out = Files.newOutputStream(file)) {
+            build.build(workbook);
+            workbook.write(out);
+        }
+        return file;
+    }
+
+    @FunctionalInterface
+    private interface WorkbookBuilder {
+        void build(XSSFWorkbook workbook);
+    }
+
+    private static void row(Sheet sheet, int index, Object... values) {
+        Row row = sheet.createRow(index);
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] == null) {
+                continue;
+            }
+            if (values[i] instanceof Number number) {
+                row.createCell(i).setCellValue(number.doubleValue());
+            } else {
+                row.createCell(i).setCellValue(values[i].toString());
+            }
+        }
+    }
+
+    @Test
+    void workbookFirstSheetBecomesTable() throws Exception {
+        Path xlsx = workbook("sites.xlsx", wb -> {
+            Sheet sheet = wb.createSheet("Sites");
+            row(sheet, 0, "site", "count");
+            row(sheet, 1, "A1", 3);
+            row(sheet, 2, "B2", 5.5);
+        });
+
+        DocumentPreview preview = converter().convertData(xlsx, "sites.xlsx");
+
+        assertThat(preview.kind(), is(DocumentPreview.Kind.TABLE));
+        assertThat(preview.table().header(), contains("site", "count"));
+        assertThat(preview.table().rows(), contains(List.of("A1", "3"), List.of("B2", "5.5")));
+        assertThat(preview.table().moreRows(), is(false));
+        assertThat(preview.table().sheet(), is("Sites"));
+        assertThat(preview.table().sheets(), contains("Sites"));
+    }
+
+    @Test
+    void workbookSkipsEmptySheetsAndNamesTheOthers() throws Exception {
+        Path xlsx = workbook("book.xlsx", wb -> {
+            wb.createSheet("Cover");
+            Sheet data = wb.createSheet("Data");
+            row(data, 2, "site", "count");
+            row(data, 3, "A1", 3);
+            row(wb.createSheet("Notes"), 0, "Collected 2019");
+        });
+
+        DocumentPreview preview = converter().convertData(xlsx, "book.xlsx");
+
+        assertThat(preview.table().sheet(), is("Data"));
+        assertThat(preview.table().sheets(), contains("Cover", "Data", "Notes"));
+        assertThat(preview.table().header(), contains("site", "count"));
+    }
+
+    @Test
+    void workbookKeepsGapsBetweenCellsAsEmptyColumns() throws Exception {
+        Path xlsx = workbook("gaps.xlsx", wb -> {
+            Sheet sheet = wb.createSheet("S");
+            row(sheet, 0, "a", "b", "c");
+            row(sheet, 1, "1", null, "3");
+            row(sheet, 2, "4");
+        });
+
+        DocumentPreview preview = converter().convertData(xlsx, "gaps.xlsx");
+
+        assertThat(preview.table().rows(), contains(List.of("1", "", "3"), List.of("4", "", "")));
+    }
+
+    @Test
+    void workbookStopsAtMaxRowsAndFlagsMore() throws Exception {
+        Path xlsx = workbook("big.xlsx", wb -> {
+            Sheet sheet = wb.createSheet("S");
+            row(sheet, 0, "n");
+            for (int i = 1; i <= 60; i++) {
+                row(sheet, i, i);
+            }
+        });
+
+        DocumentPreview preview = converter().convertData(xlsx, "big.xlsx");
+
+        assertThat(preview.table().rows().size(), is(50));
+        assertThat(preview.table().moreRows(), is(true));
+    }
+
+    @Test
+    void emptyWorkbookIsNotPreviewable() throws Exception {
+        Path xlsx = workbook("empty.xlsx", wb -> wb.createSheet("Blank"));
+
+        assertThat(converter().convertData(xlsx, "empty.xlsx").kind(), is(DocumentPreview.Kind.NOT_PREVIEWABLE));
+    }
+
+    @Test
+    void fileThatIsNotAWorkbookIsNotPreviewable() throws Exception {
+        Path xlsx = Files.writeString(tmp.resolve("fake.xlsx"), "site,count\nA1,3\n");
+
+        assertThat(converter().convertData(xlsx, "fake.xlsx").kind(), is(DocumentPreview.Kind.NOT_PREVIEWABLE));
+    }
+
+    @Test
+    void workbookOverSizeLimitIsTooLarge() throws Exception {
+        Path xlsx = workbook("sites.xlsx", wb -> row(wb.createSheet("S"), 0, "site"));
+
+        assertThat(converter(10, 200000, Duration.ofSeconds(20)).convertData(xlsx, "sites.xlsx").kind(),
+            is(DocumentPreview.Kind.TOO_LARGE));
+    }
+
+    @Test
+    void supportingWorkbookBecomesTable() throws Exception {
+        Path xlsx = workbook("dictionary.xlsx", wb -> {
+            Sheet sheet = wb.createSheet("Dictionary");
+            row(sheet, 0, "name", "units");
+            row(sheet, 1, "rain", "mm");
+        });
+
+        DocumentPreview preview = converter().convert(xlsx, "dictionary.xlsx");
+
+        assertThat(preview.kind(), is(DocumentPreview.Kind.TABLE));
+        assertThat(preview.table().rows(), contains(List.of("rain", "mm")));
+    }
+
+    @Test
+    void workbookReadWaitsForAWorker() throws Exception {
+        CountDownLatch started = new CountDownLatch(DocumentConverter.WORKERS);
+        CountDownLatch release = new CountDownLatch(1);
+        DocumentConverter converter = converter(Duration.ofSeconds(20), blockingUntil(started, release));
+        Path rtf = fixture("dictionary.rtf");
+        Path xlsx = workbook("sites.xlsx", wb -> row(wb.createSheet("S"), 0, "site"));
+        try (ExecutorService callers = Executors.newFixedThreadPool(DocumentConverter.WORKERS)) {
+            try {
+                for (int i = 0; i < DocumentConverter.WORKERS; i++) {
+                    callers.submit(() -> converter.convert(rtf));
+                }
+                assertThat(started.await(5, TimeUnit.SECONDS), is(true));
+
+                assertThrows(PreviewBusyException.class, () -> converter.convertData(xlsx, "sites.xlsx"));
+            } finally {
+                release.countDown();
+            }
+        }
+    }
+
+    @Test
+    void readFailureOfDataPropagates() {
+        Path missing = tmp.resolve("gone.tsv");
+
+        assertThrows(UncheckedIOException.class, () -> converter().convertData(missing, "gone.tsv"));
+    }
+
+    // Limits that hold against a crafted workbook
+
+    @Test
+    void workbookColumnsBeyondTheCapAreLeftOut() throws Exception {
+        Path xlsx = workbook("wide.xlsx", wb -> {
+            Sheet sheet = wb.createSheet("S");
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("a");
+            header.createCell(16_000).setCellValue("far");
+            row(sheet, 1, "1");
+        });
+
+        DocumentPreview preview = converter().convertData(xlsx, "wide.xlsx");
+
+        assertThat(preview.table().header(), contains("a"));
+    }
+
+    @Test
+    void cellReferenceFarBeyondExcelIsIgnoredWithoutPadding() {
+        XlsxSampler.Rows rows = new XlsxSampler.Rows(50);
+        rows.startRow(0);
+        rows.cell("A1", "a", null);
+        rows.cell("ZZZZZZ1", "far", null);
+        rows.endRow(0);
+        rows.startRow(1);
+        rows.cell("A2", "1", null);
+        rows.endRow(1);
+
+        CsvSample sample = rows.sample();
+
+        assertThat(sample.header(), contains("a"));
+        assertThat(sample.rows(), contains(List.of("1")));
+    }
+
+    @Test
+    void blankRowsCountTowardsTheScanLimit() {
+        XlsxSampler.Rows rows = new XlsxSampler.Rows(50);
+        rows.startRow(0);
+        rows.cell("A1", "a", null);
+        rows.endRow(0);
+
+        assertThrows(XlsxSampler.EnoughRows.class, () -> {
+            for (int i = 1; ; i++) {
+                rows.startRow(i);
+                rows.endRow(i);
+            }
+        });
+
+        CsvSample sample = rows.sample();
+        assertThat(sample.header(), contains("a"));
+        assertThat(sample.rows(), is(List.of()));
+        assertThat(sample.moreRows(), is(true));
+    }
+
+    @Test
+    void sharedStringsExpandingBeyondTheLimitAreTooLarge() throws Exception {
+        Path xlsx = workbook("strings.xlsx", wb -> {
+            Sheet sheet = wb.createSheet("S");
+            row(sheet, 0, "site");
+            for (int i = 1; i < 200; i++) {
+                row(sheet, i, "a long distinct value number " + i);
+            }
+        });
+
+        assertThrows(XlsxSampler.TooLargeException.class,
+            () -> XlsxSampler.sample(xlsx, 50, 1024, XlsxSampler.MAX_STYLES_BYTES));
+        assertThat(XlsxSampler.sample(xlsx, 50, XlsxSampler.MAX_STRINGS_BYTES, XlsxSampler.MAX_STYLES_BYTES).previewable(),
+            is(true));
+    }
+
+    @Test
+    void stylesExpandingBeyondTheLimitAreTooLargeThoughXmlBeansWrapsTheFailure() throws Exception {
+        Path xlsx = workbook("styled.xlsx", wb -> row(wb.createSheet("S"), 0, "site"));
+
+        assertThrows(XlsxSampler.TooLargeException.class,
+            () -> XlsxSampler.sample(xlsx, 50, XlsxSampler.MAX_STRINGS_BYTES, 100));
+    }
+
+    @Test
+    void repeatedAndOutOfOrderCellsCannotWidenARow() {
+        XlsxSampler.Rows rows = new XlsxSampler.Rows(50);
+        rows.startRow(0);
+        rows.cell("B1", "b", null);
+        for (int i = 0; i < 100_000; i++) {
+            rows.cell("B1", "again", null);
+            rows.cell("A1", "earlier", null);
+            rows.cell(null, "unplaced", null);
+        }
+        rows.endRow(0);
+
+        assertThat(rows.sample().header().size(), is(XlsxSampler.MAX_COLUMNS));
     }
 }
