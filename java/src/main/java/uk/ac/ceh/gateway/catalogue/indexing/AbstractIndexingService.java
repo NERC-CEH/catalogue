@@ -11,6 +11,7 @@ import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The following abstract class defines the common structure for a
@@ -33,6 +34,10 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
     private final DocumentListingService listingService;
     private final DataRepository<?> repo;
     private final IndexGenerator<D, I> indexGenerator;
+    // A count rather than a flag: a rebuild started from the maintenance page can overlap the
+    // scheduled one, and the first to finish must not report the index complete.
+    @ToString.Exclude
+    private final AtomicInteger rebuildsUnderWay = new AtomicInteger();
 
     public AbstractIndexingService(
             BundledReaderService<D> reader,
@@ -54,7 +59,13 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
     }
 
     @Override
+    public boolean isRebuilding() {
+        return rebuildsUnderWay.get() > 0;
+    }
+
+    @Override
     public void rebuildIndex() throws DocumentIndexingException {
+        rebuildsUnderWay.incrementAndGet();
         try {
             log.info("Rebuilding {} index", indexName());
             // Read the data repository *before* clearing anything. A repository which cannot be
@@ -75,6 +86,9 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
         }
         catch(IOException ex) {
             throw new DocumentIndexingException(ex);
+        }
+        finally {
+            rebuildsUnderWay.decrementAndGet();
         }
     }
 

@@ -35,13 +35,18 @@ import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.matchesRegex;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
+
 import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CatalogueToTurtleServiceTest {
     private CatalogueToTurtleService service;
 
+    @Mock
+    private DocumentIndexingService linkIndex;
     @Mock
     CatalogueService catalogueService;
     @Mock
@@ -92,8 +97,39 @@ class CatalogueToTurtleServiceTest {
             catalogueService,
             configuration,
             listing,
-            baseUri
+            baseUri,
+            linkIndex
         );
+    }
+
+    /**
+     * dri-one #408: the daily prefetch first runs three minutes after start-up. Caching the EIDC
+     * Turtle while the Jena index is still being rebuilt would serve /eidc/catalogue.ttl without
+     * its record-to-record links for a day.
+     */
+    @Test
+    void theScheduledPrefetchWaitsForAReadyJenaIndex() {
+        // given
+        given(linkIndex.isReady()).willReturn(false);
+
+        // when
+        service.scheduledFetch();
+
+        // then
+        verify(catalogueService, never()).retrieve(anyString());
+    }
+
+    @Test
+    void theScheduledPrefetchRunsOnceTheJenaIndexIsReady() {
+        // given
+        given(linkIndex.isReady()).willReturn(true);
+        given(catalogueService.retrieve(catalogueKey)).willReturn(catalogue);
+
+        // when
+        service.scheduledFetch();
+
+        // then
+        verify(catalogueService).retrieve(catalogueKey);
     }
 
     @Test

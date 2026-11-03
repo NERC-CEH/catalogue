@@ -16,4 +16,25 @@ public interface DocumentIndexingService {
      *         index could not be reached at all, in which case the caller should try again later.
      */
     boolean attemptIndexing();
+
+    /**
+     * Whether a rebuild of this index is under way. While it is, the index holds only some of the
+     * documents, so anything read from it - a record's relationships, say - may be incomplete even
+     * though the index is not empty.
+     */
+    default boolean isRebuilding() {
+        return false;
+    }
+
+    /**
+     * Whether the index holds every document: it is neither empty nor part-way through a rebuild.
+     * An index that cannot be reached is not ready.
+     */
+    default boolean isReady() {
+        try {
+            return !isRebuilding() && !isIndexEmpty();
+        } catch (DocumentIndexingException ex) {
+            return false;
+        }
+    }
 }

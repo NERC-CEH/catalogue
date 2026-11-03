@@ -15,6 +15,7 @@ import org.springframework.web.client.RestClientResponseException;
 import uk.ac.ceh.gateway.catalogue.exports.DescriptionCache;
 import uk.ac.ceh.gateway.catalogue.exports.DocumentsToTurtleService;
 import uk.ac.ceh.gateway.catalogue.exports.SourceGraphProvider;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 import org.springframework.http.HttpMethod;
@@ -22,6 +23,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -39,6 +41,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -53,6 +57,7 @@ public class FusekiExportServiceTest {
     @Mock private MetadataListingService metadataListingService;
     @Mock private SourceGraphProvider vocabularyGraphService;
     @Mock private DescriptionCache descriptionCache;
+    @Mock private DocumentIndexingService linkIndex;
     private VoidStatsService voidStatsService;
     private MockRestServiceServer mockServer;
 
@@ -92,6 +97,8 @@ public class FusekiExportServiceTest {
         mockServer = MockRestServiceServer.createServer(restTemplate);
         configuration.setDirectoryForTemplateLoading(new File("../templates"));
         voidStatsService = new VoidStatsService();
+        // Every test but the ones about waiting for it starts with a complete Jena index
+        lenient().when(linkIndex.isReady()).thenReturn(true);
 
         service = new FusekiExportService(
             documentsToTurtleService,
@@ -104,8 +111,58 @@ public class FusekiExportServiceTest {
             voidStatsService,
             metadataListingService,
             List.of(vocabularyGraphService),
-            descriptionCache
+            descriptionCache,
+            linkIndex,
+            Duration.ofMillis(200),
+            Duration.ofMillis(1)
         );
+    }
+
+    /**
+     * dri-one #408. The record-to-record links (dct:isPartOf, dct:hasPart, dct:relation,
+     * dct:replaces) are read from the Jena index when the Turtle is rendered. The first export
+     * after a deploy ran a minute after start-up, alongside the rebuild of the unpersisted index,
+     * and published the graph without any of them.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("waits for the Jena index to be complete before rendering any Turtle")
+    void waitsForTheLinkIndexBeforeRenderingTheTurtle() {
+        // given: the index is still being rebuilt for the first two checks
+        given(linkIndex.isReady()).willReturn(false, false, true);
+        given(documentsToTurtleService.getBigTtl(any())).willReturn(Optional.of(TTL));
+        given(metadataListingService.getPublicDocumentsOfCatalogue(anyString())).willReturn(List.of());
+        mockServer.expect(requestTo(equalTo(FUSEKI_DATASET_URL + "?graph=" + BASE_URI)))
+            .andExpect(method(HttpMethod.PUT))
+            .andRespond(withSuccess());
+
+        // when
+        service.runExport();
+
+        // then: the Turtle is refreshed and rendered only once the index is ready
+        val order = inOrder(linkIndex, documentsToTurtleService);
+        order.verify(linkIndex, times(3)).isReady();
+        order.verify(documentsToTurtleService).refresh();
+        order.verify(documentsToTurtleService).getBigTtl(FUSEKI_CATALOGUE_IDS.get(0));
+        mockServer.verify();
+        assertThat(service.getLastExported(), is(notNullValue()));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("publishes nothing when the Jena index is not ready in time, leaving the last graph in place")
+    void publishesNothingWhenTheLinkIndexIsNeverReady() {
+        // given
+        given(linkIndex.isReady()).willReturn(false);
+
+        // when
+        service.runExport();
+
+        // then: no Turtle is built and nothing is sent to Fuseki (the mock server expects no request)
+        verify(documentsToTurtleService, never()).refresh();
+        verify(documentsToTurtleService, never()).getBigTtl(anyString());
+        mockServer.verify();
+        assertThat(service.getLastExported() == null, is(true));
     }
 
     @Test

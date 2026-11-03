@@ -20,8 +20,8 @@ finishes and runs cannot overlap or pile up; only the cron entries are wall-cloc
 | `JDBCMetricsService.syncDB` | 1 hour | `metrics` | Up to 59 minutes of view/download counts, silently — dri-one #245 |
 | `JDBCMetricsService.updateDB` | cron 01:00 | `metrics` | Titles and record types left stale for a day |
 | `DataRepositoryOptimizingService` | cron, midnight | all | **Worst case.** An interrupted `git gc` over the CIFS-mounted datastore left an `.idx.new` and took the whole catalogue down. Disabled in prod and staging (`DATA_REPOSITORY_OPTIMIZE_CRON: "-"`), so latent rather than live |
-| `FusekiExportService.runExport` | 1 day | `exports` | Only that run's fetches. Each graph is published with a single all-or-nothing PUT, so the previously published graph survives intact — safe by construction, and worth not "fixing" |
-| `CatalogueToTurtleService.fetchCatalogues` | 1 day | all | A stale prefetched Turtle payload until the next run |
+| `FusekiExportService.runExport` | 1 day | `exports` | Only that run's fetches. Each graph is published with a single all-or-nothing PUT, so the previously published graph survives intact — safe by construction, and worth not "fixing". Waits (up to `fuseki.export.linkIndexWait`, default 20 minutes) for the Jena index to be complete first, and publishes nothing if it isn't — dri-one #408 |
+| `CatalogueToTurtleService.scheduledFetch` | 1 day | all | A stale prefetched Turtle payload until the next run. Skipped while the Jena index is empty or rebuilding, since the Turtle's record-to-record links come from it; the export's refresh fills the cache instead — dri-one #408 |
 | `GeminiWafService.fetchFiles` | 1 day | all | A stale WAF file listing until the next run |
 | `OrganisationUpdater` | 7 days | all | A partly-downloaded ROR data dump; guarded by a URL recorded in `config.properties` |
 | `LocalKeywordVocabulary.retrieve` | 7 days | all | **A week without that vocabulary.** It `deleteByQuery`s the vocabulary from Solr *then* re-adds the terms; interrupted between the two, the keywords are gone until the next weekly run |
@@ -42,6 +42,15 @@ symmetric:
   `AbstractIndexingService.attemptIndexing` checks `isIndexEmpty()` and otherwise logs at
   debug. But when an index *is* empty that task **is** the repair mechanism — the dri-one
   #283 scenario — and that is exactly when it must not be waiting.
+- The Fuseki export and the Jena reindex both start a minute after start-up, on different
+  scheduler threads, and the Jena store (`/var/ceh-catalogue/tdb`) isn't persisted, so every new
+  pod rebuilds it then. The record Turtle's `dct:isPartOf`, `dct:hasPart`, `dct:relation` and
+  `dct:replaces` are read from that index as each record is rendered, so an export that ran first
+  published the graph without them until the next day (dri-one #408). The export now waits until
+  `isReady()` (holding documents, no rebuild under way), polling every
+  `fuseki.export.linkIndexPoll` (10 s), and skips the run with a WARN if the index still isn't
+  ready after `fuseki.export.linkIndexWait` (20 minutes). Waiting holds one of the four scheduler
+  threads, which leaves the reindex its own.
 - The Fuseki export became expensive in dri-one #350. On a run that starts with a cold
   description cache it makes roughly 1,660 sequential outbound requests (ORCID 500, DOIs
   300, GtR 259, ROR 200, GeoNames 200, SKOS ~130, DEIMS 61, Wikidata 8 batched), each with

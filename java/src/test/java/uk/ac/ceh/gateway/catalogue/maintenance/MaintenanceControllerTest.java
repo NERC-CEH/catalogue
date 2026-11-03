@@ -331,6 +331,42 @@ class MaintenanceControllerTest extends AbstractMvcTest {
     }
 
     @Test
+    public void reportsTheFusekiExportCompletedWhenItPublished() {
+        //Given: the export records a completion during the run
+        CatalogueExportService exportService = mock(CatalogueExportService.class);
+        given(exportService.getLastExported()).willReturn(null, new java.util.Date());
+        MaintenanceController controllerWithExports =
+            controllerWith(Optional.of(exportService), List.of(), Optional.empty());
+
+        //When
+        HttpEntity<MaintenanceResponse> response = controllerWithExports.exportToFuseki();
+
+        //Then
+        assertThat(response.getBody().getMessages(), hasItem("Fuseki export completed"));
+    }
+
+    /**
+     * dri-one #408: the export now declines to publish while the Jena index is empty or being
+     * rebuilt. The page must say so, rather than report a completion that didn't happen.
+     */
+    @Test
+    public void saysTheFusekiExportDidNotPublishWhenItDeclined() {
+        //Given: the run returns without recording a completion
+        CatalogueExportService exportService = mock(CatalogueExportService.class);
+        java.util.Date earlier = new java.util.Date(0);
+        given(exportService.getLastExported()).willReturn(earlier, earlier);
+        MaintenanceController controllerWithExports =
+            controllerWith(Optional.of(exportService), List.of(), Optional.empty());
+
+        //When
+        HttpEntity<MaintenanceResponse> response = controllerWithExports.exportToFuseki();
+
+        //Then
+        assertThat(response.getBody().getMessages(), hasItem(containsString("did not publish")));
+        assertThat(response.getBody().getMessages(), not(hasItem("Fuseki export completed")));
+    }
+
+    @Test
     public void checkThatFusekiExportFailureIsReportedNotThrown() {
         //Given
         CatalogueExportService exportService = mock(CatalogueExportService.class);

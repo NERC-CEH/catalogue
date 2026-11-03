@@ -240,6 +240,49 @@ class AbstractIndexingServiceTest {
         assertThat(service.events).containsExactly("clear", "index", "index");
     }
 
+    @Test
+    @DisplayName("says it is rebuilding while a rebuild indexes documents, and not before or after")
+    @SneakyThrows
+    void reportsRebuildingOnlyDuringARebuild() {
+        givenRepositoryContains("doc1", "doc2");
+        assertThat(service.isRebuilding()).isFalse();
+
+        service.rebuildIndex();
+
+        assertThat(service.rebuildingWhileIndexing).containsExactly(true, true);
+        assertThat(service.isRebuilding()).isFalse();
+    }
+
+    @Test
+    @DisplayName("stops saying it is rebuilding when a rebuild fails")
+    @SneakyThrows
+    void stopsReportingRebuildingWhenARebuildFails() {
+        given(repo.getLatestRevision()).willThrow(new DataRepositoryException("Missing unknown"));
+
+        assertThrows(DocumentIndexingException.class, () -> service.rebuildIndex());
+
+        assertThat(service.isRebuilding()).isFalse();
+    }
+
+    @Test
+    @DisplayName("is ready only when it holds documents and is not being rebuilt")
+    @SneakyThrows
+    void isReadyOnlyWhenCompleteAndNotRebuilding() {
+        service.indexEmpty = true;
+        assertThat(service.isReady()).as("empty").isFalse();
+
+        service.indexEmpty = false;
+        assertThat(service.isReady()).as("holds documents").isTrue();
+
+        givenRepositoryContains("doc1");
+        service.readyDuringIndex = true;
+        service.rebuildIndex();
+        assertThat(service.readyWhileIndexing).as("part-way through a rebuild").containsExactly(false);
+
+        service.isIndexEmptyException = new DocumentIndexingException(new RuntimeException("Connection refused"));
+        assertThat(service.isReady()).as("unreachable").isFalse();
+    }
+
     @SneakyThrows
     @SuppressWarnings("unchecked")
     private void givenRepositoryContains(String... documents) {
@@ -260,6 +303,9 @@ class AbstractIndexingServiceTest {
         boolean indexEmpty = true;
         boolean rebuildCalled = false;
         final List<String> events = new ArrayList<>();
+        final List<Boolean> rebuildingWhileIndexing = new ArrayList<>();
+        final List<Boolean> readyWhileIndexing = new ArrayList<>();
+        boolean readyDuringIndex = false;
         DocumentIndexingException rebuildException;
         Exception isIndexEmptyException;
 
@@ -281,7 +327,7 @@ class AbstractIndexingServiceTest {
 
         @Override public void unindexDocuments(List<String> ids) {}
         @Override protected void clearIndex() { events.add("clear"); }
-        @Override protected void index(Object o) { events.add("index"); }
+        @Override protected void index(Object o) { events.add("index"); rebuildingWhileIndexing.add(isRebuilding()); if (readyDuringIndex) readyWhileIndexing.add(isReady()); }
 
         @Override
         @SneakyThrows

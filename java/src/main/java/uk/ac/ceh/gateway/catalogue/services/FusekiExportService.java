@@ -24,12 +24,14 @@ import uk.ac.ceh.gateway.catalogue.exports.CatalogueExportService;
 import uk.ac.ceh.gateway.catalogue.exports.DescriptionCache;
 import uk.ac.ceh.gateway.catalogue.exports.DocumentsToTurtleService;
 import uk.ac.ceh.gateway.catalogue.exports.SourceGraphProvider;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
@@ -58,6 +60,9 @@ public class FusekiExportService implements CatalogueExportService {
     private final MetadataListingService metadataListingService;
     private final List<SourceGraphProvider> sourceGraphProviders;
     private final DescriptionCache descriptionCache;
+    private final DocumentIndexingService linkIndex;
+    private final Duration linkIndexWait;
+    private final Duration linkIndexPoll;
     private volatile Date lastExported;
 
     public FusekiExportService(
@@ -71,7 +76,10 @@ public class FusekiExportService implements CatalogueExportService {
         VoidStatsService voidStatsService,
         MetadataListingService metadataListingService,
         List<SourceGraphProvider> sourceGraphProviders,
-        DescriptionCache descriptionCache
+        DescriptionCache descriptionCache,
+        @Qualifier("jena-index") DocumentIndexingService linkIndex,
+        @Value("${fuseki.export.linkIndexWait:20m}") Duration linkIndexWait,
+        @Value("${fuseki.export.linkIndexPoll:10s}") Duration linkIndexPoll
     ) {
         log.info("Creating");
 
@@ -86,6 +94,9 @@ public class FusekiExportService implements CatalogueExportService {
         this.metadataListingService = metadataListingService;
         this.sourceGraphProviders = sourceGraphProviders;
         this.descriptionCache = descriptionCache;
+        this.linkIndex = linkIndex;
+        this.linkIndexWait = linkIndexWait;
+        this.linkIndexPoll = linkIndexPoll;
     }
 
     private record TurtleStats(long triples, Map<String, Long> classEntityCounts) {}
@@ -98,6 +109,13 @@ public class FusekiExportService implements CatalogueExportService {
     @Scheduled(initialDelay = TimeConstants.ONE_MINUTE, fixedDelay = TimeConstants.ONE_DAY)
     public void runExport() {
         log.info("Running Fuseki export");
+        if (!awaitLinkIndex()) {
+            // Publishing now would replace the graph with one missing every record-to-record link.
+            // Leaving it means the last complete graph stays published until the next run.
+            log.warn("Not running the Fuseki export: the Jena index was still empty or being rebuilt after {}",
+                linkIndexWait);
+            return;
+        }
         documentsToTurtleService.refresh();
         Map<String, String> catalogueTtls = new LinkedHashMap<>();
         catalogueIds.forEach(id ->
@@ -208,6 +226,37 @@ public class FusekiExportService implements CatalogueExportService {
                 }
             });
         }
+    }
+
+    /**
+     * Waits until the Jena index holds every record (dri-one #408). The Turtle's record-to-record
+     * links - dct:isPartOf, dct:hasPart, dct:relation, dct:replaces - are read from that index as
+     * each record is rendered, and the index is not persisted: every new pod starts with it empty
+     * and rebuilds it on a scheduler thread of its own, starting a minute after start-up, just as
+     * this export does. Rendering before that rebuild finished published the graph without any of
+     * those links, until the next day's run.
+     *
+     * @return true once the index is ready, false if it still is not after {@code linkIndexWait}
+     */
+    private boolean awaitLinkIndex() {
+        long deadline = System.nanoTime() + linkIndexWait.toNanos();
+        boolean waiting = false;
+        while (!linkIndex.isReady()) {
+            if (System.nanoTime() - deadline >= 0) {
+                return false;
+            }
+            if (!waiting) {
+                log.info("Waiting for the Jena index to be complete before exporting");
+                waiting = true;
+            }
+            try {
+                Thread.sleep(linkIndexPoll.toMillis());
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
