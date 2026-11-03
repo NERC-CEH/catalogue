@@ -20,7 +20,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.jspecify.annotations.NonNull;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
