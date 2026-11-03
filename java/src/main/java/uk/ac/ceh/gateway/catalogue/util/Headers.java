@@ -1,11 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.util;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.jena.sparql.function.library.leviathan.log;
 import org.springframework.http.HttpHeaders;
 
 import java.util.Objects;
 
+@Slf4j
 public class Headers {
     public static HttpHeaders withBasicAuth(String username, String password) {
         try {
@@ -45,6 +48,8 @@ public class Headers {
     public static String getClientId(HttpServletRequest request) {
         String xClientIP = request.getHeader("X-Client-IP");
         String clientId = (xClientIP != null && !xClientIP.isBlank()) ? xClientIP : request.getRemoteAddr();
+        log.info("Debug: xClientIP ID is {}", xClientIP);
+        log.info("Debug: request.getRemoteAddr() is {}", request.getRemoteAddr());
         return (clientId != null && !clientId.isBlank()) ? clientId : null;
     }
 }

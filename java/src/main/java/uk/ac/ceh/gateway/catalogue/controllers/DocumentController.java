@@ -488,6 +488,7 @@ public class DocumentController extends AbstractDocumentController {
         if(metricsService != null && !metricsExcludedUsers.contains(user.getUsername()) && !document.getState().equals(GitRepoServiceAgreementService.DRAFT)) {
             String clientId = Headers.getClientId(request);
             if (clientId != null) {
+                log.info("Debug: recording view of file {} for client {}", file, clientId);
                 metricsService.recordView(file, clientId);
             }
         }
