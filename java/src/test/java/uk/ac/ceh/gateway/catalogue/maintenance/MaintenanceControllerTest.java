@@ -36,6 +36,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -327,14 +328,13 @@ class MaintenanceControllerTest extends AbstractMvcTest {
         //Then
         verify(exportService).runExport();
         assertThat(((ResponseEntity<MaintenanceResponse>) response).getStatusCode(), equalTo(HttpStatus.OK));
-        assertThat(response.getBody().getMessages(), hasItem(containsString("Fuseki export")));
     }
 
     @Test
     public void reportsTheFusekiExportCompletedWhenItPublished() {
         //Given: the export records a completion during the run
         CatalogueExportService exportService = mock(CatalogueExportService.class);
-        given(exportService.getLastExported()).willReturn(null, new java.util.Date());
+        given(exportService.getLastExported()).willReturn(null, new Date());
         MaintenanceController controllerWithExports =
             controllerWith(Optional.of(exportService), List.of(), Optional.empty());
 
@@ -353,8 +353,28 @@ class MaintenanceControllerTest extends AbstractMvcTest {
     public void saysTheFusekiExportDidNotPublishWhenItDeclined() {
         //Given: the run returns without recording a completion
         CatalogueExportService exportService = mock(CatalogueExportService.class);
-        java.util.Date earlier = new java.util.Date(0);
+        Date earlier = new Date(0);
         given(exportService.getLastExported()).willReturn(earlier, earlier);
+        MaintenanceController controllerWithExports =
+            controllerWith(Optional.of(exportService), List.of(), Optional.empty());
+
+        //When
+        HttpEntity<MaintenanceResponse> response = controllerWithExports.exportToFuseki();
+
+        //Then
+        assertThat(response.getBody().getMessages(), hasItem(containsString("did not publish")));
+        assertThat(response.getBody().getMessages(), not(hasItem("Fuseki export completed")));
+    }
+
+    /**
+     * dri-one #408 as it first appears: on a new pod nothing has been exported yet, so there is no
+     * completion time before the run, and a declined run leaves none after it either.
+     */
+    @Test
+    public void saysTheFusekiExportDidNotPublishWhenItHasNeverCompleted() {
+        //Given: no completion before the run or after it
+        CatalogueExportService exportService = mock(CatalogueExportService.class);
+        given(exportService.getLastExported()).willReturn(null, (Date) null);
         MaintenanceController controllerWithExports =
             controllerWith(Optional.of(exportService), List.of(), Optional.empty());
 

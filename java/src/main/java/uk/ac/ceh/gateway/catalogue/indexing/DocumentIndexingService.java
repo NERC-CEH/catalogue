@@ -27,8 +27,10 @@ public interface DocumentIndexingService {
     }
 
     /**
-     * Whether the index holds every document: it is neither empty nor part-way through a rebuild.
-     * An index that cannot be reached is not ready.
+     * Whether the index is fit to be read from: it is neither empty nor part-way through a rebuild.
+     * An index that cannot be reached is not ready. A rebuild in which some documents failed to
+     * index still leaves the rest, and that index counts as ready - it is as complete as a rebuild
+     * will make it, since one that holds documents isn't rebuilt again automatically.
      */
     default boolean isReady() {
         try {

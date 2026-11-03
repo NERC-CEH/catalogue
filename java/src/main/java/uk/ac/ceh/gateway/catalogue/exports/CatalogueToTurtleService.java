@@ -68,10 +68,27 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
     }
 
     private Optional<String> getCachedBigTtl(String catalogueId) {
-        if (!preFetchCatalogue.containsKey(catalogueId)) {
-            preFetchCatalogue.put(catalogueId, getUncachedBigTtl(catalogueId));
+        Optional<String> cached = preFetchCatalogue.get(catalogueId);
+        return cached != null ? cached : fetch(catalogueId);
+    }
+
+    /**
+     * Renders a catalogue's Turtle and caches it - unless the Jena index was empty or being rebuilt
+     * at any point while it was rendered. Record-to-record links are read from that index, which is
+     * unpersisted and so rebuilt for the first minutes after every start; caching then would serve
+     * the catalogue without them for up to a day (dri-one #408). This is the only place the cache is
+     * written, so it covers the scheduled prefetch, {@link #refresh()} and a request's cache miss
+     * alike. Turtle that isn't cached is still returned, and an earlier, complete entry is kept.
+     */
+    private Optional<String> fetch(String catalogueId) {
+        boolean readyBefore = linkIndex.isReady();
+        Optional<String> ttl = getUncachedBigTtl(catalogueId);
+        if (readyBefore && linkIndex.isReady()) {
+            preFetchCatalogue.put(catalogueId, ttl);
+        } else {
+            log.info("Not caching the {} catalogue Turtle: the Jena index is empty or being rebuilt", catalogueId);
         }
-        return preFetchCatalogue.get(catalogueId);
+        return ttl;
     }
 
     private Optional<String> getUncachedBigTtl(String catalogueId) {
@@ -104,24 +121,18 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
     }
 
     /**
-     * The daily prefetch. Record-to-record links are rendered from the Jena index, so caching the
-     * Turtle while that index is empty or being rebuilt - as it is for the first minutes after every
-     * start, being unpersisted - would serve the catalogue without them for a day (dri-one #408).
-     * A prefetch skipped here is made up by the Fuseki export, which waits for the index and then
-     * {@link #refresh()}es the cache.
+     * The daily prefetch. Skipped while the Jena index isn't ready, since what it rendered couldn't
+     * be cached (see {@link #fetch(String)}); the first request once the index is ready fills the
+     * cache instead.
      */
     @Scheduled(initialDelay = TimeConstants.ONE_MINUTE*3, fixedDelay = TimeConstants.ONE_DAY)
-    public void scheduledFetch() {
+    public void fetchCatalogues() {
         if (!linkIndex.isReady()) {
             log.info("Not prefetching catalogue Turtle: the Jena index is empty or being rebuilt");
             return;
         }
-        fetchCatalogues();
-    }
-
-    public void fetchCatalogues() {
         for (String catalogueId : PREFETCH_CATALOGUES) {
-            preFetchCatalogue.put(catalogueId, getUncachedBigTtl(catalogueId));
+            fetch(catalogueId);
         }
     }
 

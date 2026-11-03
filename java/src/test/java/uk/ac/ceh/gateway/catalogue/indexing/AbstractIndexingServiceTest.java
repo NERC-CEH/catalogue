@@ -245,11 +245,36 @@ class AbstractIndexingServiceTest {
     @SneakyThrows
     void reportsRebuildingOnlyDuringARebuild() {
         givenRepositoryContains("doc1", "doc2");
+        List<Boolean> rebuildingWhileIndexing = new ArrayList<>();
+        service.duringIndex = () -> rebuildingWhileIndexing.add(service.isRebuilding());
         assertThat(service.isRebuilding()).isFalse();
 
         service.rebuildIndex();
 
-        assertThat(service.rebuildingWhileIndexing).containsExactly(true, true);
+        assertThat(rebuildingWhileIndexing).containsExactly(true, true);
+        assertThat(service.isRebuilding()).isFalse();
+    }
+
+    /**
+     * A rebuild from the maintenance page can overlap the scheduled one. The first to finish must
+     * not report the index complete while the other is still part-way through - which is why
+     * rebuilds are counted rather than flagged.
+     */
+    @Test
+    @DisplayName("still says it is rebuilding when an overlapping rebuild finishes first")
+    @SneakyThrows
+    void stillReportsRebuildingWhenAnOverlappingRebuildFinishesFirst() {
+        givenRepositoryContains("doc1");
+        List<Boolean> rebuildingAfterTheOverlappingRebuild = new ArrayList<>();
+        service.duringIndex = () -> {
+            service.duringIndex = () -> {};
+            service.rebuildIndex();
+            rebuildingAfterTheOverlappingRebuild.add(service.isRebuilding());
+        };
+
+        service.rebuildIndex();
+
+        assertThat(rebuildingAfterTheOverlappingRebuild).containsExactly(true);
         assertThat(service.isRebuilding()).isFalse();
     }
 
@@ -265,22 +290,41 @@ class AbstractIndexingServiceTest {
     }
 
     @Test
-    @DisplayName("is ready only when it holds documents and is not being rebuilt")
-    @SneakyThrows
-    void isReadyOnlyWhenCompleteAndNotRebuilding() {
+    @DisplayName("is not ready while empty")
+    void isNotReadyWhileEmpty() {
         service.indexEmpty = true;
-        assertThat(service.isReady()).as("empty").isFalse();
 
+        assertThat(service.isReady()).isFalse();
+    }
+
+    @Test
+    @DisplayName("is ready when it holds documents and is not being rebuilt")
+    void isReadyWhenItHoldsDocumentsAndIsNotBeingRebuilt() {
         service.indexEmpty = false;
-        assertThat(service.isReady()).as("holds documents").isTrue();
 
+        assertThat(service.isReady()).isTrue();
+    }
+
+    @Test
+    @DisplayName("is not ready part-way through a rebuild, though it holds documents")
+    @SneakyThrows
+    void isNotReadyPartWayThroughARebuild() {
+        service.indexEmpty = false;
         givenRepositoryContains("doc1");
-        service.readyDuringIndex = true;
-        service.rebuildIndex();
-        assertThat(service.readyWhileIndexing).as("part-way through a rebuild").containsExactly(false);
+        List<Boolean> readyWhileIndexing = new ArrayList<>();
+        service.duringIndex = () -> readyWhileIndexing.add(service.isReady());
 
+        service.rebuildIndex();
+
+        assertThat(readyWhileIndexing).containsExactly(false);
+    }
+
+    @Test
+    @DisplayName("is not ready when the index cannot be reached")
+    void isNotReadyWhenUnreachable() {
         service.isIndexEmptyException = new DocumentIndexingException(new RuntimeException("Connection refused"));
-        assertThat(service.isReady()).as("unreachable").isFalse();
+
+        assertThat(service.isReady()).isFalse();
     }
 
     @SneakyThrows
@@ -303,9 +347,8 @@ class AbstractIndexingServiceTest {
         boolean indexEmpty = true;
         boolean rebuildCalled = false;
         final List<String> events = new ArrayList<>();
-        final List<Boolean> rebuildingWhileIndexing = new ArrayList<>();
-        final List<Boolean> readyWhileIndexing = new ArrayList<>();
-        boolean readyDuringIndex = false;
+        // Run as each document is indexed during a rebuild, for tests that look at the state then
+        ThrowingRunnable duringIndex = () -> {};
         DocumentIndexingException rebuildException;
         Exception isIndexEmptyException;
 
@@ -327,7 +370,13 @@ class AbstractIndexingServiceTest {
 
         @Override public void unindexDocuments(List<String> ids) {}
         @Override protected void clearIndex() { events.add("clear"); }
-        @Override protected void index(Object o) { events.add("index"); rebuildingWhileIndexing.add(isRebuilding()); if (readyDuringIndex) readyWhileIndexing.add(isReady()); }
+
+        @Override
+        @SneakyThrows
+        protected void index(Object o) {
+            events.add("index");
+            duringIndex.run();
+        }
 
         @Override
         @SneakyThrows
@@ -336,5 +385,10 @@ class AbstractIndexingServiceTest {
             if (rebuildException != null) throw rebuildException;
             super.rebuildIndex();
         }
+    }
+
+    @FunctionalInterface
+    private interface ThrowingRunnable {
+        void run() throws Exception;
     }
 }
