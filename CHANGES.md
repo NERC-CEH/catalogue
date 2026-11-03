@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.249.0] - 2026-11-02
+
+The data preview on dataset pages now covers far more file types. Alongside CSV, readers can now preview other delimited text files and Excel workbooks (DRI-ONE-499), and NetCDF files (a common format for gridded scientific data) now get a summary of their variables and dimensions (DRI-ONE-500). Safeguards stop unusually large or deliberately malformed files from overloading the server while it builds a preview. The preview now appears only on datasets that actually have previewable data files, so it no longer shows on records that hold documents alone.
+
+Usage statistics are more accurate. Downloads and page views are now recorded against the visitor's real address rather than an internal network address (DRI-ONE-247), and counts still waiting to be saved are no longer lost when the server restarts (DRI-ONE-245).
+
 ## [3.248.0] - 2026-10-30
 
 Monitoring programme pages now group their facilities into three lists: active, not yet in operation, and inactive. Each list shows a count, so readers can see at a glance what a programme is running now and what is still planned (DRI-ONE-491). Facilities, networks and activities that haven't started yet are marked "not yet in operation" with an amber notice, rather than looking either live or closed. A programme's map and facility list now also include facilities used by its sub-programmes, so a parent programme shows its full reach (DRI-ONE-497).
