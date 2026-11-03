@@ -11,10 +11,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.web.client.RestClientResponseException;
 import uk.ac.ceh.gateway.catalogue.exports.DescriptionCache;
 import uk.ac.ceh.gateway.catalogue.exports.DocumentsToTurtleService;
 import uk.ac.ceh.gateway.catalogue.exports.SourceGraphProvider;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 import org.springframework.http.HttpMethod;
@@ -22,6 +24,8 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -37,9 +41,13 @@ import static org.mockito.BDDMockito.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
@@ -53,8 +61,11 @@ public class FusekiExportServiceTest {
     @Mock private MetadataListingService metadataListingService;
     @Mock private SourceGraphProvider vocabularyGraphService;
     @Mock private DescriptionCache descriptionCache;
+    @Mock private DocumentIndexingService linkIndex;
+    @Mock private TaskScheduler taskScheduler;
     private VoidStatsService voidStatsService;
     private MockRestServiceServer mockServer;
+    private RestTemplate restTemplate;
 
     private static final String BASE_URI = "http://catalogue.invalid/";
     private static final List<String> FUSEKI_CATALOGUE_IDS = List.of("eidc", "ukeof");
@@ -88,12 +99,18 @@ public class FusekiExportServiceTest {
     @SneakyThrows
     @BeforeEach
     void setup() {
-        RestTemplate restTemplate = new RestTemplate();
+        restTemplate = new RestTemplate();
         mockServer = MockRestServiceServer.createServer(restTemplate);
         configuration.setDirectoryForTemplateLoading(new File("../templates"));
         voidStatsService = new VoidStatsService();
+        // Every test but the ones about waiting for it starts with a complete Jena index
+        lenient().when(linkIndex.isReady()).thenReturn(true);
 
-        service = new FusekiExportService(
+        service = exportService(Duration.ofHours(2));
+    }
+
+    private FusekiExportService exportService(Duration linkIndexWait) {
+        return new FusekiExportService(
             documentsToTurtleService,
             restTemplate,
             BASE_URI,
@@ -104,8 +121,112 @@ public class FusekiExportServiceTest {
             voidStatsService,
             metadataListingService,
             List.of(vocabularyGraphService),
-            descriptionCache
+            descriptionCache,
+            linkIndex,
+            linkIndexWait,
+            Duration.ofSeconds(30),
+            taskScheduler
         );
+    }
+
+    private void expectTheCatalogueGraphPut() {
+        given(documentsToTurtleService.getBigTtl(any())).willReturn(Optional.of(TTL));
+        given(metadataListingService.getPublicDocumentsOfCatalogue(anyString())).willReturn(List.of());
+        mockServer.expect(requestTo(equalTo(FUSEKI_DATASET_URL + "?graph=" + BASE_URI)))
+            .andExpect(method(HttpMethod.PUT))
+            .andRespond(withSuccess());
+    }
+
+    /**
+     * dri-one #408. The record-to-record links (dct:isPartOf, dct:hasPart, dct:relation,
+     * dct:replaces) are read from the Jena index when the Turtle is rendered. The first export
+     * after a deploy ran a minute after start-up, alongside the rebuild of the unpersisted index,
+     * and published the graph without any of them.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("the scheduled export retries later, without holding a thread, until the Jena index is ready")
+    void theScheduledExportRetriesUntilTheLinkIndexIsReady() {
+        // given: the index is still being rebuilt at the scheduled time
+        given(linkIndex.isReady()).willReturn(false);
+        expectTheCatalogueGraphPut();
+        val retry = ArgumentCaptor.forClass(Runnable.class);
+
+        // when
+        service.scheduledExport();
+
+        // then: nothing is rendered yet, and a check is scheduled 30s on
+        verify(taskScheduler).schedule(retry.capture(), any(Instant.class));
+        verify(documentsToTurtleService, never()).refresh();
+
+        // when: the retry runs once the index is ready
+        given(linkIndex.isReady()).willReturn(true);
+        retry.getValue().run();
+
+        // then: the Turtle is refreshed and rendered, and the graph published
+        val order = inOrder(linkIndex, documentsToTurtleService);
+        order.verify(linkIndex, times(3)).isReady();
+        order.verify(documentsToTurtleService).refresh();
+        order.verify(documentsToTurtleService).getBigTtl(FUSEKI_CATALOGUE_IDS.get(0));
+        mockServer.verify();
+        assertThat(service.getLastExported(), is(notNullValue()));
+        verify(taskScheduler, times(1)).schedule(any(Runnable.class), any(Instant.class));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("the scheduled export exports straight away when the Jena index is ready")
+    void theScheduledExportRunsAtOnceWhenTheLinkIndexIsReady() {
+        // given
+        expectTheCatalogueGraphPut();
+
+        // when
+        service.scheduledExport();
+
+        // then
+        verifyNoInteractions(taskScheduler);
+        mockServer.verify();
+        assertThat(service.getLastExported(), is(notNullValue()));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("the scheduled export gives up, publishing nothing, when the Jena index is not ready in time")
+    void theScheduledExportGivesUpWhenTheLinkIndexIsNeverReady() {
+        // given: a wait that has already run out
+        given(linkIndex.isReady()).willReturn(false);
+        service = exportService(Duration.ZERO);
+
+        // when
+        service.scheduledExport();
+
+        // then: no retry, no Turtle, and nothing sent to Fuseki (the mock server expects no request)
+        verifyNoInteractions(taskScheduler);
+        verify(documentsToTurtleService, never()).refresh();
+        mockServer.verify();
+        assertThat(service.getLastExported(), is(nullValue()));
+    }
+
+    /**
+     * The maintenance page calls runExport on a request thread, so it must not wait for the index:
+     * it declines, and the page says the export did not publish.
+     */
+    @Test
+    @SneakyThrows
+    @DisplayName("a manual export publishes nothing, and doesn't wait, while the Jena index is not ready")
+    void aManualExportPublishesNothingWhileTheLinkIndexIsNotReady() {
+        // given
+        given(linkIndex.isReady()).willReturn(false);
+
+        // when
+        service.runExport();
+
+        // then: no Turtle is built and nothing is sent to Fuseki (the mock server expects no request)
+        verifyNoInteractions(taskScheduler);
+        verify(documentsToTurtleService, never()).refresh();
+        verify(documentsToTurtleService, never()).getBigTtl(anyString());
+        mockServer.verify();
+        assertThat(service.getLastExported(), is(nullValue()));
     }
 
     @Test

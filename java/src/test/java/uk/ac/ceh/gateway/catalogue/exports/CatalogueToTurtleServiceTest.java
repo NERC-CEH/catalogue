@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
@@ -42,6 +43,8 @@ import static org.mockito.Mockito.*;
 class CatalogueToTurtleServiceTest {
     private CatalogueToTurtleService service;
 
+    @Mock
+    private DocumentIndexingService linkIndex;
     @Mock
     CatalogueService catalogueService;
     @Mock
@@ -88,12 +91,82 @@ class CatalogueToTurtleServiceTest {
         configuration.setSharedVariable("licenceUris", new LicenceUri());
         configuration.setSharedVariable("formatUris", new FormatUri());
         configuration.setSharedVariable("jena", jenaLookupService);
+        // Every test but the ones about it starts with a complete Jena index
+        lenient().when(linkIndex.isReady()).thenReturn(true);
         service = new CatalogueToTurtleService(
             catalogueService,
             configuration,
             listing,
-            baseUri
+            baseUri,
+            linkIndex
         );
+    }
+
+    /**
+     * dri-one #408: the daily prefetch first runs three minutes after start-up. Caching the EIDC
+     * Turtle while the Jena index is still being rebuilt would serve /eidc/catalogue.ttl without
+     * its record-to-record links for a day.
+     */
+    @Test
+    void thePrefetchIsSkippedWhileTheJenaIndexIsNotReady() {
+        // given
+        given(linkIndex.isReady()).willReturn(false);
+
+        // when
+        service.fetchCatalogues();
+
+        // then
+        verify(catalogueService, never()).retrieve(anyString());
+    }
+
+    /**
+     * dri-one #408: a request for the catalogue Turtle on a cache miss used to fill the cache too,
+     * so one made while the index was being rebuilt cached the link-less Turtle until the next day.
+     */
+    @Test
+    void aRequestWhileTheJenaIndexIsNotReadyIsServedButNotCached() {
+        // given: not ready for the first request, ready from the second
+        given(linkIndex.isReady()).willReturn(false, true);
+        given(catalogueService.retrieve(catalogueKey)).willReturn(catalogue);
+
+        // when
+        val whileRebuilding = service.getBigTtl(catalogueKey);
+        service.getBigTtl(catalogueKey);
+        service.getBigTtl(catalogueKey);
+
+        // then: the first is rendered and returned but not kept; the second is cached for the third
+        assertTrue(whileRebuilding.isPresent());
+        verify(catalogueService, times(2)).retrieve(catalogueKey);
+    }
+
+    @Test
+    void turtleRenderedWhileARebuildStartedIsNotCached() {
+        // given: ready when rendering starts, rebuilding by the time it finishes
+        given(linkIndex.isReady()).willReturn(true, false, true);
+        given(catalogueService.retrieve(catalogueKey)).willReturn(catalogue);
+
+        // when
+        service.getBigTtl(catalogueKey);
+        service.getBigTtl(catalogueKey);
+
+        // then
+        verify(catalogueService, times(2)).retrieve(catalogueKey);
+    }
+
+    @Test
+    void aRefreshWhileTheJenaIndexIsNotReadyKeepsTheEarlierCompleteCache() {
+        // given: a complete entry cached while the index was ready
+        given(catalogueService.retrieve(catalogueKey)).willReturn(catalogue);
+        service.fetchCatalogues();
+        given(linkIndex.isReady()).willReturn(false);
+
+        // when
+        service.refresh();
+        val result = service.getBigTtl(catalogueKey);
+
+        // then: served from the cache, without rendering again
+        assertTrue(result.isPresent());
+        verify(catalogueService, times(1)).retrieve(catalogueKey);
     }
 
     @Test

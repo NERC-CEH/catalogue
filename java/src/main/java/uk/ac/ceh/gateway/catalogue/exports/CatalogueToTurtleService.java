@@ -5,6 +5,7 @@ import freemarker.template.Configuration;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 
@@ -39,15 +41,18 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
     private final Configuration configuration;
     private final MetadataListingService listing;
     private final String baseUri;
+    private final DocumentIndexingService linkIndex;
     private final ConcurrentMap<String, Optional<String>> preFetchCatalogue = new ConcurrentHashMap<>();
 
     public CatalogueToTurtleService(
         CatalogueService catalogueService,
         Configuration configuration,
         MetadataListingService listing,
-        @Value("${documents.baseUri}") String baseUri
+        @Value("${documents.baseUri}") String baseUri,
+        @Qualifier("jena-index") DocumentIndexingService linkIndex
     ) {
         this.catalogueService = catalogueService;
+        this.linkIndex = linkIndex;
         this.configuration = configuration;
         this.baseUri = baseUri;
         this.listing = listing;
@@ -63,10 +68,27 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
     }
 
     private Optional<String> getCachedBigTtl(String catalogueId) {
-        if (!preFetchCatalogue.containsKey(catalogueId)) {
-            preFetchCatalogue.put(catalogueId, getUncachedBigTtl(catalogueId));
+        Optional<String> cached = preFetchCatalogue.get(catalogueId);
+        return cached != null ? cached : fetch(catalogueId);
+    }
+
+    /**
+     * Renders a catalogue's Turtle and caches it - unless the Jena index was empty or being rebuilt
+     * at any point while it was rendered. Record-to-record links are read from that index, which is
+     * unpersisted and so rebuilt for the first minutes after every start; caching then would serve
+     * the catalogue without them for up to a day (dri-one #408). This is the only place the cache is
+     * written, so it covers the scheduled prefetch, {@link #refresh()} and a request's cache miss
+     * alike. Turtle that isn't cached is still returned, and an earlier, complete entry is kept.
+     */
+    private Optional<String> fetch(String catalogueId) {
+        boolean readyBefore = linkIndex.isReady();
+        Optional<String> ttl = getUncachedBigTtl(catalogueId);
+        if (readyBefore && linkIndex.isReady()) {
+            preFetchCatalogue.put(catalogueId, ttl);
+        } else {
+            log.info("Not caching the {} catalogue Turtle: the Jena index is empty or being rebuilt", catalogueId);
         }
-        return preFetchCatalogue.get(catalogueId);
+        return ttl;
     }
 
     private Optional<String> getUncachedBigTtl(String catalogueId) {
@@ -98,10 +120,19 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
         return catalogueTtl.concat(String.join("\n", recordsTtls));
     }
 
+    /**
+     * The daily prefetch. Skipped while the Jena index isn't ready, since what it rendered couldn't
+     * be cached (see {@link #fetch(String)}); the first request once the index is ready fills the
+     * cache instead.
+     */
     @Scheduled(initialDelay = TimeConstants.ONE_MINUTE*3, fixedDelay = TimeConstants.ONE_DAY)
     public void fetchCatalogues() {
+        if (!linkIndex.isReady()) {
+            log.info("Not prefetching catalogue Turtle: the Jena index is empty or being rebuilt");
+            return;
+        }
         for (String catalogueId : PREFETCH_CATALOGUES) {
-            preFetchCatalogue.put(catalogueId, getUncachedBigTtl(catalogueId));
+            fetch(catalogueId);
         }
     }
 

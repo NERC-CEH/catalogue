@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
@@ -24,12 +25,15 @@ import uk.ac.ceh.gateway.catalogue.exports.CatalogueExportService;
 import uk.ac.ceh.gateway.catalogue.exports.DescriptionCache;
 import uk.ac.ceh.gateway.catalogue.exports.DocumentsToTurtleService;
 import uk.ac.ceh.gateway.catalogue.exports.SourceGraphProvider;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStats;
 import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
@@ -58,6 +62,10 @@ public class FusekiExportService implements CatalogueExportService {
     private final MetadataListingService metadataListingService;
     private final List<SourceGraphProvider> sourceGraphProviders;
     private final DescriptionCache descriptionCache;
+    private final DocumentIndexingService linkIndex;
+    private final Duration linkIndexWait;
+    private final Duration linkIndexPoll;
+    private final TaskScheduler taskScheduler;
     private volatile Date lastExported;
 
     public FusekiExportService(
@@ -71,7 +79,11 @@ public class FusekiExportService implements CatalogueExportService {
         VoidStatsService voidStatsService,
         MetadataListingService metadataListingService,
         List<SourceGraphProvider> sourceGraphProviders,
-        DescriptionCache descriptionCache
+        DescriptionCache descriptionCache,
+        @Qualifier("jena-index") DocumentIndexingService linkIndex,
+        @Value("${fuseki.export.linkIndexWait:2h}") Duration linkIndexWait,
+        @Value("${fuseki.export.linkIndexPoll:30s}") Duration linkIndexPoll,
+        TaskScheduler taskScheduler
     ) {
         log.info("Creating");
 
@@ -86,18 +98,63 @@ public class FusekiExportService implements CatalogueExportService {
         this.metadataListingService = metadataListingService;
         this.sourceGraphProviders = sourceGraphProviders;
         this.descriptionCache = descriptionCache;
+        this.linkIndex = linkIndex;
+        this.linkIndexWait = linkIndexWait;
+        this.linkIndexPoll = linkIndexPoll;
+        this.taskScheduler = taskScheduler;
     }
 
     private record TurtleStats(long triples, Map<String, Long> classEntityCounts) {}
 
     /**
+     * The daily export. Waits for the Jena index to be ready (dri-one #408) by re-scheduling itself
+     * every {@code linkIndexPoll} rather than sleeping: the scheduler has only four threads, and the
+     * Jena reindex this waits for needs one of them, alongside the Solr rebuild and the vocabulary
+     * updaters that start on the same tick after a restart. Holding a thread to wait would delay the
+     * very rebuild being waited for. Gives up, publishing nothing, after {@code linkIndexWait}.
+     */
+    @Scheduled(initialDelay = TimeConstants.ONE_MINUTE, fixedDelay = TimeConstants.ONE_DAY)
+    public void scheduledExport() {
+        exportOnceLinkIndexReady(Instant.now().plus(linkIndexWait), true);
+    }
+
+    private void exportOnceLinkIndexReady(Instant deadline, boolean firstAttempt) {
+        if (linkIndex.isReady()) {
+            runExport();
+            return;
+        }
+        if (!Instant.now().isBefore(deadline)) {
+            // Publishing now would replace the graph with one missing every record-to-record link.
+            // Leaving it means the last complete graph stays published until the next day's run.
+            log.warn("Not running the Fuseki export: the Jena index was still empty or being rebuilt after {}",
+                linkIndexWait);
+            return;
+        }
+        if (firstAttempt) {
+            log.info("Waiting for the Jena index to be complete before exporting, checking every {}", linkIndexPoll);
+        }
+        taskScheduler.schedule(() -> exportOnceLinkIndexReady(deadline, false), Instant.now().plus(linkIndexPoll));
+    }
+
+    /**
+     * Exports now, if the Jena index is ready, and otherwise publishes nothing - it does not wait,
+     * since the maintenance page calls this on a request thread. The Turtle's record-to-record links
+     * - dct:isPartOf, dct:hasPart, dct:relation, dct:replaces - are read from that index as each
+     * record is rendered, and the index is not persisted: every new pod starts with it empty and
+     * rebuilds it a minute after start-up. Rendering before that rebuild finished published the graph
+     * without any of those links, until the next day's run (dri-one #408).
+     * <p>
      * Refreshes the prefetched Turtle cache (e.g. eidc) before every export, scheduled or manual,
      * so this never publishes a stale prefetched payload. See
      * {@link uk.ac.ceh.gateway.catalogue.exports.CatalogueToTurtleService#refresh()}.
      */
-    @Scheduled(initialDelay = TimeConstants.ONE_MINUTE, fixedDelay = TimeConstants.ONE_DAY)
+    @Override
     public void runExport() {
         log.info("Running Fuseki export");
+        if (!linkIndex.isReady()) {
+            log.warn("Not running the Fuseki export: the Jena index is empty or being rebuilt");
+            return;
+        }
         documentsToTurtleService.refresh();
         Map<String, String> catalogueTtls = new LinkedHashMap<>();
         catalogueIds.forEach(id ->

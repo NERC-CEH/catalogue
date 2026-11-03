@@ -27,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.solr.PendingEmbeddingService;
 import uk.ac.ceh.gateway.catalogue.maintenance.MaintenanceResponse.GraphProgress;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -262,8 +263,17 @@ public class MaintenanceController {
                     .body(response);
         }
         try {
-            catalogueExportService.get().runExport();
-            return ResponseEntity.ok(loadMaintenancePage().addMessage("Fuseki export completed"));
+            CatalogueExportService export = catalogueExportService.get();
+            Date before = export.getLastExported();
+            export.runExport();
+            Date after = export.getLastExported();
+            // runExport can return without publishing - while the Jena index is still being rebuilt
+            // (dri-one #408), or with nothing to export - and only a new completion time says it did
+            boolean published = after != null && (before == null || after.after(before));
+            return ResponseEntity.ok(loadMaintenancePage().addMessage(published
+                ? "Fuseki export completed"
+                : "Fuseki export did not publish: the Jena index may still be rebuilding after a restart, "
+                    + "or there was nothing to export. See the log, and try again in a few minutes."));
         } catch (Exception ex) {
             // Deliberately wide. RestClientResponseException only covers a 4xx/5xx *response*
             // from Fuseki; a refused connection or timeout is ResourceAccessException, a sibling
