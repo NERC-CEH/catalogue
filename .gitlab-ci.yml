@@ -1,5 +1,5 @@
 include:
-- template: Jobs/Container-Scanning.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
 
 stages:
   - test
@@ -23,6 +23,8 @@ test_java:
     POSTGRES_USER: catalogue
     POSTGRES_PASSWORD: catalogue
     METRICS_TEST_POSTGRES_URL: jdbc:postgresql://catalogue-db:5432/catalogue
+    METRICS_TEST_POSTGRES_USER: $POSTGRES_USER
+    METRICS_TEST_POSTGRES_PASSWORD: $POSTGRES_PASSWORD
   script: gradle test --no-daemon
   artifacts:
     when: always
@@ -72,7 +74,7 @@ container_scanning:
     CS_REGISTRY_PASSWORD: $CI_JOB_TOKEN
     CS_SEVERITY_THRESHOLD: 'high'
   before_script:
-  - sudo apt-get update -y && sudo apt-get install -y jq
+    - sudo apt-get update -y && sudo apt-get install -y jq
   script:
     - gtcs scan
     - SEVERITY_COUNT=$(jq '.vulnerabilities | map(select(.severity=="High" or .severity=="Critical")) | length' gl-container-scanning-report.json )

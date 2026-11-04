@@ -88,4 +88,13 @@ class MetricsDatabaseConfigPostgresTest {
         assertThat(pool.getDataSourceProperties().getProperty("socketTimeout"), is("10"));
         assertThat(pool.getInitializationFailTimeout(), is(-1L));
     }
+
+    /** A missing CATALOGUE_DATASOURCE_URL must stop startup, not fall back to localhost and retry forever. */
+    @Test
+    void aMissingUrlFailsLoudly() {
+        for (String url : new String[]{null, "", "  ", "${CATALOGUE_DATASOURCE_URL}"}) {
+            org.junit.jupiter.api.Assertions.assertThrows(IllegalStateException.class,
+                () -> MetricsDatabaseConfig.PostgresMetricsDatabase.requireUrl(url), String.valueOf(url));
+        }
+    }
 }

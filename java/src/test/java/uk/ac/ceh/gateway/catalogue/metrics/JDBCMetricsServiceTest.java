@@ -16,9 +16,11 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.postgresql.PostgreSQLContainer;
+import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -70,7 +72,10 @@ class JDBCMetricsServiceTest {
     static void startPostgres() {
         val externalUrl = System.getenv("METRICS_TEST_POSTGRES_URL");
         if (externalUrl != null) {
-            postgresDataSource = new DriverManagerDataSource(externalUrl, "catalogue", "catalogue");
+            postgresDataSource = new DriverManagerDataSource(externalUrl,
+                envOr("METRICS_TEST_POSTGRES_USER", "catalogue"),
+                envOr("METRICS_TEST_POSTGRES_PASSWORD", "catalogue"));
+            awaitConnection(postgresDataSource, externalUrl);
         } else {
             assertThat("METRICS_TEST_POSTGRES_URL must be set in CI; see the class javadoc",
                 System.getenv("CI"), is(nullValue()));
@@ -250,10 +255,13 @@ class JDBCMetricsServiceTest {
         assertThat(amount, equalTo(2 * howMany));
     }
 
-    /** {@code doc_title} NULL means "never resolved"; the nightly refresh fills it in. */
+    /**
+     * A transient repository fault (the record exists but could not be read) keeps the count;
+     * {@code doc_title} NULL means "never resolved" and the nightly refresh fills it in.
+     */
     @SneakyThrows
     @Test
-    void aCountIsKeptWhenTheRecordCannotBeReadAndItsTitleIsResolvedLater() {
+    void aCountIsKeptWhenTheRecordExistsButCannotBeReadAndItsTitleIsResolvedLater() {
         given(documentRepository.read(TEST_DOCUMENT))
             .willThrow(new RuntimeException("repository down"))
             .willReturn(document("resolved", "dataset"));
@@ -265,6 +273,20 @@ class JDBCMetricsServiceTest {
 
         service.updateDB();
         assertThat(jdbc.queryForList("SELECT doc_title FROM metrics.documents", String.class), containsInAnyOrder("resolved"));
+    }
+
+    /** #246: an unknown UUID (e.g. a random /download/{uuid}) must not create a documents row or a count. */
+    @SneakyThrows
+    @Test
+    void aCountForARecordThatDoesNotExistIsDropped() {
+        given(documentRepository.read(TEST_DOCUMENT)).willThrow(notFound(TEST_DOCUMENT));
+        service.recordDownload(TEST_DOCUMENT, TEST_IP1);
+        service.recordView(TEST_DOCUMENT, TEST_IP1);
+
+        service.syncDB();
+
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM metrics.metric_counts", Integer.class), is(0));
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM metrics.documents", Integer.class), is(0));
     }
 
     /** The upsert's coalesce: a failed repository read never replaces a known title with NULL. */
@@ -561,6 +583,88 @@ class JDBCMetricsServiceTest {
         assertThat(getTitleAndType(), contains(contains("default Test Title", "default dataset")));
     }
 
+    /** A record deleted from the catalogue is marked removed, keeps its counts, and is not re-read nightly. */
+    @SneakyThrows
+    @Test
+    void updateDBMarksADeletedRecordRemovedAndStopsRereadingIt() {
+        //given a record with a count, later deleted from the catalogue
+        given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc).willThrow(notFound(TEST_DOCUMENT));
+        service.recordView(TEST_DOCUMENT, TEST_IP1);
+        service.syncDB();
+
+        //when the nightly refresh runs twice
+        service.updateDB();
+        service.updateDB();
+
+        //then it was marked removed on the first run, kept its count and title, and was not read again
+        assertThat(jdbc.queryForObject("SELECT removed_at IS NOT NULL FROM metrics.documents", Boolean.class), is(true));
+        assertThat(service.totalViews(TEST_DOCUMENT), equalTo(1));
+        assertThat(getTitleAndType(), contains(contains("default Test Title", "default dataset")));
+        verify(documentRepository, times(2)).read(TEST_DOCUMENT);
+    }
+
+    /** A transient failure is not a deletion: removed_at stays NULL and the record is retried next night. */
+    @SneakyThrows
+    @Test
+    void updateDBDoesNotMarkARecordRemovedOnATransientFailure() {
+        given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc).willThrow(new RuntimeException("repository down"));
+        service.recordView(TEST_DOCUMENT, TEST_IP1);
+        service.syncDB();
+
+        service.updateDB();
+
+        assertThat(jdbc.queryForObject("SELECT removed_at IS NULL FROM metrics.documents", Boolean.class), is(true));
+    }
+
+    /** A record that comes back (restored, re-published) is un-removed by its next count. */
+    @SneakyThrows
+    @Test
+    void aCountForARecordThatCameBackClearsRemovedAt() {
+        given(documentRepository.read(TEST_DOCUMENT))
+            .willReturn(doc).willThrow(notFound(TEST_DOCUMENT)).willReturn(doc);
+        service.recordView(TEST_DOCUMENT, TEST_IP1);
+        service.syncDB();
+        service.updateDB();
+
+        service.recordView(TEST_DOCUMENT, TEST_IP2);
+        service.syncDB();
+
+        assertThat(jdbc.queryForObject("SELECT removed_at IS NULL FROM metrics.documents", Boolean.class), is(true));
+        assertThat(service.totalViews(TEST_DOCUMENT), equalTo(2));
+    }
+
+    // ---------------------------------------------------------------- flyway validation
+
+    /**
+     * An edited applied migration is a deployment fault, not an outage: ensureSchema must stop retrying
+     * (no further connection attempts) instead of looping forever behind a WARN.
+     */
+    @Test
+    void aFlywayValidationFailureStopsRetrying() {
+        jdbc.update("UPDATE metrics.flyway_schema_history SET checksum = checksum + 1 WHERE version = '1'");
+        try {
+            val counting = new SeverableDataSource(postgresDataSource);
+            val validating = new JDBCMetricsService(counting, documentRepository);
+
+            assertThat(validating.ensureSchema(), is(false));
+            val attemptsAfterFirstFailure = counting.connectionAttempts();
+            assertThat(validating.ensureSchema(), is(false));
+            validating.syncDB();
+
+            assertThat(counting.connectionAttempts(), is(attemptsAfterFirstFailure));
+        } finally {
+            jdbc.update("UPDATE metrics.flyway_schema_history SET checksum = checksum - 1 WHERE version = '1'");
+        }
+    }
+
+    /** The pinned V1 checksum is the one Flyway itself recorded (see FlywayMigrationChecksumTest). */
+    @Test
+    void flywayRecordedThePinnedV1Checksum() {
+        assertThat(jdbc.queryForObject(
+                "SELECT checksum FROM metrics.flyway_schema_history WHERE version = '1'", Integer.class),
+            is(FlywayMigrationChecksumTest.V1_CHECKSUM));
+    }
+
     // ---------------------------------------------------------------- hasMetricsFor / deleteMetricsFor
 
     @Test
@@ -728,6 +832,53 @@ class JDBCMetricsServiceTest {
         assertThat(result.toString(), equalTo("[" + row(DOC1, "test1", "a", 1, 0) + "]"));
     }
 
+    /**
+     * An unrecognised orderBy falls back to document order (ordering still applies); it must never reach
+     * the ORDER BY %s. DOC1 has more views, so ordering by views descending would put it first.
+     */
+    @Test
+    void reportUnknownOrderByFallsBackToDocumentOrder() {
+        insert("view", 1721952000L, 1722038399L, DOC1, 5, "test1", "a");
+        insert("view", 1721952000L, 1722038399L, DOC2, 1, "test2", "b");
+
+        val result = service.getMetricsReport(null, null, "doc_title; DROP TABLE metrics.documents --",
+            "descending", null, null, null);
+
+        assertThat(result.toString(), equalTo("[" +
+            row(DOC2, "test2", "b", 1, 0) + ", " + row(DOC1, "test1", "a", 5, 0) + "]"));
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM metrics.documents", Integer.class), is(2));
+    }
+
+    /** With no noOfRecords (or a negative one) the report is capped at 100 rows. */
+    @Test
+    void reportDefaultsToALimitOf100() {
+        jdbc.execute("""
+            WITH d AS (
+                INSERT INTO metrics.documents (document_id, doc_title, record_type)
+                SELECT gen_random_uuid(), 'bulk', 'dataset' FROM generate_series(1, 101)
+                RETURNING document_id
+            )
+            INSERT INTO metrics.metric_counts (document_id, metric_type, counted_from, counted_until, amount)
+            SELECT d.document_id, 'view', timestamptz '2024-07-26', timestamptz '2024-07-27', 1 FROM d
+            """);
+
+        assertThat(service.getMetricsReport(null, null, null, null, null, null, null), hasSize(100));
+        assertThat(service.getMetricsReport(null, null, null, null, null, null, -1), hasSize(100));
+        assertThat(service.getMetricsReport(null, null, null, null, null, null, 101), hasSize(101));
+    }
+
+    /**
+     * A backslash is escaped too, so it matches literally. Unescaped, "\\a" would be LIKE's escaped "a"
+     * and "abcd\\0001" would be "abcd0001", and both would wrongly match DOC1.
+     */
+    @Test
+    void reportDocumentFilterTreatsBackslashLiterally() {
+        insert("view", 1721952000L, 1722038399L, DOC1, 1, "test1", "a");
+
+        assertThat(service.getMetricsReport(null, null, null, null, null, "\\a", null), is(empty()));
+        assertThat(service.getMetricsReport(null, null, null, null, null, "abcd\\0001", null), is(empty()));
+    }
+
     // ---------------------------------------------------------------- shutdown flush
 
     /** Counts recorded since the last hourly sync must be written at shutdown. */
@@ -823,6 +974,32 @@ class JDBCMetricsServiceTest {
     }
 
     // ---------------------------------------------------------------- helpers
+
+    /** What GitDocumentRepository.read throws for a record that does not exist. */
+    private static DocumentRepositoryException notFound(String id) {
+        return new DocumentRepositoryException("Cannot read file: " + id, new GitFileNotFoundException("no such file"));
+    }
+
+    private static String envOr(String name, String fallback) {
+        val value = System.getenv(name);
+        return value == null || value.isBlank() ? fallback : value;
+    }
+
+    /** The CI service container may still be initialising; retry for up to 60s before failing. */
+    @SneakyThrows
+    private static void awaitConnection(DataSource ds, String url) {
+        val deadline = System.nanoTime() + Duration.ofSeconds(60).toNanos();
+        SQLException last;
+        do {
+            try (Connection ignored = ds.getConnection()) {
+                return;
+            } catch (SQLException e) {
+                last = e;
+                Thread.sleep(1000);
+            }
+        } while (System.nanoTime() < deadline);
+        throw new IllegalStateException("Cannot connect to " + url + ": " + last.getMessage(), last);
+    }
 
     private List<List<Object>> getDocumentsAndAmounts(String metricType) {
         return jdbc.query(

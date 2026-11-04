@@ -50,6 +50,12 @@ services:
       - catalogue-db-data:/var/lib/postgresql/data
     ports:
       - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U catalogue -d catalogue"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    profiles: [postgres]
   hubbub:
     image: registry.gitlab.ceh.ac.uk/eip/hubbub:7.22.0
     depends_on:
@@ -122,7 +128,10 @@ services:
       CATALOGUE_DATA_PREVIEW_ENABLED: ${DATA_PREVIEW_ENABLED:-false}
       CATALOGUE_DATA_PREVIEW_DATA_LOCATION: /var/ceh-catalogue/data-package
       CATALOGUE_DATA_PREVIEW_SUPPORTING_DOCUMENTS_LOCATION: /var/ceh-catalogue/supporting-documents
-      # start postgres metrics:  METRICS_DATABASE_ENGINE=postgres docker compose up --build
+      # Metrics engine, sqlite by default. For postgres, also start the catalogue-db profile:
+      #   METRICS_DATABASE_ENGINE=postgres docker compose --profile postgres up --build
+      # The CATALOGUE_DATASOURCE_* values are only read by the postgres engine. The URL has no
+      # default in application-metrics.properties, so it must be set here.
       METRICS_DATABASE_ENGINE: ${METRICS_DATABASE_ENGINE:-sqlite}
       CATALOGUE_DATASOURCE_URL: jdbc:postgresql://catalogue-db:5432/catalogue
       CATALOGUE_DATASOURCE_USERNAME: *catalogue_db_user
@@ -150,8 +159,15 @@ services:
       - "8090:8090"
       - "8091:8091"
     depends_on:
-      - solr
-      - catalogue-db
+      solr:
+        condition: service_started
+      catalogue-db:
+        condition: service_healthy
+        # required: false -- catalogue-db only runs under the "postgres" profile. Without it, a plain
+        # `docker compose up` (sqlite engine) would fail because the dependency is not enabled; with
+        # it, compose waits for catalogue-db to be healthy when the profile is on and skips it when off.
+        # Needs Docker Compose 2.20 or later.
+        required: false
     develop:
       watch:
         - action: rebuild

@@ -6,6 +6,7 @@ import lombok.val;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
+import org.flywaydb.core.api.exception.FlywayValidateException;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.jspecify.annotations.NonNull;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
@@ -52,6 +54,7 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
     private final DocumentRepository documentRepository;
 
     private volatile boolean schemaReady;
+    private volatile boolean schemaInvalid;
     private final Object schemaLock = new Object();
 
     private final ReentrantLock syncLock = new ReentrantLock();
@@ -83,6 +86,8 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
     private static final String DELETE_DOCUMENT = "DELETE FROM metrics.documents WHERE document_id = ?";
     private static final String DOCUMENTS_QUERY =
         "SELECT document_id::text FROM metrics.documents WHERE removed_at IS NULL ORDER BY document_id";
+    private static final String MARK_REMOVED =
+        "UPDATE metrics.documents SET removed_at = now() WHERE document_id = ? AND removed_at IS NULL";
     private static final String UPDATE_STATEMENT =
         "UPDATE metrics.documents SET doc_title = ?, record_type = ? WHERE document_id = ? AND (doc_title, record_type) IS DISTINCT FROM (?, ?)";
     private static final String VIEW = "view";
@@ -147,9 +152,15 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         if (schemaReady) {
             return true;
         }
+        if (schemaInvalid) {
+            return false;
+        }
         synchronized (schemaLock) {
             if (schemaReady) {
                 return true;
+            }
+            if (schemaInvalid) {
+                return false;
             }
             try {
                 val startedAt = System.currentTimeMillis();
@@ -158,10 +169,38 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
                     result.migrationsExecuted, result.targetSchemaVersion, System.currentTimeMillis() - startedAt);
                 schemaReady = true;
             } catch (FlywayException ex) {
-                log.warn("Metrics database schema could not be migrated, will retry on next use: {}", ex.getMessage());
+                if (isValidationFailure(ex)) {
+                    // Not transient: an applied migration was edited, removed or reordered. Retrying would
+                    // fail identically forever behind a WARN, so stop and say so loudly, once.
+                    schemaInvalid = true;
+                    log.error("Metrics database schema failed Flyway validation; metrics are DISABLED until the "
+                        + "migrations in {} are fixed and the application restarted. Never edit an applied "
+                        + "migration: add a new V<n> file instead.", MIGRATIONS, ex);
+                } else {
+                    log.warn("Metrics database schema could not be migrated, will retry on next use: {}", ex.getMessage());
+                }
             }
             return schemaReady;
         }
+    }
+
+    private static boolean isValidationFailure(Throwable ex) {
+        for (Throwable cause = ex; cause != null; cause = cause.getCause()) {
+            if (cause instanceof FlywayValidateException) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Whether a repository read failed because the record does not exist, rather than a transient fault. */
+    static boolean isNotFound(Throwable ex) {
+        for (Throwable cause = ex; cause != null; cause = cause.getCause()) {
+            if (cause instanceof GitFileNotFoundException) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -304,6 +343,12 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         return syncDBHelper(metricType, drained, windowStart, windowEnd, deadline);
     }
 
+    /**
+     * Nightly refresh of titles and record types. A record the catalogue no longer has is marked
+     * {@code removed_at = now()}: its counts are kept, but it drops out of {@link #DOCUMENTS_QUERY}, so it
+     * is not re-read (and does not log an ERROR) every night forever. A later count for the same id, i.e.
+     * the record has come back, clears the mark through the upsert in {@link #insertCount}.
+     */
     @Scheduled(cron = "0 0 1 * * *")
     public void updateDB() {
         log.info("Updating document titles and record types");
@@ -311,14 +356,33 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
             return;
         }
         jdbcTemplate.queryForList(DOCUMENTS_QUERY, String.class).forEach(doc -> {
+            val id = UUID.fromString(doc);
             try {
                 log.debug("UPDATING title and type of document ID {}", doc);
                 MetadataDocument document = documentRepository.read(doc);
-                jdbcTemplate.update(UPDATE_STATEMENT, document.getTitle(), document.getType(), UUID.fromString(doc), document.getTitle(), document.getType());
+                if (document == null) {
+                    markRemoved(id, doc);
+                    return;
+                }
+                jdbcTemplate.update(UPDATE_STATEMENT, document.getTitle(), document.getType(), id, document.getTitle(), document.getType());
             } catch (Exception e) {
-                log.error("Error reading document from repository {}", doc, e);
+                if (isNotFound(e)) {
+                    markRemoved(id, doc);
+                } else {
+                    log.error("Error reading document from repository {}", doc, e);
+                }
             }
         });
+    }
+
+    private void markRemoved(UUID id, String doc) {
+        try {
+            if (jdbcTemplate.update(MARK_REMOVED, id) > 0) {
+                log.info("Document {} is no longer in the catalogue; marked removed, its counts are kept", doc);
+            }
+        } catch (DataAccessException e) {
+            log.error("Error marking document {} as removed", doc, e);
+        }
     }
 
     private void recordMetric(@NonNull Map<String, Set<String>> map, @NonNull String uuid, @NonNull String addr) {
@@ -359,10 +423,18 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
             String recordType = null;
             try {
                 MetadataDocument document = documentRepository.read(doc);
+                if (document == null) {
+                    log.warn("Not writing {} {}(s) for {}: no such record", amount, metricType, doc);
+                    continue;
+                }
                 title = document.getTitle();
                 recordType = document.getType();
             } catch (Exception e) {
-                log.error("Error reading document from repository {}", doc, e);
+                if (isNotFound(e)) {
+                    log.warn("Not writing {} {}(s) for {}: no such record", amount, metricType, doc);
+                    continue;
+                }
+                log.error("Error reading document from repository {}; keeping the count without a title", doc, e);
             }
             try {
                 insertCount(id.get(), metricType, amount, windowStart, windowEnd, title, recordType);
