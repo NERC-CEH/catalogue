@@ -1604,6 +1604,137 @@ public class RdfTurtleTest {
         }
 
         @Nested
+        @DisplayName("Requires, source, supersedes and the two inverses are exported")
+        class Relationships {
+
+            private static final String DCT = "http://purl.org/dc/terms/";
+            private static final String REQUIRES = DCT + "requires";
+            private static final String REPLACES = DCT + "replaces";
+            private static final String SOURCE = DCT + "source";
+            private static final String SUPERSEDES = "http://onto.nerc.ac.uk/CEHMD/rels/supersedes";
+
+            @org.junit.jupiter.api.BeforeEach
+            void noRelationshipsByDefault() {
+                // Strict stubs reject a call whose arguments differ from the stubbed ones, and the
+                // template asks for every relationship; each test overrides only the one it covers.
+                org.mockito.Mockito.lenient().when(jenaLookupService.relationships(
+                    org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString()))
+                    .thenReturn(List.of());
+                org.mockito.Mockito.lenient().when(jenaLookupService.inverseRelationships(
+                    org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString()))
+                    .thenReturn(List.of());
+            }
+
+            private GeminiDocument dataset(String id) {
+                return (GeminiDocument) new GeminiDocument()
+                    .setType("dataset")
+                    .setId(id)
+                    .setUri("https://example.com/id/" + id)
+                    .setTitle("Relationships");
+            }
+
+            private Link link(String id, String availability) {
+                return Link.builder().href("https://example.com/id/" + id).availability(availability).build();
+            }
+
+            private boolean has(GeminiDocument document, String predicate, String target) {
+                return model.contains(
+                    createResource(document.getUri()),
+                    createProperty(predicate),
+                    createResource("https://example.com/id/" + target)
+                );
+            }
+
+            @Test
+            @DisplayName("dcterms:requires is exported")
+            void requiresIsExported() {
+                val document = dataset("rel");
+                given(jenaLookupService.relationships(document.getUri(), REQUIRES))
+                    .willReturn(List.of(link("t1", "Available")));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(has(document, REQUIRES, "t1"));
+            }
+
+            @Test
+            @DisplayName("dcterms:isRequiredBy comes from an incoming dcterms:requires")
+            void isRequiredByComesFromIncomingRequires() {
+                val document = dataset("rel");
+                given(jenaLookupService.inverseRelationships(document.getUri(), REQUIRES))
+                    .willReturn(List.of(link("s1", "Available")));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(has(document, DCT + "isRequiredBy", "s1"));
+            }
+
+            @Test
+            @DisplayName("dcterms:isReplacedBy comes from an incoming dcterms:replaces")
+            void isReplacedByComesFromIncomingReplaces() {
+                val document = dataset("rel");
+                given(jenaLookupService.inverseRelationships(document.getUri(), REPLACES))
+                    .willReturn(List.of(link("new1", "Available")));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(has(document, DCT + "isReplacedBy", "new1"));
+            }
+
+            @Test
+            @DisplayName("dcterms:source is exported")
+            void sourceIsExported() {
+                val document = dataset("rel");
+                given(jenaLookupService.relationships(document.getUri(), SOURCE))
+                    .willReturn(List.of(link("src1", "Available")));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(has(document, SOURCE, "src1"));
+            }
+
+            @Test
+            @DisplayName("the CEHMD supersedes relationship is exported as dcterms:replaces")
+            void supersedesBecomesReplaces() {
+                val document = dataset("rel");
+                given(jenaLookupService.relationships(document.getUri(), SUPERSEDES))
+                    .willReturn(List.of(link("old1", "Available")));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(has(document, REPLACES, "old1"));
+                assertFalse(model.contains(createResource(document.getUri()), createProperty(SUPERSEDES)));
+            }
+
+            @Test
+            @DisplayName("an inverse link to a withdrawn record is not exported")
+            void inverseToDeletedRecordIsNotLinked() {
+                val document = dataset("rel");
+                given(jenaLookupService.inverseRelationships(document.getUri(), REQUIRES))
+                    .willReturn(List.of(link("gone", "Deleted")));
+                given(jenaLookupService.inverseRelationships(document.getUri(), REPLACES))
+                    .willReturn(List.of(link("gone", "Deleted")));
+
+                template("rdf/ttl.ftl", document);
+
+                assertFalse(has(document, DCT + "isRequiredBy", "gone"));
+                assertFalse(has(document, DCT + "isReplacedBy", "gone"));
+            }
+
+            @Test
+            @DisplayName("a record with none of these relationships emits none of the predicates")
+            void noRelationshipsEmitsNoPredicates() {
+                val document = dataset("rel");
+
+                template("rdf/ttl.ftl", document);
+
+                for (val predicate : List.of("requires", "isRequiredBy", "isReplacedBy", "source")) {
+                    assertFalse(model.contains(createResource(document.getUri()), createProperty(DCT + predicate)));
+                }
+            }
+        }
+
+        @Nested
         @DisplayName("A bare keyword literal is promoted to a concept already in the vocabularies (dri-one #321)")
         class LiteralSubjectPromotion {
 

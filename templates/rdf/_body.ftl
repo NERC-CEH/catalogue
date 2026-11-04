@@ -63,6 +63,23 @@
     <#list jena.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises")?filter(item -> item.availability != "Deleted")>
       doo:utilises <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
+    <#-- The inverse links read the incoming statement; the same withdrawn-record guard applies, so a
+         public record never names a withdrawn one as its dependant or successor. -->
+    <#list jena.relationships(uri, "http://purl.org/dc/terms/requires")?filter(item -> item.availability != "Deleted")>
+      dcterms:requires <#items as item><${item.href}><#sep>, </#items> ;
+    </#list>
+    <#list jena.relationships(uri, "http://purl.org/dc/terms/source")?filter(item -> item.availability != "Deleted")>
+      dcterms:source <#items as item><${item.href}><#sep>, </#items> ;
+    </#list>
+    <#list jena.relationships(uri, "http://onto.nerc.ac.uk/CEHMD/rels/supersedes")?filter(item -> item.availability != "Deleted")>
+      dcterms:replaces <#items as item><${item.href}><#sep>, </#items> ;
+    </#list>
+    <#list jena.inverseRelationships(uri, "http://purl.org/dc/terms/requires")?filter(item -> item.availability != "Deleted")>
+      dcterms:isRequiredBy <#items as item><${item.href}><#sep>, </#items> ;
+    </#list>
+    <#list jena.inverseRelationships(uri, "http://purl.org/dc/terms/replaces")?filter(item -> item.availability != "Deleted")>
+      dcterms:isReplacedBy <#items as item><${item.href}><#sep>, </#items> ;
+    </#list>
 
     <#--Citations-->
     <#if incomingCitations?has_content>

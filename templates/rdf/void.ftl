@@ -146,5 +146,7 @@
     void:propertyPartition [ void:property dcterms:rights ] ;
     void:propertyPartition [ void:property dcat:distribution ] ;
     void:propertyPartition [ void:property prov:wasGeneratedBy ] ;
+    void:propertyPartition [ void:property dcterms:requires ] ;
+    void:propertyPartition [ void:property dcterms:isReplacedBy ] ;
     .
 </#list>
