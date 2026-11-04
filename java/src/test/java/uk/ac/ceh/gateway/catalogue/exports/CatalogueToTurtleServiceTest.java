@@ -395,6 +395,16 @@ class CatalogueToTurtleServiceTest {
         }
     }
 
+    @Test
+    void theUkcehCatalogueNodeIsPublishedByUkceh() {
+        val ukceh = Catalogue.builder().id("ukceh").title("UKCEH").url(baseUri).contactUrl("").logo("x.png").build();
+
+        val model = catalogueModel(ukceh, record("one"));
+
+        assertTrue(model.contains(createResource(baseUri + "/ukceh/documents"),
+            createProperty(DCT + "publisher"), createResource("https://ror.org/00pggkr55")));
+    }
+
     /** The ROR node is shared across catalogues, so it carries only the name the EIDC block asserts. */
     @Test
     void theRorNodeGainsNoRecordText() {

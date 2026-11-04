@@ -4,6 +4,8 @@ import freemarker.template.Configuration;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
@@ -22,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
+import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.DistributionInfo;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
@@ -47,8 +50,11 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
 
 import java.io.File;
 import java.io.StringReader;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import static org.apache.jena.rdf.model.ResourceFactory.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -57,9 +63,6 @@ import static org.hamcrest.Matchers.matchesRegex;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
-import java.time.LocalDate;
-import java.util.Optional;
-import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verifyNoInteractions;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.KeywordUri;
@@ -116,7 +119,7 @@ public class RdfTurtleTest {
                 .setId("9372")
                 .setUri("https://example.com/id/9372")
                 .setTitle("Kelp bed");
-            facility.setMetadataDate(java.time.LocalDateTime.of(2024, 5, 6, 7, 8, 9));
+            facility.setMetadataDate(LocalDateTime.of(2024, 5, 6, 7, 8, 9));
 
             template("rdf/monitoring/facility.ftl", facility);
 
@@ -126,7 +129,7 @@ public class RdfTurtleTest {
             assertTrue(model.contains(record, createProperty("http://xmlns.com/foaf/0.1/primaryTopic"),
                 createResource("https://example.com/id/9372")));
             assertTrue(model.contains(record, createProperty("http://purl.org/dc/terms/modified"),
-                createTypedLiteral("2024-05-06T07:08:09", org.apache.jena.datatypes.xsd.XSDDatatype.XSDdateTime)));
+                createTypedLiteral("2024-05-06T07:08:09", XSDDatatype.XSDdateTime)));
         }
 
         @Test
@@ -2896,11 +2899,11 @@ public class RdfTurtleTest {
             return document;
         }
 
-        private org.apache.jena.rdf.model.Literal date(String value) {
-            return createTypedLiteral(value, org.apache.jena.datatypes.xsd.XSDDatatype.XSDdate);
+        private Literal date(String value) {
+            return createTypedLiteral(value, XSDDatatype.XSDdate);
         }
 
-        private boolean has(String predicate, org.apache.jena.rdf.model.RDFNode object) {
+        private boolean has(String predicate, RDFNode object) {
             return model.contains(null, createProperty(predicate), object);
         }
 
@@ -2962,6 +2965,26 @@ public class RdfTurtleTest {
 
             assertFalse(model.contains(null, createProperty(DCT + "issued")));
             assertFalse(model.contains(null, createProperty(DCT + "available")));
+            assertFalse(model.contains(null, createProperty(DCT + "created")));
+            assertFalse(model.contains(null, createProperty(DCT + "modified")));
+            assertFalse(model.contains(null, createProperty(DCAT_VERSION)));
+        }
+
+        @Test
+        @DisplayName("a Deleted record keeps its catalogue record node but exports no issued or available date")
+        void deletedRecordKeepsRecordNodeWithoutDates() {
+            val document = withDates(DatasetReferenceDate.builder()
+                .publicationDate(LocalDate.of(2020, 1, 2))
+                .releasedDate(LocalDate.of(2021, 3, 4)));
+            document.setAccessLimitation(AccessLimitation.builder().value("Deleted").availability("Deleted").build());
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(model.contains(createResource("https://example.com/id/dates_record"),
+                createProperty("http://xmlns.com/foaf/0.1/primaryTopic"),
+                createResource("https://example.com/id/dates")));
+            assertFalse(model.contains(null, createProperty(DCT + "issued")));
+            assertFalse(model.contains(null, createProperty(DCT + "available")));
         }
 
         @Test
@@ -3004,7 +3027,6 @@ public class RdfTurtleTest {
                 .publicationDate(LocalDate.of(2020, 1, 2))
                 .supersededDate(LocalDate.of(2023, 9, 10))));
 
-            assertFalse(has(DCT + "available", date("2023-09-10")));
             assertFalse(model.listStatements(null, null, date("2023-09-10")).hasNext());
         }
 
@@ -3012,7 +3034,7 @@ public class RdfTurtleTest {
         @DisplayName("the catalogue record carries the metadata date")
         void catalogRecordCarriesMetadataDate() {
             val document = dataset("rec");
-            document.setMetadataDate(java.time.LocalDateTime.of(2024, 5, 6, 7, 8, 9));
+            document.setMetadataDate(LocalDateTime.of(2024, 5, 6, 7, 8, 9));
 
             template("rdf/ttl.ftl", document);
 
@@ -3022,20 +3044,20 @@ public class RdfTurtleTest {
             assertTrue(model.contains(record, createProperty("http://xmlns.com/foaf/0.1/primaryTopic"),
                 createResource("https://example.com/id/rec")));
             assertTrue(model.contains(record, createProperty(DCT + "modified"),
-                createTypedLiteral("2024-05-06T07:08:09", org.apache.jena.datatypes.xsd.XSDDatatype.XSDdateTime)));
+                createTypedLiteral("2024-05-06T07:08:09", XSDDatatype.XSDdateTime)));
         }
 
         @Test
         @DisplayName("a metadata date on the minute keeps its zero seconds (ISO_LOCAL_DATE_TIME prints them)")
         void metadataDateOnTheMinute() {
             val document = dataset("recmin");
-            document.setMetadataDate(java.time.LocalDateTime.of(2024, 5, 6, 7, 8, 0));
+            document.setMetadataDate(LocalDateTime.of(2024, 5, 6, 7, 8, 0));
 
             template("rdf/ttl.ftl", document);
 
             assertTrue(model.contains(createResource("https://example.com/id/recmin_record"),
                 createProperty(DCT + "modified"),
-                createTypedLiteral("2024-05-06T07:08:00", org.apache.jena.datatypes.xsd.XSDDatatype.XSDdateTime)));
+                createTypedLiteral("2024-05-06T07:08:00", XSDDatatype.XSDdateTime)));
         }
 
         @Test
