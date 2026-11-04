@@ -25,7 +25,7 @@ class RelationshipRulesTest {
 
     @Test
     @DisplayName("a research activity's facility or network is searched for in eidc and ukceh too")
-    void programmeUtilises() {
+    void researchActivityUtilises() {
         assertThat(ruleFor("researchActivity", UTILISES).orElseThrow().catalogues())
             .isEqualTo(List.of("eidc", "ukceh"));
     }
@@ -94,8 +94,8 @@ class RelationshipRulesTest {
 
 
     @ParameterizedTest
-    @ValueSource(strings = {HAS_CHILD_FACILITY, HAS_CHILD_NETWORK, HAS_CHILD_PROGRAMME})
-    @DisplayName("a child facility, network or programme is of the same type as its parent")
+    @ValueSource(strings = {HAS_CHILD_FACILITY, HAS_CHILD_NETWORK,})
+    @DisplayName("a child facility or network is of the same type as its parent")
     void hasChild(String predicate) {
         var rule = ruleFor("monitoringNetwork", predicate).orElseThrow();
         assertThat(rule.allows("monitoringNetwork", "monitoringNetwork")).isTrue();

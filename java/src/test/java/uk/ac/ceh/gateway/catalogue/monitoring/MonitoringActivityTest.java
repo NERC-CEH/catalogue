@@ -27,7 +27,7 @@ class MonitoringActivityTest {
         when(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/uses"))
             .thenReturn(List.of(Link.builder().href("https://example.com/network/1").build()));
         when(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/triggers"))
-            .thenReturn(List.of(Link.builder().href("https://example.com/programme/1").build()));
+            .thenReturn(List.of(Link.builder().href("https://example.com/researchActivity/1").build()));
 
         //when
         activity.populateFromJenaService(jenaService);

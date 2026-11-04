@@ -98,9 +98,9 @@ public class CatalogueServiceConfig {
                 .facetKey("parametersMeasured")
                 .facetKey("environmentalDomains")
                 .documentType(GEMINI_TYPE)
+                .documentType(RESEARCH_ACTIVITY_TYPE)
                 .documentType(MONITORING_FACILITY_TYPE)
                 .documentType(MONITORING_NETWORK_TYPE)
-                .documentType(RESEARCH_ACTIVITY_TYPE)
                 .fileUpload(false)
                 .build(),
 
@@ -227,9 +227,9 @@ public class CatalogueServiceConfig {
                 .facetKey("pointOfContact")
                 .facetKey("operationalStatus")
                 .facetKey("publicationState")
+                .documentType(RESEARCH_ACTIVITY_TYPE)
                 .documentType(MONITORING_FACILITY_TYPE)
                 .documentType(MONITORING_NETWORK_TYPE)
-                .documentType(RESEARCH_ACTIVITY_TYPE)
                 .fileUpload(false)
                 .build()
         );

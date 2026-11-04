@@ -74,7 +74,7 @@ class MonitoringRelationshipsTemplateTest {
     private static JenaLookupService utilisedBy(String uri) {
         val jena = mock(JenaLookupService.class);
         when(jena.inverseRelationships(uri, UTILISES)).thenReturn(List.of(
-            link("https://example.com/id/programme", "COSMOS-UK programme", "researchActivity", "published"),
+            link("https://example.com/id/resarchactivity", "COSMOS-UK", "researchActivity", "published"),
             link("https://example.com/id/dataset", "Soil moisture data", "dataset", "published"),
             link("https://example.com/id/draft", "Unreleased soil data", "dataset", "draft")
         ));
@@ -107,11 +107,11 @@ class MonitoringRelationshipsTemplateTest {
 
         //then
         assertThat(section(actual, "Used by"))
-            .contains("COSMOS-UK programme")
+            .contains("COSMOS-UK")
             .doesNotContain("Soil moisture data");
         assertThat(section(actual, "Data produced here"))
             .contains("href=\"https://example.com/id/dataset\"")
-            .doesNotContain("COSMOS-UK programme");
+            .doesNotContain("COSMOS-UK");
         assertThat(actual).doesNotContain("Unreleased soil data");
     }
 
@@ -129,11 +129,11 @@ class MonitoringRelationshipsTemplateTest {
 
         //then
         assertThat(section(actual, "Used by"))
-            .contains("COSMOS-UK programme")
+            .contains("COSMOS-UK")
             .doesNotContain("Soil moisture data");
         assertThat(section(actual, "Data produced by this network"))
             .contains("href=\"https://example.com/id/dataset\"")
-            .doesNotContain("COSMOS-UK programme");
+            .doesNotContain("COSMOS-UK");
         assertThat(actual).doesNotContain("Unreleased soil data");
     }
 

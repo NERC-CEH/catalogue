@@ -32,7 +32,7 @@ class MonitoringNetworkTest {
         when(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/uses"))
             .thenReturn(List.of(Link.builder().href("https://example.com/activity/1").build()));
         when(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"))
-            .thenReturn(List.of(Link.builder().href("https://example.com/programme/1").publicationStatus("published").build()));
+            .thenReturn(List.of(Link.builder().href("https://example.com/researchActivity/1").publicationStatus("published").build()));
         when(jenaService.relationships(uri, "http://purl.org/dc/terms/replaces"))
             .thenReturn(List.of(Link.builder().href("https://example.com/old-network/1").build()));
         when(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/replaces"))
@@ -71,7 +71,7 @@ class MonitoringNetworkTest {
         val jenaService = org.mockito.Mockito.mock(JenaLookupService.class);
         when(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"))
             .thenReturn(List.of(
-                published("https://example.com/programme/1", "researchActivity"),
+                published("https://example.com/researchActivity/1", "researchActivity"),
                 published("https://example.com/dataset/1", "dataset"),
                 published("https://example.com/dataset/2", "nonGeographicDataset")
             ));
@@ -80,7 +80,7 @@ class MonitoringNetworkTest {
         network.populateFromJenaService(jenaService);
 
         //then
-        assertThat(hrefs(network.getUtilisingResearchActivities()), equalTo(List.of("https://example.com/programme/1")));
+        assertThat(hrefs(network.getUtilisingResearchActivities()), equalTo(List.of("https://example.com/researchActivity/1")));
         assertThat(
             hrefs(network.getProducedDataResources()),
             equalTo(List.of("https://example.com/dataset/1", "https://example.com/dataset/2"))
@@ -104,7 +104,7 @@ class MonitoringNetworkTest {
                 published("https://example.com/dataset/1", "dataset"),
                 Link.builder().href("https://example.com/dataset/draft").associationType("dataset")
                     .publicationStatus("draft").build(),
-                Link.builder().href("https://example.com/programme/pending").associationType("researchActivity")
+                Link.builder().href("https://example.com/researchActivity/pending").associationType("researchActivity")
                     .publicationStatus("pending").build()
             ));
 
@@ -116,7 +116,7 @@ class MonitoringNetworkTest {
         assertThat(network.getUtilisingResearchActivities().isEmpty(), equalTo(true));
         val json = JsonMapper.builder().build().writeValueAsString(network);
         assertThat(json.contains("https://example.com/dataset/draft"), equalTo(false));
-        assertThat(json.contains("https://example.com/programme/pending"), equalTo(false));
+        assertThat(json.contains("https://example.com/researchActivity/pending"), equalTo(false));
     }
 
     private static Link published(String href, String type) {

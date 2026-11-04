@@ -249,12 +249,12 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://facility2"), METADATA_STATUS, "published");
         triples.add(createResource("http://facility2"), DCTERMS_TYPE, "facility");
         triples.add(createResource("http://facility2"), SF_GEOMETRY, geometryString2);
-        triples.add(createResource("http://programme"), createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises"), createResource("http://facility1"));
-        triples.add(createResource("http://programme"), createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises"), createResource("http://facility2"));
+        triples.add(createResource("http://researchActivity"), createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises"), createResource("http://facility1"));
+        triples.add(createResource("http://researchActivity"), createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises"), createResource("http://facility2"));
         jenaTdb.commit();
 
         // When
-        List<Link> actual = service.researchActivityFeatures("http://programme");
+        List<Link> actual = service.researchActivityFeatures("http://researchActivity");
 
         // Then
         assertThat("Should be 2 Links", actual.size(), equalTo(2));
@@ -282,12 +282,12 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://facility2"), METADATA_STATUS, "published");
         triples.add(createResource("http://facility2"), DCTERMS_TYPE, "facility");
         triples.add(createResource("http://facility2"), SF_GEOMETRY, geometryString2);
-        triples.add(createResource("http://programme"), createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises"), createResource("http://facility1"));
-        triples.add(createResource("http://programme"), createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises"), createResource("http://facility2"));
+        triples.add(createResource("http://researchActivity"), createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises"), createResource("http://facility1"));
+        triples.add(createResource("http://researchActivity"), createProperty("https://digital.ceh.ac.uk/ontology/doo/utilises"), createResource("http://facility2"));
         jenaTdb.commit();
 
         // When
-        String actual = service.researchActivityCombinedGeometries("http://programme");
+        String actual = service.researchActivityCombinedGeometries("http://researchActivity");
 
         // Then
         assertThat("Generates correct combined GeoJSON", actual, equalTo(combinedGeometry));

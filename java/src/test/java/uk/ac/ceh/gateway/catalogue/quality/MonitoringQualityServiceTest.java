@@ -52,27 +52,6 @@ public class MonitoringQualityServiceTest {
 
     @Test
     @SneakyThrows
-    public void successfullyCheckMonitoringProgramme() {
-        given(documentReader.read("monitoringProgrammeRight", "raw"))
-            .willReturn(
-                ResourceUtils.getFile(getClass().getResource("ukeof/monitoringProgrammeRight.raw"))
-            );
-        given(documentReader.read("monitoringProgrammeRight", "meta"))
-            .willReturn(
-                ResourceUtils.getFile(getClass().getResource("ukeof/monitoringProgrammeRight.meta"))
-            );
-
-        //when
-        val results = this.service.check("monitoringProgrammeRight");
-
-        //then
-        verify(documentReader).read("monitoringProgrammeRight", "raw");
-        verify(documentReader).read("monitoringProgrammeRight", "meta");
-        assertThat(results.getProblems(), empty());
-    }
-
-    @Test
-    @SneakyThrows
     public void successfullyCheckMonitoringActivity() {
         given(documentReader.read("monitoringActivityRight", "raw"))
             .willReturn(
@@ -159,28 +138,6 @@ public class MonitoringQualityServiceTest {
 
     @Test
     @SneakyThrows
-    public void checkProgrammeMissingFields() {
-        given(documentReader.read("monitoringProgrammeMissingFields", "raw"))
-            .willReturn(
-                ResourceUtils.getFile(getClass().getResource("ukeof/monitoringProgrammeMissingFields.raw"))
-            );
-        given(documentReader.read("monitoringProgrammeMissingFields", "meta"))
-            .willReturn(
-                ResourceUtils.getFile(getClass().getResource("ukeof/monitoringProgrammeRight.meta"))
-            );
-
-        //when
-        val results = this.service.check("monitoringProgrammeMissingFields");
-
-        //then
-        verify(documentReader).read("monitoringProgrammeMissingFields", "raw");
-        verify(documentReader).read("monitoringProgrammeMissingFields", "meta");
-        val problems = results.getProblems().stream().map(MetadataCheck::getTest).toList();
-        assertThat(problems, contains("Bounding box is missing"));
-    }
-
-    @Test
-    @SneakyThrows
     public void checkActivityBoundingBox() {
         given(documentReader.read("monitoringActivityBoundingBox", "raw"))
             .willReturn(
@@ -226,55 +183,6 @@ public class MonitoringQualityServiceTest {
         verify(documentReader).read("monitoringNetworkEmptyKeywords", "meta");
         val problems = results.getProblems().stream().map(MetadataCheck::getTest).toList();
         assertThat(problems, contains("Keyword is empty"));
-    }
-
-    @Test
-    @SneakyThrows
-    public void checkProgrammeEmptyOperatingPeriod() {
-        given(documentReader.read("monitoringProgrammeEmptyOperatingPeriod", "raw"))
-            .willReturn(
-                ResourceUtils.getFile(getClass().getResource("ukeof/monitoringProgrammeEmptyOperatingPeriod.raw"))
-            );
-        given(documentReader.read("monitoringProgrammeEmptyOperatingPeriod", "meta"))
-            .willReturn(
-                ResourceUtils.getFile(getClass().getResource("ukeof/monitoringProgrammeRight.meta"))
-            );
-
-        //when
-        val results = this.service.check("monitoringProgrammeEmptyOperatingPeriod");
-
-        //then
-        verify(documentReader).read("monitoringProgrammeEmptyOperatingPeriod", "raw");
-        verify(documentReader).read("monitoringProgrammeEmptyOperatingPeriod", "meta");
-        val problems = results.getProblems().stream().map(MetadataCheck::getTest).toList();
-        assertThat(problems, contains("Operating period is empty"));
-    }
-
-    @Test
-    @SneakyThrows
-    public void checkProgrammeBadOperatingPeriod() {
-        given(documentReader.read("monitoringActivityBoundingBox", "raw"))
-            .willReturn(
-                ResourceUtils.getFile(getClass().getResource("ukeof/monitoringActivityBoundingBox.raw"))
-            );
-        given(documentReader.read("monitoringActivityBoundingBox", "meta"))
-            .willReturn(
-                ResourceUtils.getFile(getClass().getResource("ukeof/monitoringProgrammeRight.meta"))
-            );
-
-        //when
-        val results = this.service.check("monitoringActivityBoundingBox");
-
-        //then
-        verify(documentReader).read("monitoringActivityBoundingBox", "raw");
-        verify(documentReader).read("monitoringActivityBoundingBox", "meta");
-        val problems = results.getProblems().stream().map(MetadataCheck::getTest).toList();
-        assertThat(problems, containsInAnyOrder(
-            "westBoundLongitude is out of range",
-            "eastBoundLongitude is missing from bounding box",
-            "southBoundLatitude should be less than northBoundLatitude",
-            "southBoundLatitude is out of range"
-        ));
     }
 
     @Test

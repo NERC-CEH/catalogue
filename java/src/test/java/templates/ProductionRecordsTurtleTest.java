@@ -19,7 +19,6 @@ import org.mockito.quality.Strictness;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
-import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FormatUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
@@ -98,9 +97,6 @@ class ProductionRecordsTurtleTest {
                 } else if ("monitoringFacility".equals(type)) {
                     template = "rdf/monitoring/facility.ftl";
                     document = mapper.treeToValue(json, MonitoringFacility.class);
-                } else if ("monitoringProgramme".equals(type)) {
-                    template = "rdf/monitoring/programme.ftl";
-                    document = mapper.treeToValue(json, MonitoringProgramme.class);
                 } else {
                     skipped++;
                     continue;
