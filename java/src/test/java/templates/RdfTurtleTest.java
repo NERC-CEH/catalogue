@@ -43,6 +43,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.CrsUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FormatUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.LicenceUri;
@@ -90,6 +91,7 @@ public class RdfTurtleTest {
         configuration.setSharedVariable("fundingUri", new FundingUri(uriNormaliser));
         configuration.setSharedVariable("licenceUris", new LicenceUri());
         configuration.setSharedVariable("formatUris", new FormatUri());
+        configuration.setSharedVariable("crsUris", new CrsUri());
         configuration.setSharedVariable("keywordUri", new KeywordUri(uriNormaliser, keywordVocabulary));
 
         model = ModelFactory.createDefaultModel();

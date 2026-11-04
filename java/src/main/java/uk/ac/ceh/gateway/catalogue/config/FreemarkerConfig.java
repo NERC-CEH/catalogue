@@ -26,6 +26,7 @@ public class FreemarkerConfig {
     private final CatalogueService catalogueService;
     private final CodeLookupService codeLookupService;
     private final ContactUri contactUri;
+    private final CrsUri crsUri;
     private final DownloadOrderDetailsService downloadOrderDetailsService;
     private final freemarker.template.Configuration freemarkerConfiguration;
     private final DownloadUrlProperties downloadUrlProperties;
@@ -57,6 +58,7 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("catalogues", catalogueService);
         freemarkerConfiguration.setSharedVariable("codes", codeLookupService);
         freemarkerConfiguration.setSharedVariable("contactUri", contactUri);
+        freemarkerConfiguration.setSharedVariable("crsUris", crsUri);
         freemarkerConfiguration.setSharedVariable("csp", new CspNonce());
         freemarkerConfiguration.setSharedVariable("downloadOrderDetails", downloadOrderDetailsService);
         freemarkerConfiguration.setSharedVariable("formatUris", formatUri);
