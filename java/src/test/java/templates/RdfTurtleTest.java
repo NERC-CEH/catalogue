@@ -57,7 +57,9 @@ import static org.hamcrest.Matchers.matchesRegex;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
+import java.time.LocalDate;
 import java.util.Optional;
+import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verifyNoInteractions;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.KeywordUri;
@@ -2851,6 +2853,154 @@ public class RdfTurtleTest {
                     + "no email and no membership of itself (dri-one #320, #334)",
                 predicatesOf(ROR), equalTo(List.of(RDF_TYPE))
             );
+        }
+    }
+
+    @Nested
+    @DisplayName("Record dates and version")
+    class Dates {
+
+        private static final String DCT = "http://purl.org/dc/terms/";
+        private static final String DCAT_VERSION = "http://www.w3.org/ns/dcat#version";
+
+        private GeminiDocument dataset(String id) {
+            return (GeminiDocument) new GeminiDocument()
+                .setType("dataset")
+                .setId(id)
+                .setUri("https://example.com/id/" + id)
+                .setTitle("Dates");
+        }
+
+        private GeminiDocument withDates(DatasetReferenceDate.DatasetReferenceDateBuilder dates) {
+            val document = dataset("dates");
+            document.setDatasetReferenceDate(dates.build());
+            return document;
+        }
+
+        private org.apache.jena.rdf.model.Literal date(String value) {
+            return createTypedLiteral(value, org.apache.jena.datatypes.xsd.XSDDatatype.XSDdate);
+        }
+
+        private boolean has(String predicate, org.apache.jena.rdf.model.RDFNode object) {
+            return model.contains(null, createProperty(predicate), object);
+        }
+
+        @Test
+        @DisplayName("publicationDate is dcterms:issued")
+        void publicationDateIsIssued() {
+            template("rdf/ttl.ftl", withDates(DatasetReferenceDate.builder()
+                .publicationDate(LocalDate.of(2020, 1, 2))));
+
+            assertTrue(has(DCT + "issued", date("2020-01-02")));
+        }
+
+        @Test
+        @DisplayName("releasedDate is dcterms:available, not the publication date")
+        void releasedDateIsAvailable() {
+            template("rdf/ttl.ftl", withDates(DatasetReferenceDate.builder()
+                .publicationDate(LocalDate.of(2020, 1, 2))
+                .releasedDate(LocalDate.of(2021, 3, 4))));
+
+            assertTrue(has(DCT + "available", date("2021-03-04")));
+            assertFalse(has(DCT + "available", date("2020-01-02")));
+        }
+
+        @Test
+        @DisplayName("dcterms:available falls back to the publication date")
+        void availableFallsBackToPublication() {
+            template("rdf/ttl.ftl", withDates(DatasetReferenceDate.builder()
+                .publicationDate(LocalDate.of(2020, 1, 2))));
+
+            assertTrue(has(DCT + "available", date("2020-01-02")));
+        }
+
+        @Test
+        @DisplayName("a future embargo release date stays a future dcterms:available")
+        void futureEmbargoKeepsFutureAvailable() {
+            template("rdf/ttl.ftl", withDates(DatasetReferenceDate.builder()
+                .publicationDate(LocalDate.of(2020, 1, 2))
+                .releasedDate(LocalDate.of(2099, 1, 1))));
+
+            assertTrue(has(DCT + "available", date("2099-01-01")));
+            assertTrue(has(DCT + "issued", date("2020-01-02")));
+        }
+
+        @Test
+        @DisplayName("creation and revision dates are dcterms:created and dcterms:modified")
+        void creationAndRevision() {
+            template("rdf/ttl.ftl", withDates(DatasetReferenceDate.builder()
+                .creationDate(LocalDate.of(2019, 5, 6))
+                .revisionDate(LocalDate.of(2022, 7, 8))));
+
+            assertTrue(has(DCT + "created", date("2019-05-06")));
+            assertTrue(has(DCT + "modified", date("2022-07-08")));
+        }
+
+        @Test
+        @DisplayName("a record without reference dates still renders, with no date predicates")
+        void noDates() {
+            template("rdf/ttl.ftl", dataset("nodates"));
+
+            assertFalse(model.contains(null, createProperty(DCT + "issued")));
+            assertFalse(model.contains(null, createProperty(DCT + "available")));
+        }
+
+        @Test
+        @DisplayName("an integer version is dcat:version")
+        void integerVersion() {
+            val document = dataset("v2");
+            document.setVersion(2);
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(has(DCAT_VERSION, createPlainLiteral("2")));
+        }
+
+        @Test
+        @DisplayName("a decimal version is not localised")
+        void decimalVersion() {
+            val document = dataset("v36");
+            document.setVersion(3.6);
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(has(DCAT_VERSION, createPlainLiteral("3.6")));
+        }
+
+        @Test
+        @DisplayName("a stored version of -1 is exported as is (controller ruling R3)")
+        void negativeVersionAsIs() {
+            val document = dataset("vminus");
+            document.setVersion(-1);
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(has(DCAT_VERSION, createPlainLiteral("-1")));
+        }
+
+        @Test
+        @DisplayName("the superseded date is not exported")
+        void supersededDateIsNotExported() {
+            template("rdf/ttl.ftl", withDates(DatasetReferenceDate.builder()
+                .publicationDate(LocalDate.of(2020, 1, 2))
+                .supersededDate(LocalDate.of(2023, 9, 10))));
+
+            assertFalse(has(DCT + "available", date("2023-09-10")));
+            assertFalse(model.listStatements(null, null, date("2023-09-10")).hasNext());
+        }
+
+        @Test
+        @DisplayName("a non-dataset type carrying dates gets them too")
+        void aggregateGetsDates() {
+            val document = (GeminiDocument) new GeminiDocument()
+                .setType("aggregate").setId("agg")
+                .setUri("https://example.com/id/agg").setTitle("Aggregate");
+            document.setDatasetReferenceDate(DatasetReferenceDate.builder()
+                .publicationDate(LocalDate.of(2020, 1, 2)).build());
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(has(DCT + "issued", date("2020-01-02")));
         }
     }
 

@@ -139,6 +139,9 @@
     void:propertyPartition [ void:property dcterms:subject ] ;
     void:propertyPartition [ void:property dcterms:spatial ] ;
     void:propertyPartition [ void:property dcterms:temporal ] ;
+    void:propertyPartition [ void:property dcterms:issued ] ;
+    void:propertyPartition [ void:property dcterms:available ] ;
+    void:propertyPartition [ void:property dcterms:modified ] ;
     void:propertyPartition [ void:property dcat:contactPoint ] ;
     void:propertyPartition [ void:property dcterms:publisher ] ;
     void:propertyPartition [ void:property dcterms:creator ] ;
