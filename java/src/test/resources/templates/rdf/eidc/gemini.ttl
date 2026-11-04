@@ -113,3 +113,7 @@ owl:sameAs <https://testaward.ac.uk> ;
 frapo:funds :f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16 .
 <https://ror.org/00cwqg982> a frapo:FundingAgency ;
 frapo:awards :grant_d8eb992155e350a7 .
+
+:f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16_record a dcat:CatalogRecord ;
+foaf:primaryTopic :f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16 ;
+dcterms:modified "2025-02-04T11:48:28"^^xsd:dateTime .

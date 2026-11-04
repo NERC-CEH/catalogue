@@ -2990,6 +2990,47 @@ public class RdfTurtleTest {
         }
 
         @Test
+        @DisplayName("the catalogue record carries the metadata date")
+        void catalogRecordCarriesMetadataDate() {
+            val document = dataset("rec");
+            document.setMetadataDate(java.time.LocalDateTime.of(2024, 5, 6, 7, 8, 9));
+
+            template("rdf/ttl.ftl", document);
+
+            val record = createResource("https://example.com/id/rec_record");
+            assertTrue(model.contains(record, createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                createResource("http://www.w3.org/ns/dcat#CatalogRecord")));
+            assertTrue(model.contains(record, createProperty("http://xmlns.com/foaf/0.1/primaryTopic"),
+                createResource("https://example.com/id/rec")));
+            assertTrue(model.contains(record, createProperty(DCT + "modified"),
+                createTypedLiteral("2024-05-06T07:08:09", org.apache.jena.datatypes.xsd.XSDDatatype.XSDdateTime)));
+        }
+
+        @Test
+        @DisplayName("a metadata date on the minute keeps a valid xsd:dateTime")
+        void metadataDateOnTheMinute() {
+            val document = dataset("recmin");
+            document.setMetadataDate(java.time.LocalDateTime.of(2024, 5, 6, 7, 8, 0));
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(model.contains(createResource("https://example.com/id/recmin_record"),
+                createProperty(DCT + "modified"),
+                createTypedLiteral("2024-05-06T07:08:00", org.apache.jena.datatypes.xsd.XSDDatatype.XSDdateTime)));
+        }
+
+        @Test
+        @DisplayName("no metadata date means a record node without dcterms:modified")
+        void noMetadataDateNoModified() {
+            template("rdf/ttl.ftl", dataset("norec"));
+
+            val record = createResource("https://example.com/id/norec_record");
+            assertTrue(model.contains(record, createProperty("http://xmlns.com/foaf/0.1/primaryTopic"),
+                createResource("https://example.com/id/norec")));
+            assertFalse(model.contains(record, createProperty(DCT + "modified")));
+        }
+
+        @Test
         @DisplayName("a non-dataset type carrying dates gets them too")
         void aggregateGetsDates() {
             val document = (GeminiDocument) new GeminiDocument()
