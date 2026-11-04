@@ -41,6 +41,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.greaterThan;
 
 /**
  * Renders every real production record through the Turtle templates and checks the output parses.
@@ -114,6 +115,7 @@ class ProductionRecordsTurtleTest {
         }
 
         report(model, records, skipped);
+        assertThat("no records were read from PROD_RECORDS_DIR", records, greaterThan(0));
         assertThat(failures, empty());
     }
 
