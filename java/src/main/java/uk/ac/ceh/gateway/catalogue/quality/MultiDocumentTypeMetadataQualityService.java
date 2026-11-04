@@ -59,7 +59,7 @@ public class MultiDocumentTypeMetadataQualityService implements MetadataQualityS
 
             return switch (parsedMeta.read("$.documentType", String.class)) {
                 case GEMINI -> geminiMetadataQualityService.check(id);
-                case MONITORING_ACTIVITY, MONITORING_FACILITY, MONITORING_NETWORK, MONITORING_PROGRAMME ->
+                case MONITORING_ACTIVITY, MONITORING_FACILITY, MONITORING_NETWORK, RESEARCH_ACTIVITY ->
                     monitoringQualityService.check(id);
                 default ->
                     new Results(Collections.emptyList(), id, "Not a qualifying document type");

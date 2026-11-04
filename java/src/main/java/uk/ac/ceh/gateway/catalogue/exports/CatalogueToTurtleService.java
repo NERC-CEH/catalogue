@@ -32,7 +32,7 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
         "monitoringActivity",
         "monitoringFacility",
         "monitoringNetwork",
-        "monitoringProgramme"
+        "researchActivity"
     );
     private static final Set<String> PREFETCH_CATALOGUES = ImmutableSet.of(
         "eidc"
@@ -172,8 +172,8 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
                 template(model, "rdf/monitoring/unprefixed/facility.ftl");
             case "monitoringNetwork" ->
                 template(model, "rdf/monitoring/unprefixed/network.ftl");
-            case "monitoringProgramme" ->
-                template(model, "rdf/monitoring/unprefixed/programme.ftl");
+            case "researchActivity" ->
+                template(model, "rdf/monitoring/unprefixed/researchActivity.ftl");
             default -> "";
         };
     }

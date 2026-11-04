@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
+import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -15,23 +15,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@DisplayName("Indexing monitoring programme documents into Solr")
+@DisplayName("Indexing research activity documents into Solr")
 @ExtendWith(MockitoExtension.class)
-class SolrIndexMonitoringProgrammeGeneratorTest {
+class SolrIndexResearchActivityGeneratorTest {
     @Mock
     SolrIndexMetadataDocumentGenerator documentIndexer;
-    private SolrIndexMonitoringProgrammeGenerator generator;
+    private SolrIndexResearchActivityGenerator generator;
 
     @BeforeEach
     void init() {
         when(documentIndexer.generateIndex(any(MetadataDocument.class))).thenReturn(new SolrIndex());
-        generator = new SolrIndexMonitoringProgrammeGenerator(documentIndexer);
+        generator = new SolrIndexResearchActivityGenerator(documentIndexer);
     }
 
     @Test
-    public void checkThatMonitoringProgrammeDataTransferedToIndex() {
+    public void checkThatResearchActivityDataTransferedToIndex() {
         //Given
-        MonitoringProgramme document = new MonitoringProgramme();
+        ResearchActivity document = new ResearchActivity();
         document.setObjectives(SolrIndexMonitoringGeneratorData.objectives);
         document.setEnvironmentalDomain(SolrIndexMonitoringGeneratorData.domainList);
         document.setKeywordsParameters(SolrIndexMonitoringGeneratorData.paramList);

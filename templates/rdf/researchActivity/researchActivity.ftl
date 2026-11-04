@@ -2,7 +2,7 @@
 <#compress>
 <#import "_common.ftl" as c>
 
-<@c.common rdftype="doo:EnvironmentalMonitoringProgramme" prefixed=prefixed!true>
+<@c.common rdftype="doo:researchActivity" prefixed=prefixed!true>
   <#-- programme specific statements about <id> -->
 </@c.common>
 </#compress>

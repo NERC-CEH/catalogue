@@ -235,7 +235,7 @@ public class JenaLookupServiceTest {
     }
 
     @Test
-    public void lookupProgrammeFeatures() {
+    public void lookupResearchActivityFeatures() {
         // Given
         jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
@@ -254,7 +254,7 @@ public class JenaLookupServiceTest {
         jenaTdb.commit();
 
         // When
-        List<Link> actual = service.programmeFeatures("http://programme");
+        List<Link> actual = service.researchActivityFeatures("http://programme");
 
         // Then
         assertThat("Should be 2 Links", actual.size(), equalTo(2));
@@ -263,7 +263,7 @@ public class JenaLookupServiceTest {
     }
 
     @Test
-    public void programmeCombinedGeometries() throws JacksonException {
+    public void researchActivityCombinedGeometries() throws JacksonException {
         // Given
         jenaTdb.begin(ReadWrite.WRITE);
         Model triples = jenaTdb.getDefaultModel();
@@ -287,7 +287,7 @@ public class JenaLookupServiceTest {
         jenaTdb.commit();
 
         // When
-        String actual = service.programmeCombinedGeometries("http://programme");
+        String actual = service.researchActivityCombinedGeometries("http://programme");
 
         // Then
         assertThat("Generates correct combined GeoJSON", actual, equalTo(combinedGeometry));

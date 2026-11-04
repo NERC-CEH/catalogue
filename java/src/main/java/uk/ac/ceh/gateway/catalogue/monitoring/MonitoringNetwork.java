@@ -116,8 +116,8 @@ public class MonitoringNetwork extends AbstractMetadataDocument implements WellK
     }
 
     @JsonIgnore
-    public List<Link> getUtilisingProgrammes() {
-        return Utilises.programmes(getRelUtilisedBy());
+    public List<Link> getUtilisingResearchActivities() {
+        return Utilises.researchActivities(getRelUtilisedBy());
     }
 
     @JsonIgnore

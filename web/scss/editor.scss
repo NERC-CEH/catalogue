@@ -676,7 +676,7 @@ textarea.editor-textarea {
                 padding: 0;
             }
 
-            @media only screen and (min-width: 2040px) {
+            @media only screen and (width > 2040px) {
                 /* Fixes a bug where the options of select elements
                are offset and hidden when the viewport is larger than c2040px.
                I think this might be a bootstrap bug */
@@ -764,7 +764,7 @@ textarea.editor-textarea {
     }
 }
 
-@media only screen and (min-width: 600px) {
+@media (width > 600px) {
 
     .metadata,
     #search {
@@ -815,7 +815,7 @@ textarea.editor-textarea {
     }
 }
 
-@media only screen and (min-width: 995px) {
+@media (width > 995px) {
     .col-sm-11.dataentry.child.child-large {
         .row {
             >div:has(>label) {

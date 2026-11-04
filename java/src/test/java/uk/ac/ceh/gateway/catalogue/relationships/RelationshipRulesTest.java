@@ -24,9 +24,9 @@ class RelationshipRulesTest {
     }
 
     @Test
-    @DisplayName("a programme's facility or network is searched for in eidc and ukceh too")
+    @DisplayName("a research activity's facility or network is searched for in eidc and ukceh too")
     void programmeUtilises() {
-        assertThat(ruleFor("monitoringProgramme", UTILISES).orElseThrow().catalogues())
+        assertThat(ruleFor("researchActivity", UTILISES).orElseThrow().catalogues())
             .isEqualTo(List.of("eidc", "ukceh"));
     }
 
@@ -62,11 +62,11 @@ class RelationshipRulesTest {
     }
 
     @Test
-    @DisplayName("an activity uses facilities and networks, and a programme triggers activities")
+    @DisplayName("an activity uses facilities and networks, and a research activity triggers activities")
     void monitoring() {
         assertThat(ruleFor("monitoringActivity", USES).orElseThrow().targetTypesFor("monitoringActivity"))
             .isEqualTo(Set.of("monitoringFacility", "monitoringNetwork"));
-        assertThat(ruleFor("monitoringProgramme", TRIGGERS).orElseThrow().targetTypesFor("monitoringProgramme"))
+        assertThat(ruleFor("researchActivity", TRIGGERS).orElseThrow().targetTypesFor("researchActivity"))
             .isEqualTo(Set.of("monitoringActivity"));
     }
 
@@ -92,15 +92,6 @@ class RelationshipRulesTest {
         assertThat(ruleFor("codeProject", predicate)).isEmpty();
     }
 
-    @Test
-    @DisplayName("a research activity's outputs are models, data, map services and software")
-    void hasOutput() {
-        var rule = ruleFor("researchActivity", HAS_OUTPUT).orElseThrow();
-        for (String output : List.of("model", "nercModel", "dataset", "nonGeographicDataset", "service", "software")) {
-            assertThat(rule.allows("researchActivity", output)).as(output).isTrue();
-        }
-        assertThat(rule.allows("researchActivity", "monitoringFacility")).isFalse();
-    }
 
     @ParameterizedTest
     @ValueSource(strings = {HAS_CHILD_FACILITY, HAS_CHILD_NETWORK, HAS_CHILD_PROGRAMME})

@@ -34,6 +34,6 @@ class MonitoringActivityTest {
 
         //then
         assertThat(activity.getRelUseNetworkOrFacility().size(), equalTo(1));
-        assertThat(activity.getRelSetupForProgramme().size(), equalTo(1));
+        assertThat(activity.getRelSetupForResearchActivity().size(), equalTo(1));
     }
 }

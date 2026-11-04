@@ -1011,7 +1011,7 @@ body {
 }
 
 /********** Monitoring Records *************/
-.metadata-monitoring {
+.metadata-monitoring, .metadata-researchactivity {
 
     .alternativeTitles {
         font-size: 1.25rem;
@@ -1079,8 +1079,8 @@ body {
     }
 }
 
-@media only screen and (min-width: 990px) {
-    .metadata-monitoring {
+@media (width > 990px) {
+    .metadata-monitoring, .metadata-researchactivity {
         .displayFeatures {
             .featureMap {
                 flex: 1 0 60%;

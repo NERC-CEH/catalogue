@@ -46,7 +46,7 @@ public class MonitoringActivity extends AbstractMetadataDocument implements Well
     private List<Link> relUseNetworkOrFacility;
     @JsonIgnore
     @Setter(onMethod_ = @JsonIgnore)
-    private List<Link> relSetupForProgramme;
+    private List<Link> relSetupForResearchActivity;
 
     @Override
     public List<String> getWKTs() {
@@ -60,7 +60,7 @@ public class MonitoringActivity extends AbstractMetadataDocument implements Well
     public void populateFromJenaService(JenaLookupService jenaService) {
         final String uri = this.getUri();
         this.setRelUseNetworkOrFacility(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/uses"));
-        this.setRelSetupForProgramme(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/triggers"));
+        this.setRelSetupForResearchActivity(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/triggers"));
     }
 
     @JsonProperty("relUseNetworkOrFacility")
@@ -69,9 +69,9 @@ public class MonitoringActivity extends AbstractMetadataDocument implements Well
             .orElseGet(Collections::emptyList);
     }
 
-    @JsonProperty("relSetupForProgramme")
-    public List<Link> getRelSetupForProgramme() {
-        return Optional.ofNullable(relSetupForProgramme)
+    @JsonProperty("relSetupForResearchActivity")
+    public List<Link> getRelSetupForResearchActivity() {
+        return Optional.ofNullable(relSetupForResearchActivity)
             .orElseGet(Collections::emptyList);
     }
 }

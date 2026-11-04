@@ -60,7 +60,7 @@
     <#-- Relationships between records -->
     <@c.jenaLinks "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility" />
     <@c.jenaLinks "https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork" />
-    <@c.jenaLinks "https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme" />
+    <@c.jenaLinks "http://purl.org/dc/terms/hasPart" />
     <@c.jenaLinks "http://purl.org/dc/terms/relation" />
     <@c.jenaLinks "http://purl.org/dc/terms/replaces" />
     <@c.jenaLinks "http://purl.org/dc/terms/isPartOf" />

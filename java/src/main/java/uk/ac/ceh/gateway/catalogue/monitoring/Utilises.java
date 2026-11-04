@@ -6,7 +6,7 @@ import uk.ac.ceh.gateway.catalogue.relationships.RelationshipRules;
 import java.util.List;
 
 /**
- * {@code doo:utilises} links a monitoring programme that runs at a facility or network, or a
+ * {@code doo:utilises} links a research activity that runs at a facility or network, or a
  * data resource produced there, to that facility or network (dri-one #404).
  * <p>
  * {@link RelationshipRules} says what a {@code doo:utilises} link may point at, and the save-time
@@ -19,7 +19,7 @@ import java.util.List;
 public final class Utilises {
     public static final String PREDICATE = RelationshipRules.UTILISES;
 
-    private static final String PROGRAMME = "monitoringProgramme";
+    private static final String RESEARCH_ACTIVITY = "researchActivity";
 
     private Utilises() {}
 
@@ -38,17 +38,17 @@ public final class Utilises {
             .toList();
     }
 
-    /** The programmes among a facility or network's {@link #sources}. */
-    static List<Link> programmes(List<Link> utilisedBy) {
+    /** The research activities among a facility or network's {@link #sources}. */
+    static List<Link> researchActivities(List<Link> utilisedBy) {
         return utilisedBy.stream()
-            .filter(link -> PROGRAMME.equals(link.getAssociationType()))
+            .filter(link -> RESEARCH_ACTIVITY.equals(link.getAssociationType()))
             .toList();
     }
 
     /** The data resources produced at a facility or network: every other source. */
     static List<Link> dataResources(List<Link> utilisedBy) {
         return utilisedBy.stream()
-            .filter(link -> !PROGRAMME.equals(link.getAssociationType()))
+            .filter(link -> !RESEARCH_ACTIVITY.equals(link.getAssociationType()))
             .toList();
     }
 

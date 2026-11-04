@@ -27,11 +27,9 @@ import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.WmsFeatureInfo2XmlMessageConverter;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsReportModel;
-import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.document.writing.MessageConverterWritingService;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
-import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.maintenance.AdminDeleteResponse;
 import uk.ac.ceh.gateway.catalogue.maintenance.MaintenanceResponse;
@@ -43,8 +41,8 @@ import uk.ac.ceh.gateway.catalogue.modelnerc.NercModelUse;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
-import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
+import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.History;
@@ -74,7 +72,6 @@ public class WebConfig implements WebMvcConfigurer {
         val code = new Object2TemplatedMessageConverter<>(CodeDocument.class, freemarkerConfiguration);
         val dataType = new Object2TemplatedMessageConverter<>(DataType.class, freemarkerConfiguration);
         val infrastructureRecord = new Object2TemplatedMessageConverter<>(InfrastructureRecord.class, freemarkerConfiguration);
-        val researchActivity = new Object2TemplatedMessageConverter<>(ResearchActivity.class, freemarkerConfiguration);
         val errorResponse = new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration);
         val gemini = new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration);
         val adminDeleteResponse = new Object2TemplatedMessageConverter<>(AdminDeleteResponse.class, freemarkerConfiguration);
@@ -85,7 +82,7 @@ public class WebConfig implements WebMvcConfigurer {
         val monitoringActivity = new Object2TemplatedMessageConverter<>(MonitoringActivity.class, freemarkerConfiguration);
         val monitoringFacility = new Object2TemplatedMessageConverter<>(MonitoringFacility.class, freemarkerConfiguration);
         val monitoringNetwork = new Object2TemplatedMessageConverter<>(MonitoringNetwork.class, freemarkerConfiguration);
-        val monitoringProgramme = new Object2TemplatedMessageConverter<>(MonitoringProgramme.class, freemarkerConfiguration);
+        val researchActivity = new Object2TemplatedMessageConverter<>(ResearchActivity.class, freemarkerConfiguration);
         val nercModel = new Object2TemplatedMessageConverter<>(NercModel.class, freemarkerConfiguration);
         val nercModelUse = new Object2TemplatedMessageConverter<>(NercModelUse.class, freemarkerConfiguration);
         val permissionResource = new Object2TemplatedMessageConverter<>(PermissionResource.class, freemarkerConfiguration);
@@ -110,7 +107,6 @@ public class WebConfig implements WebMvcConfigurer {
             code,
             dataType,
             infrastructureRecord,
-            researchActivity,
             errorResponse,
             history,
             link,
@@ -119,7 +115,7 @@ public class WebConfig implements WebMvcConfigurer {
             monitoringActivity,
             monitoringFacility,
             monitoringNetwork,
-            monitoringProgramme,
+            researchActivity,
             nercModel,
             nercModelUse,
             permissionResource,

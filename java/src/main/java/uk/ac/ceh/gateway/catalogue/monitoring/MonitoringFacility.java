@@ -131,14 +131,16 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
     }
 
     @JsonIgnore
-    public List<Link> getUtilisingProgrammes() {
-        return Utilises.programmes(getRelUtilisedBy());
+    public List<Link> getUtilisingResearchActivities() {
+        return Utilises.researchActivities(getRelUtilisedBy());
     }
 
+   /*
     @JsonIgnore
     public List<Link> getProducedDataResources() {
         return Utilises.dataResources(getRelUtilisedBy());
-    }
+    } //?
+    */
 
     @JsonProperty("relSupersedes")
     public List<Link> getRelSupersedes() {

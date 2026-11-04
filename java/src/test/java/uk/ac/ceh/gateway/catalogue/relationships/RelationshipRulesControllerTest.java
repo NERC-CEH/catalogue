@@ -58,8 +58,8 @@ class RelationshipRulesControllerTest {
     @ParameterizedTest
     @ValueSource(strings = {
         "dataset", "nonGeographicDataset", "aggregate", "service", "codeProject", "codeSnippet",
-        "computationalNotebook", "infrastructureRecord", "researchActivity", "monitoringActivity",
-        "monitoringFacility", "monitoringNetwork", "monitoringProgramme"
+        "computationalNotebook", "infrastructureRecord", "monitoringActivity",
+        "monitoringFacility", "monitoringNetwork", "researchActivity"
     })
     @DisplayName("every allowed target type has a resourceType label")
     void everyTargetTypeHasALabel(String sourceType) {

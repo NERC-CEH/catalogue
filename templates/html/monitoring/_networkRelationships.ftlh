@@ -3,9 +3,9 @@
 <div class="relationships">
 
   <@m.inverseRelationships relUsedBy "Used by"  />
-  <@m.inverseRelationships utilisingProgrammes "Used by"  />
-  <@m.inverseRelationships producedDataResources "Data produced by this network"  />
+  <@m.inverseRelationships utilisingResearchActivities "Used by"  />
 
+  
   <@m.relationships relSupersedes "Supersedes" />
   <@m.inverseRelationships relSupersededBy "Superseded by"  />
 

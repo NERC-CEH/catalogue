@@ -107,8 +107,8 @@ a.navbar-brand {
             }
         }
 
-        @media only screen and (max-width: 760px),
-            (min-device-width: 768px) and (max-device-width: 1024px) {
+        @media only screen and (width > 760px),
+            (768px < device-width < 1024px) {
             // On small screens, force qa table to not display as a table
             $head-width: 100px;
 

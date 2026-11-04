@@ -23,14 +23,13 @@ import uk.ac.ceh.gateway.catalogue.monitoring.LocationObfuscationService;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
-import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
-import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
+import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
@@ -257,42 +256,7 @@ public class DocumentController extends AbstractDocumentController {
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
         method = RequestMethod.POST,
-        consumes = MONITORING_PROGRAMME_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> newMonitoringProgramme(
-        @ActiveUser CatalogueUser user,
-        @RequestBody MonitoringProgramme document,
-        @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException, IOException {
-        return saveNewMetadataDocument(
-            user,
-            document,
-            catalogue,
-            "new Monitoring programme"
-        );
-    }
-
-    @PreAuthorize("@permission.userCanEdit(#file)")
-    @RequestMapping(value = "documents/{file}",
-        method = RequestMethod.PUT,
-        consumes = MONITORING_PROGRAMME_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> updateMonitoringProgramme(
-        @ActiveUser CatalogueUser user,
-        @PathVariable String file,
-        @RequestBody MonitoringProgramme document,
-        @RequestHeader(value = HttpHeaders.IF_MATCH, required = false) String ifMatch
-    ) throws DocumentRepositoryException, IOException {
-        return saveMetadataDocument(
-            user,
-            file,
-            document,
-            ifMatch
-        );
-    }
-
-    @PreAuthorize("@permission.userCanCreate(#catalogue)")
-    @RequestMapping (value = "documents",
-        method = RequestMethod.POST,
-        consumes = RESEARCHACTIVITY_JSON_VALUE)
+        consumes = RESEARCH_ACTIVITY_JSON_VALUE)
     public ResponseEntity<MetadataDocument> newResearchActivity(
         @ActiveUser CatalogueUser user,
         @RequestBody ResearchActivity document,
@@ -302,14 +266,14 @@ public class DocumentController extends AbstractDocumentController {
             user,
             document,
             catalogue,
-            "new Research Activity"
+            "new Research activity"
         );
     }
 
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}",
         method = RequestMethod.PUT,
-        consumes = RESEARCHACTIVITY_JSON_VALUE)
+        consumes = RESEARCH_ACTIVITY_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateResearchActivity(
         @ActiveUser CatalogueUser user,
         @PathVariable String file,
@@ -323,6 +287,7 @@ public class DocumentController extends AbstractDocumentController {
             ifMatch
         );
     }
+
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
     method = RequestMethod.POST,
@@ -469,7 +434,6 @@ public class DocumentController extends AbstractDocumentController {
             case MonitoringActivity doc -> doc.populateFromJenaService(jenaService);
             case MonitoringFacility doc -> doc.populateFromJenaService(jenaService);
             case MonitoringNetwork doc -> doc.populateFromJenaService(jenaService);
-            case MonitoringProgramme doc -> doc.populateFromJenaService(jenaService);
             case ResearchActivity doc -> doc.populateFromJenaService(jenaService);
             default -> {}
         }

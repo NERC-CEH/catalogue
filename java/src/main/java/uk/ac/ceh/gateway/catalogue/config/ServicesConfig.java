@@ -37,7 +37,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
 import uk.ac.ceh.gateway.catalogue.indexing.PrioritisedClassMap;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
-import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
@@ -46,7 +45,6 @@ import uk.ac.ceh.gateway.catalogue.modelnerc.NercModelUse;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
-import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
@@ -56,6 +54,7 @@ import uk.ac.ceh.gateway.catalogue.repository.GitDocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.checks.NoNewMojibake;
 import uk.ac.ceh.gateway.catalogue.repository.checks.RelationshipTargets;
 import uk.ac.ceh.gateway.catalogue.repository.checks.UniqueResourceIdentifiers;
+import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
 import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.services.ResourceIdentifierLookupService;
@@ -185,7 +184,6 @@ public class ServicesConfig {
             .register(CODE, CodeDocument.class)
             .register(DATA_TYPE, DataType.class)
             .register(INFRASTRUCTURERECORD, InfrastructureRecord.class)
-            .register(RESEARCHACTIVITY, ResearchActivity.class)
             .register(GEMINI, GeminiDocument.class)
             .register(LINK, LinkDocument.class)
             .register(NERC_MODEL, NercModel.class)
@@ -193,7 +191,7 @@ public class ServicesConfig {
             .register(MONITORING_ACTIVITY, MonitoringActivity.class)
             .register(MONITORING_FACILITY, MonitoringFacility.class)
             .register(MONITORING_NETWORK, MonitoringNetwork.class)
-            .register(MONITORING_PROGRAMME, MonitoringProgramme.class)
+            .register(RESEARCH_ACTIVITY, ResearchActivity.class)
             .register(SAMPLE_ARCHIVE, SampleArchive.class)
             .register(SERVICE_AGREEMENT, ServiceAgreement.class)
             .register(UKEMS_DOCUMENT, UkemsDocument.class);

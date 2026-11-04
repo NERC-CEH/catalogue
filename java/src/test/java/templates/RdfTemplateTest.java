@@ -25,7 +25,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.LocationObfuscationService;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
-import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
+import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
@@ -305,32 +305,32 @@ public class RdfTemplateTest {
 
         @Test
         @SneakyThrows
-        @DisplayName("programme ttl")
-        void programme() {
+        @DisplayName("research activity ttl")
+        void researchActivity() {
             //given
-            val expected = expected("rdf/monitoring/programme.ttl");
+            val expected = expected("rdf/monitoring/researchActivity.ttl");
 
-            val programmeDocument = objectMapper.readValue(expected("rdf/datastore/monitoring-programme.raw"), MonitoringProgramme.class);
+            val researchActivityDocument = objectMapper.readValue(expected("rdf/datastore/research-activity.raw"), ResearchActivity.class);
 
-            given(jena.relationships(programmeDocument.getUri(), "http://purl.org/dc/terms/relation")).willReturn(List.of(
+            given(jena.relationships(researchActivityDocument.getUri(), "http://purl.org/dc/terms/relation")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000001").build(),
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000002").build()
             ));
-            given(jena.relationships(programmeDocument.getUri(), "http://purl.org/dc/terms/replaces")).willReturn(List.of(
+            given(jena.relationships(researchActivityDocument.getUri(), "http://purl.org/dc/terms/replaces")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000003").build()
             ));
-            given(jena.relationships(programmeDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/utilises")).willReturn(List.of(
+            given(jena.relationships(researchActivityDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/utilises")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000004").build()
             ));
-            given(jena.relationships(programmeDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme")).willReturn(List.of(
+            given(jena.relationships(researchActivityDocument.getUri(), "http://purl.org/dc/terms/hasPart")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000005").build()
             ));
-            given(jena.relationships(programmeDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/triggers")).willReturn(List.of(
+            given(jena.relationships(researchActivityDocument.getUri(), "https://digital.ceh.ac.uk/ontology/doo/triggers")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/000000006").build()
             ));
 
             //when
-            val actual = template("rdf/monitoring/programme.ftl", programmeDocument);
+            val actual = template("rdf/monitoring/researchActivity.ftl", researchActivityDocument);
 
             //then
             compare(expected, actual, false);

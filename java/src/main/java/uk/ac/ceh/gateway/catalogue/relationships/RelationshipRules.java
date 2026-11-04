@@ -26,6 +26,7 @@ import java.util.Set;
  */
 public final class RelationshipRules {
     public static final String IS_PART_OF = "http://purl.org/dc/terms/isPartOf";
+    public static final String HAS_PART = "http://purl.org/dc/terms/hasPart";
     public static final String REPLACES = "http://purl.org/dc/terms/replaces";
     public static final String REQUIRES = "http://purl.org/dc/terms/requires";
     public static final String SOURCE = "http://purl.org/dc/terms/source";
@@ -35,7 +36,6 @@ public final class RelationshipRules {
     public static final String TRIGGERS = "https://digital.ceh.ac.uk/ontology/doo/triggers";
     public static final String HAS_CHILD_FACILITY = "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility";
     public static final String HAS_CHILD_NETWORK = "https://digital.ceh.ac.uk/ontology/doo/hasChildNetwork";
-    public static final String HAS_CHILD_PROGRAMME = "https://digital.ceh.ac.uk/ontology/doo/hasChildProgramme";
     public static final String SUPERSEDES = "http://onto.nerc.ac.uk/CEHMD/rels/supersedes";
 
     public static final String MONITORING_FACILITY = "monitoringFacility";
@@ -107,7 +107,7 @@ public final class RelationshipRules {
         Map.entry(TRIGGERS, Rule.types(Set.of("monitoringActivity"))),
         Map.entry(HAS_CHILD_FACILITY, Rule.sameType()),
         Map.entry(HAS_CHILD_NETWORK, Rule.sameType()),
-        Map.entry(HAS_CHILD_PROGRAMME, Rule.sameType()),
+        Map.entry(HAS_PART, Rule.sameType()),
         Map.entry(SUPERSEDES, Rule.sameType())
     );
 

@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
  * ({@code _facilityRelationships.ftlh}, {@code _networkRelationships.ftlh}).
  * <p>
  * The "Used by" and "Data produced here" lists come from page-only getters
- * ({@code getUtilisingProgrammes}, {@code getProducedDataResources}), so a template that names
+ * ({@code getUtilisingResearchActivities}, {@code getProducedDataResources}), so a template that names
  * either one wrongly throws {@code InvalidReferenceException} and 500s every page of that type -
  * which the getters' own tests cannot see (dri-one #404).
  * <p>
@@ -70,11 +70,11 @@ class MonitoringRelationshipsTemplateTest {
         );
     }
 
-    /** A Jena lookup in which a programme, a dataset and a draft dataset all utilise {@code uri}. */
+    /** A Jena lookup in which a researchActivity, a dataset and a draft dataset all utilise {@code uri}. */
     private static JenaLookupService utilisedBy(String uri) {
         val jena = mock(JenaLookupService.class);
         when(jena.inverseRelationships(uri, UTILISES)).thenReturn(List.of(
-            link("https://example.com/id/programme", "COSMOS-UK programme", "monitoringProgramme", "published"),
+            link("https://example.com/id/programme", "COSMOS-UK programme", "researchActivity", "published"),
             link("https://example.com/id/dataset", "Soil moisture data", "dataset", "published"),
             link("https://example.com/id/draft", "Unreleased soil data", "dataset", "draft")
         ));
@@ -94,7 +94,7 @@ class MonitoringRelationshipsTemplateTest {
     }
 
     @Test
-    @DisplayName("a facility lists programmes under Used by and datasets under Data produced here")
+    @DisplayName("a facility lists Research activities under Used by and datasets under Data produced here")
     void facility() {
         //given
         val facility = new MonitoringFacility();
@@ -116,7 +116,7 @@ class MonitoringRelationshipsTemplateTest {
     }
 
     @Test
-    @DisplayName("a network lists programmes under Used by and datasets under Data produced by this network")
+    @DisplayName("a network lists researchActivities under Used by and datasets under Data produced by this network")
     void network() {
         //given
         val network = new MonitoringNetwork();

@@ -61,7 +61,7 @@ public class MonitoringQualityService implements MetadataQualityService {
 
             checks.addAll(switch (docType) {
                 case MONITORING_FACILITY -> checkFacility(parsedDoc).toList();
-                case MONITORING_PROGRAMME, MONITORING_ACTIVITY -> checkProgrammeOrActivity(parsedDoc).toList();
+                case MONITORING_ACTIVITY -> checkActivity(parsedDoc).toList();
                 default -> Collections.emptyList();
             });
 
@@ -90,7 +90,7 @@ public class MonitoringQualityService implements MetadataQualityService {
         return toReturn.stream();
     }
 
-    private Stream<MetadataCheck> checkProgrammeOrActivity(DocumentContext parsedDoc) {
+    private Stream<MetadataCheck> checkActivity(DocumentContext parsedDoc) {
         return Stream.concat(
             checkBoundingBox(parsedDoc),
             checkOperatingPeriods(parsedDoc)

@@ -12,7 +12,7 @@
   </#if>
 
   <@m.relationships relUseNetworkOrFacility "Uses these facilities/networks"/>
-  <@m.inverseRelationships relSetupForProgramme "Set up for these programmes"/>
+  <@m.inverseRelationships relSetupForResearchActivity "Set up for these research activities"/>
 
 </@m.base>
 

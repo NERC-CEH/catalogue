@@ -37,7 +37,7 @@ import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
-import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
+import uk.ac.ceh.gateway.catalogue.researchActivity.ResearchActivity;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
@@ -178,15 +178,15 @@ public class RdfTurtleTest {
         }
 
         @Test
-        void loadProgramme() {
+        void loadResearchActivity() {
             //given
-            val programme = new MonitoringProgramme()
+            val activity = new ResearchActivity()
                 .setId("5566")
                 .setUri("https://example.com/id/5566")
                 .setTitle("Rainfall");
 
             //when
-            template("rdf/monitoring/programme.ftl", programme);
+            template("rdf/monitoring/researchActivity.ftl", activity);
 
             //then
             assertTrue(
@@ -194,7 +194,7 @@ public class RdfTurtleTest {
                     createStatement(
                         createResource("https://example.com/id/5566"),
                         createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                        createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringProgramme")
+                        createResource("https://digital.ceh.ac.uk/ontology/doo/ResearchActivity")
                     )
                 )
             );
@@ -273,17 +273,17 @@ public class RdfTurtleTest {
         }
 
         @Test
-        void unprefixedProgrammeParses() {
-            val programme = new MonitoringProgramme()
+        void unprefixedActivityParses() {
+            val activity = new ResearchActivity()
                 .setId("5566")
                 .setUri("https://example.com/id/5566")
                 .setTitle("Rainfall");
-            combinedTemplate("rdf/monitoring/unprefixed/programme.ftl", programme);
+            combinedTemplate("rdf/monitoring/unprefixed/researchActivity.ftl", activity);
             assertTrue(model.contains(
                 createStatement(
                     createResource("https://example.com/id/5566"),
                     createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                    createResource("https://digital.ceh.ac.uk/ontology/doo/EnvironmentalMonitoringProgramme")
+                    createResource("https://digital.ceh.ac.uk/ontology/doo/ResearchActivity")
                 )
             ));
         }

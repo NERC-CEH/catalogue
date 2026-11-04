@@ -227,7 +227,7 @@ main {
     }
 }
 
-@media (min-width: 1000px) {
+@media (width > 1000px) {
     main {
         .search {
             .filters {

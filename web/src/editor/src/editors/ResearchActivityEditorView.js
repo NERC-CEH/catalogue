@@ -1,19 +1,25 @@
-import { EditorView, InputView } from '../index'
+import EditorView from '../EditorView'
+import InputView from '../InputView'
+import SelectView from '../SelectView'
 import {
-  ContactView,
-  SimpleLinkView,
-  ParentStringView,
+  KeywordVocabularyView,
   ParentView,
+  ParentStringView,
   PredefinedParentView,
-  PredefinedParentLargeView,
   RelationshipView,
+  PredefinedSingleObjectView,
+  TemporalExtentView,
   TextareaView,
+  EnvironmentalDomainView,
+  ResourceIdentifierView,
+  ContactView,
+  PurposeOfCollectionView,
+  SupplementalLinkView,
   FundingView
 } from '../views'
-import {
-  Contact,
-  Funding
-} from '../models'
+import { MultipleDate, EnvironmentalDomain, PurposeOfCollection, Contact, Supplemental, Funding } from '../models'
+import { BoundingBox, BoundingBoxView } from '../geometryMap'
+
 export default EditorView.extend({
 
   initialize () {
@@ -21,7 +27,7 @@ export default EditorView.extend({
 
     this.sections = [{
       label: 'General',
-      title: 'General',
+      title: 'General information',
       views: [
 
         new InputView({
@@ -33,95 +39,152 @@ export default EditorView.extend({
         new ParentStringView({
           model: this.model,
           modelAttribute: 'alternateNames',
-          label: 'Alternative names'
+          label: 'Alternative name(s)'
+        }),
+
+        new SelectView({
+          model: this.model,
+          modelAttribute: 'activityType',
+          label: 'Type of activity',
+          options: [
+            { value: 'earthObservation', label: 'Earth observation', description: 'Research whose primary objective is the acquisition and use of remotely sensed observations from satellites, aircraft, drones, or similar platforms to study environmental processes and change' },
+            { value: 'environmentalMonitoring', label: 'Environmental monitoring scheme' },
+            { value: 'experimentalResearch', label: 'Experimental research' },
+            { value: 'instrumentedNetwork', label: 'Instrumented network' },
+            { value: 'modelling', label: 'Modelling' },
+            { value: 'periodicSurvey', label: 'Periodic survey' }
+          ]
         }),
 
         new TextareaView({
           model: this.model,
           modelAttribute: 'description',
-          label: 'Description',
-          rows: 6
+          rows: 5,
+          label: 'Description'
+        }),
+
+        new TextareaView({
+          model: this.model,
+          modelAttribute: 'objectives',
+          label: 'Objectives'
         }),
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'onlineResources',
-          label: 'Online resources',
-          ObjectInputView: SimpleLinkView,
-          multiline: true
-        })
+          modelAttribute: 'operatingPeriod',
+          ModelType: MultipleDate,
+          label: 'Operating period',
+          ObjectInputView: TemporalExtentView
+        }),
 
+        new SelectView({
+          model: this.model,
+          modelAttribute: 'operationalStatus',
+          label: 'Status',
+          options: [
+            { value: 'Unknown', label: 'Unknown' },
+            { value: 'Active', label: 'Active' },
+            { value: 'Inactive', label: 'Inactive' }
+          ]
+        })
+      ]
+    },
+    {
+      label: 'Spatial coverage',
+      title: 'Spatial coverage',
+      views: [
+
+        new PredefinedSingleObjectView({
+          model: this.model,
+          modelAttribute: 'boundingBox',
+          ModelType: BoundingBox,
+          label: 'Bounding box',
+          ObjectInputView: BoundingBoxView,
+          predefined: {
+            England: {
+              northBoundLatitude: 55.812,
+              eastBoundLongitude: 1.768,
+              southBoundLatitude: 49.864,
+              westBoundLongitude: -6.452
+            },
+            'Great Britain': {
+              northBoundLatitude: 60.861,
+              eastBoundLongitude: 1.768,
+              southBoundLatitude: 49.864,
+              westBoundLongitude: -8.648
+            },
+            'Northern Ireland': {
+              northBoundLatitude: 55.313,
+              eastBoundLongitude: -5.432,
+              southBoundLatitude: 54.022,
+              westBoundLongitude: -8.178
+            },
+            Scotland: {
+              northBoundLatitude: 60.861,
+              eastBoundLongitude: -0.728,
+              southBoundLatitude: 54.634,
+              westBoundLongitude: -8.648
+            },
+            'United Kingdom': {
+              northBoundLatitude: 60.861,
+              eastBoundLongitude: 1.768,
+              southBoundLatitude: 49.864,
+              westBoundLongitude: -8.648
+            },
+            Wales: {
+              northBoundLatitude: 53.434,
+              eastBoundLongitude: -2.654,
+              southBoundLatitude: 51.375,
+              westBoundLongitude: -5.473
+            },
+            World: {
+              northBoundLatitude: 90.00,
+              eastBoundLongitude: 180.00,
+              southBoundLatitude: -90.00,
+              westBoundLongitude: -180.00
+            }
+          }
+        })
       ]
     },
     {
       label: 'Contacts',
       title: 'Contacts',
       views: [
-        new PredefinedParentLargeView({
+
+        new PredefinedParentView({
           model: this.model,
           ModelType: Contact,
-          modelAttribute: 'contactPoints',
-          label: 'Contact point',
+          modelAttribute: 'contacts',
+          label: 'Contacts',
           ObjectInputView: ContactView,
           multiline: true,
           roleDefault: 'pointOfContact',
           predefined: {
-            'UKCEH Bangor': {
-              organisationName: 'UK Centre for Ecology & Hydrology',
-              role: 'pointOfContact',
-              email: 'enquiries@ceh.ac.uk',
-              organisationIdentifier: 'https://ror.org/00pggkr55',
-              address: {
-                deliveryPoint: 'Environment Centre Wales, Deiniol Road',
-                postalCode: 'LL57 2UW',
-                city: 'Bangor',
-                administrativeArea: 'Gwynedd',
-                country: 'United Kingdom'
-              }
+            'Environment Agency': {
+              organisationName: 'Environment Agency',
+              email: 'enquiries@environment-agency.gov.uk',
+              organisationIdentifier: 'https://ror.org/01zewfb16'
             },
-            'UKCEH Edinburgh': {
-              organisationName: 'UK Centre for Ecology & Hydrology',
-              role: 'pointOfContact',
-              email: 'enquiries@ceh.ac.uk',
-              organisationIdentifier: 'https://ror.org/00pggkr55',
-              address: {
-                deliveryPoint: 'Bush Estate',
-                postalCode: 'EH26 0QB',
-                city: 'Penicuik',
-                administrativeArea: 'Midlothian',
-                country: 'United Kingdom'
-              }
+            'Natural England': {
+              organisationName: 'Natural England',
+              email: 'enquiries@naturalengland.org.uk',
+              organisationIdentifier: 'https://ror.org/00r66pz14'
             },
-            'UKCEH Lancaster': {
-              organisationName: 'UK Centre for Ecology & Hydrology',
-              role: 'pointOfContact',
-              email: 'enquiries@ceh.ac.uk',
-              organisationIdentifier: 'https://ror.org/00pggkr55',
-              address: {
-                deliveryPoint: 'Lancaster Environment Centre, Library Avenue, Bailrigg',
-                postalCode: 'LA1 4AP',
-                city: 'Lancaster',
-                administrativeArea: 'Lancashire',
-                country: 'United Kingdom'
-              }
+            'Natural Resources Wales': {
+              organisationName: 'Natural Resources Wales',
+              email: 'enquiries@naturalresourceswales.gov.uk',
+              organisationIdentifier: 'https://ror.org/04x65hs26'
             },
-            'UKCEH Wallingford': {
+            UKCEH: {
               organisationName: 'UK Centre for Ecology & Hydrology',
-              role: 'pointOfContact',
               email: 'enquiries@ceh.ac.uk',
-              organisationIdentifier: 'https://ror.org/00pggkr55',
-              address: {
-                deliveryPoint: 'Maclean Building, Benson Lane, Crowmarsh Gifford',
-                postalCode: 'OX10 8BB',
-                city: 'Wallingford',
-                administrativeArea: 'Oxfordshire',
-                country: 'United Kingdom'
-              }
+              organisationIdentifier: 'https://ror.org/00pggkr55'
             }
           }
         }),
 
-        new PredefinedParentLargeView({
+        new PredefinedParentView({
           model: this.model,
           ModelType: Contact,
           modelAttribute: 'contributors',
@@ -139,8 +202,21 @@ export default EditorView.extend({
               organisationName: 'Unaffiliated'
             }
           }
-        })
+        }),
 
+        new ParentView({
+          model: this.model,
+          ModelType: Contact,
+          modelAttribute: 'partners',
+          label: 'Partners',
+          ObjectInputView: ContactView,
+          multiline: true,
+          roleoptions: [
+            { value: 'funder', label: 'Funder' },
+            { value: 'stakeholder', label: 'Stakeholder' },
+            { value: 'user', label: 'User' }
+          ]
+        })
       ]
     },
     {
@@ -195,9 +271,82 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'Relationships',
-      title: 'Relationships',
+      label: 'Keywords/classification',
+      title: 'Keywords and classification',
       views: [
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'environmentalDomain',
+          ModelType: EnvironmentalDomain,
+          label: 'Environmental domain',
+          ObjectInputView: EnvironmentalDomainView
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'purposeOfCollection',
+          ModelType: PurposeOfCollection,
+          label: 'Purpose of collection',
+          ObjectInputView: PurposeOfCollectionView
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsParameters',
+          label: 'Parameters measured',
+          ObjectInputView: KeywordVocabularyView,
+          vocabs: {
+            ukceh: ['envThes', 'gemet'],
+            eidc: ['envThes', 'gemet'],
+            ukeof: ['envThes', 'gemet']
+          },
+          multiline: true
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywords',
+          label: 'Keywords',
+          ObjectInputView: KeywordVocabularyView,
+          vocabs: {
+            ukceh: ['envThes', 'gemet'],
+            eidc: ['envThes', 'gemet'],
+            ukeof: ['envThes', 'gemet']
+          },
+          multiline: true
+        })
+      ]
+    },
+    {
+      label: 'IDs and links',
+      title: 'IDs and links',
+      views: [
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'resourceIdentifiers',
+          label: 'Identifiers',
+          ObjectInputView: ResourceIdentifierView
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'linksData',
+          ModelType: Supplemental,
+          multiline: true,
+          label: 'Links to data',
+          ObjectInputView: SupplementalLinkView
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'linksOther',
+          ModelType: Supplemental,
+          multiline: true,
+          label: 'Other links',
+          ObjectInputView: SupplementalLinkView
+        }),
 
         new ParentView({
           model: this.model,
@@ -206,17 +355,15 @@ export default EditorView.extend({
           ObjectInputView: RelationshipView,
           multiline: true,
           options: [
-            {
-              value: 'http://purl.org/cerif/frapo/hasOutput',
-              label: 'Has output'
-            },
-            {
-              value: 'http://purl.org/dc/terms/relation',
-              label: 'Relation'
-            }
-          ]
+            { value: 'https://digital.ceh.ac.uk/ontology/doo/utilises', label: 'Uses (facility or network)' },
+            { value: 'http://purl.org/dc/terms/hasPart', label: 'Has part' },
+            { value: 'http://purl.org/dc/terms/relation', label: 'Related to' },
+            { value: 'http://purl.org/dc/terms/replaces', label: 'Supersedes' }
+          ],
+          helpText: `
+<p>Links to other records</p>
+`
         })
-
       ]
     }
     ]

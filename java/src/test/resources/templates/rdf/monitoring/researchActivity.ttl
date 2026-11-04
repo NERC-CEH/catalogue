@@ -7,13 +7,13 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 PREFIX adms: <http://www.w3.org/ns/adms#>
 :43414cbf-03ab-4f5a-a581-b01ce145d312
-a doo:EnvironmentalMonitoringProgramme ;
+a doo:researchActivity ;
 dcterms:title "Test programme name" ;
 adms:identifier :43414cbf-03ab-4f5a-a581-b01ce145d312_id0 ;
 dcterms:description "Test programme description" ;
 geo:hasBoundingBox :43414cbf-03ab-4f5a-a581-b01ce145d312_bbox ;
 dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en>;
-doo:hasChildProgramme <https://catalogue.ceh.ac.uk/id/000000005>;
+doo:hasPart <https://catalogue.ceh.ac.uk/id/000000005>;
 dcterms:relation <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue.ceh.ac.uk/id/000000002>;
 dcterms:replaces <https://catalogue.ceh.ac.uk/id/000000003>;
 doo:utilises <https://catalogue.ceh.ac.uk/id/000000004>;

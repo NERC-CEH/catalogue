@@ -25,8 +25,6 @@ public class CatalogueMediaTypes {
 
     public static final String INFRASTRUCTURERECORD_JSON_VALUE = "application/vnd.infrastructure+json";
 
-    public static final String RESEARCHACTIVITY_JSON_VALUE = "application/vnd.researchactivity+json";
-
     public static final String METHOD_JSON_VALUE = "application/vnd.method+json";
 
     public static final String GEMINI_XML_SHORT = "gemini";
@@ -41,7 +39,7 @@ public class CatalogueMediaTypes {
     public static final String MONITORING_ACTIVITY_JSON_VALUE = "application/vnd.monitoring-activity+json";
     public static final String MONITORING_FACILITY_JSON_VALUE = "application/vnd.monitoring-facility+json";
     public static final String MONITORING_NETWORK_JSON_VALUE = "application/vnd.monitoring-network+json";
-    public static final String MONITORING_PROGRAMME_JSON_VALUE = "application/vnd.monitoring-programme+json";
+    public static final String RESEARCH_ACTIVITY_JSON_VALUE = "application/vnd.research-activity+json";
 
     public static final String NERC_MODEL_JSON_VALUE = "application/vnd.nerc-model+json";
     public static final String NERC_MODEL_USE_JSON_VALUE = "application/vnd.nerc-model-use+json";

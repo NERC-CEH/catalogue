@@ -190,9 +190,9 @@ public class JenaLookupService {
         return links(sparql, binding);
     }
 
-    public List<Link> programmeFeatures(String uri) {
+    public List<Link> researchActivityFeatures(String uri) {
         String sparql = PREFIXES + " SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom (GROUP_CONCAT(?code; separator='|') AS ?codes) " +
-            "WHERE {?me (doo:hasChildProgramme)* ?prog ." +
+            "WHERE {?me (dcterms:hasPart)* ?prog ." +
             "{?prog doo:utilises ?node. ?node dcterms:title ?title ; pso:PublicationStatus ?publicationStatus ; dcterms:type ?type ; sf:Geometry ?geom.}" + 
             "UNION {?prog doo:utilises ?network .?node dcterms:isPartOf ?network ; dcterms:title ?title ; pso:PublicationStatus ?publicationStatus ; dcterms:type ?type ; sf:Geometry ?geom .BIND(doo:utilises AS ?rel)}" +
             "OPTIONAL {?node eidc:availability ?availability} " +
@@ -203,10 +203,10 @@ public class JenaLookupService {
     }
 
     /**
-     * Function to compile a FeatureCollection for programmes - directly linked facilities and child facilities of networks
+     * Function to compile a FeatureCollection for researchActivities - directly linked facilities and child facilities of networks
      */
-    public String programmeCombinedGeometries(String uri) throws JacksonException {
-        List<Link> links = programmeFeatures(uri);
+    public String researchActivityCombinedGeometries(String uri) throws JacksonException {
+        List<Link> links = researchActivityFeatures(uri);
         // Return if no links found
         if (links.isEmpty()) {
             return "";

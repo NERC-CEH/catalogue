@@ -62,7 +62,7 @@ class MonitoringNetworkTest {
     }
 
     @Test
-    @DisplayName("splits utilisedBy into programmes and the data resources produced there")
+    @DisplayName("splits utilisedBy into researchActivities and the data resources produced there")
     void splitsUtilisedByOnRecordType() throws Exception {
         //given
         val network = new MonitoringNetwork();
@@ -71,7 +71,7 @@ class MonitoringNetworkTest {
         val jenaService = org.mockito.Mockito.mock(JenaLookupService.class);
         when(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"))
             .thenReturn(List.of(
-                published("https://example.com/programme/1", "monitoringProgramme"),
+                published("https://example.com/programme/1", "researchActivity"),
                 published("https://example.com/dataset/1", "dataset"),
                 published("https://example.com/dataset/2", "nonGeographicDataset")
             ));
@@ -80,14 +80,14 @@ class MonitoringNetworkTest {
         network.populateFromJenaService(jenaService);
 
         //then
-        assertThat(hrefs(network.getUtilisingProgrammes()), equalTo(List.of("https://example.com/programme/1")));
+        assertThat(hrefs(network.getUtilisingResearchActivities()), equalTo(List.of("https://example.com/programme/1")));
         assertThat(
             hrefs(network.getProducedDataResources()),
             equalTo(List.of("https://example.com/dataset/1", "https://example.com/dataset/2"))
         );
         // derived views for the page only: relUtilisedBy stays the one JSON property
         val json = JsonMapper.builder().build().writeValueAsString(network);
-        assertThat(json.contains("utilisingProgrammes"), equalTo(false));
+        assertThat(json.contains("utilisingResearchActivities"), equalTo(false));
         assertThat(json.contains("producedDataResources"), equalTo(false));
     }
 
@@ -104,7 +104,7 @@ class MonitoringNetworkTest {
                 published("https://example.com/dataset/1", "dataset"),
                 Link.builder().href("https://example.com/dataset/draft").associationType("dataset")
                     .publicationStatus("draft").build(),
-                Link.builder().href("https://example.com/programme/pending").associationType("monitoringProgramme")
+                Link.builder().href("https://example.com/programme/pending").associationType("researchActivity")
                     .publicationStatus("pending").build()
             ));
 
@@ -113,7 +113,7 @@ class MonitoringNetworkTest {
 
         //then
         assertThat(hrefs(network.getRelUtilisedBy()), equalTo(List.of("https://example.com/dataset/1")));
-        assertThat(network.getUtilisingProgrammes().isEmpty(), equalTo(true));
+        assertThat(network.getUtilisingResearchActivities().isEmpty(), equalTo(true));
         val json = JsonMapper.builder().build().writeValueAsString(network);
         assertThat(json.contains("https://example.com/dataset/draft"), equalTo(false));
         assertThat(json.contains("https://example.com/programme/pending"), equalTo(false));

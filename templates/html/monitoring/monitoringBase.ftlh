@@ -415,13 +415,6 @@ Symmetrical relationships
   </#if>
 </#macro>
 
-<#macro programmeCombinedGeometries relation>
-  <#local combinedGeometry=relation />
-  <#if combinedGeometry?has_content>
-    <@map combinedGeometry />
-  </#if>
-</#macro>
-
 <#macro contactDetails contact>
   <div class="contact row">
       <#if contact.role?has_content>

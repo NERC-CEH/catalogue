@@ -24,13 +24,13 @@ export function editorLookup ({
   CehModelApplicationEditorView,
   CehModelEditorView, CodeDocumentEditorView,
   DataTypeEditorView,
-  GeminiEditorView, InfrastructureRecordEditorView, ResearchActivityEditorView,
+  GeminiEditorView, InfrastructureRecordEditorView, 
   LinkEditorView,
   MonitoringEditorView,
   MonitoringActivityEditorView,
   MonitoringFacilityEditorView,
   MonitoringNetworkEditorView,
-  MonitoringProgrammeEditorView,
+  ResearchActivityEditorView,
   NercModelEditorView,
   NercModelUseEditorView,
   SampleArchiveEditorView, ServiceAgreementEditorView, UkemsDocumentEditorView,
@@ -67,10 +67,10 @@ export function editorLookup ({
       Model: EditorMetadata,
       mediaType: 'application/vnd.monitoring-activity+json'
     },
-    'monitoring-programme': {
-      View: MonitoringProgrammeEditorView,
+    'research-activity': {
+      View: ResearchActivityEditorView,
       Model: EditorMetadata,
-      mediaType: 'application/vnd.monitoring-programme+json'
+      mediaType: 'application/vnd.research-activity+json'
     },
     'monitoring-facility': {
       View: MonitoringFacilityEditorView,
@@ -121,11 +121,6 @@ export function editorLookup ({
       View: InfrastructureRecordEditorView,
       Model: EditorMetadata,
       mediaType: 'application/vnd.infrastructure+json'
-    },
-    researchactivity: {
-      View: ResearchActivityEditorView,
-      Model: EditorMetadata,
-      mediaType: 'application/vnd.researchactivity+json'
     }
   }
 }

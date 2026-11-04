@@ -3,7 +3,7 @@ import $ from 'jquery'
 import RelationshipView, { clearRelationshipRules, recordUrl } from '../src/views/RelationshipView'
 import {
   CodeDocumentEditorView, GeminiEditorView, InfrastructureRecordEditorView, MonitoringActivityEditorView,
-  MonitoringFacilityEditorView, MonitoringNetworkEditorView, MonitoringProgrammeEditorView, ResearchActivityEditorView
+  MonitoringFacilityEditorView, MonitoringNetworkEditorView, ResearchActivityEditorView,
 } from '../src/editors'
 import { EditorMetadata, GeminiEditorMetadata } from '../src'
 import { fakeServer } from '../../test/support'
@@ -330,7 +330,6 @@ describe('Relationships in the editor', () => {
       ['monitoring activity', MonitoringActivityEditorView, EditorMetadata, {}, 'monitoringActivity'],
       ['monitoring facility', MonitoringFacilityEditorView, EditorMetadata, {}, 'monitoringFacility'],
       ['monitoring network', MonitoringNetworkEditorView, EditorMetadata, {}, 'monitoringNetwork'],
-      ['monitoring programme', MonitoringProgrammeEditorView, EditorMetadata, {}, 'monitoringProgramme'],
       ['research activity', ResearchActivityEditorView, EditorMetadata, {}, 'researchActivity']
     ]
 

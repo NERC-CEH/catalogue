@@ -100,8 +100,7 @@ public class CatalogueServiceConfig {
                 .documentType(GEMINI_TYPE)
                 .documentType(MONITORING_FACILITY_TYPE)
                 .documentType(MONITORING_NETWORK_TYPE)
-                .documentType(MONITORING_PROGRAMME_TYPE)
-                .documentType(RESEARCHACTIVITY_TYPE)
+                .documentType(RESEARCH_ACTIVITY_TYPE)
                 .fileUpload(false)
                 .build(),
 
@@ -120,7 +119,6 @@ public class CatalogueServiceConfig {
                 .facetKey("grant")
                 .facetKey("publicationState")
                 .documentType(GEMINI_TYPE)
-                .documentType(RESEARCHACTIVITY_TYPE)
                 .fileUpload(false)
                 .build(),
 
@@ -231,7 +229,7 @@ public class CatalogueServiceConfig {
                 .facetKey("publicationState")
                 .documentType(MONITORING_FACILITY_TYPE)
                 .documentType(MONITORING_NETWORK_TYPE)
-                .documentType(MONITORING_PROGRAMME_TYPE)
+                .documentType(RESEARCH_ACTIVITY_TYPE)
                 .fileUpload(false)
                 .build()
         );
