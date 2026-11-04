@@ -1,3 +1,4 @@
+<#import "_catalogRecord.ftl" as cr>
 :${id}
   dcterms:title <@displayLiteral title /> ;
 
@@ -213,23 +214,7 @@
     .
   </#if>
 
-  <#--
-    The catalogue record: when this metadata was last changed, as distinct from the
-    resource it describes. ISO_LOCAL_DATE_TIME drops zero seconds ("2024-05-06T07:08"),
-    which is not a valid xsd:dateTime, so those are restored; anything else that does not
-    fit is omitted rather than coerced.
-  -->
-  <#assign recordModified = (metadataDateTime!"")>
-  <#if recordModified?matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}")>
-    <#assign recordModified = recordModified + ":00">
-  </#if>
-  :${id}_record
-    a dcat:CatalogRecord ;
-    foaf:primaryTopic :${id} ;
-    <#if recordModified?matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?")>
-      dcterms:modified "${recordModified}"^^xsd:dateTime ;
-    </#if>
-    .
+  <@cr.catalogRecord />
 
   <#macro canonicalIdentifier resourceIdentifiers>
 

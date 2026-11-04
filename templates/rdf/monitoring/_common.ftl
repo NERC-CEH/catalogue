@@ -1,5 +1,6 @@
 <#ftl output_format="plainText">
 <#import "../_turtle.ftl" as ttl>
+<#import "../_catalogRecord.ftl" as cr>
 
  <#if resourceIdentifiers?? && resourceIdentifiers?has_content && resourceIdentifiers?filter(ri -> ri.codeSpace?has_content)?has_content>
   <#assign localIDs = resourceIdentifiers?filter(ri -> ri.codeSpace?has_content)?filter(ri -> !ri.codeSpace?starts_with("doi")) >
@@ -79,6 +80,8 @@
           a geo:Geometry ;
           geo:asEnvelope "ENVELOPE(${boundingBox.westBoundLongitude}, ${boundingBox.eastBoundLongitude}, ${boundingBox.southBoundLatitude}, ${boundingBox.northBoundLatitude})"^^geo:envelopeLiteral .
     </#if>
+
+    <@cr.catalogRecord />
 </#macro>
 
 <#macro jenaLinks predicate="http://purl.org/dc/terms/relation">

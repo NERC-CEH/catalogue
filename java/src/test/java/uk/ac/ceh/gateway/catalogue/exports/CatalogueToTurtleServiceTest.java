@@ -35,6 +35,7 @@ import static org.apache.jena.rdf.model.ResourceFactory.createProperty;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.matchesRegex;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -412,6 +413,29 @@ class CatalogueToTurtleServiceTest {
 
         assertTrue(model.contains(createResource(baseUri + "/ukeof/documents"),
             createProperty(DCT + "license"), createResource("https://spdx.org/licenses/OGL-UK-3.0.ttl")));
-        assertTrue(!model.contains(null, createProperty(DCT + "publisher")));
+        assertFalse(model.contains(null, createProperty(DCT + "publisher")));
+    }
+
+    /** Every id the catalogue links with dcat:record must be described, whatever its record type. */
+    @Test
+    void aMonitoringRecordsCatalogueRecordNodeIsDescribed() {
+        val facility = new uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility();
+        facility.setType("monitoringFacility");
+        facility.setId("mon1");
+        facility.setUri(baseUri + "/id/mon1");
+        facility.setTitle("Monitoring facility");
+        given(catalogueService.retrieve(catalogueKey)).willReturn(catalogue);
+        given(listing.getLatestPublicDocumentsOfCatalogue(catalogueKey)).willReturn(List.of(facility));
+        val ttl = service.getBigTtl(catalogueKey).orElseThrow();
+        Model model = ModelFactory.createDefaultModel();
+        RDFDataMgr.read(model, new StringReader(ttl), baseUri + "/", Lang.TTL);
+
+        val record = createResource(baseUri + "/id/mon1_record");
+        assertTrue(model.contains(createResource(baseUri + "/eidc/documents"),
+            createProperty("http://www.w3.org/ns/dcat#record"), record));
+        assertTrue(model.contains(record, createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            createResource("http://www.w3.org/ns/dcat#CatalogRecord")));
+        assertTrue(model.contains(record, createProperty("http://xmlns.com/foaf/0.1/primaryTopic"),
+            createResource(baseUri + "/id/mon1")));
     }
 }

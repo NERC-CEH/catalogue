@@ -111,6 +111,25 @@ public class RdfTurtleTest {
     class Monitoring {
 
         @Test
+        void facilityHasACatalogueRecordNode() {
+            val facility = new MonitoringFacility()
+                .setId("9372")
+                .setUri("https://example.com/id/9372")
+                .setTitle("Kelp bed");
+            facility.setMetadataDate(java.time.LocalDateTime.of(2024, 5, 6, 7, 8, 9));
+
+            template("rdf/monitoring/facility.ftl", facility);
+
+            val record = createResource("https://example.com/id/9372_record");
+            assertTrue(model.contains(record, createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                createResource("http://www.w3.org/ns/dcat#CatalogRecord")));
+            assertTrue(model.contains(record, createProperty("http://xmlns.com/foaf/0.1/primaryTopic"),
+                createResource("https://example.com/id/9372")));
+            assertTrue(model.contains(record, createProperty("http://purl.org/dc/terms/modified"),
+                createTypedLiteral("2024-05-06T07:08:09", org.apache.jena.datatypes.xsd.XSDDatatype.XSDdateTime)));
+        }
+
+        @Test
         void loadActivity() {
             //given
             val activity = new MonitoringActivity()
@@ -3007,7 +3026,7 @@ public class RdfTurtleTest {
         }
 
         @Test
-        @DisplayName("a metadata date on the minute keeps a valid xsd:dateTime")
+        @DisplayName("a metadata date on the minute keeps its zero seconds (ISO_LOCAL_DATE_TIME prints them)")
         void metadataDateOnTheMinute() {
             val document = dataset("recmin");
             document.setMetadataDate(java.time.LocalDateTime.of(2024, 5, 6, 7, 8, 0));
