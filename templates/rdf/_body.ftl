@@ -63,6 +63,24 @@
     <#list jena.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises")?filter(item -> item.availability != "Deleted")>
       doo:utilises <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
+    <#-- requires / isRequiredBy / isReplacedBy name only published, non-withdrawn records: the
+         inverse lookups return incoming nodes whatever their publication state, so a draft that
+         requires or replaces this record must not be named in the public export.
+         dcterms:source and the CEHMD supersedes relationship are deliberately not exported: no
+         public exported record holds either (only the CodeDocument and InfrastructureRecord
+         editors offer them, types that are not exported, dri-one #403), and that editor labels
+         dcterms:source "Produces", the inverse of Dublin Core's meaning. -->
+    <#list jena.relationships(uri, "http://purl.org/dc/terms/requires")?filter(item -> item.availability != "Deleted" && item.publicationStatus == "published")>
+      dcterms:requires <#items as item><${item.href}><#sep>, </#items> ;
+    </#list>
+    <#-- The inverse links read the incoming statement; the same guards apply, so a public record
+         never names a withdrawn or unpublished one as its dependant or successor. -->
+    <#list jena.inverseRelationships(uri, "http://purl.org/dc/terms/requires")?filter(item -> item.availability != "Deleted" && item.publicationStatus == "published")>
+      dcterms:isRequiredBy <#items as item><${item.href}><#sep>, </#items> ;
+    </#list>
+    <#list jena.inverseRelationships(uri, "http://purl.org/dc/terms/replaces")?filter(item -> item.availability != "Deleted" && item.publicationStatus == "published")>
+      dcterms:isReplacedBy <#items as item><${item.href}><#sep>, </#items> ;
+    </#list>
 
     <#--Citations-->
     <#if incomingCitations?has_content>

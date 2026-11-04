@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
@@ -57,6 +58,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import java.util.Optional;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verifyNoInteractions;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.KeywordUri;
 import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabularySolrQueryService;
@@ -1600,6 +1602,153 @@ public class RdfTurtleTest {
                     createProperty(IS_PART_OF),
                     createResource("https://example.com/id/noAvailabilityRecorded")
                 ));
+            }
+        }
+
+        @Nested
+        @DisplayName("Requires and its two inverses are exported, for published records only")
+        class Relationships {
+
+            private static final String DCT = "http://purl.org/dc/terms/";
+            private static final String REQUIRES = DCT + "requires";
+            private static final String REPLACES = DCT + "replaces";
+
+            @BeforeEach
+            void noRelationshipsByDefault() {
+                // Strict stubs reject a call whose arguments differ from the stubbed ones, and the
+                // template asks for every relationship; each test overrides only the one it covers.
+                lenient().when(jenaLookupService.relationships(
+                    ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+                    .thenReturn(List.of());
+                lenient().when(jenaLookupService.inverseRelationships(
+                    ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+                    .thenReturn(List.of());
+            }
+
+            private GeminiDocument dataset(String id) {
+                return (GeminiDocument) new GeminiDocument()
+                    .setType("dataset")
+                    .setId(id)
+                    .setUri("https://example.com/id/" + id)
+                    .setTitle("Relationships");
+            }
+
+            private Link link(String id, String availability) {
+                return link(id, availability, "published");
+            }
+
+            private Link link(String id, String availability, String publicationStatus) {
+                return Link.builder().href("https://example.com/id/" + id)
+                    .availability(availability).publicationStatus(publicationStatus).build();
+            }
+
+            private boolean has(GeminiDocument document, String predicate, String target) {
+                return model.contains(
+                    createResource(document.getUri()),
+                    createProperty(predicate),
+                    createResource("https://example.com/id/" + target)
+                );
+            }
+
+            @Test
+            @DisplayName("dcterms:requires is exported")
+            void requiresIsExported() {
+                val document = dataset("rel");
+                given(jenaLookupService.relationships(document.getUri(), REQUIRES))
+                    .willReturn(List.of(link("t1", "Available")));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(has(document, REQUIRES, "t1"));
+            }
+
+            @Test
+            @DisplayName("dcterms:isRequiredBy comes from an incoming dcterms:requires")
+            void isRequiredByComesFromIncomingRequires() {
+                val document = dataset("rel");
+                given(jenaLookupService.inverseRelationships(document.getUri(), REQUIRES))
+                    .willReturn(List.of(link("s1", "Available")));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(has(document, DCT + "isRequiredBy", "s1"));
+            }
+
+            @Test
+            @DisplayName("dcterms:isReplacedBy comes from an incoming dcterms:replaces")
+            void isReplacedByComesFromIncomingReplaces() {
+                val document = dataset("rel");
+                given(jenaLookupService.inverseRelationships(document.getUri(), REPLACES))
+                    .willReturn(List.of(link("new1", "Available")));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(has(document, DCT + "isReplacedBy", "new1"));
+            }
+
+            @Test
+            @DisplayName("forward requires skips withdrawn and unpublished targets and keeps a published one")
+            void forwardRequiresOnlyLinksPublished() {
+                val document = dataset("rel");
+                given(jenaLookupService.relationships(document.getUri(), REQUIRES))
+                    .willReturn(List.of(
+                        link("gone", "Deleted"),
+                        link("wip", "Available", "draft"),
+                        link("gonedraft", "Deleted", "draft"),
+                        link("live", "Available")));
+
+                template("rdf/ttl.ftl", document);
+
+                assertFalse(has(document, REQUIRES, "gone"));
+                assertFalse(has(document, REQUIRES, "wip"));
+                assertFalse(has(document, REQUIRES, "gonedraft"));
+                assertTrue(has(document, REQUIRES, "live"));
+            }
+
+            @Test
+            @DisplayName("isRequiredBy skips withdrawn and draft sources and keeps a published one")
+            void isRequiredByOnlyLinksPublished() {
+                val document = dataset("rel");
+                given(jenaLookupService.inverseRelationships(document.getUri(), REQUIRES))
+                    .willReturn(List.of(
+                        link("gone", "Deleted"),
+                        link("wip", "Available", "draft"),
+                        link("live", "Available")));
+
+                template("rdf/ttl.ftl", document);
+
+                assertFalse(has(document, DCT + "isRequiredBy", "gone"));
+                assertFalse(has(document, DCT + "isRequiredBy", "wip"));
+                assertTrue(has(document, DCT + "isRequiredBy", "live"));
+            }
+
+            @Test
+            @DisplayName("isReplacedBy skips withdrawn and draft successors and keeps a published one")
+            void isReplacedByOnlyLinksPublished() {
+                val document = dataset("rel");
+                given(jenaLookupService.inverseRelationships(document.getUri(), REPLACES))
+                    .willReturn(List.of(
+                        link("gone", "Deleted"),
+                        link("wip", "Available", "draft"),
+                        link("live", "Available")));
+
+                template("rdf/ttl.ftl", document);
+
+                assertFalse(has(document, DCT + "isReplacedBy", "gone"));
+                assertFalse(has(document, DCT + "isReplacedBy", "wip"));
+                assertTrue(has(document, DCT + "isReplacedBy", "live"));
+            }
+
+            @Test
+            @DisplayName("a record with none of these relationships emits none of the predicates")
+            void noRelationshipsEmitsNoPredicates() {
+                val document = dataset("rel");
+
+                template("rdf/ttl.ftl", document);
+
+                for (val predicate : List.of("requires", "isRequiredBy", "isReplacedBy")) {
+                    assertFalse(model.contains(createResource(document.getUri()), createProperty(DCT + predicate)));
+                }
             }
         }
 
