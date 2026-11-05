@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import 'bootstrap'
 import { startApps } from './startup/apps'
+import { sendCsrfTokenWithSsoForms } from './sso-forms/src/ssoForms'
 
 // The page's jQuery globals are the catalogue's own jQuery. What reads them:
 // - Bootstrap, which finding window.jQuery raises each of its events as a jQuery event too. Only that
@@ -12,3 +13,6 @@ window.jQuery = window.$ = $ // eslint-disable-line no-restricted-properties
 // Every page loads this file, so it holds only what every page needs; each micro-app is fetched only
 // on a page that has it (startup/apps.js, startup/load.js, NERC-CEH/dri-one#364)
 startApps(document)
+
+// The user menu's logout posts to the SSO proxy, which requires its CSRF token (sso-forms)
+sendCsrfTokenWithSsoForms(document)
