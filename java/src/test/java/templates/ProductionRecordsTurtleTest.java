@@ -22,6 +22,7 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CrsUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.FrequencyUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FormatUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
@@ -73,6 +74,7 @@ class ProductionRecordsTurtleTest {
         configuration.setSharedVariable("licenceUris", new LicenceUri());
         configuration.setSharedVariable("formatUris", new FormatUri());
         configuration.setSharedVariable("crsUris", new CrsUri());
+        configuration.setSharedVariable("frequencyUris", new FrequencyUri());
         configuration.setSharedVariable("keywordUri", new KeywordUri(uriNormaliser, keywordVocabulary));
 
         // Public JSON carries computed read-only fields (e.g. relCombinedGeometry) with no setter
