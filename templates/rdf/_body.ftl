@@ -48,6 +48,12 @@
       dcterms:contributor <@contactList contributors "con" /> ;
     </#if>
 
+    <#--Rights holders-->
+    <#assign describableRightsHolders = describable(rightsHolders)>
+    <#if describableRightsHolders?has_content>
+      dcterms:rightsHolder <@contactList describableRightsHolders "rh" /> ;
+    </#if>
+
     <#--Relationships-->
     <#-- dri-one #327: a target that is itself withdrawn/unpublished (available in the Jena
          index, but not to the outside world) must not be linked to as if it resolved. -->
@@ -213,6 +219,20 @@
 
     <#if contributors?has_content>
       <@contactDetail contributors "con" />
+    </#if>
+
+    <#if describableRightsHolders?has_content>
+      <@contactDetail describableRightsHolders "rh" inspireRole("owner") />
+    </#if>
+
+    <#assign describableCustodians = describable(custodians)>
+    <#if describableCustodians?has_content>
+      <@contactDetail describableCustodians "cu" inspireRole("custodian") />
+    </#if>
+
+    <#assign describableDistributors = describable(distributorContacts)>
+    <#if describableDistributors?has_content>
+      <@contactDetail describableDistributors "di" inspireRole("distributor") />
     </#if>
 
     <#--

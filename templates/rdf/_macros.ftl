@@ -41,15 +41,44 @@
 <#assign scoroContributorRoles = ["data-creator", "data-curator", "collaborator", "researcher",
   "technician", "project-leader", "workpackage-leader"]>
 
+<#--
+  The INSPIRE ResponsiblePartyRole code list: the only vocabulary with a
+  confirmed equivalent for rights holders, custodians, distributors and the
+  owner/resourceProvider/originator contacts. Defined once here.
+-->
+<#assign roleBase = "http://inspire.ec.europa.eu/metadata-codelist/ResponsiblePartyRole/">
+<#assign inspireOtherContactRoles = ["owner", "resourceProvider", "originator"]>
+
+<#--
+  Only contacts that can be described: contactDetail types a node from the
+  person's or organisation's name, so a present-but-blank entry (nullToEmpty
+  turns a stored {} into one) would fail the whole render. Used for the lists
+  that are new to the export; the contactList and contactDetail calls for one
+  list must be given the same filtered sequence so their indexes agree.
+-->
+<#function describable contacts>
+  <#return (contacts![])?filter(c -> c.fullName?has_content || c.organisationName?has_content)>
+</#function>
+
+<#function inspireRole name>
+  <#return "<" + roleBase + name + ">">
+</#function>
+
 <#function doiRoleUri contact>
   <#local scoroRole = contact.contributorRole?replace("([a-z])([A-Z])", "$1-$2", "r")?lower_case>
   <#if scoroContributorRoles?seq_contains(scoroRole)><#return "scoro:" + scoroRole></#if>
   <#if contact.role == "author"><#return "pro:author"></#if>
   <#if contact.role == "principalInvestigator"><#return "scoro:principal-investigator"></#if>
+  <#if inspireOtherContactRoles?seq_contains(contact.role)><#return inspireRole(contact.role)></#if>
   <#return "">
 </#function>
 
-<#macro contactDetail contacts prefix="c">
+<#--
+  role, when given, is the full role IRI (in <…> form) held by every contact in
+  the list, used instead of doiRoleUri(contact): rights holders, custodians and
+  distributors are distinguished by which list they are in, not by a field.
+-->
+<#macro contactDetail contacts prefix="c" role="">
   <#if contacts?has_content>
     <#list contacts as contact>
 
@@ -150,7 +179,7 @@ ${memberOrg} a foaf:Organization ;
         so the statement can be pointed at — which is exactly what a blank node
         prevents.
       -->
-      <#local doiRole = doiRoleUri(contact)>
+      <#local doiRole = role?has_content?then(role, doiRoleUri(contact))>
       <#if doiRole?has_content>
         <#local roleNode = contactUri.identifyRole(contactIdentifier, doiRole, id)>
         ${contactIdentifier} pro:holdsRoleInTime ${roleNode} .

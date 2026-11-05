@@ -65,6 +65,7 @@ import static org.apache.jena.rdf.model.ResourceFactory.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.matchesRegex;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
@@ -1447,6 +1448,125 @@ public class RdfTurtleTest {
                     createResource("http://purl.org/spar/pro/author")
                 ));
                 assertTrue(model.contains(roleInTime, createProperty(RELATES_TO_ENTITY), record));
+            }
+
+            private static final String ROLE_BASE = "http://inspire.ec.europa.eu/metadata-codelist/ResponsiblePartyRole/";
+            private static final String RIGHTS_HOLDER = "http://purl.org/dc/terms/rightsHolder";
+            private static final String FOAF_NAME = "http://xmlns.com/foaf/0.1/name";
+            private static final String ROR = "https://ror.org/02wn5qz54";
+
+            private ResponsibleParty rorOrganisation(String name) {
+                return ResponsibleParty.builder()
+                    .organisationName(name)
+                    .organisationIdentifier(ROR)
+                    .build();
+            }
+
+            private boolean hasRole(Resource record, String role) {
+                return model.listSubjectsWithProperty(createProperty(RELATES_TO_ENTITY), record).toList().stream()
+                    .anyMatch(node -> model.contains(node, createProperty(WITH_ROLE), createResource(ROLE_BASE + role)));
+            }
+
+            @Test
+            @DisplayName("a rights holder is dcterms:rightsHolder, holds the INSPIRE owner role, and its ROR gains no record text")
+            void rightsHolderHasOwnerRoleAndRightsHolder() {
+                val document = dataset("rolerh");
+                document.setRightsHolders(List.of(rorOrganisation("Some Org")));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/rolerh");
+                val ror = createResource(ROR);
+                assertTrue(model.contains(record, createProperty(RIGHTS_HOLDER), ror));
+                val roleInTime = roleOf(ror);
+                assertTrue(model.contains(roleInTime, createProperty(WITH_ROLE), createResource(ROLE_BASE + "owner")));
+                assertTrue(model.contains(roleInTime, createProperty(RELATES_TO_ENTITY), record));
+                assertFalse(model.contains(ror, createProperty(FOAF_NAME)));
+            }
+
+            @Test
+            @DisplayName("a custodian and a distributor hold their INSPIRE roles and are not rights holders")
+            void custodianAndDistributorHaveRoles() {
+                val document = dataset("rolecd");
+                document.setCustodians(List.of(rorOrganisation("Custodian Org")));
+                document.setDistributorContacts(List.of(ResponsibleParty.builder()
+                    .organisationName("Distributor Org")
+                    .organisationIdentifier("https://ror.org/00pggkr55")
+                    .build()));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/rolecd");
+                assertTrue(hasRole(record, "custodian"));
+                assertTrue(hasRole(record, "distributor"));
+                assertFalse(model.contains(null, createProperty(RIGHTS_HOLDER)));
+            }
+
+            @Test
+            @DisplayName("a rights holder with an ORCID is the ORCID node, without a foaf:name")
+            void rightsHolderWithOrcid() {
+                val document = dataset("rolerhorcid");
+                document.setRightsHolders(List.of(ResponsibleParty.builder()
+                    .familyName("Wood")
+                    .givenName("Claire")
+                    .nameIdentifier("https://orcid.org/0000-0002-1825-0097")
+                    .build()));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/rolerhorcid");
+                val orcid = createResource("https://orcid.org/0000-0002-1825-0097");
+                assertTrue(model.contains(record, createProperty(RIGHTS_HOLDER), orcid));
+                assertTrue(hasRole(record, "owner"));
+                assertFalse(model.contains(orcid, createProperty(FOAF_NAME)));
+            }
+
+            @Test
+            @DisplayName("a minted rights holder and a minted author at the same index are distinct nodes")
+            void mintedRightsHolderDoesNotCollide() {
+                val document = dataset("rolecollide");
+                document.setRightsHolders(List.of(ResponsibleParty.builder().organisationName("Holder Org").build()));
+                document.setAuthors(List.of(ResponsibleParty.builder()
+                    .familyName("Smith").givenName("John").role("author").build()));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/rolecollide");
+                val holder = model.listObjectsOfProperty(record, createProperty(RIGHTS_HOLDER)).next();
+                val author = model.listObjectsOfProperty(record, createProperty(CREATOR)).next();
+                assertFalse(holder.equals(author));
+            }
+
+            @Test
+            @DisplayName("owner, resourceProvider and originator in Other contacts map to INSPIRE roles; mediator does not")
+            void otherContactRolesMapToInspire() {
+                val document = dataset("roleother");
+                document.setOtherContacts(List.of(
+                    ResponsibleParty.builder().familyName("A").givenName("Anna").role("owner").build(),
+                    ResponsibleParty.builder().familyName("B").givenName("Ben").role("resourceProvider").build(),
+                    ResponsibleParty.builder().familyName("C").givenName("Cat").role("originator").build(),
+                    ResponsibleParty.builder().familyName("D").givenName("Dan").role("mediator").build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                val record = createResource("https://example.com/id/roleother");
+                assertTrue(hasRole(record, "owner"));
+                assertTrue(hasRole(record, "resourceProvider"));
+                assertTrue(hasRole(record, "originator"));
+                assertEquals(3, model.listSubjectsWithProperty(createProperty(RELATES_TO_ENTITY), record).toList().size());
+                assertFalse(model.contains(null, createProperty(FOAF_FAMILY_NAME), "D"));
+            }
+
+            @Test
+            @DisplayName("a present-but-blank rights holder produces no dangling predicate and the file parses")
+            void blankRightsHolderIsHarmless() {
+                val document = dataset("rolerhblank");
+                document.setRightsHolders(List.of(ResponsibleParty.builder().build()));
+
+                template("rdf/ttl.ftl", document);
+
+                assertFalse(model.contains(null, createProperty(HOLDS_ROLE_IN_TIME)));
             }
 
             @Test
