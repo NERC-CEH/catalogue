@@ -3757,6 +3757,70 @@ public class RdfTurtleTest {
             assertFalse(model.contains(record(), createProperty(RDF_TYPE), createResource(DATA_SERVICE)));
         }
 
+        private static final String REQUIRES_URI = DCT + "requires";
+
+        // Strict stubs reject a call whose arguments differ from the stubbed ones, and the
+        // template asks for every relationship; a test overrides only the one it covers.
+        private void stubRequires(GeminiDocument document, List<Link> targets) {
+            lenient().when(jenaLookupService.relationships(
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(List.of());
+            lenient().when(jenaLookupService.inverseRelationships(
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(List.of());
+            lenient().when(jenaLookupService.relationships(document.getUri(), REQUIRES_URI)).thenReturn(targets);
+        }
+
+        private Link target(String id, String type, String availability, String publicationStatus) {
+            return Link.builder().href(BASE + id).associationType(type)
+                .availability(availability).publicationStatus(publicationStatus).build();
+        }
+
+        @Test
+        @DisplayName("a WMS service record serves the published datasets it requires, and nothing else")
+        void serviceServesOnlyPublishedDatasets() {
+            val document = (GeminiDocument) dataset().setType("service")
+                .setOnlineResources(List.of(wms(WMS_URL)));
+            stubRequires(document, List.of(
+                target("live", "dataset", "Available", "published"),
+                target("gone", "dataset", "Deleted", "published"),
+                target("draftds", "dataset", "Available", "draft"),
+                target("agg", "aggregate", "Available", "published")));
+
+            template("rdf/ttl.ftl", document);
+
+            val serves = createProperty(DCAT + "servesDataset");
+            assertTrue(model.contains(record(), serves, createResource(BASE + "live")));
+            assertFalse(model.contains(record(), serves, createResource(BASE + "gone")));
+            assertFalse(model.contains(record(), serves, createResource(BASE + "draftds")));
+            assertFalse(model.contains(record(), serves, createResource(BASE + "agg")));
+        }
+
+        @Test
+        @DisplayName("a service record with no WMS link gets no dcat:servesDataset")
+        void serviceWithoutWmsServesNothing() {
+            val document = (GeminiDocument) dataset().setType("service")
+                .setOnlineResources(List.of(OnlineResource.builder().url("https://example.org/x").build()));
+            stubRequires(document, List.of(target("live", "dataset", "Available", "published")));
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(objects(record(), DCAT + "servesDataset").isEmpty());
+        }
+
+        @Test
+        @DisplayName("an unusable WMS link is dropped before indexing, so the nodes stay aligned")
+        void unusableWmsLinkDoesNotShiftIndex() {
+            template("rdf/ttl.ftl", dataset().setOnlineResources(List.of(
+                wms("https://x/a b?service=WMS&request=GetCapabilities"), wms(WMS_URL))));
+
+            val node = createResource(BASE + "desc_wms0");
+            assertTrue(model.contains(node, createProperty(DCAT + "endpointURL"), createResource(WMS_URL)));
+            assertFalse(model.containsResource(createResource(BASE + "desc_wms1")));
+            val distributions = objects(record(), DCAT + "distribution");
+            assertEquals(1, distributions.size());
+            assertTrue(model.contains(distributions.get(0).asResource(),
+                createProperty(DCAT + "accessService"), node));
+        }
+
         @Test
         @DisplayName("a non-WMS online resource creates no DataService")
         void nonWmsOnlineResourceIsIgnored() {
