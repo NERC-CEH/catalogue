@@ -34,24 +34,23 @@
     </#if>
 
     <#--Points of contact-->
-    <#if contactPoints?has_content>
+    <#if describable(contactPoints)?has_content>
       dcat:contactPoint <@contactList contactPoints "c" />  ;
     </#if>
 
     <#--Publisher-->
-    <#if publishers?has_content>
+    <#if describable(publishers)?has_content>
       dcterms:publisher <@contactList publishers "pub" /> ;
     </#if>
 
     <#--Contributors: the one list the editor offers a contributorRole on (dri-one #405)-->
-    <#if contributors?has_content>
+    <#if describable(contributors)?has_content>
       dcterms:contributor <@contactList contributors "con" /> ;
     </#if>
 
     <#--Rights holders-->
-    <#assign describableRightsHolders = describable(rightsHolders)>
-    <#if describableRightsHolders?has_content>
-      dcterms:rightsHolder <@contactList describableRightsHolders "rh" /> ;
+    <#if describable(rightsHolders)?has_content>
+      dcterms:rightsHolder <@contactList rightsHolders "rh" /> ;
     </#if>
 
     <#--Relationships-->
@@ -205,35 +204,17 @@
 
     dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en> . <#-- leave here to close all the statements about the dataset -->
 
-    <#if contactPoints?has_content>
-      <@contactDetail contactPoints "c" />
-    </#if>
+    <@contactDetail contactPoints "c" />
 
-    <#if publishers?has_content>
-      <@contactDetail publishers "pub" />
-    </#if>
+    <@contactDetail publishers "pub" />
 
-    <#if authors?has_content>
-      <@contactDetail authors "a" />
-    </#if>
+    <@contactDetail authors "a" />
 
-    <#if contributors?has_content>
-      <@contactDetail contributors "con" />
-    </#if>
+    <@contactDetail contributors "con" />
 
-    <#if describableRightsHolders?has_content>
-      <@contactDetail describableRightsHolders "rh" inspireRole("owner") />
-    </#if>
-
-    <#assign describableCustodians = describable(custodians)>
-    <#if describableCustodians?has_content>
-      <@contactDetail describableCustodians "cu" inspireRole("custodian") />
-    </#if>
-
-    <#assign describableDistributors = describable(distributorContacts)>
-    <#if describableDistributors?has_content>
-      <@contactDetail describableDistributors "di" inspireRole("distributor") />
-    </#if>
+    <@contactDetail rightsHolders "rh" inspireRole("owner") />
+    <@contactDetail custodians "cu" inspireRole("custodian") />
+    <@contactDetail distributorContacts "di" inspireRole("distributor") />
 
     <#--
       Other contacts only where their role maps onto DOO — in practice a
@@ -242,9 +223,7 @@
       record, so describing them would leave nodes nothing points at.
     -->
     <#assign mappedOtherContacts = (otherContacts![])?filter(c -> doiRoleUri(c)?has_content)>
-    <#if mappedOtherContacts?has_content>
-      <@contactDetail mappedOtherContacts "oc" />
-    </#if>
+    <@contactDetail mappedOtherContacts "oc" />
 
     <#if incomingCitations?has_content>
       <@incomingCitationDetail />

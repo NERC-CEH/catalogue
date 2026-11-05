@@ -13,6 +13,7 @@
   so the two can never disagree about which node a contact is.
 -->
 <#macro contactList contacts prefix="c">
+  <#local contacts = describable(contacts)>
   <#if contacts?has_content>
     <#list contacts as contact>
       ${contactUri.identify(contact, id, prefix, contact?index)}<#sep>,</#sep><#t>
@@ -51,13 +52,14 @@
 
 <#--
   Only contacts that can be described: contactDetail types a node from the
-  person's or organisation's name, so a present-but-blank entry (nullToEmpty
-  turns a stored {} into one) would fail the whole render. Used for the lists
-  that are new to the export; the contactList and contactDetail calls for one
-  list must be given the same filtered sequence so their indexes agree.
+  person's or organisation's name, and a present-but-blank entry (nullToEmpty
+  turns a stored {} into one) has neither. contactList and contactDetail both
+  apply this to every list themselves, so their indexes — and so the nodes
+  ContactUri gives the record-scoped fallback — always agree, and call sites
+  need no filter of their own.
 -->
 <#function describable contacts>
-  <#return (contacts![])?filter(c -> c.fullName?has_content || c.organisationName?has_content)>
+  <#return (contacts![])?filter(c -> c.fullName?trim?has_content || c.organisationName?trim?has_content)>
 </#function>
 
 <#function inspireRole name>
@@ -79,15 +81,21 @@
   distributors are distinguished by which list they are in, not by a field.
 -->
 <#macro contactDetail contacts prefix="c" role="">
+  <#local contacts = describable(contacts)>
   <#if contacts?has_content>
     <#list contacts as contact>
 
       <#local contactIdentifier = contactUri.identify(contact, id, prefix, contact?index)>
 
-      <#if contact.fullName?has_content>
+      <#--
+        Assigned on every iteration: FreeMarker keeps a #local set inside #list
+        across iterations, so a branch that did not assign would silently
+        inherit the previous contact's type and name.
+      -->
+      <#if contact.fullName?trim?has_content>
         <#local contactType="foaf:Person">
         <#local contactName=contact.fullName>
-      <#elseif contact.organisationName?has_content >
+      <#else>
         <#local contactType="foaf:Organization">
         <#local contactName=contact.organisationName>
       </#if>
