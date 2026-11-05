@@ -3521,22 +3521,38 @@ public class RdfTurtleTest {
         }
 
         @Test
+        @DisplayName("a facility without a geometry emits no geometry properties and the file parses")
+        void facilityWithoutGeometryEmitsNothing() {
+            val facility = new MonitoringFacility();
+            facility.setId("nogeo").setUri(BASE + "nogeo").setTitle("No geometry");
+
+            template("rdf/monitoring/facility.ftl", facility);
+
+            val subject = createResource(BASE + "nogeo");
+            assertTrue(objects(subject, DCT + "geometry").isEmpty());
+            assertTrue(objects(subject, GEO + "hasGeometry").isEmpty());
+            assertTrue(model.contains(subject, createProperty(DCT + "title")));
+        }
+
+        @Test
         @DisplayName("a programme envelope also carries a WKT polygon with the same corners")
         void programmeEnvelopeGetsWkt() {
             val programme = new MonitoringProgramme();
             programme.setId("prog").setUri(BASE + "prog").setTitle("Programme");
             programme.setBoundingBox(BoundingBox.builder()
-                .westBoundLongitude("-8.6").eastBoundLongitude("-0.7")
-                .southBoundLatitude("54.6").northBoundLatitude("60.8").build());
+                .westBoundLongitude("-8.6481").eastBoundLongitude("-0.7282")
+                .southBoundLatitude("54.6343").northBoundLatitude("60.8614").build());
 
             template("rdf/monitoring/programme.ftl", programme);
 
             val bbox = createResource(BASE + "prog_bbox");
             assertTrue(model.contains(createResource(BASE + "prog"), createProperty(GEO + "hasBoundingBox"), bbox));
             assertTrue(model.contains(createResource(BASE + "prog"), createProperty(GEO + "hasGeometry"), bbox));
-            assertTrue(model.contains(bbox, createProperty(GEO + "asEnvelope")));
+            assertTrue(model.contains(bbox, createProperty(GEO + "asEnvelope"), createTypedLiteral(
+                "ENVELOPE(-8.6481, -0.7282, 54.6343, 60.8614)",
+                org.apache.jena.datatypes.TypeMapper.getInstance().getSafeTypeByName(GEO + "envelopeLiteral"))));
             assertTrue(model.contains(bbox, createProperty(GEO + "asWKT"), wkt(
-                "POLYGON((-8.6 54.6, -0.7 54.6, -0.7 60.8, -8.6 60.8, -8.6 54.6))")));
+                "POLYGON((-8.6481 54.6343, -0.7282 54.6343, -0.7282 60.8614, -8.6481 60.8614, -8.6481 54.6343))")));
         }
 
         @Test
@@ -3669,7 +3685,13 @@ public class RdfTurtleTest {
             val document = dataset()
                 .setAlternateTitles(List.of("Other"))
                 .setKeywordsTheme(List.of(Keyword.builder().value("soil").build()))
-                .setSupplemental(List.of(Supplemental.builder().function("website").url("https://example.org/p").build()));
+                .setSupplemental(List.of(
+                    Supplemental.builder().function("website").url("https://example.org/p").build(),
+                    Supplemental.builder().function("relatedArticle").url("https://doi.org/10.1/d").build()))
+                .setSpatialResolutions(List.of(resolution("10", "m")))
+                .setTemporalResolution(List.of("daily"))
+                .setBoundingBoxes(List.of(BoundingBox.builder()
+                    .westBoundLongitude("-3").eastBoundLongitude("1").southBoundLatitude("50").northBoundLatitude("55").build()));
             document.setAccessLimitation(AccessLimitation.builder().value("Deleted").availability("Deleted").build());
 
             template("rdf/ttl.ftl", document);
@@ -3677,6 +3699,10 @@ public class RdfTurtleTest {
             assertTrue(objects(record(), DCT + "alternative").isEmpty());
             assertTrue(objects(record(), DCAT + "keyword").isEmpty());
             assertTrue(objects(record(), FOAF + "page").isEmpty());
+            assertTrue(objects(record(), GEO + "hasGeometry").isEmpty());
+            assertTrue(objects(record(), DCT + "isReferencedBy").isEmpty());
+            assertTrue(objects(record(), DCAT + "spatialResolutionInMeters").isEmpty());
+            assertTrue(objects(record(), DCAT + "temporalResolution").isEmpty());
         }
     }
 
