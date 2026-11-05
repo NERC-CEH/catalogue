@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.ac.ceh.gateway.catalogue.gemini.SpatialReferenceSystem;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -51,14 +52,22 @@ public class CrsUri {
         if (!DIGITS.matcher(code).matches()) {
             return "";
         }
-        if (!prefixed && isBlank(srs.getCodeSpace()) && !inEpsgRange(code)) {
-            return "";
+        if (!prefixed) {
+            String codeSpace = srs.getCodeSpace();
+            if (isBlank(codeSpace) ? !inEpsgRange(code) : !isEpsgCodeSpace(codeSpace)) {
+                return "";
+            }
         }
         return EPSG_PREFIX + code;
     }
 
     private static boolean isBlank(String value) {
         return value == null || value.isBlank();
+    }
+
+    /** A code space naming EPSG, such as {@code urn:ogc:def:crs:EPSG} or {@code EPSG}. */
+    private static boolean isEpsgCodeSpace(String codeSpace) {
+        return codeSpace.toUpperCase(Locale.ROOT).contains("EPSG");
     }
 
     /**
