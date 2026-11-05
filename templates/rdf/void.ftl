@@ -3,6 +3,7 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix dcat:    <http://www.w3.org/ns/dcat#> .
 @prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix geo:     <http://www.opengis.net/ont/geosparql#> .
 @prefix sd:      <http://www.w3.org/ns/sparql-service-description#> .
 
 <#--
@@ -154,5 +155,11 @@
     void:propertyPartition [ void:property prov:wasGeneratedBy ] ;
     void:propertyPartition [ void:property dcterms:requires ] ;
     void:propertyPartition [ void:property dcterms:isReplacedBy ] ;
+    void:propertyPartition [ void:property geo:hasGeometry ] ;
+    void:propertyPartition [ void:property dcat:keyword ] ;
+    void:propertyPartition [ void:property dcat:spatialResolutionInMeters ] ;
+    void:propertyPartition [ void:property dcat:temporalResolution ] ;
+    void:propertyPartition [ void:property dcat:accessService ] ;
+    void:propertyPartition [ void:property dcat:servesDataset ] ;
     .
 </#list>
