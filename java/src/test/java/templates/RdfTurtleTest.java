@@ -177,6 +177,11 @@ public class RdfTurtleTest {
             );
         }
 
+    }
+
+    @Nested
+    @DisplayName("Research activities")
+    class ResearchActivityTests {
         @Test
         void loadResearchActivity() {
             //given
@@ -225,7 +230,7 @@ public class RdfTurtleTest {
         }
 
         @Test
-        void unprefixedActivityParses() {
+        void unprefixedMonitoringActivityParses() {
             val activity = new MonitoringActivity()
                 .setId("9371")
                 .setUri("https://example.com/id/9371")
@@ -273,12 +278,12 @@ public class RdfTurtleTest {
         }
 
         @Test
-        void unprefixedActivityParses() {
-            val activity = new ResearchActivity()
+        void unprefixedResearchActivityParses() {
+            val researchActivity = new ResearchActivity()
                 .setId("5566")
                 .setUri("https://example.com/id/5566")
                 .setTitle("Rainfall");
-            combinedTemplate("rdf/monitoring/unprefixed/researchActivity.ftl", activity);
+            combinedTemplate("rdf/researchActivity/unprefixed/researchActivity.ftl", researchActivity);
             assertTrue(model.contains(
                 createStatement(
                     createResource("https://example.com/id/5566"),

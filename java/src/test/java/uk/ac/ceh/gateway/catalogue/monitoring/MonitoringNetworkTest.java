@@ -62,13 +62,15 @@ class MonitoringNetworkTest {
     }
 
     @Test
-    @DisplayName("splits utilisedBy into researchActivities and the data resources produced there")
+    @DisplayName("splits utilisedBy into research activities")
     void splitsUtilisedByOnRecordType() throws Exception {
         //given
         val network = new MonitoringNetwork();
         String uri = "https://example.com/network/test";
         network.setUri(uri);
+
         val jenaService = org.mockito.Mockito.mock(JenaLookupService.class);
+
         when(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"))
             .thenReturn(List.of(
                 published("https://example.com/researchActivity/1", "researchActivity"),
@@ -80,15 +82,14 @@ class MonitoringNetworkTest {
         network.populateFromJenaService(jenaService);
 
         //then
-        assertThat(hrefs(network.getUtilisingResearchActivities()), equalTo(List.of("https://example.com/researchActivity/1")));
         assertThat(
-            hrefs(network.getProducedDataResources()),
-            equalTo(List.of("https://example.com/dataset/1", "https://example.com/dataset/2"))
+            hrefs(network.getUtilisingResearchActivities()),
+            equalTo(List.of("https://example.com/researchActivity/1"))
         );
-        // derived views for the page only: relUtilisedBy stays the one JSON property
+
+        // derived view for the page only: relUtilisedBy stays the one JSON property
         val json = JsonMapper.builder().build().writeValueAsString(network);
         assertThat(json.contains("utilisingResearchActivities"), equalTo(false));
-        assertThat(json.contains("producedDataResources"), equalTo(false));
     }
 
     @Test

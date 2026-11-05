@@ -41,7 +41,6 @@ class MonitoringFacilityTest {
         val facility = new MonitoringFacility();
         val expected = Collections.emptyList();
 
-
         //when
         val actual = facility.getWKTs();
 
@@ -77,24 +76,38 @@ class MonitoringFacilityTest {
 
         val jenaService = org.mockito.Mockito.mock(JenaLookupService.class);
 
-        when(jenaService.relationshipCombinedGeometriesWithOwner(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility"))
+        when(jenaService.relationshipCombinedGeometriesWithOwner(
+            uri,
+            "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility"))
             .thenReturn("combined-geometry-wkt");
+
         when(jenaService.relationships(uri, "http://purl.org/dc/terms/isPartOf"))
             .thenReturn(List.of(Link.builder().href("https://example.com/network/1").build()));
+
         when(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/uses"))
             .thenReturn(List.of(Link.builder().href("https://example.com/activity/1").build()));
+
         when(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"))
-            .thenReturn(List.of(Link.builder().href("https://example.com/researchActivity/1").publicationStatus("published").build()));
+            .thenReturn(List.of(Link.builder()
+                .href("https://example.com/researchActivity/1")
+                .publicationStatus("published")
+                .build()));
+
         when(jenaService.relationships(uri, "http://purl.org/dc/terms/replaces"))
             .thenReturn(List.of(Link.builder().href("https://example.com/old-facility/1").build()));
+
         when(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/replaces"))
             .thenReturn(List.of(Link.builder().href("https://example.com/new-facility/1").build()));
+
         when(jenaService.relationships(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility"))
             .thenReturn(List.of(Link.builder().href("https://example.com/child-facility/1").build()));
+
         when(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/hasChildFacility"))
             .thenReturn(List.of(Link.builder().href("https://example.com/parent-facility/1").build()));
+
         when(jenaService.inverseRelationships(uri, "http://purl.org/dc/terms/relation"))
             .thenReturn(List.of(Link.builder().href("https://example.com/related/1").build()));
+
         when(jenaService.relationships(uri, "http://purl.org/dc/terms/relation"))
             .thenReturn(List.of(Link.builder().href("https://example.com/related/2").build()));
 
@@ -114,13 +127,15 @@ class MonitoringFacilityTest {
     }
 
     @Test
-    @DisplayName("splits utilisedBy into researchActivities and the data resources produced there")
+    @DisplayName("splits utilisedBy into research activities")
     void splitsUtilisedByOnRecordType() throws Exception {
         //given
         val facility = new MonitoringFacility();
         String uri = "https://example.com/facility/test";
         facility.setUri(uri);
+
         val jenaService = org.mockito.Mockito.mock(JenaLookupService.class);
+
         when(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"))
             .thenReturn(List.of(
                 published("https://example.com/researchActivity/1", "researchActivity"),
@@ -132,15 +147,14 @@ class MonitoringFacilityTest {
         facility.populateFromJenaService(jenaService);
 
         //then
-        assertThat(hrefs(facility.getUtilisingResearchActivities()), equalTo(List.of("https://example.com/researchActivity/1")));
         assertThat(
-            hrefs(facility.getProducedDataResources()),
-            equalTo(List.of("https://example.com/dataset/1", "https://example.com/dataset/2"))
+            hrefs(facility.getUtilisingResearchActivities()),
+            equalTo(List.of("https://example.com/researchActivity/1"))
         );
-        // derived views for the page only: relUtilisedBy stays the one JSON property
+
+        // derived view for the page only: relUtilisedBy stays the one JSON property
         val json = JsonMapper.builder().build().writeValueAsString(facility);
         assertThat(json.contains("utilisingResearchActivities"), equalTo(false));
-        assertThat(json.contains("producedDataResources"), equalTo(false));
     }
 
     @Test
@@ -150,29 +164,47 @@ class MonitoringFacilityTest {
         val facility = new MonitoringFacility();
         String uri = "https://example.com/facility/test";
         facility.setUri(uri);
+
         val jenaService = org.mockito.Mockito.mock(JenaLookupService.class);
+
         when(jenaService.inverseRelationships(uri, "https://digital.ceh.ac.uk/ontology/doo/utilises"))
             .thenReturn(List.of(
                 published("https://example.com/dataset/1", "dataset"),
-                Link.builder().href("https://example.com/dataset/draft").associationType("dataset")
-                    .publicationStatus("draft").build(),
-                Link.builder().href("https://example.com/researchActivity/pending").associationType("researchActivity")
-                    .publicationStatus("pending").build()
+                Link.builder()
+                    .href("https://example.com/dataset/draft")
+                    .associationType("dataset")
+                    .publicationStatus("draft")
+                    .build(),
+                Link.builder()
+                    .href("https://example.com/researchActivity/pending")
+                    .associationType("researchActivity")
+                    .publicationStatus("pending")
+                    .build()
             ));
 
         //when
         facility.populateFromJenaService(jenaService);
 
         //then
-        assertThat(hrefs(facility.getRelUtilisedBy()), equalTo(List.of("https://example.com/dataset/1")));
+        assertThat(
+            hrefs(facility.getRelUtilisedBy()),
+            equalTo(List.of("https://example.com/dataset/1"))
+        );
+
         assertThat(facility.getUtilisingResearchActivities().isEmpty(), equalTo(true));
+
         val json = JsonMapper.builder().build().writeValueAsString(facility);
+
         assertThat(json.contains("https://example.com/dataset/draft"), equalTo(false));
         assertThat(json.contains("https://example.com/researchActivity/pending"), equalTo(false));
     }
 
     private static Link published(String href, String type) {
-        return Link.builder().href(href).associationType(type).publicationStatus("published").build();
+        return Link.builder()
+            .href(href)
+            .associationType(type)
+            .publicationStatus("published")
+            .build();
     }
 
     private static List<String> hrefs(List<Link> links) {

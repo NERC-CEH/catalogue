@@ -120,11 +120,6 @@ public class MonitoringNetwork extends AbstractMetadataDocument implements WellK
         return Utilises.researchActivities(getRelUtilisedBy());
     }
 
-    @JsonIgnore
-    public List<Link> getProducedDataResources() {
-        return Utilises.dataResources(getRelUtilisedBy());
-    }
-
     @JsonProperty("relSupersedes")
     public List<Link> getRelSupersedes() {
         return Optional.ofNullable(relSupersedes)

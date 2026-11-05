@@ -135,13 +135,6 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
         return Utilises.researchActivities(getRelUtilisedBy());
     }
 
-   /*
-    @JsonIgnore
-    public List<Link> getProducedDataResources() {
-        return Utilises.dataResources(getRelUtilisedBy());
-    } //?
-    */
-
     @JsonProperty("relSupersedes")
     public List<Link> getRelSupersedes() {
         return Optional.ofNullable(relSupersedes)
