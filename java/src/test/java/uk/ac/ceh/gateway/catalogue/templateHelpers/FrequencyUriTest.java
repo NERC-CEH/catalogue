@@ -18,6 +18,7 @@ class FrequencyUriTest {
     @CsvSource(nullValues = "NULL", value = {
         "continual, CONT",
         "daily, DAILY",
+        "' daily ', DAILY",
         "weekly, WEEKLY",
         "fortnightly, BIWEEKLY",
         "monthly, MONTHLY",

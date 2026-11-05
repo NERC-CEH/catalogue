@@ -29,7 +29,18 @@ class CrsUriTest {
         "NULL, NULL, ''",
         "27700, NULL, http://www.opengis.net/def/crs/EPSG/0/27700",
         "EPSG:abc, NULL, ''",
-        "http://www.opengis.net/def/crs/EPSG/0/, NULL, ''"
+        "http://www.opengis.net/def/crs/EPSG/0/, NULL, ''",
+        "102028, NULL, ''",
+        "29903, NULL, http://www.opengis.net/def/crs/EPSG/0/29903",
+        "'EPSG: 29903', NULL, http://www.opengis.net/def/crs/EPSG/0/29903",
+        "epsg:27700, NULL, http://www.opengis.net/def/crs/EPSG/0/27700",
+        "http://www.opengis.net/def/crs/EPSG/0/27700/, NULL, ''",
+        "0999, NULL, ''",
+        "1023, NULL, ''",
+        "1024, NULL, http://www.opengis.net/def/crs/EPSG/0/1024",
+        "32767, NULL, http://www.opengis.net/def/crs/EPSG/0/32767",
+        "32768, NULL, ''",
+        "102028, urn:ogc:def:crs:EPSG, http://www.opengis.net/def/crs/EPSG/0/102028"
     })
     void canonicalises(String code, String codeSpace, String expected) {
         SpatialReferenceSystem srs = SpatialReferenceSystem.builder().code(code).codeSpace(codeSpace).build();

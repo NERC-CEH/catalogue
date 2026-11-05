@@ -27,11 +27,11 @@ public class FreemarkerConfig {
     private final CodeLookupService codeLookupService;
     private final ContactUri contactUri;
     private final CrsUri crsUri;
-    private final FrequencyUri frequencyUri;
     private final DownloadOrderDetailsService downloadOrderDetailsService;
     private final freemarker.template.Configuration freemarkerConfiguration;
     private final DownloadUrlProperties downloadUrlProperties;
     private final FormatUri formatUri;
+    private final FrequencyUri frequencyUri;
     private final FundingUri fundingUri;
     private final GeminiExtractor geminiExtractor;
     private final JenaLookupService jenaLookupService;
@@ -60,10 +60,10 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("codes", codeLookupService);
         freemarkerConfiguration.setSharedVariable("contactUri", contactUri);
         freemarkerConfiguration.setSharedVariable("crsUris", crsUri);
-        freemarkerConfiguration.setSharedVariable("frequencyUris", frequencyUri);
         freemarkerConfiguration.setSharedVariable("csp", new CspNonce());
         freemarkerConfiguration.setSharedVariable("downloadOrderDetails", downloadOrderDetailsService);
         freemarkerConfiguration.setSharedVariable("formatUris", formatUri);
+        freemarkerConfiguration.setSharedVariable("frequencyUris", frequencyUri);
         freemarkerConfiguration.setSharedVariable("fundingUri", fundingUri);
         freemarkerConfiguration.setSharedVariable("geminiHelper", geminiExtractor);
         freemarkerConfiguration.setSharedVariable("jena", jenaLookupService);

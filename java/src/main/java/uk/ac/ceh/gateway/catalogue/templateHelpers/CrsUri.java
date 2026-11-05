@@ -20,6 +20,8 @@ public class CrsUri {
 
     private static final String EPSG_PREFIX = "http://www.opengis.net/def/crs/EPSG/0/";
     private static final String CRS84 = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
+    private static final int EPSG_MIN_CODE = 1024;
+    private static final int EPSG_MAX_CODE = 32767;
     private static final Pattern DIGITS = Pattern.compile("\\d+");
     private static final List<String> KNOWN_PREFIXES = List.of(
         EPSG_PREFIX,
@@ -38,12 +40,36 @@ public class CrsUri {
         if ("CRS:84".equalsIgnoreCase(code)) {
             return CRS84;
         }
+        boolean prefixed = false;
         for (String prefix : KNOWN_PREFIXES) {
             if (code.regionMatches(true, 0, prefix, 0, prefix.length())) {
-                code = code.substring(prefix.length());
+                code = code.substring(prefix.length()).trim();
+                prefixed = true;
                 break;
             }
         }
-        return DIGITS.matcher(code).matches() ? EPSG_PREFIX + code : "";
+        if (!DIGITS.matcher(code).matches()) {
+            return "";
+        }
+        if (!prefixed && isBlank(srs.getCodeSpace()) && !inEpsgRange(code)) {
+            return "";
+        }
+        return EPSG_PREFIX + code;
+    }
+
+    private static boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
+
+    /**
+     * A bare code with no code space could be from any registry (ESRI's 102028, for
+     * one), so it is read as EPSG only inside the range EPSG actually issues codes in.
+     */
+    private static boolean inEpsgRange(String digits) {
+        if (digits.length() > 5 || digits.charAt(0) == '0') {
+            return false;
+        }
+        int value = Integer.parseInt(digits);
+        return value >= EPSG_MIN_CODE && value <= EPSG_MAX_CODE;
     }
 }
