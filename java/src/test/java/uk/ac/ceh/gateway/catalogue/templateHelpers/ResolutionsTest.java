@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import uk.ac.ceh.gateway.catalogue.gemini.SpatialReferenceSystem;
 import uk.ac.ceh.gateway.catalogue.gemini.SpatialResolution;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.matchesPattern;
 
 @DisplayName("Spatial and temporal resolutions as typed RDF values")
 class ResolutionsTest {
@@ -99,8 +101,8 @@ class ResolutionsTest {
         "yearly, P1Y",
         "2 years, P2Y",
         "28 days, P28D",
-        "Weekly, P1W",
-        "fortnightly, P2W",
+        "Weekly, P7D",
+        "fortnightly, P14D",
         "15 minute, PT15M",
         "1 minute, PT1M",
         "1 hour, PT1H",
@@ -115,17 +117,19 @@ class ResolutionsTest {
         "hourly, PT1H",
         "Daily, P1D",
         "decadal, P10Y",
-        "two weeks, P2W",
-        "Two weeks, P2W",
-        "Four weeks, P4W",
-        "2 weeks, P2W",
+        "two weeks, P14D",
+        "Two weeks, P14D",
+        "Four weeks, P28D",
+        "2 weeks, P14D",
         "7 months, P7M",
         "1 Year, P1Y",
         "1d, P1D",
         "'1 day ', P1D",
-        "'Fortnightly ', P2W",
+        "'Fortnightly ', P14D",
         "3hr, PT3H",
         "5 mins, PT5M",
+        "tens, ''",
+        "tend, ''",
         "30m, ''",
         "bi-weekly, ''",
         "sub-minute, ''",
@@ -136,5 +140,25 @@ class ResolutionsTest {
     })
     void duration(String text, String expected) {
         assertThat(resolutions.duration(text), equalTo(expected));
+        if (!expected.isEmpty()) {
+            assertThat(expected, matchesPattern(XSD_DURATION));
+            assertThat(XSDDatatype.XSDduration.isValid(expected), equalTo(true));
+        }
     }
+
+    @Test
+    void crsRules() {
+        assertThat(resolutions.metres(resolution("100", null), List.of(srs("27700"), srs("4326"))), equalTo(""));
+        assertThat(resolutions.metres(resolution("100", null), List.of(srs("27700"))), equalTo("100"));
+        assertThat(resolutions.metres(resolution("100", null), List.of(srs("27700"), srs("unknown"))), equalTo("100"));
+        assertThat(resolutions.metres(resolution("100", null), List.of(srs("unknown"))), equalTo(""));
+        assertThat(resolutions.metres(resolution("100", null), List.of()), equalTo(""));
+    }
+
+    private static SpatialReferenceSystem srs(String code) {
+        return SpatialReferenceSystem.builder().code(code).build();
+    }
+
+    private static final String XSD_DURATION =
+        "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+D)?(T(?=\\d)(\\d+H)?(\\d+M)?(\\d+S)?)?$";
 }

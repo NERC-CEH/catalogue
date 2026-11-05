@@ -26,7 +26,7 @@ public class Resolutions {
 
     private static final String EPSG_PREFIX = "http://www.opengis.net/def/crs/EPSG/0/";
     private static final Pattern DECIMAL = Pattern.compile("\\d+(\\.\\d+)?|\\.\\d+");
-    private static final Pattern DURATION = Pattern.compile("(\\d+|[a-z]+)\\s*([a-z]+)");
+    private static final Pattern DURATION = Pattern.compile("(?:(\\d+)\\s*([a-z]+))|(?:([a-z]+)\\s+([a-z]+))");
     private static final Pattern METRIC_EPSG = Pattern.compile("27700|2990[0-3]|3857|3035|326\\d\\d|327\\d\\d");
 
     private static final Map<String, BigDecimal> METRES_PER_UNIT = Map.ofEntries(
@@ -49,7 +49,7 @@ public class Resolutions {
         Map.entry("minute", "TM"), Map.entry("minutes", "TM"), Map.entry("min", "TM"), Map.entry("mins", "TM"),
         Map.entry("hour", "TH"), Map.entry("hours", "TH"), Map.entry("hr", "TH"), Map.entry("h", "TH"),
         Map.entry("day", "D"), Map.entry("days", "D"), Map.entry("d", "D"),
-        Map.entry("week", "W"), Map.entry("weeks", "W"),
+        Map.entry("week", "7D"), Map.entry("weeks", "7D"),
         Map.entry("month", "M"), Map.entry("months", "M"),
         Map.entry("year", "Y"), Map.entry("years", "Y")
     );
@@ -57,8 +57,8 @@ public class Resolutions {
     private static final Map<String, String> WORDS = Map.ofEntries(
         Map.entry("daily", "P1D"),
         Map.entry("hourly", "PT1H"),
-        Map.entry("weekly", "P1W"),
-        Map.entry("fortnightly", "P2W"),
+        Map.entry("weekly", "P7D"),
+        Map.entry("fortnightly", "P14D"),
         Map.entry("monthly", "P1M"),
         Map.entry("yearly", "P1Y"),
         Map.entry("annual", "P1Y"),
@@ -101,18 +101,24 @@ public class Resolutions {
         return METRES_PER_UNIT.get(uom.trim().toLowerCase(Locale.ROOT));
     }
 
+    /** Metric only if some system maps to an EPSG code and every system that maps is metric. */
     private boolean isMetric(List<SpatialReferenceSystem> systems) {
         if (systems == null) {
             return false;
         }
+        boolean anyMapped = false;
         for (SpatialReferenceSystem system : systems) {
             String canonical = crsUri.canonical(system);
-            if (canonical.startsWith(EPSG_PREFIX)
-                && METRIC_EPSG.matcher(canonical.substring(EPSG_PREFIX.length())).matches()) {
-                return true;
+            if (canonical.isEmpty()) {
+                continue;
+            }
+            anyMapped = true;
+            if (!canonical.startsWith(EPSG_PREFIX)
+                || !METRIC_EPSG.matcher(canonical.substring(EPSG_PREFIX.length())).matches()) {
+                return false;
             }
         }
-        return false;
+        return anyMapped;
     }
 
     /** The text as an {@code xsd:duration}, or {@code ""} when it does not map cleanly. */
@@ -129,10 +135,15 @@ public class Resolutions {
         if (!m.matches()) {
             return "";
         }
-        String designator = UNIT_DESIGNATORS.get(m.group(2));
-        Integer n = quantity(m.group(1));
+        String quantity = m.group(1) != null ? m.group(1) : m.group(3);
+        String unit = m.group(1) != null ? m.group(2) : m.group(4);
+        String designator = UNIT_DESIGNATORS.get(unit);
+        Integer n = quantity(quantity);
         if (designator == null || n == null || n <= 0) {
             return "";
+        }
+        if (designator.equals("7D")) {
+            return "P" + (n * 7) + "D";
         }
         return designator.startsWith("T") ? "PT" + n + designator.substring(1) : "P" + n + designator;
     }
