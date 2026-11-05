@@ -147,6 +147,7 @@
     void:propertyPartition [ void:property dcat:contactPoint ] ;
     void:propertyPartition [ void:property dcterms:publisher ] ;
     void:propertyPartition [ void:property dcterms:creator ] ;
+    void:propertyPartition [ void:property dcterms:rightsHolder ] ;
     void:propertyPartition [ void:property dcterms:license ] ;
     void:propertyPartition [ void:property dcterms:rights ] ;
     void:propertyPartition [ void:property dcat:distribution ] ;

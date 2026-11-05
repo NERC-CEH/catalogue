@@ -1062,8 +1062,14 @@ public class RdfTurtleTest {
                 ));
             }
 
+            private String organisationNode(String name) {
+                return new ContactUri(new UriNormaliser())
+                    .identifyOrganisation(ResponsibleParty.builder().organisationName(name).build())
+                    .substring(1);
+            }
+
             @Test
-            @DisplayName("an organisation without a ROR stays on its record-scoped node")
+            @DisplayName("an organisation without a ROR is the node minted from its name, shared across records")
             void organisationWithoutRor() {
                 val document = dataset("orgtest");
                 document.setContactPoints(List.of(
@@ -1075,7 +1081,17 @@ public class RdfTurtleTest {
                 assertTrue(model.contains(
                     createResource("https://example.com/id/orgtest"),
                     createProperty(CONTACT_POINT),
-                    createResource("https://example.com/id/orgtest_c0")
+                    createResource("https://example.com/id/" + organisationNode("Butterfly Conservation"))
+                ));
+                assertTrue(model.contains(
+                    createResource("https://example.com/id/" + organisationNode("Butterfly Conservation")),
+                    createProperty("http://xmlns.com/foaf/0.1/name"),
+                    "Butterfly Conservation"
+                ));
+                assertFalse(model.contains(
+                    null,
+                    createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                    createResource("http://xmlns.com/foaf/0.1/Person")
                 ));
             }
         }
@@ -1467,6 +1483,13 @@ public class RdfTurtleTest {
                     .anyMatch(node -> model.contains(node, createProperty(WITH_ROLE), createResource(ROLE_BASE + role)));
             }
 
+            private boolean contactHasRole(Resource record, String givenName, String role) {
+                return model.listSubjectsWithProperty(createProperty("http://xmlns.com/foaf/0.1/givenName"), givenName).toList().stream()
+                    .anyMatch(person -> model.listObjectsOfProperty(person, createProperty(HOLDS_ROLE_IN_TIME)).toList().stream()
+                        .anyMatch(r -> model.contains(r.asResource(), createProperty(WITH_ROLE), createResource(ROLE_BASE + role))
+                            && model.contains(r.asResource(), createProperty(RELATES_TO_ENTITY), record)));
+            }
+
             @Test
             @DisplayName("a rights holder is dcterms:rightsHolder, holds the INSPIRE owner role, and its ROR gains no record text")
             void rightsHolderHasOwnerRoleAndRightsHolder() {
@@ -1500,6 +1523,8 @@ public class RdfTurtleTest {
                 assertTrue(hasRole(record, "custodian"));
                 assertTrue(hasRole(record, "distributor"));
                 assertFalse(model.contains(null, createProperty(RIGHTS_HOLDER)));
+                assertFalse(model.contains(createResource(ROR), createProperty(FOAF_NAME)));
+                assertFalse(model.contains(createResource("https://ror.org/00pggkr55"), createProperty(FOAF_NAME)));
             }
 
             @Test
@@ -1522,7 +1547,7 @@ public class RdfTurtleTest {
             }
 
             @Test
-            @DisplayName("a minted rights holder and a minted author at the same index are distinct nodes")
+            @DisplayName("a rights holder and an author at the same index are distinct nodes, each on its own identity rule")
             void mintedRightsHolderDoesNotCollide() {
                 val document = dataset("rolecollide");
                 document.setRightsHolders(List.of(ResponsibleParty.builder().organisationName("Holder Org").build()));
@@ -1534,6 +1559,14 @@ public class RdfTurtleTest {
                 val record = createResource("https://example.com/id/rolecollide");
                 val holder = model.listObjectsOfProperty(record, createProperty(RIGHTS_HOLDER)).next();
                 val author = model.listObjectsOfProperty(record, createProperty(CREATOR)).next();
+                // An organisation with no ROR is keyed on its own name, not on the record (#334).
+                val contactUri = new ContactUri(new UriNormaliser());
+                val ns = "https://example.com/id/";
+                assertThat(holder.asResource().getURI(), equalTo(contactUri.identifyOrganisation(
+                    ResponsibleParty.builder().organisationName("Holder Org").build()).replace(":", ns)));
+                assertThat(author.asResource().getURI(), equalTo(contactUri.identify(
+                    ResponsibleParty.builder().familyName("Smith").givenName("John").build(), "rolecollide", "a", 0)
+                    .replace(":", ns)));
                 assertFalse(holder.equals(author));
             }
 
@@ -1551,22 +1584,47 @@ public class RdfTurtleTest {
                 template("rdf/ttl.ftl", document);
 
                 val record = createResource("https://example.com/id/roleother");
-                assertTrue(hasRole(record, "owner"));
-                assertTrue(hasRole(record, "resourceProvider"));
-                assertTrue(hasRole(record, "originator"));
+                assertTrue(contactHasRole(record, "Anna", "owner"));
+                assertTrue(contactHasRole(record, "Ben", "resourceProvider"));
+                assertTrue(contactHasRole(record, "Cat", "originator"));
+                assertFalse(contactHasRole(record, "Anna", "originator"));
                 assertEquals(3, model.listSubjectsWithProperty(createProperty(RELATES_TO_ENTITY), record).toList().size());
                 assertFalse(model.contains(null, createProperty(FOAF_FAMILY_NAME), "D"));
             }
 
             @Test
-            @DisplayName("a present-but-blank rights holder produces no dangling predicate and the file parses")
-            void blankRightsHolderIsHarmless() {
-                val document = dataset("rolerhblank");
-                document.setRightsHolders(List.of(ResponsibleParty.builder().build()));
+            @DisplayName("a blank contact beside a named one, in either order, neither crashes the export nor borrows the other's name or type")
+            void blankContactDoesNotLeak() {
+                val named = ResponsibleParty.builder().familyName("Wood").givenName("Claire").role("author").build();
+                val org = ResponsibleParty.builder().organisationName("Named Org").build();
+                val blank = ResponsibleParty.builder().build();
 
-                template("rdf/ttl.ftl", document);
+                for (val pair : List.of(List.of(named, blank), List.of(blank, named),
+                                        List.of(org, blank), List.of(blank, org),
+                                        List.of(named, blank, org), List.of(blank, named, blank, org))) {
+                    val document = dataset("blankleak");
+                    document.setAuthors(pair);
+                    document.setRightsHolders(pair);
 
-                assertFalse(model.contains(null, createProperty(HOLDS_ROLE_IN_TIME)));
+                    model.removeAll();
+                    template("rdf/ttl.ftl", document);
+
+                    val expected = pair.stream().filter(c -> c != blank)
+                        .map(c -> c == named ? named.getFullName() : "Named Org").distinct().sorted().toList();
+                    val names = model.listObjectsOfProperty(createProperty(FOAF_NAME)).toList().stream()
+                        .map(n -> n.asLiteral().getString()).distinct().sorted().toList();
+                    assertThat(names, equalTo(expected));
+                    // Each node carries exactly one name and one type: nothing inherited.
+                    model.listSubjectsWithProperty(createProperty(FOAF_NAME)).forEach(node -> {
+                        assertEquals(1, model.listObjectsOfProperty(node, createProperty(FOAF_NAME)).toList().size());
+                        assertEquals(1, model.listObjectsOfProperty(node,
+                            createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")).toList().size());
+                    });
+                    val record = createResource("https://example.com/id/blankleak");
+                    val described = (int) pair.stream().filter(c -> c != blank).count();
+                    assertEquals(described, model.listObjectsOfProperty(record, createProperty(CREATOR)).toList().size());
+                    assertEquals(described, model.listObjectsOfProperty(record, createProperty(RIGHTS_HOLDER)).toList().size());
+                }
             }
 
             @Test
