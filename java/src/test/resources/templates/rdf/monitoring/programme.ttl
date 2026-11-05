@@ -12,6 +12,7 @@ dcterms:title "Test programme name" ;
 adms:identifier :43414cbf-03ab-4f5a-a581-b01ce145d312_id0 ;
 dcterms:description "Test programme description" ;
 geo:hasBoundingBox :43414cbf-03ab-4f5a-a581-b01ce145d312_bbox ;
+geo:hasGeometry :43414cbf-03ab-4f5a-a581-b01ce145d312_bbox ;
 dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en>;
 doo:hasChildProgramme <https://catalogue.ceh.ac.uk/id/000000005>;
 dcterms:relation <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue.ceh.ac.uk/id/000000002>;
@@ -26,7 +27,8 @@ dcterms:conformsTo "UKCEH" ;
 .
 :43414cbf-03ab-4f5a-a581-b01ce145d312_bbox
 a geo:Geometry ;
-geo:asEnvelope "ENVELOPE(-8.648, -0.728, 54.634, 60.861)"^^geo:envelopeLiteral .
+geo:asEnvelope "ENVELOPE(-8.648, -0.728, 54.634, 60.861)"^^geo:envelopeLiteral ;
+geo:asWKT "POLYGON((-8.648 54.634, -0.728 54.634, -0.728 60.861, -8.648 60.861, -8.648 54.634))"^^geo:wktLiteral .
 
 :43414cbf-03ab-4f5a-a581-b01ce145d312_record a <http://www.w3.org/ns/dcat#CatalogRecord> ;
   <http://xmlns.com/foaf/0.1/primaryTopic> :43414cbf-03ab-4f5a-a581-b01ce145d312 ;

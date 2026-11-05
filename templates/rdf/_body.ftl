@@ -29,6 +29,26 @@
       ] ;
     </#list>
 
+    <#-- The same boxes as GeoSPARQL geometries (nodes described by geometryDetail) -->
+    <#list boundingBoxes>
+      geo:hasGeometry <#items as extent>:${id}_geom${extent?index}<#sep>, </#sep></#items> ;
+    </#list>
+
+    <#list (alternateTitles![])?filter(t -> t?has_content && t?trim?has_content)>
+      dcterms:alternative <#items as title><@displayLiteral title /><#sep>, </#sep></#items> ;
+    </#list>
+
+    <#--
+      Resolutions are typed literals, so each is emitted only when Resolutions maps it
+      to a value valid for its datatype; anything else is omitted, never coerced.
+    -->
+    <#list (spatialResolutions![])?filter(r -> resolutions.metres(r, spatialReferenceSystems![])?has_content)>
+      dcat:spatialResolutionInMeters <#items as r>"${resolutions.metres(r, spatialReferenceSystems![])}"^^xsd:decimal<#sep>, </#sep></#items> ;
+    </#list>
+    <#list (temporalResolution![])?filter(t -> resolutions.duration(t)?has_content)>
+      dcat:temporalResolution <#items as t>"${resolutions.duration(t)}"^^xsd:duration<#sep>, </#sep></#items> ;
+    </#list>
+
     <#if temporalExtents?has_content>
       <@temporal />
     </#if>
@@ -93,9 +113,30 @@
       dcterms:isReferencedBy <@incomingCitationList /> ;
     </#if>
 
+    <#--
+      Supplemental links, by the entry's function. relatedArticle and isReferencedBy are
+      citing works, typed fabio:Expression in supplementalDetail so one that is also an
+      incoming citation is the same node. Entries without a usable URL emit nothing.
+    -->
+    <#assign referencedByUris = supplementalUris(["relatedArticle", "isReferencedBy"])>
+    <#if referencedByUris?has_content>
+      dcterms:isReferencedBy <#list referencedByUris as u><${u}><#sep>, </#sep></#list> ;
+    </#if>
+    <#assign pageUris = supplementalUris(["website"])>
+    <#if pageUris?has_content>
+      foaf:page <#list pageUris as u><${u}><#sep>, </#sep></#list> ;
+    </#if>
+    <#assign relationUris = supplementalUris(["relatedDataset"])>
+    <#if relationUris?has_content>
+      dcterms:relation <#list relationUris as u><${u}><#sep>, </#sep></#list> ;
+    </#if>
+
     <#if allKeywords?has_content>
       dcterms:subject <@keywordList allKeywords/> ;
     </#if>
+    <#list allKeywords?filter(k -> (k.value!"")?trim?has_content)>
+      dcat:keyword <#items as k><@displayLiteral k.value /><#sep>, </#sep></#items> ;
+    </#list>
 
     <#--
       Controlled-vocabulary links. Each list uses the <#list ...><#items> form (see
@@ -232,6 +273,9 @@
     <#if allKeywords?has_content>
       <@keywordDetail allKeywords />
     </#if>
+
+    <@geometryDetail />
+    <@supplementalDetail />
 
     <#if fileset?? && fileset?has_content>
       <@opDetail />

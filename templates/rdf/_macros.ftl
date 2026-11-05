@@ -414,6 +414,42 @@ ${formatUris.identify(format)} a dcterms:IMT ;
   </#if>
 </#macro>
 
+<#--
+  The normalised URLs of the supplemental entries whose function is one of the given
+  names, without repeats. The discriminator is function: type is rarely stored.
+  An entry with no URL, or one that does not normalise to a valid IRI, is skipped.
+-->
+<#function supplementalUris functions>
+  <#local uris = []>
+  <#list (supplemental![]) as entry>
+    <#if functions?seq_contains(entry.function!"")>
+      <#local entryUri = uriNormaliser.normalise(entry.url!"")>
+      <#if entryUri?has_content && !uris?seq_contains(entryUri)>
+        <#local uris = uris + [entryUri]>
+      </#if>
+    </#if>
+  </#list>
+  <#return uris>
+</#function>
+
+<#--
+  Type only: like incomingCitationDetail, a citing work is described on its own IRI,
+  and where the same URL is also an incoming citation both write the one type statement.
+-->
+<#macro supplementalDetail>
+  <#list supplementalUris(["relatedArticle", "isReferencedBy"]) as articleUri>
+    <${articleUri}> a <http://purl.org/spar/fabio/Expression> .
+  </#list>
+</#macro>
+
+<#-- The GeoSPARQL geometry node for each bounding box, matching the dcat:bbox WKT -->
+<#macro geometryDetail>
+  <#list boundingBoxes as extent>
+    :${id}_geom${extent?index} a geo:Geometry ;
+      geo:asWKT "${ttl.escape(extent.wkt)}"^^geo:wktLiteral .
+  </#list>
+</#macro>
+
 <#macro temporal>
   <#list temporalExtents as extent>
     <#if extent.begin?has_content || extent.end?has_content>
