@@ -40,6 +40,14 @@ dcat:distribution [
 ];
 </#list>
 
+<#--WMS distributions: one per WMS link, each naming the DataService node (_body.ftl) that serves it-->
+<#list wmsUris as wmsUri>
+dcat:distribution [
+    dcat:accessURL <${wmsUri}> ;
+    dcat:accessService :${id}_wms${wmsUri?index}
+] ;
+</#list>
+
 <#--Authors-->
 <#if describable(authors)?has_content>
   dcterms:creator <@contactList authors "a" /> ;

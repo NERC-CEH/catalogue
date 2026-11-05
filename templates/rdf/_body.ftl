@@ -230,6 +230,14 @@
     -->
     <#assign emitsRights = false>
     <#assign emitsFormats = false>
+    <#--
+      WMS GetCapabilities links, as normalised IRIs. The index into this list names the
+      :{id}_wms{i} node, so the distribution that points at it (turtle/_dataset.ftl) and
+      the node itself (below) must both read this one list. A link with no usable IRI is
+      dropped here, before any index is taken.
+    -->
+    <#assign wmsUris = (onlineResources![])?filter(r -> r.type?string == "WMS_GET_CAPABILITIES")
+      ?map(r -> uriNormaliser.normalise(r.url!""))?filter(u -> u?has_content)>
     <#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
       <#assign emitsRights = true>
       <#include "turtle/_dataset.ftl">
@@ -276,6 +284,17 @@
 
     <@geometryDetail />
     <@supplementalDetail />
+
+    <#-- A dataset's WMS endpoints are services of their own, serving the dataset. (A service
+         record with a WMS link is itself the DataService: see turtle/_service.ftl.) -->
+    <#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
+      <#list wmsUris as wmsUri>
+    :${id}_wms${wmsUri?index}
+      a dcat:DataService ;
+      dcat:endpointURL <${wmsUri}> ;
+      dcat:servesDataset :${id} .
+      </#list>
+    </#if>
 
     <#if fileset?? && fileset?has_content>
       <@opDetail />

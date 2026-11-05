@@ -3679,6 +3679,109 @@ public class RdfTurtleTest {
             assertTrue(objects(record(), DCT + "isReferencedBy").isEmpty());
         }
 
+        private static final String WMS_URL =
+            "https://catalogue.ceh.ac.uk/maps/x?service=WMS&request=GetCapabilities";
+        private static final String WMS_URL_2 =
+            "https://catalogue.ceh.ac.uk/maps/y?service=WMS&request=GetCapabilities";
+        private static final String DATA_SERVICE = DCAT + "DataService";
+
+        private OnlineResource wms(String url) {
+            return OnlineResource.builder().url(url).function("information").build();
+        }
+
+        @Test
+        @DisplayName("a dataset's WMS link becomes a dcat:DataService with its own distribution")
+        void datasetWmsBecomesDataService() {
+            template("rdf/ttl.ftl", dataset().setOnlineResources(List.of(
+                OnlineResource.builder().url("https://data-package.ceh.ac.uk/data/abc").function("download").build(),
+                wms(WMS_URL))));
+
+            val service = createResource(BASE + "desc_wms0");
+            assertTrue(model.contains(service, createProperty(RDF_TYPE), createResource(DATA_SERVICE)));
+            assertTrue(model.contains(service, createProperty(DCAT + "endpointURL"), createResource(WMS_URL)));
+            assertTrue(model.contains(service, createProperty(DCAT + "servesDataset"), record()));
+
+            val distributions = objects(record(), DCAT + "distribution");
+            val viaService = distributions.stream().map(RDFNode::asResource)
+                .filter(d -> model.contains(d, createProperty(DCAT + "accessService"), service)).toList();
+            assertEquals(1, viaService.size());
+            assertTrue(model.contains(viaService.get(0), createProperty(DCAT + "accessURL"), createResource(WMS_URL)));
+            val download = distributions.stream().map(RDFNode::asResource)
+                .filter(d -> model.contains(d, createProperty(DCAT + "accessURL"),
+                    createResource("https://data-package.ceh.ac.uk/data/abc"))).toList();
+            assertEquals(1, download.size());
+            assertTrue(objects(download.get(0), DCAT + "accessService").isEmpty());
+        }
+
+        @Test
+        @DisplayName("each of several WMS links gets its own indexed service node")
+        void severalWmsLinksGetDistinctNodes() {
+            template("rdf/ttl.ftl", dataset().setOnlineResources(List.of(wms(WMS_URL), wms(WMS_URL_2))));
+
+            assertTrue(model.contains(createResource(BASE + "desc_wms0"), createProperty(DCAT + "endpointURL"), createResource(WMS_URL)));
+            assertTrue(model.contains(createResource(BASE + "desc_wms1"), createProperty(DCAT + "endpointURL"), createResource(WMS_URL_2)));
+            assertEquals(2, objects(record(), DCAT + "distribution").size());
+        }
+
+        @Test
+        @DisplayName("a service record with a WMS link is itself the dcat:DataService")
+        void serviceRecordIsItselfADataService() {
+            val document = (GeminiDocument) dataset().setType("service")
+                .setOnlineResources(List.of(wms(WMS_URL)));
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(model.contains(record(), createProperty(RDF_TYPE), createResource(DATA_SERVICE)));
+            assertTrue(model.contains(record(), createProperty(RDF_TYPE),
+                createResource("http://purl.org/dc/dcmitype/Service")));
+            assertTrue(model.contains(record(), createProperty(DCAT + "endpointURL"), createResource(WMS_URL)));
+            assertFalse(model.containsResource(createResource(BASE + "desc_wms0")));
+        }
+
+        @Test
+        @DisplayName("a service record with several WMS links has several endpoint URLs")
+        void serviceRecordWithSeveralWmsLinks() {
+            val document = (GeminiDocument) dataset().setType("service")
+                .setOnlineResources(List.of(wms(WMS_URL), wms(WMS_URL_2)));
+            template("rdf/ttl.ftl", document);
+
+            assertEquals(2, objects(record(), DCAT + "endpointURL").size());
+        }
+
+        @Test
+        @DisplayName("a service record without a WMS link is not a dcat:DataService")
+        void serviceWithoutWmsIsNotADataService() {
+            val document = (GeminiDocument) dataset().setType("service")
+                .setOnlineResources(List.of(OnlineResource.builder().url("https://example.org/x").build()));
+            template("rdf/ttl.ftl", document);
+
+            assertFalse(model.contains(record(), createProperty(RDF_TYPE), createResource(DATA_SERVICE)));
+        }
+
+        @Test
+        @DisplayName("a non-WMS online resource creates no DataService")
+        void nonWmsOnlineResourceIsIgnored() {
+            template("rdf/ttl.ftl", dataset().setOnlineResources(List.of(
+                OnlineResource.builder().url("https://example.org/page").function("information").build())));
+
+            assertFalse(model.containsResource(createResource(BASE + "desc_wms0")));
+            assertTrue(objects(record(), DCAT + "distribution").isEmpty());
+        }
+
+        @Test
+        @DisplayName("a Deleted record exports no WMS DataService")
+        void deletedRecordEmitsNoWms() {
+            val dataset = dataset().setOnlineResources(List.of(wms(WMS_URL)));
+            dataset.setAccessLimitation(AccessLimitation.builder().value("Deleted").availability("Deleted").build());
+            template("rdf/ttl.ftl", dataset);
+            assertFalse(model.containsResource(createResource(BASE + "desc_wms0")));
+            assertTrue(objects(record(), DCAT + "distribution").isEmpty());
+
+            val service = (GeminiDocument) dataset().setType("service").setOnlineResources(List.of(wms(WMS_URL)));
+            service.setAccessLimitation(AccessLimitation.builder().value("Deleted").availability("Deleted").build());
+            template("rdf/ttl.ftl", service);
+            assertTrue(objects(record(), DCAT + "endpointURL").isEmpty());
+        }
+
         @Test
         @DisplayName("a Deleted record exports none of the new description properties")
         void deletedRecordEmitsNoDescriptions() {
