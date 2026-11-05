@@ -24,6 +24,7 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CrsUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FormatUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FrequencyUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.Resolutions;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.KeywordUri;
@@ -76,6 +77,7 @@ class ProductionRecordsTurtleTest {
         configuration.setSharedVariable("frequencyUris", new FrequencyUri());
         configuration.setSharedVariable("crsUris", new CrsUri());
         configuration.setSharedVariable("keywordUri", new KeywordUri(uriNormaliser, keywordVocabulary));
+        configuration.setSharedVariable("resolutions", new Resolutions(new CrsUri()));
 
         // Public JSON carries computed read-only fields (e.g. relCombinedGeometry) with no setter
         val mapper = new ObjectMapper().findAndRegisterModules().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
