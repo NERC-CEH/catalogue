@@ -47,9 +47,9 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CrsUri;
-import uk.ac.ceh.gateway.catalogue.templateHelpers.FrequencyUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FormatUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.FrequencyUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.LicenceUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
 
@@ -95,8 +95,8 @@ public class RdfTurtleTest {
         configuration.setSharedVariable("fundingUri", new FundingUri(uriNormaliser));
         configuration.setSharedVariable("licenceUris", new LicenceUri());
         configuration.setSharedVariable("formatUris", new FormatUri());
-        configuration.setSharedVariable("crsUris", new CrsUri());
         configuration.setSharedVariable("frequencyUris", new FrequencyUri());
+        configuration.setSharedVariable("crsUris", new CrsUri());
         configuration.setSharedVariable("keywordUri", new KeywordUri(uriNormaliser, keywordVocabulary));
 
         model = ModelFactory.createDefaultModel();
@@ -3161,7 +3161,7 @@ public class RdfTurtleTest {
 
             assertTrue(has(DCAT + "theme", hydrography));
             assertTrue(has(DCAT + "theme", biota));
-            assertTrue(hasAny(DCT + "theme"));
+            assertTrue(has(DCT + "theme", "http://example.com/soil"));
             assertFalse(model.listStatements(createResource(hydrography), null, (RDFNode) null).toList().stream()
                 .anyMatch(statement -> statement.getObject().isLiteral()));
         }
@@ -3175,6 +3175,60 @@ public class RdfTurtleTest {
                 .setTopicCategories(List.of(Keyword.builder().value("Biota").build()))
                 .setResourceMaintenance(List.of(ResourceMaintenance.builder().build())));
 
+            assertFalse(hasAny(DCT + "conformsTo"));
+            assertFalse(hasAny(DCAT + "theme"));
+            assertFalse(hasAny(DCT + "accrualPeriodicity"));
+        }
+
+        @Test
+        @DisplayName("an unmapped frequency and non-URI theme values emit nothing, and the file still parses")
+        void unmappedAndNonUriValuesEmitNothing() {
+            template("rdf/ttl.ftl", dataset()
+                .setResourceMaintenance(List.of(ResourceMaintenance.builder().frequencyOfUpdate("bogus").build()))
+                .setInspireThemes(List.of(InspireTheme.builder().theme("Hydrography").uri("not a uri").build()))
+                .setTopicCategories(List.of(Keyword.builder().value("Biota").URI("free text").build())));
+
+            assertFalse(hasAny(DCT + "accrualPeriodicity"));
+            assertFalse(hasAny(DCAT + "theme"));
+            assertTrue(model.contains(createResource("https://example.com/id/vocab"), null, (RDFNode) null));
+        }
+
+        @Test
+        @DisplayName("spatial representation matching is case-insensitive and writes DOO's case")
+        void spatialRepresentationMatchesCaseInsensitively() {
+            template("rdf/ttl.ftl", dataset().setSpatialRepresentationTypes(
+                List.of("textTable", "Vector", "STEREOMODEL", "video")));
+
+            val objects = model.listObjectsOfProperty(createProperty(DOO + "spatialRepresentationType")).toList()
+                .stream().map(Object::toString).collect(java.util.stream.Collectors.toSet());
+            assertThat(objects, equalTo(java.util.Set.of(
+                DOO + "textTable", DOO + "vector", DOO + "stereoModel", DOO + "video")));
+        }
+
+        @Test
+        @DisplayName("a mixed spatial representation list keeps only the allow-listed entries")
+        void mixedSpatialRepresentationKeepsAllowListed() {
+            template("rdf/ttl.ftl", dataset().setSpatialRepresentationTypes(List.of("raster", "grid")));
+
+            val objects = model.listObjectsOfProperty(createProperty(DOO + "spatialRepresentationType")).toList()
+                .stream().map(Object::toString).collect(java.util.stream.Collectors.toSet());
+            assertThat(objects, equalTo(java.util.Set.of(DOO + "grid")));
+        }
+
+        @Test
+        @DisplayName("a Deleted record exports none of the controlled-vocabulary properties")
+        void deletedRecordEmitsNoControlledVocabularies() {
+            val document = dataset()
+                .setSpatialRepresentationTypes(List.of("vector"))
+                .setSpatialReferenceSystems(List.of(SpatialReferenceSystem.builder().code("27700").build()))
+                .setInspireThemes(List.of(InspireTheme.builder()
+                    .theme("Hydrography").uri("http://inspire.ec.europa.eu/theme/hy").build()))
+                .setResourceMaintenance(List.of(ResourceMaintenance.builder().frequencyOfUpdate("daily").build()));
+            document.setAccessLimitation(AccessLimitation.builder().value("Deleted").availability("Deleted").build());
+
+            template("rdf/ttl.ftl", document);
+
+            assertFalse(hasAny(DOO + "spatialRepresentationType"));
             assertFalse(hasAny(DCT + "conformsTo"));
             assertFalse(hasAny(DCAT + "theme"));
             assertFalse(hasAny(DCT + "accrualPeriodicity"));
