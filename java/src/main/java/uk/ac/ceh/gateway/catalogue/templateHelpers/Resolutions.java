@@ -122,6 +122,8 @@ public class Resolutions {
     }
 
     /** The text as an {@code xsd:duration}, or {@code ""} when it does not map cleanly. */
+    private static final int MAX_QUANTITY = 1_000_000;
+
     public String duration(String text) {
         if (text == null) {
             return "";
@@ -139,7 +141,10 @@ public class Resolutions {
         String unit = m.group(1) != null ? m.group(2) : m.group(4);
         String designator = UNIT_DESIGNATORS.get(unit);
         Integer n = quantity(quantity);
-        if (designator == null || n == null || n <= 0) {
+        // The cap keeps n * 7 inside int and every value within what Jena's
+        // xsd:duration validator accepts (it rejects P2800000000D): an ill-typed
+        // literal would freeze the whole export, and no real resolution is this large.
+        if (designator == null || n == null || n <= 0 || n > MAX_QUANTITY) {
             return "";
         }
         if (designator.equals("7D")) {
