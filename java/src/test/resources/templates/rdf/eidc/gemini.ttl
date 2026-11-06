@@ -98,6 +98,20 @@ org:memberOf <https://ror.org/00pggkr55> ;
 :role_c850511b14958c73 a pro:RoleInTime ;
 pro:withRole scoro:data-curator ;
 pro:relatesToEntity :f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16 .
+<https://orcid.org/0000-3333-2345-6789> a foaf:Person ;
+org:memberOf <https://ror.org/04xw4m193> ;
+.
+<https://orcid.org/0000-3333-2345-6789> pro:holdsRoleInTime :role_c26f9cdf33ba10dc .
+:role_c26f9cdf33ba10dc a pro:RoleInTime ;
+pro:withRole <http://inspire.ec.europa.eu/metadata-codelist/ResponsiblePartyRole/custodian> ;
+pro:relatesToEntity :f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16 .
+<https://orcid.org/0000-1111-2345-6789> a foaf:Person ;
+org:memberOf <https://ror.org/04xw4m193> ;
+.
+<https://orcid.org/0000-1111-2345-6789> pro:holdsRoleInTime :role_cd7384840745ad62 .
+:role_cd7384840745ad62 a pro:RoleInTime ;
+pro:withRole <http://inspire.ec.europa.eu/metadata-codelist/ResponsiblePartyRole/distributor> ;
+pro:relatesToEntity :f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16 .
 <https://test-admin-url.ac.uk> a <http://purl.org/spar/fabio/Expression> ;
 dcterms:bibliographicCitation "Test Admin details";
 .

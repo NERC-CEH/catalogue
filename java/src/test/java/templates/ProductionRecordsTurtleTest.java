@@ -155,6 +155,12 @@ class ProductionRecordsTurtleTest {
         System.out.println("records: " + records);
         System.out.println("skipped: " + skipped);
         System.out.println("triples: " + model.size());
+        val subjects = model.listSubjects().toList().stream()
+            .filter(r -> r.isURIResource()).map(r -> r.getURI()).toList();
+        System.out.println("organisation nodes: " + subjects.stream()
+            .filter(u -> u.contains("/organisation_")).count());
+        System.out.println("record-scoped contact nodes: " + subjects.stream()
+            .filter(u -> u.matches(".*/[^/_]+_(a|c|pub|con|rh|cu|di|oc)\\d+$")).count());
         perPredicate.forEach((predicate, count) -> System.out.println("predicate " + predicate + " " + count));
     }
 }

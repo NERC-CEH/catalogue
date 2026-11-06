@@ -13,6 +13,7 @@
   so the two can never disagree about which node a contact is.
 -->
 <#macro contactList contacts prefix="c">
+  <#local contacts = describable(contacts)>
   <#if contacts?has_content>
     <#list contacts as contact>
       ${contactUri.identify(contact, id, prefix, contact?index)}<#sep>,</#sep><#t>
@@ -41,24 +42,60 @@
 <#assign scoroContributorRoles = ["data-creator", "data-curator", "collaborator", "researcher",
   "technician", "project-leader", "workpackage-leader"]>
 
+<#--
+  The INSPIRE ResponsiblePartyRole code list: the only vocabulary with a
+  confirmed equivalent for rights holders, custodians, distributors and the
+  owner/resourceProvider/originator contacts. Defined once here.
+-->
+<#assign roleBase = "http://inspire.ec.europa.eu/metadata-codelist/ResponsiblePartyRole/">
+<#assign inspireOtherContactRoles = ["owner", "resourceProvider", "originator"]>
+
+<#--
+  Only contacts that can be described: contactDetail types a node from the
+  person's or organisation's name, and a present-but-blank entry (nullToEmpty
+  turns a stored {} into one) has neither. contactList and contactDetail both
+  apply this to every list themselves, so their indexes — and so the nodes
+  ContactUri gives the record-scoped fallback — always agree, and call sites
+  need no filter of their own.
+-->
+<#function describable contacts>
+  <#return (contacts![])?filter(c -> c.fullName?trim?has_content || c.organisationName?trim?has_content)>
+</#function>
+
+<#function inspireRole name>
+  <#return "<" + roleBase + name + ">">
+</#function>
+
 <#function doiRoleUri contact>
   <#local scoroRole = contact.contributorRole?replace("([a-z])([A-Z])", "$1-$2", "r")?lower_case>
   <#if scoroContributorRoles?seq_contains(scoroRole)><#return "scoro:" + scoroRole></#if>
   <#if contact.role == "author"><#return "pro:author"></#if>
   <#if contact.role == "principalInvestigator"><#return "scoro:principal-investigator"></#if>
+  <#if inspireOtherContactRoles?seq_contains(contact.role)><#return inspireRole(contact.role)></#if>
   <#return "">
 </#function>
 
-<#macro contactDetail contacts prefix="c">
+<#--
+  role, when given, is the full role IRI (in <…> form) held by every contact in
+  the list, used instead of doiRoleUri(contact): rights holders, custodians and
+  distributors are distinguished by which list they are in, not by a field.
+-->
+<#macro contactDetail contacts prefix="c" role="">
+  <#local contacts = describable(contacts)>
   <#if contacts?has_content>
     <#list contacts as contact>
 
       <#local contactIdentifier = contactUri.identify(contact, id, prefix, contact?index)>
 
-      <#if contact.fullName?has_content>
+      <#--
+        Assigned on every iteration: FreeMarker keeps a #local set inside #list
+        across iterations, so a branch that did not assign would silently
+        inherit the previous contact's type and name.
+      -->
+      <#if contact.fullName?trim?has_content>
         <#local contactType="foaf:Person">
         <#local contactName=contact.fullName>
-      <#elseif contact.organisationName?has_content >
+      <#else>
         <#local contactType="foaf:Organization">
         <#local contactName=contact.organisationName>
       </#if>
@@ -150,7 +187,7 @@ ${memberOrg} a foaf:Organization ;
         so the statement can be pointed at — which is exactly what a blank node
         prevents.
       -->
-      <#local doiRole = doiRoleUri(contact)>
+      <#local doiRole = role?has_content?then(role, doiRoleUri(contact))>
       <#if doiRole?has_content>
         <#local roleNode = contactUri.identifyRole(contactIdentifier, doiRole, id)>
         ${contactIdentifier} pro:holdsRoleInTime ${roleNode} .

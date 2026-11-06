@@ -202,13 +202,37 @@ class ContactUriTest {
         }
 
         @Test
-        @DisplayName("without a ROR an organisation stays on its record-scoped node")
+        @DisplayName("without a ROR an organisation is the node minted from its name, the same on every record")
         void withoutRor() {
             val organisation = ResponsibleParty.builder()
                 .organisationName("UK Centre for Ecology & Hydrology")
                 .build();
 
-            assertThat(service.identify(organisation, "rec", "c", 2), is(equalTo(":rec_c2")));
+            val node = service.identify(organisation, "rec", "c", 2);
+            assertThat(node, is(equalTo(service.identifyOrganisation(organisation))));
+            assertThat(node, matchesRegex(":organisation_[0-9a-f]+"));
+            assertThat(service.identify(organisation, "other", "pub", 0), is(equalTo(node)));
+        }
+
+        @Test
+        @DisplayName("an organisation with a ROR still resolves to the ROR, not the minted node")
+        void rorWinsOverMintedNode() {
+            val organisation = ResponsibleParty.builder()
+                .organisationName("UK Centre for Ecology & Hydrology")
+                .organisationIdentifier("https://ror.org/00pggkr55")
+                .build();
+
+            assertThat(service.identify(organisation, "other", "pub", 3), is(equalTo("<https://ror.org/00pggkr55>")));
+        }
+
+        @Test
+        @DisplayName("a contact with no names at all stays on its record-scoped node")
+        void noNames() {
+            assertThat(
+                service.identify(ResponsibleParty.builder().organisationIdentifier("https://ror.org/00pggkr55").build(), "rec", "c", 2),
+                is(equalTo("<https://ror.org/00pggkr55>"))
+            );
+            assertThat(service.identify(ResponsibleParty.builder().build(), "rec", "c", 2), is(equalTo(":rec_c2")));
         }
     }
 

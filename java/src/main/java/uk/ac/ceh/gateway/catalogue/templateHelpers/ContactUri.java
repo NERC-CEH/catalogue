@@ -26,6 +26,10 @@ import java.text.Normalizer;
  *       nowhere, so a depositor who supplied one still got a throwaway node</li>
  *   <li>a ROR, for a contact that is an organisation rather than a person</li>
  *   <li>a node minted from the person's own name, stable across records</li>
+ *   <li>a node minted from the organisation's own name, for an organisation
+ *       with no usable ROR — the rule {@link #identifyOrganisation} applies to
+ *       affiliations (dri-one #334), so a custodian "JNCC" and an author's
+ *       affiliation "JNCC" are one node</li>
  *   <li>the record-scoped node, for a contact with nothing to identify it</li>
  * </ol>
  *
@@ -83,9 +87,11 @@ public class ContactUri {
         val recordScoped = ":" + recordId + "_" + prefix + index;
 
         if (contact.getFullName().isBlank()) {
+            val organisation = identifyOrganisation(contact);
+            val fallback = organisation.isEmpty() ? recordScoped : organisation;
             return contact.isRor()
-                ? iriOrElse(contact.getOrganisationIdentifier(), recordScoped)
-                : recordScoped;
+                ? iriOrElse(contact.getOrganisationIdentifier(), fallback)
+                : fallback;
         }
 
         if (contact.isOrcid() || contact.isIsni()) {
