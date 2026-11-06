@@ -24,3 +24,7 @@ skos:notation "123456" ;
 adms:schemaAgency <https://ror.org/00pggkr55> ;
 dcterms:conformsTo "UKCEH" ;
 .
+
+:de64ac2e-4fd4-4dcb-9e83-1464219bb1c2_record a <http://www.w3.org/ns/dcat#CatalogRecord> ;
+  <http://xmlns.com/foaf/0.1/primaryTopic> :de64ac2e-4fd4-4dcb-9e83-1464219bb1c2 ;
+  <http://purl.org/dc/terms/modified> "2025-02-05T09:02:01"^^<http://www.w3.org/2001/XMLSchema#dateTime> .

@@ -1,10 +1,6 @@
 a dcat:Dataset;
 dcterms:type dcmitype:Dataset ;
 
-<#if datasetReferenceDate?? && datasetReferenceDate.publicationDate?has_content>
-  dcterms:available "${datasetReferenceDate.publicationDate}"^^xsd:date ;
-</#if>
-
 <#assign citationLandingPage = "">
 <#if datacitable?string=="true" && citation?has_content>
   <#assign citationLandingPage = uriNormaliser.normalise(citation.url!"")>

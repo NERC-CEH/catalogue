@@ -35,6 +35,7 @@ import static org.apache.jena.rdf.model.ResourceFactory.createProperty;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.matchesRegex;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -350,5 +351,101 @@ class CatalogueToTurtleServiceTest {
             createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
             createResource("http://www.w3.org/ns/dcat#Dataset")
         ));
+    }
+
+    private Model catalogueModel(Catalogue forCatalogue, GeminiDocument... documents) {
+        given(catalogueService.retrieve(forCatalogue.getId())).willReturn(forCatalogue);
+        given(listing.getLatestPublicDocumentsOfCatalogue(forCatalogue.getId())).willReturn(List.of(documents));
+        val ttl = service.getBigTtl(forCatalogue.getId()).orElseThrow();
+        Model model = ModelFactory.createDefaultModel();
+        RDFDataMgr.read(model, new StringReader(ttl), baseUri + "/", Lang.TTL);
+        return model;
+    }
+
+    private GeminiDocument record(String id) {
+        return (GeminiDocument) new GeminiDocument()
+            .setType("dataset")
+            .setId(id)
+            .setUri(baseUri + "/id/" + id)
+            .setTitle("Record " + id);
+    }
+
+    private static final String DCT = "http://purl.org/dc/terms/";
+
+    @Test
+    void theEidcCatalogueNodeIsPublishedLicensedAndDescribed() {
+        //When
+        val model = catalogueModel(catalogue, record("one"), record("two"));
+
+        //Then
+        val node = createResource(baseUri + "/eidc/documents");
+        val ror = createResource("https://ror.org/04xw4m193");
+        assertTrue(model.contains(node, createProperty(DCT + "publisher"), ror));
+        assertTrue(model.contains(node, createProperty(DCT + "license"),
+            createResource("https://spdx.org/licenses/OGL-UK-3.0.ttl")));
+        val description = model.getProperty(node, createProperty(DCT + "description")).getString();
+        assertTrue(description.contains("Env Data Centre"));
+        assertTrue(description.contains("Open Government Licence"));
+        val modified = model.getProperty(node, createProperty(DCT + "modified")).getLiteral();
+        assertThat(modified.getDatatypeURI(), org.hamcrest.Matchers.is("http://www.w3.org/2001/XMLSchema#dateTime"));
+        assertThat(modified.getLexicalForm(), matchesRegex("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z"));
+        for (val id : List.of("one", "two")) {
+            assertTrue(model.contains(node, createProperty("http://www.w3.org/ns/dcat#record"),
+                createResource(baseUri + "/id/" + id + "_record")));
+        }
+    }
+
+    @Test
+    void theUkcehCatalogueNodeIsPublishedByUkceh() {
+        val ukceh = Catalogue.builder().id("ukceh").title("UKCEH").url(baseUri).contactUrl("").logo("x.png").build();
+
+        val model = catalogueModel(ukceh, record("one"));
+
+        assertTrue(model.contains(createResource(baseUri + "/ukceh/documents"),
+            createProperty(DCT + "publisher"), createResource("https://ror.org/00pggkr55")));
+    }
+
+    /** The ROR node is shared across catalogues, so it carries only the name the EIDC block asserts. */
+    @Test
+    void theRorNodeGainsNoRecordText() {
+        val model = catalogueModel(catalogue, record("one"));
+
+        val ror = createResource("https://ror.org/04xw4m193");
+        assertThat(model.listObjectsOfProperty(ror, createProperty("http://xmlns.com/foaf/0.1/name")).toList().size(),
+            org.hamcrest.Matchers.is(1));
+    }
+
+    @Test
+    void aCatalogueWithoutAPublisherMappingHasNoPublisher() {
+        val ukeof = Catalogue.builder().id("ukeof").title("UKEOF").url(baseUri).contactUrl("").logo("x.png").build();
+
+        val model = catalogueModel(ukeof, record("one"));
+
+        assertTrue(model.contains(createResource(baseUri + "/ukeof/documents"),
+            createProperty(DCT + "license"), createResource("https://spdx.org/licenses/OGL-UK-3.0.ttl")));
+        assertFalse(model.contains(null, createProperty(DCT + "publisher")));
+    }
+
+    /** Every id the catalogue links with dcat:record must be described, whatever its record type. */
+    @Test
+    void aMonitoringRecordsCatalogueRecordNodeIsDescribed() {
+        val facility = new uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility();
+        facility.setType("monitoringFacility");
+        facility.setId("mon1");
+        facility.setUri(baseUri + "/id/mon1");
+        facility.setTitle("Monitoring facility");
+        given(catalogueService.retrieve(catalogueKey)).willReturn(catalogue);
+        given(listing.getLatestPublicDocumentsOfCatalogue(catalogueKey)).willReturn(List.of(facility));
+        val ttl = service.getBigTtl(catalogueKey).orElseThrow();
+        Model model = ModelFactory.createDefaultModel();
+        RDFDataMgr.read(model, new StringReader(ttl), baseUri + "/", Lang.TTL);
+
+        val record = createResource(baseUri + "/id/mon1_record");
+        assertTrue(model.contains(createResource(baseUri + "/eidc/documents"),
+            createProperty("http://www.w3.org/ns/dcat#record"), record));
+        assertTrue(model.contains(record, createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            createResource("http://www.w3.org/ns/dcat#CatalogRecord")));
+        assertTrue(model.contains(record, createProperty("http://xmlns.com/foaf/0.1/primaryTopic"),
+            createResource(baseUri + "/id/mon1")));
     }
 }

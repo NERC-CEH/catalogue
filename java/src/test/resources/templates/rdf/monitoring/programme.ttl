@@ -27,3 +27,7 @@ dcterms:conformsTo "UKCEH" ;
 :43414cbf-03ab-4f5a-a581-b01ce145d312_bbox
 a geo:Geometry ;
 geo:asEnvelope "ENVELOPE(-8.648, -0.728, 54.634, 60.861)"^^geo:envelopeLiteral .
+
+:43414cbf-03ab-4f5a-a581-b01ce145d312_record a <http://www.w3.org/ns/dcat#CatalogRecord> ;
+  <http://xmlns.com/foaf/0.1/primaryTopic> :43414cbf-03ab-4f5a-a581-b01ce145d312 ;
+  <http://purl.org/dc/terms/modified> "2025-02-05T10:21:49"^^<http://www.w3.org/2001/XMLSchema#dateTime> .

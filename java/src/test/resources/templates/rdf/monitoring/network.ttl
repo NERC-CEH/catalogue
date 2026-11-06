@@ -21,3 +21,7 @@ skos:notation "http://localhost:8080/id/09b6b7f5-1bc3-4d21-864a-adf249e86618" ;
 adms:schemaAgency <https://ror.org/00pggkr55> ;
 dcterms:conformsTo "UKCEH" ;
 .
+
+:09b6b7f5-1bc3-4d21-864a-adf249e86618_record a <http://www.w3.org/ns/dcat#CatalogRecord> ;
+  <http://xmlns.com/foaf/0.1/primaryTopic> :09b6b7f5-1bc3-4d21-864a-adf249e86618 ;
+  <http://purl.org/dc/terms/modified> "2025-02-05T10:06:13"^^<http://www.w3.org/2001/XMLSchema#dateTime> .

@@ -17,6 +17,8 @@ import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -158,6 +160,7 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
         model.put("catalogue", catalogue.getId());
         model.put("title", catalogue.getTitle());
         model.put("baseUri", baseUri);
+        model.put("exported", Instant.now().truncatedTo(ChronoUnit.SECONDS).toString());
         return model;
     }
 

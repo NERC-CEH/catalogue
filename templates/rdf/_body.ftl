@@ -1,3 +1,4 @@
+<#import "_catalogRecord.ftl" as cr>
 :${id}
   dcterms:title <@displayLiteral title /> ;
 
@@ -104,6 +105,36 @@
     </#if>
 
     <#--
+      Dates, once for every type. publicationDate is when the record (and its DOI)
+      went public: dcterms:issued. releasedDate is when an embargo lifted and the data
+      became downloadable: dcterms:available, falling back to publicationDate. A future
+      releasedDate is kept as a future dcterms:available. supersededDate, deprecatedDate
+      and unavailableDate are deliberately not exported.
+    -->
+    <#if datasetReferenceDate??>
+      <#if datasetReferenceDate.publicationDate?has_content>
+        dcterms:issued "${datasetReferenceDate.publicationDate}"^^xsd:date ;
+      </#if>
+      <#if datasetReferenceDate.releasedDate?has_content>
+        dcterms:available "${datasetReferenceDate.releasedDate}"^^xsd:date ;
+      <#elseif datasetReferenceDate.publicationDate?has_content>
+        dcterms:available "${datasetReferenceDate.publicationDate}"^^xsd:date ;
+      </#if>
+      <#if datasetReferenceDate.creationDate?has_content>
+        dcterms:created "${datasetReferenceDate.creationDate}"^^xsd:date ;
+      </#if>
+      <#if datasetReferenceDate.revisionDate?has_content>
+        dcterms:modified "${datasetReferenceDate.revisionDate}"^^xsd:date ;
+      </#if>
+    </#if>
+
+    <#-- A free string (controller ruling R3): any stored version is emitted as is; ?c stops
+         3.6 being localised to 3,6. -->
+    <#if version??>
+      dcat:version "${version?c}" ;
+    </#if>
+
+    <#--
       emitsRights tracks whether the type-specific include below pulls in
       turtle/_rights.ftl, so that rightsDetail only describes a minted licence or
       access-rights node when something actually references it. Set alongside each
@@ -182,6 +213,8 @@
     dcterms:description "This resource is no longer available please contact the Environmental Information Data Centre for more details" ;
     .
   </#if>
+
+  <@cr.catalogRecord />
 
   <#macro canonicalIdentifier resourceIdentifiers>
 

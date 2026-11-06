@@ -107,16 +107,37 @@ class ProductionRecordsTurtleTest {
                 }
                 val turtle = FreeMarkerTemplateUtils.processTemplateIntoString(
                     configuration.getTemplate(template), document);
-                RDFDataMgr.read(model, new StringReader(turtle), "https://example.com/id/", Lang.TTL);
-                records++;
+                val recordModel = ModelFactory.createDefaultModel();
+                RDFDataMgr.read(recordModel, new StringReader(turtle), "https://example.com/id/", Lang.TTL);
+                val illTyped = illTypedLiterals(id, recordModel);
+                if (illTyped.isEmpty()) {
+                    model.add(recordModel);
+                    records++;
+                } else {
+                    failures.addAll(illTyped);
+                }
             } catch (Exception e) {
-                failures.add(id + ": " + e.getMessage());
+                failures.add(id + ": " + e.getClass().getSimpleName() + ": " + e.getMessage());
             }
         }
 
         report(model, records, skipped);
         assertThat("no records were read from PROD_RECORDS_DIR", records, greaterThan(0));
         assertThat(failures, empty());
+    }
+
+    /** Jena parses ill-typed literals without complaint; a datatype that rejects its lexical form is a failure. */
+    private static List<String> illTypedLiterals(String id, Model recordModel) {
+        val problems = new ArrayList<String>();
+        recordModel.listStatements().forEachRemaining(s -> {
+            if (s.getObject().isLiteral()) {
+                val lit = s.getObject().asLiteral();
+                if (lit.getDatatype() != null && !lit.getDatatype().isValid(lit.getLexicalForm())) {
+                    problems.add(id + ": ill-typed literal \"" + lit.getLexicalForm() + "\"^^" + lit.getDatatypeURI());
+                }
+            }
+        });
+        return problems;
     }
 
     private static String text(JsonNode json, String field) {
