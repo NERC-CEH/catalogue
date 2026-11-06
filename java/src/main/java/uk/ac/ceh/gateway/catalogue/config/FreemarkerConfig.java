@@ -41,6 +41,7 @@ public class FreemarkerConfig {
     private final MultiDocumentTypeMetadataQualityService metadataQualityService;
     private final PermissionService permissionService;
     private final ProfileService profileService;
+    private final Resolutions resolutions;
     private final FileDetailsService fileDetailsService;
     private final FileListService fileListService;
     private final UriNormaliser uriNormaliser;
@@ -73,6 +74,7 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("metadataQuality", metadataQualityService);
         freemarkerConfiguration.setSharedVariable("permission", permissionService);
         freemarkerConfiguration.setSharedVariable("profile", profileService);
+        freemarkerConfiguration.setSharedVariable("resolutions", resolutions);
         freemarkerConfiguration.setSharedVariable("uriNormaliser", uriNormaliser);
         freemarkerConfiguration.setSharedVariable("wmsMaps", wmsMapService);
         freemarkerConfiguration.setSharedVariable("userInfo", new SecurityUserInfo());

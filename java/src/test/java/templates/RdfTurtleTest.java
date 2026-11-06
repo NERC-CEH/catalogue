@@ -31,6 +31,9 @@ import uk.ac.ceh.gateway.catalogue.gemini.InspireTheme;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceMaintenance;
 import uk.ac.ceh.gateway.catalogue.gemini.SpatialReferenceSystem;
+import uk.ac.ceh.gateway.catalogue.gemini.SpatialResolution;
+import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
@@ -50,6 +53,7 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.CrsUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FormatUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FrequencyUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.Resolutions;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.LicenceUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
 
@@ -99,6 +103,7 @@ public class RdfTurtleTest {
         configuration.setSharedVariable("frequencyUris", new FrequencyUri());
         configuration.setSharedVariable("crsUris", new CrsUri());
         configuration.setSharedVariable("keywordUri", new KeywordUri(uriNormaliser, keywordVocabulary));
+        configuration.setSharedVariable("resolutions", new Resolutions(new CrsUri()));
 
         model = ModelFactory.createDefaultModel();
     }
@@ -3420,6 +3425,451 @@ public class RdfTurtleTest {
 
             assertTrue(has(DCT + "accrualPeriodicity",
                 "http://publications.europa.eu/resource/authority/frequency/NOT_PLANNED"));
+        }
+    }
+
+    @Nested
+    @DisplayName("Descriptions: geometry, alternative titles, resolutions, keywords, supplemental links")
+    class Descriptions {
+
+        private static final String DCT = "http://purl.org/dc/terms/";
+        private static final String DCAT = "http://www.w3.org/ns/dcat#";
+        private static final String GEO = "http://www.opengis.net/ont/geosparql#";
+        private static final String FOAF = "http://xmlns.com/foaf/0.1/";
+        private static final String RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+        private static final String FABIO_EXPRESSION = "http://purl.org/spar/fabio/Expression";
+        private static final String BASE = "https://example.com/id/";
+
+        private GeminiDocument dataset() {
+            return (GeminiDocument) new GeminiDocument()
+                .setType("dataset")
+                .setId("desc")
+                .setUri(BASE + "desc")
+                .setTitle("Descriptions");
+        }
+
+        private Resource record() {
+            return createResource(BASE + "desc");
+        }
+
+        private List<RDFNode> objects(Resource subject, String predicate) {
+            return model.listObjectsOfProperty(subject, createProperty(predicate)).toList();
+        }
+
+        private Literal wkt(String lexicalForm) {
+            return createTypedLiteral(lexicalForm,
+                org.apache.jena.datatypes.TypeMapper.getInstance().getSafeTypeByName(GEO + "wktLiteral"));
+        }
+
+        private SpatialResolution resolution(String distance, String uom) {
+            return SpatialResolution.builder().distance(distance).uom(uom).build();
+        }
+
+        @Test
+        @DisplayName("a bounding box gets a GeoSPARQL geometry with the same WKT, and keeps dcat:bbox")
+        void boundingBoxGetsGeoSparqlGeometry() {
+            val box = BoundingBox.builder()
+                .westBoundLongitude("-3.5").eastBoundLongitude("1.5")
+                .southBoundLatitude("50.0").northBoundLatitude("55.5").build();
+            template("rdf/ttl.ftl", dataset().setBoundingBoxes(List.of(box)));
+
+            val geometry = createResource(BASE + "desc_geom0");
+            assertTrue(model.contains(record(), createProperty(GEO + "hasGeometry"), geometry));
+            assertTrue(model.contains(geometry, createProperty(RDF_TYPE), createResource(GEO + "Geometry")));
+            assertTrue(model.contains(geometry, createProperty(GEO + "asWKT"),
+                wkt(box.getWkt())));
+            val spatial = objects(record(), DCT + "spatial");
+            assertEquals(1, spatial.size());
+            assertTrue(model.contains(spatial.get(0).asResource(), createProperty(DCAT + "bbox"),
+                wkt(box.getWkt())));
+        }
+
+        @Test
+        @DisplayName("each of several bounding boxes gets its own indexed geometry node")
+        void severalBoundingBoxesGetDistinctGeometries() {
+            val first = BoundingBox.builder()
+                .westBoundLongitude("-3").eastBoundLongitude("1").southBoundLatitude("50").northBoundLatitude("55").build();
+            val second = BoundingBox.builder()
+                .westBoundLongitude("4").eastBoundLongitude("6").southBoundLatitude("10").northBoundLatitude("12").build();
+            template("rdf/ttl.ftl", dataset().setBoundingBoxes(List.of(first, second)));
+
+            assertEquals(2, objects(record(), GEO + "hasGeometry").size());
+            assertTrue(model.contains(createResource(BASE + "desc_geom1"), createProperty(GEO + "asWKT"),
+                wkt(second.getWkt())));
+        }
+
+        @Test
+        @DisplayName("a facility geometry gets a GeoSPARQL geometry and keeps dcterms:geometry")
+        void facilityPointGetsGeoSparqlGeometry() {
+            val facility = new MonitoringFacility();
+            facility.setId("fac").setUri(BASE + "fac").setTitle("Point facility");
+            facility.setGeometry(Geometry.builder()
+                .geometryString("{\"type\":\"Feature\",\"properties\":{},\"geometry\":"
+                    + "{\"type\":\"Point\",\"coordinates\":[-2.8288,51.2074]}}")
+                .build());
+
+            template("rdf/monitoring/facility.ftl", facility);
+
+            val geometry = createResource(BASE + "fac_geom");
+            val wkt = objects(createResource(BASE + "fac"), DCT + "geometry");
+            assertEquals(1, wkt.size());
+            assertEquals(GEO + "wktLiteral", wkt.get(0).asLiteral().getDatatypeURI());
+            assertTrue(wkt.get(0).asLiteral().getLexicalForm().startsWith("POINT"));
+            assertTrue(model.contains(createResource(BASE + "fac"), createProperty(GEO + "hasGeometry"), geometry));
+            assertTrue(model.contains(geometry, createProperty(RDF_TYPE), createResource(GEO + "Geometry")));
+            assertTrue(model.contains(geometry, createProperty(GEO + "asWKT"), wkt.get(0)));
+        }
+
+        @Test
+        @DisplayName("a facility without a geometry emits no geometry properties and the file parses")
+        void facilityWithoutGeometryEmitsNothing() {
+            val facility = new MonitoringFacility();
+            facility.setId("nogeo").setUri(BASE + "nogeo").setTitle("No geometry");
+
+            template("rdf/monitoring/facility.ftl", facility);
+
+            val subject = createResource(BASE + "nogeo");
+            assertTrue(objects(subject, DCT + "geometry").isEmpty());
+            assertTrue(objects(subject, GEO + "hasGeometry").isEmpty());
+            assertTrue(model.contains(subject, createProperty(DCT + "title")));
+        }
+
+        @Test
+        @DisplayName("a programme envelope also carries a WKT polygon with the same corners")
+        void programmeEnvelopeGetsWkt() {
+            val programme = new MonitoringProgramme();
+            programme.setId("prog").setUri(BASE + "prog").setTitle("Programme");
+            programme.setBoundingBox(BoundingBox.builder()
+                .westBoundLongitude("-8.6481").eastBoundLongitude("-0.7282")
+                .southBoundLatitude("54.6343").northBoundLatitude("60.8614").build());
+
+            template("rdf/monitoring/programme.ftl", programme);
+
+            val bbox = createResource(BASE + "prog_bbox");
+            assertTrue(model.contains(createResource(BASE + "prog"), createProperty(GEO + "hasBoundingBox"), bbox));
+            assertTrue(model.contains(createResource(BASE + "prog"), createProperty(GEO + "hasGeometry"), bbox));
+            assertTrue(model.contains(bbox, createProperty(GEO + "asEnvelope"), createTypedLiteral(
+                "ENVELOPE(-8.6481, -0.7282, 54.6343, 60.8614)",
+                org.apache.jena.datatypes.TypeMapper.getInstance().getSafeTypeByName(GEO + "envelopeLiteral"))));
+            assertTrue(model.contains(bbox, createProperty(GEO + "asWKT"), wkt(
+                "POLYGON((-8.6481 54.6343, -0.7282 54.6343, -0.7282 60.8614, -8.6481 60.8614, -8.6481 54.6343))")));
+        }
+
+        @Test
+        @DisplayName("each alternate title is a dcterms:alternative literal")
+        void alternativeTitles() {
+            template("rdf/ttl.ftl", dataset().setAlternateTitles(List.of("First name", "Second 'name'")));
+
+            val titles = objects(record(), DCT + "alternative").stream()
+                .map(node -> node.asLiteral().getLexicalForm()).sorted().toList();
+            assertThat(titles, equalTo(List.of("First name", "Second 'name'")));
+        }
+
+        @Test
+        @DisplayName("blank alternate titles emit nothing")
+        void blankAlternativeTitlesEmitNothing() {
+            template("rdf/ttl.ftl", dataset().setAlternateTitles(List.of(" ", "")));
+
+            assertTrue(objects(record(), DCT + "alternative").isEmpty());
+        }
+
+        @Test
+        @DisplayName("a spatial resolution in metres is an xsd:decimal; an unparseable one emits nothing and the file parses")
+        void spatialResolution() {
+            template("rdf/ttl.ftl", dataset().setSpatialResolutions(List.of(resolution("1000", "urn:ogc:def:uom:EPSG::9001"))));
+            assertTrue(model.contains(record(), createProperty(DCAT + "spatialResolutionInMeters"),
+                createTypedLiteral("1000", XSDDatatype.XSDdecimal)));
+
+            model = ModelFactory.createDefaultModel();
+            template("rdf/ttl.ftl", dataset().setSpatialResolutions(List.of(resolution("1,000", "m"))));
+            assertTrue(objects(record(), DCAT + "spatialResolutionInMeters").isEmpty());
+            assertTrue(model.contains(record(), createProperty(DCT + "title")));
+        }
+
+        @Test
+        @DisplayName("a temporal resolution is an xsd:duration; one that does not map emits nothing")
+        void temporalResolution() {
+            template("rdf/ttl.ftl", dataset().setTemporalResolution(List.of("daily", "bi-weekly")));
+
+            val durations = objects(record(), DCAT + "temporalResolution");
+            assertEquals(1, durations.size());
+            assertEquals(createTypedLiteral("P1D", XSDDatatype.XSDduration), durations.get(0));
+        }
+
+        @Test
+        @DisplayName("keyword values are also dcat:keyword literals; blank values are not")
+        void keywordsAlsoDcatKeyword() {
+            template("rdf/ttl.ftl", dataset().setKeywordsTheme(List.of(
+                Keyword.builder().value("soil").URI("http://example.com/soil").build(),
+                Keyword.builder().value("").URI("http://example.com/blank").build(),
+                Keyword.builder().value("  ").build())));
+
+            assertTrue(model.contains(record(), createProperty(DCT + "subject"), createResource("http://example.com/soil")));
+            val keywords = objects(record(), DCAT + "keyword").stream()
+                .map(node -> node.asLiteral().getLexicalForm()).toList();
+            assertThat(keywords, equalTo(List.of("soil")));
+        }
+
+        @Test
+        @DisplayName("a related article is dcterms:isReferencedBy a fabio:Expression, and is one node when also an incoming citation")
+        void relatedArticleIsReferencedBy() {
+            template("rdf/ttl.ftl", dataset().setSupplemental(List.of(
+                Supplemental.builder().function("relatedArticle").url("https://doi.org/10.1/x").build())));
+
+            val article = createResource("https://doi.org/10.1/x");
+            assertTrue(model.contains(record(), createProperty(DCT + "isReferencedBy"), article));
+            assertTrue(model.contains(article, createProperty(RDF_TYPE), createResource(FABIO_EXPRESSION)));
+        }
+
+        @Test
+        @DisplayName("an article that is both a citation and a related article is one node with one type statement")
+        void relatedArticleAndCitationShareANode() {
+            val document = dataset()
+                .setSupplemental(List.of(
+                    Supplemental.builder().function("isReferencedBy").url("https://doi.org/10.1/x").build()));
+            document.setIncomingCitations(List.of(
+                Supplemental.builder().url("https://doi.org/10.1/x").description("A citation").build()));
+
+            template("rdf/ttl.ftl", document);
+
+            val article = createResource("https://doi.org/10.1/x");
+            assertEquals(1, model.listStatements(article, createProperty(RDF_TYPE), createResource(FABIO_EXPRESSION)).toList().size());
+            assertEquals(1, model.listStatements(record(), createProperty(DCT + "isReferencedBy"), article).toList().size());
+            assertEquals(1, objects(article, DCT + "bibliographicCitation").size());
+        }
+
+        @Test
+        @DisplayName("a related article without a URL emits nothing")
+        void relatedArticleWithoutUrlEmitsNothing() {
+            template("rdf/ttl.ftl", dataset().setSupplemental(List.of(
+                Supplemental.builder().function("relatedArticle").name("No link").build())));
+
+            assertTrue(objects(record(), DCT + "isReferencedBy").isEmpty());
+            assertTrue(model.listSubjectsWithProperty(createProperty(RDF_TYPE), createResource(FABIO_EXPRESSION)).toList().isEmpty());
+        }
+
+        @Test
+        @DisplayName("a website is a foaf:page")
+        void websiteIsFoafPage() {
+            template("rdf/ttl.ftl", dataset().setSupplemental(List.of(
+                Supplemental.builder().function("website").url("https://example.org/project").build())));
+
+            assertTrue(model.contains(record(), createProperty(FOAF + "page"), createResource("https://example.org/project")));
+        }
+
+        @Test
+        @DisplayName("a related dataset is a dcterms:relation to the external URL")
+        void relatedDatasetIsRelation() {
+            template("rdf/ttl.ftl", dataset().setSupplemental(List.of(
+                Supplemental.builder().function("relatedDataset").url("https://example.org/data").build())));
+
+            assertTrue(model.contains(record(), createProperty(DCT + "relation"), createResource("https://example.org/data")));
+        }
+
+        @Test
+        @DisplayName("an unusable supplemental URL or an unknown function emits nothing and the file parses")
+        void unusableSupplementalEmitsNothing() {
+            template("rdf/ttl.ftl", dataset().setSupplemental(List.of(
+                Supplemental.builder().function("website").url("not a url").build(),
+                Supplemental.builder().function("somethingElse").url("https://example.org/x").build(),
+                Supplemental.builder().url("https://example.org/y").build())));
+
+            assertTrue(objects(record(), FOAF + "page").isEmpty());
+            assertTrue(objects(record(), DCT + "relation").isEmpty());
+            assertTrue(objects(record(), DCT + "isReferencedBy").isEmpty());
+        }
+
+        private static final String WMS_URL =
+            "https://catalogue.ceh.ac.uk/maps/x?service=WMS&request=GetCapabilities";
+        private static final String WMS_URL_2 =
+            "https://catalogue.ceh.ac.uk/maps/y?service=WMS&request=GetCapabilities";
+        private static final String DATA_SERVICE = DCAT + "DataService";
+
+        private OnlineResource wms(String url) {
+            return OnlineResource.builder().url(url).function("information").build();
+        }
+
+        @Test
+        @DisplayName("a dataset's WMS link becomes a dcat:DataService with its own distribution")
+        void datasetWmsBecomesDataService() {
+            template("rdf/ttl.ftl", dataset().setOnlineResources(List.of(
+                OnlineResource.builder().url("https://data-package.ceh.ac.uk/data/abc").function("download").build(),
+                wms(WMS_URL))));
+
+            val service = createResource(BASE + "desc_wms0");
+            assertTrue(model.contains(service, createProperty(RDF_TYPE), createResource(DATA_SERVICE)));
+            assertTrue(model.contains(service, createProperty(DCAT + "endpointURL"), createResource(WMS_URL)));
+            assertTrue(model.contains(service, createProperty(DCAT + "servesDataset"), record()));
+
+            val distributions = objects(record(), DCAT + "distribution");
+            val viaService = distributions.stream().map(RDFNode::asResource)
+                .filter(d -> model.contains(d, createProperty(DCAT + "accessService"), service)).toList();
+            assertEquals(1, viaService.size());
+            assertTrue(model.contains(viaService.get(0), createProperty(DCAT + "accessURL"), createResource(WMS_URL)));
+            val download = distributions.stream().map(RDFNode::asResource)
+                .filter(d -> model.contains(d, createProperty(DCAT + "accessURL"),
+                    createResource("https://data-package.ceh.ac.uk/data/abc"))).toList();
+            assertEquals(1, download.size());
+            assertTrue(objects(download.get(0), DCAT + "accessService").isEmpty());
+        }
+
+        @Test
+        @DisplayName("each of several WMS links gets its own indexed service node")
+        void severalWmsLinksGetDistinctNodes() {
+            template("rdf/ttl.ftl", dataset().setOnlineResources(List.of(wms(WMS_URL), wms(WMS_URL_2))));
+
+            assertTrue(model.contains(createResource(BASE + "desc_wms0"), createProperty(DCAT + "endpointURL"), createResource(WMS_URL)));
+            assertTrue(model.contains(createResource(BASE + "desc_wms1"), createProperty(DCAT + "endpointURL"), createResource(WMS_URL_2)));
+            assertEquals(2, objects(record(), DCAT + "distribution").size());
+        }
+
+        @Test
+        @DisplayName("a service record with a WMS link is itself the dcat:DataService")
+        void serviceRecordIsItselfADataService() {
+            val document = (GeminiDocument) dataset().setType("service")
+                .setOnlineResources(List.of(wms(WMS_URL)));
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(model.contains(record(), createProperty(RDF_TYPE), createResource(DATA_SERVICE)));
+            assertTrue(model.contains(record(), createProperty(RDF_TYPE),
+                createResource("http://purl.org/dc/dcmitype/Service")));
+            assertTrue(model.contains(record(), createProperty(DCAT + "endpointURL"), createResource(WMS_URL)));
+            assertFalse(model.containsResource(createResource(BASE + "desc_wms0")));
+        }
+
+        @Test
+        @DisplayName("a service record with several WMS links has several endpoint URLs")
+        void serviceRecordWithSeveralWmsLinks() {
+            val document = (GeminiDocument) dataset().setType("service")
+                .setOnlineResources(List.of(wms(WMS_URL), wms(WMS_URL_2)));
+            template("rdf/ttl.ftl", document);
+
+            assertEquals(2, objects(record(), DCAT + "endpointURL").size());
+        }
+
+        @Test
+        @DisplayName("a service record without a WMS link is not a dcat:DataService")
+        void serviceWithoutWmsIsNotADataService() {
+            val document = (GeminiDocument) dataset().setType("service")
+                .setOnlineResources(List.of(OnlineResource.builder().url("https://example.org/x").build()));
+            template("rdf/ttl.ftl", document);
+
+            assertFalse(model.contains(record(), createProperty(RDF_TYPE), createResource(DATA_SERVICE)));
+        }
+
+        private static final String REQUIRES_URI = DCT + "requires";
+
+        // Strict stubs reject a call whose arguments differ from the stubbed ones, and the
+        // template asks for every relationship; a test overrides only the one it covers.
+        private void stubRequires(GeminiDocument document, List<Link> targets) {
+            lenient().when(jenaLookupService.relationships(
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(List.of());
+            lenient().when(jenaLookupService.inverseRelationships(
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(List.of());
+            lenient().when(jenaLookupService.relationships(document.getUri(), REQUIRES_URI)).thenReturn(targets);
+        }
+
+        private Link target(String id, String type, String availability, String publicationStatus) {
+            return Link.builder().href(BASE + id).associationType(type)
+                .availability(availability).publicationStatus(publicationStatus).build();
+        }
+
+        @Test
+        @DisplayName("a WMS service record serves the published datasets it requires, and nothing else")
+        void serviceServesOnlyPublishedDatasets() {
+            val document = (GeminiDocument) dataset().setType("service")
+                .setOnlineResources(List.of(wms(WMS_URL)));
+            stubRequires(document, List.of(
+                target("live", "dataset", "Available", "published"),
+                target("gone", "dataset", "Deleted", "published"),
+                target("draftds", "dataset", "Available", "draft"),
+                target("agg", "aggregate", "Available", "published")));
+
+            template("rdf/ttl.ftl", document);
+
+            val serves = createProperty(DCAT + "servesDataset");
+            assertTrue(model.contains(record(), serves, createResource(BASE + "live")));
+            assertFalse(model.contains(record(), serves, createResource(BASE + "gone")));
+            assertFalse(model.contains(record(), serves, createResource(BASE + "draftds")));
+            assertFalse(model.contains(record(), serves, createResource(BASE + "agg")));
+        }
+
+        @Test
+        @DisplayName("a service record with no WMS link gets no dcat:servesDataset")
+        void serviceWithoutWmsServesNothing() {
+            val document = (GeminiDocument) dataset().setType("service")
+                .setOnlineResources(List.of(OnlineResource.builder().url("https://example.org/x").build()));
+            stubRequires(document, List.of(target("live", "dataset", "Available", "published")));
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(objects(record(), DCAT + "servesDataset").isEmpty());
+        }
+
+        @Test
+        @DisplayName("an unusable WMS link is dropped before indexing, so the nodes stay aligned")
+        void unusableWmsLinkDoesNotShiftIndex() {
+            template("rdf/ttl.ftl", dataset().setOnlineResources(List.of(
+                wms("https://x/a b?service=WMS&request=GetCapabilities"), wms(WMS_URL))));
+
+            val node = createResource(BASE + "desc_wms0");
+            assertTrue(model.contains(node, createProperty(DCAT + "endpointURL"), createResource(WMS_URL)));
+            assertFalse(model.containsResource(createResource(BASE + "desc_wms1")));
+            val distributions = objects(record(), DCAT + "distribution");
+            assertEquals(1, distributions.size());
+            assertTrue(model.contains(distributions.get(0).asResource(),
+                createProperty(DCAT + "accessService"), node));
+        }
+
+        @Test
+        @DisplayName("a non-WMS online resource creates no DataService")
+        void nonWmsOnlineResourceIsIgnored() {
+            template("rdf/ttl.ftl", dataset().setOnlineResources(List.of(
+                OnlineResource.builder().url("https://example.org/page").function("information").build())));
+
+            assertFalse(model.containsResource(createResource(BASE + "desc_wms0")));
+            assertTrue(objects(record(), DCAT + "distribution").isEmpty());
+        }
+
+        @Test
+        @DisplayName("a Deleted record exports no WMS DataService")
+        void deletedRecordEmitsNoWms() {
+            val dataset = dataset().setOnlineResources(List.of(wms(WMS_URL)));
+            dataset.setAccessLimitation(AccessLimitation.builder().value("Deleted").availability("Deleted").build());
+            template("rdf/ttl.ftl", dataset);
+            assertFalse(model.containsResource(createResource(BASE + "desc_wms0")));
+            assertTrue(objects(record(), DCAT + "distribution").isEmpty());
+
+            val service = (GeminiDocument) dataset().setType("service").setOnlineResources(List.of(wms(WMS_URL)));
+            service.setAccessLimitation(AccessLimitation.builder().value("Deleted").availability("Deleted").build());
+            template("rdf/ttl.ftl", service);
+            assertTrue(objects(record(), DCAT + "endpointURL").isEmpty());
+        }
+
+        @Test
+        @DisplayName("a Deleted record exports none of the new description properties")
+        void deletedRecordEmitsNoDescriptions() {
+            val document = dataset()
+                .setAlternateTitles(List.of("Other"))
+                .setKeywordsTheme(List.of(Keyword.builder().value("soil").build()))
+                .setSupplemental(List.of(
+                    Supplemental.builder().function("website").url("https://example.org/p").build(),
+                    Supplemental.builder().function("relatedArticle").url("https://doi.org/10.1/d").build()))
+                .setSpatialResolutions(List.of(resolution("10", "m")))
+                .setTemporalResolution(List.of("daily"))
+                .setBoundingBoxes(List.of(BoundingBox.builder()
+                    .westBoundLongitude("-3").eastBoundLongitude("1").southBoundLatitude("50").northBoundLatitude("55").build()));
+            document.setAccessLimitation(AccessLimitation.builder().value("Deleted").availability("Deleted").build());
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(objects(record(), DCT + "alternative").isEmpty());
+            assertTrue(objects(record(), DCAT + "keyword").isEmpty());
+            assertTrue(objects(record(), FOAF + "page").isEmpty());
+            assertTrue(objects(record(), GEO + "hasGeometry").isEmpty());
+            assertTrue(objects(record(), DCT + "isReferencedBy").isEmpty());
+            assertTrue(objects(record(), DCAT + "spatialResolutionInMeters").isEmpty());
+            assertTrue(objects(record(), DCAT + "temporalResolution").isEmpty());
         }
     }
 

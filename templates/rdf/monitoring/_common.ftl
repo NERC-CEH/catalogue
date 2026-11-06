@@ -50,6 +50,17 @@
 
     <#if boundingBox?has_content>
       geo:hasBoundingBox :${id}_bbox ;
+      geo:hasGeometry :${id}_bbox ;
+    </#if>
+
+    <#-- A facility's own geometry (only facilities have one), described by the node below -->
+    <#assign facilityWkt = "">
+    <#if geometry?? && geometry.wkt.isPresent()>
+      <#assign facilityWkt = geometry.wkt.get()>
+    </#if>
+    <#if facilityWkt?has_content>
+      dcterms:geometry "${ttl.escape(facilityWkt)}"^^geo:wktLiteral ;
+      geo:hasGeometry :${id}_geom ;
     </#if>
 
     <#nested>
@@ -78,7 +89,14 @@
     <#-- Bounding box node -->
       :${id}_bbox
           a geo:Geometry ;
-          geo:asEnvelope "ENVELOPE(${boundingBox.westBoundLongitude}, ${boundingBox.eastBoundLongitude}, ${boundingBox.southBoundLatitude}, ${boundingBox.northBoundLatitude})"^^geo:envelopeLiteral .
+          geo:asEnvelope "ENVELOPE(${boundingBox.westBoundLongitude?c}, ${boundingBox.eastBoundLongitude?c}, ${boundingBox.southBoundLatitude?c}, ${boundingBox.northBoundLatitude?c})"^^geo:envelopeLiteral ;
+          geo:asWKT "POLYGON((${boundingBox.westBoundLongitude?c} ${boundingBox.southBoundLatitude?c}, ${boundingBox.eastBoundLongitude?c} ${boundingBox.southBoundLatitude?c}, ${boundingBox.eastBoundLongitude?c} ${boundingBox.northBoundLatitude?c}, ${boundingBox.westBoundLongitude?c} ${boundingBox.northBoundLatitude?c}, ${boundingBox.westBoundLongitude?c} ${boundingBox.southBoundLatitude?c}))"^^geo:wktLiteral .
+    </#if>
+
+    <#if facilityWkt?has_content>
+      :${id}_geom
+          a geo:Geometry ;
+          geo:asWKT "${ttl.escape(facilityWkt)}"^^geo:wktLiteral .
     </#if>
 
     <@cr.catalogRecord />

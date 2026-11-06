@@ -12,6 +12,7 @@ dcterms:title "Test activity name" ;
 adms:identifier :6b9a9875-5077-4641-b4b4-1a4c6e48988d_id0 ;
 dcterms:description "Test activity description" ;
 geo:hasBoundingBox :6b9a9875-5077-4641-b4b4-1a4c6e48988d_bbox ;
+geo:hasGeometry :6b9a9875-5077-4641-b4b4-1a4c6e48988d_bbox ;
 dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en>;
 doo:uses <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue.ceh.ac.uk/id/000000002>;
 .
@@ -22,7 +23,8 @@ dcterms:conformsTo "UKCEH" ;
 .
 :6b9a9875-5077-4641-b4b4-1a4c6e48988d_bbox
 a geo:Geometry ;
-geo:asEnvelope "ENVELOPE(-6.452, 1.768, 49.864, 55.812)"^^geo:envelopeLiteral .
+geo:asEnvelope "ENVELOPE(-6.452, 1.768, 49.864, 55.812)"^^geo:envelopeLiteral ;
+geo:asWKT "POLYGON((-6.452 49.864, 1.768 49.864, 1.768 55.812, -6.452 55.812, -6.452 49.864))"^^geo:wktLiteral .
 
 :6b9a9875-5077-4641-b4b4-1a4c6e48988d_record a <http://www.w3.org/ns/dcat#CatalogRecord> ;
   <http://xmlns.com/foaf/0.1/primaryTopic> :6b9a9875-5077-4641-b4b4-1a4c6e48988d ;
