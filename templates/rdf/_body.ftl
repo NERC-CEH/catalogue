@@ -92,6 +92,48 @@
       dcterms:subject <@keywordList allKeywords/> ;
     </#if>
 
+    <#--
+      Controlled-vocabulary links. Each list uses the <#list ...><#items> form (see
+      turtle/_rights.ftl) so entries filtered out as blank emit no predicate. Only
+      links are emitted: nothing the record says (SRS title, theme label, topic
+      category value) is attached to the external IRIs.
+      DOO's spatial representation individuals are an allow-list, matched
+      case-insensitively and written in DOO's case; anything else is omitted.
+    -->
+    <#assign dooSpatialRepresentations = ["grid", "stereoModel", "textTable", "tin", "vector", "video"]>
+    <#assign dooSpatialRepresentationIris = []>
+    <#list (spatialRepresentationTypes![])?filter(t -> t?has_content) as srt>
+      <#list dooSpatialRepresentations?filter(d -> d?lower_case == srt?trim?lower_case) as match>
+        <#assign dooSpatialRepresentationIris = dooSpatialRepresentationIris + ["doo:" + match]>
+      </#list>
+    </#list>
+    <#if dooSpatialRepresentationIris?has_content>
+      doo:spatialRepresentationType ${dooSpatialRepresentationIris?join(", ")} ;
+    </#if>
+
+    <#list (spatialReferenceSystems![])?filter(s -> crsUris.canonical(s)?has_content)>
+      dcterms:conformsTo <#t>
+      <#items as srs>
+        <${crsUris.canonical(srs)}><#sep>, </#sep>
+      </#items> ;
+    </#list>
+
+    <#assign themeUris = ((inspireThemes![])?filter(t -> uriNormaliser.normalise(t.uri!"")?has_content)?map(t -> uriNormaliser.normalise(t.uri))
+      + (topicCategories![])?filter(t -> uriNormaliser.normalise(t.uri!"")?has_content)?map(t -> uriNormaliser.normalise(t.uri)))>
+    <#list themeUris>
+      dcat:theme <#t>
+      <#items as themeUri>
+        <${themeUri}><#sep>, </#sep>
+      </#items> ;
+    </#list>
+
+    <#list (resourceMaintenance![])?filter(m -> frequencyUris.uri(m.frequencyOfUpdate!"")?has_content)>
+      dcterms:accrualPeriodicity <#t>
+      <#items as maintenance>
+        <${frequencyUris.uri(maintenance.frequencyOfUpdate)}><#sep>, </#sep>
+      </#items> ;
+    </#list>
+
     <#if fileset?? && fileset?has_content && fileset?filter(fs -> fs.observedProperty?has_content)?has_content>
       sdo:variableMeasured <@opList /> ;
     </#if>

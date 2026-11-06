@@ -27,7 +27,10 @@ import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.DistributionInfo;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
+import uk.ac.ceh.gateway.catalogue.gemini.InspireTheme;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceMaintenance;
+import uk.ac.ceh.gateway.catalogue.gemini.SpatialReferenceSystem;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
@@ -43,8 +46,10 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.ContactUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.CrsUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FundingUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FormatUri;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.FrequencyUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.LicenceUri;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.UriNormaliser;
 
@@ -90,6 +95,8 @@ public class RdfTurtleTest {
         configuration.setSharedVariable("fundingUri", new FundingUri(uriNormaliser));
         configuration.setSharedVariable("licenceUris", new LicenceUri());
         configuration.setSharedVariable("formatUris", new FormatUri());
+        configuration.setSharedVariable("frequencyUris", new FrequencyUri());
+        configuration.setSharedVariable("crsUris", new CrsUri());
         configuration.setSharedVariable("keywordUri", new KeywordUri(uriNormaliser, keywordVocabulary));
 
         model = ModelFactory.createDefaultModel();
@@ -3083,6 +3090,158 @@ public class RdfTurtleTest {
             template("rdf/ttl.ftl", document);
 
             assertTrue(has(DCT + "issued", date("2020-01-02")));
+        }
+    }
+
+    @Nested
+    @DisplayName("Controlled vocabularies")
+    class ControlledVocabularies {
+
+        private static final String DCT = "http://purl.org/dc/terms/";
+        private static final String DCAT = "http://www.w3.org/ns/dcat#";
+        private static final String DOO = "https://digital.ceh.ac.uk/ontology/doo/";
+        private static final String EPSG_27700 = "http://www.opengis.net/def/crs/EPSG/0/27700";
+
+        private GeminiDocument dataset() {
+            return (GeminiDocument) new GeminiDocument()
+                .setType("dataset")
+                .setId("vocab")
+                .setUri("https://example.com/id/vocab")
+                .setTitle("Vocabularies");
+        }
+
+        private boolean has(String predicate, String object) {
+            return model.contains(null, createProperty(predicate), createResource(object));
+        }
+
+        private boolean hasAny(String predicate) {
+            return model.contains(null, createProperty(predicate));
+        }
+
+        @Test
+        @DisplayName("spatial representation types in DOO's allow-list are doo individuals; others are omitted")
+        void spatialRepresentationIsDoo() {
+            template("rdf/ttl.ftl", dataset().setSpatialRepresentationTypes(List.of("textTable", "Vector")));
+
+            assertTrue(has(DOO + "spatialRepresentationType", DOO + "textTable"));
+            assertTrue(has(DOO + "spatialRepresentationType", DOO + "vector"));
+        }
+
+        @Test
+        @DisplayName("a spatial representation type outside the allow-list emits nothing")
+        void unlistedSpatialRepresentationEmitsNothing() {
+            template("rdf/ttl.ftl", dataset().setSpatialRepresentationTypes(List.of("raster")));
+
+            assertFalse(hasAny(DOO + "spatialRepresentationType"));
+        }
+
+        @Test
+        @DisplayName("an EPSG spatial reference system is dcterms:conformsTo, and the EPSG node gains no record text")
+        void crsIsConformsTo() {
+            template("rdf/ttl.ftl", dataset().setSpatialReferenceSystems(List.of(
+                SpatialReferenceSystem.builder()
+                    .code("27700").codeSpace("urn:ogc:def:crs:EPSG").title("OSGB 1936 / British National Grid")
+                    .build())));
+
+            assertTrue(has(DCT + "conformsTo", EPSG_27700));
+            val epsg = createResource(EPSG_27700);
+            assertFalse(model.listStatements(epsg, null, (RDFNode) null).toList().stream()
+                .anyMatch(statement -> statement.getObject().isLiteral()));
+        }
+
+        @Test
+        @DisplayName("INSPIRE themes and ISO topic categories are dcat:theme; keywordsTheme stays dcterms:theme")
+        void inspireThemeAndTopicCategoryAreDcatTheme() {
+            val hydrography = "http://inspire.ec.europa.eu/theme/hy";
+            val biota = "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/biota";
+            template("rdf/ttl.ftl", dataset()
+                .setInspireThemes(List.of(InspireTheme.builder().theme("Hydrography").uri(hydrography).build()))
+                .setTopicCategories(List.of(Keyword.builder().value("Biota").URI(biota).build()))
+                .setKeywordsTheme(List.of(Keyword.builder().value("Soil").URI("http://example.com/soil").build())));
+
+            assertTrue(has(DCAT + "theme", hydrography));
+            assertTrue(has(DCAT + "theme", biota));
+            assertTrue(has(DCT + "theme", "http://example.com/soil"));
+            assertFalse(model.listStatements(createResource(hydrography), null, (RDFNode) null).toList().stream()
+                .anyMatch(statement -> statement.getObject().isLiteral()));
+        }
+
+        @Test
+        @DisplayName("present-but-blank entries emit no predicate and the file still parses")
+        void blankEntriesEmitNothing() {
+            template("rdf/ttl.ftl", dataset()
+                .setSpatialReferenceSystems(List.of(SpatialReferenceSystem.builder().build()))
+                .setInspireThemes(List.of(InspireTheme.builder().theme("Hydrography").build()))
+                .setTopicCategories(List.of(Keyword.builder().value("Biota").build()))
+                .setResourceMaintenance(List.of(ResourceMaintenance.builder().build())));
+
+            assertFalse(hasAny(DCT + "conformsTo"));
+            assertFalse(hasAny(DCAT + "theme"));
+            assertFalse(hasAny(DCT + "accrualPeriodicity"));
+        }
+
+        @Test
+        @DisplayName("an unmapped frequency and non-URI theme values emit nothing, and the file still parses")
+        void unmappedAndNonUriValuesEmitNothing() {
+            template("rdf/ttl.ftl", dataset()
+                .setResourceMaintenance(List.of(ResourceMaintenance.builder().frequencyOfUpdate("bogus").build()))
+                .setInspireThemes(List.of(InspireTheme.builder().theme("Hydrography").uri("not a uri").build()))
+                .setTopicCategories(List.of(Keyword.builder().value("Biota").URI("free text").build())));
+
+            assertFalse(hasAny(DCT + "accrualPeriodicity"));
+            assertFalse(hasAny(DCAT + "theme"));
+            assertTrue(model.contains(createResource("https://example.com/id/vocab"), null, (RDFNode) null));
+        }
+
+        @Test
+        @DisplayName("spatial representation matching is case-insensitive and writes DOO's case")
+        void spatialRepresentationMatchesCaseInsensitively() {
+            template("rdf/ttl.ftl", dataset().setSpatialRepresentationTypes(
+                List.of("textTable", "Vector", "STEREOMODEL", "video")));
+
+            val objects = model.listObjectsOfProperty(createProperty(DOO + "spatialRepresentationType")).toList()
+                .stream().map(Object::toString).collect(java.util.stream.Collectors.toSet());
+            assertThat(objects, equalTo(java.util.Set.of(
+                DOO + "textTable", DOO + "vector", DOO + "stereoModel", DOO + "video")));
+        }
+
+        @Test
+        @DisplayName("a mixed spatial representation list keeps only the allow-listed entries")
+        void mixedSpatialRepresentationKeepsAllowListed() {
+            template("rdf/ttl.ftl", dataset().setSpatialRepresentationTypes(List.of("raster", "grid")));
+
+            val objects = model.listObjectsOfProperty(createProperty(DOO + "spatialRepresentationType")).toList()
+                .stream().map(Object::toString).collect(java.util.stream.Collectors.toSet());
+            assertThat(objects, equalTo(java.util.Set.of(DOO + "grid")));
+        }
+
+        @Test
+        @DisplayName("a Deleted record exports none of the controlled-vocabulary properties")
+        void deletedRecordEmitsNoControlledVocabularies() {
+            val document = dataset()
+                .setSpatialRepresentationTypes(List.of("vector"))
+                .setSpatialReferenceSystems(List.of(SpatialReferenceSystem.builder().code("27700").build()))
+                .setInspireThemes(List.of(InspireTheme.builder()
+                    .theme("Hydrography").uri("http://inspire.ec.europa.eu/theme/hy").build()))
+                .setResourceMaintenance(List.of(ResourceMaintenance.builder().frequencyOfUpdate("daily").build()));
+            document.setAccessLimitation(AccessLimitation.builder().value("Deleted").availability("Deleted").build());
+
+            template("rdf/ttl.ftl", document);
+
+            assertFalse(hasAny(DOO + "spatialRepresentationType"));
+            assertFalse(hasAny(DCT + "conformsTo"));
+            assertFalse(hasAny(DCAT + "theme"));
+            assertFalse(hasAny(DCT + "accrualPeriodicity"));
+        }
+
+        @Test
+        @DisplayName("update frequency is dcterms:accrualPeriodicity with the EU frequency IRI")
+        void frequencyIsAccrualPeriodicity() {
+            template("rdf/ttl.ftl", dataset().setResourceMaintenance(List.of(
+                ResourceMaintenance.builder().frequencyOfUpdate("notPlanned").build())));
+
+            assertTrue(has(DCT + "accrualPeriodicity",
+                "http://publications.europa.eu/resource/authority/frequency/NOT_PLANNED"));
         }
     }
 

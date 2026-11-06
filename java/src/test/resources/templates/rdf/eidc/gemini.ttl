@@ -54,6 +54,10 @@ dcterms:subject
 <http://onto.nerc.ac.uk/CAST/287>,
 <http://onto.nerc.ac.uk/CEHMD/topic/1>,
 <http://vocabs.lter-europe.net/EnvThes/30349> ;
+doo:spatialRepresentationType doo:grid ;
+dcterms:conformsTo <http://www.opengis.net/def/crs/EPSG/0/27700> ;
+dcat:theme <http://inspire.ec.europa.eu/theme/ad>, <http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/biota> ;
+dcterms:accrualPeriodicity <http://publications.europa.eu/resource/authority/frequency/ANNUAL_2> ;
 sdo:variableMeasured <https://test-observed-properties.ac.uk> ;
 sosa:observedProperty <https://test-observed-properties.ac.uk> ;
 prov:wasGeneratedBy

@@ -137,6 +137,8 @@
     void:propertyPartition [ void:property dcterms:description ] ;
     void:propertyPartition [ void:property dcterms:identifier ] ;
     void:propertyPartition [ void:property dcterms:subject ] ;
+    void:propertyPartition [ void:property dcat:theme ] ;
+    void:propertyPartition [ void:property dcterms:conformsTo ] ;
     void:propertyPartition [ void:property dcterms:spatial ] ;
     void:propertyPartition [ void:property dcterms:temporal ] ;
     void:propertyPartition [ void:property dcterms:issued ] ;
