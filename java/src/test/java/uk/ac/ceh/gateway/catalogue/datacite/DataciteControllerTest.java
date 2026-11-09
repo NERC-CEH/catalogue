@@ -26,7 +26,9 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.DATACITE_JSON_VALUE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC_PUBLISHER_USERNAME;
 import static uk.ac.ceh.gateway.catalogue.datacite.DataciteController.DATACITE_ROLE;
@@ -91,5 +93,35 @@ class DataciteControllerTest extends AbstractMvcTest {
         )
             .andExpect(status().is3xxRedirection())
             .andExpect(header().string("location", "https://example.com/1234"));
+    }
+
+    /**
+     * getDoi is the one endpoint that writes {@code application/vnd.api+json}. It used to rely on the
+     * JSON converter claiming every {@code +json} type, which also let records answer that type with
+     * their internal JSON (dri-one #409).
+     */
+    @Test
+    @WithMockCatalogueUser(
+        username=EIDC_PUBLISHER_USERNAME,
+        grantedAuthorities=DATACITE_ROLE
+    )
+    @DisplayName("getDoi still returns the DataCite request as application/vnd.api+json")
+    void getDoiAsDataciteJson() throws Exception {
+        //given
+        givenDocumentRepository();
+        given(dataciteService.getDoiMetadata(any(GeminiDocument.class))).willReturn(
+            new DataciteRequest(new DataciteRequest.Data("10.5285/1234", null))
+        );
+
+        //when
+        mvc.perform(
+            get("/documents/{file}/datacite/getDoi", file)
+            .header("remote-user", EIDC_PUBLISHER_USERNAME)
+            .accept(DATACITE_JSON_VALUE)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(DATACITE_JSON_VALUE))
+            .andExpect(jsonPath("$.data.id").value("10.5285/1234"))
+            .andExpect(jsonPath("$.data.type").value("dois"));
     }
 }

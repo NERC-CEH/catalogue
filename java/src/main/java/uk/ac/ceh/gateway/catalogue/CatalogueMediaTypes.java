@@ -50,6 +50,13 @@ public class CatalogueMediaTypes {
     public static final String RDF_SCHEMAORG_VALUE = "application/vnd.schemaorg.ld+json";
     public static final MediaType RDF_SCHEMAORG_JSON = parseMediaType(RDF_SCHEMAORG_VALUE);
 
+    /**
+     * Generic JSON-LD, the standard way for a linked-data client to ask for a record (optionally
+     * with {@code profile="https://schema.org"}). A record type that can describe itself in JSON-LD
+     * maps this to its schema.org template; any other answers 406 (dri-one #409).
+     */
+    public static final String JSON_LD_VALUE = "application/ld+json";
+
     public static final String CROISSANT_SHORT = "croissant";
     public static final String CROISSANT_VALUE = "application/vnd.croissant.ld+json";
     public static final MediaType CROISSANT_JSON = parseMediaType(CROISSANT_VALUE);

@@ -69,6 +69,10 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
             // A malformed request is the caller's fault, not a server failure. Logging it at ERROR
             // meant a crawler walking stale sort/facet links filled the log with false alarms.
             logger.warn(message);
+        } else if (NOT_ACCEPTABLE.equals(statusCode)) {
+            // Likewise the caller's choice: a harvester asking for a format a record doesn't have,
+            // such as JSON-LD for a non-Gemini record (dri-one #409)
+            logger.warn(message);
         } else {
             if (showStackTrace) {
                 logger.error(message, ex);
