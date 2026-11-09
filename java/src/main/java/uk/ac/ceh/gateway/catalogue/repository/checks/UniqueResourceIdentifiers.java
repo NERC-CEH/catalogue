@@ -10,6 +10,10 @@ import uk.ac.ceh.gateway.catalogue.services.ResourceIdentifierLookupService;
  * Refuses a save that gives a document a resource identifier another document already has.
  * An identifier without both a code and a code space (such as the record's own URI) is not
  * checked.
+ * <p>
+ * If the search index cannot be asked, the save is refused with a
+ * {@link uk.ac.ceh.gateway.catalogue.model.ResourceIdentifierLookupException} (a 503) rather than
+ * let through unchecked (dri-one #522).
  */
 public class UniqueResourceIdentifiers implements SaveCheck {
     private final ResourceIdentifierLookupService resourceIdentifierLookupService;

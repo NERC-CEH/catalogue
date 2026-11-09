@@ -9,6 +9,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.ResourceIdentifierExistsException;
+import uk.ac.ceh.gateway.catalogue.model.ResourceIdentifierLookupException;
 import uk.ac.ceh.gateway.catalogue.services.ResourceIdentifierLookupService;
 
 import java.util.List;
@@ -48,6 +49,16 @@ class UniqueResourceIdentifiersTest {
         given(lookup.findDocumentIdsByRi("ukceh.eidc:fafa99")).willReturn(List.of("tulips"));
 
         assertDoesNotThrow(() ->
+            new UniqueResourceIdentifiers(lookup).check(USER, withIdentifier("ukceh.eidc", "fafa99"), "tulips", null));
+    }
+
+    @Test
+    @DisplayName("refuses the save when the identifier cannot be checked, rather than letting a duplicate through (dri-one #522)")
+    void lookupFailure() {
+        given(lookup.findDocumentIdsByRi("ukceh.eidc:fafa99"))
+            .willThrow(new ResourceIdentifierLookupException("unavailable", new RuntimeException("Solr down")));
+
+        assertThrows(ResourceIdentifierLookupException.class, () ->
             new UniqueResourceIdentifiers(lookup).check(USER, withIdentifier("ukceh.eidc", "fafa99"), "tulips", null));
     }
 

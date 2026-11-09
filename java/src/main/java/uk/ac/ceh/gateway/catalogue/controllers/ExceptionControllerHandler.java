@@ -202,6 +202,12 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, ex.getMessage(), CONFLICT);
     }
 
+    @ExceptionHandler(ResourceIdentifierLookupException.class)
+    public ResponseEntity<Object> handleResourceIdentifierLookup(ResourceIdentifierLookupException ex) {
+        // The cause is logged where it is caught; the index could not be asked, which is not a "no match"
+        return handleExceptionInternal(ex, ex.getMessage(), SERVICE_UNAVAILABLE);
+    }
+
     @ExceptionHandler(MojibakeTextException.class)
     public ResponseEntity<Object> handleMojibakeText(MojibakeTextException ex) {
         log.warn("Rejected save: {}", ex.getMessage());

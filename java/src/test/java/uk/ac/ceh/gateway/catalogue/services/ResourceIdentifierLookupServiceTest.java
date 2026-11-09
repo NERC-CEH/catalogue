@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import org.apache.solr.client.solrj.RemoteSolrException;
 import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -8,7 +10,9 @@ import org.apache.solr.common.params.SolrParams;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import uk.ac.ceh.gateway.catalogue.model.ResourceIdentifierLookupException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,15 +70,51 @@ class ResourceIdentifierLookupServiceTest {
         assertTrue(result.isEmpty());
     }
 
+    /**
+     * A failed lookup says nothing about whether the identifier exists. Reporting it as "no match"
+     * made the resolver redirect to a URL that 404s and let the uniqueness check pass a duplicate
+     * unchecked (dri-one #522).
+     */
     @Test
-    void returnsEmptyOnSolrError() throws Exception {
-        String identifier = "eidc:error-case";
+    void resolveReportsSolrFailureRatherThanNoMatch() throws Exception {
+        when(solrClient.query(eq("documents"), any())).thenThrow(new SolrServerException("Solr down"));
 
-        when(solrClient.query(eq("documents"), any())).thenThrow(new RuntimeException("Solr down"));
+        ResourceIdentifierLookupException ex = assertThrows(
+            ResourceIdentifierLookupException.class,
+            () -> service.resolveToUuid("eidc:error-case")
+        );
+        assertInstanceOf(SolrServerException.class, ex.getCause());
+    }
 
-        Optional<String> result = service.resolveToUuid(identifier);
+    @Test
+    void findOwnersReportsSolrFailureRatherThanNoOwners() throws Exception {
+        when(solrClient.query(eq("documents"), any())).thenThrow(new IOException("connection refused"));
 
-        assertTrue(result.isEmpty(), "Service should swallow Solr errors and return Optional.empty()");
+        assertThrows(
+            ResourceIdentifierLookupException.class,
+            () -> service.findDocumentIdsByRi("doi:10.5285/abc")
+        );
+    }
+
+    @Test
+    void findOwnersReportsSolrErrorResponseRatherThanNoOwners() throws Exception {
+        when(solrClient.query(eq("documents"), any())).thenThrow(new RemoteSolrException("http://solr", 503, "unavailable", null));
+
+        assertThrows(
+            ResourceIdentifierLookupException.class,
+            () -> service.findDocumentIdsByRi("doi:10.5285/abc")
+        );
+    }
+
+    @Test
+    void failureMessageDoesNotLeakSolrDetails() throws Exception {
+        when(solrClient.query(eq("documents"), any())).thenThrow(new SolrServerException("http://solr:8983/solr/documents secret"));
+
+        ResourceIdentifierLookupException ex = assertThrows(
+            ResourceIdentifierLookupException.class,
+            () -> service.findDocumentIdsByRi("doi:10.5285/abc")
+        );
+        assertFalse(ex.getMessage().contains("solr:8983"), "The message reaches the client; the cause is only logged");
     }
 
     @Test

@@ -1,14 +1,17 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.stereotype.Service;
+import uk.ac.ceh.gateway.catalogue.model.ResourceIdentifierLookupException;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ResourceIdentifierLookupService {
@@ -25,6 +28,8 @@ public class ResourceIdentifierLookupService {
     /**
      * Resolve an identifier to a single owning document id. Intended for redirect/resolution where
      * one identifier maps to one record (see IdController).
+     *
+     * @throws ResourceIdentifierLookupException if the index could not be asked
      */
     public Optional<String> resolveToUuid(String identifier) {
         List<String> owners = findDocumentIdsByRi(identifier);
@@ -40,6 +45,9 @@ public class ResourceIdentifierLookupService {
      * a phrase query matches exactly and case-insensitively — the whole identifier is a single
      * token, never split, stemmed or synonym-expanded, so it can be relied on for identity
      * comparison.
+     *
+     * @throws ResourceIdentifierLookupException if the index could not be asked. A failure is never
+     *     reported as "no owners", or the uniqueness check would pass a duplicate unchecked.
      */
     public List<String> findDocumentIdsByRi(String identifier) {
         try {
@@ -57,7 +65,11 @@ public class ResourceIdentifierLookupService {
                 .toList();
         }
         catch (Exception e) {
-            return List.of();
+            // Not a "no match": the index could not be asked, so the answer is unknown (dri-one #522)
+            // The identifier can come straight from a request path, so keep it to one log line
+            log.warn("Cannot look up resource identifier {}", identifier.replaceAll("[\\r\\n]", "_"), e);
+            throw new ResourceIdentifierLookupException(
+                "Resource identifiers cannot be looked up just now. Please try again shortly.", e);
         }
     }
 
