@@ -14,7 +14,11 @@ For example `Authorization: Bearer glpat-xxxxxxxxxxxxxxxxxxxx`.
 ### Defined Values
 [CatalogueServiceConfig](../java/src/main/java/uk/ac/ceh/gateway/catalogue/config/CatalogueServiceConfig.java) for valid values of {catalogue identifier}
 
-[WebConfig](../java/src/main/java/uk/ac/ceh/gateway/catalogue/config/WebConfig.java) for valid values of {document type}
+{document media type} is the record type's own JSON media type: one of the `*_JSON_VALUE` constants in
+[CatalogueMediaTypes](../java/src/main/java/uk/ac/ceh/gateway/catalogue/CatalogueMediaTypes.java),
+e.g. `application/gemini+json` or `application/vnd.monitoring-facility+json`. Only the types listed in
+`RECORD_JSON_MEDIA_TYPES` in [WebConfig](../java/src/main/java/uk/ac/ceh/gateway/catalogue/config/WebConfig.java)
+are accepted; any other `+json` type is rejected with `406` or `415`.
 
 ### File Identifier
 The jsonpath of {identifier} from the response payload is
@@ -27,7 +31,7 @@ The jsonpath of {identifier} from the response payload is
 
     Accept: application/json
     Authorization: Bearer {personal access token}
-    Content-Type: application/{document type}+json
+    Content-Type: {document media type}
 
     {JSON request payload}
 
@@ -38,13 +42,17 @@ The jsonpath of {identifier} from the response payload is
     Accept: application/json
     Authorization: Bearer {personal access token}
 
+To get a dataset's schema.org description as JSON-LD, send `Accept: application/ld+json`
+(optionally with `profile="https://schema.org"`). This is available for Gemini records only;
+other record types return `406 Not Acceptable`.
+
 ## Modify
 
     PUT /documents/{identifier}
 
     Accept: application/json
     Authorization: Bearer {personal access token}
-    Content-Type: application/{document type}+json
+    Content-Type: {document media type}
     If-Match: "{revision}"
 
     {JSON request payload}

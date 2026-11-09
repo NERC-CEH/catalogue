@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.json.JsonCompareMode;
 import org.springframework.util.StreamUtils;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
@@ -48,6 +50,9 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
+import uk.ac.ceh.gateway.catalogue.modelnerc.NercModel;
+import uk.ac.ceh.gateway.catalogue.modelnerc.NercModelUse;
+import uk.ac.ceh.gateway.catalogue.ukems.UkemsDocument;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.quality.MultiDocumentTypeMetadataQualityService;
@@ -243,8 +248,8 @@ class DocumentControllerTest extends AbstractMvcTest {
             .willReturn(new ArrayList<>());
     }
 
-    @SuppressWarnings("unused")
-    private static Stream<Arguments> provideMetadataDocuments() {
+    /** The Gemini record the expected-response files (gemini.json, gemini-schema-org.json, …) describe. */
+    private static GeminiDocument geminiFixture() {
         val gemini = new GeminiDocument();
         gemini.setId("da9d9beb-3fe5-4799-a4ed-c558d55159e6");
         gemini.setType("dataset");
@@ -260,6 +265,12 @@ class DocumentControllerTest extends AbstractMvcTest {
                 .url("https://example.com/maps/da9d9beb-3fe5-4799-a4ed-c558d55159e6?request=getCapabilities&service=WMS")
                 .build()
         ));
+        return gemini;
+    }
+
+    @SuppressWarnings("unused")
+    private static Stream<Arguments> provideMetadataDocuments() {
+        val gemini = geminiFixture();
 
         val original = new GeminiDocument();
         val metadataInfo = MetadataInfo.builder()
@@ -496,6 +507,145 @@ class DocumentControllerTest extends AbstractMvcTest {
                 result.andExpect(content().xml(expectedResponse(filename)));
             }
         }
+    }
+
+    private void givenRecordCanBeRendered(MetadataDocument doc) {
+        givenUserIsPermittedToView();
+        givenMetadataDocument(doc);
+        givenCatalogue();
+        givenDefaultCatalogue();
+        givenFreemarkerConfiguration();
+        givenProfileNotActive();
+        givenCodeLookup();
+        givenRoCrateServiceFrom();
+        givenMetadataQuality();
+    }
+
+    /**
+     * {@code application/ld+json}, with or without a schema.org profile, is the standard way to ask
+     * for a record's linked-data description. It used to return the internal record JSON labelled
+     * as JSON-LD (dri-one #409); a Gemini record now answers with its schema.org JSON-LD.
+     */
+    @ParameterizedTest(name = "[{index}] Gemini as {0}")
+    @ValueSource(strings = {"application/ld+json", "application/ld+json; profile=\"https://schema.org\""})
+    @SneakyThrows
+    void geminiAsJsonLdIsSchemaOrg(String accept) {
+        //given
+        givenRecordCanBeRendered(geminiFixture());
+        val schemaOrg = mvc.perform(get("/documents/{id}", id).accept(RDF_SCHEMAORG_JSON))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        //when
+        mvc.perform(get("/documents/{id}", id).accept(MediaType.parseMediaType(accept)))
+
+        //then
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.parseMediaType("application/ld+json")))
+            .andExpect(jsonPath("$['@context']").value("https://schema.org/"))
+            .andExpect(jsonPath("$['@graph'][0]['@type']").value("Dataset"))
+            .andExpect(jsonPath("$['@graph'][0]['@id']").value("https://example.com/" + id))
+            .andExpect(jsonPath("$['@graph'][0].name").value("Test title"))
+            .andExpect(content().json(schemaOrg, JsonCompareMode.STRICT));
+    }
+
+    @SuppressWarnings("unused")
+    private static Stream<Arguments> recordsWithoutJsonLd() {
+        return Stream.of(
+            Arguments.of(new CehModel()),
+            Arguments.of(new CehModelApplication()),
+            Arguments.of(new DataType()),
+            Arguments.of(new InfrastructureRecord()),
+            Arguments.of(new ResearchActivity()),
+            Arguments.of(new MonitoringActivity()),
+            Arguments.of(new MonitoringFacility()),
+            Arguments.of(new MonitoringNetwork()),
+            Arguments.of(new MonitoringProgramme()),
+            Arguments.of(new SampleArchive())
+        );
+    }
+
+    /** A record type with no JSON-LD template says so, rather than sending its internal JSON (dri-one #409). */
+    @ParameterizedTest(name = "[{index}] {0} as application/ld+json")
+    @MethodSource("recordsWithoutJsonLd")
+    @SneakyThrows
+    void recordWithoutJsonLdIsNotAcceptable(MetadataDocument doc) {
+        //given
+        givenRecordCanBeRendered(doc);
+
+        //when
+        mvc.perform(get("/documents/{id}", id).accept(MediaType.parseMediaType("application/ld+json")))
+
+        //then
+            .andExpect(status().isNotAcceptable());
+    }
+
+    /**
+     * The JSON converter used to claim every {@code application/*+json} type, so any made-up one
+     * returned the internal record JSON under the requested label (dri-one #409).
+     * {@code application/vnd.api+json} is DataCite's type: only the getDoi endpoint produces it.
+     */
+    @ParameterizedTest(name = "[{index}] Gemini as {0}")
+    @ValueSource(strings = {"application/foo+json", "application/vnd.api+json"})
+    @SneakyThrows
+    void unknownJsonTypeIsNotAcceptable(String accept) {
+        //given
+        givenRecordCanBeRendered(geminiFixture());
+
+        //when
+        mvc.perform(get("/documents/{id}", id).accept(MediaType.parseMediaType(accept)))
+
+        //then
+            .andExpect(status().isNotAcceptable());
+    }
+
+    @SuppressWarnings("unused")
+    private static Stream<Arguments> editorMediaTypes() {
+        val link = LinkDocument.builder()
+            .linkedDocumentId("cbde2ff1-cae3-4189-9489-ef1f4435fadc")
+            .original(geminiFixture())
+            .additionalKeywords(new ArrayList<>())
+            .build();
+        // One row per editor in web/src/startup/apps.js; each reads and saves the record model
+        // under its own media type
+        return Stream.of(
+            Arguments.of(geminiFixture(), GEMINI_JSON_VALUE),
+            Arguments.of(link, LINKED_JSON_VALUE),
+            Arguments.of(new CehModel(), CEH_MODEL_JSON_VALUE),
+            Arguments.of(new CehModelApplication(), CEH_MODEL_APPLICATION_JSON_VALUE),
+            Arguments.of(new CodeDocument(), CODE_JSON_VALUE),
+            Arguments.of(new DataType(), DATA_TYPE_JSON_VALUE),
+            Arguments.of(new InfrastructureRecord(), INFRASTRUCTURERECORD_JSON_VALUE),
+            Arguments.of(new ResearchActivity(), RESEARCHACTIVITY_JSON_VALUE),
+            Arguments.of(new MonitoringActivity(), MONITORING_ACTIVITY_JSON_VALUE),
+            Arguments.of(new MonitoringFacility(), MONITORING_FACILITY_JSON_VALUE),
+            Arguments.of(new MonitoringNetwork(), MONITORING_NETWORK_JSON_VALUE),
+            Arguments.of(new MonitoringProgramme(), MONITORING_PROGRAMME_JSON_VALUE),
+            Arguments.of(new NercModel(), NERC_MODEL_JSON_VALUE),
+            Arguments.of(new NercModelUse(), NERC_MODEL_USE_JSON_VALUE),
+            Arguments.of(new SampleArchive(), SAMPLE_ARCHIVE_JSON_VALUE),
+            Arguments.of(new UkemsDocument(), UKEMS_DOCUMENT_JSON_VALUE)
+        );
+    }
+
+    /**
+     * The editors depended on the {@code +json} wildcard that dri-one #409 removes, so each of their
+     * media types has to be registered with the JSON converter explicitly.
+     */
+    @ParameterizedTest(name = "[{index}] {0} as {1}")
+    @MethodSource("editorMediaTypes")
+    @SneakyThrows
+    void editorMediaTypeStillReturnsTheRecordModel(MetadataDocument doc, String mediaType) {
+        //given
+        givenRecordCanBeRendered(doc);
+
+        //when
+        mvc.perform(get("/documents/{id}", id).accept(MediaType.parseMediaType(mediaType)))
+
+        //then
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.parseMediaType(mediaType)))
+            .andExpect(jsonPath("$['@context']").doesNotExist());
     }
 
     @ParameterizedTest(name = "[{index}] GET using format {2}, {3}, {0}")

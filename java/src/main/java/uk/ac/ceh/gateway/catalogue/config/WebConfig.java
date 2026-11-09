@@ -26,6 +26,7 @@ import uk.ac.ceh.gateway.catalogue.citation.Citation;
 import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.WmsFeatureInfo2XmlMessageConverter;
+import uk.ac.ceh.gateway.catalogue.datacite.DataciteJsonMessageConverter;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsReportModel;
 import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
@@ -143,11 +144,56 @@ public class WebConfig implements WebMvcConfigurer {
         argumentResolvers.add(new ActiveUserHandlerMethodArgumentResolver());
     }
 
+    /**
+     * The JSON types the record model is read and written as: plain JSON and each editor's own type
+     * ({@code web/src/startup/apps.js}).
+     * <p>
+     * Spring's JSON converter claims {@code application/*+json} by default. Because no template claims
+     * most {@code +json} types, it answered them all with the internal record JSON, labelled as whatever
+     * was asked for: {@code application/ld+json} came back as non-RDF JSON with a 200 (dri-one #409).
+     * Narrowed to this list, any other {@code +json} type is a 406 unless a templated converter (the
+     * JSON-LD formats) or {@link DataciteJsonMessageConverter} claims it.
+     * <p>
+     * A new editor media type must be added here, or its editor can neither load nor save.
+     * {@code application/hal+json} is the HAL API of the catalogue and service-agreement resources
+     * (Spring HATEOAS {@code RepresentationModel}s). {@code application/problem+json} is deliberately
+     * absent: the converter offers it for error responses separately, through
+     * {@code getMediaTypesForProblemDetail()}, so listing it would only let records answer it.
+     */
+    static final List<MediaType> RECORD_JSON_MEDIA_TYPES = Stream.of(
+        MediaType.APPLICATION_JSON_VALUE,
+        org.springframework.hateoas.MediaTypes.HAL_JSON_VALUE,
+        GEMINI_JSON_VALUE,
+        LINKED_JSON_VALUE,
+        CEH_MODEL_JSON_VALUE,
+        CEH_MODEL_APPLICATION_JSON_VALUE,
+        CODE_JSON_VALUE,
+        DATA_TYPE_JSON_VALUE,
+        INFRASTRUCTURERECORD_JSON_VALUE,
+        RESEARCHACTIVITY_JSON_VALUE,
+        METHOD_JSON_VALUE,
+        MONITORING_ACTIVITY_JSON_VALUE,
+        MONITORING_FACILITY_JSON_VALUE,
+        MONITORING_NETWORK_JSON_VALUE,
+        MONITORING_PROGRAMME_JSON_VALUE,
+        NERC_MODEL_JSON_VALUE,
+        NERC_MODEL_USE_JSON_VALUE,
+        SAMPLE_ARCHIVE_JSON_VALUE,
+        UKEMS_DOCUMENT_JSON_VALUE
+    ).map(MediaType::parseMediaType).toList();
+
     @Override
     public void configureMessageConverters(HttpMessageConverters.ServerBuilder builder) {
         builder.addCustomConverter(new TransparentProxyMessageConverter(proxyRequestFactory()));
         beforeStandardMessageConverters.forEach(builder::addCustomConverter);
+        builder.addCustomConverter(new DataciteJsonMessageConverter(objectMapper()));
         builder.configureMessageConvertersList(converters -> converters.addAll(afterStandardMessageConverters));
+        // Exact class: DataciteJsonMessageConverter is a subclass and keeps its own single type
+        builder.configureMessageConverters(converter -> {
+            if (converter.getClass() == JacksonJsonHttpMessageConverter.class) {
+                ((JacksonJsonHttpMessageConverter) converter).setSupportedMediaTypes(RECORD_JSON_MEDIA_TYPES);
+            }
+        });
     }
 
     @Bean
