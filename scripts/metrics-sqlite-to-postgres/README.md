@@ -3,9 +3,29 @@
 One-off migration of the legacy SQLite metrics (`views`, `downloads`) into the PostgreSQL
 `metrics.documents` and `metrics.metric_counts` tables.
 
+## 0. Timing and extraction
+
+**Take the copy after the catalogue is running on postgres and the old sqlite pod has terminated.**
+
+If you copy before the switch, every count recorded between the copy and the switch is lost for good.
+
+Extract the SQLite database from the catalogue pod (this only works while the SMB share is still mounted):
+
+```bash
+kubectl -n eidc exec deploy/catalogue -- cat /var/ceh-catalogue/metrics-db/metrics.db > metrics-copy.db
+```
+
 ## 1. SQLite: export
 
-Copy the SQLite `metrics.db` to your local machine (work on a copy, not the live file) and run:
+Copy the SQLite `metrics.db` and `metrics.old.db` to your local machine (work on a copy, not the live file) and run:
+
+```bash
+./01_export_sqlite.sh ./metrics-copy.db . ./metrics.old.db
+```
+
+This will insert any rows that exist in `metrics.old.db` but not in `metrics-copy.db` for both `views` and `downloads` tables.
+
+If you don't have an older copy of the database with missing rows, just run:
 
 ```bash
 ./01_export_sqlite.sh ./metrics-copy.db .
