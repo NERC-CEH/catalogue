@@ -39,29 +39,23 @@ services:
     ports:
       - "5432:5432"
     profiles: [hubbub]
-  # Copied from hubbub-db above rather than invented: same image, same localtime mount, same shape,
-  # and behind a compose profile in the same way. The tag is 14.24, not hubbub-db's 14.1, to match the
-  # metrics-db that staging runs (k8s-eds-staging workloads/eidc/metrics-db.yaml) and the image
-  # JDBCMetricsServicePostgresTest uses.
-  #
-  # Host port 5434, not 5432: hubbub-db takes 5432, and although that one is also profiled,
-  # `docker compose --profile hubbub --profile metrics up` has to be able to run both. The container
-  # port stays 5432, so only the host-side URL differs.
-  #
-  # Storage is ephemeral, as hubbub-db's is -- no named volume, so the data goes when the container
-  # does. That is the pattern here, and the metrics tables are recreated at startup today. Revisit
-  # once Flyway owns the schema (#235) if a persistent local database turns out to be useful.
-  metrics-db:
+  catalogue-db:
     image: postgres:14.24-alpine
     environment:
-      POSTGRES_PASSWORD: &metrics_db_password metrics
-      POSTGRES_USER: &metrics_db_user metrics
-      POSTGRES_DB: metrics
+      POSTGRES_PASSWORD: &catalogue_db_password catalogue
+      POSTGRES_USER: &catalogue_db_user catalogue
+      POSTGRES_DB: catalogue
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - catalogue-db-data:/var/lib/postgresql/data
     ports:
       - "5434:5432"
-    profiles: [metrics]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U catalogue -d catalogue"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    profiles: [postgres]
   hubbub:
     image: registry.gitlab.ceh.ac.uk/eip/hubbub:7.22.0
     depends_on:
@@ -108,6 +102,7 @@ services:
       - datastore:/var/ceh-catalogue/datastore
       - jena-data:/var/ceh-catalogue/jena
       - gradle-cache:/home/gradle/.gradle
+      # The SQLite metrics file (rollback engine only), unrelated to catalogue-db
       - metrics-db:/var/ceh-catalogue/metrics-db
       # The same fixture shares Hubbub lists (see the hubbub service), read by the data preview
       - ./fixtures/upload/eidchub:/var/ceh-catalogue/data-package:ro
@@ -133,28 +128,14 @@ services:
       CATALOGUE_DATA_PREVIEW_ENABLED: ${DATA_PREVIEW_ENABLED:-false}
       CATALOGUE_DATA_PREVIEW_DATA_LOCATION: /var/ceh-catalogue/data-package
       CATALOGUE_DATA_PREVIEW_SUPPORTING_DOCUMENTS_LOCATION: /var/ceh-catalogue/supporting-documents
-      # Interpolated, defaulting to sqlite to match the application default, so that a plain
-      # `docker compose up` -- which does not start metrics-db -- is self-consistent rather than
-      # pointing at a database that is not running.
-      #
-      # The compose profile and this variable are two separate switches and have to be set together.
-      # Put both in the .env file beside this one, which compose reads for interpolation and for
-      # COMPOSE_PROFILES, so it is a single edit:
-      #
-      #     COMPOSE_PROFILES=metrics
-      #     METRICS_DATABASE_ENGINE=postgres
-      #
-      # or, one-off:  METRICS_DATABASE_ENGINE=postgres docker compose --profile metrics up
+      # Metrics engine, sqlite by default. For postgres, also start the catalogue-db profile:
+      #   METRICS_DATABASE_ENGINE=postgres docker compose --profile postgres up --build
+      # The CATALOGUE_DATASOURCE_* values are only read by the postgres engine. The URL has no
+      # default in application-metrics.properties, so it must be set here.
       METRICS_DATABASE_ENGINE: ${METRICS_DATABASE_ENGINE:-sqlite}
-      # Both engines' settings are present at once, on separate variables, so switching between them
-      # is a one-value change. The sqlite path uses the application default,
-      # /var/ceh-catalogue/metrics-db/metrics.db, on the metrics-db named volume (ownership repaired
-      # in docker/entrypoint-dev.sh). METRICS_DATASOURCE_* feeds spring.datasource.* on the postgres
-      # path, over the compose network, so the container port applies rather than the 5434 published
-      # to the host. Credentials come from the same anchors the service is defined with, as hubbub does.
-      METRICS_DATASOURCE_URL: jdbc:postgresql://metrics-db:5432/metrics
-      METRICS_DATASOURCE_USERNAME: *metrics_db_user
-      METRICS_DATASOURCE_PASSWORD: *metrics_db_password
+      CATALOGUE_DATASOURCE_URL: jdbc:postgresql://catalogue-db:5432/catalogue
+      CATALOGUE_DATASOURCE_USERNAME: *catalogue_db_user
+      CATALOGUE_DATASOURCE_PASSWORD: *catalogue_db_password
       SERVER_PORT: "8090"
       SPRING_FREEMARKER_CACHE: "false"
       SPRING_FREEMARKER_TEMPLATE_LOADER_PATH: file:/app/templates
@@ -168,24 +149,6 @@ services:
       HUBBUB_TOKEN: local-dev-token
       FUSEKI_SPARQL_ENDPOINT: http://fuseki:3030/ds/sparql
       FUSEKI_DATASET_URL: http://fuseki:3030/ds
-      # "metrics" (Spring profile, unrelated to the compose profile above) is active: without it
-      # MetricsDatabaseConfig and JDBCMetricsService are never built locally and none of the engine
-      # settings above are read. It is in EIDC's SPRING_PROFILES_ACTIVE in production, so this also
-      # brings local dev closer to what actually runs. Left on unconditionally: under the default
-      # sqlite engine it needs nothing external, and under postgres the catalogue still starts if
-      # metrics-db is not running (see the depends_on comment below).
-      #
-      # The upload profile is interpolated, defaulting to upload-simple, which needs nothing external.
-      # upload-hubbub (Hubbub uploads and the data preview) needs the hubbub compose profile running;
-      # the two upload profiles cannot both be active. As with the metrics engine, set them in .env,
-      # with DATA_PREVIEW_ENABLED for the data preview:
-      #
-      #     COMPOSE_PROFILES=hubbub
-      #     UPLOAD_PROFILE=upload-hubbub
-      #     DATA_PREVIEW_ENABLED=true
-      #
-      # or, one-off:
-      #     UPLOAD_PROFILE=upload-hubbub DATA_PREVIEW_ENABLED=true docker compose --profile hubbub up
       SPRING_PROFILES_ACTIVE: development,server-eidc,search-basic,service-agreement,${UPLOAD_PROFILE:-upload-simple},metrics
     env_file:
       - path: secrets.env
@@ -198,20 +161,12 @@ services:
     depends_on:
       solr:
         condition: service_started
-      # required: false is what lets metrics-db be profiled. Without it, `docker compose up` without
-      # the metrics profile fails outright -- "service metrics-db is required by catalogue but is
-      # disabled" -- because compose does not activate a dependency's profile for it. With it, an
-      # inactive metrics-db is a warning and the catalogue starts anyway, which is the intended
-      # behaviour under the default sqlite engine.
-      #
-      # Start ordering only when it IS active, as hubbub has on hubbub-db -- not a readiness gate.
-      # Safe because on the postgres path the catalogue starts with the metrics database unavailable:
-      # the pool is lazy (spring.datasource.hikari.initialization-fail-timeout=-1) and JDBCMetricsService
-      # runs no SQL in its constructor, only a schema attempt on ApplicationReadyEvent that logs and
-      # retries on next use if it fails. If PostgreSQL is still initialising, record pages render
-      # without counts until it accepts connections, and the schema is created then.
-      metrics-db:
-        condition: service_started
+      catalogue-db:
+        condition: service_healthy
+        # required: false -- catalogue-db only runs under the "postgres" profile. Without it, a plain
+        # `docker compose up` (sqlite engine) would fail because the dependency is not enabled; with
+        # it, compose waits for catalogue-db to be healthy when the profile is on and skips it when off.
+        # Needs Docker Compose 2.20 or later.
         required: false
     develop:
       watch:
@@ -243,3 +198,4 @@ volumes:
   jena-data:
   gradle-cache:
   metrics-db:
+  catalogue-db-data:

@@ -15,39 +15,26 @@ import org.sqlite.SQLiteDataSource;
 import javax.sql.DataSource;
 
 /**
- * The metrics {@link DataSource}, which has exactly one consumer
- * ({@code JDBCMetricsService}) — so the blast radius of introducing a pool is that one class.
+ * The metrics {@link DataSource}, selected by {@code metrics.database.engine} ({@code sqlite}, the
+ * default, or {@code postgres}).
  *
- * <p><b>Engine selection.</b> {@code metrics.database.engine} chooses the implementation:
- * {@code sqlite} (the default) or {@code postgres}. A property rather than a sub-profile because all
- * four metrics beans — this class, {@code JDBCMetricsService}, {@code MetricsService} and
- * {@code MetricsReportController} — are {@code @Profile("metrics")}, so a sub-profile scheme would
- * have to be invented and threaded through the deployment's {@code SPRING_PROFILES_ACTIVE}.
+ * <p><strong>Why the PostgreSQL pool is built by hand.</strong> {@code DataSourceAutoConfiguration} is
+ * excluded globally on {@code CatalogueApplication}. Left enabled, every context without the
+ * {@code metrics} profile (DataLabs, NonEidc, most tests) would have the PostgreSQL driver on the
+ * classpath, no {@code spring.datasource.url} and no embedded database, and would fail to start with
+ * "Failed to determine a suitable driver class".</p>
  *
- * <p>SQLite is the default deliberately, for the duration of the migration: an environment that is
- * not explicitly opted in keeps the behaviour it has today, and a rollback is the removal of one
- * ConfigMap entry rather than the addition of one. The PostgreSQL environments name the engine
- * explicitly. Once the migration (#236) is verified in production and the rollback window closes, the
- * default flips to {@code postgres}, that branch and {@code metrics.database.busy-timeout-millis} go,
- * and the {@code sqlite-jdbc} dependency goes with them.
+ * <p><strong>Why the exclusion cannot be undone here.</strong> An application-wide exclude wins over a
+ * profile-scoped re-import: {@code @ImportAutoConfiguration(DataSourceAutoConfiguration.class)} on a
+ * {@code @Profile("metrics")} class is filtered out by the same exclusion and silently contributes
+ * nothing. So the postgres branch builds the Hikari pool itself, through the same
+ * {@link DataSourceProperties} and {@code DataSourceBuilder} the auto-configuration would use, which is
+ * why {@code spring.datasource.*} and {@code spring.datasource.hikari.*} still bind as normal (see
+ * {@code application-metrics.properties}).</p>
  *
- * <p><b>Why the pool is declared here rather than auto-configured.</b> The project depends on
- * {@code spring-boot-starter-jdbc}, which supplies HikariCP and puts
- * {@code DataSourceAutoConfiguration} on the auto-configuration candidate list for <em>every</em>
- * profile. The metrics datasource is {@code @Profile("metrics")}, so in contexts without that profile
- * (DataLabs, NonEidc, most tests) the auto-configuration would find the PostgreSQL driver on the
- * classpath, no {@code spring.datasource.url} and no embedded database to fall back on, and fail at
- * startup with "Failed to determine a suitable driver class". It is therefore excluded on
- * {@code CatalogueApplication}.
- *
- * <p>That exclusion is global and cannot be undone for one profile — re-importing the same class with
- * {@code @ImportAutoConfiguration} inside this class does <em>not</em> bring it back, which shows up
- * as "No qualifying bean of type 'javax.sql.DataSource'" when the metrics profile is active. So the
- * PostgreSQL branch below builds the pool itself. It still binds {@code spring.datasource.*} and
- * {@code spring.datasource.hikari.*}, through the same {@link DataSourceProperties} and
- * {@code DataSourceBuilder} the auto-configuration uses, so the property names and
- * {@code application-metrics.properties} are exactly as they would be if it were auto-configured.
- * Flyway (#235) will need the same treatment.
+ * <p>No SQL runs here: the pool is lazy, and the schema is migrated by {@code JDBCMetricsService} after
+ * startup, so an unreachable database never stops the catalogue starting. A <em>missing</em>
+ * connection URL is different: that is a deployment mistake, not an outage, so it fails startup.</p>
  */
 @Configuration
 @Slf4j
@@ -56,23 +43,6 @@ public class MetricsDatabaseConfig {
 
     /**
      * SQLite: the default engine, and the current production behaviour.
-     *
-     * <p>SQLite's default busy timeout is 0, so a reader that meets a writer's lock fails immediately
-     * with {@code SQLITE_BUSY} rather than waiting. The hourly {@code JDBCMetricsService.syncDB}
-     * writes while record pages are reading view/download counts, so without a timeout those reads
-     * fail whenever the two overlap.
-     *
-     * <p>Note {@code journal_mode=WAL} would be the usual way to stop writers blocking readers, but
-     * it relies on shared memory and is unsafe on the network filesystem this database lives on.
-     *
-     * <p>Unpooled, as before: this path has to behave exactly as production does today, and pooling
-     * SQLite on a {@code nobrl} CIFS share is not a change worth making to something that is going to
-     * be deleted. One consequence to keep in mind is that every statement opens its own connection,
-     * which is why the production-context test points at a file-backed database rather than
-     * {@code :memory:}.
-     *
-     * <p>Note the driver does not create the parent directory of the database file. Locally that
-     * directory is inside the bind-mounted project tree, so it has to exist in the working copy.
      */
     @ConditionalOnProperty(name = "metrics.database.engine", havingValue = "sqlite", matchIfMissing = true)
     static class SqliteMetricsDatabase {
@@ -93,19 +63,6 @@ public class MetricsDatabaseConfig {
 
     /**
      * PostgreSQL, pooled with HikariCP.
-     *
-     * <p>Reads {@code spring.datasource.*}, NOT {@code metrics.database.url} — the two engines take
-     * their connection details from separate properties on purpose, so that an environment can carry
-     * both and switching engines is genuinely a one-value change. Sharing one property would mean a
-     * rollback handed a PostgreSQL URL to the SQLite driver.
-     *
-     * <p>Pool settings are bound from {@code spring.datasource.hikari.*} rather than set in code, so
-     * they stay alongside the connection settings in {@code application-metrics.properties} and can be
-     * tuned per environment without a rebuild: the pool size, the deliberately short
-     * {@code connection-timeout} and the driver's {@code socketTimeout}; the reasoning for each is
-     * recorded next to the values. The startup-failure policy (the catalogue starts when the metrics
-     * database is down) is noted there too, but is enforced by {@code JDBCMetricsService} doing no SQL
-     * while the context starts, not by any pool setting.
      */
     @ConditionalOnProperty(name = "metrics.database.engine", havingValue = "postgres")
     static class PostgresMetricsDatabase {
@@ -116,17 +73,26 @@ public class MetricsDatabaseConfig {
             return new DataSourceProperties();
         }
 
-        /**
-         * {@code destroyMethod} is left to Hikari's own {@code close()}, which Spring finds by
-         * convention, so the pool is shut down with the context rather than leaking its threads.
-         */
         @Bean
         @ConfigurationProperties("spring.datasource.hikari")
         public DataSource dataSource(DataSourceProperties properties) {
+            requireUrl(properties.getUrl());
             log.info("Connecting to PostgreSQL metrics database: {}", properties.getUrl());
             return properties.initializeDataSourceBuilder()
                 .type(HikariDataSource.class)
                 .build();
+        }
+
+        /**
+         * Fail loudly on a missing CATALOGUE_DATASOURCE_URL. Without this, an environment still setting
+         * the old variable names gets an unresolved placeholder as its URL, and JDBCMetricsService would
+         * only log a WARN and retry forever.
+         */
+        static void requireUrl(String url) {
+            if (url == null || url.isBlank() || url.contains("${")) {
+                throw new IllegalStateException("metrics.database.engine=postgres but spring.datasource.url is not set; "
+                    + "set CATALOGUE_DATASOURCE_URL (and CATALOGUE_DATASOURCE_USERNAME/_PASSWORD)");
+            }
         }
     }
 }
