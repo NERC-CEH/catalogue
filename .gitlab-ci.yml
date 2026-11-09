@@ -1,5 +1,5 @@
 include:
-  - template: Jobs/Container-Scanning.gitlab-ci.yml
+- template: Jobs/Container-Scanning.gitlab-ci.yml
 
 stages:
   - test
@@ -15,6 +15,10 @@ test_java:
   image: gradle:9.5.1-jdk25-alpine
   except:
     - tags
+  # PostgreSQL for JDBCMetricsServiceTest and EidcPostgresMetricsContextTest, which fail rather than skip
+  # in CI without it. A service rather than Testcontainers (which those tests use locally): the job
+  # container cannot reach ports Docker maps on the host, so Testcontainers cannot connect to anything
+  # it starts here. Same tag as staging's catalogue-db.
   services:
     - name: postgres:14.24-alpine
       alias: catalogue-db
@@ -74,7 +78,7 @@ container_scanning:
     CS_REGISTRY_PASSWORD: $CI_JOB_TOKEN
     CS_SEVERITY_THRESHOLD: 'high'
   before_script:
-    - sudo apt-get update -y && sudo apt-get install -y jq
+  - sudo apt-get update -y && sudo apt-get install -y jq
   script:
     - gtcs scan
     - SEVERITY_COUNT=$(jq '.vulnerabilities | map(select(.severity=="High" or .severity=="Critical")) | length' gl-container-scanning-report.json )
