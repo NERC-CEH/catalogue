@@ -17,15 +17,7 @@ kubectl -n eidc exec deploy/catalogue -- cat /var/ceh-catalogue/metrics-db/metri
 
 ## 1. SQLite: export
 
-Copy the SQLite `metrics.db` and `metrics.old.db` to your local machine (work on a copy, not the live file) and run:
-
-```bash
-./01_export_sqlite.sh ./metrics-copy.db . ./metrics.old.db
-```
-
-This will insert any rows that exist in `metrics.old.db` but not in `metrics-copy.db` for both `views` and `downloads` tables.
-
-If you don't have an older copy of the database with missing rows, just run:
+Copy the SQLite `metrics.db` to your local machine (work on a copy, not the live file) and run:
 
 ```bash
 ./01_export_sqlite.sh ./metrics-copy.db .
