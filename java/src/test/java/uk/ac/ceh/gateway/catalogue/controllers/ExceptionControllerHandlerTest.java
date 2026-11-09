@@ -30,6 +30,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataPreconditionRequiredException;
 import uk.ac.ceh.gateway.catalogue.model.InvalidRelationshipTargetException;
 import uk.ac.ceh.gateway.catalogue.model.MojibakeTextException;
 import uk.ac.ceh.gateway.catalogue.model.RelationshipTargetCheckException;
+import uk.ac.ceh.gateway.catalogue.model.ResourceIdentifierLookupException;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import org.apache.solr.client.solrj.RemoteSolrException;
 import uk.ac.ceh.gateway.catalogue.search.InvalidFacetException;
@@ -253,6 +254,22 @@ class ExceptionControllerHandlerTest {
 
         //When
         ResponseEntity<Object> response = controller.handleRelationshipTargetCheck(ex);
+
+        //Then
+        assertThat(response.getStatusCode(), equalTo(SERVICE_UNAVAILABLE));
+        assert response.getBody() != null;
+        assertThat(((ErrorResponse) response.getBody()).getMessage(), equalTo(mess));
+    }
+
+    @Test
+    @DisplayName("A failed resource identifier lookup becomes a 503, not a 404 or a silent pass (dri-one #522)")
+    public void resourceIdentifierLookupFaultReturnsServiceUnavailable() {
+        //Given
+        String mess = "Resource identifiers cannot be looked up just now. Please try again shortly.";
+        ResourceIdentifierLookupException ex = new ResourceIdentifierLookupException(mess, new java.io.IOException("Solr down"));
+
+        //When
+        ResponseEntity<Object> response = controller.handleResourceIdentifierLookup(ex);
 
         //Then
         assertThat(response.getStatusCode(), equalTo(SERVICE_UNAVAILABLE));

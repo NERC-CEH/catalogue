@@ -12,6 +12,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
+import uk.ac.ceh.gateway.catalogue.model.ResourceIdentifierLookupException;
 import uk.ac.ceh.gateway.catalogue.services.ResourceIdentifierLookupService;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
@@ -78,5 +79,33 @@ class IdControllerTest extends AbstractMvcTest {
                 "location",
                 "http://localhost:8080/documents/" + resolvedUuid
             ));
+    }
+
+    @Test
+    @DisplayName("Resolve codespace/code with no match still falls back to the combined id")
+    @SneakyThrows
+    void resolveCodespaceAndCodeNoMatch() {
+        given(resolver.resolveToUuid("eidc:unknown")).willReturn(Optional.empty());
+
+        mvc.perform(get("/id/{codespace}/{code}", "eidc", "unknown"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(header().string("location", "http://localhost:8080/documents/eidc:unknown"));
+    }
+
+    /**
+     * A failed lookup used to look like "no match", redirecting to /documents/{codespace}:{code},
+     * which 404s. A URI that exists would be reported as missing whenever Solr was down or
+     * reindexing (dri-one #522).
+     */
+    @Test
+    @DisplayName("Resolve codespace/code returns 503, not a redirect, when the lookup fails")
+    @SneakyThrows
+    void resolveCodespaceAndCodeLookupFailure() {
+        given(resolver.resolveToUuid("ecn:T02"))
+            .willThrow(new ResourceIdentifierLookupException("unavailable", new RuntimeException("Solr down")));
+
+        mvc.perform(get("/id/{codespace}/{code}", "ecn", "T02"))
+            .andExpect(status().isServiceUnavailable())
+            .andExpect(header().doesNotExist("location"));
     }
 }
