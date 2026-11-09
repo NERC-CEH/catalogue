@@ -78,7 +78,7 @@ This is a **multi-catalogue metadata management system** for environmental/scien
 
 **Search:** Metadata is indexed into **Solr** for faceted full-text search, and into **Apache Jena** for RDF/SPARQL and linked data endpoints. Both indexes are rebuilt from the Git store. Any change to `solr/documents/conf/managed-schema` requires a full Solr reindex to take effect.
 
-**Adding a new document type** requires changes in 4 places (per README): the model class, a Freemarker template, catalogue config, and the Solr indexer.
+**Adding a new document type** — follow `docs/newDocumentType.md`: model class, Freemarker template, `CatalogueMediaTypes` + catalogue/services config, Solr indexer, and the editor in `web/src/startup/apps.js`. Its editor media type **must** also be added to `WebConfig.RECORD_JSON_MEDIA_TYPES`, or the editor's load/save get 406/415 (the JSON converter no longer accepts every `+json` type, dri-one #409).
 
 **Spring profiles** control optional features:
 - `hubbub` / `legilo` — file upload backends

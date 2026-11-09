@@ -69,7 +69,8 @@ You can get access to the values of the document on the root level, in the examp
 </@skeleton.master>
 ```
 
-Register the template and document type in `extendMessageConverters` method of WebConfig.
+Register the template and document type in the `WebConfig` constructor: create an
+`Object2TemplatedMessageConverter` for your class and add it to `afterStandardMessageConverters`.
 
 ### Admin template
 
@@ -90,7 +91,8 @@ in `html/your-id/your-document.ftl`. See `template/html/link/_admin.ftlh`.
 ```
 
 ```java
-converters.add(new Object2TemplatedMessageConverter<>(YourDocument.class, freemarkerConfiguration()));
+val yourDocument = new Object2TemplatedMessageConverter<>(YourDocument.class, freemarkerConfiguration);
+// ...then add yourDocument to the afterStandardMessageConverters list
 ```
 
 ## Document Type
@@ -114,6 +116,19 @@ Add your media type to CatalogueMediaTypes.java
 ```java
 public static final String YOUR_DOCUMENT_JSON_VALUE = "application/vnd.your-document+json";
 ```
+
+Then register it with the JSON converter by adding it to `RECORD_JSON_MEDIA_TYPES` in `WebConfig`:
+
+```java
+static final List<MediaType> RECORD_JSON_MEDIA_TYPES = Stream.of(
+    // ...
+    YOUR_DOCUMENT_JSON_VALUE
+).map(MediaType::parseMediaType).toList();
+```
+
+**Don't skip this.** The JSON converter only accepts the types on that list (dri-one #409). If yours
+is missing, the editor's load gets `406 Not Acceptable` and its save gets `415 Unsupported Media
+Type`. Add a row for your type to `editorMediaTypes()` in `DocumentControllerTest` as well.
 
 ### ServiceConfig
 
@@ -214,14 +229,16 @@ we have hardcoded `type` using `@model.set('type', 'dataset') unless @model.has(
 
 ### Configure editor
 
-In `Main.coffee` add document-type to `initEditor`, key in `lookup` needs to match
-value in `DocumentTypes.java` e.g. `YOUR_DOCUMENT = "your-document";`
+In `web/src/startup/apps.js` add your document type to the editor lookup. The key needs to match
+the value in `DocumentTypes.java`, e.g. `YOUR_DOCUMENT = "your-document";`.
+The `mediaType` must be the one you added to `RECORD_JSON_MEDIA_TYPES` (see [Media Type](#media-type)).
 
-```coffee
-'your-document':
-    View: YourDocumentView
-    Model: EditorMetadata
-    mediaType: 'application/vnd.your-document+json'
+```js
+'your-document': {
+  View: YourDocumentView,
+  Model: EditorMetadata,
+  mediaType: 'application/vnd.your-document+json'
+},
 ```
 
 
