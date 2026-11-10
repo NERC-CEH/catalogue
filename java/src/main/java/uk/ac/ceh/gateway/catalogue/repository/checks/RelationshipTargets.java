@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.repository.checks;
 
 import lombok.extern.slf4j.Slf4j;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -135,7 +136,7 @@ public class RelationshipTargets implements SaveCheck {
         try {
             return permissionService.toAccess(user, targetId, "VIEW");
         } catch (PermissionDeniedException ex) {
-            if (StoredVersion.isNotFound(ex)) {
+            if (DocumentRepositoryException.isNotFound(ex)) {
                 log.debug("Relationship target {} does not exist", targetId);
                 return false;
             }
@@ -164,7 +165,7 @@ public class RelationshipTargets implements SaveCheck {
         try {
             return documentBundleReader.readBundle(id);
         } catch (Exception ex) {
-            if (StoredVersion.isNotFound(ex)) {
+            if (DocumentRepositoryException.isNotFound(ex)) {
                 return null;
             }
             throw cannotCheck(id, ex);

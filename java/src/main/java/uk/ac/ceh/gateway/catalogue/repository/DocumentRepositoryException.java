@@ -15,7 +15,16 @@ public class DocumentRepositoryException extends Exception {
      * null, so callers that answer 404 must check this.
      */
     public boolean isNotFound() {
-        for (Throwable cause = this; cause != null; cause = cause.getCause()) {
+        return isNotFound(this);
+    }
+
+    /**
+     * Whether an exception, or anything that caused it, is the datastore reporting a missing file.
+     * Readers wrap that report in their own exceptions ({@code DocumentRepositoryException},
+     * {@code PermissionDeniedException}, ...), so the whole cause chain is searched.
+     */
+    public static boolean isNotFound(Throwable ex) {
+        for (Throwable cause = ex; cause != null; cause = cause.getCause()) {
             if (cause instanceof GitFileNotFoundException) {
                 return true;
             }
