@@ -2558,6 +2558,37 @@ public class RdfTurtleTest {
             }
 
             @Test
+            @DisplayName("a shared copyright node's notice is flattened exactly as before, not escaped (dri-one #359)")
+            void sharedCopyrightNoticeStaysFlattened() {
+                // Unlike a description, this node is shared and keyed on whitespace-folded text, so
+                // escaping its line breaks would add a label variant per record layout. It keeps
+                // the substitution it has always been published with: CR and LF each a space, and
+                // rdf/ttl.ftl's <#compress> then folds the resulting run into one.
+                // See sharedRightsLabel in templates/rdf/_macros.ftl.
+                template("rdf/ttl.ftl", withCopyright("cpybreak", "Owned by\r\nUKCEH"));
+
+                val rights = objectsOf("https://example.com/id/cpybreak", RIGHTS);
+                assertTrue(model.contains(
+                    rights.getFirst().asResource(), createProperty(COPYRIGHT_NOTICE), model.createLiteral("Owned by UKCEH")
+                ));
+            }
+
+            @Test
+            @DisplayName("a free-text licence label keeps line breaks flattened")
+            void licenceLabelStaysFlattened() {
+                val document = dataset("licbreak");
+                document.setUseConstraints(List.of(
+                    ResourceConstraint.builder().code("license").value("Bespoke\nlicence").build()
+                ));
+
+                template("rdf/ttl.ftl", document);
+
+                assertTrue(model.contains(
+                    null, createProperty(RDFS_LABEL), model.createLiteral("Bespoke licence")
+                ));
+            }
+
+            @Test
             @DisplayName("a copyright notice with no text emits no dcterms:rights")
             void emptyCopyrightNoticeIsSuppressed() {
                 template("rdf/ttl.ftl", withCopyright("cpyempty", ""));
@@ -2835,19 +2866,83 @@ public class RdfTurtleTest {
             assertThat(soleLiteral(DESCRIPTION), equalTo("UNC path \\\\server\\share"));
         }
 
+        /*
+         * Until dri-one #359 a double quote was published as an apostrophe and a line break as a
+         * space: valid Turtle, but not what the record says, and it flattened every multi-paragraph
+         * abstract (over half of EIDC's records) into one run of text. Each literal must now come
+         * back out of the graph exactly as it went in.
+         */
+
         @Test
-        @DisplayName("a double quote still becomes an apostrophe, and a line break a space")
-        void quotesAndNewlinesKeepTheirLongstandingTreatment() {
+        @DisplayName("a double quote is escaped, not replaced with an apostrophe")
+        void doubleQuoteSurvives() {
             val document = dataset("bsquote");
-            document.setDescription("A \"quoted\" phrase\nand a second line");
+            document.setDescription("Data for the project \"UK-China Virtual Joint Centre\".");
 
             template("rdf/ttl.ftl", document);
 
-            assertThat(
-                "substituting rather than escaping these is lossy but is what every "
-                    + "already-published literal carries; see templates/rdf/_turtle.ftl",
-                soleLiteral(DESCRIPTION), equalTo("A 'quoted' phrase and a second line")
+            assertThat(soleLiteral(DESCRIPTION), equalTo("Data for the project \"UK-China Virtual Joint Centre\"."));
+        }
+
+        @Test
+        @DisplayName("paragraph breaks survive, not flattened to spaces")
+        void paragraphBreaksSurvive() {
+            val document = dataset("bsparagraph");
+            document.setDescription("First paragraph.\n\nSecond paragraph.\nA third line.");
+
+            template("rdf/ttl.ftl", document);
+
+            assertThat(soleLiteral(DESCRIPTION), equalTo("First paragraph.\n\nSecond paragraph.\nA third line."));
+        }
+
+        @Test
+        @DisplayName("a CRLF line break survives with both characters")
+        void crlfSurvives() {
+            val document = dataset("bscrlf");
+            document.setDescription("Line one\r\nLine two\rLine three");
+
+            template("rdf/ttl.ftl", document);
+
+            assertThat(soleLiteral(DESCRIPTION), equalTo("Line one\r\nLine two\rLine three"));
+        }
+
+        @Test
+        @DisplayName("a backslash before a double quote does not swallow the quote's escape")
+        void backslashThenQuote() {
+            val document = dataset("bsthenquote");
+            document.setDescription("Path C:\\\"Program Files\"\\ ends \\");
+
+            template("rdf/ttl.ftl", document);
+
+            assertThat(soleLiteral(DESCRIPTION), equalTo("Path C:\\\"Program Files\"\\ ends \\"));
+        }
+
+        @Test
+        @DisplayName("a quote and a line break in a keyword literal survive")
+        void quoteAndLineBreakInKeyword() {
+            val document = dataset("bsquotekw");
+            document.setKeywordsOther(List.of(Keyword.builder().value("\"Soil\"\nmoisture").build()));
+
+            template("rdf/ttl.ftl", document);
+
+            assertTrue(
+                objectsOf(SUBJECT).stream()
+                    .anyMatch(o -> o.isLiteral() && o.asLiteral().getString().equals("\"Soil\"\nmoisture")),
+                "the keyword literal fallback escapes through the same function"
             );
+        }
+
+        @Test
+        @DisplayName("a quote and a line break in a monitoring facility's title survive")
+        void quoteAndLineBreakInMonitoringTitle() {
+            val facility = new MonitoringFacility()
+                .setId("bsquotefacility")
+                .setUri("https://example.com/id/bsquotefacility")
+                .setTitle("Site \"A\"\nNorth");
+
+            template("rdf/monitoring/facility.ftl", facility);
+
+            assertThat(soleLiteral(TITLE), equalTo("Site \"A\"\nNorth"));
         }
 
         @Test
