@@ -252,7 +252,11 @@ public class DataciteService {
         return isDatacitable(document, false) && getDoi(document).isEmpty();
     }
 
-    private Optional<String> getDoi(GeminiDocument document) {
+    /**
+     * The document's DOI, if it has one minted under our DataCite prefix. A
+     * {@code doi} identifier with another prefix does not count.
+     */
+    public Optional<String> getDoi(GeminiDocument document) {
         return Optional.ofNullable(document.getResourceIdentifiers())
                 .orElse(Collections.emptyList())
                 .stream()

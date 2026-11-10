@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import uk.ac.ceh.gateway.catalogue.datapreviewer.OpenDataAccessFixtures;
 import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -57,6 +58,7 @@ class DatasetFilesControllerTest extends AbstractMvcTest {
         Mockito.when(document.getAvailability()).thenReturn("Available");
         Mockito.when(document.getAccessLimitation())
             .thenReturn(new AccessLimitation("noLimitations", "", "", "http://vocab.nerc.ac.uk/collection/N07/current/UNRS/"));
+        OpenDataAccessFixtures.released(document);
         Mockito.when(documentRepository.read("abc123")).thenReturn(document);
 
         var fileInfo = new HubbubResponse.FileInfo(
@@ -123,6 +125,26 @@ class DatasetFilesControllerTest extends AbstractMvcTest {
             .andExpect(content().string(containsString("Dataset not publicly accessible")));
     }
 
+    // dri-one #524: files sit in eidchub before the DOI is minted and the data links are added
+    @Test
+    void shouldReturnForbiddenWhenPublicOpenRecordHasNoDoiYet() throws Exception {
+        Multimap<Permission, String> permissions = ArrayListMultimap.create();
+        permissions.put(Permission.VIEW, "public");
+
+        Mockito.when(metadata.getPermissions()).thenReturn(permissions);
+        Mockito.when(document.getAvailability()).thenReturn("Available");
+        Mockito.when(document.getAccessLimitation())
+            .thenReturn(new AccessLimitation("noLimitations", "", "", "http://vocab.nerc.ac.uk/collection/N07/current/UNRS/"));
+        Mockito.when(document.getResourceIdentifiers()).thenReturn(List.of());
+        Mockito.when(document.getOnlineResources()).thenReturn(List.of());
+        Mockito.when(documentRepository.read("abc123")).thenReturn(document);
+
+        mvc.perform(get("/documents/abc123/files"))
+            .andExpect(status().isForbidden())
+            .andExpect(content().string(containsString("Dataset not publicly accessible")));
+        Mockito.verifyNoInteractions(uploadService);
+    }
+
     @Test
     void shouldReturnNotFoundWhenDatasetMissing() throws Exception {
         Mockito.when(documentRepository.read("missing")).thenReturn(null);
@@ -141,6 +163,7 @@ class DatasetFilesControllerTest extends AbstractMvcTest {
         Mockito.when(document.getAvailability()).thenReturn("Available");
         Mockito.when(document.getAccessLimitation())
             .thenReturn(new AccessLimitation("noLimitations", "", "", "http://vocab.nerc.ac.uk/collection/N07/current/UNRS/"));
+        OpenDataAccessFixtures.released(document);
         Mockito.when(documentRepository.read("abc123")).thenReturn(document);
 
         // Return HubbubResponse with null data

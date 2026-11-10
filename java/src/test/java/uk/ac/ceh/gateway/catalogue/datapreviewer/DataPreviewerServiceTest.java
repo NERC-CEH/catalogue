@@ -45,7 +45,7 @@ class DataPreviewerServiceTest {
     private JenaLookupService jenaLookupService;
 
     @Spy
-    private OpenDataAccess openDataAccess = new OpenDataAccess();
+    private OpenDataAccess openDataAccess = OpenDataAccessFixtures.openDataAccess();
 
     @InjectMocks
     private DataPreviewerService service;
@@ -93,6 +93,7 @@ class DataPreviewerServiceTest {
             )
         );
         when(metadata.getPermissions()).thenReturn(perms);
+        OpenDataAccessFixtures.released(dataset);
 
         when(dataset.getFileset()).thenReturn(filesetList);
 
@@ -177,6 +178,7 @@ class DataPreviewerServiceTest {
         when(dataset.getFileset()).thenReturn(filesetList);
         when(dataset.getTemporalExtents()).thenReturn(timePeriodsList);
         when(metadata.getPermissions()).thenReturn(perms);
+        OpenDataAccessFixtures.released(dataset);
 
         when(documentRepository.read("col1")).thenReturn(collection);
         when(documentRepository.read("ds1")).thenReturn(dataset);
@@ -263,6 +265,7 @@ class DataPreviewerServiceTest {
         );
         when(dataset.getFileset()).thenReturn(List.of());
         when(metadata.getPermissions()).thenReturn(perms);
+        OpenDataAccessFixtures.released(dataset);
 
         when(documentRepository.read("col1")).thenReturn(collection);
         when(documentRepository.read("col2")).thenReturn(subCollection);
