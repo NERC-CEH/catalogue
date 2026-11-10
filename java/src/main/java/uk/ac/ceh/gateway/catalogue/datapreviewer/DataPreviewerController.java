@@ -21,10 +21,11 @@ public class DataPreviewerController {
         try {
             return ResponseEntity.ok(dataPreviewerService.preview(id));
 
+        // Fixed bodies: exception messages can carry caller input such as the id.
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Document not found");
         } catch (SecurityException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Dataset not publicly accessible");
         } catch (Exception e) {
             log.error("Failed to generate preview for {}", id, e);
             return ResponseEntity.internalServerError()

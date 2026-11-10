@@ -39,7 +39,7 @@ public class DatasetFilesController {
         try {
             MetadataDocument document = documentRepository.read(datasetId);
             if (document == null) {
-                return notFound(datasetId);
+                return notFound();
             }
 
             if (!(document instanceof GeminiDocument gemini) || !openDataAccess.isOpen(gemini)) {
@@ -65,7 +65,7 @@ public class DatasetFilesController {
             return ResponseEntity.ok(files);
         } catch (DocumentRepositoryException e) {
             if (e.isNotFound()) {
-                return notFound(datasetId);
+                return notFound();
             }
             return failed(datasetId, e);
         } catch (Exception e) {
@@ -73,8 +73,9 @@ public class DatasetFilesController {
         }
     }
 
-    private static ResponseEntity<String> notFound(String datasetId) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Dataset not found: " + datasetId);
+    // A fixed body: echoing the id from the path would reflect caller input.
+    private static ResponseEntity<String> notFound() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Dataset not found");
     }
 
     // The cause stays in the log: the body must not echo exception messages to the caller.

@@ -210,4 +210,15 @@ class DatasetFilesControllerTest extends AbstractMvcTest {
             .andExpect(status().isForbidden());
         Mockito.verifyNoInteractions(uploadService);
     }
+
+    @Test
+    void shouldNotEchoTheIdInTheNotFoundBody() throws Exception {
+        String id = "<img src=x onerror=alert(1)>";
+        Mockito.when(documentRepository.read(id)).thenThrow(new DocumentRepositoryException(
+            "Cannot read file: " + id, new GitFileNotFoundException(id)));
+
+        mvc.perform(get("/documents/{id}/files", id).accept(MediaType.ALL))
+            .andExpect(status().isNotFound())
+            .andExpect(content().string("Dataset not found"));
+    }
 }

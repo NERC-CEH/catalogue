@@ -29,12 +29,12 @@ public class DataPreviewerService {
             document = documentRepository.read(id);
         } catch (DocumentRepositoryException e) {
             if (e.isNotFound()) {
-                throw new IllegalArgumentException("Document not found: " + id);
+                throw new IllegalArgumentException("Document not found");
             }
             throw e;
         }
         if (document == null) {
-            throw new IllegalArgumentException("Document not found: " + id);
+            throw new IllegalArgumentException("Document not found");
         }
         if (!(document instanceof GeminiDocument doc)) {
             throw new SecurityException("Dataset not publicly accessible");
