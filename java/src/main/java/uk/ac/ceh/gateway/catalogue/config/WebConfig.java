@@ -9,6 +9,8 @@ import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilte
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -62,8 +64,14 @@ import java.util.stream.Stream;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
 
+/**
+ * Ordered just ahead of the lowest precedence so that {@code ManagementJsonConfig}, which the actuator's
+ * child context also gives this configurer to, runs after it there and can undo the record narrowing on the
+ * management port (dri-one #527). Unordered, the child's own configurer would come first and be overridden.
+ */
 @Slf4j
 @Configuration
+@Order(Ordered.LOWEST_PRECEDENCE - 1)
 public class WebConfig implements WebMvcConfigurer {
     private final List<HttpMessageConverter<?>> beforeStandardMessageConverters;
     private final List<HttpMessageConverter<?>> afterStandardMessageConverters;
