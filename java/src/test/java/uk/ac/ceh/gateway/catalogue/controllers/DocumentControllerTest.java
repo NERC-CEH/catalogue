@@ -27,6 +27,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.json.JsonCompareMode;
 import org.springframework.util.StreamUtils;
+import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
+import uk.ac.ceh.gateway.catalogue.datacite.DataciteException;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -1451,5 +1453,45 @@ class DocumentControllerTest extends AbstractMvcTest {
         val stored = captor.getValue().getGeometry().getGeometryString();
         assertThat(stored, containsString("[1.7,52.6]"));
         assertThat(stored, not(containsString("1.71792")));
+    }
+
+    // dri-one #444: a permission check on an unknown id wraps the datastore's GitFileNotFoundException,
+    // and Spring matches the not-found handler on that cause. The body must not carry the wrapper's
+    // message, which names the datastore's HEAD commit.
+    @Test
+    @SneakyThrows
+    void unknownRecordNotFoundDoesNotExposeTheRevision() {
+        given(permissionService.toAccess(any(CatalogueUser.class), eq(id), eq("VIEW"))).willThrow(
+            new PermissionDeniedException(
+                "No document found for: " + id + " at revision: e3eb320e014e86dae1745bb89e388efbd8f4254d",
+                new GitFileNotFoundException(id + ".meta")));
+
+        mvc.perform(get("/documents/{id}", id).accept(APPLICATION_JSON))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.message").value("No document found"))
+            .andExpect(content().string(not(containsString("e3eb320e"))));
+    }
+
+    // A handler matched through a cause must echo the message written for it, not the wrapper's
+    @Test
+    @SneakyThrows
+    void notFoundMatchedThroughACauseEchoesTheCausesMessage() {
+        given(permissionService.toAccess(any(CatalogueUser.class), eq(id), eq("VIEW"))).willThrow(
+            new PermissionDeniedException("internal detail", new ResourceNotFoundException("Metadata record does not exist")));
+
+        mvc.perform(get("/documents/{id}", id).accept(APPLICATION_JSON))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.message").value("Metadata record does not exist"));
+    }
+
+    @Test
+    @SneakyThrows
+    void dataciteFailureMatchedThroughACauseEchoesTheCausesMessage() {
+        given(permissionService.toAccess(any(CatalogueUser.class), eq(id), eq("VIEW"))).willThrow(
+            new PermissionDeniedException("internal detail", new DataciteException("Failed to obtain datacite metadata")));
+
+        mvc.perform(get("/documents/{id}", id).accept(APPLICATION_JSON))
+            .andExpect(status().isInternalServerError())
+            .andExpect(jsonPath("$.message").value("Failed to obtain datacite metadata"));
     }
 }

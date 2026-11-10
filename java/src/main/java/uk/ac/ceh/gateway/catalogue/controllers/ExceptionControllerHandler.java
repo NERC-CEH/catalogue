@@ -133,22 +133,42 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, ex.getMessage(), BAD_REQUEST);
     }
 
-    @ExceptionHandler({
-        GitFileNotFoundException.class,
-        ResourceNotFoundException.class,
-        CatalogueException.class
-    })
-    public ResponseEntity<Object> handleNotFoundExceptions(Exception ex) {
+    /*
+     * Spring matches an @ExceptionHandler on the thrown exception OR any of its causes, and then
+     * passes each parameter the first of those that fits its declared type. A handler declared with
+     * plain Exception therefore receives the outer wrapper and would echo the wrapper's message,
+     * which was never written for a client (dri-one #444 leaked the datastore's HEAD commit that
+     * way). Handlers that echo a message declare the exact type, so the message is always the one
+     * written for that type.
+     */
+
+    /**
+     * The datastore has no such file. Its message, and that of whatever wrapped it (a permission
+     * check names the revision it looked at), is for the log only.
+     */
+    @ExceptionHandler(GitFileNotFoundException.class)
+    public ResponseEntity<Object> handleMissingFile(Exception ex) {
+        log.warn("Not found: {}", ex.getMessage());
+        return handleExceptionInternal(ex, "No document found", NOT_FOUND);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Object> handleNotFoundExceptions(ResourceNotFoundException ex) {
+        return handleExceptionInternal(ex, ex.getMessage(), NOT_FOUND);
+    }
+
+    @ExceptionHandler(CatalogueException.class)
+    public ResponseEntity<Object> handleCatalogueException(CatalogueException ex) {
         return handleExceptionInternal(ex, ex.getMessage(), NOT_FOUND);
     }
 
     @ExceptionHandler(PostProcessingException.class)
-    public ResponseEntity<Object> handlePostProcessingException(Exception ex) {
+    public ResponseEntity<Object> handlePostProcessingException(PostProcessingException ex) {
         return handleExceptionInternal(ex, ex.getMessage(), INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(DataciteException.class)
-    public ResponseEntity<Object> handleDataciteException(Exception ex) {
+    public ResponseEntity<Object> handleDataciteException(DataciteException ex) {
         return handleExceptionInternal(ex, ex.getMessage(), INTERNAL_SERVER_ERROR);
     }
 
@@ -197,7 +217,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({DocumentIndexingException.class})
-    public ResponseEntity<Object> handleIndexingExceptions(Exception ex) {
+    public ResponseEntity<Object> handleIndexingExceptions(DocumentIndexingException ex) {
         return handleExceptionInternal(ex, ex.getMessage(), INTERNAL_SERVER_ERROR);
     }
 
