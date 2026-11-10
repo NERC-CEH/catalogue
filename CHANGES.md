@@ -4,6 +4,10 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.250.0] - 2026-11-03
+
+The catalogue's linked-data export no longer publishes an incomplete picture just after the service restarts. It used to run before the catalogue had finished rebuilding its internal index of how records relate to one another, so the first export after each restart could leave out links between records. It now waits for that index to be ready, and the downloadable copy of each catalogue's data is only saved once the index is complete, so an incomplete version can't be served from the cache (DRI-ONE-408). Starting an export by hand from the maintenance page while the index is still rebuilding now shows a clear "not published" message instead of timing out.
+
 ## [3.249.0] - 2026-11-02
 
 The data preview on dataset pages now covers far more file types. Alongside CSV, readers can now preview other delimited text files and Excel workbooks (DRI-ONE-499), and NetCDF files (a common format for gridded scientific data) now get a summary of their variables and dimensions (DRI-ONE-500). Safeguards stop unusually large or deliberately malformed files from overloading the server while it builds a preview. The preview now appears only on datasets that actually have previewable data files, so it no longer shows on records that hold documents alone.
