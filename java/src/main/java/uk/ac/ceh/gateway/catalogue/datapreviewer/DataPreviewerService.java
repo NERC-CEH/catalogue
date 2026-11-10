@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.HubbubResponse;
@@ -23,10 +24,20 @@ public class DataPreviewerService {
     private final OpenDataAccess openDataAccess;
 
     public Object preview(String id) throws DocumentRepositoryException {
-        GeminiDocument doc = (GeminiDocument) documentRepository.read(id);
-
-        if (doc == null) {
+        MetadataDocument document;
+        try {
+            document = documentRepository.read(id);
+        } catch (DocumentRepositoryException e) {
+            if (e.isNotFound()) {
+                throw new IllegalArgumentException("Document not found: " + id);
+            }
+            throw e;
+        }
+        if (document == null) {
             throw new IllegalArgumentException("Document not found: " + id);
+        }
+        if (!(document instanceof GeminiDocument doc)) {
+            throw new SecurityException("Dataset not publicly accessible");
         }
 
         return switch (doc.getType()) {

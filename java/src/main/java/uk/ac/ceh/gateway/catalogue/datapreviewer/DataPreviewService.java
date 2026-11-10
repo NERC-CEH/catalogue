@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.datapreviewer.PreviewManifest.PreviewFile;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -78,7 +77,7 @@ public class DataPreviewService {
         try {
             document = documentRepository.read(recordId);
         } catch (DocumentRepositoryException e) {
-            if (isNotFound(e)) {
+            if (e.isNotFound()) {
                 throw new NoSuchElementException("No record " + recordId);
             }
             throw new IllegalStateException("Cannot read record " + recordId, e);
@@ -89,15 +88,6 @@ public class DataPreviewService {
         if (!(document instanceof GeminiDocument gemini) || !openDataAccess.isOpen(gemini)) {
             throw new PreviewNotOpenException(recordId);
         }
-    }
-
-    private static boolean isNotFound(Throwable e) {
-        for (Throwable cause = e; cause != null; cause = cause.getCause()) {
-            if (cause instanceof GitFileNotFoundException) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private static Optional<PreviewFile> find(List<PreviewFile> files, String path) {
