@@ -41,7 +41,12 @@ public class PermissionController {
         log.info("Creating");
     }
 
-    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
+    /**
+     * The record's access-control list. It names the login of every account with rights on the
+     * record, so reading it needs the same edit right as changing it: a VIEW guard published staff
+     * login names to anyone, anonymous callers included, on every public record (dri-one #411).
+     */
+    @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(method = RequestMethod.GET, value = "documents/{file}/permission")
     @ResponseBody
     public HttpEntity<PermissionResource> currentPermission (
