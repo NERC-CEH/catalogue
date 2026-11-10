@@ -467,6 +467,21 @@ ${formatUris.identify(format)} a dcterms:IMT ;
 </#macro>
 
 <#--
+  The label of a rights node minted from free text (licence, access rights,
+  copyright notice). Unlike a record's own description, such a node is shared:
+  LicenceUri keys it on the text with whitespace runs folded, so every record
+  whose wording differs only in line breaks points at the same node. Escaping
+  the breaks would hang a further label variant on it for each record's
+  layout, so they are flattened exactly as they have always been published
+  (CR and LF each a space), leaving these labels unchanged. This is a
+  deliberate normalisation of the value, not escaping: ttl.escape keeps line
+  breaks everywhere else (dri-one #359).
+-->
+<#function sharedRightsLabel text>
+  <#return text?replace("\r", " ")?replace("\n", " ")>
+</#function>
+
+<#--
   A licence or access-rights statement with only free text (no URI) is
   identified by a node minted from that text (dri-one #327), so the same
   wording is one node wherever it recurs and can be filtered/compared
@@ -479,7 +494,7 @@ ${formatUris.identify(format)} a dcterms:IMT ;
     <#list licences as licence>
       <#if !(uriNormaliser.normalise(licence.uri!"")?has_content) && licence.value?has_content>
 ${licenceUris.mintLicence(licence.value)} a dcterms:LicenseDocument ;
-  rdfs:label <@displayLiteral licence.value?replace("\n", " ") /> .
+  rdfs:label <@displayLiteral sharedRightsLabel(licence.value) /> .
       </#if>
     </#list>
   </#if>
@@ -487,19 +502,19 @@ ${licenceUris.mintLicence(licence.value)} a dcterms:LicenseDocument ;
     && !(uriNormaliser.normalise(accessLimitation.uri!"")?has_content)
     && accessLimitation.value?has_content>
 ${licenceUris.mintAccessRights(accessLimitation.value)} a dcterms:RightsStatement ;
-  rdfs:label <@displayLiteral accessLimitation.value /> .
+  rdfs:label <@displayLiteral sharedRightsLabel(accessLimitation.value) /> .
   </#if>
   <#--
     The copyright notice each dcterms:rights in turtle/_rights.ftl points at.
     Filtered identically there and here, so neither can describe a node the
-    other did not reference. The substitutions are cosmetic — Turtle has no
-    escape for a literal newline, and © survives the round trip unreliably —
-    and are applied only to the emitted literal: mintCopyright keys on the
-    stored text, so how a notice is rendered cannot change which node it is.
+    other did not reference. The substitutions (© survives the round trip
+    unreliably; line breaks, see sharedRightsLabel) are applied only to the
+    emitted literal: mintCopyright keys on the stored text, so how a notice is
+    rendered cannot change which node it is.
   -->
   <#list (copyrights![])?filter(c -> c.value?has_content) as copyright>
 ${licenceUris.mintCopyright(copyright.value)} a dcterms:RightsStatement ;
-  odrs:copyrightNotice <@displayLiteral copyright.value?replace("©","copyright")?replace("\n", " ") /> .
+  odrs:copyrightNotice <@displayLiteral sharedRightsLabel(copyright.value?replace("©","copyright")) /> .
   </#list>
 </#macro>
 

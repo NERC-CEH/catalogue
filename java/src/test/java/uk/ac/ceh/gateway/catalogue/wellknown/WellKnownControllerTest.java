@@ -20,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.wellknown.VoidStatsService;
 import java.util.Map;
 
 import lombok.val;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
@@ -139,6 +140,26 @@ class WellKnownControllerTest extends AbstractMvcTest {
         // nothing can parse advertises nothing.
         RDFDataMgr.read(model, new StringReader(body), null, Lang.TURTLE);
         assertTrue(model.size() > 0, "the description should assert something");
+    }
+
+    @SneakyThrows
+    @Test
+    @DisplayName("a quote, line break and backslash in a catalogue title survive into the description (dri-one #359)")
+    void titleLiteralRoundTrips() {
+        givenFreemarkerConfiguration();
+        val title = "The \"Test\" Centre\r\nData\\Archive";
+        given(catalogueService.retrieve("eidc"))
+            .willReturn(Catalogue.builder()
+                .id("eidc").title(title).url("https://eidc.ac.uk").contactUrl("").logo("eidc.png")
+                .build());
+
+        val model = voidDescription();
+
+        val titles = model.listStatements(null, model.createProperty(DCTERMS, "title"), (RDFNode) null)
+            .filterKeep(s -> s.getSubject().getURI().endsWith("/eidc/documents"))
+            .mapWith(s -> s.getLiteral().getString())
+            .toList();
+        assertThat(titles, contains(title));
     }
 
     @SneakyThrows

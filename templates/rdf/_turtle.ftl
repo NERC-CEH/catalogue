@@ -21,14 +21,13 @@
   one character held back every triple for a week — the whole dri-one #319-#330
   batch and #334 with it.
 
-  Note what this deliberately does NOT change. A double quote is replaced with
-  an apostrophe rather than escaped as \", which is lossy: proper escaping
-  would keep the character. That substitution is what the catalogue has emitted
-  for years, and every literal already published carries it, so changing it
-  here would silently rewrite existing data for no gain in validity. (void.ftl
-  escapes properly, having been written later; the two are inconsistent and
-  reconciling them is a data decision, not a bug fix.) Same reasoning for
-  turning a line break into a space rather than \n.
+  All of them are escaped (\" \\ \r \n), so the literal reads back exactly
+  as the record stores it. Until dri-one #359 a double quote was instead
+  replaced with an apostrophe and a line break with a space. That was valid
+  Turtle but lossy: the graph no longer said what the record said, and every
+  multi-paragraph abstract (over half of EIDC's records) was published as one
+  undifferentiated run of text. void.ftl had already escaped the quote
+  properly, so the export disagreed with itself; it now uses this function too.
 -->
 
 <#--
@@ -37,7 +36,7 @@
                  the quotes themselves, so a datatype or language tag can follow
 -->
 <#function escape string>
-  <#-- Backslash first: it is the only rule here that emits a backslash, and
-       running it after a rule that introduced one would escape that too. -->
-  <#return string?replace("\\", "\\\\")?replace("\"", "'")?replace("\r", " ")?replace("\n", " ")>
+  <#-- Backslash first: every rule here emits a backslash, and running this
+       one after any of the others would escape that backslash a second time. -->
+  <#return string?replace("\\", "\\\\")?replace("\"", "\\\"")?replace("\r", "\\r")?replace("\n", "\\n")>
 </#function>

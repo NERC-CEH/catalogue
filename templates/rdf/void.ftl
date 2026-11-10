@@ -8,20 +8,12 @@
 
 <#--
   Every literal in this document is assembled by hand rather than serialised by
-  Jena, so escaping is this template's problem. One unescaped backslash in one
-  hand-built literal took every export down for a week (dri-one #344), and a
-  line break in a title would break this document the same way -- which the
-  backslash-and-quote pair of ?replace calls that used to sit inline at each
-  literal did not cover.
-
-  Not templates/rdf/_turtle.ftl's escape(), which substitutes an apostrophe for a
-  double quote to stay byte-compatible with years of already-published literals.
-  There is nothing published here to stay compatible with, so this escapes the
-  quote properly instead.
+  Jena, so it goes through the same escaping as the record export: one unescaped
+  backslash in one hand-built literal took every export down for a week
+  (dri-one #344). This template used to carry its own copy, which escaped the
+  quote but still flattened line breaks; one function means one behaviour.
 -->
-<#function lit text>
-  <#return text?replace('\\', '\\\\')?replace('"', '\\"')?replace('\r', ' ')?replace('\n', ' ')>
-</#function>
+<#import "_turtle.ftl" as ttl>
 
 <${baseUri}/.well-known/void>
     a void:DatasetDescription ;
@@ -100,8 +92,8 @@
 <#list sourceGraphs![] as source>
 <${source.graph()}>
     a void:Dataset ;
-    dcterms:title "${lit(source.title())}"@en ;
-    dcterms:description "${lit(source.description())}"@en ;
+    dcterms:title "${ttl.escape(source.title())}"@en ;
+    dcterms:description "${ttl.escape(source.description())}"@en ;
     void:sparqlEndpoint <${sparqlUrl}> ;
     void:uriSpace "${source.graph()}" ;
 <#list source.vocabularies() as vocabulary>
@@ -116,7 +108,7 @@
 
 <${baseUri}/${cat.id}/documents>
     a void:Dataset ;
-    dcterms:title "${lit(cat.title)}"@en ;
+    dcterms:title "${ttl.escape(cat.title)}"@en ;
     dcterms:subject <http://dbpedia.org/resource/Environmental_science> ;
     foaf:homepage <${baseUri}/${cat.id}/documents> ;
     void:sparqlEndpoint <${sparqlUrl}> ;
