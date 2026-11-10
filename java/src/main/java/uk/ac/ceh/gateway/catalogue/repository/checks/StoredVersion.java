@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.repository.checks;
 
 import lombok.extern.slf4j.Slf4j;
-import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.document.UnknownContentTypeException;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -49,22 +49,12 @@ public final class StoredVersion {
         } catch (IOException | PostProcessingException
                  | UnknownContentTypeException | IllegalArgumentException ex) {
             // DataRepositoryException is an IOException subclass, so it is covered above.
-            if (isNotFound(ex)) {
+            if (DocumentRepositoryException.isNotFound(ex)) {
                 log.debug("No stored version of {}", id);
             } else {
                 log.warn("Cannot read the stored version of {}, so the save is checked as wholly new", id, ex);
             }
             return Optional.empty();
         }
-    }
-
-    /** Whether an exception, or anything that caused it, means the record does not exist. */
-    static boolean isNotFound(Throwable ex) {
-        for (Throwable cause = ex; cause != null; cause = cause.getCause()) {
-            if (cause instanceof GitFileNotFoundException) {
-                return true;
-            }
-        }
-        return false;
     }
 }

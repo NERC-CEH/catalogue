@@ -9,11 +9,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
+import uk.ac.ceh.gateway.catalogue.datapreviewer.OpenDataAccessFixtures;
 import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.HubbubResponse;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
@@ -57,6 +61,7 @@ class DatasetFilesControllerTest extends AbstractMvcTest {
         Mockito.when(document.getAvailability()).thenReturn("Available");
         Mockito.when(document.getAccessLimitation())
             .thenReturn(new AccessLimitation("noLimitations", "", "", "http://vocab.nerc.ac.uk/collection/N07/current/UNRS/"));
+        OpenDataAccessFixtures.released(document);
         Mockito.when(documentRepository.read("abc123")).thenReturn(document);
 
         var fileInfo = new HubbubResponse.FileInfo(
@@ -123,6 +128,26 @@ class DatasetFilesControllerTest extends AbstractMvcTest {
             .andExpect(content().string(containsString("Dataset not publicly accessible")));
     }
 
+    // dri-one #524: files sit in eidchub before the DOI is minted and the data links are added
+    @Test
+    void shouldReturnForbiddenWhenPublicOpenRecordHasNoDoiYet() throws Exception {
+        Multimap<Permission, String> permissions = ArrayListMultimap.create();
+        permissions.put(Permission.VIEW, "public");
+
+        Mockito.when(metadata.getPermissions()).thenReturn(permissions);
+        Mockito.when(document.getAvailability()).thenReturn("Available");
+        Mockito.when(document.getAccessLimitation())
+            .thenReturn(new AccessLimitation("noLimitations", "", "", "http://vocab.nerc.ac.uk/collection/N07/current/UNRS/"));
+        Mockito.when(document.getResourceIdentifiers()).thenReturn(List.of());
+        Mockito.when(document.getOnlineResources()).thenReturn(List.of());
+        Mockito.when(documentRepository.read("abc123")).thenReturn(document);
+
+        mvc.perform(get("/documents/abc123/files"))
+            .andExpect(status().isForbidden())
+            .andExpect(content().string(containsString("Dataset not publicly accessible")));
+        Mockito.verifyNoInteractions(uploadService);
+    }
+
     @Test
     void shouldReturnNotFoundWhenDatasetMissing() throws Exception {
         Mockito.when(documentRepository.read("missing")).thenReturn(null);
@@ -141,6 +166,7 @@ class DatasetFilesControllerTest extends AbstractMvcTest {
         Mockito.when(document.getAvailability()).thenReturn("Available");
         Mockito.when(document.getAccessLimitation())
             .thenReturn(new AccessLimitation("noLimitations", "", "", "http://vocab.nerc.ac.uk/collection/N07/current/UNRS/"));
+        OpenDataAccessFixtures.released(document);
         Mockito.when(documentRepository.read("abc123")).thenReturn(document);
 
         // Return HubbubResponse with null data
@@ -150,5 +176,49 @@ class DatasetFilesControllerTest extends AbstractMvcTest {
 
         mvc.perform(get("/documents/abc123/files"))
             .andExpect(status().isNoContent());
+    }
+
+    // dri-one #524: the repository throws for an unknown id rather than returning null
+    @Test
+    void shouldReturnNotFoundForUnknownId() throws Exception {
+        Mockito.when(documentRepository.read("unknown")).thenThrow(new DocumentRepositoryException(
+            "Cannot read file: unknown", new GitFileNotFoundException("unknown")));
+
+        mvc.perform(get("/documents/unknown/files"))
+            .andExpect(status().isNotFound())
+            .andExpect(content().string(containsString("Dataset not found")))
+            .andExpect(content().string(not(containsString("Cannot read file"))));
+        Mockito.verifyNoInteractions(uploadService);
+    }
+
+    @Test
+    void shouldNotEchoTheExceptionWhenTheRepositoryFails() throws Exception {
+        Mockito.when(documentRepository.read("abc123")).thenThrow(new DocumentRepositoryException(
+            "Cannot read file: abc123", new java.io.IOException("disk on fire")));
+
+        mvc.perform(get("/documents/abc123/files"))
+            .andExpect(status().isInternalServerError())
+            .andExpect(content().string(not(containsString("Cannot read file"))))
+            .andExpect(content().string(not(containsString("disk on fire"))));
+    }
+
+    @Test
+    void shouldReturnForbiddenForANonGeminiRecord() throws Exception {
+        Mockito.when(documentRepository.read("link1")).thenReturn(Mockito.mock(LinkDocument.class));
+
+        mvc.perform(get("/documents/link1/files"))
+            .andExpect(status().isForbidden());
+        Mockito.verifyNoInteractions(uploadService);
+    }
+
+    @Test
+    void shouldNotEchoTheIdInTheNotFoundBody() throws Exception {
+        String id = "<img src=x onerror=alert(1)>";
+        Mockito.when(documentRepository.read(id)).thenThrow(new DocumentRepositoryException(
+            "Cannot read file: " + id, new GitFileNotFoundException(id)));
+
+        mvc.perform(get("/documents/{id}/files", id).accept(MediaType.ALL))
+            .andExpect(status().isNotFound())
+            .andExpect(content().string("Dataset not found"));
     }
 }

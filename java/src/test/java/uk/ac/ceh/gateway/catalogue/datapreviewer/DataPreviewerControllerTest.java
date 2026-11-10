@@ -89,4 +89,15 @@ class DataPreviewerControllerTest extends AbstractMvcTest {
             .andExpect(status().isInternalServerError())
             .andExpect(content().string("Failed to generate preview"));
     }
+
+    @Test
+    void preview_notFound_doesNotEchoTheExceptionMessage() throws Exception {
+        String id = "<img src=x onerror=alert(1)>";
+        when(dataPreviewerService.preview(id))
+            .thenThrow(new IllegalArgumentException("Document not found: " + id));
+
+        mvc.perform(get("/documents/{id}/preview", id).accept(MediaType.ALL))
+            .andExpect(status().isNotFound())
+            .andExpect(content().string("Document not found"));
+    }
 }

@@ -9,7 +9,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 import uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology;
@@ -45,7 +47,7 @@ class DataPreviewerServiceTest {
     private JenaLookupService jenaLookupService;
 
     @Spy
-    private OpenDataAccess openDataAccess = new OpenDataAccess();
+    private OpenDataAccess openDataAccess = OpenDataAccessFixtures.openDataAccess();
 
     @InjectMocks
     private DataPreviewerService service;
@@ -93,6 +95,7 @@ class DataPreviewerServiceTest {
             )
         );
         when(metadata.getPermissions()).thenReturn(perms);
+        OpenDataAccessFixtures.released(dataset);
 
         when(dataset.getFileset()).thenReturn(filesetList);
 
@@ -177,6 +180,7 @@ class DataPreviewerServiceTest {
         when(dataset.getFileset()).thenReturn(filesetList);
         when(dataset.getTemporalExtents()).thenReturn(timePeriodsList);
         when(metadata.getPermissions()).thenReturn(perms);
+        OpenDataAccessFixtures.released(dataset);
 
         when(documentRepository.read("col1")).thenReturn(collection);
         when(documentRepository.read("ds1")).thenReturn(dataset);
@@ -263,6 +267,7 @@ class DataPreviewerServiceTest {
         );
         when(dataset.getFileset()).thenReturn(List.of());
         when(metadata.getPermissions()).thenReturn(perms);
+        OpenDataAccessFixtures.released(dataset);
 
         when(documentRepository.read("col1")).thenReturn(collection);
         when(documentRepository.read("col2")).thenReturn(subCollection);
@@ -308,5 +313,22 @@ class DataPreviewerServiceTest {
 
         assertThatThrownBy(() -> service.preview("ds1"))
             .isInstanceOf(SecurityException.class);
+    }
+
+    // dri-one #524: the repository throws for an unknown id rather than returning null
+    @Test
+    void previewOfUnknownIdIsNotFound() throws Exception {
+        when(documentRepository.read("unknown")).thenThrow(new DocumentRepositoryException(
+            "Cannot read file: unknown", new GitFileNotFoundException("unknown")));
+
+        assertThrows(IllegalArgumentException.class, () -> service.preview("unknown"));
+    }
+
+    @Test
+    void previewRepositoryFailureIsNotTreatedAsNotFound() throws Exception {
+        when(documentRepository.read("ds1")).thenThrow(new DocumentRepositoryException(
+            "Cannot read file: ds1", new java.io.IOException("disk on fire")));
+
+        assertThrows(DocumentRepositoryException.class, () -> service.preview("ds1"));
     }
 }

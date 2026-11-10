@@ -1,15 +1,21 @@
 package uk.ac.ceh.gateway.catalogue.templateHelpers;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import uk.ac.ceh.gateway.catalogue.datapreviewer.DataPreviewProperties;
 import uk.ac.ceh.gateway.catalogue.datapreviewer.OpenDataAccess;
+import uk.ac.ceh.gateway.catalogue.datapreviewer.OpenDataAccessFixtures;
+import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
 import uk.ac.ceh.gateway.catalogue.gemini.DistributionInfo;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
@@ -175,5 +181,52 @@ class DataPreviewOfferTest {
         offer(true).offered(ID);
 
         verifyNoInteractions(uploadService);
+    }
+
+    // dri-one #524: publishing a record must not offer its data before the DOI and data links exist.
+    // These go through the real rule rather than the mocked one above.
+    private DataPreviewOffer offerWithRealRule() {
+        openDataAccess = OpenDataAccessFixtures.openDataAccess();
+        return offer(true);
+    }
+
+    private void publicAvailableOpenAccessCsv() {
+        MetadataInfo metadata = mock(MetadataInfo.class);
+        Multimap<Permission, String> permissions = ArrayListMultimap.create();
+        permissions.put(Permission.VIEW, "public");
+        when(document.getMetadata()).thenReturn(metadata);
+        when(metadata.getPermissions()).thenReturn(permissions);
+        when(document.getAvailability()).thenReturn("Available");
+        when(document.getAccessLimitation()).thenReturn(new AccessLimitation(
+            "noLimitations", "", "", "http://vocab.nerc.ac.uk/collection/N07/current/UNRS/"));
+        csv();
+    }
+
+    @Test
+    void notOfferedForPublicOpenRecordWithoutDoi() {
+        publicAvailableOpenAccessCsv();
+        when(document.getResourceIdentifiers()).thenReturn(List.of());
+        when(document.getOnlineResources()).thenReturn(List.of(OpenDataAccessFixtures.link(
+            "fileAccess", "https://catalogue.ceh.ac.uk/datastore/eidchub/abc")));
+
+        assertThat(offerWithRealRule().offered(ID), is(false));
+    }
+
+    @Test
+    void notOfferedForPublicOpenRecordWithDoiButNoDataLinks() {
+        publicAvailableOpenAccessCsv();
+        when(document.getResourceIdentifiers()).thenReturn(
+            List.of(OpenDataAccessFixtures.doi(OpenDataAccessFixtures.DOI_PREFIX + "/abc")));
+        when(document.getOnlineResources()).thenReturn(List.of());
+
+        assertThat(offerWithRealRule().offered(ID), is(false));
+    }
+
+    @Test
+    void offeredForPublicOpenRecordOnceReleased() {
+        publicAvailableOpenAccessCsv();
+        OpenDataAccessFixtures.released(document);
+
+        assertThat(offerWithRealRule().offered(ID), is(true));
     }
 }

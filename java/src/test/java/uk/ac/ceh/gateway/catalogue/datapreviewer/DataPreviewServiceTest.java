@@ -73,7 +73,7 @@ class DataPreviewServiceTest {
         documentConverter = new DocumentConverter(sampler, properties);
         contentReader = spy(new PreviewContentReader(new PreviewFileResolver(), documentConverter, properties));
         service = new DataPreviewService(
-            documentRepository, new OpenDataAccess(), new PreviewListing(uploadService, properties), contentReader);
+            documentRepository, OpenDataAccessFixtures.openDataAccess(), new PreviewListing(uploadService, properties), contentReader);
         when(uploadService.get(eq(ID), eq(DOCS), anyInt(), anyInt())).thenReturn(response(List.of(), 1, 0));
     }
 
@@ -92,6 +92,7 @@ class DataPreviewServiceTest {
         when(document.getAvailability()).thenReturn("Available");
         when(document.getAccessLimitation())
             .thenReturn(new AccessLimitation("noLimitations", "", "", N07 + accessCode + "/"));
+        OpenDataAccessFixtures.released(document);
         when(documentRepository.read(ID)).thenReturn(document);
     }
 
@@ -412,7 +413,7 @@ class DataPreviewServiceTest {
             Duration.ofSeconds(3), Duration.ofSeconds(10));
         Files.createDirectories(tmp.resolve(ID));
         Files.writeString(tmp.resolve(ID).resolve("notes.txt"), "Notes");
-        DataPreviewService busyService = new DataPreviewService(documentRepository, new OpenDataAccess(),
+        DataPreviewService busyService = new DataPreviewService(documentRepository, OpenDataAccessFixtures.openDataAccess(),
             new PreviewListing(uploadService, properties),
             new PreviewContentReader(new PreviewFileResolver(), busy, properties));
 

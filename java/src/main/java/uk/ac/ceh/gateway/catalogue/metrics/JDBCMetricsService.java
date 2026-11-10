@@ -21,7 +21,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.jspecify.annotations.NonNull;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
@@ -193,16 +193,6 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         return false;
     }
 
-    /** Whether a repository read failed because the record does not exist, rather than a transient fault. */
-    static boolean isNotFound(Throwable ex) {
-        for (Throwable cause = ex; cause != null; cause = cause.getCause()) {
-            if (cause instanceof GitFileNotFoundException) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
     public void recordView(@NonNull String uuid, @NonNull String addr) {
         synchronized (viewed) {
@@ -366,7 +356,7 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
                 }
                 jdbcTemplate.update(UPDATE_STATEMENT, document.getTitle(), document.getType(), id, document.getTitle(), document.getType());
             } catch (Exception e) {
-                if (isNotFound(e)) {
+                if (DocumentRepositoryException.isNotFound(e)) {
                     markRemoved(id, doc);
                 } else {
                     log.error("Error reading document from repository {}", doc, e);
@@ -430,7 +420,7 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
                 title = document.getTitle();
                 recordType = document.getType();
             } catch (Exception e) {
-                if (isNotFound(e)) {
+                if (DocumentRepositoryException.isNotFound(e)) {
                     log.warn("Not writing {} {}(s) for {}: no such record", amount, metricType, doc);
                     continue;
                 }

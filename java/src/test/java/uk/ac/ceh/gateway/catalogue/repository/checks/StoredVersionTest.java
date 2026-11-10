@@ -66,11 +66,4 @@ class StoredVersionTest {
 
         assertThat(StoredVersion.of(reader, "cosmos").get()).isEmpty();
     }
-
-    @Test
-    @DisplayName("not-found is recognised anywhere in an exception's causes")
-    void notFoundInCauses() {
-        assertThat(StoredVersion.isNotFound(new RuntimeException(new GitFileNotFoundException("x")))).isTrue();
-        assertThat(StoredVersion.isNotFound(new RuntimeException(new IOException("x")))).isFalse();
-    }
 }

@@ -8,7 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ceh.gateway.catalogue.datapreviewer.OpenDataAccess;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.HubbubResponse;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
 
@@ -35,13 +37,12 @@ public class DatasetFilesController {
         log.debug("Fetching dataset files for {}", datasetId);
 
         try {
-            GeminiDocument document = (GeminiDocument) documentRepository.read(datasetId);
+            MetadataDocument document = documentRepository.read(datasetId);
             if (document == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Dataset not found: " + datasetId);
+                return notFound();
             }
 
-            if (!openDataAccess.isOpen(document)) {
+            if (!(document instanceof GeminiDocument gemini) || !openDataAccess.isOpen(gemini)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("Dataset not publicly accessible");
             }
@@ -62,11 +63,25 @@ public class DatasetFilesController {
                 .toList();
 
             return ResponseEntity.ok(files);
+        } catch (DocumentRepositoryException e) {
+            if (e.isNotFound()) {
+                return notFound();
+            }
+            return failed(datasetId, e);
         } catch (Exception e) {
-            log.error("Failed to fetch dataset files for {}", datasetId, e);
-            return ResponseEntity.internalServerError()
-                .body("Error fetching dataset files: " + e.getMessage());
+            return failed(datasetId, e);
         }
+    }
+
+    // A fixed body: echoing the id from the path would reflect caller input.
+    private static ResponseEntity<String> notFound() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Dataset not found");
+    }
+
+    // The cause stays in the log: the body must not echo exception messages to the caller.
+    private static ResponseEntity<String> failed(String datasetId, Exception e) {
+        log.error("Failed to fetch dataset files for {}", datasetId, e);
+        return ResponseEntity.internalServerError().body("Error fetching dataset files");
     }
 
     public record DatasetFile(
