@@ -118,6 +118,10 @@ and the permission and catalogue panels of a record:
     PUT /documents/{identifier}/catalogue
     PUT /documents/{identifier}/catalogue-view
 
+Reading either permission list (`GET …/permission`) needs the same edit right
+as changing it, because the list names the login of every account with access
+to the record. Anyone else, including an anonymous caller, gets `403`.
+
 ### curl
 
 Capture the `ETag` from the `GET`, then send it back on the `PUT`. `-D -`

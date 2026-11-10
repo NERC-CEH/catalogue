@@ -6,6 +6,8 @@ import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -15,6 +17,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -42,11 +46,13 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC_PUBLISHER_USERNAME;
+import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UNPRIVILEGED_USERNAME;
 
 // TODO: convert remaining tests to use mvc
 
@@ -95,15 +101,22 @@ class PermissionControllerTest extends AbstractMvcTest {
             .willReturn(true);
     }
 
+    /** The principal {@code SecurityConfig}'s anonymous filter installs for a request with no Remote-User. */
+    private static AnonymousAuthenticationToken anonymous() {
+        return new AnonymousAuthenticationToken(
+            "NotSure", CatalogueUser.PUBLIC_USER, AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
+    }
+
     private void givenCatalogue() {
-        given(catalogueService.retrieve(catalogueKey))
-            .willReturn(Catalogue.builder()
+        val catalogue = Catalogue.builder()
             .id(catalogueKey)
             .title("Foo")
             .url("https://example.com")
             .contactUrl("")
             .logo("eidc.png")
-            .build());
+            .build();
+        given(catalogueService.retrieve(catalogueKey)).willReturn(catalogue);
+        given(catalogueService.defaultCatalogue()).willReturn(catalogue); // the access-denied page
     }
 
     @BeforeEach
@@ -379,6 +392,65 @@ class PermissionControllerTest extends AbstractMvcTest {
                 .content("{\"id\":\"12345\",\"permissions\":[]}")
             )
             .andExpect(status().isConflict());
+    }
+
+    /*
+     * The access-control list names the login of every account with rights on the record, so reading
+     * it needs the same edit right as changing it, not just VIEW (dri-one #411). A public record is
+     * viewable by everyone, so a VIEW guard published staff login names to anonymous callers.
+     */
+
+    @Test
+    @SneakyThrows
+    @DisplayName("an anonymous GET of a public record's permissions is forbidden and reads nothing")
+    void anonymousCannotReadPermissionsOfPublicRecord() {
+        givenUserHasPermission(); // public record: everyone has VIEW
+        givenMetadataDocument();
+        givenFreemarkerConfiguration();
+        givenCatalogue();
+
+        mvc.perform(get("/documents/{file}/permission", file)
+                .with(authentication(anonymous()))
+                .accept(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isForbidden());
+
+        verify(documentRepository, never()).read(anyString());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE})
+    @SneakyThrows
+    @DisplayName("a user with only VIEW cannot read a record's permissions")
+    void viewOnlyUserCannotReadPermissions(String accept) {
+        givenUserHasPermission();
+        givenMetadataDocument();
+        givenFreemarkerConfiguration();
+        givenCatalogue();
+
+        mvc.perform(get("/documents/{file}/permission", file)
+                .header("remote-user", UNPRIVILEGED_USERNAME)
+                .accept(accept)
+            )
+            .andExpect(status().isForbidden());
+
+        verify(documentRepository, never()).read(anyString());
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("an editor can read a record's permissions as JSON")
+    void editorCanReadPermissions() {
+        givenUserHasPermission();
+        givenUserCanEdit();
+        givenMetadataDocument();
+
+        mvc.perform(get("/documents/{file}/permission", file)
+                .header("remote-user", EIDC_PUBLISHER_USERNAME)
+                .accept(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
 }
