@@ -40,11 +40,10 @@ test_web:
   image: node:24-alpine
   except:
     - tags
-  variables:
-    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
   script:
+    # Alpine's chromium: Playwright's own builds need glibc (dri-one #532)
     - apk add --no-cache chromium
-    - export PUPPETEER_EXECUTABLE_PATH=$(which chromium-browser 2>/dev/null || which chromium)
+    - export CHROMIUM_PATH=$(which chromium-browser 2>/dev/null || which chromium)
     - cd web/
     - npm ci --no-audit
     - npm run lint

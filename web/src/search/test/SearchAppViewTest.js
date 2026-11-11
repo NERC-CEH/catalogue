@@ -31,4 +31,20 @@ describe('Test SearchAppView', () => {
     expect(view.facetsPanelView.model.get('title')).toEqual('some text')
     expect(view.spatialFilterView.model.get('title')).toEqual('some text')
   })
+
+  it('starts from the search the form sent, its + read as a space (dri-one #532)', () => {
+    const original = window.location.href
+    window.history.replaceState(null, '', '?term=soil+carbon&facet=resourceType%7Cdataset&page=2')
+    try {
+      const model = new SearchApp()
+      // eslint-disable-next-line no-new
+      new SearchAppView({ model })
+
+      expect(model.get('term')).toBe('soil carbon')
+      expect(model.get('facet')).toBe('resourceType|dataset')
+      expect(model.get('page')).toBe(2)
+    } finally {
+      window.history.replaceState(null, '', original)
+    }
+  })
 })

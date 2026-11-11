@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import Backbone from 'backbone'
 import Dropzone from 'dropzone'
-import { filesize } from 'filesize'
+import { formatBytes } from '../../../file-size/formatBytes'
 import template from './previewTemplate'
 
 export default Backbone.View.extend({
@@ -26,13 +26,13 @@ export default Backbone.View.extend({
         this.on('addedfile', function (file) {
           const $file = $(file.previewElement)
           $file.find('.cancel').click(() => this.removeFile(file))
-          return $file.find('.file-size-value').text(`${filesize(file.size)}`)
+          return $file.find('.file-size-value').text(`${formatBytes(file.size)}`)
         })
 
         this.on('uploadprogress', function (file, progress, bytesSent) {
           const $file = $(file.previewElement)
           if (progress < 100) {
-            return $file.find('.file-status').text(`Uploaded ${filesize(bytesSent)}`)
+            return $file.find('.file-status').text(`Uploaded ${formatBytes(bytesSent)}`)
           } else {
             $file.find('.file-status').text('Writing to Disk')
             return $file.find('.cancel').attr('disabled', true)
