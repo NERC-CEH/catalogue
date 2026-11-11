@@ -5,6 +5,8 @@ import DataTable from 'datatables.net-bs5'
 import { TableView } from '../src/table'
 import FileCollection from '../src/File/FileCollection'
 import File from '../src/File/File'
+import { dialog } from '../../dialog/src/dialog'
+import { settle } from '../../test/support'
 
 describe('TableView', function () {
   let collection
@@ -135,7 +137,7 @@ describe('TableView', function () {
           callback(model)
         }
       })
-      confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
+      confirmSpy = vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: true })
     })
 
     function triggerAction (action) {
@@ -159,9 +161,10 @@ describe('TableView', function () {
       expect(view.getServerState).toHaveBeenCalledTimes(1)
     })
 
-    it('should trigger Cancel action with confirmation and get updated state', function () {
+    it('should trigger Cancel action with confirmation and get updated state', async function () {
       const model = testModels[0]
       triggerAction('Cancel')
+      await settle()
 
       expect(confirmSpy).toHaveBeenCalled()
       expect(ajaxSpy).toHaveBeenCalledWith({
@@ -174,9 +177,10 @@ describe('TableView', function () {
       expect(view.getServerState).toHaveBeenCalledTimes(1)
     })
 
-    it('should trigger Delete action with correct parameters and do not get updated state', function () {
+    it('should trigger Delete action with correct parameters and do not get updated state', async function () {
       const model = testModels[0]
       triggerAction('Delete')
+      await settle()
 
       expect(confirmSpy).toHaveBeenCalled()
       expect(ajaxSpy).toHaveBeenCalledWith({

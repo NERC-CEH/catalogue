@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { EditorView } from '../src'
 import Backbone from 'backbone'
-import Swal from 'sweetalert2'
+import { dialog } from '../../dialog/src/dialog'
 
 describe('EditorView', () => {
   let view = null
@@ -111,7 +111,7 @@ describe('EditorView', () => {
   it('save shows a "Saving…" state and defers "Saved!" until the request succeeds', () => {
     // given: a save that is in flight (truthy jqXHR), not yet resolved
     vi.spyOn(view.model, 'save').mockReturnValue({})
-    vi.spyOn(Swal, 'fire').mockImplementation(() => {})
+    vi.spyOn(dialog, 'alert').mockResolvedValue({ isConfirmed: true })
     view.saveRequired = true
 
     // when
@@ -121,7 +121,7 @@ describe('EditorView', () => {
     expect(view.model.save).toHaveBeenCalled()
     expect(view.$('#editorSave').prop('disabled')).toBe(true)
     expect(view.$('#editorSave').text()).toContain('Saving')
-    expect(Swal.fire).not.toHaveBeenCalled()
+    expect(dialog.alert).not.toHaveBeenCalled()
     expect(view.saveRequired).toBe(true)
 
     // and when the server confirms, the success callback shows the popup and
@@ -130,7 +130,7 @@ describe('EditorView', () => {
     expect(options.wait).toBe(true)
     options.success()
 
-    expect(Swal.fire).toHaveBeenCalledWith({ title: 'Saved!', icon: 'success' })
+    expect(dialog.alert).toHaveBeenCalledWith({ title: 'Saved!', icon: 'success' })
     expect(view.$('#editorSave').prop('disabled')).toBe(false)
     expect(view.$('#editorSave').text()).toContain('Save')
     expect(view.saveRequired).toBe(false)
@@ -182,33 +182,45 @@ describe('EditorView', () => {
   })
 
   it('shows a conflict banner and preserves edits on 409', () => {
-    const swalSpy = vi.spyOn(Swal, 'fire').mockImplementation(() => {})
+    const alert = vi.spyOn(dialog, 'alert').mockResolvedValue({ isConfirmed: true })
     view.model.set('title', 'my in-progress title')
 
     // Simulate Backbone's error event for a 409 conflict
     view.model.trigger('error', view.model, { status: 409, statusText: 'Conflict', responseJSON: {} })
 
-    expect(swalSpy).toHaveBeenCalled()
-    const args = swalSpy.mock.lastCall[0]
+    expect(alert).toHaveBeenCalled()
+    const args = alert.mock.lastCall[0]
     expect(args.title).toBe('Edit conflict')
     // this must be the conflict-specific banner, not the generic error dialog
     // (whose title also happens to contain "Conflict" via statusText)
     expect(args.title).not.toContain('Server response')
     expect(args.icon).toBe('warning')
-    // the dialog must actually render the submitted edits, not just promise them
-    expect(args.html).toContain('my in-progress title')
+    // the dialog must actually show the submitted edits, not just promise them
+    expect(args.body[1].value).toContain('my in-progress title')
     // edits are still on the model
     expect(view.model.get('title')).toBe('my in-progress title')
   })
 
   it('shows the record JSON in the save-error dialog as text (dri-one #454)', () => {
-    const swalSpy = vi.spyOn(Swal, 'fire').mockImplementation(() => {})
+    const alert = vi.spyOn(dialog, 'alert').mockResolvedValue({ isConfirmed: true })
     view.model.set('title', '</textarea><img src=x onerror="window.__xss454=1">')
 
-    view.model.trigger('error', view.model, { status: 500, statusText: 'Server Error', responseText: 'boom' })
+    view.model.trigger('error', view.model, { status: 500, statusText: 'Server Error', responseText: '<img src=x onerror="window.__xss454=1">' })
 
-    const html = swalSpy.mock.lastCall[0].html
-    expect(html).not.toContain('<img')
-    expect(html).toContain('&lt;/textarea&gt;&lt;img')
+    const { text, body } = alert.mock.lastCall[0]
+    expect(text).toBe('<img src=x onerror="window.__xss454=1">')
+    expect(body.tagName).toBe('TEXTAREA')
+    expect(body.children.length).toBe(0)
+    expect(body.value).toContain('</textarea><img')
+  })
+
+  // Validation messages were joined into HTML unescaped (dri-one #531): they are text now
+  it('lists validation errors as text', () => {
+    const alert = vi.spyOn(dialog, 'alert').mockResolvedValue({ isConfirmed: true })
+
+    view.model.trigger('invalid', view.model, ['<img src=x onerror="window.__xss531=1">'])
+
+    expect(alert).toHaveBeenCalledWith(expect.objectContaining({ title: 'Validation Errors', text: ['<img src=x onerror="window.__xss531=1">'] }))
+    expect(alert.mock.lastCall[0]).not.toHaveProperty('html')
   })
 })

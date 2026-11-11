@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import { UploadModel, UploadView, DropzoneView } from '../../src/Upload'
 import { File } from '../../src/File'
-import { fakeServer } from '../../../test/support'
+import { fakeServer, settle } from '../../../test/support'
+import { dialog } from '../../../dialog/src/dialog'
 
 /**
  * The upload page could lose a depositor's work (NERC-CEH/dri-one#459): "Finish uploading" aborted
@@ -28,43 +29,47 @@ describe('Upload page safety', () => {
   describe('finishing', () => {
     beforeEach(() => build('<button class="finish"><i class="fa-solid fa-check"></i></button>'))
 
-    it('refuses while files are still uploading', () => {
+    it('refuses while files are still uploading', async () => {
       view.dropzoneView = { dropzone: { getUploadingFiles: () => [{}], getQueuedFiles: () => [{}, {}] } }
-      vi.spyOn(window, 'alert').mockImplementation(() => {})
-      vi.spyOn(window, 'confirm').mockImplementation(() => {})
+      vi.spyOn(dialog, 'alert').mockResolvedValue({ isConfirmed: true })
+      vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: true })
 
       view.$('.finish').trigger('click')
+      await settle()
 
-      expect(window.alert).toHaveBeenCalledWith('3 files are still uploading. Wait for them to finish before you finish uploading.')
-      expect(window.confirm).not.toHaveBeenCalled()
+      expect(dialog.alert).toHaveBeenCalledWith(expect.objectContaining({ text: '3 files are still uploading. Wait for them to finish before you finish uploading.' }))
+      expect(dialog.confirm).not.toHaveBeenCalled()
       expect(fakeServer.requestCount()).toBe(0)
     })
 
-    it('asks first, and does nothing if the depositor says no', () => {
-      vi.spyOn(window, 'confirm').mockReturnValue(false)
+    it('asks first, and does nothing if the depositor says no', async () => {
+      vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: false })
 
       view.$('.finish').trigger('click')
+      await settle()
 
-      expect(window.confirm).toHaveBeenCalled()
+      expect(dialog.confirm).toHaveBeenCalled()
       expect(fakeServer.requestCount()).toBe(0)
     })
 
-    it('finishes once confirmed', () => {
-      vi.spyOn(window, 'confirm').mockReturnValue(true)
+    it('finishes once confirmed', async () => {
+      vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: true })
 
       view.$('.finish').trigger('click')
+      await settle()
 
       expect(fakeServer.lastRequest().url).toBe(`/upload/${id}/finish`)
     })
   })
 
-  it('asks before moving every file to the datastore', () => {
+  it('asks before moving every file to the datastore', async () => {
     build('<button class="move-all"><i class="fa-solid fa-arrow-right"></i></button>')
-    vi.spyOn(window, 'confirm').mockReturnValue(false)
+    vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: false })
 
     view.$('.move-all').trigger('click')
+    await settle()
 
-    expect(window.confirm).toHaveBeenCalled()
+    expect(dialog.confirm).toHaveBeenCalled()
     expect(fakeServer.requestCount()).toBe(0)
   })
 

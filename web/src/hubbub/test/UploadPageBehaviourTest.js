@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import { UploadModel, UploadView } from '../src/Upload'
-import { fakeServer } from '../../test/support'
+import { fakeServer, settle } from '../../test/support'
+import { dialog } from '../../dialog/src/dialog'
 
 // The data upload page as an EIDC administrator sees it (templates/html/upload/hubbub/upload.ftlh):
 // each store's files in a table, what each file can have done to it, those actions carried out and
@@ -188,14 +189,16 @@ describe('The upload page', () => {
       expect(total('metadata')).toBe('1 file')
     })
 
-    it('deletes a file once confirmed, and not otherwise', () => {
-      const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false)
+    it('deletes a file once confirmed, and not otherwise', async () => {
+      const confirm = vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: false })
       act(row('data', 'rain/old.csv'), 'Delete')
-      expect(confirm).toHaveBeenCalledWith('Delete file: rain/old.csv?')
+      await settle()
+      expect(confirm).toHaveBeenCalledWith(expect.objectContaining({ title: 'Delete this file?', text: 'rain/old.csv' }))
       expect(fakeServer.requestCount()).toBe(0)
 
-      confirm.mockReturnValue(true)
+      confirm.mockResolvedValue({ isConfirmed: true })
       act(row('data', 'rain/old.csv'), 'Delete')
+      await settle()
       expect(fakeServer.lastRequest().method).toBe('DELETE')
       expect(fakeServer.lastRequest().url).toBe(`${base}/dropbox?path=rain%2Fold.csv`)
       fakeServer.lastRequest().respondWith({ status: 204, contentType: 'application/json', responseText: '' })
@@ -204,22 +207,24 @@ describe('The upload page', () => {
       expect(total('dropbox')).toBe('3 files')
     })
 
-    it('unregisters a file it is told to ignore', () => {
-      vi.spyOn(window, 'confirm').mockReturnValue(true)
+    it('unregisters a file it is told to ignore', async () => {
+      vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: true })
 
       act(row('data', 'rain/old.csv'), 'Ignore')
+      await settle()
       expect(fakeServer.lastRequest().url).toBe(`${base}/dropbox/unregister?path=rain%2Fold.csv`)
       fakeServer.lastRequest().respondWith(json({}))
 
       expect(paths('data')).not.toContain('rain/old.csv')
     })
 
-    it('cancels a move once confirmed', () => {
-      vi.spyOn(window, 'confirm').mockReturnValue(true)
+    it('cancels a move once confirmed', async () => {
+      vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: true })
 
       act(row('data', 'rain/2022.csv'), 'Cancel')
+      await settle()
 
-      expect(window.confirm).toHaveBeenCalledWith('Cancel moving file: rain/2022.csv?')
+      expect(dialog.confirm).toHaveBeenCalledWith(expect.objectContaining({ title: 'Cancel moving this file?', text: 'rain/2022.csv' }))
       expect(fakeServer.lastRequest().url).toBe(`${base}/dropbox/cancel?path=rain%2F2022.csv`)
     })
 
@@ -247,11 +252,12 @@ describe('The upload page', () => {
   })
 
   describe('totals', () => {
-    it('says "0 files" once the last file has gone', () => {
+    it('says "0 files" once the last file has gone', async () => {
       open({ dropbox: store([file('only.csv', 'dropbox', 'MISSING')]) })
-      vi.spyOn(window, 'confirm').mockReturnValue(true)
+      vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: true })
 
       act(row('data', 'only.csv'), 'Delete')
+      await settle()
       fakeServer.lastRequest().respondWith({ status: 204, contentType: 'application/json', responseText: '' })
 
       expect(total('dropbox')).toBe('0 files')
@@ -307,10 +313,11 @@ describe('The upload page', () => {
       expect(isWarning($button)).toBe(true)
     })
 
-    it('moves every arrival to the datastore once confirmed, and says the arrivals are empty as the page does', () => {
-      vi.spyOn(window, 'confirm').mockReturnValue(true)
+    it('moves every arrival to the datastore once confirmed, and says the arrivals are empty as the page does', async () => {
+      vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: true })
 
       $('.move-all').trigger('click')
+      await settle()
       expect(fakeServer.lastRequest().url).toBe(`${base}/dropbox/move?to=eidchub`)
       fakeServer.lastRequest().respondWith(json({}))
       vi.advanceTimersByTime(7000)
@@ -322,12 +329,13 @@ describe('The upload page', () => {
       expect(paths('datastore')).toEqual(['rain/2019.csv', 'rain/2020.csv'])
     })
 
-    it('says the arrivals are empty as the page does, when moving all from an empty store', () => {
+    it('says the arrivals are empty as the page does, when moving all from an empty store', async () => {
       $(document.body).empty()
       open({ dropbox: store([]) })
-      vi.spyOn(window, 'confirm').mockReturnValue(true)
+      vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: true })
 
       $('.move-all').trigger('click')
+      await settle()
       fakeServer.lastRequest().respondWith(json({}))
       vi.advanceTimersByTime(7000)
       fakeServer.lastRequest().respondWith(json({ data: [file('rain/2019.csv', 'eidchub', 'VALID')], meta: { currentPage: 1, lastPage: 1, totalFiles: 1 } }))

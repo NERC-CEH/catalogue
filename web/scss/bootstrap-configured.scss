@@ -35,7 +35,9 @@ $-link-color: #22F;
     $grid-gutter-width:  30px,
     $zindex-popover:     1060,
     $zindex-tooltip:     1070,
-    $zindex-modal:       1050,
+    // No $zindex-modal: Bootstrap 5's own (1055) is what puts a modal above its backdrop (1050). The 1050
+    // kept from Bootstrap 3, whose backdrop was 1040, tied them, and the backdrop, added after the
+    // modal, covered it (NERC-CEH/dri-one#531)
 
     // Forms, buttons and tables
     $component-active-bg:             #3c68c0,

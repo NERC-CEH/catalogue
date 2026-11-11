@@ -1,9 +1,9 @@
-import Swal from 'sweetalert2'
 import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import template from './editorTemplate'
 import { copyText } from '../../clipboard/copyText'
+import { dialog } from '../../dialog/src/dialog'
 
 export default Backbone.View.extend({
 
@@ -30,36 +30,28 @@ export default Backbone.View.extend({
         // with no explicit attrs passed to save() this is exactly the JSON body that was PUT. Show it
         // so the edits can be copied out and re-applied after reloading the latest version.
         const submitted = JSON.stringify(model.toJSON(), null, 2)
-        Swal.fire({
+        const copyButton = $('<button type="button" class="btn btn-outline-primary btn-sm mb-2">').text('Copy changes to clipboard')
+        const payload = $('<textarea readonly rows="12" class="form-control font-monospace small">').val(submitted)
+        copyButton.on('click', () => {
+          copyText(payload[0]).then(ok => { if (ok) copyButton.text('Copied!') })
+        })
+        dialog.alert({
           title: 'Edit conflict',
-          html: '<p>This record was changed by another user since you opened it. ' +
-                'Your changes below were <strong>not</strong> saved. ' +
-                'Reload the record to see the latest version, then re-apply your changes.</p>' +
-                '<button type="button" id="conflictCopy" class="swal2-styled" ' +
-                'style="background-color:#3085d6">Copy changes to clipboard</button>' +
-                `<textarea id="conflictPayload" readonly rows="12" style="width:100%; resize:vertical; font-family:monospace; font-size:0.8em;">${_.escape(submitted)}</textarea>`,
           icon: 'warning',
-          confirmButtonText: 'Close',
-          didOpen: () => {
-            const copyButton = document.getElementById('conflictCopy')
-            const payload = document.getElementById('conflictPayload')
-            if (copyButton && payload) {
-              copyButton.addEventListener('click', () => {
-                copyText(payload).then(ok => { if (ok) copyButton.textContent = 'Copied!' })
-              })
-            }
-          }
+          text: 'This record was changed by another user since you opened it. Your changes below were not saved. ' +
+                'Reload the record to see the latest version, then re-apply your changes.',
+          body: [copyButton[0], payload[0]]
         })
         return
       }
 
       const message = response?.responseJSON?.message || response?.responseText || response?.statusText || 'There was a problem communicating with the server!'
 
-      Swal.fire({
+      dialog.alert({
         title: `Server response: ${response.status} ${response.statusText}`,
-        html: `<p>${_.escape(message)}</p><textarea readonly style="resize:none; height:auto;" rows="10">${_.escape(JSON.stringify(model.toJSON()))}</textarea>`,
         icon: 'error',
-        confirmButtonText: 'Close'
+        text: message,
+        body: $('<textarea readonly rows="10" class="form-control font-monospace small">').val(JSON.stringify(model.toJSON()))[0]
       })
     })
 
@@ -71,16 +63,7 @@ export default Backbone.View.extend({
     })
 
     this.listenTo(this.model, 'invalid', function (model, errors) {
-      let errorString = ''
-      _.each(errors, function (error) {
-        errorString = errorString.concat(`<p>${error}</p>`)
-      })
-      Swal.fire({
-        title: 'Validation Errors',
-        html: errorString,
-        icon: 'error',
-        confirmButtonText: 'Close'
-      })
+      dialog.alert({ title: 'Validation Errors', icon: 'error', text: errors })
     })
 
     this.render()
@@ -93,13 +76,11 @@ export default Backbone.View.extend({
   },
 
   attemptDelete () {
-    Swal.fire({
+    return dialog.confirm({
       title: 'Are you sure?',
-      confirmButtonText: 'Yes, delete this record',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33'
+      text: 'This deletes the record.',
+      confirmText: 'Yes, delete this record',
+      danger: true
     }).then((result) => {
       if (result.isConfirmed) {
         this.delete()
@@ -122,11 +103,7 @@ export default Backbone.View.extend({
         _.invoke(this.sections, 'remove')
         this.remove()
         Backbone.history.location.replace(`/${this.catalogue}/documents`)
-        Swal.fire({
-          title: 'Deleted!',
-          html: 'Your file has been deleted.',
-          icon: 'success'
-        })
+        dialog.alert({ title: 'Deleted!', icon: 'success', text: 'The record has been deleted.' })
       }
     })
   },
@@ -139,10 +116,7 @@ export default Backbone.View.extend({
         wait: true,
         success: () => {
           this.resetSaveButton()
-          Swal.fire({
-            title: 'Saved!',
-            icon: 'success'
-          })
+          dialog.alert({ title: 'Saved!', icon: 'success' })
           this.saveRequired = false
         },
         error: () => {
@@ -174,15 +148,13 @@ export default Backbone.View.extend({
   },
 
   confirmExit () {
-    const that = this
-    Swal.fire({
+    return dialog.confirm({
       title: 'There are unsaved changes.',
-      showCancelButton: true,
-      icon: 'warning',
-      confirmButtonText: 'Exit without saving'
+      confirmText: 'Exit without saving',
+      danger: true
     }).then((result) => {
       if (result.isConfirmed) {
-        that.exit()
+        this.exit()
       }
     })
   },

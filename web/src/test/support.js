@@ -42,3 +42,9 @@ export const fakeServer = {
   requests () { return caughtRequests.map(caught) },
   requestCount () { return caughtRequests.length }
 }
+
+// Lets the promise callbacks waiting to run do so, such as what a view does once a dialog it asked is
+// answered (dialog/src/dialog.js). Microtasks only, with no timer, so it works under vi.useFakeTimers().
+export async function settle () {
+  for (let turn = 0; turn < 10; turn++) await Promise.resolve()
+}

@@ -1,6 +1,6 @@
 import _ from 'underscore'
-import Swal from 'sweetalert2'
 import SingleView from '../SingleView'
+import { dialog } from '../../../dialog/src/dialog'
 
 const template = _.template(`
   <div class="mb-2">
@@ -49,11 +49,10 @@ const CffHarvestView = SingleView.extend({
   onExtractClick: async function () {
     const url = this.$('.cff-url').val()
     if (!url) {
-      Swal.fire({
+      dialog.alert({
         title: 'Missing Input',
         text: 'Please enter a GitHub.com CFF url',
-        icon: 'warning',
-        confirmButtonText: 'Close'
+        icon: 'warning'
       })
       return
     }
@@ -76,21 +75,20 @@ const CffHarvestView = SingleView.extend({
 
       const data = await response.json()
 
-      Swal.fire({
+      dialog.alert({
         title: 'Success',
         text: 'Document created successfully!',
         icon: 'success',
-        confirmButtonText: 'View Document'
+        confirmText: 'View Document'
       }).then(() => {
         window.location.href = `/documents/${data.id}`
       })
     } catch (err) {
       console.error('Error creating doc from CFF:', err)
-      Swal.fire({
+      dialog.alert({
         title: 'Failed to Create Document',
         text: err.message,
-        icon: 'error',
-        confirmButtonText: 'Close'
+        icon: 'error'
       })
     } finally {
       this.$loader.hide()

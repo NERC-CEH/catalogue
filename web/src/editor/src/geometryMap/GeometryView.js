@@ -3,6 +3,7 @@ import 'leaflet-draw'
 import '../../../map/markerIcons'
 import { ObjectInputView } from '../views'
 import template from './geometryTemplate'
+import { dialog } from '../../../dialog/src/dialog'
 
 export default ObjectInputView.extend({
 
@@ -55,20 +56,26 @@ export default ObjectInputView.extend({
   handleLocationConfidentialCheckbox () {
     const isChecked = this.$('#locationConfidential').is(':checked')
 
-    if (isChecked) {
-      const confirmed = window.confirm(
-        'The saved location will be reduced to an approximate area of about ' +
-        '11 km by 7 km, and the precise location will not be kept.\n\n' +
-        'Do you want to continue?'
-      )
-
-      if (!confirmed) {
-        this.$('#locationConfidential').prop('checked', false)
-        return
-      }
+    if (!isChecked) {
+      this.model.set('locationConfidential', false)
+      return Promise.resolve()
     }
 
-    this.model.set('locationConfidential', isChecked)
+    return dialog.confirm({
+      title: 'Make the location confidential?',
+      text: [
+        'The saved location will be reduced to an approximate area of about 11 km by 7 km, ' +
+        'and the precise location will not be kept.',
+        'Do you want to continue?'
+      ],
+      confirmText: 'Make it confidential'
+    }).then(({ isConfirmed }) => {
+      if (isConfirmed) {
+        this.model.set('locationConfidential', true)
+      } else {
+        this.$('#locationConfidential').prop('checked', false)
+      }
+    })
   },
 
   createMap () {

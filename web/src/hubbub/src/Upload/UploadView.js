@@ -3,6 +3,7 @@ import Backbone from 'backbone'
 import { File, FileCollection } from '../File'
 import { TableView } from '../table'
 import DropzoneView from './DropzoneView'
+import { dialog } from '../../../dialog/src/dialog'
 
 export default Backbone.View.extend({
 
@@ -259,12 +260,24 @@ export default Backbone.View.extend({
   finish (event) {
     const pending = this.pendingUploads()
     if (pending > 0) {
-      window.alert(`${pending} ${pending === 1 ? 'file is' : 'files are'} still uploading. Wait for them to finish before you finish uploading.`)
-      return
+      return dialog.alert({
+        title: 'Still uploading',
+        icon: 'info',
+        text: `${pending} ${pending === 1 ? 'file is' : 'files are'} still uploading. Wait for them to finish before you finish uploading.`
+      })
     }
-    if (!window.confirm('Finish uploading? You will not be able to add more files to this dataset afterwards.')) {
-      return
-    }
+    // The button, read now: an event's currentTarget is only certain while it is being dispatched
+    const button = { currentTarget: event.currentTarget }
+    return dialog.confirm({
+      title: 'Finish uploading?',
+      text: 'You will not be able to add more files to this dataset afterwards.',
+      confirmText: 'Finish uploading'
+    }).then(({ isConfirmed }) => {
+      if (isConfirmed) return this.sendFinish(button)
+    })
+  },
+
+  sendFinish (event) {
     const that = this
     const currentClasses = this.showInProgress(event)
     return $.ajax({
@@ -300,9 +313,17 @@ export default Backbone.View.extend({
   },
 
   moveAllDatastore (event) {
-    if (!window.confirm('Move every file in the dropbox to the datastore, including any not yet validated?')) {
-      return
-    }
+    const button = { currentTarget: event.currentTarget }
+    return dialog.confirm({
+      title: 'Move every file to the datastore?',
+      text: 'Every file in the dropbox moves, including any not yet validated.',
+      confirmText: 'Move every file'
+    }).then(({ isConfirmed }) => {
+      if (isConfirmed) return this.sendMoveAll(button)
+    })
+  },
+
+  sendMoveAll (event) {
     const that = this
     const currentClasses = this.showInProgress(event)
     $.ajax({

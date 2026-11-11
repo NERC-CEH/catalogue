@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
-import Swal from 'sweetalert2'
 import { EditorView } from '../src'
-import { fakeServer } from '../../test/support'
+import { fakeServer, settle } from '../../test/support'
+import { dialog } from '../../dialog/src/dialog'
 
 // What the editor does around its sections: moving between them, saving, deleting, leaving with or
 // without unsaved changes, and reporting what the server or validation says (dri-one #473).
@@ -27,12 +27,12 @@ describe('EditorView behaviour', () => {
     return view
   }
 
-  const settle = () => new Promise(resolve => setTimeout(resolve, 0))
-  const answer = isConfirmed => Swal.fire.mockResolvedValue({ isConfirmed })
+  const answer = isConfirmed => dialog.confirm.mockResolvedValue({ isConfirmed })
 
   beforeEach(() => {
     fakeServer.install()
-    vi.spyOn(Swal, 'fire').mockResolvedValue({ isConfirmed: false })
+    vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: false })
+    vi.spyOn(dialog, 'alert').mockResolvedValue({ isConfirmed: true })
     $('html').attr('data-catalogue', 'eidc').removeData('catalogue')
     location = { pathname: '/eidc/documents', replace: vi.fn(), reload: vi.fn() }
     Object.defineProperty(Backbone.history, 'location', { value: location, configurable: true, writable: true })
@@ -111,9 +111,9 @@ describe('EditorView behaviour', () => {
 
       model.trigger('invalid', model, ['A title is mandatory', 'Embargo date is in the past or too far in the future'])
 
-      expect(Swal.fire).toHaveBeenCalledWith(expect.objectContaining({
+      expect(dialog.alert).toHaveBeenCalledWith(expect.objectContaining({
         title: 'Validation Errors',
-        html: '<p>A title is mandatory</p><p>Embargo date is in the past or too far in the future</p>'
+        text: ['A title is mandatory', 'Embargo date is in the past or too far in the future']
       }))
     })
   })
@@ -132,7 +132,7 @@ describe('EditorView behaviour', () => {
 
       expect(document.body.contains(view.el)).toBe(false)
       expect(location.replace).toHaveBeenCalledWith('/eidc/documents')
-      expect(Swal.fire).toHaveBeenCalledWith(expect.objectContaining({ title: 'Deleted!' }))
+      expect(dialog.alert).toHaveBeenCalledWith(expect.objectContaining({ title: 'Deleted!' }))
     })
 
     it('keeps the record when the editor cancels', async () => {
@@ -152,7 +152,7 @@ describe('EditorView behaviour', () => {
 
       view.$('#editorExit').trigger('click')
 
-      expect(Swal.fire).not.toHaveBeenCalled()
+      expect(dialog.confirm).not.toHaveBeenCalled()
       expect(document.body.contains(view.el)).toBe(false)
       expect($('body').hasClass('edit-mode')).toBe(false)
       expect(location.replace).toHaveBeenCalledWith('/documents/abc')
@@ -176,7 +176,7 @@ describe('EditorView behaviour', () => {
       view.$('#editorExit').trigger('click')
       await settle()
 
-      expect(Swal.fire).toHaveBeenCalledWith(expect.objectContaining({ title: 'There are unsaved changes.' }))
+      expect(dialog.confirm).toHaveBeenCalledWith(expect.objectContaining({ title: 'There are unsaved changes.' }))
       expect(location.replace).not.toHaveBeenCalled()
     })
 
@@ -199,15 +199,14 @@ describe('EditorView behaviour', () => {
       const writeText = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue()
 
       model.trigger('error', model, { status: 409 })
-      const options = Swal.fire.mock.lastCall[0]
-      $(document.body).append(options.html)
-      options.didOpen()
-      $('#conflictCopy').trigger('click')
+      const options = dialog.alert.mock.lastCall[0]
+      const [copy] = options.body
+      copy.click()
       await settle()
 
       expect(options.title).toBe('Edit conflict')
       expect(writeText).toHaveBeenCalledWith(JSON.stringify(model.toJSON(), null, 2))
-      expect($('#conflictCopy').text()).toBe('Copied!')
+      expect(copy.textContent).toBe('Copied!')
     })
 
     it('falls back to copying the selected text where the clipboard API is missing', async () => {
@@ -218,14 +217,14 @@ describe('EditorView behaviour', () => {
 
       try {
         model.trigger('error', model, { status: 409 })
-        const options = Swal.fire.mock.lastCall[0]
-        $(document.body).append(options.html)
-        options.didOpen()
-        $('#conflictCopy').trigger('click')
+        const [copy, payload] = dialog.alert.mock.lastCall[0].body
+        // Selecting text needs it on the page, as it is while the dialog is open
+        $(document.body).append(copy, payload)
+        copy.click()
         await settle()
 
         expect(document.execCommand).toHaveBeenCalledWith('copy')
-        expect($('#conflictCopy').text()).toBe('Copied!')
+        expect(copy.textContent).toBe('Copied!')
       } finally {
         delete navigator.clipboard
         if (clipboard) Object.defineProperty(Navigator.prototype, 'clipboard', clipboard)
@@ -238,7 +237,6 @@ describe('EditorView behaviour', () => {
 
     model.trigger('error', model, { status: 500, statusText: 'Server Error', responseJSON: { message: 'Solr is down' } })
 
-    expect(Swal.fire).toHaveBeenCalledWith(expect.objectContaining({ title: 'Server response: 500 Server Error', icon: 'error' }))
-    expect(Swal.fire.mock.lastCall[0].html).toContain('<p>Solr is down</p>')
+    expect(dialog.alert).toHaveBeenCalledWith(expect.objectContaining({ title: 'Server response: 500 Server Error', icon: 'error', text: 'Solr is down' }))
   })
 })

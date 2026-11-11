@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import { UploadModel, UploadView } from '../../src/Upload'
 import FileCollection from '../../src/File/FileCollection'
-import { fakeServer } from '../../../test/support'
+import { fakeServer, settle } from '../../../test/support'
+import { dialog } from '../../../dialog/src/dialog'
 
 describe('UploadView', function () {
   const id = 'ebaf006d-b014-4d8b-9131-7677e61519dd'
@@ -276,7 +277,7 @@ describe('UploadView', function () {
     beforeEach(function () {
       fakeServer.install()
       // These actions now ask first (dri-one #459)
-      vi.spyOn(window, 'confirm').mockReturnValue(true)
+      vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: true })
       $(document.body)
         .html(`
                         <div class="document-upload">
@@ -294,7 +295,7 @@ describe('UploadView', function () {
       fakeServer.uninstall()
     })
 
-    it('success', function () {
+    it('success', async function () {
       // given
       const $finishBtn = view.$('.finish')
       vi.spyOn(view, 'showInProgress').mockImplementation(() => {})
@@ -303,6 +304,7 @@ describe('UploadView', function () {
 
       // when
       $finishBtn.trigger('click')
+      await settle()
 
       // then
       expect($finishBtn.length).toEqual(1)
@@ -319,7 +321,7 @@ describe('UploadView', function () {
       expect(view.redirectToDocuments).toHaveBeenCalled()
     })
 
-    it('error', function () {
+    it('error', async function () {
       // given
       const $finish = view.$('.finish')
       vi.spyOn(view, 'showInProgress').mockImplementation(() => {})
@@ -328,6 +330,7 @@ describe('UploadView', function () {
 
       // when
       $finish.trigger('click')
+      await settle()
 
       // then
       expect($finish.length).toEqual(1)
@@ -348,7 +351,7 @@ describe('UploadView', function () {
     beforeEach(function () {
       fakeServer.install()
       // These actions now ask first (dri-one #459)
-      vi.spyOn(window, 'confirm').mockReturnValue(true)
+      vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: true })
       $(document.body)
         .html(`
                         <div class="document-upload">
@@ -366,7 +369,7 @@ describe('UploadView', function () {
       fakeServer.uninstall()
     })
 
-    it('success', function () {
+    it('success', async function () {
       // given
       vi.spyOn(view, 'showInProgress').mockImplementation(() => {})
       // moveAllDatastore delegates the (deferred) refresh + dropbox cleanup to
@@ -376,6 +379,7 @@ describe('UploadView', function () {
 
       // when
       view.$('.move-all').trigger('click')
+      await settle()
 
       // then
       const request = fakeServer.lastRequest()
