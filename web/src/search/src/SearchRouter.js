@@ -1,5 +1,5 @@
 import Backbone from 'backbone'
-import deparam from 'deparam.js'
+import { parseSearchQuery } from './searchQuery'
 
 export default Backbone.Router.extend({
   routes: {
@@ -73,6 +73,6 @@ export default Backbone.Router.extend({
      * avoid unnecessary triggering of events
      */
   updateModel (state, options) {
-    if (state) { this.model.setState(deparam(state, true), options) }
+    if (state) { this.model.setState(parseSearchQuery(state), options) }
   }
 })

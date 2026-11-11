@@ -1,7 +1,7 @@
 import Backbone from 'backbone'
 import panelTpl from '../templates/facetsPanelTemplate'
 import resultsTpl from '../templates/facetResultsTemplate'
-import deparam from 'deparam.js'
+import { parseSearchQuery } from '../searchQuery'
 import 'select2'
 
 export default Backbone.View.extend({
@@ -60,7 +60,7 @@ export default Backbone.View.extend({
   handleMultiSelect (url, model) {
     const query = url.split('?')[1]
     if (query) {
-      model.setState(deparam(query, true))
+      model.setState(parseSearchQuery(query))
     } else {
       model.setState({})
     }

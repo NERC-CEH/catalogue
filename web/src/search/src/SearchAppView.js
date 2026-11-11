@@ -1,6 +1,6 @@
 import $ from 'jquery'
 import Backbone from 'backbone'
-import deparam from 'deparam.js'
+import { parseSearchQuery } from './searchQuery'
 import { FacetsPanelView, FiltersResizeView, SearchFormView, SearchPageView, SpatialFilterView } from './views'
 
 export default Backbone.View.extend({
@@ -22,7 +22,7 @@ export default Backbone.View.extend({
     this.events[`click a[href^='${this.appUrl}?']`] = 'handleUrl'
 
     // Prefill search input when a term is present in the URL or user is redirected from the portal, for better UX
-    const initialParams = deparam(window.location.search.substring(1), true)
+    const initialParams = parseSearchQuery(window.location.search)
 
     if (Object.keys(initialParams).length) {
       // The views still pick up the state, but when the server has rendered these results the
@@ -45,7 +45,7 @@ export default Backbone.View.extend({
      */
   handleUrl (e) {
     const query = $(e.currentTarget).attr('href').split('?')[1]
-    this.model.setState(deparam(query, true))
+    this.model.setState(parseSearchQuery(query))
     return false
   },
 
