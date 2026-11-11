@@ -771,6 +771,90 @@ textarea.editor-textarea {
     margin-block-start: .25rem;
 }
 
+// A person the catalogue already names with an ORCID: their name, and beneath it, quieter, their iD,
+// where they work and how many records name them (dri-one #534)
+.person-autocomplete {
+    .dropdown-item {
+        border-block-end: 1px solid lightgray;
+
+        &:hover,
+        &.active {
+            background-color: var(--ukceh-colour-data);
+            color: black;
+        }
+    }
+}
+
+.person-option {
+    .person-name,
+    .person-details {
+        display: block;
+    }
+
+    // #4a4a4a, not gray, to keep AA contrast on the highlighted row as well as on white
+    .person-details {
+        color: #4a4a4a;
+        font-size: .9rem;
+    }
+
+    .person-alias {
+        font-style: italic;
+    }
+}
+
+// A contact's organisation and the person there are two things, so each is boxed under its own
+// heading and colour: earth for the organisation, water for the person
+.contact-group {
+    --contact-group-accent: var(--ukceh-colour-earth);
+    margin-block: .75rem;
+    padding: .25rem .75rem .5rem;
+    border: 1px solid lightgray;
+    border-inline-start: .3rem solid var(--contact-group-accent);
+    border-radius: .25rem;
+    background-color: color-mix(in srgb, var(--contact-group-accent) 15%, white);
+
+    &.contact-group-person {
+        --contact-group-accent: var(--ukceh-colour-water);
+        background-color: color-mix(in srgb, var(--contact-group-accent) 7%, white);
+    }
+
+    // Bootstrap's legend: inside the box, across its top, rather than on its border
+    .contact-group-legend {
+        margin-block-end: .25rem;
+        font-size: 1rem;
+        font-weight: bold;
+
+        i {
+            margin-inline-end: .25rem;
+        }
+    }
+
+    // #4a4a4a for AA contrast on the tinted background
+    .contact-group-hint {
+        margin-inline-start: .25rem;
+        color: #4a4a4a;
+        font-size: .875rem;
+        font-weight: normal;
+    }
+}
+
+// What ORCID's registry says of the iD given, and the iDs the catalogue has for the name typed
+.orcid-status,
+.orcid-suggestions {
+    margin-block-start: .25rem;
+}
+
+.orcid-suggestion {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-block-end: .25rem;
+
+    .btn {
+        flex-shrink: 0;
+    }
+}
+
 .relationship-autocomplete {
     .dropdown-item {
         border-block-end: 1px solid lightgray;

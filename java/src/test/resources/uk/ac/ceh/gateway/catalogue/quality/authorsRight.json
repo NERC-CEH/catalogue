@@ -4,6 +4,7 @@
       "displayName": "Author, 0.",
       "givenName": "0.",
       "familyName": "Author",
+      "nameIdentifier": "https://orcid.org/0000-0002-1825-0097",
       "organisationName": "Organisation 0",
       "email": "author0@test.ac.uk",
       "fullName": "Author, 0."
@@ -11,6 +12,7 @@
     {
       "givenName": "1.",
       "familyName": "Author",
+      "nameIdentifier": "https://orcid.org/0000-0001-5109-3700",
       "organisationName": "Organisation 0",
       "email": "author1@test.ac.uk",
       "fullName": "Author, 1."

@@ -64,6 +64,9 @@ public class SolrIndex {
     private @Field List<String> ncGeographicalScale;
     private @Field List<String> orcid;
     private @Field List<String> organisation;
+    /** Each person named with an ORCID, packed whole: see NamedPerson */
+    private @Field List<String> person;
+    private @Field List<String> personName;
     private @Field String recordType;
     private @Field List<String> resourceIdentifier;
     private @Field String availability;

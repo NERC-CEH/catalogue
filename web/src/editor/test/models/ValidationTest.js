@@ -28,12 +28,16 @@ describe('Editor model validation', () => {
       ])
     })
 
-    it('refuses a malformed email and an ORCiD without its URL', () => {
-      const author = new Author({ ...valid, email: 'not-an-email', nameIdentifier: '0000-1234-5678-999X' })
+    it('refuses a malformed email and an ORCID iD whose check character is wrong', () => {
+      const author = new Author({ ...valid, email: 'not-an-email', nameIdentifier: '0000-0002-1825-0098' })
       expect(messages(author)).toEqual([
         'That email address is invalid',
-        expect.stringMatching(/^That ORCiD is invalid/)
+        expect.stringMatching(/^https:\/\/orcid\.org\/0000-0002-1825-0098 isn't a real ORCID iD/)
       ])
+    })
+
+    it('accepts an ISNI as a person\'s identifier', () => {
+      expect(messages(new Author({ ...valid, nameIdentifier: 'https://isni.org/isni/000000012146438X' }))).toEqual([])
     })
 
     it('leaves out an empty address when saved', () => {
@@ -65,14 +69,19 @@ describe('Editor model validation', () => {
       expect(messages(new Contact({}))).toEqual(['Role is mandatory.', 'Organisation name is mandatory.'])
     })
 
-    it('checks the email, ORCiD and ROR', () => {
+    it('checks the email, ORCID iD and ROR, saying once what is wrong with the iD', () => {
       const contact = new Contact({ ...valid, email: 'nope', nameIdentifier: '0000-1234', organisationIdentifier: 'https://ror.org/x' })
       expect(messages(contact)).toEqual([
         'That email address is wrong',
-        'Invalid ORCiD',
-        expect.stringMatching(/^ORCiDs should be entered as/),
+        expect.stringMatching(/^An ORCID iD looks like https:\/\/orcid\.org\//),
         'Invalid RoR'
       ])
+    })
+
+    // The last character is a checksum of the rest, so a slip of the finger is caught (dri-one #534)
+    it('refuses an ORCID iD whose check character doesn\'t match', () => {
+      expect(messages(new Contact({ ...valid, nameIdentifier: 'https://orcid.org/0000-0002-1825-0098' })))
+        .toEqual([expect.stringMatching(/isn't a real ORCID iD: its last character doesn't match the rest/)])
     })
 
     it('accepts a full ORCiD and ROR', () => {

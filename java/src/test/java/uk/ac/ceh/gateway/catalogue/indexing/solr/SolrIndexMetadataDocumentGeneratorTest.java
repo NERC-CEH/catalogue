@@ -15,6 +15,8 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.people.NamedPerson;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
@@ -87,6 +89,39 @@ class SolrIndexMetadataDocumentGeneratorTest {
         //When / Then — must not throw
         SolrIndex index = generator.generateIndex(document);
         assertThat(index.getTitle(), equalTo("No embedding needed"));
+    }
+
+    @Test
+    @DisplayName("indexes the people a record names with an ORCID, whole, for the editor's people look-up (dri-one #534)")
+    void indexesPeopleWithOrcids() {
+        //given
+        val document = new GeminiDocument();
+        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        document.setAuthors(List.of(
+            ResponsibleParty.builder().givenName("Clare").familyName("Rowland").organisationName("UKCEH")
+                .organisationIdentifier("https://ror.org/00pggkr55").nameIdentifier("https://orcid.org/0000-0002-0459-506X").build(),
+            ResponsibleParty.builder().givenName("Ann").familyName("Other").organisationName("UKCEH").build()
+        ));
+
+        //when
+        val actual = generator.generateIndex(document);
+
+        //then
+        assertThat(actual.getPerson(), contains(
+            new NamedPerson("0000-0002-0459-506X", "Clare", "Rowland", "UKCEH", "https://ror.org/00pggkr55").pack()));
+        assertThat(actual.getPersonName(), contains("Clare Rowland"));
+    }
+
+    @Test
+    @DisplayName("leaves the people fields unset for a record naming nobody with an ORCID")
+    void noPeopleWithOrcids() {
+        val document = new GeminiDocument();
+        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+
+        val actual = generator.generateIndex(document);
+
+        assertThat(actual.getPerson(), nullValue());
+        assertThat(actual.getPersonName(), nullValue());
     }
 
     @Test

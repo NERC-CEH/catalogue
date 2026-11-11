@@ -1,6 +1,8 @@
 import { ObjectInputView } from '../index'
 import template from '../../templates/service-agreement/author'
 import { createOrgAutocomplete } from '../../utils'
+import { normalisePersonIdentifier } from '../../utils/orcid'
+import { createPersonLookup } from '../../utils/peopleUtils'
 
 export default ObjectInputView.extend({
 
@@ -8,6 +10,7 @@ export default ObjectInputView.extend({
     this.template = template
     ObjectInputView.prototype.initialize.apply(this, arguments)
     createOrgAutocomplete('.orgAutocomplete', this)
+    createPersonLookup(this)
   },
 
   render () {
@@ -17,6 +20,10 @@ export default ObjectInputView.extend({
   },
 
   modify (event) {
+    // An iD pasted bare, or from http://, is kept as https://orcid.org/… (dri-one #534)
+    if (event.target.dataset.name === 'nameIdentifier') {
+      event.target.value = normalisePersonIdentifier(event.target.value)
+    }
     ObjectInputView.prototype.modify.call(this, event)
     this.model.set('role', 'author')
   }

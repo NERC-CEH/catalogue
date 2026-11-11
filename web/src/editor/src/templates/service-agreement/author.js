@@ -2,6 +2,15 @@ import _ from 'underscore'
 
 export default _.template(`
   <div class="author">
+    <div class="row personFind">
+      <div class="col-lg-2">
+        <label for="contacts<%- data.index %>FindPerson">Find a person</label>
+      </div>
+      <div class="col-lg-10">
+        <input class="editor-input personAutocomplete" id="contacts<%- data.index %>FindPerson" placeholder="Name of someone in the catalogue, or anyone's ORCID iD" aria-describedby="contacts<%- data.index %>FindPersonHelp">
+        <div class="form-text" id="contacts<%- data.index %>FindPersonHelp">Fills in their name and ORCID iD. Not in the catalogue? Paste their ORCID iD here, or enter their details below.</div>
+      </div>
+    </div>
     <div class="row">
       <div class="col-lg-2">
         <label>Name</label>
@@ -37,10 +46,10 @@ export default _.template(`
     </div>
     <div class="row">
       <div class="col-sm-2">
-          <label for="contacts<%- data.index %>nameIdentifier">ORCID</label>
+          <label for="contacts<%- data.index %>nameIdentifier">ORCID iD</label>
       </div>
       <div class="col-sm-4">
-          <input data-name='nameIdentifier' placeholder='https://orcid.org/0000-0000-0000-0000' class="editor-input" id="contacts<%- data.index %>nameIdentifier" value="<%- data.nameIdentifier %>">
+          <input data-name='nameIdentifier' placeholder='https://orcid.org/0000-0002-1825-0097' class="editor-input" id="contacts<%- data.index %>nameIdentifier" value="<%- data.nameIdentifier %>">
       </div>
       <div class="col-sm-1 required">
           <label for="contacts<%- data.index %>Email">Email</label>
