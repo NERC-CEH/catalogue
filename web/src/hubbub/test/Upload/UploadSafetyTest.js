@@ -129,7 +129,7 @@ describe('Upload page safety', () => {
 
     expect(file.get('sha256')).toBe('abc123')
     expect(file.get('lastValidated')).toBe('2026-10-13T10:00:00')
-    expect(file.get('size')).toBe('2.05 kB')
+    expect(file.get('size')).toBe('2 KB')
   })
 
   describe('the dropzone', () => {

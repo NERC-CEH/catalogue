@@ -1,5 +1,5 @@
 import Backbone from 'backbone'
-import { filesize } from 'filesize'
+import { formatBytes } from '../../../file-size/formatBytes'
 
 export default Backbone.Model.extend({
 
@@ -24,7 +24,7 @@ export default Backbone.Model.extend({
       action = errorToAction[status]
     }
 
-    const size = this.has('bytes') ? filesize(this.get('bytes')) : 0
+    const size = this.has('bytes') ? formatBytes(this.get('bytes')) : 0
     const message = messages[status]
     const moving = status === 'MOVING_FROM' || status === 'MOVING_TO' || status === 'WRITING'
 

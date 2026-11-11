@@ -1,14 +1,11 @@
 import $ from 'jquery'
 import Backbone from 'backbone'
-import { filesize } from 'filesize'
+import { formatBytes } from '../../file-size/formatBytes'
 import { render as renderTable } from './csvTable'
 
 const SECTION = '#segment-map'
 
 const plural = (count, word) => `${count} ${word}${count === 1 ? '' : 's'}`
-
-// "384 KB", "1.2 KB": binary multiples with the familiar unit names
-const size = bytes => filesize(bytes, { standard: 'jedec' })
 
 // A CF time as the server gives it (ISO 8601), without a midnight time of day: "2000-01-01"
 const when = iso => String(iso).replace(/T00:00:00(\.0+)?Z$/, '')
@@ -147,7 +144,7 @@ export default Backbone.View.extend({
   dataTable (entry, sample) {
     const rows = sample.rows || []
     const columns = Math.max((sample.header || []).length, ...rows.map(row => row.length))
-    const of = entry.bytes > 0 ? ` of a ${size(entry.bytes)} file` : ''
+    const of = entry.bytes > 0 ? ` of a ${formatBytes(entry.bytes)} file` : ''
     const note = `${sample.moreRows ? 'First' : 'All'} ${plural(rows.length, 'row')}${of} · ${plural(columns, 'column')}`
     const $note = $('<p class="data-preview-note small text-muted mb-1"></p>').text(note)
     if (this.packageUrl) $note.append(document.createTextNode(' · '), $('<a></a>').attr('href', this.packageUrl).text('Download the data'))
@@ -161,7 +158,7 @@ export default Backbone.View.extend({
   netcdfSummary (entry, summary) {
     const count = this.manifest.netcdfCount || 1
     const parts = [count > 1 ? `Summary of the first of ${count} NetCDF files` : 'Summary of the NetCDF file', summary.format]
-    if (entry.bytes > 0) parts.push(`${size(entry.bytes)} file`)
+    if (entry.bytes > 0) parts.push(`${formatBytes(entry.bytes)} file`)
     const $note = $('<p class="data-preview-note small text-muted mb-1"></p>').text(parts.join(' · '))
     if (this.packageUrl) $note.append(document.createTextNode(' · '), $('<a></a>').attr('href', this.packageUrl).text('Download the data'))
 
