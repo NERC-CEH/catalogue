@@ -7,15 +7,23 @@ import {
 } from '../src/views'
 import { Contact, SupportingDoc } from '../src/models'
 import { fakeServer } from '../../test/support'
+import { autocompleteOf } from '../src/utils/autocomplete'
 
-// The editor's other look-up boxes, driven through the real jQuery UI autocomplete against a fake
-// server: what each searches for as the editor types, what it offers, and what choosing one puts in
-// the record (dri-one #473)
+// The editor's other look-up boxes, driven through the real look-up box (utils/autocomplete.js)
+// against a fake server: what each searches for as the editor types, what it offers, and what
+// choosing one puts in the record (dri-one #473, #533)
 describe('The editor\'s look-up boxes', () => {
   const json = body => ({ status: 200, contentType: 'application/json', responseText: JSON.stringify(body) })
   const requested = () => decodeURIComponent(fakeServer.lastRequest().url)
-  const offered = $input => $input.autocomplete('widget').find('li').map((i, item) => item.textContent).get()
-  const choose = ($input, index = 0) => $input.autocomplete('widget').find('li > div').eq(index).trigger('click')
+  const settle = () => new Promise(resolve => setTimeout(resolve, 0))
+  const options = $input => [...autocompleteOf($input).menu.querySelectorAll('[role=option]')]
+  const offered = $input => options($input).map(option => option.textContent)
+  const choose = ($input, index = 0) => options($input)[index].click()
+  // Searches as typing does once it pauses: the request goes at once, the answer comes later, once
+  // jQuery has passed the response on (through timers of its own, so waiting on the search itself)
+  let searching = null
+  const search = ($input, term) => { $input.val(term); searching = autocompleteOf($input).search() }
+  const answer = async response => { fakeServer.lastRequest().respondWith(response); await searching }
   const place = view => { $(document.body).append(view.el); return view }
 
   beforeEach(() => {
@@ -26,7 +34,7 @@ describe('The editor\'s look-up boxes', () => {
   afterEach(() => {
     fakeServer.uninstall()
     $('html').removeData('catalogue')
-    $('.ui-autocomplete').remove()
+    $('.autocomplete-menu').remove()
     $(document.body).empty()
   })
 
@@ -54,17 +62,17 @@ describe('The editor\'s look-up boxes', () => {
           $input = view.$('.orgAutocomplete')
         })
 
-        it('searches organisations by what has been typed', () => {
-          $input.val(' ecology ').autocomplete('search')
+        it('searches organisations by what has been typed', async () => {
+          search($input, ' ecology ')
 
           expect(requested()).toBe('/organisation/names?query=ecology')
-          fakeServer.lastRequest().respondWith(json(ror))
+          await answer(json(ror))
           expect(offered($input)).toEqual(['UK Centre for Ecology & Hydrology', 'Natural Environment Research Council'])
         })
 
-        it('keeps the organisation chosen, by name and identifier', () => {
-          $input.val('ecology').autocomplete('search')
-          fakeServer.lastRequest().respondWith(json(ror))
+        it('keeps the organisation chosen, by name and identifier', async () => {
+          search($input, 'ecology')
+          await answer(json(ror))
 
           choose($input)
 
@@ -75,9 +83,9 @@ describe('The editor\'s look-up boxes', () => {
           expect($identifier.val()).toBe('https://ror.org/00pggkr55')
         })
 
-        it('forgets the identifier once the name is typed over, so a stale one isn\'t kept', () => {
-          $input.val('ecology').autocomplete('search')
-          fakeServer.lastRequest().respondWith(json(ror))
+        it('forgets the identifier once the name is typed over, so a stale one isn\'t kept', async () => {
+          search($input, 'ecology')
+          await answer(json(ror))
           choose($input)
 
           $input.val('UK Centre for Ecology').trigger('input')
@@ -86,12 +94,12 @@ describe('The editor\'s look-up boxes', () => {
           expect(view.$(`[data-name=${identifier}]`).val()).toBe('')
         })
 
-        it('stops searching when the look-up fails, rather than spinning', () => {
-          $input.val('ecology').autocomplete('search')
-          fakeServer.lastRequest().respondWith({ status: 503, contentType: 'text/plain', responseText: '' })
+        it('stops searching when the look-up fails, rather than spinning', async () => {
+          search($input, 'ecology')
+          await answer({ status: 503, contentType: 'text/plain', responseText: '' })
 
           expect(offered($input)).toEqual([])
-          expect($input.hasClass('ui-autocomplete-loading')).toBe(false)
+          expect($input.attr('aria-busy')).toBeUndefined()
         })
       })
     })
@@ -112,25 +120,25 @@ describe('The editor\'s look-up boxes', () => {
       expect(view.$('.vocabularyPicker').text()).toContain('EnvThes')
     })
 
-    it('searches the ticked vocabularies, and says which each keyword comes from', () => {
-      $input.val('soil').autocomplete('search')
+    it('searches the ticked vocabularies, and says which each keyword comes from', async () => {
+      search($input, 'soil')
 
       expect(requested()).toBe('/vocabulary/keywords?query=soil&vocab=gemet,envThes')
-      fakeServer.lastRequest().respondWith(json([{ label: 'soil', vocabId: 'gemet', url: 'http://www.eionet.europa.eu/gemet/concept/7843' }]))
+      await answer(json([{ label: 'soil', vocabId: 'gemet', url: 'http://www.eionet.europa.eu/gemet/concept/7843' }]))
       expect(offered($input)).toEqual(['soil (gemet)'])
     })
 
     it('leaves out a vocabulary once it is unticked', () => {
       view.$('.vocabularyPicker .vocab').first().find('input').trigger('change')
 
-      $input.val('soil').autocomplete('search')
+      search($input, 'soil')
 
       expect(requested()).toBe('/vocabulary/keywords?query=soil&vocab=envThes')
     })
 
-    it('keeps the keyword chosen with its URI, and locks them', () => {
-      $input.val('soil').autocomplete('search')
-      fakeServer.lastRequest().respondWith(json([{ label: 'soil', vocabId: 'gemet', url: 'http://www.eionet.europa.eu/gemet/concept/7843' }]))
+    it('keeps the keyword chosen with its URI, and locks them', async () => {
+      search($input, 'soil')
+      await answer(json([{ label: 'soil', vocabId: 'gemet', url: 'http://www.eionet.europa.eu/gemet/concept/7843' }]))
 
       choose($input)
 
@@ -171,20 +179,20 @@ describe('The editor\'s look-up boxes', () => {
         })
 
         it(`lists the catalogue's ${documentType} records before anything is typed`, () => {
-          $input.val('').autocomplete('search')
+          search($input, '')
 
           expect(requested()).toBe(`/eidc/documents?term=documentType:${documentType}`)
         })
 
         it('searches only those records, however the search is worded', () => {
-          $input.val('JULES OR documentType:GEMINI_DOCUMENT').autocomplete('search')
+          search($input, 'JULES OR documentType:GEMINI_DOCUMENT')
 
           expect(requested()).toBe(`/eidc/documents?term=documentType:${documentType} AND (JULES OR documentType:GEMINI_DOCUMENT)`)
         })
 
-        it('keeps the model chosen, by title and identifier', () => {
-          $input.val('jules').autocomplete('search')
-          fakeServer.lastRequest().respondWith(json({ results: [{ title: 'JULES', identifier: 'abc' }, { title: 'LUCI', identifier: 'def' }] }))
+        it('keeps the model chosen, by title and identifier', async () => {
+          search($input, 'jules')
+          await answer(json({ results: [{ title: 'JULES', identifier: 'abc' }, { title: 'LUCI', identifier: 'def' }] }))
           expect(offered($input)).toEqual(['JULES', 'LUCI'])
 
           choose($input, 1)
@@ -207,8 +215,9 @@ describe('The editor\'s look-up boxes', () => {
       $format = view.$('.autocomplete')
     })
 
-    it('offers the formats as soon as the box is focused, and keeps the one chosen', () => {
+    it('offers the formats as soon as the box is focused, and keeps the one chosen', async () => {
       $format.trigger('focus')
+      await settle()
 
       expect(offered($format)).toEqual(['docx (preferred)', 'txt', 'csv'])
       choose($format, 1)

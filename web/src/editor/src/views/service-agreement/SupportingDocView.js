@@ -1,7 +1,7 @@
 import { ObjectInputView } from '../index'
 import $ from 'jquery'
 import template from '../../templates/service-agreement/supportingDoc'
-import 'jquery-ui/ui/widgets/autocomplete'
+import { autocomplete } from '../../utils/autocomplete'
 
 export default ObjectInputView.extend({
   template,
@@ -9,21 +9,21 @@ export default ObjectInputView.extend({
   initialize (options) {
     ObjectInputView.prototype.initialize.call(this, options)
 
-    this.$('.autocomplete').autocomplete({
-      source: [
-        { label: 'docx (preferred)', value: 'docx' },
-        { label: 'txt', value: 'txt' },
-        { label: 'csv', value: 'csv' }
-      ],
-      minLength: 0,
-      delay: 0,
-      select (event, { item: { value } }) {
-        // Trigger a 'change' event to get the model to update,
-        // unfortunately the selected value needs retrieving from the 'select' event first
-        this.value = value
-        $(this).trigger('change')
-      }
-    }).on('focus', ({ target: t }) => $(t).autocomplete('search'))
+    this.$('.autocomplete').each((i, input) => {
+      const { search } = autocomplete(input, {
+        source: [
+          { label: 'docx (preferred)', value: 'docx' },
+          { label: 'txt', value: 'txt' },
+          { label: 'csv', value: 'csv' }
+        ],
+        minLength: 0,
+        delay: 0,
+        // The format chosen is in the field by now: a change event puts it in the model
+        select: () => $(input).trigger('change')
+      })
+      // The formats are offered as soon as the field is focused
+      input.addEventListener('focus', () => search())
+    })
 
     const model = this.model
     const content = model.get('content') ?? []

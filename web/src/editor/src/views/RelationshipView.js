@@ -2,7 +2,7 @@ import _ from 'underscore'
 import $ from 'jquery'
 import template from '../templates/Relationship'
 import ObjectInputView from './ObjectInputView'
-import 'jquery-ui/ui/widgets/autocomplete'
+import { autocomplete } from '../utils/autocomplete'
 
 // constrain autocomplete menu so that it does not exceed the width of the associate input field
 if ($.ui && $.ui.autocomplete && $.ui.autocomplete.prototype) {
@@ -183,69 +183,30 @@ export default ObjectInputView.extend({
 
     const catalogue = $('html').data('catalogue')
 
-    const autocomplete = this.$('.autocomplete').autocomplete({
+    const $search = this.$('.autocomplete')
+    $search.each((i, input) => autocomplete(input, {
       minLength: 2,
-
-      source: async (request, response) => {
-        const query = await searchQuery({
-          catalogue,
-          relation: this.$('.relationshipList').val(),
-          sourceType: recordType(this.parentModel),
-          currentId: this.parentModel?.get('id'),
-          searchTerm: request.term.trim()
-        })
-
-        if (query === RULES_UNAVAILABLE) {
-          response([{ notice: NOTICES[RULES_UNAVAILABLE] }])
-          return
-        }
-        if (!query) {
-          response([{ notice: NOTICES.none }])
-          return
-        }
-
-        try {
-          const options = await $.getJSON(query)
-          const items = await Promise.all(_.map(options.results, resultItem))
-
-          // An empty menu looked like no search had been made
-          response(items.length ? items : [{ notice: NOTICES.none }])
-        } catch (error) {
-          console.error('Error fetching data:', error)
-          // Always answer, or the autocomplete stays in its loading state
-          response([{ notice: NOTICES.failed }])
-        }
+      source: term => this.findTargets(catalogue, term),
+      // resultItem escapes what the record says: only its own markup is markup
+      render: item => {
+        const div = document.createElement('div')
+        div.innerHTML = item.html
+        return div
       },
-
-      select: async (event, ui) => {
-        if (ui.item.notice) {
-          event.preventDefault()
-          return
-        }
-        this.$('.title').val(ui.item.label)
-        this.$('.identifier').val(ui.item.value)
-        this.showTarget(await describeTarget(ui.item.value))
+      menuClass: 'relationship-autocomplete',
+      // A notice ("No matching records") can't be chosen: the look-up box passes it over
+      select: async item => {
+        this.$('.title').val(item.label)
+        this.$('.identifier').val(item.value)
+        this.showTarget(await describeTarget(item.value))
 
         this.$('.relationshipList').prop('disabled', true)
         this.$('.relationshipSearch').addClass('d-none')
         this.$('.relationshipRecord').removeClass('d-none')
       }
-    })
+    }))
 
-    autocomplete.autocomplete('widget')
-      .addClass('relationship-autocomplete')
-
-    autocomplete.autocomplete('instance')._renderItem = function (ul, item) {
-      // jQuery UI's menu skips a disabled item, so a notice can't be chosen
-      if (item.notice) {
-        return $('<li class="ui-state-disabled relationship-notice">').append($('<div>').text(item.notice)).appendTo(ul)
-      }
-      return $('<li>')
-        .append($('<div>').html(item.html))
-        .appendTo(ul)
-    }
-
-    autocomplete.attr('placeholder', 'Choose a relationship type first')
+    $search.attr('placeholder', 'Choose a relationship type first')
 
     // Disable until a relationship is chosen
     this.$('.autocomplete').prop('disabled', true)
@@ -262,6 +223,33 @@ export default ObjectInputView.extend({
     if (!_.isEmpty(target)) {
       this.existingRecord = true
       await this.render()
+    }
+  },
+
+  /**
+   * The records the relationship chosen can link to, matching the term typed, as the picker's items.
+   * When there are none to offer, or they can't be found, one notice saying so: an empty menu looked
+   * like no search had been made.
+   */
+  async findTargets (catalogue, term) {
+    const query = await searchQuery({
+      catalogue,
+      relation: this.$('.relationshipList').val(),
+      sourceType: recordType(this.parentModel),
+      currentId: this.parentModel?.get('id'),
+      searchTerm: term.trim()
+    })
+
+    if (query === RULES_UNAVAILABLE) return [{ notice: NOTICES[RULES_UNAVAILABLE] }]
+    if (!query) return [{ notice: NOTICES.none }]
+
+    try {
+      const options = await $.getJSON(query)
+      const items = await Promise.all(_.map(options.results, resultItem))
+      return items.length ? items : [{ notice: NOTICES.none }]
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      return [{ notice: NOTICES.failed }]
     }
   },
 

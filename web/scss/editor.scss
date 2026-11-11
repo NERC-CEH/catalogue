@@ -4,7 +4,6 @@
 
 @import "leaflet-draw/dist/leaflet.draw.css";
 @import "leaflet/dist/leaflet.css";
-@import "jquery-ui/dist/themes/base/jquery-ui.min.css";
 @import "leaflet.markercluster/dist/MarkerCluster.css";
 @import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 @import "select2/dist/css/select2.min.css";
@@ -267,7 +266,7 @@ textarea.editor-textarea {
                 }
             }
 
-            .ui-sortable {
+            .sortable-list {
                 .row {
                     .provenance {
                         border-block-end: 1px solid #eee;
@@ -641,9 +640,17 @@ textarea.editor-textarea {
                 line-height: 2.5em;
             }
 
-            .ui-sortable,
-            .ui-sortable-handle {
+            // Rows are dragged from anywhere but their form controls (utils/sortable.js)
+            .sortable-list > * {
                 cursor: move;
+            }
+
+            .sortable-list.is-sorting {
+                user-select: none;
+
+                > .sorting {
+                    opacity: .6;
+                }
             }
 
             .catalogueSearch {
@@ -695,33 +702,6 @@ textarea.editor-textarea {
             }
         }
 
-        ul.ui-autocomplete {
-            li.ui-menu-item {
-                font-size: 0.8em;
-            }
-        }
-
-        .ui-autocomplete {
-            max-height: 350px;
-            overflow-y: auto;
-            overflow-x: hidden;
-            scrollbar-gutter: stable;
-            scrollbar-width: thin;
-
-
-            &::-webkit-scrollbar {
-                width: 8px;
-            }
-
-            &::-webkit-scrollbar-track {
-                background: #f1f1f1;
-            }
-
-            &::-webkit-scrollbar-thumb {
-                background: #999;
-            }
-        }
-
         .mapDataSource-header {
             display: flex;
             justify-content: space-between;
@@ -731,14 +711,36 @@ textarea.editor-textarea {
     }
 }
 
-.relationship-autocomplete {
-    border-color: transparent;
+// A look-up box's matches (utils/autocomplete.js): a Bootstrap dropdown menu on the page's body,
+// beneath its field. Above the editor's sticky menu (z-index 1000), and scrolled when long. These
+// rules were written for jQuery UI's menu inside the editor, where its menu never was: it was on the
+// body too, so they had never applied (dri-one #533)
+.autocomplete-menu {
+    z-index: 1040;
+    max-height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
 
-    div.ui-menu-item-wrapper {
+    .dropdown-item {
+        cursor: pointer;
+        white-space: normal;
+    }
+
+    // What the menu says when it has nothing to offer: can't be chosen, but is there to be read
+    .autocomplete-notice {
+        color: #4a4a4a;
+        font-style: italic;
+        cursor: default;
+    }
+}
+
+.relationship-autocomplete {
+    .dropdown-item {
         border-block-end: 1px solid lightgray;
 
         &:hover,
-        &:focus-visible {
+        &.active {
             background-color: var(--ukceh-colour-data);
             color: black;
         }
@@ -747,19 +749,6 @@ textarea.editor-textarea {
             display: block;
             color: gray;
             font-size: .9rem;
-        }
-    }
-
-    // What the menu says when it has nothing to offer: can't be chosen, but is there to be read,
-    // which jQuery UI's .35 opacity for a disabled item made hard
-    .relationship-notice.ui-state-disabled {
-        opacity: 1;
-        margin: 0;
-
-        div {
-            padding: .5rem;
-            color: #4a4a4a;
-            font-style: italic;
         }
     }
 }

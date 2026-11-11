@@ -2,7 +2,7 @@ import _ from 'underscore'
 import $ from 'jquery'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/NercModelInfo'
-import 'jquery-ui/ui/widgets/autocomplete'
+import { autocomplete } from '../utils/autocomplete'
 
 export default ObjectInputView.extend({
 
@@ -11,27 +11,28 @@ export default ObjectInputView.extend({
     ObjectInputView.prototype.initialize.apply(this, arguments)
     const catalogue = $('html').data('catalogue')
 
-    this.$('.autocomplete').autocomplete({
+    this.$('.autocomplete').each((i, input) => autocomplete(input, {
       minLength: 0,
-      source (request, response) {
-        const term = request.term.trim()
+      async source (term) {
+        term = term.trim()
         // The term is a Solr query of its own: bracketed, so an OR in it can't widen the type filter
         const solrQuery = _.isEmpty(term) ? 'documentType:nerc-model' : `documentType:nerc-model AND (${term})`
-
-        $.getJSON(`/${catalogue}/documents?term=${encodeURIComponent(solrQuery)}`)
-          .done(data => response(_.map(data.results, d => ({
+        try {
+          const data = await $.getJSON(`/${catalogue}/documents?term=${encodeURIComponent(solrQuery)}`)
+          return _.map(data.results, d => ({
             value: d.title,
             label: d.title,
             identifier: d.identifier
-          }))))
-          .fail(() => response([]))
+          }))
+        } catch {
+          return []
+        }
+      },
+      select: item => {
+        this.model.set('id', item.identifier)
+        this.$('.identifier').val(item.identifier)
       }
-    })
-
-    this.$('.autocomplete').on('autocompleteselect', (event, ui) => {
-      this.model.set('id', ui.item.identifier)
-      this.$('.identifier').val(ui.item.identifier)
-    })
+    }))
   },
 
   render () {

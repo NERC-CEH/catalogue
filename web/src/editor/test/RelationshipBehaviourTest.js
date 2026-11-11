@@ -7,10 +7,11 @@ import {
 } from '../src/editors'
 import { EditorMetadata, GeminiEditorMetadata } from '../src'
 import { fakeServer } from '../../test/support'
+import { autocompleteOf } from '../src/utils/autocomplete'
 
-// The relationship picker as an editor uses it: the record search it sends, through the real
-// autocomplete, for the kind of record being edited, what it offers, and the record it then shows
-// (dri-one #473)
+// The relationship picker as an editor uses it: the record search it sends, through the real look-up
+// box, for the kind of record being edited, what it offers, and the record it then shows
+// (dri-one #473, #533)
 describe('Relationships in the editor', () => {
   const PART_OF = 'http://purl.org/dc/terms/isPartOf'
   const UTILISES = 'https://digital.ceh.ac.uk/ontology/doo/utilises'
@@ -19,6 +20,8 @@ describe('Relationships in the editor', () => {
   const settle = () => new Promise(resolve => setTimeout(resolve, 0))
   const json = body => ({ status: 200, contentType: 'application/json', responseText: JSON.stringify(body) })
   const url = () => decodeURIComponent(fakeServer.lastRequest().url)
+  // Searches as typing does once it pauses
+  const search = ($input, term) => { $input.val(term); autocompleteOf($input).search() }
 
   // Answers the request the view is waiting on, after checking what it asked for
   async function answer (expected, body) {
@@ -70,7 +73,7 @@ describe('Relationships in the editor', () => {
     it('searches the record\'s own catalogue for only the kinds of record the relationship allows', async () => {
       view.$('.relationshipList').val(PART_OF).trigger('change')
 
-      $search.val('rain').autocomplete('search')
+      search($search, 'rain')
       await answer(/^\/relationships\/rules\?type=dataset$/, { [PART_OF]: { resourceTypes: ['Aggregation'] } })
 
       expect(url()).toMatch(/^\/eidc\/documents\?term=/)
@@ -81,13 +84,13 @@ describe('Relationships in the editor', () => {
 
     // A menu that can't be chosen from, saying why: the search's outcome either way, where an empty
     // menu looked like no search at all
-    const notice = () => $('.relationship-autocomplete li')
+    const notice = () => $('.relationship-autocomplete [role=option]')
 
     it('says so when what the relationship can link to can\'t be loaded, rather than offering anything', async () => {
       // Unfiltered, the search offered records the save then rejected, from the record's own
       // catalogue only: on staging and production the proxy had no route for the rules
       view.$('.relationshipList').val(UTILISES).trigger('change')
-      $search.val('blue lough').autocomplete('search')
+      search($search, 'blue lough')
       await settle()
       expect(url()).toMatch(/^\/relationships\/rules/)
       fakeServer.lastRequest().respondWith({ status: 404, responseText: 'Not Found' })
@@ -96,17 +99,17 @@ describe('Relationships in the editor', () => {
       expect(url()).toMatch(/^\/relationships\/rules/) // no search sent
       expect(notice().length).toBe(1)
       expect(notice().text()).toContain('couldn\'t be loaded')
-      expect(notice().hasClass('ui-state-disabled')).toBe(true)
+      expect(notice().attr('aria-disabled')).toBe('true')
     })
 
     it('asks again for what the relationship can link to on the next search', async () => {
       view.$('.relationshipList').val(UTILISES).trigger('change')
-      $search.val('blue lough').autocomplete('search')
+      search($search, 'blue lough')
       await settle()
       fakeServer.lastRequest().respondWith({ status: 404, responseText: 'Not Found' })
       await settle()
 
-      $search.val('blue lough 2').autocomplete('search')
+      search($search, 'blue lough 2')
       await answer(/^\/relationships\/rules/, { [UTILISES]: { resourceTypes: ['Monitoring facility'], catalogues: ['eidc', 'ukceh'] } })
 
       expect(url()).toMatch(/^\/documents\?term=/)
@@ -114,40 +117,40 @@ describe('Relationships in the editor', () => {
 
     it('says when nothing matches', async () => {
       view.$('.relationshipList').val(PART_OF).trigger('change')
-      $search.val('nothing like this').autocomplete('search')
+      search($search, 'nothing like this')
       await answer(/^\/relationships\/rules/, { [PART_OF]: { resourceTypes: ['Aggregation'] } })
       await answer(/^\/eidc\/documents\?term=/, { results: [] })
 
       expect(notice().length).toBe(1)
       expect(notice().text()).toBe('No matching records')
-      expect(notice().hasClass('ui-state-disabled')).toBe(true)
+      expect(notice().attr('aria-disabled')).toBe('true')
     })
 
     it('says when the search itself fails', async () => {
       view.$('.relationshipList').val(PART_OF).trigger('change')
-      $search.val('rain').autocomplete('search')
+      search($search, 'rain')
       await answer(/^\/relationships\/rules/, { [PART_OF]: { resourceTypes: ['Aggregation'] } })
       fakeServer.lastRequest().respondWith({ status: 500, responseText: 'boom' })
       await settle()
 
       expect(notice().text()).toContain('The search failed')
-      expect(notice().hasClass('ui-state-disabled')).toBe(true)
+      expect(notice().attr('aria-disabled')).toBe('true')
     })
 
     it('offers what the search finds, saying where each comes from, and shows the one chosen', async () => {
       view.$('.relationshipList').val(UTILISES).trigger('change')
-      $search.val('cosmos').autocomplete('search')
+      search($search, 'cosmos')
       await answer(/^\/relationships\/rules/, { [UTILISES]: { resourceTypes: ['Monitoring facility'], catalogues: ['eidc', 'ukceh'] } })
       expect(url()).toMatch(/^\/documents\?term=/)
       await answer(/^\/documents\?term=/, { results: [{ identifier: '640ccee2', title: 'COSMOS at Wimpole', resourceType: 'Monitoring facility', catalogue: 'ukceh' }] })
       await answer(/^\/catalogues$/, [{ id: 'ukceh', title: 'UKCEH digital assets' }])
 
-      const $items = $('.relationship-autocomplete li')
+      const $items = $('.relationship-autocomplete [role=option]')
       expect($items.length).toBe(1)
       expect($items.text()).toContain('COSMOS at Wimpole (Monitoring facility)')
       expect($items.find('span').text()).toBe('UKCEH digital assets · 640ccee2')
 
-      $items.first().find('div').trigger('click')
+      $items[0].click()
       $search.trigger('change')
       await answer(/^\/documents\/640ccee2$/, { title: 'COSMOS at Wimpole', type: 'monitoringFacility', id: '640ccee2' })
 
@@ -346,7 +349,7 @@ describe('Relationships in the editor', () => {
         const $row = relationships.$('.existing .relationshipList').last()
         const relation = $row.find('option').filter((i, option) => option.value === REPLACES).val() || $row.find('option[value!=""]').first().val()
         $row.val(relation).trigger('change')
-        $row.closest('.row').find('.autocomplete').val('rain').autocomplete('search')
+        search($row.closest('.row').find('.autocomplete'), 'rain')
         await settle()
 
         expect(fakeServer.lastRequest().url).toBe(`/relationships/rules?type=${type}`)

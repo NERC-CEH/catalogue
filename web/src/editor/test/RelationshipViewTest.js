@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import RelationshipView, { clearRelationshipRules, recordType, resultItem } from '../src/views/RelationshipView.js'
 import { EditorMetadata } from '../src'
 import $ from 'jquery'
-import 'jquery-ui/ui/widgets/autocomplete'
 
 describe('Test RelationshipView', function () {
   let model = null
@@ -97,14 +96,10 @@ describe('Test RelationshipView', function () {
     async function pickerFor (relation, parent = new EditorMetadata({ id: 'cosmos', type: 'dataset' })) {
       const m = new EditorMetadata({ value: relation, target: '' })
       const v = new RelationshipView({ model: m, options: [{ value: relation, label: 'Relationship' }], parentModel: parent })
-      // The autocomplete is bound during initialize and render() replaces the
-      // input, so capture the source callback before rendering.
-      const source = v.$('.autocomplete').autocomplete('option', 'source')
       await v.render()
       v.$('.relationshipList').val(relation)
       return async () => {
-        const results = []
-        await source({ term: 'rainfall' }, items => results.push(items))
+        const results = [await v.findTargets('eidc', 'rainfall')]
         return { query: decodeURIComponent($.getJSON.mock.lastCall[0]), results }
       }
     }

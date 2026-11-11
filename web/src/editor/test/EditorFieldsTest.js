@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import _ from 'underscore'
 import Backbone from 'backbone'
-import 'jquery-ui/ui/widgets/autocomplete'
+import { autocompleteOf } from '../src/utils/autocomplete'
 import {
   ContactView,
   DataTypeProvenanceView,
@@ -24,13 +24,13 @@ import MapReprojectionView from '../src/views/MapReprojectionView'
  * Editor fields that did the wrong thing, or nothing at all (NERC-CEH/dri-one#458).
  */
 describe('Editor fields', () => {
-  // Calls an autocomplete's source as jQuery UI would, and returns the URL it asked for
+  // Searches a view's first look-up box for term, and returns the URL it asked for
   const autocompleteRequest = (view, term) => {
     const request = $.Deferred()
     vi.spyOn($, 'getJSON').mockReturnValue(request.promise())
-    const response = vi.fn()
-    view.$('.ui-autocomplete-input').first().autocomplete('option', 'source')({ term }, response)
-    return { url: $.getJSON.mock.lastCall[0], request, response }
+    const lookUp = autocompleteOf(view.$('[role=combobox]')[0])
+    const searching = lookUp.search(term)
+    return { url: $.getJSON.mock.lastCall[0], request, searching, menu: lookUp.menu }
   }
 
   describe('a reprojection row', () => {
@@ -132,19 +132,28 @@ describe('Editor fields', () => {
       })
     })
 
-    it('answers with nothing when the search fails', () => {
+    it('answers with nothing when the search fails', async () => {
       const view = new ContactView({ model: new Contact() })
+      $(document.body).append(view.el)
 
-      const { request, response } = autocompleteRequest(view, 'Centre (')
+      const { request, searching, menu } = autocompleteRequest(view, 'Centre (')
       request.reject()
+      await searching
 
-      expect(response).toHaveBeenCalledWith([])
+      expect(menu.isConnected).toBe(false)
+      expect(view.$('.orgAutocomplete').attr('aria-busy')).toBeUndefined()
+      view.remove()
     })
 
-    it('fills in the funder, not an organisation, on a funding row', () => {
+    it('fills in the funder, not an organisation, on a funding row', async () => {
       const view = new FundingView({ model: new Backbone.Model() })
+      $(document.body).append(view.el)
 
-      view.$('.orgAutocomplete').autocomplete('option', 'select')({}, { item: { label: 'NERC', url: 'https://ror.org/02b5d8509' } })
+      const { request, searching, menu } = autocompleteRequest(view, 'NERC')
+      request.resolve([{ id: 'https://ror.org/02b5d8509', name: 'NERC' }])
+      await searching
+      menu.querySelector('[role=option]').click()
+      view.remove()
 
       expect(view.model.get('funderName')).toBe('NERC')
       expect(view.model.get('funderIdentifier')).toBe('https://ror.org/02b5d8509')

@@ -5,7 +5,7 @@ import ObjectInputView from './ObjectInputView'
 import template from '../templates/KeywordVocabulary'
 import KeywordCheckboxView from './KeywordCheckboxView'
 import { vocabsList } from './KeywordVocabularyConfig'
-import 'jquery-ui/ui/widgets/autocomplete'
+import { autocomplete } from '../utils/autocomplete'
 
 export default ObjectInputView.extend({
 
@@ -41,30 +41,33 @@ export default ObjectInputView.extend({
     if (this.vocabularies.length === 0) {
       this.$('.keywordPicker').addClass('d-none')
     } else {
-      this.$('.autocomplete').autocomplete({
+      this.$('.autocomplete').each((i, input) => autocomplete(input, {
         minLength: 2,
-        source: (request, response) => {
+        source: async term => {
           const vocab = _.pluck(this.vocabularies.where({ toSearch: true }), 'id').join(',')
-          const term = request.term.trim()
+          term = term.trim()
           const params = _.isEmpty(term) ? { vocab } : { query: term, vocab }
-          $.getJSON(`/vocabulary/keywords?${$.param(params)}`)
-            .done(data => response(_.map(data, d => ({
+          try {
+            const data = await $.getJSON(`/vocabulary/keywords?${$.param(params)}`)
+            return _.map(data, d => ({
               value: d.label,
               label: `${d.label} (${d.vocabId})`,
               url: d.url
-            }))))
-            .fail(() => response([]))
+            }))
+          } catch {
+            return []
+          }
         },
-        select: (event, ui) => {
-          this.model.set('value', ui.item.value)
-          this.$('.value').val(ui.item.value)
-          this.model.set('uri', ui.item.url)
-          this.$('.uri').val(ui.item.url)
+        select: item => {
+          this.model.set('value', item.value)
+          this.$('.value').val(item.value)
+          this.model.set('uri', item.url)
+          this.$('.uri').val(item.url)
           this.$('.keywordPicker').addClass('d-none')
           this.$('.uri').attr('disabled', true)
           this.$('.value').attr('disabled', true)
         }
-      })
+      }))
     }
   },
 

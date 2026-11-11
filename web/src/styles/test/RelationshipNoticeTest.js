@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 /**
  * The relationship picker says when it has nothing to offer (no match, a failed search, rules it
- * couldn't load) in a menu item that can't be chosen. jQuery UI fades a disabled item to .35, which
- * left the message too faint to read.
+ * couldn't load) in a menu item that can't be chosen. jQuery UI faded a disabled item to .35, and
+ * Bootstrap greys a disabled dropdown item, either of which leaves the message too faint to read.
  *
  * Measured on the stylesheet compiled by scripts/build-test-css.js, as ContrastTest is.
  */
@@ -14,8 +14,8 @@ function loadBase () {
     frame.srcdoc = `<!doctype html><html><head>
       <link rel="stylesheet" href="/build/test-css/base.css">
       </head><body>
-      <ul class="ui-menu ui-widget ui-widget-content ui-autocomplete relationship-autocomplete">
-        <li class="ui-state-disabled relationship-notice"><div>No matching records</div></li>
+      <ul class="dropdown-menu show autocomplete-menu relationship-autocomplete" role="listbox">
+        <li class="dropdown-item disabled autocomplete-notice" role="option" aria-disabled="true">No matching records</li>
       </ul></body></html>`
     document.body.appendChild(frame)
   })
@@ -28,10 +28,10 @@ describe('A relationship picker notice', () => {
   afterAll(() => frame.remove())
 
   it('is shown at full strength, to be read', () => {
-    expect(win.getComputedStyle(doc.querySelector('.relationship-notice')).opacity).toBe('1')
+    expect(win.getComputedStyle(doc.querySelector('.autocomplete-notice')).opacity).toBe('1')
   })
 
   it('is set in a dark grey that reads on the menu\'s white', () => {
-    expect(win.getComputedStyle(doc.querySelector('.relationship-notice div')).color).toBe('rgb(74, 74, 74)')
+    expect(win.getComputedStyle(doc.querySelector('.autocomplete-notice')).color).toBe('rgb(74, 74, 74)')
   })
 })
