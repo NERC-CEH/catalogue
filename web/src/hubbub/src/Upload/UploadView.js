@@ -273,7 +273,9 @@ export default Backbone.View.extend({
       text: 'You will not be able to add more files to this dataset afterwards.',
       confirmText: 'Finish uploading'
     }).then(({ isConfirmed }) => {
-      if (isConfirmed) return this.sendFinish(button)
+      // Not returned: a failed request is shown on the button by sendFinish, and returned, its
+      // rejection would carry on into this promise, which nothing catches
+      if (isConfirmed) this.sendFinish(button)
     })
   },
 
@@ -319,7 +321,7 @@ export default Backbone.View.extend({
       text: 'Every file in the dropbox moves, including any not yet validated.',
       confirmText: 'Move every file'
     }).then(({ isConfirmed }) => {
-      if (isConfirmed) return this.sendMoveAll(button)
+      if (isConfirmed) this.sendMoveAll(button)
     })
   },
 
