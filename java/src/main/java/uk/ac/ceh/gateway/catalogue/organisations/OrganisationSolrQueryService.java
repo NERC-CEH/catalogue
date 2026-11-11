@@ -39,5 +39,23 @@ public class OrganisationSolrQueryService {
             throw new SolrServerException(ex);
         }
     }
+
+    /**
+     * The organisation with a ROR identifier, as the only item of the list, or an empty list for one
+     * not in ROR. The editor describes the organisation a record already has with it.
+     */
+    public List<Organisation> get(String id) throws SolrServerException {
+        try {
+            SolrQuery query = new SolrQuery("*:*");
+            // The term parser matches the identifier as it is, so its ":" and "/" need no escaping
+            query.addFilterQuery("{!term f=id}" + id);
+            query.setRows(1);
+
+            return solrClient.query(COLLECTION, query, POST).getBeans(Organisation.class);
+
+        } catch (IOException | SolrServerException | RemoteSolrException ex) {
+            throw new SolrServerException(ex);
+        }
+    }
 }
 

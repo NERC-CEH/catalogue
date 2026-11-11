@@ -21,7 +21,13 @@ public class OrganisationController {
         log.info("Creating");
     }
 
-    @GetMapping(value = "organisation/names")
+    /** The organisation with a ROR identifier, as a list of one, or none: under the search's path, which the proxies already route */
+    @GetMapping(value = "organisation/names", params = "id")
+    public List<Organisation> getOrganisation(@RequestParam("id") String id) throws SolrServerException {
+        return organisationService.get(id);
+    }
+
+    @GetMapping(value = "organisation/names", params = "!id")
     public List<Organisation> getOrganisations(
             @RequestParam(value = "query", defaultValue = "*") String query
     ) throws SolrServerException {

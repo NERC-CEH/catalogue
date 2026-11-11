@@ -41,8 +41,9 @@ class OrganisationSolrQueryServiceTest {
     @SneakyThrows
     public void successfullyGetOrganisations() {
         //Given
-        val org1 = new Organisation("id1", "name1", List.of("acronym1", "acronym2"), List.of("aliase1", "aliase2"));
-        val org2 = new Organisation("id2", "name2", Collections.emptyList(), Collections.emptyList());
+        val org1 = Organisation.builder().id("id1").name("name1").acronyms(List.of("acronym1", "acronym2")).aliases(List.of("aliase1", "aliase2"))
+            .city("York").region("England").country("United Kingdom").countryCode("GB").types(List.of("education", "funder")).website("https://www.york.ac.uk").build();
+        val org2 = Organisation.builder().id("id2").name("name2").acronyms(Collections.emptyList()).aliases(Collections.emptyList()).build();
         val orgList = List.of(org1, org2);
 
         val response = mock(QueryResponse.class);
@@ -58,6 +59,25 @@ class OrganisationSolrQueryServiceTest {
         assertEquals(result, orgList);
     }
 
+
+    @Test
+    @SneakyThrows
+    public void getsAnOrganisationByItsIdentifierAsItIs() {
+        //Given
+        val response = mock(QueryResponse.class);
+        val york = Organisation.builder().id("https://ror.org/04m01e293").name("University of York").build();
+        given(solrClient.query(eq(COLLECTION), any(SolrQuery.class), eq(POST))).willReturn(response);
+        given(response.getBeans(Organisation.class)).willReturn(List.of(york));
+
+        //When
+        List<Organisation> result = service.get("https://ror.org/04m01e293");
+
+        //Then
+        assertEquals(List.of(york), result);
+        val query = org.mockito.ArgumentCaptor.forClass(SolrQuery.class);
+        org.mockito.Mockito.verify(solrClient).query(eq(COLLECTION), query.capture(), eq(POST));
+        assertThat(query.getValue().getFilterQueries()[0], org.hamcrest.Matchers.is("{!term f=id}https://ror.org/04m01e293"));
+    }
 
     @Test
     @SneakyThrows

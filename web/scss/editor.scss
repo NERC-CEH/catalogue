@@ -239,18 +239,22 @@ textarea.editor-textarea {
                 }
             }
 
+            // Whether the organisation has a RoR ID, as a badge inside the end of its field. Placed on
+            // the field's container rather than after it, as the organisation's location follows the
+            // field (dri-one #417)
             .dataentry:has(.ror) {
                 div:has(>.orgAutocomplete) {
-                    margin-block-end: -25px;
+                    position: relative;
 
                     &:after {
                         font-family: var(--font-stack-icons);
                         font-weight: 900;
                         content: var(--hasrorcontent, "\f06a");
                         color: var(--hasrorcolor, lightgray);
-                        position: relative;
-                        top: -30px;
-                        right: calc(-100% + 25px);
+                        position: absolute;
+                        top: .4rem;
+                        right: calc(var(--bs-gutter-x, 1.5rem) * .5 + .5rem);
+                        pointer-events: none;
                     }
                 }
             }
@@ -261,7 +265,6 @@ textarea.editor-textarea {
                         --hasrorcontent: url(/static/img/ror_16x16.png) "\f00c" / "has valid RoR";
                         --hasrorcolor: green;
                         font-size: .8rem;
-                        right: calc(-100% + 36px);
                     }
                 }
             }
@@ -733,6 +736,39 @@ textarea.editor-textarea {
         font-style: italic;
         cursor: default;
     }
+}
+
+// An organisation's name, and beneath it, quieter, where it is, what it is and its website (dri-one #417)
+.org-autocomplete {
+    .dropdown-item {
+        border-block-end: 1px solid lightgray;
+
+        &:hover,
+        &.active {
+            background-color: var(--ukceh-colour-data);
+            color: black;
+        }
+    }
+
+    .org-name,
+    .org-details {
+        display: block;
+    }
+
+    // #4a4a4a, not gray, to keep AA contrast on the highlighted row as well as on white
+    .org-details {
+        color: #4a4a4a;
+        font-size: .9rem;
+    }
+
+    .org-alias {
+        font-style: italic;
+    }
+}
+
+// Where the organisation chosen is, beneath its name
+.org-location {
+    margin-block-start: .25rem;
 }
 
 .relationship-autocomplete {

@@ -63,5 +63,13 @@
     <field name="name" type="text_general" multiValued="false" required="true"/>
     <field name="acronyms" type="text_general" multiValued="true"/>
     <field name="aliases" type="text_general" multiValued="true"/>
+    <!-- Shown in the editor's look-up to tell same-named organisations apart (dri-one #417); not searched -->
+    <field name="city" type="string" indexed="false" docValues="false" stored="true" multiValued="false"/>
+    <field name="region" type="string" indexed="false" docValues="false" stored="true" multiValued="false"/>
+    <field name="country" type="string" indexed="false" docValues="false" stored="true" multiValued="false"/>
+    <!-- Indexed so results could be boosted by country -->
+    <field name="countryCode" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="types" type="string" indexed="false" docValues="false" stored="true" multiValued="true"/>
+    <field name="website" type="string" indexed="false" docValues="false" stored="true" multiValued="false"/>
 
 </schema>
