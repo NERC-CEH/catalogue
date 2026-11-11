@@ -1,6 +1,7 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
 import FileView from './FileView'
+import { dialog } from '../../../dialog/src/dialog'
 
 export default Backbone.View.extend({
 
@@ -36,7 +37,12 @@ export default Backbone.View.extend({
 
   deleteSelected () {
     const toDelete = this.files.where({ toDelete: true })
-    if (window.confirm(`Delete ${toDelete.length} files?`)) {
+    return dialog.confirm({
+      title: `Delete ${toDelete.length} ${toDelete.length === 1 ? 'file' : 'files'}?`,
+      confirmText: 'Delete',
+      danger: true
+    }).then(({ isConfirmed }) => {
+      if (!isConfirmed) return
       const options = {
         success: model => {
           this.messages.add(new Backbone.Model({ message: `Deleted: ${model.get('name')}`, type: 'info' }))
@@ -46,7 +52,7 @@ export default Backbone.View.extend({
         }
       }
       _.invoke(toDelete, 'destroy', options)
-    }
+    })
   },
 
   selectAll () {

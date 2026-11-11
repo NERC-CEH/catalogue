@@ -1,8 +1,8 @@
 import Backbone from 'backbone'
 import _ from 'underscore'
-import Swal from 'sweetalert2'
 import template from './PermissionsTemplate'
 import { IdentityPermission, IdentityPermissionView } from '../IdentityPermission'
+import { dialog } from '../../../dialog/src/dialog'
 
 export const documentsTemplate = _.template(`
 <td><%- identity %></td>
@@ -49,21 +49,19 @@ export default Backbone.View.extend({
       error: (model, response) => {
         if (response.status === 409) {
           this.model.trigger('save:error', 'These permissions were changed by another user since you opened this page. Your changes were not saved - reload before trying again.')
-          Swal.fire({
+          dialog.alert({
             title: 'Edit conflict',
-            html: '<p>These permissions were changed by another user since you opened this page. ' +
-                  'Your changes were not saved. Reload before trying again.</p>',
             icon: 'warning',
-            confirmButtonText: 'Close'
+            text: 'These permissions were changed by another user since you opened this page. ' +
+                  'Your changes were not saved. Reload before trying again.'
           })
           return
         }
         this.model.trigger('save:error', `Error saving permission: ${response.status} (${response.statusText})`)
-        Swal.fire({
+        dialog.alert({
           title: `Server response: ${response.status} ${response.statusText}`,
-          html: '<p>There was a problem saving these permissions.</p>',
           icon: 'error',
-          confirmButtonText: 'Close'
+          text: 'There was a problem saving these permissions.'
         })
       }
     }
@@ -97,7 +95,7 @@ export default Backbone.View.extend({
     // The collection is keyed on identity, so adding one already listed was silently dropped while
     // the form cleared as if it had worked (dri-one #461). Keep the form so nothing typed is lost.
     if (identity && this.model.get('permissions').get(identity)) {
-      Swal.fire({
+      dialog.alert({
         title: 'Already listed',
         text: `${identity} already has permissions on this record: change them in the table.`,
         icon: 'info'

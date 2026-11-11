@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Geometry, GeometryView } from '../src/geometryMap'
+import { dialog } from '../../dialog/src/dialog'
 
 describe('Test GeometryView', function () {
   let model = null
@@ -57,28 +58,28 @@ describe('Test GeometryView', function () {
   // Obfuscation is the server's job now. The editor records intent and nothing
   // else - it must not rewrite the geometry, because doing so in the browser is
   // what let the raw-JSON field and the circle tool publish precise locations.
-  it('records the flag without touching a point geometry', () => {
+  it('records the flag without touching a point geometry', async () => {
     // given
     const confidential = confidentialView(POINT)
-    vi.spyOn(window, 'confirm').mockReturnValue(true)
+    vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: true })
 
     // when
     confidential.$('#locationConfidential').prop('checked', true)
-    confidential.handleLocationConfidentialCheckbox()
+    await confidential.handleLocationConfidentialCheckbox()
 
     // then
     expect(confidential.model.get('locationConfidential')).toBe(true)
     expect(confidential.model.get('geometryString')).toBe(POINT)
   })
 
-  it('records the flag without touching a polygon geometry', () => {
+  it('records the flag without touching a polygon geometry', async () => {
     // given
     const confidential = confidentialView(POLYGON)
-    vi.spyOn(window, 'confirm').mockReturnValue(true)
+    vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: true })
 
     // when
     confidential.$('#locationConfidential').prop('checked', true)
-    confidential.handleLocationConfidentialCheckbox()
+    await confidential.handleLocationConfidentialCheckbox()
 
     // then
     expect(confidential.model.get('locationConfidential')).toBe(true)
@@ -87,45 +88,45 @@ describe('Test GeometryView', function () {
 
   // The warning applies to every geometry type, not just points, because the
   // server reduces every type to a cell.
-  it('warns before enabling confidentiality on a polygon', () => {
+  it('warns before enabling confidentiality on a polygon', async () => {
     // given
     const confidential = confidentialView(POLYGON)
-    vi.spyOn(window, 'confirm').mockReturnValue(true)
+    vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: true })
 
     // when
     confidential.$('#locationConfidential').prop('checked', true)
-    confidential.handleLocationConfidentialCheckbox()
+    await confidential.handleLocationConfidentialCheckbox()
 
     // then
-    expect(window.confirm).toHaveBeenCalled()
+    expect(dialog.confirm).toHaveBeenCalled()
   })
 
-  it('does not enable confidentiality if the confirmation is cancelled', () => {
+  it('does not enable confidentiality if the confirmation is cancelled', async () => {
     // given
     const confidential = confidentialView(POINT)
-    vi.spyOn(window, 'confirm').mockReturnValue(false)
+    vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: false })
 
     // when
     confidential.$('#locationConfidential').prop('checked', true)
-    confidential.handleLocationConfidentialCheckbox()
+    await confidential.handleLocationConfidentialCheckbox()
 
     // then
     expect(confidential.model.get('locationConfidential')).not.toBe(true)
     expect(confidential.$('#locationConfidential').is(':checked')).toBe(false)
   })
 
-  it('clears the flag without confirmation when unticked', () => {
+  it('clears the flag without confirmation when unticked', async () => {
     // given
     const confidential = confidentialView(POINT)
     confidential.model.set('locationConfidential', true)
-    vi.spyOn(window, 'confirm').mockImplementation(() => {})
+    vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: true })
 
     // when
     confidential.$('#locationConfidential').prop('checked', false)
-    confidential.handleLocationConfidentialCheckbox()
+    await confidential.handleLocationConfidentialCheckbox()
 
     // then
-    expect(window.confirm).not.toHaveBeenCalled()
+    expect(dialog.confirm).not.toHaveBeenCalled()
     expect(confidential.model.get('locationConfidential')).toBe(false)
   })
 

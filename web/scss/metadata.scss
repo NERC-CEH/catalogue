@@ -236,11 +236,6 @@ body {
         }
     }
 
-    .modal:has(.modal-citation) {
-        --bs-modal-zindex: 2001;
-        --bs-modal-width: 600px;
-    }
-
     .topDOI {
         padding-top: 0.5rem;
         padding-bottom: 0.5rem;

@@ -5,6 +5,7 @@ import Backbone from 'backbone'
 // interface, $(el).DataTable() and $.fn.dataTable, is gone (dri-one #467)
 import DataTable from 'datatables.net-bs5'
 import TableTemplate from './TableTemplate'
+import { dialog } from '../../../dialog/src/dialog'
 
 // The file cards this table replaced (EMC-275) explained problem states such as a failed move or a
 // changed checksum; the table had shown only the code (dri-one #459)
@@ -235,44 +236,47 @@ export default Backbone.View.extend({
           () => this.getServerState(this, 3000, $dropdown, model, (model) => this.updateTableRow(tr, model))
         )
       } else if (action === 'Cancel') {
-        if (window.confirm(`Cancel moving file: ${model.get('path')}?`)) {
+        dialog.confirm({ title: 'Cancel moving this file?', text: model.get('path'), confirmText: 'Cancel the move', cancelText: 'Keep moving' }).then(({ isConfirmed }) => {
+          if (!isConfirmed) return
           this.showInProgress($dropdown, action)
           this.request(
             this,
             $dropdown,
-            `${this.model.url()}/${model.get('datastore')}/cancel?path=${encodeURIComponent(model.get('path'))}`,
-            'POST',
-            () => this.getServerState(this, 3000, $dropdown, model, () => this.updateTableRow(tr, model))
+              `${this.model.url()}/${model.get('datastore')}/cancel?path=${encodeURIComponent(model.get('path'))}`,
+              'POST',
+              () => this.getServerState(this, 3000, $dropdown, model, () => this.updateTableRow(tr, model))
           )
-        }
+        })
       } else if (action === 'Delete') {
-        if (window.confirm(`Delete file: ${model.get('path')}?`)) {
+        dialog.confirm({ title: 'Delete this file?', text: model.get('path'), confirmText: 'Delete', danger: true }).then(({ isConfirmed }) => {
+          if (!isConfirmed) return
           this.showInProgress($dropdown, action)
           this.request(
             this,
             $dropdown,
-            `${this.model.url()}/${model.get('datastore')}?path=${encodeURIComponent(model.get('path'))}`,
-            'DELETE',
-            () => {
-              this.removeTableRow(tr, model)
-              this.addTotal(model.get('datastore'), -1)
-            }
+              `${this.model.url()}/${model.get('datastore')}?path=${encodeURIComponent(model.get('path'))}`,
+              'DELETE',
+              () => {
+                this.removeTableRow(tr, model)
+                this.addTotal(model.get('datastore'), -1)
+              }
           )
-        }
+        })
       } else if (action === 'Ignore') {
-        if (window.confirm(`Ignore file: ${model.get('path')}? This file will be unregistered from the system`)) {
+        dialog.confirm({ title: 'Ignore this file?', text: [model.get('path'), 'The file will be unregistered from the system.'], confirmText: 'Ignore' }).then(({ isConfirmed }) => {
+          if (!isConfirmed) return
           this.showInProgress($dropdown, action)
           this.request(
             this,
             $dropdown,
-            `${this.model.url()}/${model.get('datastore')}/unregister?path=${encodeURIComponent(model.get('path'))}`,
-            'POST',
-            () => {
-              this.removeTableRow(tr, model)
-              this.addTotal(model.get('datastore'), -1)
-            }
+              `${this.model.url()}/${model.get('datastore')}/unregister?path=${encodeURIComponent(model.get('path'))}`,
+              'POST',
+              () => {
+                this.removeTableRow(tr, model)
+                this.addTotal(model.get('datastore'), -1)
+              }
           )
-        }
+        })
       } else if (action === 'Move to datastore') {
         this.showInProgress($dropdown, action)
         this.request(

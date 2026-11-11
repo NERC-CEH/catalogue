@@ -19,8 +19,6 @@ export const load = {
   messageView: () => import('../search/src/views/MessageView')
     .then(module => module.default),
 
-  swal: () => import('sweetalert2').then(module => module.default),
-
   permission: () => import('../permission/src/PermissionApp'),
 
   search: () => Promise.all([

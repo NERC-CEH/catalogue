@@ -6,6 +6,7 @@
 import $ from 'jquery'
 import Backbone from 'backbone'
 import { load } from './load'
+import { dialog } from '../dialog/src/dialog'
 
 // Leaving the page, in one place, so a spec can see where to without going there
 export const page = {
@@ -323,14 +324,11 @@ export function initClone ($forms) {
     event.preventDefault()
     const form = event.currentTarget
 
-    return load.swal().then(Swal => Swal.fire({
+    return dialog.confirm({
       title: 'Are you sure?',
       text: 'This will create a copy of the record and save it as a draft',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, copy it',
-      cancelButtonText: 'Cancel'
-    })).then((result) => {
+      confirmText: 'Yes, copy it'
+    }).then((result) => {
       if (result.isConfirmed) {
         form.submit()
       }

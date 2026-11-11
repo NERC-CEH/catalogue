@@ -25,13 +25,12 @@ describe('Micro-app loaders', () => {
     })
   })
 
-  it('messageView, searchRouter and swal give what their callers use directly', async () => {
+  it('messageView and searchRouter give what their callers use directly', async () => {
     expect(await load.messageView()).toEqual(expect.any(Function))
     expect(await load.searchRouter()).toEqual(expect.any(Function))
-    expect((await load.swal()).fire).toEqual(expect.any(Function))
   })
 
   it('covers every loader', () => {
-    expect(Object.keys(load).sort()).toEqual([...Object.keys(EXPECTED), 'messageView', 'searchRouter', 'swal'].sort())
+    expect(Object.keys(load).sort()).toEqual([...Object.keys(EXPECTED), 'messageView', 'searchRouter'].sort())
   })
 })

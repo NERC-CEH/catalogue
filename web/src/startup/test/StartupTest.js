@@ -8,6 +8,7 @@ import {
   initDataPreview, initWmsMap, navbarToggle, page, startApps, stickyHeader
 } from '../apps'
 import { fakeServer } from '../../test/support'
+import { dialog } from '../../dialog/src/dialog'
 
 // What each page starts, run on a page of the spec's own with the micro-apps' code replaced by
 // recording fakes, so nothing is fetched and nothing happens on import (NERC-CEH/dri-one#473)
@@ -425,21 +426,20 @@ describe('Page start-up', () => {
   describe('copying a record', () => {
     function copyForm (answer) {
       pageWith('<form class="clone-control" action="/documents/abc/clone"></form>')
-      const fire = vi.fn().mockResolvedValue({ isConfirmed: answer })
-      vi.spyOn(load, 'swal').mockResolvedValue({ fire })
+      const confirm = vi.spyOn(dialog, 'confirm').mockResolvedValue({ isConfirmed: answer })
       const form = $('.clone-control')[0]
       vi.spyOn(form, 'submit').mockImplementation(() => {})
       initClone($('.clone-control'))
-      return { form, fire }
+      return { form, confirm }
     }
 
     it('copies once the editor confirms', async () => {
-      const { form, fire } = copyForm(true)
+      const { form, confirm } = copyForm(true)
 
       $('.clone-control').trigger('submit')
       await settle()
 
-      expect(fire).toHaveBeenCalledWith(expect.objectContaining({ title: 'Are you sure?' }))
+      expect(confirm).toHaveBeenCalledWith(expect.objectContaining({ title: 'Are you sure?' }))
       expect(form.submit).toHaveBeenCalled()
     })
 
