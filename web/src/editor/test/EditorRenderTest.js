@@ -43,7 +43,7 @@ describe('Opening a saved record in the editor', () => {
   it('makes the saved contributors reorderable', () => {
     const contributorsView = sectionView(geminiEditor({ contributors }), 'contributors')
 
-    expect(contributorsView.$('.existing').hasClass('ui-sortable')).toBe(true)
+    expect(contributorsView.$('.existing').hasClass('sortable-list')).toBe(true)
   })
 
   it('shows a single-object field inside its section', () => {

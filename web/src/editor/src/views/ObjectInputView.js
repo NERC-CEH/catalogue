@@ -3,7 +3,7 @@ import $ from 'jquery'
 import Backbone from 'backbone'
 import validationTemplate from '../templates/validation'
 import { cleanText } from '../utils'
-import 'jquery-ui/ui/widgets/sortable'
+import { sortable } from '../utils/sortable'
 
 export default Backbone.View.extend({
 
@@ -74,18 +74,8 @@ export default Backbone.View.extend({
       this.listenTo(collection, 'add change remove', options.onCollectionChange)
     }
 
-    let pos = null
-    if (this.data.disabled !== 'disabled') {
-      if (!noSort) {
-        element.sortable({
-          start: (event, ui) => {
-            pos = ui.item.index()
-          },
-          update: (event, ui) => {
-            collection.position(pos, ui.item.index())
-          }
-        })
-      }
+    if (this.data.disabled !== 'disabled' && !noSort) {
+      element.each((i, list) => sortable(list, (from, to) => collection.position(from, to)))
     }
 
     resetView()

@@ -1,39 +1,33 @@
 import _ from 'underscore'
 import $ from 'jquery'
-import 'jquery-ui/ui/widgets/autocomplete'
+import { autocomplete } from './autocomplete'
 
 export function createOrgAutocomplete (id, obj, identifierFieldName = 'organisationIdentifier', nameFieldName = 'organisationName') {
   const selector = `[data-name=${identifierFieldName}]`
 
-  obj.$(id).autocomplete({
+  obj.$(id).each((i, input) => autocomplete(input, {
     minLength: 2,
-    source: (request, response) => {
-      const term = request.term.trim()
+    source: async term => {
+      term = term.trim()
       const query = _.isEmpty(term) ? '/organisation/names' : `/organisation/names?${$.param({ query: term })}`
-
-      $.getJSON(query)
-        .done(data =>
-          response(
-            _.map(data, d => ({
-              label: d.name,
-              url: d.id
-            }))
-          )
-        )
-        // Always answer, or the autocomplete stays in its loading state
-        .fail(() => response([]))
+      try {
+        const data = await $.getJSON(query)
+        return _.map(data, d => ({ label: d.name, url: d.id }))
+      } catch {
+        return []
+      }
     },
-    select: (event, ui) => {
-      obj.model.set(nameFieldName, ui.item.label)
-      obj.model.set(identifierFieldName, ui.item.url)
+    select: item => {
+      obj.model.set(nameFieldName, item.label)
+      obj.model.set(identifierFieldName, item.url)
 
       const $identifierField = obj.$(selector)
 
       if ($identifierField.length) {
-        $identifierField.val(ui.item.url)
+        $identifierField.val(item.url)
       }
     }
-  })
+  }))
 
   obj.$(id).on('input', () => {
     obj.model.set(identifierFieldName, '')

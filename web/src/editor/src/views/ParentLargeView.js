@@ -1,5 +1,5 @@
 import _ from 'underscore'
-import 'jquery-ui/ui/widgets/sortable'
+import { sortable } from '../utils/sortable'
 import { Positionable } from '../collections'
 import { hasContent } from '../utils'
 import SingleView from '../SingleView'
@@ -38,14 +38,7 @@ export default SingleView.extend({
 
   makeSortable () {
     if (this.data.disabled !== 'disabled' && this.data.modelAttribute !== 'boundingBoxes') {
-      this.$('.existing').sortable({
-        start: (event, ui) => {
-          this._oldPosition = ui.item.index()
-        },
-        update: (event, ui) => {
-          this.collection.position(this._oldPosition, ui.item.index())
-        }
-      })
+      this.$('.existing').each((i, list) => sortable(list, (from, to) => this.collection.position(from, to)))
     }
   },
 
