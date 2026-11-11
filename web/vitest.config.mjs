@@ -16,7 +16,7 @@ if (chromium && !existsSync(chromium)) {
 
 export default defineConfig({
   // The build's own plugins (vite.config.mjs), so the specs run the code as the page does: the
-  // templates compiled, and jQuery UI, select2 and leaflet-draw wired up as the build wires them
+  // templates compiled, and select2 and leaflet-draw wired up as the build wires them
   plugins: [templates, legacyModules],
   optimizeDeps: { exclude: legacyModulePackages },
   test: {

@@ -28,10 +28,10 @@ export const templates = {
 }
 
 // Libraries written for AMD or for globals, which webpack wired up by itself and Rolldown doesn't:
-// - jQuery UI's widgets and select2 are UMD, taking the AMD route if there is a define(). Each is
-//   given one, which imports what it names and calls the factory with it, as webpack did. Otherwise a
-//   jQuery UI widget falls back on a jQuery with no $.widget, and select2 on its CommonJS form, which
-//   exports a function to call with jQuery rather than adding itself to it.
+// - select2 is UMD, taking the AMD route if there is a define(). It is given one, which imports what
+//   it names and calls the factory with it, as webpack did. Otherwise select2 takes its CommonJS
+//   form, which exports a function to call with jQuery rather than adding itself to it. (jQuery UI's
+//   widgets were the same, until the editor stopped using them: dri-one #533.)
 // - leaflet-draw adds itself to a global L, which nothing promises is there when it runs, so it is
 //   given Leaflet's as an import. Two of its functions also assign to variables they never declare
 //   (`type` working out an area, `radius` resizing a circle), which made a global of each as webpack
@@ -39,7 +39,7 @@ export const templates = {
 //   first move of the mouse. Declared here, they are the module's own.
 // The code is added ahead of the library's first line and after its last, so the lines in between
 // keep their numbers and need no source map of their own.
-const AMD = /[\\/]node_modules[\\/](jquery-ui[\\/]ui|select2[\\/]dist[\\/]js)[\\/][^\\/]+(?:[\\/][^\\/]+)?\.js$/
+const AMD = /[\\/]node_modules[\\/]select2[\\/]dist[\\/]js[\\/][^\\/]+(?:[\\/][^\\/]+)?\.js$/
 const LEAFLET_PLUGIN = /[\\/]node_modules[\\/]leaflet-draw[\\/]dist[\\/][^\\/]+\.js$/
 
 export const legacyModules = {
@@ -67,4 +67,4 @@ export const legacyModules = {
 
 // What vitest needs to apply legacyModules: its dependency pre-bundling would otherwise take these
 // libraries past the plugin, as Vite's development server does
-export const legacyModulePackages = ['jquery-ui', 'select2', 'leaflet-draw']
+export const legacyModulePackages = ['select2', 'leaflet-draw']
