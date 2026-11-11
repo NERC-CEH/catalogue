@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import {
@@ -52,7 +52,32 @@ describe('The editor\'s look-up boxes', () => {
       { id: 'https://ror.org/02wfhk785', name: 'Natural Environment Research Council' }
     ]
 
-    pickers.forEach(([who, View, Model, name, identifier]) => {
+    // The two "York University"s, as ROR has them (dri-one #417)
+    const yorks = [
+      {
+        id: 'https://ror.org/022jz8688',
+        name: 'York University',
+        aliases: ['York College'],
+        city: 'York',
+        region: 'Nebraska',
+        country: 'United States',
+        countryCode: 'US',
+        types: ['education'],
+        website: 'https://york.edu'
+      },
+      {
+        id: 'https://ror.org/05fq50484',
+        name: 'York University',
+        city: 'Toronto',
+        region: 'Ontario',
+        country: 'Canada',
+        countryCode: 'CA',
+        types: ['education', 'funder'],
+        website: 'https://www.yorku.ca'
+      }
+    ]
+
+    pickers.forEach(([who, View, Model, name, identifier], index) => {
       describe(`for ${who}`, () => {
         let model, view, $input
 
@@ -100,6 +125,49 @@ describe('The editor\'s look-up boxes', () => {
 
           expect(offered($input)).toEqual([])
           expect($input.attr('aria-busy')).toBeUndefined()
+        })
+
+        it('tells same-named organisations apart by where they are, what they are and their website', async () => {
+          search($input, 'york university')
+          await answer(json(yorks))
+
+          expect(offered($input)).toEqual([
+            'York UniversityYork, Nebraska, United States · Education · york.edu',
+            'York UniversityToronto, Ontario, Canada · Education, Funder · yorku.ca'
+          ])
+          expect(options($input)[0].querySelector('.org-details').textContent).toBe('York, Nebraska, United States · Education · york.edu')
+        })
+
+        it('says where the organisation chosen is, beneath its name', async () => {
+          const $location = () => view.$('.org-location')
+          expect($location().prop('hidden')).toBe(true)
+          search($input, 'york university')
+          await answer(json(yorks))
+
+          choose($input, 1)
+
+          expect($location().text()).toBe('Toronto, Ontario, Canada · Education, Funder · yorku.ca')
+          expect($location().prop('hidden')).toBe(false)
+          expect($input.attr('aria-describedby')).toContain($location().attr('id'))
+
+          $input.val('York Univ').trigger('input')
+
+          expect($location().text()).toBe('')
+          expect($location().prop('hidden')).toBe(true)
+        })
+
+        it('says where the organisation a record already has is, looking it up by its identifier', async () => {
+          // An identifier of its own, as organisations seen are remembered from one picker to the next
+          const id = `https://ror.org/0${index}test417`
+          view.remove()
+          model = new Model({ [name]: 'University of York', [identifier]: id })
+          view = place(new View({ model, index: 'c2' }))
+
+          expect(requested()).toBe(`/organisation/names?id=${id}`)
+          fakeServer.lastRequest().respondWith(json([{
+            id, name: 'University of York', city: 'York', region: 'England', country: 'United Kingdom', types: ['education', 'funder'], website: 'https://www.york.ac.uk'
+          }]))
+          await vi.waitFor(() => expect(view.$('.org-location').text()).toBe('York, England, United Kingdom · Education, Funder · york.ac.uk'))
         })
       })
     })

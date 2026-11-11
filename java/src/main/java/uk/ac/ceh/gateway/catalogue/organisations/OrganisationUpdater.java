@@ -18,6 +18,8 @@ import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -35,6 +37,27 @@ public class OrganisationUpdater {
     private final String dataFile;
     private final String downloadKey = "latest.download";
     private String rorFileName = "";
+
+    /**
+     * The ROR columns kept, in the order they are written to the local CSV, keyed by the name the code
+     * knows each by. The local CSV keeps ROR's own column names, so one header lookup reads both files.
+     */
+    private static final LinkedHashMap<String, String> COLUMNS = new LinkedHashMap<>();
+    static {
+        COLUMNS.put("url", "id");
+        COLUMNS.put("name", "names.types.ror_display");
+        COLUMNS.put("acronym", "names.types.acronym");
+        COLUMNS.put("alias", "names.types.alias");
+        COLUMNS.put("city", "locations.geonames_details.name");
+        COLUMNS.put("region", "locations.geonames_details.country_subdivision_name");
+        COLUMNS.put("country", "locations.geonames_details.country_name");
+        COLUMNS.put("countryCode", "locations.geonames_details.country_code");
+        COLUMNS.put("types", "types");
+        COLUMNS.put("website", "links.type.website");
+    }
+
+    /** A ROR name's language, which prefixes each language's group of names: "en: York College" */
+    private static final Pattern LANGUAGE_PREFIX = Pattern.compile("^\\s*(no_lang_code|[a-z]{2,3}):\\s*");
 
     public OrganisationUpdater(
         @Qualifier("normal") RestTemplate restTemplate,
@@ -64,7 +87,8 @@ public class OrganisationUpdater {
                 FileInputStream configInputStream = new FileInputStream(configFile);
                 properties.load(configInputStream);
                 String latestDownload = properties.getProperty(downloadKey);
-                if (!latestDownload.equals(downloadUrl) || !data.exists()) {
+                // A CSV written before a column was added to COLUMNS is fetched again, as if the release were new
+                if (!latestDownload.equals(downloadUrl) || !data.exists() || !hasAllColumns(data)) {
                     log.info("Start downloading the latest ror file");
                     if (downloadFile(downloadUrl, data)) {
                         properties.setProperty(downloadKey, downloadUrl);
@@ -87,28 +111,60 @@ public class OrganisationUpdater {
         }
     }
 
-    private String removeUnrelatedStr(String str) {
-        return str.replaceFirst("^.+:", "").trim();
+    /**
+     * ROR groups names by language, "; " between groups and ", " between a group's names:
+     * "cy: Canolfan Ecoleg a Hydroleg y DU; fr: Centre britannique pour l'Écologie et l'Hydrologie".
+     * Drops each group's language, keeping every group.
+     */
+    private static String removeLanguages(String str) {
+        return Arrays.stream(str.split(";"))
+            .map(group -> LANGUAGE_PREFIX.matcher(group).replaceFirst("").trim())
+            .filter(group -> !group.isBlank())
+            .collect(Collectors.joining("; "));
     }
 
-    private List<String> csvStr2List(String str) {
-        return Arrays.stream(str.split(","))
+    /** A list from a column of names: split at both the groups' "; " and the names' ", " */
+    private static List<String> csvStr2List(String str) {
+        return Arrays.stream(str.split("[;,]"))
             .map(String::trim).filter(s -> !s.isBlank()).toList();
+    }
+
+    /** The first of a column's "; "-separated values. Every active organisation has one location, but ROR allows several */
+    private static String first(String str) {
+        return Arrays.stream(str.split(";")).map(String::trim).filter(s -> !s.isBlank()).findFirst().orElse("");
+    }
+
+    private static String blankToNull(String str) {
+        return str == null || str.isBlank() ? null : str.trim();
     }
 
     private HashMap<String, Integer> getHeaderIndex(String[] header) {
         HashMap<String, Integer> map = new HashMap<>();
         for (int i = 0; i < header.length; i++) {
             String title = header[i];
-            switch (title) {
-                case "id" -> map.put("url", i);
-                case "names.types.ror_display" -> map.put("name", i);
-                case "names.types.acronym" -> map.put("acronym", i);
-                case "names.types.alias" -> map.put("alias", i);
-                case "status" -> map.put("status", i);
+            for (Map.Entry<String, String> column : COLUMNS.entrySet()) {
+                if (column.getValue().equals(title)) map.put(column.getKey(), i);
             }
+            if ("status".equals(title)) map.put("status", i);
         }
         return map;
+    }
+
+    private static List<String> missingColumns(Map<String, Integer> map) {
+        return COLUMNS.entrySet().stream()
+            .filter(column -> !map.containsKey(column.getKey()))
+            .map(Map.Entry::getValue)
+            .toList();
+    }
+
+    /** Whether the local CSV has every column in COLUMNS, rather than being from before one was added */
+    boolean hasAllColumns(File data) throws IOException {
+        try (CSVReader csvReader = new CSVReader(new BufferedReader(new FileReader(data)))) {
+            String[] header = csvReader.readNext();
+            return header != null && missingColumns(getHeaderIndex(header)).isEmpty();
+        } catch (com.opencsv.exceptions.CsvValidationException e) {
+            return false;
+        }
     }
 
     public void setupDataPath() throws Exception {
@@ -142,8 +198,13 @@ public class OrganisationUpdater {
     }
 
     public boolean downloadFile(URL downloadUrl, File data) throws Exception {
-        InputStream downloadStream = downloadUrl.openStream();
-        ZipInputStream zipStream = new ZipInputStream(downloadStream);
+        try (InputStream downloadStream = downloadUrl.openStream();
+             ZipInputStream zipStream = new ZipInputStream(downloadStream)) {
+            return downloadFile(zipStream, data);
+        }
+    }
+
+    private boolean downloadFile(ZipInputStream zipStream, File data) throws Exception {
         ZipEntry entry;
         while ((entry = zipStream.getNextEntry()) != null) {
             if (entry.getName().contains(rorFileName)) {
@@ -153,9 +214,13 @@ public class OrganisationUpdater {
                 if ((header = csvReader.readNext()) != null) {
                     map = getHeaderIndex(header);
                 }
-                if (map != null && !map.isEmpty()) {
-                    CSVWriter csvWriter = new CSVWriter(new BufferedWriter(new FileWriter(data)));
-                    csvWriter.writeNext(new String[] {header[map.get("url")], header[map.get("name")], header[map.get("acronym")], header[map.get("alias")]});
+                if (map == null) continue;
+                if (!missingColumns(map).isEmpty() || !map.containsKey("status")) {
+                    log.error("ROR file {} lacks columns {}", entry.getName(), missingColumns(map));
+                    continue;
+                }
+                try (CSVWriter csvWriter = new CSVWriter(new BufferedWriter(new FileWriter(data)))) {
+                    csvWriter.writeNext(COLUMNS.values().toArray(String[]::new));
 
                     String[] line;
                     while ((line = csvReader.readNext()) != null) {
@@ -164,42 +229,64 @@ public class OrganisationUpdater {
                         csvWriter.writeNext(new String[] {
                             line[map.get("url")],
                             line[map.get("name")],
-                            removeUnrelatedStr(line[map.get("acronym")]),
-                            removeUnrelatedStr(line[map.get("alias")])
+                            removeLanguages(line[map.get("acronym")]),
+                            removeLanguages(line[map.get("alias")]),
+                            first(line[map.get("city")]),
+                            first(line[map.get("region")]),
+                            first(line[map.get("country")]),
+                            first(line[map.get("countryCode")]),
+                            line[map.get("types")],
+                            // Not split: a few websites have a ";jsessionid=" in them
+                            line[map.get("website")].trim()
                         });
                     }
-
-                    csvWriter.close();
-                    return true;
                 }
+                return true;
             }
         }
         return false;
     }
 
     public long updateToSolr(File data) throws Exception {
-        solrClient.deleteByQuery(COLLECTION, "*:*");
-
-        CSVReader csvReader = new CSVReader(new BufferedReader(new FileReader(data)));
-        HashMap<String, Integer> map = getHeaderIndex(csvReader.readNext());
-        String[] line;
-        ArrayList<Organisation> beanList = new ArrayList<>();
-        while ((line = csvReader.readNext()) != null) {
-            String id = line[map.get("url")].trim();
-            String name = line[map.get("name")].trim();
-            List<String> acronyms = csvStr2List(line[map.get("acronym")]);
-            List<String> aliases = csvStr2List(line[map.get("alias")]);
-            beanList.add(new Organisation(id, name, acronyms, aliases));
-            if (beanList.size() >= 3000) {
-                solrClient.addBeans(COLLECTION, beanList);
-                beanList = new ArrayList<>();
+        try (CSVReader csvReader = new CSVReader(new BufferedReader(new FileReader(data)))) {
+            String[] header = csvReader.readNext();
+            HashMap<String, Integer> map = getHeaderIndex(header == null ? new String[0] : header);
+            // Checked before anything is deleted: the collection soft-commits within seconds, so deleting
+            // first and then failing on a file it can't read would leave the look-up empty until the
+            // next ROR release
+            List<String> missing = missingColumns(map);
+            if (!missing.isEmpty()) {
+                throw new IllegalStateException("ROR file " + data + " lacks columns " + missing + ", so it was not imported");
             }
-        }
-        if (!beanList.isEmpty()) {
-            solrClient.addBeans(COLLECTION, beanList);
-        }
-        solrClient.commit(COLLECTION);
 
-        return csvReader.getLinesRead() - 1;
+            solrClient.deleteByQuery(COLLECTION, "*:*");
+
+            String[] line;
+            ArrayList<Organisation> beanList = new ArrayList<>();
+            while ((line = csvReader.readNext()) != null) {
+                beanList.add(Organisation.builder()
+                    .id(line[map.get("url")].trim())
+                    .name(line[map.get("name")].trim())
+                    .acronyms(csvStr2List(line[map.get("acronym")]))
+                    .aliases(csvStr2List(line[map.get("alias")]))
+                    .city(blankToNull(line[map.get("city")]))
+                    .region(blankToNull(line[map.get("region")]))
+                    .country(blankToNull(line[map.get("country")]))
+                    .countryCode(blankToNull(line[map.get("countryCode")]))
+                    .types(Arrays.stream(line[map.get("types")].split(";")).map(String::trim).filter(s -> !s.isBlank()).toList())
+                    .website(blankToNull(line[map.get("website")]))
+                    .build());
+                if (beanList.size() >= 3000) {
+                    solrClient.addBeans(COLLECTION, beanList);
+                    beanList = new ArrayList<>();
+                }
+            }
+            if (!beanList.isEmpty()) {
+                solrClient.addBeans(COLLECTION, beanList);
+            }
+            solrClient.commit(COLLECTION);
+
+            return csvReader.getLinesRead() - 1;
+        }
     }
 }

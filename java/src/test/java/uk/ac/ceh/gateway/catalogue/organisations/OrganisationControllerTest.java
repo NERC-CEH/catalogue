@@ -18,6 +18,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,10 +35,11 @@ class OrganisationControllerTest extends AbstractMvcTest {
 
     public static final String QUERY = "queryTest";
     List<Organisation> orgList = List.of(
-        new Organisation("id1", "name1", List.of("acronym1", "acronym2"), List.of("aliase1", "aliase2")),
-        new Organisation("id2", "name2", Collections.emptyList(), Collections.emptyList())
+        Organisation.builder().id("id1").name("name1").acronyms(List.of("acronym1", "acronym2")).aliases(List.of("aliase1", "aliase2"))
+            .city("York").region("England").country("United Kingdom").countryCode("GB").types(List.of("education", "funder")).website("https://www.york.ac.uk").build(),
+        Organisation.builder().id("id2").name("name2").acronyms(Collections.emptyList()).aliases(Collections.emptyList()).build()
     );
-    String expectedResponse = "[{\"id\":\"id1\",\"name\":\"name1\",\"acronyms\":[\"acronym1\",\"acronym2\"],\"aliases\":[\"aliase1\",\"aliase2\"]},{\"id\":\"id2\",\"name\":\"name2\"}]";
+    String expectedResponse = "[{\"id\":\"id1\",\"name\":\"name1\",\"acronyms\":[\"acronym1\",\"acronym2\"],\"aliases\":[\"aliase1\",\"aliase2\"],\"city\":\"York\",\"region\":\"England\",\"country\":\"United Kingdom\",\"countryCode\":\"GB\",\"types\":[\"education\",\"funder\"],\"website\":\"https://www.york.ac.uk\"},{\"id\":\"id2\",\"name\":\"name2\"}]";
 
     @MockitoBean
     private OrganisationSolrQueryService organisationService;
@@ -64,6 +68,21 @@ class OrganisationControllerTest extends AbstractMvcTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(content().json(expectedResponse));
+    }
+
+    @Test
+    @SneakyThrows
+    void getOrganisationById() {
+        //Given
+        given(organisationService.get("https://ror.org/04m01e293")).willReturn(orgList.subList(0, 1));
+
+        //When
+        mvc.perform(get("/organisation/names").queryParam("id", "https://ror.org/04m01e293"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().json("[" + expectedResponse.substring(1, expectedResponse.indexOf("},{") + 1) + "]"));
+
+        verify(organisationService, never()).query(anyString());
     }
 
     @Test
