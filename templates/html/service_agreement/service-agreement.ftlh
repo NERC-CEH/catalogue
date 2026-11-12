@@ -215,7 +215,7 @@
                   <@displayFiles/>
               </#if>
 
-              <@displayData "File naming convention" fileNamingConvention/>
+              <#include "_fileGroups.ftlh">
 
               <@displayData "Number of files to be deposited" fileNumber/>
 
