@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
+import com.google.common.eventbus.EventBus;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -16,9 +18,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientResponseException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import uk.ac.ceh.components.datastore.*;
+import uk.ac.ceh.components.datastore.git.GitDataRepository;
 import uk.ac.ceh.gateway.catalogue.config.ServiceAgreementPublicationConfig;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.document.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -28,18 +34,21 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.publication.State;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
+import uk.ac.ceh.gateway.catalogue.publication.Workflow;
 import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -92,6 +101,10 @@ public class GitRepoServiceAgreementServiceTest {
     @Mock private JiraService jiraService;
     @Mock private ServiceAgreementPublicationService publicationService;
 
+    private final Workflow workflow = new ServiceAgreementPublicationConfig().workflow();
+    /** As the application's mapper, which picks up the Guava module {@link MetadataInfo} needs. */
+    private final ObjectMapper objectMapper = JsonMapper.builder().findAndAddModules().build();
+
     private ServiceAgreementService service;
     private ServiceAgreement serviceAgreement;
 
@@ -113,6 +126,8 @@ public class GitRepoServiceAgreementServiceTest {
             documentRepository,
             jiraService,
             publicationService,
+            workflow,
+            objectMapper,
             Clock.fixed(NOW, ZoneOffset.UTC)
         );
         serviceAgreement = new ServiceAgreement();
@@ -590,6 +605,10 @@ public class GitRepoServiceAgreementServiceTest {
             )
         );
         verify(documentRepository).save(user, expected, "populated from service agreement");
+        // the agreed file listing is committed on its own, and the caches told
+        verify(repo).submitData(eq(FOLDER + ID + ".agreed.json"), any());
+        verify(dataOngoingCommit).commit(user, "saving agreed files of service agreement " + ID);
+        verify(cachedDataRepository, times(2)).evictAfterDirectWrite(FOLDER + ID);
     }
 
     @Test
@@ -974,4 +993,170 @@ public class GitRepoServiceAgreementServiceTest {
         }
     }
 
+
+    // --- The last agreed file listing, against a real git datastore ---
+
+    @TempDir
+    Path datastore;
+
+    private DataRepository<CatalogueUser> gitRepo;
+
+    /** A service over a real git datastore and real mappers, so snapshots are written and read back. */
+    @SneakyThrows
+    private ServiceAgreementService gitBackedService() {
+        gitRepo = new GitDataRepository<>(datastore.toFile(), CatalogueUser::new, new EventBus());
+        return new GitRepoServiceAgreementService(
+            BASE_URI,
+            gitRepo,
+            cachedDataRepository,
+            new JacksonDocumentInfoMapper<>(objectMapper, MetadataInfo.class),
+            new JacksonDocumentInfoMapper<>(objectMapper, ServiceAgreement.class),
+            documentRepository,
+            jiraService,
+            publicationService,
+            workflow,
+            objectMapper,
+            Clock.fixed(NOW, ZoneOffset.UTC)
+        );
+    }
+
+    private static File file(String name) {
+        val file = new File();
+        file.setName(name);
+        file.setFormat("csv");
+        file.setSize("1 MB");
+        return file;
+    }
+
+    private static FileGroup fileGroup(String pattern, int count) {
+        val group = new FileGroup();
+        group.setPattern(pattern);
+        group.setCount(count);
+        group.setFormat("csv");
+        group.setSize("10 MB");
+        group.setDescription("one per site");
+        return group;
+    }
+
+    private static ServiceAgreement agreementWith(List<File> files, List<FileGroup> groups, String fileNumber) {
+        val agreement = new ServiceAgreement();
+        agreement.setTitle("Test");
+        agreement.setDepositorContactDetails("depositor@example.com");
+        agreement.setFiles(files);
+        agreement.setFileGroups(groups);
+        agreement.setFileNumber(fileNumber);
+        return agreement;
+    }
+
+    private static final List<File> AGREED_FILES = List.of(file("readme.txt"), file("data/summary.csv"));
+    private static final List<FileGroup> AGREED_GROUPS = List.of(fileGroup("site*/CP_*.csv", 12));
+
+    /** Moves the stored agreement to {@code state}, as the publication workflow's own metadata commit does. */
+    @SneakyThrows
+    private void moveTo(ServiceAgreementService service, String state) {
+        val metadata = new JacksonDocumentInfoMapper<>(objectMapper, MetadataInfo.class)
+            .readInfo(gitRepo.getData(FOLDER + ID + ".meta").getInputStream());
+        service.updateMetadata(user, ID, metadata.withState(state));
+    }
+
+    /** Creates the agreement and takes it through agreement, as the workflow's agree transition does. */
+    @SneakyThrows
+    private ServiceAgreementService agreedService() {
+        val service = gitBackedService();
+        service.create(user, ID, catalogueKey, agreementWith(AGREED_FILES, AGREED_GROUPS, "14"));
+        moveTo(service, "agreed");
+        givenDraftGeminiDocument();
+        service.publishServiceAgreement(user, ID);
+        return service;
+    }
+
+    @Test
+    @SneakyThrows
+    void publishWritesAgreedSnapshot() {
+        //given
+        val service = agreedService();
+
+        //then a snapshot is stored beside the agreement, without the read-time revising flag
+        try (val stored = gitRepo.getData(FOLDER + ID + ".agreed.json").getInputStream()) {
+            val json = new String(stored.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+            assertThat(json, containsString("site*/CP_*.csv"));
+            assertThat(json, org.hamcrest.Matchers.not(containsString("revising")));
+        }
+        //and it is what is read back, not yet being revised
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false))));
+    }
+
+    @Test
+    @SneakyThrows
+    void snapshotSurvivesLaterDraftEdits() {
+        //given an agreed agreement, sent back to draft
+        val service = agreedService();
+        moveTo(service, "draft");
+        service.doTransitionAction(user, ID, ServiceAgreementPublicationConfig.agreedToDraftId);
+
+        //when the depositor edits its files
+        service.update(user, ID, agreementWith(
+            List.of(file("other.txt")), List.of(fileGroup("x*.csv", 1)), "1"));
+
+        //then the agreed listing is still the one agreed, marked as being revised
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", true))));
+    }
+
+    @Test
+    @SneakyThrows
+    void agreedBeforeSnapshotsExistUsesCurrent() {
+        //given an agreement in the agreed state that was agreed before snapshots were kept
+        val service = gitBackedService();
+        service.create(user, ID, catalogueKey, agreementWith(AGREED_FILES, AGREED_GROUPS, "14"));
+        moveTo(service, "agreed");
+
+        //then its current content is the last agreed version
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false))));
+    }
+
+    @Test
+    @SneakyThrows
+    void neverAgreedOrSentBackWithoutSnapshotIsEmpty() {
+        val service = gitBackedService();
+
+        //no agreement at all
+        assertThat(service.agreedFiles(ID), is(Optional.empty()));
+
+        //never agreed
+        service.create(user, ID, catalogueKey, agreementWith(AGREED_FILES, AGREED_GROUPS, "14"));
+        assertThat(service.agreedFiles(ID), is(Optional.empty()));
+
+        //agreed before snapshots were kept, then sent back to draft
+        moveTo(service, "agreed");
+        moveTo(service, "draft");
+        assertThat(service.agreedFiles(ID), is(Optional.empty()));
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteRemovesSnapshot() {
+        //given
+        val service = agreedService();
+
+        //when
+        service.delete(user, ID);
+
+        //then
+        assertThat(service.agreedFiles(ID), is(Optional.empty()));
+        assertThrows(DataRepositoryException.class, () -> gitRepo.getData(FOLDER + ID + ".agreed.json"));
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteWithoutSnapshot() {
+        //given an agreement never agreed, so with no snapshot
+        val service = gitBackedService();
+        service.create(user, ID, catalogueKey, agreementWith(AGREED_FILES, AGREED_GROUPS, "14"));
+
+        //when
+        service.delete(user, ID);
+
+        //then
+        assertThrows(DataRepositoryException.class, () -> gitRepo.getData(FOLDER + ID + ".meta"));
+    }
 }
