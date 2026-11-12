@@ -743,6 +743,23 @@ describe('UploadView', function () {
       expect(statusOf('b.csv')).toBe('not yet uploaded')
     })
 
+    it('passes each listed file\'s size to the check (dri-one #537)', function () {
+      page({ dropbox: listing(['a.csv']), datastore: listing(['moved.csv'], { datastore: 'eidchub' }) })
+
+      expect(view.expectedSources().uploads).toEqual([
+        { path: 'a.csv', status: 'VALID', bytes: 1 },
+        { path: 'moved.csv', status: 'VALID', bytes: 1 }
+      ])
+    })
+
+    it('gives a depositor\'s datastore paths no size, so they are never size-checked (dri-one #537)', function () {
+      page({ dropbox: listing([]), 'datastore-paths': JSON.stringify({ paths: ['moved.csv'], complete: true }) })
+
+      const uploads = view.expectedSources().uploads
+      expect(uploads).toEqual([{ path: 'moved.csv', status: 'VALID' }])
+      expect('bytes' in uploads[0]).toBe(false)
+    })
+
     it('makes no claim while the depositor\'s datastore paths are partial', function () {
       page({ dropbox: listing(['a.csv']), 'datastore-paths': JSON.stringify({ paths: ['moved.csv'], complete: false }) })
 
