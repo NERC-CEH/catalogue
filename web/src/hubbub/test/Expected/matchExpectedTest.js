@@ -1,0 +1,167 @@
+import { describe, expect, it } from 'vitest'
+import { ABSENT_STATUSES, matchExpected, patternToRegExp } from '../../src/Expected'
+
+const up = (path, status = 'VALID') => ({ path, status })
+const run = (expected, uploads, complete = true) =>
+  matchExpected({ files: [], fileGroups: [], ...expected }, uploads, { complete })
+
+describe('patternToRegExp', function () {
+  it('matches exactly and case-sensitively', function () {
+    expect(patternToRegExp('site1/a.csv').test('site1/a.csv')).toBe(true)
+    expect(patternToRegExp('Site1/a.csv').test('site1/a.csv')).toBe(false)
+  })
+
+  it('treats folders as part of the match', function () {
+    expect(patternToRegExp('a.csv').test('x/a.csv')).toBe(false)
+  })
+
+  it('does not let * cross a slash', function () {
+    const re = patternToRegExp('site*/a.csv')
+    expect(re.test('site12/a.csv')).toBe(true)
+    expect(re.test('site1/x/a.csv')).toBe(false)
+  })
+
+  it('matches exactly one non-slash character for ?', function () {
+    const re = patternToRegExp('a?.csv')
+    expect(re.test('a1.csv')).toBe(true)
+    expect(re.test('a.csv')).toBe(false)
+    expect(re.test('a12.csv')).toBe(false)
+    expect(patternToRegExp('a?b').test('a/b')).toBe(false)
+  })
+
+  it('is anchored at both ends', function () {
+    const re = patternToRegExp('a*.csv')
+    expect(re.test('xa1.csv')).toBe(false)
+    expect(re.test('a1.csv.bak')).toBe(false)
+    expect(re.test('a1.csv')).toBe(true)
+  })
+
+  it('treats regular expression metacharacters literally', function () {
+    expect(patternToRegExp('data(1).csv').test('data(1).csv')).toBe(true)
+    expect(patternToRegExp('a+b.csv').test('a+b.csv')).toBe(true)
+    expect(patternToRegExp('v1.2.csv').test('v1x2.csv')).toBe(false)
+    expect(patternToRegExp('[a]|b$^{1}\\').test('[a]|b$^{1}\\')).toBe(true)
+  })
+})
+
+describe('ABSENT_STATUSES', function () {
+  it('holds the four statuses that say a file is gone', function () {
+    expect([...ABSENT_STATUSES].sort()).toEqual(
+      ['MISSING', 'MOVED_UNKNOWN_MISSING', 'UNKNOWN_MISSING', 'ZIPPED_UNKNOWN_MISSING'])
+  })
+})
+
+describe('matchExpected', function () {
+  it('marks a named file uploaded, or not-uploaded when complete', function () {
+    const result = run({ files: [{ name: 'a.csv' }, { name: 'b.csv' }] }, [up('a.csv')])
+    expect(result.files.map(f => f.status)).toEqual(['uploaded', 'not-uploaded'])
+  })
+
+  it('keeps the file attributes in the result', function () {
+    const result = run({ files: [{ name: 'a.csv', format: 'csv' }] }, [up('a.csv')])
+    expect(result.files[0]).toEqual({ name: 'a.csv', format: 'csv', status: 'uploaded' })
+  })
+
+  it('reports unknown rather than not-uploaded when incomplete', function () {
+    const result = run({ files: [{ name: 'a.csv' }, { name: 'b.csv' }] }, [up('a.csv')], false)
+    expect(result.files.map(f => f.status)).toEqual(['uploaded', 'unknown'])
+  })
+
+  it('lets a named file win over a group', function () {
+    const result = run(
+      { files: [{ name: 'a.csv' }], fileGroups: [{ pattern: '*.csv', count: '1' }] },
+      [up('a.csv'), up('b.csv')])
+    expect(result.groups[0].found).toBe(1)
+    expect(result.unmatched).toEqual([])
+  })
+
+  it('lets the first group win over a later one', function () {
+    const result = run(
+      { fileGroups: [{ pattern: 'a*', count: '1' }, { pattern: '*.csv', count: '1' }] },
+      [up('a.csv'), up('b.csv')])
+    expect(result.groups.map(g => g.found)).toEqual([1, 1])
+  })
+
+  it('counts a path once when it is in both listings', function () {
+    const result = run({ fileGroups: [{ pattern: '*.csv', count: 1 }] }, [up('a.csv'), up('a.csv')])
+    expect(result.groups[0].found).toBe(1)
+    expect(result.groups[0].flag).toBe(null)
+  })
+
+  it('does not count files whose status says they are gone', function () {
+    const uploads = [...ABSENT_STATUSES].map((status, i) => up(`g${i}.csv`, status))
+    uploads.push(up('a.csv'), up('b.csv', 'MISSING_UNKNOWN'))
+    const result = run({ files: [{ name: 'g0.csv' }], fileGroups: [{ pattern: '*.csv', count: 2 }] }, uploads)
+    expect(result.files[0].status).toBe('not-uploaded')
+    expect(result.groups[0].found).toBe(2)
+    expect(result.unmatched).toEqual([])
+  })
+
+  it('flags a group as over, short or neither', function () {
+    const uploads = [up('a1.csv'), up('a2.csv'), up('b1.txt'), up('b1')]
+    const result = run({
+      fileGroups: [
+        { pattern: 'a*.csv', count: '1' },
+        { pattern: 'b*.txt', count: '2' },
+        { pattern: 'c*', count: '0' },
+        { pattern: 'b*', count: '1' }
+      ]
+    }, uploads)
+    expect(result.groups.map(g => g.flag)).toEqual(['over', 'short', null, null])
+  })
+
+  it('suppresses short but not over when incomplete', function () {
+    const result = run({
+      fileGroups: [{ pattern: 'a*', count: '1' }, { pattern: 'b*', count: '2' }]
+    }, [up('a1'), up('a2'), up('b1')], false)
+    expect(result.groups.map(g => g.flag)).toEqual(['over', null])
+  })
+
+  it('skips incomplete entries without throwing', function () {
+    const result = run({
+      files: [{ format: 'csv' }, { name: '' }],
+      fileGroups: [{ count: '2' }, { pattern: 'a*' }, { pattern: 'b*', count: null }]
+    }, [up('a.csv'), up('b.csv'), up('b2.csv')])
+    expect(result.files.map(f => f.status)).toEqual(['unknown', 'unknown'])
+    expect(result.groups[0].found).toBe(0)
+    expect(result.groups[0].flag).toBe(null)
+    expect(result.groups[1]).toMatchObject({ found: 1, flag: null })
+    expect(result.groups[2]).toMatchObject({ found: 2, flag: null })
+    expect(result.unmatched).toEqual([])
+  })
+
+  it('copes with absent file lists and fileNumber', function () {
+    const result = matchExpected({}, [up('a.csv')], { complete: true })
+    expect(result.files).toEqual([])
+    expect(result.groups).toEqual([])
+    expect(result.unmatched).toEqual(['a.csv'])
+    expect(result.total).toEqual({ expected: null, found: 0, differs: false })
+  })
+
+  it('compares the total only with a numeric fileNumber', function () {
+    const expected = { files: [{ name: 'a.csv' }], fileNumber: ' 3 ' }
+    const result = run(expected, [up('a.csv'), up('z.csv')])
+    expect(result.total).toEqual({ expected: 3, found: 1, differs: true })
+    expect(run({ ...expected, fileNumber: '1' }, [up('a.csv')]).total.differs).toBe(false)
+    expect(run(expected, [up('a.csv')], false).total).toEqual({ expected: 3, found: 1, differs: false })
+  })
+
+  it('gives a null expected total for a non-numeric fileNumber', function () {
+    for (const fileNumber of ['about 12', '', '1.5', '-2', undefined]) {
+      const result = run({ files: [{ name: 'a.csv' }], fileNumber }, [up('a.csv')])
+      expect(result.total).toEqual({ expected: null, found: 1, differs: false })
+    }
+  })
+
+  it('lists only uploads that match nothing as unmatched', function () {
+    const result = run(
+      { files: [{ name: 'a.csv' }], fileGroups: [{ pattern: 'b*', count: '1' }] },
+      [up('a.csv'), up('b1'), up('c.txt'), up('d.txt'), up('c.txt')])
+    expect(result.unmatched).toEqual(['c.txt', 'd.txt'])
+  })
+
+  it('puts every upload in unmatched when nothing is expected', function () {
+    const result = run({}, [up('a.csv'), up('b.csv')])
+    expect(result.unmatched).toEqual(['a.csv', 'b.csv'])
+  })
+})
