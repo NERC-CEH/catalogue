@@ -842,6 +842,19 @@ class UploadControllerTest extends AbstractMvcTest {
     }
 
     @Test
+    void pageStaysUpWhenAgreedFilesCannotBeRead() {
+        givenPage(false);
+        givenDataTransferIssue();
+        givenDropbox();
+        given(serviceAgreementService.agreedFiles(datasetId)).willThrow(new RuntimeException("corrupt snapshot"));
+
+        val model = getPageModel();
+
+        assertThat(model, not(hasKey("expected")));
+        assertThat(model, hasKey("dropbox"));
+    }
+
+    @Test
     void scheduledNonAdminGetsDatastorePathsOnly() {
         givenPage(false);
         givenDataTransferIssue();

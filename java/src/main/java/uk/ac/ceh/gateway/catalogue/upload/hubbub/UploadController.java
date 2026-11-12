@@ -150,7 +150,13 @@ public class UploadController {
         if (service == null) {
             return;
         }
-        service.agreedFiles(datasetId).ifPresent(agreed -> model.addAttribute("expected", expectedJson(agreed)));
+        try {
+            service.agreedFiles(datasetId).ifPresent(agreed -> model.addAttribute("expected", expectedJson(agreed)));
+        } catch (Exception ex) {
+            // agreedFiles is @SneakyThrows, so checked read faults arrive here too: a bad snapshot
+            // must not take the upload page down
+            log.warn("{}: agreed files not added", datasetId, ex);
+        }
     }
 
     /** Built by hand: the stored form leaves out revising, and the app's mapper drops empty lists */
