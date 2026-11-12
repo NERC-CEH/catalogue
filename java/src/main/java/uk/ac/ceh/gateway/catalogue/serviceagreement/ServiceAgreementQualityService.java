@@ -271,13 +271,13 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
         val fileNamingConvention = parsed.read("$.fileNamingConvention", String.class);
         val fileNumber = parsed.read("$.fileNumber", String.class);
         val files = parsed.read(
-            "$.files[*].['name','format', 'size']",
-            typeRefStringString
+            "$.files[*].['name','format','size','bytes']",
+            typeRefStringObject
         );
 
         // fileGroups is absent from older agreements, so a missing path reads as empty
         val fileGroups = parsed.read(
-            "$.fileGroups[*].['pattern','count']",
+            "$.fileGroups[*].['pattern','count','size','minBytes','maxBytes','totalBytes']",
             typeRefStringObject
         );
 
@@ -293,18 +293,22 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
         for (val file: files) {
             index++;
 
-            if (fieldIsMissing(file, "name")) {
+            if (objectFieldIsMissing(file, "name")) {
                 toReturn.add(new MetadataCheck("File " + index + " name is missing ", ERROR));
-            } else if (!isValidPath(file.get("name"), FILE_SEGMENT)) {
+            } else if (!isValidPath(file.get("name").toString(), FILE_SEGMENT)) {
                 toReturn.add(new MetadataCheck("File " + index + " name should only consist of alphanumeric characters, underscores, dots, hyphens and / between folders", ERROR));
             }
 
-            if (fieldIsMissing(file, "format")) {
+            if (objectFieldIsMissing(file, "format")) {
                 toReturn.add(new MetadataCheck("File " + index + " format is missing", ERROR));
             }
 
-            if (fieldIsMissing(file, "size")) {
+            // byte fields win over the legacy size text, so either one satisfies the check
+            val bytes = longOrNull(file.get("bytes"));
+            if (bytes == null && objectFieldIsMissing(file, "size")) {
                 toReturn.add(new MetadataCheck("File" + index + " size is missing", ERROR));
+            } else if (bytes != null && bytes <= 0) {
+                toReturn.add(new MetadataCheck("File " + index + " size must be more than 0", WARNING));
             }
         }
 
@@ -326,6 +330,8 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             } else if (count.trim().matches("\\d{1,9}")) {
                 listedCount += Long.parseLong(count.trim());
             }
+
+            checkGroupSizes(group, groupIndex, toReturn);
         }
 
         // a prose naming convention describes files that are not listed, so the count cannot be compared
@@ -338,6 +344,51 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
         }
 
         return toReturn;
+    }
+
+    private void checkGroupSizes(Map<String, Object> group, int groupIndex, List<MetadataCheck> toReturn) {
+        val prefix = "File group " + groupIndex + " ";
+        val min = longOrNull(group.get("minBytes"));
+        val max = longOrNull(group.get("maxBytes"));
+        val total = longOrNull(group.get("totalBytes"));
+        val hasLegacySize = !objectFieldIsMissing(group, "size");
+
+        if (min == null && max == null && !hasLegacySize) {
+            toReturn.add(new MetadataCheck(prefix + "size of each file is missing", WARNING));
+        }
+        if (total == null && !hasLegacySize) {
+            toReturn.add(new MetadataCheck(prefix + "total size is missing", WARNING));
+        }
+        if (min != null && min <= 0) {
+            toReturn.add(new MetadataCheck(prefix + "smallest file size must be more than 0", WARNING));
+        }
+        if (max != null && max <= 0) {
+            toReturn.add(new MetadataCheck(prefix + "largest file size must be more than 0", WARNING));
+        }
+        if (total != null && total <= 0) {
+            toReturn.add(new MetadataCheck(prefix + "total size must be more than 0", WARNING));
+        }
+        if (min != null && max != null && min > max) {
+            toReturn.add(new MetadataCheck(prefix + "smallest file size is larger than the largest", WARNING));
+        }
+        if (max != null && total != null && total < max) {
+            toReturn.add(new MetadataCheck(prefix + "total size is smaller than its largest file", WARNING));
+        }
+    }
+
+    private static boolean objectFieldIsMissing(Map<String, Object> map, String key) {
+        return map == null || map.get(key) == null || map.get(key).toString().isBlank();
+    }
+
+    /** A JSON number (or numeric text) as a long; null when absent or not a whole number. */
+    private static Long longOrNull(Object value) {
+        if (value instanceof Number number) {
+            return number.longValue();
+        }
+        if (value != null && value.toString().trim().matches("-?\\d{1,18}")) {
+            return Long.parseLong(value.toString().trim());
+        }
+        return null;
     }
 
     private static final Pattern FILE_SEGMENT = Pattern.compile("[\\w\\-.]+");

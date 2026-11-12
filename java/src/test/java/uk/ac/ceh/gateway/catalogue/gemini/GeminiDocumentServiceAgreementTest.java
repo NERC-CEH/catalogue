@@ -41,6 +41,12 @@ class GeminiDocumentServiceAgreementTest {
         return file;
     }
 
+    private static File typedFile(String name, String format, String formatType) {
+        val file = file(name, format);
+        file.setFormatType(formatType);
+        return file;
+    }
+
     private static FileGroup fileGroup(String pattern, String format) {
         val fileGroup = new FileGroup();
         fileGroup.setPattern(pattern);
@@ -108,6 +114,24 @@ class GeminiDocumentServiceAgreementTest {
         assertThat(gemini.getDistributionFormats(), contains(
             DistributionInfo.builder().name("CSV").build(),
             DistributionInfo.builder().name("NetCDF").build()
+        ));
+    }
+
+    @Test
+    void mediaTypeIsCopiedAndTheFirstTypedEntryWinsTheDedupe() {
+        val serviceAgreement = serviceAgreement();
+        serviceAgreement.setFiles(List.of(
+            typedFile("a.csv", "Comma-separated values (CSV)", "text/csv"),
+            file("grid.nc", "NetCDF")
+        ));
+        serviceAgreement.setFileGroups(List.of(fileGroup("csv", "comma-separated values (csv)")));
+        val gemini = new GeminiDocument();
+
+        gemini.populateFromServiceAgreement(serviceAgreement);
+
+        assertThat(gemini.getDistributionFormats(), contains(
+            DistributionInfo.builder().name("Comma-separated values (CSV)").type("text/csv").build(),
+            DistributionInfo.builder().name("NetCDF").type("").build()
         ));
     }
 

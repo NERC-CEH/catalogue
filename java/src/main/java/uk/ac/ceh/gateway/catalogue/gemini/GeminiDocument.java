@@ -498,15 +498,17 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return constraints.isEmpty() ? null : constraints;
     }
 
-    // One per distinct format in the file listing and file groups, ignoring case; the first spelling wins
+    // One per distinct format name in the file listing and file groups, ignoring case; the first entry wins, so its media type does too
     private static List<DistributionInfo> distributionFormatsFrom(ServiceAgreement serviceAgreement) {
         val seen = new HashSet<String>();
         return Stream.concat(
-                Stream.ofNullable(serviceAgreement.getFiles()).flatMap(List::stream).map(file -> file.getFormat()),
-                Stream.ofNullable(serviceAgreement.getFileGroups()).flatMap(List::stream).map(group -> group.getFormat()))
-            .map(format -> nullToEmpty(format).strip())
-            .filter(format -> !format.isEmpty() && seen.add(format.toLowerCase(Locale.ROOT)))
-            .map(format -> DistributionInfo.builder().name(format).build())
+                Stream.ofNullable(serviceAgreement.getFiles()).flatMap(List::stream)
+                    .map(file -> new String[] {file.getFormat(), file.getFormatType()}),
+                Stream.ofNullable(serviceAgreement.getFileGroups()).flatMap(List::stream)
+                    .map(group -> new String[] {group.getFormat(), group.getFormatType()}))
+            .map(pair -> new String[] {nullToEmpty(pair[0]).strip(), nullToEmpty(pair[1]).strip()})
+            .filter(pair -> !pair[0].isEmpty() && seen.add(pair[0].toLowerCase(Locale.ROOT)))
+            .map(pair -> DistributionInfo.builder().name(pair[0]).type(pair[1]).build())
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
