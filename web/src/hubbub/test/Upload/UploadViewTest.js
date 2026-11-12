@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import $ from 'jquery'
 import { UploadModel, UploadView } from '../../src/Upload'
 import FileCollection from '../../src/File/FileCollection'
+import File from '../../src/File/File'
 import { fakeServer, settle } from '../../../test/support'
 import { dialog } from '../../../dialog/src/dialog'
 
@@ -635,6 +636,118 @@ describe('UploadView', function () {
       expect(view.showInProgress).toHaveBeenCalled()
       expect(view.showNormal).toHaveBeenCalled()
       expect(view.reloadPage).toHaveBeenCalled()
+    })
+  })
+
+  describe('expected files (dri-one #536)', function () {
+    const expected = {
+      files: [{ name: 'a.csv' }, { name: 'b.csv' }, { name: 'moved.csv' }],
+      fileGroups: [],
+      revising: false
+    }
+
+    function listing (paths, { currentPage = 1, lastPage = 1, datastore = 'dropbox' } = {}) {
+      return JSON.stringify({
+        data: paths.map(path => ({ datasetId: id, datastore, path, status: 'VALID', bytes: 1 })),
+        meta: { currentPage, lastPage, pageSize: 1, totalFiles: paths.length }
+      })
+    }
+
+    function page (scripts) {
+      $(document.body).html(`
+        <div class="document-upload">
+          <section class="expected-files"></section>
+          <div class="datastore-files"></div>
+          <div class="data-files"></div>
+          <div class="metadata-files"></div>
+          <button class="load data"></button>
+        </div>
+        <script id="expected-data" type="application/json">${JSON.stringify(expected)}</script>
+        ${Object.entries(scripts).map(([name, json]) => `<script id="${name}-data" type="application/json">${json}</script>`).join('')}
+      `)
+      model = new UploadModel({ id })
+      view = new UploadView({ el: '.document-upload', model })
+    }
+
+    function statusOf (name) {
+      return view.$('.expected-files tbody tr')
+        .filter((index, element) => $(element).find('td').first().text() === name)
+        .find('.expected-status').text()
+    }
+
+    afterEach(function () {
+      fakeServer.uninstall()
+    })
+
+    it('has no section without an agreed listing', function () {
+      $(document.body).html('<div class="document-upload"><section class="expected-files"></section></div>')
+      view = new UploadView({ el: '.document-upload', model: new UploadModel({ id }) })
+
+      expect(view.expectedFilesView).toBeUndefined()
+      expect(view.$('.expected-files').html()).toBe('')
+    })
+
+    it('ticks a file off when an upload adds it to the arrivals', function () {
+      page({ dropbox: listing(['a.csv']), datastore: listing(['moved.csv'], { datastore: 'eidchub' }) })
+      expect(statusOf('a.csv')).toBe('uploaded')
+      expect(statusOf('moved.csv')).toBe('uploaded')
+      expect(statusOf('b.csv')).toBe('not yet uploaded')
+
+      view.dropbox.trigger('addBatch', [new File({ datasetId: id, datastore: 'dropbox', path: 'b.csv', status: 'NO_HASH' })])
+
+      expect(statusOf('b.csv')).toBe('uploaded')
+    })
+
+    it('stops counting a file whose status says it has gone', function () {
+      page({ dropbox: listing(['a.csv']), datastore: listing([], { datastore: 'eidchub' }) })
+
+      view.dropbox.findWhere({ path: 'a.csv' }).set('status', 'MISSING')
+
+      expect(statusOf('a.csv')).toBe('not yet uploaded')
+    })
+
+    it('says a file is not yet uploaded only once "load more" completes the listing', function () {
+      fakeServer.install()
+      page({
+        dropbox: listing(['a.csv'], { currentPage: 1, lastPage: 2 }),
+        datastore: listing([], { datastore: 'eidchub' })
+      })
+      expect(statusOf('b.csv')).toBe('')
+
+      view.$('.load.data').trigger('click')
+      fakeServer.lastRequest().respondWith({ status: 200, responseText: listing(['moved.csv'], { currentPage: 2, lastPage: 2 }) })
+
+      expect(statusOf('moved.csv')).toBe('uploaded')
+      expect(statusOf('b.csv')).toBe('not yet uploaded')
+    })
+
+    it('makes no claim while the datastore listing is missing', function () {
+      page({ dropbox: listing(['a.csv']) })
+
+      expect(statusOf('a.csv')).toBe('uploaded')
+      expect(statusOf('b.csv')).toBe('')
+    })
+
+    it('shows no statuses when there is no listing at all', function () {
+      page({})
+
+      expect(view.$('.expected-files tbody tr').length).toBe(3)
+      expect(view.$('.expected-files .expected-status').length).toBe(0)
+    })
+
+    it('counts the datastore paths a depositor\'s page is given', function () {
+      page({ dropbox: listing(['a.csv']), 'datastore-paths': JSON.stringify({ paths: ['moved.csv'], complete: true }) })
+
+      expect(view.datastore.length).toBe(0)
+      expect(statusOf('moved.csv')).toBe('uploaded')
+      expect(statusOf('b.csv')).toBe('not yet uploaded')
+    })
+
+    it('makes no claim while the depositor\'s datastore paths are partial', function () {
+      page({ dropbox: listing(['a.csv']), 'datastore-paths': JSON.stringify({ paths: ['moved.csv'], complete: false }) })
+
+      expect(statusOf('moved.csv')).toBe('uploaded')
+      expect(statusOf('b.csv')).toBe('')
     })
   })
 })

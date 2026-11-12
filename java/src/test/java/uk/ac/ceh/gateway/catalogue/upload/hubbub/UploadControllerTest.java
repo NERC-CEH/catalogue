@@ -842,6 +842,40 @@ class UploadControllerTest extends AbstractMvcTest {
     }
 
     @Test
+    @SneakyThrows
+    void pageRendersExpectedFilesSectionAndData() {
+        // dri-one #536: the section is filled in by the page's script from these two elements
+        givenPage(false);
+        givenDataTransferIssue();
+        givenDropbox();
+        givenAgreedFiles();
+        givenDatastoreListing(1, datastoreFile("data/</script><img src=x>.csv", "VALID"));
+
+        mvc.perform(get("/upload/{datasetId}", datasetId))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("<section class=\"document-upload-section expected\">")))
+            .andExpect(content().string(containsString("<div class=\"expected-files\"></div>")))
+            .andExpect(content().string(containsString("<script id=\"expected-data\" type=\"application/json\">")))
+            .andExpect(content().string(containsString("<script id=\"datastore-paths-data\" type=\"application/json\">")))
+            .andExpect(content().string(not(containsString("</script><img"))))
+            .andExpect(content().string(containsString("data/\\u003c/script>\\u003cimg src=x>.csv")));
+    }
+
+    @Test
+    @SneakyThrows
+    void pageRendersNoExpectedFilesSectionWithoutAgreement() {
+        givenPage(false);
+        givenDataTransferIssue();
+        givenDropbox();
+        givenNoAgreement();
+
+        mvc.perform(get("/upload/{datasetId}", datasetId))
+            .andExpect(status().isOk())
+            .andExpect(content().string(not(containsString("expected-files"))))
+            .andExpect(content().string(not(containsString("expected-data"))));
+    }
+
+    @Test
     void pageStaysUpWhenAgreedFilesCannotBeRead() {
         givenPage(false);
         givenDataTransferIssue();

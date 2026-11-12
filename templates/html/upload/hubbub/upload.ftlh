@@ -12,6 +12,13 @@
             </@documentUploadSection>
         </#if>
 
+        <#if expected??>
+            <#-- The agreement's last agreed file listing, filled in and ticked off by UploadView (dri-one #536) -->
+            <@documentUploadSection title="Expected files" name="expected" icon="list-check">
+                <div class="expected-files"></div>
+            </@documentUploadSection>
+        </#if>
+
         <@documentUploadSection title="Arrivals" name="dropbox" icon="archive">
             <@loadingContainer "data"/>
             <@loadMoreRow "data"/>
@@ -74,6 +81,12 @@
     </#if>
     <#if metadata??>
         <@data "metadata" metadata/>
+    </#if>
+    <#if expected??>
+        <@data "expected" expected/>
+    </#if>
+    <#if datastorePaths??>
+        <@data "datastore-paths" datastorePaths/>
     </#if>
 </@skeleton.master>
 
