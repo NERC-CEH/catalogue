@@ -38,6 +38,8 @@ public class ServiceAgreement extends AbstractMetadataDocument {
 
     private List<File> files;
 
+    private List<FileGroup> fileGroups;
+
     private List<SupportingDoc> supportingDocs;
 
     private ResourceConstraint endUserLicence;
