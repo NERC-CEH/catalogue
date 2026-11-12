@@ -9,7 +9,8 @@ const toBytes = (number, unit = 'B') => Math.round(Number(number) * 1024 ** POWE
 /**
  * Reads a size as people write it ("32 MB", "0.4gb", "2048", "2-2.5 MB") into whole bytes, using
  * the binary multiples formatBytes shows. A single size gives { bytes }, a range { min, max }, and
- * anything else, or a size of nothing, null. A range's first unit may be left off ("2-2.5 MB").
+ * anything else, or a size of nothing, null. A range's first unit may be left off ("2-2.5 MB"),
+ * and a range whose ends are equal ("2-2 MB") is that one size.
  */
 export const parseSize = text => {
   const trimmed = String(text ?? '').trim()
@@ -22,7 +23,8 @@ export const parseSize = text => {
   if (range) {
     const min = toBytes(range[1], range[2] ?? range[4])
     const max = toBytes(range[3], range[4] ?? range[2])
-    return min > 0 && max > min ? { min, max } : null
+    if (min <= 0 || max < min) return null
+    return max === min ? { bytes: min } : { min, max }
   }
   return null
 }

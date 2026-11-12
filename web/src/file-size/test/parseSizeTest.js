@@ -27,6 +27,11 @@ describe('Reading a file size into bytes', () => {
     }
   })
 
+  it('reads a range whose ends are equal as that one size', () => {
+    expect(parseSize('2-2 MB')).toEqual({ bytes: 2097152 })
+    expect(parseExactSize('2 MB - 2 MB')).toBe(2097152)
+  })
+
   it('gives nothing for text that is not a size', () => {
     for (const text of ['2.5-2 MB', '>= 2 MB', 'about 2 MB', '', 'MB', '-3 MB', '0']) {
       expect(parseSize(text), text).toBeNull()
