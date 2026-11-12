@@ -308,7 +308,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             }
         }
 
-        int listedCount = files.size();
+        long listedCount = files.size();
         int groupIndex = 0;
         for (val group: fileGroups) {
             groupIndex++;
@@ -323,13 +323,13 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
 
             if (stringIsMissing(count)) {
                 toReturn.add(new MetadataCheck("File group " + groupIndex + " number of files is missing", ERROR));
-            } else if (count.trim().matches("\\d+")) {
-                listedCount += Integer.parseInt(count.trim());
+            } else if (count.trim().matches("\\d{1,9}")) {
+                listedCount += Long.parseLong(count.trim());
             }
         }
 
         // a prose naming convention describes files that are not listed, so the count cannot be compared
-        if (stringIsMissing(fileNamingConvention) && !stringIsMissing(fileNumber) && fileNumber.trim().matches("\\d+")
+        if (stringIsMissing(fileNamingConvention) && !stringIsMissing(fileNumber) && fileNumber.trim().matches("\\d{1,9}")
             && Integer.parseInt(fileNumber.trim()) != listedCount) {
             toReturn.add(new MetadataCheck(
                 format("Number of files to be deposited (%s) differs from the files and file groups listed (%d)", fileNumber.trim(), listedCount),

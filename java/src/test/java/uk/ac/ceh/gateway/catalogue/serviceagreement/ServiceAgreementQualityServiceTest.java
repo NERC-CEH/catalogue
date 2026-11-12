@@ -312,6 +312,12 @@ public class ServiceAgreementQualityServiceTest {
     }
 
     @Test
+    public void oversizedNumbersAreTreatedAsNonNumeric() {
+        val json = "{\"fileNumber\": \"99999999999\", \"fileGroups\": [{\"pattern\": \"a*.csv\", \"count\": \"99999999999\"}]}";
+        assertThat(checkFilesJson(json), empty());
+    }
+
+    @Test
     public void resultsErrors() {
         //given
         val checks = Arrays.asList(
