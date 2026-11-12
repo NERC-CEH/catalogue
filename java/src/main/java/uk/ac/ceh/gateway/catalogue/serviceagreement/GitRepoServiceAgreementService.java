@@ -372,9 +372,12 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
 
     @SneakyThrows
     public void publishServiceAgreement(CatalogueUser user, String id) {
+        val serviceAgreement = get(user, id);
+        // Before the dataset record's check: the workflow has already committed the agreed state, so the
+        // snapshot must follow every agreement, including a re-agreement after the record was published.
+        saveAgreedFiles(user, id, serviceAgreement);
         val gemini = (GeminiDocument) documentRepository.read(id);
         val metadataRecordState = gemini.getState();
-        val serviceAgreement = get(user, id);
         val serviceAgreementState = serviceAgreement.getState();
         log.debug("gemini: {}, service agreement: {}", metadataRecordState, serviceAgreementState);
         if (metadataRecordState.equals(DRAFT)) {
@@ -387,7 +390,6 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             );
             log.info("Publishing Service Agreement: {}", id);
             removeEditPermissions(user, id, serviceAgreement);
-            saveAgreedFiles(user, id, serviceAgreement);
             sendJiraComment(serviceAgreement, user, "agreed upon and published");
         } else {
             val message = format(

@@ -1104,6 +1104,30 @@ public class GitRepoServiceAgreementServiceTest {
 
     @Test
     @SneakyThrows
+    void reAgreementAfterDatasetPublishedRefreshesSnapshot() {
+        //given an agreed agreement, sent back to draft and edited
+        val service = agreedService();
+        moveTo(service, "draft");
+        service.doTransitionAction(user, ID, ServiceAgreementPublicationConfig.agreedToDraftId);
+        val newFiles = List.of(file("other.txt"));
+        val newGroups = List.of(fileGroup("x*.csv", 1));
+        service.update(user, ID, agreementWith(newFiles, newGroups, "1"));
+
+        //when it is agreed again, after its dataset record was published, so the workflow's state commit
+        //stands but the dataset record is not repopulated
+        moveTo(service, "agreed");
+        val published = new GeminiDocument();
+        published.setId(ID);
+        published.setMetadata(MetadataInfo.builder().state("published").build());
+        given(documentRepository.read(ID)).willReturn(published);
+        assertThrows(ServiceAgreementException.class, () -> service.publishServiceAgreement(user, ID));
+
+        //then the snapshot is the newly agreed listing
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(newFiles, newGroups, "1", false))));
+    }
+
+    @Test
+    @SneakyThrows
     void agreedBeforeSnapshotsExistUsesCurrent() {
         //given an agreement in the agreed state that was agreed before snapshots were kept
         val service = gitBackedService();
