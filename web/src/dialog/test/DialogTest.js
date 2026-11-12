@@ -4,7 +4,16 @@ import { dialog } from '../src/dialog'
 
 // The dialogs on Bootstrap's own modal, opened and closed for real, as a user would
 describe('dialog', () => {
-  const open = () => vi.waitFor(() => expect(document.querySelector('.modal.show')).not.toBeNull())
+  // Opening, focusing and closing wait on Bootstrap's fade transitions, which a busy CI runner can
+  // stretch past waitFor's default second (job 95051)
+  const settled = { timeout: 5000 }
+  // .show is added as the fade-in starts, and Bootstrap ignores a hide (×, Escape, a button) until it
+  // ends; the dialog focuses its first button on shown.bs.modal, so focus inside means it has settled
+  const open = () => vi.waitFor(() => {
+    const modal = document.querySelector('.modal.show')
+    expect(modal).not.toBeNull()
+    expect(modal.contains(document.activeElement)).toBe(true)
+  }, settled)
   const shown = () => document.querySelector('.modal.show')
   const buttons = () => [...shown().querySelectorAll('.modal-footer button')].map(each => each.textContent)
 
@@ -14,7 +23,7 @@ describe('dialog', () => {
     for (let modal; (modal = document.querySelector('.modal'));) {
       await open()
       modal.querySelector('.btn-close').click()
-      await vi.waitFor(() => expect(modal.isConnected).toBe(false))
+      await vi.waitFor(() => expect(modal.isConnected).toBe(false), settled)
       await new Promise(resolve => setTimeout(resolve, 0))
     }
     expect($('.modal-backdrop').length).toBe(0)
@@ -30,7 +39,7 @@ describe('dialog', () => {
       expect(buttons()).toEqual(['Cancel', 'Yes, delete it'])
       expect(shown().querySelector('[data-dialog-confirm]').classList).toContain('btn-danger')
       // Not the button that deletes, for something that can't be undone
-      await vi.waitFor(() => expect(document.activeElement?.textContent).toBe('Cancel'))
+      await vi.waitFor(() => expect(document.activeElement?.textContent).toBe('Cancel'), settled)
 
       shown().querySelector('[data-dialog-confirm]').click()
 
@@ -59,7 +68,7 @@ describe('dialog', () => {
     it('warns, with a primary button that has the focus, unless told otherwise', async () => {
       dialog.confirm({ title: 'Are you sure?' })
       await open()
-      await vi.waitFor(() => expect(document.activeElement).toBe(shown().querySelector('[data-dialog-confirm]')))
+      await vi.waitFor(() => expect(document.activeElement).toBe(shown().querySelector('[data-dialog-confirm]')), settled)
 
       expect(shown().querySelector('.modal-title i').className).toContain('fa-triangle-exclamation')
       expect(shown().querySelector('[data-dialog-confirm]').classList).toContain('btn-primary')
@@ -134,7 +143,7 @@ describe('dialog', () => {
 
     const answer = dialog.confirm({ title: 'Are you sure?' })
     await open()
-    await vi.waitFor(() => expect(document.activeElement).not.toBe(opener))
+    await vi.waitFor(() => expect(document.activeElement).not.toBe(opener), settled)
     shown().querySelector('.btn-close').click()
     await answer
 

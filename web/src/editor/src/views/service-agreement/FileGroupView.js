@@ -5,6 +5,7 @@ import { ensureFormatDatalist, setFormat } from '../../utils/formatPicker'
 import { showSizeRecognised } from '../../utils/sizeInput'
 import { formatBytes } from '../../../../file-size/formatBytes'
 import { parseExactSize, parseSize } from '../../../../file-size/parseSize'
+import { matchesPattern } from '../../../../hubbub/src/Expected/matchExpected'
 
 export default ObjectInputView.extend({
   template,
@@ -12,6 +13,23 @@ export default ObjectInputView.extend({
   render () {
     ensureFormatDatalist()
     return ObjectInputView.prototype.render.apply(this)
+  },
+
+  // The tester box has no data-name, so modify's default case (ObjectInputView.modify) never saves what is typed in it
+  events: Object.assign({}, ObjectInputView.prototype.events, {
+    'input .pattern-tester': 'tryName',
+    'input [data-name="pattern"]': 'tryName'
+  }),
+
+  // Says whether the name typed fits the pattern, compared as the Hubbub upload page compares uploads
+  tryName () {
+    const pattern = this.$('[data-name="pattern"]').val().trim()
+    const name = this.$('.pattern-tester').val().trim()
+    let result = ''
+    if (pattern && name) {
+      result = matchesPattern(pattern, name) ? 'matches this pattern' : "doesn't match this pattern"
+    }
+    this.$('.pattern-tester-result').text(result)
   },
 
   modify (event) {
