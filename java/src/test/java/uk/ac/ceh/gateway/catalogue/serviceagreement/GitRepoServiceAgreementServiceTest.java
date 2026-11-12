@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
+import com.google.common.eventbus.EventBus;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -9,16 +10,24 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.web.client.RestClientResponseException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import uk.ac.ceh.components.datastore.*;
+import uk.ac.ceh.components.datastore.git.GitDataRepository;
+import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.config.ServiceAgreementPublicationConfig;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.document.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -28,23 +37,27 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.publication.State;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
+import uk.ac.ceh.gateway.catalogue.publication.Workflow;
 import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -92,6 +105,10 @@ public class GitRepoServiceAgreementServiceTest {
     @Mock private JiraService jiraService;
     @Mock private ServiceAgreementPublicationService publicationService;
 
+    private final Workflow workflow = new ServiceAgreementPublicationConfig().workflow();
+    /** As the application's mapper, which picks up the Guava module {@link MetadataInfo} needs. */
+    private final ObjectMapper objectMapper = JsonMapper.builder().findAndAddModules().build();
+
     private ServiceAgreementService service;
     private ServiceAgreement serviceAgreement;
 
@@ -113,6 +130,8 @@ public class GitRepoServiceAgreementServiceTest {
             documentRepository,
             jiraService,
             publicationService,
+            workflow,
+            objectMapper,
             Clock.fixed(NOW, ZoneOffset.UTC)
         );
         serviceAgreement = new ServiceAgreement();
@@ -590,6 +609,8 @@ public class GitRepoServiceAgreementServiceTest {
             )
         );
         verify(documentRepository).save(user, expected, "populated from service agreement");
+        // not in the agreed state, so no agreed file listing is kept (publishWritesAgreedSnapshot covers agreed)
+        verify(repo, never()).submitData(eq(FOLDER + ID + ".agreed.json"), any());
     }
 
     @Test
@@ -974,4 +995,324 @@ public class GitRepoServiceAgreementServiceTest {
         }
     }
 
+
+    // --- The last agreed file listing, against a real git datastore ---
+
+    @TempDir
+    Path datastore;
+
+    private DataRepository<CatalogueUser> gitRepo;
+
+    /** A service over a real git datastore and real mappers, so snapshots are written and read back. */
+    @SneakyThrows
+    private ServiceAgreementService gitBackedService() {
+        gitRepo = new GitDataRepository<>(datastore.toFile(), CatalogueUser::new, new EventBus());
+        return new GitRepoServiceAgreementService(
+            BASE_URI,
+            gitRepo,
+            cachedDataRepository,
+            new JacksonDocumentInfoMapper<>(objectMapper, MetadataInfo.class),
+            new JacksonDocumentInfoMapper<>(objectMapper, ServiceAgreement.class),
+            documentRepository,
+            jiraService,
+            publicationService,
+            workflow,
+            objectMapper,
+            Clock.fixed(NOW, ZoneOffset.UTC)
+        );
+    }
+
+    private static File file(String name) {
+        val file = new File();
+        file.setName(name);
+        file.setFormat("csv");
+        file.setSize("1 MB");
+        return file;
+    }
+
+    private static FileGroup fileGroup(String pattern, int count) {
+        val group = new FileGroup();
+        group.setPattern(pattern);
+        group.setCount(count);
+        group.setFormat("csv");
+        group.setSize("10 MB");
+        group.setDescription("one per site");
+        return group;
+    }
+
+    private static ServiceAgreement agreementWith(List<File> files, List<FileGroup> groups, String fileNumber) {
+        val agreement = new ServiceAgreement();
+        agreement.setTitle("Test");
+        agreement.setDepositorContactDetails("depositor@example.com");
+        agreement.setFiles(files);
+        agreement.setFileGroups(groups);
+        agreement.setFileNumber(fileNumber);
+        return agreement;
+    }
+
+    private static final List<File> AGREED_FILES = List.of(file("readme.txt"), file("data/summary.csv"));
+    private static final List<FileGroup> AGREED_GROUPS = List.of(fileGroup("site*/CP_*.csv", 12));
+
+    /** Moves the stored agreement to {@code state}, as the publication workflow's own metadata commit does. */
+    @SneakyThrows
+    private void moveTo(ServiceAgreementService service, String state) {
+        val metadata = new JacksonDocumentInfoMapper<>(objectMapper, MetadataInfo.class)
+            .readInfo(gitRepo.getData(FOLDER + ID + ".meta").getInputStream());
+        service.updateMetadata(user, ID, metadata.withState(state));
+    }
+
+    /** Creates the agreement and takes it through agreement, as the workflow's agree transition does. */
+    @SneakyThrows
+    private ServiceAgreementService agreedService() {
+        val service = gitBackedService();
+        service.create(user, ID, catalogueKey, agreementWith(AGREED_FILES, AGREED_GROUPS, "14"));
+        moveTo(service, "agreed");
+        givenDraftGeminiDocument();
+        service.publishServiceAgreement(user, ID);
+        return service;
+    }
+
+    @Test
+    @SneakyThrows
+    void publishWritesAgreedSnapshot() {
+        //given
+        val service = agreedService();
+
+        //then a snapshot is stored beside the agreement, without the read-time revising flag
+        try (val stored = gitRepo.getData(FOLDER + ID + ".agreed.json").getInputStream()) {
+            val json = new String(stored.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+            assertThat(json, containsString("site*/CP_*.csv"));
+            assertThat(json, org.hamcrest.Matchers.not(containsString("revising")));
+        }
+        //and it is what is read back, not yet being revised
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, false))));
+    }
+
+    @Test
+    @SneakyThrows
+    void snapshotSurvivesLaterDraftEdits() {
+        //given an agreed agreement, sent back to draft
+        val service = agreedService();
+        moveTo(service, "draft");
+        service.doTransitionAction(user, ID, ServiceAgreementPublicationConfig.agreedToDraftId);
+
+        //when the depositor edits its files
+        service.update(user, ID, agreementWith(
+            List.of(file("other.txt")), List.of(fileGroup("x*.csv", 1)), "1"));
+
+        //then the agreed listing is still the one agreed, marked as being revised
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, true))));
+    }
+
+    @Test
+    @SneakyThrows
+    void reAgreementAfterDatasetPublishedRefreshesSnapshot() {
+        //given an agreed agreement, sent back to draft and edited
+        val service = agreedService();
+        moveTo(service, "draft");
+        service.doTransitionAction(user, ID, ServiceAgreementPublicationConfig.agreedToDraftId);
+        val newFiles = List.of(file("other.txt"));
+        val newGroups = List.of(fileGroup("x*.csv", 1));
+        service.update(user, ID, agreementWith(newFiles, newGroups, "1"));
+
+        //when it is agreed again, after its dataset record was published, so the workflow's state commit
+        //stands but the dataset record is not repopulated
+        moveTo(service, "agreed");
+        val published = new GeminiDocument();
+        published.setId(ID);
+        published.setMetadata(MetadataInfo.builder().state("published").build());
+        given(documentRepository.read(ID)).willReturn(published);
+        assertThrows(ServiceAgreementException.class, () -> service.publishServiceAgreement(user, ID));
+
+        //then the snapshot is the newly agreed listing
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(newFiles, newGroups, "1", false, false))));
+    }
+
+    @Test
+    @SneakyThrows
+    void publishWhenNotAgreedWritesNoSnapshot() {
+        //given an agreement not yet agreed, reached directly rather than through the agree transition
+        val service = gitBackedService();
+        service.create(user, ID, catalogueKey, agreementWith(AGREED_FILES, AGREED_GROUPS, "14"));
+        moveTo(service, "ready-for-agreement");
+        givenDraftGeminiDocument();
+
+        //when
+        service.publishServiceAgreement(user, ID);
+
+        //then the rest of publication still happens, but nothing is kept as agreed
+        verify(documentRepository).save(eq(user), any(GeminiDocument.class), eq("populated from service agreement"));
+        assertThrows(DataRepositoryException.class, () -> gitRepo.getData(FOLDER + ID + ".agreed.json"));
+        assertThat(service.agreedFiles(ID), is(Optional.empty()));
+    }
+
+    @Test
+    @SneakyThrows
+    void publishWhenNotAgreedLeavesEarlierSnapshot() {
+        //given an agreed agreement, sent back to draft and edited
+        val service = agreedService();
+        moveTo(service, "draft");
+        service.doTransitionAction(user, ID, ServiceAgreementPublicationConfig.agreedToDraftId);
+        service.update(user, ID, agreementWith(List.of(file("other.txt")), List.of(fileGroup("x*.csv", 1)), "1"));
+
+        //when publish is reached without agreeing
+        service.publishServiceAgreement(user, ID);
+
+        //then the earlier agreed listing is unchanged, and still shown as being revised
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, true))));
+    }
+
+    @Test
+    @SneakyThrows
+    void agreedBeforeSnapshotsExistUsesCurrent() {
+        //given an agreement in the agreed state that was agreed before snapshots were kept
+        val service = gitBackedService();
+        service.create(user, ID, catalogueKey, agreementWith(AGREED_FILES, AGREED_GROUPS, "14"));
+        moveTo(service, "agreed");
+
+        //then its current content is the last agreed version
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, false))));
+    }
+
+    @Test
+    @SneakyThrows
+    void neverAgreedOrSentBackWithoutSnapshotIsEmpty() {
+        val service = gitBackedService();
+
+        //no agreement at all
+        assertThat(service.agreedFiles(ID), is(Optional.empty()));
+
+        //never agreed
+        service.create(user, ID, catalogueKey, agreementWith(AGREED_FILES, AGREED_GROUPS, "14"));
+        assertThat(service.agreedFiles(ID), is(Optional.empty()));
+
+        //agreed before snapshots were kept, then sent back to draft
+        moveTo(service, "agreed");
+        moveTo(service, "draft");
+        assertThat(service.agreedFiles(ID), is(Optional.empty()));
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteRemovesSnapshot() {
+        //given
+        val service = agreedService();
+
+        //when
+        service.delete(user, ID);
+
+        //then
+        assertThat(service.agreedFiles(ID), is(Optional.empty()));
+        assertThrows(DataRepositoryException.class, () -> gitRepo.getData(FOLDER + ID + ".agreed.json"));
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteWithoutSnapshot() {
+        //given an agreement never agreed, so with no snapshot
+        val service = gitBackedService();
+        service.create(user, ID, catalogueKey, agreementWith(AGREED_FILES, AGREED_GROUPS, "14"));
+
+        //when
+        service.delete(user, ID);
+
+        //then
+        assertThrows(DataRepositoryException.class, () -> gitRepo.getData(FOLDER + ID + ".meta"));
+    }
+
+    @Test
+    @SneakyThrows
+    @ExtendWith(OutputCaptureExtension.class)
+    void absentAgreementIsQuietlyEmpty(CapturedOutput output) {
+        given(repo.getData(FOLDER + ID + ".meta")).willThrow(new GitFileNotFoundException("absent"));
+
+        assertThat(service.agreedFiles(ID), is(Optional.empty()));
+        assertThat(output.getOut(), not(containsString("WARN")));
+    }
+
+    @Test
+    @SneakyThrows
+    @ExtendWith(OutputCaptureExtension.class)
+    void unreadableAgreementIsEmptyAndWarned(CapturedOutput output) {
+        given(repo.getData(FOLDER + ID + ".meta")).willThrow(new DataRepositoryException("disk fault"));
+
+        assertThat(service.agreedFiles(ID), is(Optional.empty()));
+        assertThat(output.getOut(), containsString("WARN"));
+        assertThat(output.getOut(), containsString(ID));
+    }
+
+    @Test
+    @SneakyThrows
+    @ExtendWith(OutputCaptureExtension.class)
+    void unreadableSnapshotIsTreatedAsAbsentAndWarned(CapturedOutput output) {
+        //given an agreed agreement whose snapshot cannot be read for a reason other than its absence
+        val meta = mock(DataDocument.class);
+        val raw = mock(DataDocument.class);
+        given(repo.getData(FOLDER + ID + ".meta")).willReturn(meta);
+        given(meta.getInputStream()).willReturn(InputStream.nullInputStream());
+        given(metadataInfoMapper.readInfo(any())).willReturn(MetadataInfo.builder().state("agreed").build());
+        given(repo.getData(FOLDER + ID + ".agreed.json")).willThrow(new DataRepositoryException("disk fault"));
+        given(repo.getData(FOLDER + ID + ".raw")).willReturn(raw);
+        given(raw.getInputStream()).willReturn(InputStream.nullInputStream());
+        given(serviceAgreementMapper.readInfo(any())).willReturn(agreementWith(AGREED_FILES, AGREED_GROUPS, "14"));
+
+        //then the current content stands in, as for an agreement agreed before snapshots, and it is logged
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, false))));
+        assertThat(output.getOut(), containsString("WARN"));
+    }
+
+    @Test
+    @SneakyThrows
+    void snapshotKeepsWhetherThereIsANamingConvention() {
+        //given an agreement agreed with a prose naming convention
+        val service = gitBackedService();
+        val agreement = agreementWith(AGREED_FILES, AGREED_GROUPS, "14");
+        agreement.setFileNamingConvention("One file per site, named after the site");
+        service.create(user, ID, catalogueKey, agreement);
+        moveTo(service, "agreed");
+        givenDraftGeminiDocument();
+        service.publishServiceAgreement(user, ID);
+
+        //then the snapshot says so, without the prose itself
+        try (val stored = gitRepo.getData(FOLDER + ID + ".agreed.json").getInputStream()) {
+            val json = new String(stored.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+            assertThat(json, containsString("\"hasNamingConvention\":true"));
+            assertThat(json, not(containsString("named after the site")));
+        }
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", true, false))));
+    }
+
+    @Test
+    @SneakyThrows
+    void snapshotWithoutNamingConventionFieldReadsAsNone() {
+        //given a snapshot stored before hasNamingConvention was kept
+        val older = objectMapper.readValue("""
+            {"files": [], "fileGroups": [], "fileNumber": "3"}
+            """, AgreedFiles.class);
+
+        assertThat(older, is(new AgreedFiles(List.of(), List.of(), "3", false, false)));
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "\t"})
+    void blankNamingConventionIsNone(String convention) {
+        val agreement = agreementWith(AGREED_FILES, AGREED_GROUPS, "14");
+        agreement.setFileNamingConvention(convention);
+
+        assertThat(AgreedFiles.of(agreement, false).hasNamingConvention(), is(false));
+    }
+
+    @Test
+    @SneakyThrows
+    void agreedBeforeSnapshotsExistKeepsNamingConvention() {
+        //given an agreement agreed before snapshots were kept, with a prose naming convention
+        val service = gitBackedService();
+        val agreement = agreementWith(AGREED_FILES, AGREED_GROUPS, "14");
+        agreement.setFileNamingConvention("CP_<site>.csv");
+        service.create(user, ID, catalogueKey, agreement);
+        moveTo(service, "agreed");
+
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", true, false))));
+    }
 }

@@ -2,7 +2,7 @@ import _ from 'underscore'
 import Backbone from 'backbone'
 import {
   AuthorView, CategoryView, EndUserLicenceView,
-  FileView, FundingView, KeywordThemeView, KeywordVocabularyView,
+  FileGroupView, FileView, FundingView, KeywordThemeView, KeywordVocabularyView,
   ParentView,
   PredefinedParentView, RightsHolderView,
   RadioView, SingleObjectView, SupportingDocView,
@@ -198,8 +198,9 @@ export default EditorView.extend({
           model: this.model,
           label: 'Files',
           text: `\
-<p>List the files to be deposited below - filenames must not include any spaces or special characters other than hyphens or underscores.</p>
-<p>If there are a too many files to list separately, you can specify a naming convention below instead.</p>\
+<p>Give each file's path within the deposit, including any folders, e.g. <code>site1/2024.csv</code>. Paths must not include spaces or special characters other than hyphens, underscores and full stops.</p>
+<p>If there are too many files to list separately, describe them as groups below instead.</p>
+<p>Files uploaded through the catalogue are stored with names in lower case and hyphens in place of spaces, and the upload page compares uploaded names with this list ignoring case and treating spaces as hyphens. A zip file's contents are unpacked into a folder named after the zip: <code>data.zip</code> containing <code>site1/x.csv</code> is stored as <code>data/site1/x.csv</code>, so give paths that include that folder.</p>\
 `
         }),
 
@@ -220,17 +221,19 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
-          labels: 'fileNamingConvention',
-          label: 'Naming convention',
+          label: 'File groups',
           text: `\
-<p>Please describe a convention, or multiple conventions, that cover any files to be deposited not described in the previous field. Indicate sizes (or a size range) for each file covered by the convention and also the total size of the files covered by the naming convention.</p>
-<p>Example: 200 files CP_&lt;REGION&gt;_MInv_&lt;determinandLabel&gt;Stats_&lt;startDate-endDate&gt;.csv. Where &lt;REGION&gt; is the Region code: &lt;startDate-endDate&gt; correspond to date format YYYYMMDD-YYYYMMDD and &lt;determinandlLabel&gt; is the chemical determinand name. Size range: 2-2.5 MB Total size: 443.1 MB</p>\
+<p>Describe any files not listed above by a pattern, with the number of files it covers. In a pattern, <code>*</code> stands for any run of characters within a file or folder name and <code>?</code> for any single character; use <code>/</code> to separate folders. Give the size of each file (or a range) and the total size of the group.</p>
+<p>Example: pattern <code>CP_*_MInv_*Stats_*.csv</code>, 200 files, format csv, size 2-2.5 MB each (443.1 MB in total). Here the first <code>*</code> is the region code, the second the determinand name and the third the date range, e.g. 20200101-20201231.</p>
+<p>As with the files above, files uploaded through the catalogue are stored with names in lower case and hyphens in place of spaces, and the upload page compares uploaded names with these patterns ignoring case and treating spaces as hyphens. A zip file's contents are unpacked into a folder named after the zip (<code>data.zip</code> containing <code>site1/x.csv</code> becomes <code>data/site1/x.csv</code>), so include that folder in the pattern.</p>\
 `
         }),
 
-        new TextareaView({
+        new ParentView({
           model: this.model,
-          modelAttribute: 'fileNamingConvention'
+          modelAttribute: 'fileGroups',
+          ObjectInputView: FileGroupView,
+          multiline: true
         }),
 
         new TextOnlyView({

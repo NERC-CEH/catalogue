@@ -4,7 +4,9 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import tools.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
@@ -14,6 +16,7 @@ import org.springframework.web.client.RestClientResponseException;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
+import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.config.ServiceAgreementPublicationConfig;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -21,6 +24,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataConflictException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
+import uk.ac.ceh.gateway.catalogue.publication.Workflow;
 import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
@@ -44,6 +48,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
     private final ServiceAgreementPublicationService publicationService;
+    private final Workflow workflow;
+    private final ObjectMapper objectMapper;
     private final Clock clock;
     public static final String PUBLISHED = "published";
     public static final String FOLDER = "service-agreement/";
@@ -51,6 +57,14 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private static final String SUBMITTED = "submitted";
     private static final String PENDING_PUBLICATION = "pending publication";
     private static final String CEH_DOMAIN = "@ceh.ac.uk";
+    /** The workflow state an agreement is in once agreed; see {@link ServiceAgreementPublicationConfig}. */
+    private static final String AGREED = "agreed";
+    /**
+     * Suffix of the snapshot of the agreed file listing, beside the agreement's {@code .meta} and
+     * {@code .raw}. Only those two make a document to the listing and indexing code, so this one is
+     * never listed or indexed.
+     */
+    private static final String AGREED_FILES_SUFFIX = ".agreed.json";
 
     /**
      * How far back {@link #getHistory} looks: five years, in seconds.
@@ -75,9 +89,11 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper,
             DocumentRepository documentRepository,
             JiraService jiraService,
-            @Lazy ServiceAgreementPublicationService publicationService) {
+            @Lazy ServiceAgreementPublicationService publicationService,
+            @Qualifier("service-agreement") Workflow workflow,
+            ObjectMapper objectMapper) {
         this(baseUri, repo, cachedDataRepository, metadataInfoMapper, serviceAgreementMapper,
-                documentRepository, jiraService, publicationService, Clock.systemUTC());
+                documentRepository, jiraService, publicationService, workflow, objectMapper, Clock.systemUTC());
     }
 
     /** Package-private, so a test can fix the instant the history window is measured back from. */
@@ -90,6 +106,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             DocumentRepository documentRepository,
             JiraService jiraService,
             ServiceAgreementPublicationService publicationService,
+            Workflow workflow,
+            ObjectMapper objectMapper,
             Clock clock) {
         this.baseUri = baseUri;
         this.repo = repo;
@@ -99,6 +117,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         this.documentRepository = documentRepository;
         this.jiraService = jiraService;
         this.publicationService = publicationService;
+        this.workflow = workflow;
+        this.objectMapper = objectMapper;
         this.clock = clock;
         log.info("Creating");
     }
@@ -243,10 +263,14 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
 
     @SneakyThrows
     public void delete(CatalogueUser user, String id) {
-        repo
+        var deletion = repo
             .deleteData(FOLDER + id + ".meta")
-            .deleteData(FOLDER + id + ".raw")
-            .commit(user, "delete document: " + id);
+            .deleteData(FOLDER + id + ".raw");
+        // Only an agreement that has been agreed has a snapshot
+        if (agreedFilesDocument(id).isPresent()) {
+            deletion = deletion.deleteData(FOLDER + id + AGREED_FILES_SUFFIX);
+        }
+        deletion.commit(user, "delete document: " + id);
         cachedDataRepository.evictAfterDirectWrite(FOLDER + id);
     }
 
@@ -349,9 +373,16 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
 
     @SneakyThrows
     public void publishServiceAgreement(CatalogueUser user, String id) {
+        val serviceAgreement = get(user, id);
+        // Before the dataset record's check: the workflow has already committed the agreed state, so the
+        // snapshot must follow every agreement, including a re-agreement after the record was published.
+        // Only when agreed, though: anyone who can edit can also reach this through POST {id}/publish, and
+        // must not be able to snapshot content nobody agreed.
+        if (isAgreed(serviceAgreement.getMetadata())) {
+            saveAgreedFiles(user, id, serviceAgreement);
+        }
         val gemini = (GeminiDocument) documentRepository.read(id);
         val metadataRecordState = gemini.getState();
-        val serviceAgreement = get(user, id);
         val serviceAgreementState = serviceAgreement.getState();
         log.debug("gemini: {}, service agreement: {}", metadataRecordState, serviceAgreementState);
         if (metadataRecordState.equals(DRAFT)) {
@@ -422,6 +453,77 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         );
         serviceAgreement.setHistorical(true);
         return serviceAgreement;
+    }
+
+    /**
+     * Keeps the file listing as agreed, so the upload page can check against it after the agreement is sent
+     * back to draft and edited. Its own commit, as the agreement's commits are made by the workflow and
+     * {@link #removeEditPermissions}; its message must not match the {@link #getHistory} pattern, or it
+     * would show as a version of the agreement.
+     */
+    @SneakyThrows
+    private void saveAgreedFiles(CatalogueUser user, String id, ServiceAgreement serviceAgreement) {
+        val snapshot = AgreedFiles.of(serviceAgreement, false);
+        repo
+            .submitData(FOLDER + id + AGREED_FILES_SUFFIX, o -> objectMapper.writeValue(o, snapshot))
+            .commit(user, "saving agreed files of service agreement " + id);
+        cachedDataRepository.evictAfterDirectWrite(FOLDER + id);
+    }
+
+    /**
+     * Reads at HEAD only, a blob lookup per file: never the history, which is an unbounded walk of the
+     * whole datastore.
+     */
+    @Override
+    @SneakyThrows
+    public Optional<AgreedFiles> agreedFiles(String id) {
+        final MetadataInfo metadataInfo;
+        try {
+            metadataInfo = metadataInfoMapper.readInfo(repo.getData(FOLDER + id + ".meta").getInputStream());
+        } catch (GitFileNotFoundException noAgreement) {
+            return Optional.empty();
+        } catch (DataRepositoryException ex) {
+            log.warn("{}: service agreement unreadable, so no agreed files", id, ex);
+            return Optional.empty();
+        }
+        val agreed = isAgreed(metadataInfo);
+        val snapshot = readAgreedFilesSnapshot(id);
+        if (snapshot.isPresent()) {
+            return Optional.of(snapshot.get().withRevising(!agreed));
+        }
+        if (agreed) {
+            // Agreed before snapshots were kept: what it holds now is what was agreed
+            val current = serviceAgreementMapper.readInfo(repo.getData(FOLDER + id + ".raw").getInputStream());
+            return Optional.of(AgreedFiles.of(current, false));
+        }
+        // Sent back to draft without a snapshot: what was agreed is no longer known
+        return Optional.empty();
+    }
+
+    private boolean isAgreed(MetadataInfo metadataInfo) {
+        return AGREED.equals(workflow.currentState(metadataInfo).getId());
+    }
+
+    @SneakyThrows
+    private Optional<AgreedFiles> readAgreedFilesSnapshot(String id) {
+        val document = agreedFilesDocument(id);
+        if (document.isEmpty()) {
+            return Optional.empty();
+        }
+        try (val in = document.get().getInputStream()) {
+            return Optional.of(objectMapper.readValue(in, AgreedFiles.class));
+        }
+    }
+
+    private Optional<DataDocument> agreedFilesDocument(String id) {
+        try {
+            return Optional.ofNullable(repo.getData(FOLDER + id + AGREED_FILES_SUFFIX));
+        } catch (GitFileNotFoundException noSnapshot) {
+            return Optional.empty();
+        } catch (DataRepositoryException ex) {
+            log.warn("{}: agreed files snapshot unreadable, so treated as absent", id, ex);
+            return Optional.empty();
+        }
     }
 
     @SneakyThrows

@@ -4,6 +4,7 @@ import lombok.val;
 import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.File;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.FileGroup;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 
 import java.util.ArrayList;
@@ -38,6 +39,13 @@ class GeminiDocumentServiceAgreementTest {
         file.setName(name);
         file.setFormat(format);
         return file;
+    }
+
+    private static FileGroup fileGroup(String pattern, String format) {
+        val fileGroup = new FileGroup();
+        fileGroup.setPattern(pattern);
+        fileGroup.setFormat(format);
+        return fileGroup;
     }
 
     private static ResponsibleParty person(String name, String email) {
@@ -92,6 +100,24 @@ class GeminiDocumentServiceAgreementTest {
             file("site2/2024.csv", "csv"),
             file("readme", " "),
             file("grid.nc", "NetCDF ")
+        ));
+        val gemini = new GeminiDocument();
+
+        gemini.populateFromServiceAgreement(serviceAgreement);
+
+        assertThat(gemini.getDistributionFormats(), contains(
+            DistributionInfo.builder().name("CSV").build(),
+            DistributionInfo.builder().name("NetCDF").build()
+        ));
+    }
+
+    @Test
+    void groupFormatsAreCopiedWithFileFormats() {
+        val serviceAgreement = serviceAgreement();
+        serviceAgreement.setFiles(List.of(file("site1/2024.csv", "CSV")));
+        serviceAgreement.setFileGroups(List.of(
+            fileGroup("csv", "csv"),
+            fileGroup("grid", "NetCDF")
         ));
         val gemini = new GeminiDocument();
 

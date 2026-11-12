@@ -258,6 +258,24 @@ class ServiceAgreementModelAssemblerTest {
         assertEquals("acronym explanation", model.getTitleAcronymExplanation());
     }
 
+    @Test
+    void fileGroupsAreCopiedToModel() {
+        //given
+        val group = new FileGroup();
+        group.setPattern("site*/CP_*.csv");
+        group.setCount(200);
+        val serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setId(id);
+        serviceAgreement.setMetadata(MetadataInfo.builder().state("published").build());
+        serviceAgreement.setFileGroups(List.of(group));
+
+        //when
+        val model = assembler.toModel(serviceAgreement);
+
+        //then
+        assertEquals(List.of(group), model.getFileGroups());
+    }
+
     @SneakyThrows
     private void givenDraftGeminiDocument() {
         val geminiDocument = new GeminiDocument();

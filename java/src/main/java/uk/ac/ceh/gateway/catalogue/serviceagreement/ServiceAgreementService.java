@@ -4,6 +4,8 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 
+import java.util.Optional;
+
 public interface ServiceAgreementService {
 
     ServiceAgreement get(CatalogueUser user, String id);
@@ -48,4 +50,14 @@ public interface ServiceAgreementService {
     StateResource transitState(CatalogueUser user, String id, String toState);
 
     void doTransitionAction(CatalogueUser user, String id, String transitionId);
+
+    /**
+     * The file listing of the service agreement as last agreed, for the Hubbub upload page. Empty when the
+     * agreement does not exist, has never been agreed, or was agreed before snapshots were kept and has since
+     * been sent back to draft.
+     *
+     * <p>Takes no user: it reads past the agreement's permissions, which change at publication, so the
+     * caller must have checked access already.</p>
+     */
+    Optional<AgreedFiles> agreedFiles(String id);
 }

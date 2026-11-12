@@ -3,6 +3,7 @@ import Backbone from 'backbone'
 import { File, FileCollection } from '../File'
 import { TableView } from '../table'
 import DropzoneView from './DropzoneView'
+import { ExpectedFilesView } from '../Expected'
 import { dialog } from '../../../dialog/src/dialog'
 
 export default Backbone.View.extend({
@@ -54,6 +55,9 @@ export default Backbone.View.extend({
     this.listenTo(this.metadata, 'update', () => this.showEmptyStorage(this.metadata, this.$metadata, 'metadata'))
     this.listenTo(this.model, 'change:metadataTotalFiles', () => this.renderTotalFiles('metadata'))
 
+    // Which listings came from Hubbub: a dropbox filled only by this page's own uploads isn't one
+    this.listed = { dropbox: $('#dropbox-data').length > 0, datastore: $('#datastore-data').length > 0 }
+
     const $datastoreData = $('#datastore-data')
     if ($datastoreData.length) {
       const response = JSON.parse($datastoreData.text())
@@ -96,6 +100,46 @@ export default Backbone.View.extend({
     this.listenTo(this.dropbox, 'addBatch', (models) => this.addBatch(this.dropboxView, this.dropbox, models))
     this.listenTo(this.datastore, 'addBatch', (models) => this.addBatch(this.datastoreView, this.datastore, models))
     this.listenTo(this.metadata, 'addBatch', (models) => this.addBatch(this.metadataView, this.metadata, models))
+
+    this.initializeExpectedFiles()
+  },
+
+  // The agreed file listing, ticked off as the dropbox and datastore listings change (dri-one #536)
+  initializeExpectedFiles () {
+    const $expectedData = $('#expected-data')
+    if (!$expectedData.length) return
+
+    const $datastorePaths = $('#datastore-paths-data')
+    // A depositor's page has only the datastore's paths: each one is there, its gone files left out
+    this.datastorePaths = $datastorePaths.length ? JSON.parse($datastorePaths.text()) : null
+
+    this.expectedFilesView = new ExpectedFilesView({
+      el: this.$('.expected-files')[0],
+      expected: JSON.parse($expectedData.text()),
+      sources: () => this.expectedSources()
+    })
+    const render = () => this.expectedFilesView.render()
+    // update, not add and remove: it comes once per batch, where they come once per file
+    ;[this.dropbox, this.datastore].forEach(collection => this.listenTo(collection, 'reset update change:status', render))
+    this.listenTo(this.model, 'change:dropboxPage change:dropboxLastPage change:datastorePage change:datastoreLastPage', render)
+    render()
+  },
+
+  expectedSources () {
+    const listed = file => ({ path: file.get('path'), status: file.get('status') })
+    const uploads = [...this.dropbox.map(listed), ...this.datastore.map(listed)]
+    const datastorePaths = !this.listed.datastore && this.datastorePaths
+    if (datastorePaths) {
+      uploads.push(...(datastorePaths.paths || []).map(path => ({ path, status: 'VALID' })))
+    }
+    const datastoreComplete = this.listed.datastore
+      ? this.checkLastPage('datastore')
+      : Boolean(datastorePaths && datastorePaths.complete)
+    return {
+      uploads,
+      complete: this.listed.dropbox && this.checkLastPage('dropbox') && datastoreComplete,
+      hasListings: this.listed.dropbox || this.listed.datastore || Boolean(datastorePaths)
+    }
   },
 
   uploaded (file) {
@@ -473,6 +517,7 @@ export default Backbone.View.extend({
       url: `${this.model.url()}/${datastore}?page=${page}&size=${size}`,
       dataType: 'json',
       success (response) {
+        self.listed[name] = true
         collection.reset(response.data)
         self.model.set(`${name}TotalFiles`, response.meta.totalFiles)
         self.model.set(`${name}LastPage`, response.meta.lastPage)

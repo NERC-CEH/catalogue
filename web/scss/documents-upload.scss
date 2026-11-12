@@ -86,6 +86,17 @@
         letter-spacing: 1px;
     }
 
+    // The agreed file listing (dri-one #536)
+    .expected-files {
+        .expected-path {
+            overflow-wrap: anywhere;
+        }
+
+        .expected-unmatched summary {
+            cursor: pointer;
+        }
+    }
+
     .filetable-content {
 
         table {

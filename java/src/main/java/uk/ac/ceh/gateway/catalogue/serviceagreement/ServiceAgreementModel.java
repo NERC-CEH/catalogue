@@ -40,6 +40,8 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
 
     private List<File> files;
 
+    private List<FileGroup> fileGroups;
+
     private List<SupportingDoc> supportingDocs;
 
     private ResourceConstraint endUserLicence;
@@ -75,6 +77,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.fileNumber = serviceAgreement.getFileNumber();
         this.fileNamingConvention = serviceAgreement.getFileNamingConvention();
         this.files = serviceAgreement.getFiles();
+        this.fileGroups = serviceAgreement.getFileGroups();
         this.supportingDocs = serviceAgreement.getSupportingDocs();
         this.transferMethod = serviceAgreement.getTransferMethod();
         this.dataCategory = serviceAgreement.getDataCategory();

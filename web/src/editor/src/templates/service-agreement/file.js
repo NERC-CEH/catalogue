@@ -3,7 +3,7 @@ import _ from 'underscore'
 export default _.template(`
 <div class="row">
     <div class="col-sm-1">
-        <label for="files<%- data.index %>Name">Name</label>
+        <label for="files<%- data.index %>Name">Path</label>
     </div>
     <div class="col-sm-3">
         <input data-name='name' class="editor-input" id="files<%- data.index %>Name" value="<%- data.name %>">
