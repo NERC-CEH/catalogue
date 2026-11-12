@@ -17,8 +17,17 @@
                 <tr>
                     <td><#if group.pattern?has_content>${group.pattern}<#else><span class="text-danger">missing</span></#if></td>
                     <td><#if group.count??>${group.count?c}<#else><span class="text-danger">missing</span></#if></td>
-                    <td>${group.format!""}</td>
-                    <td>${group.size!""}</td>
+                    <td>${group.format!""}<#if group.formatType?has_content> <span class="text-muted">${group.formatType}</span></#if></td>
+                    <td>
+                        <#if group.minBytes?? && group.maxBytes?? && group.minBytes != group.maxBytes>
+                            ${fileSizes.format(group.minBytes)} – ${fileSizes.format(group.maxBytes)}
+                        <#elseif group.minBytes?? || group.maxBytes??>
+                            ${fileSizes.format(group.minBytes!group.maxBytes)}
+                        <#else>
+                            ${group.size!""}
+                        </#if>
+                        <#if group.totalBytes??><div class="text-muted">${fileSizes.format(group.totalBytes)} in total</div></#if>
+                    </td>
                     <td>${group.description!""}</td>
                 </tr>
             </#list>
