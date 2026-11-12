@@ -34,6 +34,7 @@ export default Backbone.View.extend({
       hasListings && !complete
         ? '<p class="expected-partial text-body-secondary">The counts cover the files loaded so far.</p>'
         : '',
+      '<p class="expected-naming small text-body-secondary">Uploaded names are stored in lower case with hyphens in place of spaces, and a zip file\'s contents are unpacked into a folder named after it: <code>data.zip</code> containing <code>site1/x.csv</code> gives <code>data/site1/x.csv</code>.</p>',
       this.table(result, hasListings),
       hasListings ? this.unmatched(result.unmatched) : '',
       hasListings && result.total.differs

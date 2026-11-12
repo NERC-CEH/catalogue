@@ -19,6 +19,14 @@ export function patternToRegExp (pattern) {
   return new RegExp(`^${body}$`)
 }
 
+/**
+ * A name as an upload through the page stores it: lower case and a hyphen for each space, as
+ * UploadView.uploaded and UploadService.sanitisedFilename do. Applied to the agreement's side only,
+ * so a name typed as `Site 1/Data.csv` matches the `site-1/data.csv` that arrives. JavaScript's
+ * toLowerCase is locale-independent, like Java's toLowerCase(Locale.ROOT).
+ */
+export const asUploaded = name => name.toLowerCase().replaceAll(' ', '-')
+
 const isDigits = value => typeof value === 'string' || typeof value === 'number'
   ? /^\d+$/.test(String(value).trim())
   : false
@@ -26,7 +34,8 @@ const isDigits = value => typeof value === 'string' || typeof value === 'number'
 const toCount = value => isDigits(value) ? parseInt(String(value).trim(), 10) : null
 
 /**
- * Compare the agreed file listing with the uploaded files.
+ * Compare the agreed file listing with the uploaded files. Agreed names and patterns are first put
+ * as an upload stores them (asUploaded); upload paths are compared as listed.
  *
  * `expected` is `{ files, fileGroups, fileNumber }`, any of which may be absent, as may the
  * keys inside each file or group. `uploads` is `[{ path, status }]` from every listing that holds
@@ -42,19 +51,20 @@ export function matchExpected (expected, uploads, { complete }) {
     (uploads || []).filter(upload => !ABSENT_STATUSES.has(upload.status)).map(upload => upload.path)
   )
 
-  const named = new Set(files.map(file => file.name).filter(Boolean))
+  const named = new Set(files.map(file => file.name).filter(Boolean).map(asUploaded))
   const claimed = new Set()
 
   const fileResults = files.map(file => {
     if (!file.name) return { ...file, status: 'unknown' }
-    if (present.has(file.name)) {
-      claimed.add(file.name)
+    const name = asUploaded(file.name)
+    if (present.has(name)) {
+      claimed.add(name)
       return { ...file, status: 'uploaded' }
     }
     return { ...file, status: complete ? 'not-uploaded' : 'unknown' }
   })
 
-  const matchers = groups.map(group => group.pattern ? patternToRegExp(group.pattern) : null)
+  const matchers = groups.map(group => group.pattern ? patternToRegExp(asUploaded(group.pattern)) : null)
   const found = groups.map(() => 0)
   const unmatched = []
   present.forEach(path => {

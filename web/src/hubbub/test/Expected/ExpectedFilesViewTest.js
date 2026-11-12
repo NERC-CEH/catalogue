@@ -139,6 +139,24 @@ describe('ExpectedFilesView', function () {
     expect(view.$el.text()).not.toContain('undefined')
   })
 
+  it('explains how uploaded names are stored', function () {
+    render(expected, { uploads: [], complete: false, hasListings: false })
+
+    const note = view.$('.expected-naming').text()
+    expect(note).toContain('lower case with hyphens in place of spaces')
+    expect(note).toContain('data.zip containing site1/x.csv gives data/site1/x.csv')
+  })
+
+  it('ticks off a name typed with capitals once it arrives in lower case', function () {
+    render({ files: [{ name: 'Site1/Data.csv' }], fileGroups: [] }, {
+      uploads: [{ path: 'site1/data.csv', status: 'VALID' }],
+      complete: true,
+      hasListings: true
+    })
+
+    expect(row('Site1/Data.csv').find('.expected-status').text()).toBe('uploaded')
+  })
+
   it('says when the agreement lists no files', function () {
     render({ files: [], fileGroups: [] }, { uploads: [], complete: true, hasListings: true })
 

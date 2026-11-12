@@ -52,6 +52,37 @@ describe('ABSENT_STATUSES', function () {
 })
 
 describe('matchExpected', function () {
+  describe('puts agreed names as an upload stores them (dri-one #536)', function () {
+    it('lower-cases a named file', function () {
+      const result = run({ files: [{ name: 'CP_North.csv' }] }, [up('cp_north.csv')])
+      expect(result.files[0].status).toBe('uploaded')
+      expect(result.files[0].name).toBe('CP_North.csv')
+    })
+
+    it('turns spaces into hyphens, folders included', function () {
+      const result = run({ files: [{ name: 'Site 1/A File.csv' }] }, [up('site-1/a-file.csv')])
+      expect(result.files[0].status).toBe('uploaded')
+      expect(result.unmatched).toEqual([])
+    })
+
+    it('lower-cases a group pattern', function () {
+      const result = run({ fileGroups: [{ pattern: 'CP_*_North.csv', count: 1 }] }, [up('cp_x_north.csv')])
+      expect(result.groups[0]).toMatchObject({ pattern: 'CP_*_North.csv', found: 1, flag: null })
+    })
+
+    it('leaves the upload paths as listed', function () {
+      const result = run({ files: [{ name: 'data.csv' }] }, [up('Data.csv')])
+      expect(result.files[0].status).toBe('not-uploaded')
+      expect(result.unmatched).toEqual(['Data.csv'])
+    })
+
+    it('counts a lower-cased name as the agreement\'s, not as a group\'s', function () {
+      const result = run({ files: [{ name: 'A.csv' }], fileGroups: [{ pattern: '*.csv', count: 1 }] }, [up('a.csv')])
+      expect(result.files[0].status).toBe('uploaded')
+      expect(result.groups[0].found).toBe(0)
+    })
+  })
+
   it('marks a named file uploaded, or not-uploaded when complete', function () {
     const result = run({ files: [{ name: 'a.csv' }, { name: 'b.csv' }] }, [up('a.csv')])
     expect(result.files.map(f => f.status)).toEqual(['uploaded', 'not-uploaded'])
