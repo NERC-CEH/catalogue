@@ -1,27 +1,10 @@
 import $ from 'jquery'
 import { ObjectInputView } from '../index'
 import template from '../../templates/service-agreement/file'
-import { cleanText } from '../../utils'
-import { ensureFormatDatalist, pickFormat } from '../../utils/formatPicker'
+import { ensureFormatDatalist, setFormat } from '../../utils/formatPicker'
+import { showSizeRecognised } from '../../utils/sizeInput'
 import { formatBytes } from '../../../../file-size/formatBytes'
 import { parseExactSize } from '../../../../file-size/parseSize'
-
-const SIZE_NOT_RECOGNISED = 'Size not recognised, e.g. 32 MB or 2-2.5 MB'
-
-/** A listed format, or an extension of one, brings its media type; anything else has none to offer. */
-export function setFormat (model, input) {
-  const { name, type } = pickFormat(cleanText($(input).val().trim()))
-  $(input).val(name)
-  if (name) model.set('format', name)
-  else model.unset('format')
-  if (type) model.set('formatType', type)
-  else model.unset('formatType')
-}
-
-/** Shows, or clears, the message beside a size box that could not be read. */
-export function showSizeRecognised (input, recognised) {
-  $(input).siblings('.size-error').text(recognised ? '' : SIZE_NOT_RECOGNISED).prop('hidden', recognised)
-}
 
 export default ObjectInputView.extend({
   template,

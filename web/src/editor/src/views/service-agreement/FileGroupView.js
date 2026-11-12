@@ -1,10 +1,10 @@
 import $ from 'jquery'
 import { ObjectInputView } from '../index'
 import template, { eachSizeText } from '../../templates/service-agreement/fileGroup'
-import { ensureFormatDatalist } from '../../utils/formatPicker'
+import { ensureFormatDatalist, setFormat } from '../../utils/formatPicker'
+import { showSizeRecognised } from '../../utils/sizeInput'
 import { formatBytes } from '../../../../file-size/formatBytes'
 import { parseExactSize, parseSize } from '../../../../file-size/parseSize'
-import { setFormat, showSizeRecognised } from './FileView'
 
 export default ObjectInputView.extend({
   template,
