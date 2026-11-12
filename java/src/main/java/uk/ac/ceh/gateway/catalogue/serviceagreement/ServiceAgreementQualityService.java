@@ -328,7 +328,8 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             }
         }
 
-        if (!stringIsMissing(fileNumber) && fileNumber.trim().matches("\\d+")
+        // a prose naming convention describes files that are not listed, so the count cannot be compared
+        if (stringIsMissing(fileNamingConvention) && !stringIsMissing(fileNumber) && fileNumber.trim().matches("\\d+")
             && Integer.parseInt(fileNumber.trim()) != listedCount) {
             toReturn.add(new MetadataCheck(
                 format("Number of files to be deposited (%s) differs from the files and file groups listed (%d)", fileNumber.trim(), listedCount),

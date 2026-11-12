@@ -305,6 +305,13 @@ public class ServiceAgreementQualityServiceTest {
     }
 
     @Test
+    public void fileNumberMismatchSkippedWithNamingConvention() {
+        val json = "{\"fileNumber\": \"200\", \"fileNamingConvention\": \"200 files CP_*.csv\", "
+            + "\"files\": [{\"name\": \"a.csv\", \"format\": \"csv\", \"size\": \"1mb\"}, {\"name\": \"b.csv\", \"format\": \"csv\", \"size\": \"1mb\"}]}";
+        assertThat(checkFilesJson(json), empty());
+    }
+
+    @Test
     public void resultsErrors() {
         //given
         val checks = Arrays.asList(
