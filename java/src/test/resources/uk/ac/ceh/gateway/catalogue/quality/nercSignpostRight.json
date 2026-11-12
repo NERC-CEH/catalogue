@@ -11,7 +11,7 @@
   "authors": [
     {
       "givenName": "Jane",
-      "familyName": "Smith",
+      "familyName": "Smith", "nameIdentifier": "https://orcid.org/0000-0002-1694-233X",
       "organisationName": "Test Organisation"
     }
   ],

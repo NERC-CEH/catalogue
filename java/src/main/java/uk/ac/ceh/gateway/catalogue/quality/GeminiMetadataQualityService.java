@@ -15,7 +15,10 @@ import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import uk.ac.ceh.gateway.catalogue.people.Orcid;
 
 import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.DocumentTypes.GEMINI;
@@ -409,7 +412,8 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         return toReturn;
     }
 
-    private static final String CONTACT_PROPERTIES = "['organisationName','givenName','familyName','displayName','email']";
+    private static final String CONTACT_PROPERTIES = "['organisationName','givenName','familyName','displayName','email','nameIdentifier']";
+    private static final Pattern ISNI = Pattern.compile("^https?://isni\\.org/isni/\\d{15}[\\dX]$");
 
     // Documents saved before EMC-700 still store every contact under 'responsibleParties', keyed by role.
     private List<Map<String, String>> readContacts(DocumentContext parsed, String field, String legacyRole) {
@@ -649,8 +653,35 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             })
             .forEach(email -> toReturn.add(new MetadataCheck(format("Author's email address is %s", email), ERROR)));
 
+        toReturn.addAll(checkAuthorIdentifiers(authors));
         return toReturn;
         }
+
+    /**
+     * Every author who is a person should be identified by an ORCID (or an ISNI), and one that's given
+     * must be a real iD: its last character is a checksum, so a mistyped digit is caught (dri-one #534).
+     * A missing one only warns, as not everyone has one; an organisation as author needs none.
+     */
+    private List<MetadataCheck> checkAuthorIdentifiers(List<Map<String, String>> authors) {
+        val toReturn = new ArrayList<MetadataCheck>();
+        authors.stream()
+            .filter(author -> !fieldIsMissing(author, "familyName"))
+            .forEach(author -> {
+                val name = Stream.of(author.get("givenName"), author.get("familyName"))
+                    .filter(part -> part != null && !part.isBlank())
+                    .map(String::strip)
+                    .collect(Collectors.joining(" "));
+                if (fieldIsMissing(author, "nameIdentifier")) {
+                    toReturn.add(new MetadataCheck(format("Author %s has no ORCID", name), WARNING));
+                } else {
+                    val identifier = author.get("nameIdentifier").strip();
+                    if (Orcid.id(identifier).isEmpty() && !ISNI.matcher(identifier).matches()) {
+                        toReturn.add(new MetadataCheck(format("Author %s's ORCID %s is not a valid ORCID iD", name, identifier), ERROR));
+                    }
+                }
+            });
+        return toReturn;
+    }
 
     private boolean fieldIsMissing(Map<String, String> map, String key) {
         return map == null

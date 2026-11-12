@@ -148,6 +148,12 @@
     <field name="operationalStatus" type="string" multiValued="false"/>
     <field name="orcid" type="keywords" multiValued="true"/>
     <field name="organisation" type="keywords"/>
+    <!-- The people a record names with an ORCID, for the editor's people look-up (dri-one #534).
+         person holds each one whole (ORCID, given and family name, organisation and its ROR, joined
+         by U+001F) so a match can be read back as the person it is: the separate orcid and fullName
+         lists can't say which name goes with which ORCID. personName is what the look-up searches. -->
+    <field name="person" type="string" indexed="false" stored="true" docValues="false" multiValued="true"/>
+    <field name="personName" type="names" multiValued="true"/>
     <field name="pointOfContact" type="keywords"/>
     <field name="publicationDate" type="pdate"/>
     <field name="recordType" type="keywords" multiValued="false"/>

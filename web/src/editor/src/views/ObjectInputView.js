@@ -34,6 +34,8 @@ export default Backbone.View.extend({
 
   modify (event) {
     const name = $(event.target).data('name')
+    // A field that isn't part of the record, such as a look-up box, has no name to keep a value under
+    if (!name) return false
     let value = $(event.target).val().trim()
 
     if (value) {

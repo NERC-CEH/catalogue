@@ -26,79 +26,94 @@ export default _.template(`
         </select>
     </div>
 </div>
-<div class="row organisation">
-    <div class="col-lg-2">
-        <label for="contacts<%- data.index %>Organisation">Organisation</label>
+<fieldset class="contact-group contact-group-organisation">
+    <legend class="contact-group-legend"><i class="fa-solid fa-building" aria-hidden="true"></i> Organisation</legend>
+    <div class="row organisation">
+        <div class="col-lg-2">
+            <label for="contacts<%- data.index %>Organisation">Name</label>
+        </div>
+        <div class="col-lg-10">
+            <input autocomplete="off" aria-autocomplete="none" placeholder="Start typing to show a list of organisation. Pick from the list if possible" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%- data.index %>Organisation" value="<%- data.organisationName %>">
+        </div>
     </div>
-    <div class="col-lg-10">
-        <input autocomplete="off" aria-autocomplete="none" placeholder="Start typing to show a list of organisation. Pick from the list if possible" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%- data.index %>Organisation" value="<%- data.organisationName %>">
+    <div class="row">
+        <div class="col-lg-2">
+            <label for="contacts<%- data.index %>organisationIdentifier">ROR ID</label>
+        </div>
+        <div class="col-lg-10">
+            <input autocomplete="off" aria-autocomplete="none" data-name='organisationIdentifier' placeholder="https//ror.org/..." class="ror editor-input" id="contacts<%- data.index %>organisationIdentifier" value="<%- data.organisationIdentifier %>">
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-lg-2">
-        <label for="contacts<%- data.index %>organisationIdentifier">RoR ID</label>
+</fieldset>
+<fieldset class="contact-group contact-group-person">
+    <legend class="contact-group-legend"><i class="fa-solid fa-user" aria-hidden="true"></i> Person <span class="contact-group-hint">leave empty when the contact is the organisation itself</span></legend>
+    <div class="row personFind">
+        <div class="col-lg-2">
+            <label for="contacts<%- data.index %>FindPerson">Find a person</label>
+        </div>
+        <div class="col-lg-10">
+            <input class="editor-input personAutocomplete" id="contacts<%- data.index %>FindPerson" placeholder="Name of someone in the catalogue, or anyone's ORCID iD" aria-describedby="contacts<%- data.index %>FindPersonHelp">
+            <div class="form-text" id="contacts<%- data.index %>FindPersonHelp">Fills in their name and ORCID iD. Not in the catalogue? Paste their ORCID iD here, or enter their details below.</div>
+        </div>
     </div>
-    <div class="col-lg-10">
-        <input autocomplete="off" aria-autocomplete="none" data-name='organisationIdentifier' placeholder="https//ror.org/..." class="ror editor-input" id="contacts<%- data.index %>organisationIdentifier" value="<%- data.organisationIdentifier %>">
-    </div>
-</div>
-<div class="row contactName">
-    <div class="col-lg-2">
-       <label>Name</label>
-    </div>
-    <div class="col-lg-10">
-        <div class="row g-0">
-          <div class="col-lg-4 pe-1">
-          <div class="form-floating">
-            <select data-name="honorificPrefix" class="form-select honorificPrefix" id="contacts<%- data.index %>honorificPrefix">
-              <option value="">--none--</option>
-              <option value="Dr">Dr</option>
-              <option value="Miss">Miss</option>
-              <option value="Mr">Mr</option>
-              <option value="Mrs">Mrs</option>
-              <option value="Ms">Ms</option>
-              <option value="Professor">Professor</option>
-            </select>
-            <label for="contacts<%- data.index %>honorificPrefix">Title</label>
+    <div class="row contactName">
+        <div class="col-lg-2">
+           <label>Name</label>
+        </div>
+        <div class="col-lg-10">
+            <div class="row g-0">
+              <div class="col-lg-4 pe-1">
+              <div class="form-floating">
+                <select data-name="honorificPrefix" class="form-select honorificPrefix" id="contacts<%- data.index %>honorificPrefix">
+                  <option value="">--none--</option>
+                  <option value="Dr">Dr</option>
+                  <option value="Miss">Miss</option>
+                  <option value="Mr">Mr</option>
+                  <option value="Mrs">Mrs</option>
+                  <option value="Ms">Ms</option>
+                  <option value="Professor">Professor</option>
+                </select>
+                <label for="contacts<%- data.index %>honorificPrefix">Title</label>
+              </div>
+            </div>
+            <div class="col-lg-4 pe-1">
+              <div class="form-floating">
+                <input data-name='givenName' placeholder="e.g., C."  class="editor-input" id="contacts<%- data.index %>givenName" value="<%- data.givenName %>">
+                <label for="contacts<%- data.index %>givenName">Given name</label>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="form-floating">
+                <input data-name='familyName' placeholder="e.g., Darwin" class="editor-input" id="contacts<%- data.index %>familyName" value="<%- data.familyName %>">
+                <label for="contacts<%- data.index %>familyName">Family name</label>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="col-lg-4 pe-1">
-          <div class="form-floating">
-            <input data-name='givenName' placeholder="e.g., C."  class="editor-input" id="contacts<%- data.index %>givenName" value="<%- data.givenName %>">
-            <label for="contacts<%- data.index %>givenName">Given name</label>
-          </div>
-        </div>
-        <div class="col-lg-4">
-          <div class="form-floating">
-            <input data-name='familyName' placeholder="e.g., Darwin" class="editor-input" id="contacts<%- data.index %>familyName" value="<%- data.familyName %>">
-            <label for="contacts<%- data.index %>familyName">Family name</label>
-          </div>
-        </div>
-      </div>
     </div>
-</div>
+    <div class="row">
+        <div class="col-lg-2">
+            <label for="contacts<%- data.index %>nameIdentifier">ORCID iD</label>
+        </div>
+        <div class="col-lg-10">
+            <input data-name='nameIdentifier' placeholder='https://orcid.org/0000-0002-1825-0097' class="editor-input" id="contacts<%- data.index %>nameIdentifier" value="<%- data.nameIdentifier %>">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-2">
+            <label for="contacts<%- data.index %>DisplayName">Display name</label>
+        </div>
+        <div class="col-lg-10">
+            <input data-name='displayName' class="editor-input" placeholder="If different to name" id="contacts<%- data.index %>DisplayName" value="<%- data.displayName %>">
+        </div>
+    </div>
+</fieldset>
 <div class="row">
     <div class="col-lg-2">
         <label for="contacts<%- data.index %>Email">Email</label>
     </div>
     <div class="col-lg-10">
         <input data-name='email' class="editor-input" id="contacts<%- data.index %>Email" value="<%- data.email %>">
-    </div>
-</div>
-<div class="row">
-    <div class="col-lg-2">
-        <label for="contacts<%- data.index %>nameIdentifier">ORCID</label>
-    </div>
-    <div class="col-lg-10">
-        <input data-name='nameIdentifier' placeholder='https://orcid.org/0000-...' class="editor-input" id="contacts<%- data.index %>nameIdentifier" value="<%- data.nameIdentifier %>">
-    </div>
-</div>
-<div class="row">
-    <div class="col-lg-2">
-        <label for="contacts<%- data.index %>DisplayName">Display name</label>
-    </div>
-    <div class="col-lg-10">
-        <input data-name='displayName' class="editor-input" placeholder="If different to name" id="contacts<%- data.index %>DisplayName" value="<%- data.displayName %>">
     </div>
 </div>
 <div class="extended d-none" id="addressDetail<%- data.index %>">

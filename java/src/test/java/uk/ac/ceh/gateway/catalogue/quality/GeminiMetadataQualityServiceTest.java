@@ -253,6 +253,30 @@ public class GeminiMetadataQualityServiceTest {
     }
 
     @Test
+    @DisplayName("an author who is a person is asked for an ORCID, and one given must be a real iD (dri-one #534)")
+    public void checkAuthorIdentifiers() {
+        //given
+        val parsed = JsonPath.parse("""
+            {"authors": [
+              {"givenName": "Clare", "familyName": "Rowland", "organisationName": "UKCEH", "nameIdentifier": "https://orcid.org/0000-0002-0459-506X"},
+              {"givenName": "Ann", "familyName": "Other", "organisationName": "UKCEH"},
+              {"givenName": "Typo", "familyName": "Digit", "organisationName": "UKCEH", "nameIdentifier": "https://orcid.org/0000-0002-1825-0098"},
+              {"givenName": "Isa", "familyName": "Isni", "organisationName": "UKCEH", "nameIdentifier": "https://isni.org/isni/000000012146438X"},
+              {"displayName": "The Survey Team", "organisationName": "UKCEH"}
+            ]}
+            """, this.config);
+
+        //when
+        val actual = this.service.checkAuthors(parsed);
+
+        //then
+        assertThat(actual, containsInAnyOrder(
+            new MetadataCheck("Author Ann Other has no ORCID", WARNING),
+            new MetadataCheck("Author Typo Digit's ORCID https://orcid.org/0000-0002-1825-0098 is not a valid ORCID iD", ERROR)
+        ));
+    }
+
+    @Test
     public void checkTopicCategoriesCorrect() {
         //given
         val parsed = JsonPath.parse(getClass().getResourceAsStream("topicCategoriesRight.json"), this.config);

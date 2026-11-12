@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Profile;
 import uk.ac.ceh.gateway.catalogue.datapreviewer.PreviewContentReader;
 import uk.ac.ceh.gateway.catalogue.datapreviewer.PreviewListing;
 import uk.ac.ceh.gateway.catalogue.metrics.JDBCMetricsService;
+import uk.ac.ceh.gateway.catalogue.people.OrcidRegistry;
 import uk.ac.ceh.gateway.catalogue.repository.CachedDataRepository;
 
 import java.time.Duration;
@@ -93,6 +94,14 @@ public class CacheConfig implements CachingConfigurer {
         // count because the key is arbitrary depositor text, not a member of a known set.
         cacheManager.registerCustomCache(EXACT_LABEL_CACHE,
             expireAfterWrite(20000, Duration.ofHours(24)).build());
+
+        // Whose an ORCID iD is, asked of ORCID's registry while an editor fills in a contact (dri-one
+        // #534). Each re-render of a contact asks again, and ORCID allows an anonymous address 25,000
+        // reads a day, so the answer is kept a day: people change their names in ORCID rarely, and
+        // the worst a stale entry does is show yesterday's name beside the one typed. An iD ORCID
+        // never issued is kept too (as an empty Optional); a failure to ask is not, as it is thrown.
+        cacheManager.registerCustomCache(OrcidRegistry.ORCID_PERSON_CACHE,
+            expireAfterWrite(10000, Duration.ofHours(24)).build());
 
         // A record's data-preview file listing, built from two Hubbub calls when the record page's
         // preview section loads, and consulted again for every tab the visitor opens (each CSV or

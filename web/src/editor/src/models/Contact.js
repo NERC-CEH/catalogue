@@ -1,5 +1,6 @@
 import Backbone from 'backbone'
 import _ from 'underscore'
+import { personIdentifierError } from '../utils/orcid'
 
 export default Backbone.Model.extend({
 
@@ -9,8 +10,6 @@ export default Backbone.Model.extend({
 
   validate (attrs) {
     const emailRegEx = '[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
-    const urlRegEx = '[(http(s)?):\\/\\/(www\\.)?a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)'
-    const orcidRegEx = '^https?:\\/\\/orcid.org\\/(\\d{4}-){3}\\d{3}[\\dX]$'
     const rorRegEx = '^https?:\\/\\/ror.org\\/\\w{8,10}$'
 
     const errors = []
@@ -35,12 +34,11 @@ export default Backbone.Model.extend({
       errors.push({ message: 'That email address is wrong' })
     }
 
-    if (nameIdentifier && !nameIdentifier.match(orcidRegEx)) {
-      errors.push({ message: 'Invalid ORCiD' })
-    }
-
-    if (nameIdentifier && !nameIdentifier.match(urlRegEx)) {
-      errors.push({ message: 'ORCiDs should be entered as https://orcid.org/0000-1234-5678-999X <b>not</b> 0000-1234-5678-999X' })
+    // One message, saying what's wrong: a bare iD is stored in full as it's typed (ContactView), so
+    // only a wrong check character or something that isn't an iD at all is left to say (dri-one #534)
+    const identifierError = personIdentifierError(nameIdentifier)
+    if (identifierError) {
+      errors.push({ message: identifierError })
     }
 
     if (organisationIdentifier && !organisationIdentifier.match(rorRegEx)) {

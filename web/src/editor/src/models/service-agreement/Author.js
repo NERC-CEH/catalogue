@@ -1,5 +1,6 @@
 import Backbone from 'backbone'
 import _ from 'underscore'
+import { personIdentifierError } from '../../utils/orcid'
 
 export default Backbone.Model.extend({
 
@@ -9,7 +10,6 @@ export default Backbone.Model.extend({
 
   validate ({ organisationName, email, familyName, givenName, displayName, nameIdentifier }) {
     const emailRegEx = '^[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?'
-    const orcidRegEx = '^https?:\\/\\/orcid.org\\/(\\d{4}-){3}\\d{3}[\\dX]$'
 
     const errors = []
 
@@ -17,8 +17,9 @@ export default Backbone.Model.extend({
       errors.push({ message: 'That email address is invalid' })
     }
 
-    if (nameIdentifier && !nameIdentifier?.match(orcidRegEx)) {
-      errors.push({ message: 'That ORCiD is invalid.  ORCiDs should be entered as https://orcid.org/0000-1234-5678-999X <b>not</b> 0000-1234-5678-999X' })
+    const identifierError = personIdentifierError(nameIdentifier)
+    if (identifierError) {
+      errors.push({ message: identifierError })
     }
 
     if (!email) {

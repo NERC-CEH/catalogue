@@ -4,12 +4,16 @@ import ObjectInputView from './ObjectInputView'
 
 import template from '../templates/Contact'
 import { createOrgAutocomplete } from '../utils'
+import { normalisePersonIdentifier } from '../utils/orcid'
+import { createPersonLookup } from '../utils/peopleUtils'
 
 export default ObjectInputView.extend({
 
   initialize (options) {
     this.template = template
     this.hasRoleDefault = options.roleDefault !== undefined
+    // Sections for organisations (custodian, publisher, distributor) don't look people up (dri-one #534)
+    this.personLookup = options.personLookup !== false
     // A section with its own role options and no default makes the user choose one: falling back
     // to pointOfContact saved a role that wasn't among them (dri-one #458)
     this.roleDefault = options.roleDefault || (Array.isArray(options.roleoptions) ? undefined : 'pointOfContact')
@@ -35,6 +39,7 @@ export default ObjectInputView.extend({
     }
     ObjectInputView.prototype.initialize.apply(this, arguments)
     createOrgAutocomplete('.orgAutocomplete', this)
+    createPersonLookup(this, { lookup: this.personLookup })
   },
 
   render () {
@@ -54,6 +59,10 @@ export default ObjectInputView.extend({
       this.$('.role').addClass('d-none')
     }
 
+    if (!this.personLookup) {
+      this.$('.personFind').addClass('d-none')
+    }
+
     if (this.roleDefault !== 'contributor') {
       this.$('.contributorRole').addClass('d-none')
     }
@@ -68,7 +77,14 @@ export default ObjectInputView.extend({
   modify (event) {
     const $target = $(event.target)
     const name = $target.data('name')
-    const value = $target.val()
+    if (!name) return
+    let value = $target.val()
+
+    // An iD pasted bare, or from http://, is kept as https://orcid.org/… (dri-one #534)
+    if (name === 'nameIdentifier') {
+      value = normalisePersonIdentifier(value)
+      $target.val(value)
+    }
 
     if (_.contains(['deliveryPoint', 'city', 'administrativeArea', 'country', 'postalCode'], name)) {
       let address = _.clone(this.model.get('address'))

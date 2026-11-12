@@ -19,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import uk.ac.ceh.gateway.catalogue.people.NamedPerson;
 import java.time.Instant;
 import java.time.ZoneOffset;
 
@@ -89,12 +90,20 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                     .orElse(Date.from(Instant.EPOCH))
             )
             ;
+        setPeople(index, NamedPerson.in(document));
 
         // Enqueue for asynchronous embedding. Subtype generators (Gemini, etc.) chain
         // further setters onto this same SolrIndex instance after we return, and flush()
         // runs later, so the queued reference sees the fully-enriched document.
         pendingEmbeddingService.ifPresent(service -> service.mark(document.getId(), index));
         return index;
+    }
+
+    /** For the editor's people look-up (dri-one #534); left unset, not empty, for a record naming none */
+    private static void setPeople(SolrIndex index, List<NamedPerson> people) {
+        if (people.isEmpty()) return;
+        index.setPerson(people.stream().map(NamedPerson::pack).toList())
+            .setPersonName(people.stream().map(NamedPerson::name).distinct().toList());
     }
 
     private String getRecordType(MetadataDocument document) {

@@ -158,8 +158,7 @@ export default EditorView.extend({
           text: `\
 <div class="small">
 <p>Role and organisation name are mandatory. If email address is blank it is assumed to be "enquiries@ceh.ac.uk".</p>
-<p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID
-(e.g. <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p></div>\
+<p>Identify each person by their ORCID iD. <i>Find a person</i> fills it in for anyone the catalogue already has one for; otherwise ask them for it. Paste it in any form: it is kept as <b>https://orcid.org/…</b> and checked with ORCID, which shows the name it holds beside the one entered.</p></div>\
 `
         }),
 
@@ -207,7 +206,7 @@ export default EditorView.extend({
           },
           helpText: `\
 <p>Role and organisation name are mandatory. If email address is blank it is assumed to be 'enquiries@ceh.ac.uk'.</p>
-<p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>\
+<p>Identify each person by their ORCID iD. <i>Find a person</i> fills it in for anyone the catalogue already has one for; otherwise ask them for it. Paste it in any form: it is kept as <b>https://orcid.org/…</b> and checked with ORCID, which shows the name it holds beside the one entered.</p>\
 `
         })
       ]
@@ -289,6 +288,7 @@ export default EditorView.extend({
           ObjectInputView: ContactView,
           multiline: true,
           roleDefault: 'custodian',
+          personLookup: false,
           predefined: {
             EIDC: {
               organisationName: 'NERC EDS Environmental Information Data Centre',
@@ -306,6 +306,7 @@ export default EditorView.extend({
           ObjectInputView: ContactView,
           multiline: true,
           roleDefault: 'publisher',
+          personLookup: false,
           predefined: {
             EIDC: {
               organisationName: 'NERC EDS Environmental Information Data Centre',
@@ -563,6 +564,7 @@ export default EditorView.extend({
           ObjectInputView: ContactView,
           multiline: true,
           roleDefault: 'distributor',
+          personLookup: false,
           predefined: {
             EIDC: {
               organisationName: 'NERC EDS Environmental Information Data Centre',
