@@ -43,49 +43,71 @@ const isDigits = value => typeof value === 'string' || typeof value === 'number'
 
 const toCount = value => isDigits(value) ? parseInt(String(value).trim(), 10) : null
 
+/** How far, as a fraction, an uploaded size may be from the agreed one before it is flagged. */
+export const SIZE_TOLERANCE = 0.1
+
+// A byte count that says something: a listing without sizes, or a size of 0, is unknown
+const knownBytes = value => typeof value === 'number' && Number.isFinite(value) && value > 0
+
+const outside = (bytes, min, max) => bytes < min - min * SIZE_TOLERANCE || bytes > max + max * SIZE_TOLERANCE
+
 /**
  * Compare the agreed file listing with the uploaded files. Agreed names and patterns, and upload
  * paths, are first put as an upload stores them (asUploaded); paths that are then the same count
  * once. Unmatched paths are given as first listed.
  *
  * `expected` is `{ files, fileGroups, fileNumber }`, any of which may be absent, as may the
- * keys inside each file or group. `uploads` is `[{ path, status }]` from every listing that holds
- * data files. `complete` says every listing that could hold a file is fully loaded: only then
+ * keys inside each file or group. `uploads` is `[{ path, status, bytes? }]` from every listing that
+ * holds data files. `complete` says every listing that could hold a file is fully loaded: only then
  * can a file be called not uploaded or a group short. A partial listing can only undercount, so
  * `over` is flagged regardless.
+ *
+ * Sizes (dri-one #537) are checked only when `complete`, and only for uploads whose `bytes` is
+ * known, each within SIZE_TOLERANCE: a named file against its `bytes` (`sizeDiffers`), each file a
+ * group matches against its `minBytes`-`maxBytes` (`sizesDiffer`), and the sum of a group's files
+ * against its `totalBytes` (`totalDiffers`), the last only once the group's count is met and every
+ * file it matches has a size, so a partial sum is never compared. An agreement whose sizes are
+ * only text has none of these fields and is not checked.
  */
 export function matchExpected (expected, uploads, { complete }) {
   const files = (expected && expected.files) || []
   const groups = (expected && expected.fileGroups) || []
 
-  // As put for comparing, to the path as first listed
+  // As put for comparing, to the upload as first listed
   const present = new Map()
   for (const upload of uploads || []) {
     if (!upload.path) continue
     const path = asUploaded(upload.path)
-    if (!ABSENT_STATUSES.has(upload.status) && !present.has(path)) present.set(path, upload.path)
+    if (!ABSENT_STATUSES.has(upload.status) && !present.has(path)) present.set(path, upload)
   }
 
   const named = new Set(files.map(file => file.name).filter(Boolean).map(asUploaded))
 
   const fileResults = files.map(file => {
-    if (!file.name) return { ...file, status: 'unknown' }
-    if (present.has(asUploaded(file.name))) return { ...file, status: 'uploaded' }
-    return { ...file, status: complete ? 'not-uploaded' : 'unknown' }
+    if (!file.name) return { ...file, status: 'unknown', sizeDiffers: false }
+    const upload = present.get(asUploaded(file.name))
+    if (upload) {
+      const sizeDiffers = Boolean(complete) && knownBytes(file.bytes) && knownBytes(upload.bytes) &&
+        outside(upload.bytes, file.bytes, file.bytes)
+      return { ...file, status: 'uploaded', sizeDiffers }
+    }
+    return { ...file, status: complete ? 'not-uploaded' : 'unknown', sizeDiffers: false }
   })
 
   const matchers = groups.map(group => group.pattern ? patternToRegExp(asUploaded(group.pattern)) : null)
-  const found = groups.map(() => 0)
+  // The sizes of the files each group matches, as listed (unknown ones included)
+  const matched = groups.map(() => [])
   const unmatched = []
-  present.forEach((listed, path) => {
+  present.forEach((upload, path) => {
     if (named.has(path)) return
     const index = matchers.findIndex(matcher => matcher && matcher.test(path))
     if (index === -1) {
-      unmatched.push(listed)
+      unmatched.push(upload.path)
     } else {
-      found[index]++
+      matched[index].push(upload.bytes)
     }
   })
+  const found = matched.map(sizes => sizes.length)
 
   const groupResults = groups.map((group, index) => {
     const count = toCount(group.count)
@@ -94,7 +116,8 @@ export function matchExpected (expected, uploads, { complete }) {
       if (found[index] > count) flag = 'over'
       else if (complete && found[index] < count) flag = 'short'
     }
-    return { ...group, found: found[index], flag }
+    const countMet = count !== null && count === found[index]
+    return { ...group, found: found[index], flag, ...groupSizes(group, matched[index], complete, countMet) }
   })
 
   const expectedTotal = toCount(expected && expected.fileNumber)
@@ -109,4 +132,18 @@ export function matchExpected (expected, uploads, { complete }) {
       differs: Boolean(complete) && expectedTotal !== null && present.size !== expectedTotal
     }
   }
+}
+
+// A group's size flags from the sizes of the files it matches (as listed). One bound alone
+// is taken as both.
+function groupSizes (group, sizes, complete, countMet) {
+  const min = knownBytes(group.minBytes) ? group.minBytes : group.maxBytes
+  const max = knownBytes(group.maxBytes) ? group.maxBytes : group.minBytes
+  const known = sizes.filter(knownBytes)
+  const sizesDiffer = Boolean(complete) && knownBytes(min) &&
+    known.some(bytes => outside(bytes, min, max))
+  const totalDiffers = Boolean(complete) && countMet && knownBytes(group.totalBytes) &&
+    known.length === sizes.length && known.length > 0 &&
+    outside(known.reduce((sum, bytes) => sum + bytes, 0), group.totalBytes, group.totalBytes)
+  return { sizesDiffer, totalDiffers }
 }

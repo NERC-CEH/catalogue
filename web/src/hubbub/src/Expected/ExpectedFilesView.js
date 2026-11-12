@@ -1,6 +1,7 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
 import { matchExpected } from './matchExpected'
+import { formatBytes } from '../../../file-size/formatBytes'
 
 const FILE_STATUS = { uploaded: 'uploaded', 'not-uploaded': 'not yet uploaded', unknown: '' }
 
@@ -9,12 +10,32 @@ const text = value => _.escape(value ?? '')
 
 const plural = (count, word) => `${count} ${word}${count === 1 ? '' : 's'}`
 
+const hasBytes = value => typeof value === 'number' && Number.isFinite(value)
+
+// From bytes when the agreement has them, else the size as typed (an older agreement)
+const fileSize = file => hasBytes(file.bytes) ? formatBytes(file.bytes) : text(file.size)
+
+const groupSize = group => {
+  const min = hasBytes(group.minBytes) ? group.minBytes : group.maxBytes
+  const max = hasBytes(group.maxBytes) ? group.maxBytes : group.minBytes
+  const each = hasBytes(min)
+    ? `<span class="expected-each">${min === max ? formatBytes(min) : `${formatBytes(min)} – ${formatBytes(max)}`}</span>`
+    : text(group.size)
+  const total = hasBytes(group.totalBytes)
+    ? `<div class="expected-total-size text-body-secondary">${formatBytes(group.totalBytes)} in total</div>`
+    : ''
+  return each + total
+}
+
+// Neutral wording (dri-one #537): staff decide whether a difference matters
+const sizeFlags = flags => flags.filter(Boolean).map(flag => `; <span class="expected-size-flag">${flag}</span>`).join('')
+
 /**
  * The agreement's last agreed file listing, ticked off against the uploads (dri-one #536). Warnings
  * only, and worded neutrally: staff resolve mismatches.
  *
  * `sources` returns `{ uploads, complete, hasListings }`: the uploaded data files as
- * `[{ path, status }]`, whether every listing that could hold a file is fully loaded, and whether
+ * `[{ path, status, bytes? }]`, whether every listing that could hold a file is fully loaded, and whether
  * the page has any listing. Without one nothing is said about arrivals.
  *
  * An agreement with a prose naming convention (`hasNamingConvention`) may describe files it doesn't
@@ -57,25 +78,30 @@ export default Backbone.View.extend({
     }
     const status = content => withStatus ? `<td class="expected-status">${content}</td>` : ''
     const files = result.files.map(file => `
-      <tr class="expected-file">
+      <tr class="expected-file${file.sizeDiffers ? ' expected-flagged table-warning' : ''}">
         <td class="expected-path">${text(file.name)}</td>
         <td></td>
         <td>${text(file.format)}</td>
-        <td>${text(file.size)}</td>
-        ${status(FILE_STATUS[file.status])}
+        <td>${fileSize(file)}</td>
+        ${status(FILE_STATUS[file.status] + sizeFlags([file.sizeDiffers && 'size differs from the agreement']))}
       </tr>`)
     const groups = result.groups.map(group => {
       const count = /^\d+$/.test(String(group.count ?? '').trim()) ? ` of ${text(String(group.count).trim())}` : ''
       const flag = group.flag
         ? ' <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span class="visually-hidden">(differs from the agreement)</span>'
         : ''
+      const sizes = sizeFlags([
+        group.sizesDiffer && 'some files\' sizes differ from the agreement',
+        group.totalDiffers && 'total size differs from the agreement'
+      ])
+      const flagged = group.flag || group.sizesDiffer || group.totalDiffers
       return `
-      <tr class="expected-group${group.flag ? ' expected-flagged table-warning' : ''}">
+      <tr class="expected-group${flagged ? ' expected-flagged table-warning' : ''}">
         <td class="expected-path"><code>${text(group.pattern)}</code></td>
         <td>${text(group.description)}</td>
         <td>${text(group.format)}</td>
-        <td>${text(group.size)}</td>
-        ${status(`${group.found}${count} uploaded${flag}`)}
+        <td>${groupSize(group)}</td>
+        ${status(`${group.found}${count} uploaded${flag}${sizes}`)}
       </tr>`
     })
     return `

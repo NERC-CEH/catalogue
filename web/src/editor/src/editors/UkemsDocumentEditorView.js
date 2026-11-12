@@ -9,6 +9,7 @@ import {
   SupplementalView, TemporalExtentView,
   TextareaView
 } from '../views'
+import { predefinedFormats } from '../formats'
 import { DistributionFormat, MultipleDate, SpatialResolution } from '../models'
 
 export default EditorView.extend({
@@ -124,20 +125,9 @@ export default EditorView.extend({
           ModelType: DistributionFormat,
           label: 'Data files',
           ObjectInputView: DistributionFormatView,
-          predefined: {
-            CSV: {
-              name: 'Comma-separated values (CSV)',
-              type: 'text/csv',
-              version: 'unknown'
-            },
-            'NetCDF v4': {
-              name: 'NetCDF',
-              type: 'application/netcdf',
-              version: '4'
-            }
-          },
+          predefined: predefinedFormats(f => ({ name: f.name, type: f.type, version: 'unknown' })),
           helpText: `\
-<p><b>Name</b> is the filename (including extension) and is mandatory.</p>
+<p><b>Name</b> is the file format, chosen from the list or typed if it isn't there, and is mandatory.</p>
 <p><b>Type</b> is the machine-readable media type.  If you do not know it, leave it blank.</p>
 <p><b>Version</b> is mandatory; if it's not applicable, enter '<i>unknown</i>'</p>\
 `

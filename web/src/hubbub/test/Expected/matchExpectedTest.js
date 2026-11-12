@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ABSENT_STATUSES, matchExpected, matchesPattern, patternToRegExp } from '../../src/Expected'
+import { ABSENT_STATUSES, SIZE_TOLERANCE, matchExpected, matchesPattern, patternToRegExp } from '../../src/Expected'
 
 const up = (path, status = 'VALID') => ({ path, status })
 const run = (expected, uploads, complete = true) =>
@@ -106,7 +106,7 @@ describe('matchExpected', function () {
 
   it('keeps the file attributes in the result', function () {
     const result = run({ files: [{ name: 'a.csv', format: 'csv' }] }, [up('a.csv')])
-    expect(result.files[0]).toEqual({ name: 'a.csv', format: 'csv', status: 'uploaded' })
+    expect(result.files[0]).toEqual({ name: 'a.csv', format: 'csv', status: 'uploaded', sizeDiffers: false })
   })
 
   it('reports unknown rather than not-uploaded when incomplete', function () {
@@ -222,6 +222,92 @@ describe('matchExpected', function () {
   it('puts every upload in unmatched when nothing is expected', function () {
     const result = run({}, [up('a.csv'), up('b.csv')])
     expect(result.unmatched).toEqual(['a.csv', 'b.csv'])
+  })
+
+  describe('checks sizes against the agreement (dri-one #537)', function () {
+    const sized = (path, bytes, status = 'VALID') => ({ path, status, bytes })
+
+    it('allows ten per cent either way', function () {
+      expect(SIZE_TOLERANCE).toBe(0.1)
+    })
+
+    it('flags a named file more than ten per cent off, the edge inclusive', function () {
+      const file = { files: [{ name: 'a.csv', bytes: 1000 }] }
+      expect(run(file, [sized('a.csv', 1101)]).files[0].sizeDiffers).toBe(true)
+      expect(run(file, [sized('a.csv', 899)]).files[0].sizeDiffers).toBe(true)
+      expect(run(file, [sized('a.csv', 1100)]).files[0].sizeDiffers).toBe(false)
+      expect(run(file, [sized('a.csv', 900)]).files[0].sizeDiffers).toBe(false)
+    })
+
+    it('flags no named file while a listing is partial', function () {
+      const result = run({ files: [{ name: 'a.csv', bytes: 1000 }] }, [sized('a.csv', 1101)], false)
+      expect(result.files[0].sizeDiffers).toBe(false)
+    })
+
+    it('flags a group with a matched file outside the range, the edges inclusive', function () {
+      const group = { fileGroups: [{ pattern: '*.csv', minBytes: 1000, maxBytes: 2000 }] }
+      expect(run(group, [sized('a.csv', 1500), sized('b.csv', 899)]).groups[0].sizesDiffer).toBe(true)
+      expect(run(group, [sized('a.csv', 2201)]).groups[0].sizesDiffer).toBe(true)
+      expect(run(group, [sized('a.csv', 900), sized('b.csv', 2200)]).groups[0].sizesDiffer).toBe(false)
+      expect(run(group, [sized('a.csv', 899)], false).groups[0].sizesDiffer).toBe(false)
+    })
+
+    it('checks a group with one size against that size', function () {
+      const group = { fileGroups: [{ pattern: '*.csv', minBytes: 1000, maxBytes: 1000 }] }
+      expect(run(group, [sized('a.csv', 1101)]).groups[0].sizesDiffer).toBe(true)
+      expect(run(group, [sized('a.csv', 1100)]).groups[0].sizesDiffer).toBe(false)
+    })
+
+    describe('a group total', function () {
+      const group = { fileGroups: [{ pattern: '*.csv', count: 2, totalBytes: 1000 }] }
+
+      it('is flagged more than ten per cent off once the count is met', function () {
+        expect(run(group, [sized('a.csv', 600), sized('b.csv', 501)]).groups[0].totalDiffers).toBe(true)
+        expect(run(group, [sized('a.csv', 400), sized('b.csv', 499)]).groups[0].totalDiffers).toBe(true)
+        expect(run(group, [sized('a.csv', 600), sized('b.csv', 500)]).groups[0].totalDiffers).toBe(false)
+      })
+
+      it('is not checked before the count is met', function () {
+        expect(run(group, [sized('a.csv', 5000)]).groups[0].totalDiffers).toBe(false)
+      })
+
+      it('is not checked while a listing is partial', function () {
+        expect(run(group, [sized('a.csv', 600), sized('b.csv', 501)], false).groups[0].totalDiffers).toBe(false)
+      })
+
+      it('is not compared as a partial sum when a matched file has no size', function () {
+        expect(run(group, [sized('a.csv', 5000), up('b.csv')]).groups[0].totalDiffers).toBe(false)
+      })
+    })
+
+    it('never flags an upload whose size is unknown', function () {
+      const expected = {
+        files: [{ name: 'a.csv', bytes: 1000 }],
+        fileGroups: [{ pattern: '*.txt', count: 1, minBytes: 1000, maxBytes: 1000, totalBytes: 1000 }]
+      }
+      for (const bytes of [undefined, 0, null]) {
+        const result = run(expected, [sized('a.csv', bytes), sized('b.txt', bytes)])
+        expect(result.files[0].sizeDiffers).toBe(false)
+        expect(result.groups[0]).toMatchObject({ found: 1, sizesDiffer: false, totalDiffers: false })
+      }
+      const pathOnly = run(expected, [up('a.csv'), up('b.txt')])
+      expect(pathOnly.files[0].sizeDiffers).toBe(false)
+      expect(pathOnly.groups[0]).toMatchObject({ sizesDiffer: false, totalDiffers: false })
+    })
+
+    it('raises no size flags for a legacy agreement with sizes only as text', function () {
+      const result = run({
+        files: [{ name: 'a.csv', size: '32Mb' }],
+        fileGroups: [{ pattern: '*.txt', count: 1, size: '1 KB' }]
+      }, [sized('a.csv', 1), sized('b.txt', 999999999)])
+      expect(result.files[0].sizeDiffers).toBe(false)
+      expect(result.groups[0]).toMatchObject({ sizesDiffer: false, totalDiffers: false })
+    })
+
+    it('takes a file\'s size from its first listing, as its path', function () {
+      const result = run({ files: [{ name: 'a.csv', bytes: 1000 }] }, [sized('A.csv', 1000), sized('a.csv', 5000)])
+      expect(result.files[0].sizeDiffers).toBe(false)
+    })
   })
 })
 

@@ -63,6 +63,7 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("crsUris", crsUri);
         freemarkerConfiguration.setSharedVariable("csp", new CspNonce());
         freemarkerConfiguration.setSharedVariable("downloadOrderDetails", downloadOrderDetailsService);
+        freemarkerConfiguration.setSharedVariable("fileSizes", new FileSizes());
         freemarkerConfiguration.setSharedVariable("formatUris", formatUri);
         freemarkerConfiguration.setSharedVariable("frequencyUris", frequencyUri);
         freemarkerConfiguration.setSharedVariable("fundingUri", fundingUri);

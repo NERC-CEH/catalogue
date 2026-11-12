@@ -12,6 +12,7 @@ import {
 import { EditorView, InputView } from '../index'
 import { Author, Funding, KeywordTheme, RightsHolder, SupportingDoc, TopicCategory } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
+import { predefinedFormats } from '../formats'
 
 export default EditorView.extend({
 
@@ -199,6 +200,7 @@ export default EditorView.extend({
           label: 'Files',
           text: `\
 <p>Give each file's path within the deposit, including any folders, e.g. <code>site1/2024.csv</code>. Paths must not include spaces or special characters other than hyphens, underscores and full stops.</p>
+<p>Give each file's size like <code>32 MB</code> or <code>0.4 GB</code>; a number on its own is a size in bytes.</p>
 <p>If there are too many files to list separately, describe them as groups below instead.</p>
 <p>Files uploaded through the catalogue are stored with names in lower case and hyphens in place of spaces, and the upload page compares uploaded names with this list ignoring case and treating spaces as hyphens. A zip file's contents are unpacked into a folder named after the zip: <code>data.zip</code> containing <code>site1/x.csv</code> is stored as <code>data/site1/x.csv</code>, so give paths that include that folder.</p>\
 `
@@ -208,14 +210,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'files',
           ObjectInputView: FileView,
-          predefined: {
-            CSV: {
-              format: 'csv'
-            },
-            NetCDF: {
-              format: 'NetCDF'
-            }
-          },
+          predefined: predefinedFormats(e => ({ format: e.name, formatType: e.type })),
           multiline: true
         }),
 
@@ -223,8 +218,8 @@ export default EditorView.extend({
           model: this.model,
           label: 'File groups',
           text: `\
-<p>Describe any files not listed above by a pattern, with the number of files it covers. In a pattern, <code>*</code> stands for any run of characters within a file or folder name and <code>?</code> for any single character; use <code>/</code> to separate folders. Give the size of each file (or a range) and the total size of the group.</p>
-<p>Example: pattern <code>CP_*_MInv_*Stats_*.csv</code>, 200 files, format csv, size 2-2.5 MB each (443.1 MB in total). Here the first <code>*</code> is the region code, the second the determinand name and the third the date range, e.g. 20200101-20201231.</p>
+<p>Describe any files not listed above by a pattern, with the number of files it covers. In a pattern, <code>*</code> stands for any run of characters within a file or folder name and <code>?</code> for any single character; use <code>/</code> to separate folders. Give the size of each file, like <code>32 MB</code>, or a range such as <code>2-2.5 MB</code> when the files differ, and the total size of the group, like <code>443 MB</code>.</p>
+<p>Example: pattern <code>CP_*_MInv_*Stats_*.csv</code>, 200 files, format csv, size of each file 2-2.5 MB, total size 443.1 MB. Here the first <code>*</code> is the region code, the second the determinand name and the third the date range, e.g. 20200101-20201231.</p>
 <p>As with the files above, files uploaded through the catalogue are stored with names in lower case and hyphens in place of spaces, and the upload page compares uploaded names with these patterns ignoring case and treating spaces as hyphens. A zip file's contents are unpacked into a folder named after the zip (<code>data.zip</code> containing <code>site1/x.csv</code> becomes <code>data/site1/x.csv</code>), so include that folder in the pattern.</p>\
 `
         }),

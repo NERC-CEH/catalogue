@@ -48,6 +48,7 @@ import {
   Supplemental, TopicCategory
 } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
+import { predefinedFormats } from '../formats'
 
 export default EditorView.extend({
 
@@ -499,33 +500,7 @@ export default EditorView.extend({
           ModelType: DistributionFormat,
           label: 'Formats',
           ObjectInputView: DistributionFormatView,
-          predefined: {
-            CSV: {
-              name: 'Comma-separated values (CSV)',
-              type: 'text/csv',
-              version: 'unknown'
-            },
-            'NetCDF v4': {
-              name: 'NetCDF',
-              type: 'application/netcdf',
-              version: '4'
-            },
-            Parquet: {
-              name: 'Parquet',
-              type: 'application/vnd.apache.parquet',
-              version: 'unknown'
-            },
-            Shapefile: {
-              name: 'Shapefile',
-              type: '',
-              version: 'unknown'
-            },
-            TIFF: {
-              name: 'TIFF',
-              type: 'image/tiff',
-              version: 'unknown'
-            }
-          },
+          predefined: predefinedFormats(f => ({ name: f.name, type: f.type, version: 'unknown' })),
           helpText: `\
 <p><b>Type</b> is the machine-readable media type.  If you do not know it, leave it blank.</p>
 <p><b>Version</b> is mandatory; if it's not applicable, enter '<i>unknown</i>'</p>\

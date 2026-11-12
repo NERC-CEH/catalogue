@@ -6,7 +6,7 @@ export default _.template(`
         <label for="distributionFormat<%- data.index %>Name">Name</label>
     </div>
     <div class="col-xl-4">
-        <input data-name='name' class="editor-input" id="distributionFormat<%- data.index %>Name" value="<%- data.name %>">
+        <input data-name='name' list="catalogue-formats" class="editor-input" id="distributionFormat<%- data.index %>Name" value="<%- data.name %>">
     </div>
     <div class="col-xl-2">
         <label for="distributionFormat<%- data.index %>Type">Media type</label>

@@ -232,4 +232,67 @@ describe('ExpectedFilesView', function () {
     expect(row(`${attack}.csv`).length).toBe(1)
     expect(view.$('.expected-unmatched li').text()).toContain(`x/${attack}`)
   })
+
+  describe('sizes (dri-one #537)', function () {
+    const MB = 1024 * 1024
+    const sized = {
+      files: [{ name: 'a.csv', bytes: 2 * MB, size: '2Mb' }],
+      fileGroups: [
+        { pattern: 'r*.csv', count: 2, minBytes: 2 * MB, maxBytes: 2.5 * MB, totalBytes: 4.5 * MB },
+        { pattern: 's*.csv', minBytes: 1024, maxBytes: 1024 }
+      ]
+    }
+    const upload = (path, bytes) => ({ path, status: 'VALID', bytes })
+
+    it('shows sizes from bytes, a group\'s as a range and its total', function () {
+      render(sized, { uploads: [], complete: false, hasListings: false })
+
+      expect(row('a.csv').find('td').eq(3).text().trim()).toBe('2 MB')
+      const range = row('r*.csv').find('td').eq(3)
+      expect(range.find('.expected-each').text()).toBe('2 MB – 2.5 MB')
+      expect(range.find('.expected-total-size').text()).toBe('4.5 MB in total')
+      expect(row('s*.csv').find('td').eq(3).text().trim()).toBe('1 KB')
+    })
+
+    it('shows a legacy size as typed', function () {
+      render({ files: [{ name: 'a.csv', size: '32Mb' }], fileGroups: [{ pattern: 'b*', size: 'about <1 GB' }] },
+        { uploads: [], complete: false, hasListings: false })
+
+      expect(row('a.csv').find('td').eq(3).text().trim()).toBe('32Mb')
+      expect(row('b*').find('td').eq(3).text().trim()).toBe('about <1 GB')
+    })
+
+    it('says, in the agreement\'s words, which sizes differ', function () {
+      render(sized, {
+        uploads: [upload('a.csv', 3 * MB), upload('r1.csv', 2 * MB), upload('r2.csv', 5 * MB), upload('s1.csv', 1024)],
+        complete: true,
+        hasListings: true
+      })
+
+      const file = row('a.csv')
+      expect(file.find('.expected-status').text()).toBe('uploaded; size differs from the agreement')
+      expect(file.hasClass('expected-flagged')).toBe(true)
+
+      const group = row('r*.csv')
+      expect(group.find('.expected-size-flag').map((i, el) => $(el).text()).get()).toEqual([
+        'some files\' sizes differ from the agreement',
+        'total size differs from the agreement'
+      ])
+      expect(group.hasClass('expected-flagged')).toBe(true)
+      expect(row('s*.csv').hasClass('expected-flagged')).toBe(false)
+      expect(row('s*.csv').find('.expected-size-flag').length).toBe(0)
+    })
+
+    it('says nothing of sizes that agree', function () {
+      render(sized, {
+        uploads: [upload('a.csv', 2 * MB), upload('r1.csv', 2 * MB), upload('r2.csv', 2.5 * MB)],
+        complete: true,
+        hasListings: true
+      })
+
+      expect(view.$('.expected-size-flag').length).toBe(0)
+      expect(row('a.csv').find('.expected-status').text()).toBe('uploaded')
+      expect(view.$el.text()).not.toContain('differs from the agreement')
+    })
+  })
 })

@@ -212,7 +212,7 @@
               <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons' (<a href="#">see our policy on retention and use of personal data</a>).</p>
 
               <#if files?has_content && files?size gt 0 >
-                  <@displayFiles/>
+                  <#include "_files.ftlh">
               </#if>
 
               <#include "_fileGroups.ftlh">
@@ -399,32 +399,6 @@
                 </tbody>
             </table>
         </div>
-    </#list>
-</#macro>
-
-<#macro displayFiles>
-    <#list files>
-    <p>Files to be deposited</p>
-    <div class="tbl tbl--collapse tbl--files">
-        <table>
-            <thead>
-                <tr>
-                    <th>Path</th>
-                    <th>Format</th>
-                    <th>Size</th>
-                </tr>
-            </thead>
-            <tbody>
-            <#items as file>
-                <tr>
-                    <td><#if file.name?has_content>${file.name}<#else><span class="text-danger">missing</span></#if></td>
-                    <td><#if file.format?has_content>${file.format}<#else><span class="text-danger">missing</span></#if></td>
-                    <td><#if file.size?has_content>${file.size}<#else><span class="text-danger">missing</span></#if></td>
-                </tr>
-            </#items>
-            </tbody>
-        </table>
-    </div>
     </#list>
 </#macro>
 

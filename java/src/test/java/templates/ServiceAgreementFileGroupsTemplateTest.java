@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.FileGroup;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.FileSizes;
 
 import java.io.File;
 import java.util.List;
@@ -34,6 +35,7 @@ class ServiceAgreementFileGroupsTemplateTest {
         configuration = new Configuration(Configuration.VERSION_2_3_33);
         configuration.setTemplateLoader(new FileTemplateLoader(new File("../templates")));
         configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+        configuration.setSharedVariable("fileSizes", new FileSizes());
     }
 
     @SneakyThrows
@@ -98,5 +100,57 @@ class ServiceAgreementFileGroupsTemplateTest {
 
         assertThat(actual, not(containsString("Previous naming convention")));
         assertThat(actual, not(containsString("File groups to be deposited")));
+    }
+
+    private FileGroup sized(Long minBytes, Long maxBytes, Long totalBytes) {
+        val group = group("*.csv", 3, null);
+        group.setMinBytes(minBytes);
+        group.setMaxBytes(maxBytes);
+        group.setTotalBytes(totalBytes);
+        return group;
+    }
+
+    private String renderGroup(FileGroup group) {
+        val agreement = new ServiceAgreement();
+        agreement.setFileGroups(List.of(group));
+        return render(agreement);
+    }
+
+    @Test
+    @DisplayName("shows a single size when the smallest and largest are the same")
+    void showsSingleSize() {
+        val actual = renderGroup(sized(2097152L, 2097152L, null));
+
+        assertThat(actual, containsString("2 MB"));
+        assertThat(actual, not(containsString("\u2013")));
+    }
+
+    @Test
+    @DisplayName("shows a range of sizes when the smallest and largest differ")
+    void showsRange() {
+        assertThat(renderGroup(sized(2097152L, 2621440L, null)), containsString("2 MB \u2013 2.5 MB"));
+    }
+
+    @Test
+    @DisplayName("shows a group's total size formatted")
+    void showsTotal() {
+        assertThat(renderGroup(sized(null, null, 33554432L)), containsString("32 MB"));
+    }
+
+    @Test
+    @DisplayName("shows a legacy group's size as typed")
+    void showsLegacySize() {
+        val group = group("*.csv", 3, null);
+        group.setSize("about 2Mb each");
+        assertThat(renderGroup(group), containsString("about 2Mb each"));
+    }
+
+    @Test
+    @DisplayName("shows a group's media type after its format, muted")
+    void showsFormatType() {
+        val group = group("*.csv", 3, null);
+        group.setFormat("Comma-separated values (CSV)");
+        group.setFormatType("text/csv");
+        assertThat(renderGroup(group), containsString("Comma-separated values (CSV) <span class=\"text-muted\">text/csv</span>"));
     }
 }

@@ -255,6 +255,58 @@ public class ServiceAgreementQualityServiceTest {
 
     private static final String NAME_ERROR = "File 1 name should only consist of alphanumeric characters, underscores, dots, hyphens and / between folders";
 
+    private static String bytesFileJson(String fields) {
+        return "{\"fileNumber\": \"1\", \"files\": [{\"name\": \"a.csv\", \"format\": \"csv\"" + fields + "}]}";
+    }
+
+    @Test
+    public void fileWithBytesHasNoMissingSizeError() {
+        assertThat(checkFilesJson(bytesFileJson(", \"bytes\": 1048576")), empty());
+    }
+
+    @Test
+    public void fileWithNeitherBytesNorSizeIsAnError() {
+        assertThat(checkFilesJson(bytesFileJson("")), hasCheck("File 1 size is missing", ERROR));
+    }
+
+    @Test
+    public void fileBytesMustBePositive() {
+        for (val bytes : List.of("0", "-5")) {
+            assertThat(checkFilesJson(bytesFileJson(", \"bytes\": " + bytes)), hasCheck("File 1 size must be more than 0", WARNING));
+        }
+    }
+
+    @Test
+    public void groupWithoutSizesGetsWarnings() {
+        val actual = checkFilesJson(groupJson("{\"pattern\": \"a*.csv\", \"count\": 2}"));
+        assertThat(actual, hasCheck("File group 1 size of each file is missing", WARNING));
+        assertThat(actual, hasCheck("File group 1 total size is missing", WARNING));
+    }
+
+    @Test
+    public void groupBytesSatisfyTheSizeWarnings() {
+        val actual = checkFilesJson(groupJson("{\"pattern\": \"a*.csv\", \"count\": 2, \"minBytes\": 10, \"maxBytes\": 20, \"totalBytes\": 30}"));
+        assertThat(actual, empty());
+    }
+
+    @Test
+    public void groupLegacySizeSatisfiesTheSizeWarnings() {
+        val actual = checkFilesJson(groupJson("{\"pattern\": \"a*.csv\", \"count\": 2, \"size\": \"1 MB\"}"));
+        assertThat(actual, empty());
+    }
+
+    @Test
+    public void groupBytesThePageNeverProducesAreWarnings() {
+        val inverted = checkFilesJson(groupJson("{\"pattern\": \"a*\", \"count\": 2, \"minBytes\": 20, \"maxBytes\": 10, \"totalBytes\": 30}"));
+        assertThat(inverted, hasCheck("File group 1 smallest file size is larger than the largest", WARNING));
+        val small = checkFilesJson(groupJson("{\"pattern\": \"a*\", \"count\": 2, \"minBytes\": 10, \"maxBytes\": 20, \"totalBytes\": 19}"));
+        assertThat(small, hasCheck("File group 1 total size is smaller than its largest file", WARNING));
+        val nonPositive = checkFilesJson(groupJson("{\"pattern\": \"a*\", \"count\": 2, \"minBytes\": 0, \"maxBytes\": -1, \"totalBytes\": 0}"));
+        assertThat(nonPositive, hasCheck("File group 1 smallest file size must be more than 0", WARNING));
+        assertThat(nonPositive, hasCheck("File group 1 largest file size must be more than 0", WARNING));
+        assertThat(nonPositive, hasCheck("File group 1 total size must be more than 0", WARNING));
+    }
+
     @Test
     public void fileNameMayIncludeFolders() {
         assertThat(checkFilesJson(fileJson("site1/2024.csv")), empty());
@@ -295,7 +347,7 @@ public class ServiceAgreementQualityServiceTest {
 
     @Test
     public void fileNumberDiffersFromListing() {
-        val group = "\"fileGroups\": [{\"pattern\": \"a*.csv\", \"count\": 2}]";
+        val group = "\"fileGroups\": [{\"pattern\": \"a*.csv\", \"count\": 2, \"size\": \"1mb\"}]";
         val files = "\"files\": [{\"name\": \"a.csv\", \"format\": \"csv\", \"size\": \"1mb\"}, {\"name\": \"b.csv\", \"format\": \"csv\", \"size\": \"1mb\"}]";
         val warning = "Number of files to be deposited (5) differs from the files and file groups listed (4)";
         assertThat(checkFilesJson("{\"fileNumber\": \"5\", " + files + ", " + group + "}"), hasCheck(warning, WARNING));
@@ -313,7 +365,7 @@ public class ServiceAgreementQualityServiceTest {
 
     @Test
     public void oversizedNumbersAreTreatedAsNonNumeric() {
-        val json = "{\"fileNumber\": \"99999999999\", \"fileGroups\": [{\"pattern\": \"a*.csv\", \"count\": \"99999999999\"}]}";
+        val json = "{\"fileNumber\": \"99999999999\", \"fileGroups\": [{\"pattern\": \"a*.csv\", \"count\": \"99999999999\", \"size\": \"1mb\"}]}";
         assertThat(checkFilesJson(json), empty());
     }
 

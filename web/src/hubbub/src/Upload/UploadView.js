@@ -126,9 +126,10 @@ export default Backbone.View.extend({
   },
 
   expectedSources () {
-    const listed = file => ({ path: file.get('path'), status: file.get('status') })
+    const listed = file => ({ path: file.get('path'), status: file.get('status'), bytes: file.get('bytes') })
     const uploads = [...this.dropbox.map(listed), ...this.datastore.map(listed)]
     const datastorePaths = !this.listed.datastore && this.datastorePaths
+    // A depositor's page has the datastore's paths but not their sizes, so those aren't size-checked
     if (datastorePaths) {
       uploads.push(...(datastorePaths.paths || []).map(path => ({ path, status: 'VALID' })))
     }
