@@ -501,9 +501,10 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     // One per distinct format in the file listing, ignoring case; the first spelling wins
     private static List<DistributionInfo> distributionFormatsFrom(ServiceAgreement serviceAgreement) {
         val seen = new HashSet<String>();
-        return Stream.ofNullable(serviceAgreement.getFiles())
-            .flatMap(List::stream)
-            .map(file -> nullToEmpty(file.getFormat()).strip())
+        return Stream.concat(
+                Stream.ofNullable(serviceAgreement.getFiles()).flatMap(List::stream).map(file -> file.getFormat()),
+                Stream.ofNullable(serviceAgreement.getFileGroups()).flatMap(List::stream).map(group -> group.getFormat()))
+            .map(format -> nullToEmpty(format).strip())
             .filter(format -> !format.isEmpty() && seen.add(format.toLowerCase(Locale.ROOT)))
             .map(format -> DistributionInfo.builder().name(format).build())
             .collect(Collectors.toCollection(ArrayList::new));
