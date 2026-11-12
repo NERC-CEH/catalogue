@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ABSENT_STATUSES, matchExpected, patternToRegExp } from '../../src/Expected'
+import { ABSENT_STATUSES, matchExpected, matchesPattern, patternToRegExp } from '../../src/Expected'
 
 const up = (path, status = 'VALID') => ({ path, status })
 const run = (expected, uploads, complete = true) =>
@@ -222,5 +222,27 @@ describe('matchExpected', function () {
   it('puts every upload in unmatched when nothing is expected', function () {
     const result = run({}, [up('a.csv'), up('b.csv')])
     expect(result.unmatched).toEqual(['a.csv', 'b.csv'])
+  })
+})
+
+describe('matchesPattern', function () {
+  it('says whether a file name fits a pattern as the upload page would see it', function () {
+    expect(matchesPattern('CP_*_MInv_*Stats_*.csv', 'CP_north_MInv_nitrateStats_2020.csv')).toBe(true)
+    expect(matchesPattern('CP_*_Stats.csv', 'CP_north_MInv_Stats_2020.csv')).toBe(false)
+  })
+
+  it('compares ignoring case and treating spaces as hyphens, on both sides', function () {
+    expect(matchesPattern('Site 1/*.CSV', 'site-1/Readings 2024.csv')).toBe(true)
+  })
+
+  it('keeps * and ? within one folder', function () {
+    expect(matchesPattern('site?/*.csv', 'site1/a.csv')).toBe(true)
+    expect(matchesPattern('site?/*.csv', 'site1/x/a.csv')).toBe(false)
+  })
+
+  it('matches nothing without both a pattern and a name', function () {
+    expect(matchesPattern('', 'a.csv')).toBe(false)
+    expect(matchesPattern('*.csv', '')).toBe(false)
+    expect(matchesPattern(undefined, undefined)).toBe(false)
   })
 })
