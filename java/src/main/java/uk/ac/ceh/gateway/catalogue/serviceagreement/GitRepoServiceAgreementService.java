@@ -375,7 +375,11 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         val serviceAgreement = get(user, id);
         // Before the dataset record's check: the workflow has already committed the agreed state, so the
         // snapshot must follow every agreement, including a re-agreement after the record was published.
-        saveAgreedFiles(user, id, serviceAgreement);
+        // Only when agreed, though: anyone who can edit can also reach this through POST {id}/publish, and
+        // must not be able to snapshot content nobody agreed.
+        if (isAgreed(serviceAgreement.getMetadata())) {
+            saveAgreedFiles(user, id, serviceAgreement);
+        }
         val gemini = (GeminiDocument) documentRepository.read(id);
         val metadataRecordState = gemini.getState();
         val serviceAgreementState = serviceAgreement.getState();
@@ -478,7 +482,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         } catch (DataRepositoryException noAgreement) {
             return Optional.empty();
         }
-        val agreed = AGREED.equals(workflow.currentState(metadataInfo).getId());
+        val agreed = isAgreed(metadataInfo);
         val snapshot = readAgreedFilesSnapshot(id);
         if (snapshot.isPresent()) {
             return Optional.of(snapshot.get().withRevising(!agreed));
@@ -490,6 +494,10 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         }
         // Sent back to draft without a snapshot: what was agreed is no longer known
         return Optional.empty();
+    }
+
+    private boolean isAgreed(MetadataInfo metadataInfo) {
+        return AGREED.equals(workflow.currentState(metadataInfo).getId());
     }
 
     @SneakyThrows

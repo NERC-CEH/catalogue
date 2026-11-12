@@ -605,10 +605,8 @@ public class GitRepoServiceAgreementServiceTest {
             )
         );
         verify(documentRepository).save(user, expected, "populated from service agreement");
-        // the agreed file listing is committed on its own, and the caches told
-        verify(repo).submitData(eq(FOLDER + ID + ".agreed.json"), any());
-        verify(dataOngoingCommit).commit(user, "saving agreed files of service agreement " + ID);
-        verify(cachedDataRepository, times(2)).evictAfterDirectWrite(FOLDER + ID);
+        // not in the agreed state, so no agreed file listing is kept (publishWritesAgreedSnapshot covers agreed)
+        verify(repo, never()).submitData(eq(FOLDER + ID + ".agreed.json"), any());
     }
 
     @Test
@@ -1124,6 +1122,40 @@ public class GitRepoServiceAgreementServiceTest {
 
         //then the snapshot is the newly agreed listing
         assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(newFiles, newGroups, "1", false))));
+    }
+
+    @Test
+    @SneakyThrows
+    void publishWhenNotAgreedWritesNoSnapshot() {
+        //given an agreement not yet agreed, reached directly rather than through the agree transition
+        val service = gitBackedService();
+        service.create(user, ID, catalogueKey, agreementWith(AGREED_FILES, AGREED_GROUPS, "14"));
+        moveTo(service, "ready-for-agreement");
+        givenDraftGeminiDocument();
+
+        //when
+        service.publishServiceAgreement(user, ID);
+
+        //then the rest of publication still happens, but nothing is kept as agreed
+        verify(documentRepository).save(eq(user), any(GeminiDocument.class), eq("populated from service agreement"));
+        assertThrows(DataRepositoryException.class, () -> gitRepo.getData(FOLDER + ID + ".agreed.json"));
+        assertThat(service.agreedFiles(ID), is(Optional.empty()));
+    }
+
+    @Test
+    @SneakyThrows
+    void publishWhenNotAgreedLeavesEarlierSnapshot() {
+        //given an agreed agreement, sent back to draft and edited
+        val service = agreedService();
+        moveTo(service, "draft");
+        service.doTransitionAction(user, ID, ServiceAgreementPublicationConfig.agreedToDraftId);
+        service.update(user, ID, agreementWith(List.of(file("other.txt")), List.of(fileGroup("x*.csv", 1)), "1"));
+
+        //when publish is reached without agreeing
+        service.publishServiceAgreement(user, ID);
+
+        //then the earlier agreed listing is unchanged, and still shown as being revised
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", true))));
     }
 
     @Test
