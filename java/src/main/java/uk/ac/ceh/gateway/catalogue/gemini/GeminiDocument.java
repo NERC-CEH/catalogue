@@ -14,6 +14,7 @@ import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.monitoring.Utilises;
+import uk.ac.ceh.gateway.catalogue.people.Orcid;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
@@ -24,6 +25,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.google.common.base.Strings.nullToEmpty;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
@@ -121,19 +123,22 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     public void populateFromServiceAgreement(ServiceAgreement serviceAgreement) {
         this.setTitle(serviceAgreement.getTitle());
         this.setDescription(serviceAgreement.getDescription());
-        this.useConstraints = Optional.ofNullable(serviceAgreement.getEndUserLicence())
-            .map(List::of)
-            .orElse(null);
+        this.useConstraints = useConstraintsFrom(serviceAgreement);
         this.lineage = serviceAgreement.getLineage();
         this.boundingBoxes = serviceAgreement.getBoundingBoxes();
         this.funding = serviceAgreement.getFunding();
-        this.contactPoints.add(ResponsibleParty.builder()
+        val formats = distributionFormatsFrom(serviceAgreement);
+        if (!formats.isEmpty()) {
+            this.distributionFormats = formats;
+        }
+        // An agreement sent back to draft and agreed again runs this a second time (dri-one #535)
+        addAbsentContacts(this.contactPoints, List.of(ResponsibleParty.builder()
             .displayName(serviceAgreement.getDepositorName())
             .email(convertEmail(serviceAgreement.getDepositorContactDetails()))
             .build()
-        );
-        this.authors.addAll(convertEmails(serviceAgreement.getAuthors()));
-        this.rightsHolders.addAll(convertEmails(serviceAgreement.getOwnersOfIpr()));
+        ));
+        addAbsentContacts(this.authors, convertEmails(serviceAgreement.getAuthors()));
+        addAbsentContacts(this.rightsHolders, convertEmails(serviceAgreement.getOwnersOfIpr()));
         Optional.ofNullable(serviceAgreement.getAvailability())
             .ifPresent(availability -> this.datasetReferenceDate = DatasetReferenceDate.builder()
                 .releasedDate(LocalDate.parse(availability))
@@ -477,6 +482,64 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     private static @NonNull String convertEmail(@NonNull String email) {
         return email.endsWith("@ceh.ac.uk") ? "enquiries@ceh.ac.uk" : email;
+    }
+
+    // The licence, then the depositor's free-text "Additional use constraints"; null when there are neither
+    private static List<ResourceConstraint> useConstraintsFrom(ServiceAgreement serviceAgreement) {
+        val constraints = new ArrayList<ResourceConstraint>();
+        Optional.ofNullable(serviceAgreement.getEndUserLicence()).ifPresent(constraints::add);
+        Optional.ofNullable(serviceAgreement.getUseConstraints())
+            .map(String::strip)
+            .filter(text -> !text.isEmpty())
+            .ifPresent(text -> constraints.add(ResourceConstraint.builder()
+                .value(text)
+                .code("otherRestrictions")
+                .build()));
+        return constraints.isEmpty() ? null : constraints;
+    }
+
+    // One per distinct format in the file listing, ignoring case; the first spelling wins
+    private static List<DistributionInfo> distributionFormatsFrom(ServiceAgreement serviceAgreement) {
+        val seen = new HashSet<String>();
+        return Stream.ofNullable(serviceAgreement.getFiles())
+            .flatMap(List::stream)
+            .map(file -> nullToEmpty(file.getFormat()).strip())
+            .filter(format -> !format.isEmpty() && seen.add(format.toLowerCase(Locale.ROOT)))
+            .map(format -> DistributionInfo.builder().name(format).build())
+            .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private static void addAbsentContacts(List<ResponsibleParty> contacts, List<ResponsibleParty> additions) {
+        additions.stream()
+            .filter(addition -> contacts.stream().noneMatch(contact -> samePerson(contact, addition)))
+            .forEach(contacts::add);
+    }
+
+    /*
+     * Not equals(): an editor may have added an ORCID iD or affiliation since. Nor email alone:
+     * convertEmail gives every UKCEH contact the same enquiries address.
+     */
+    private static boolean samePerson(ResponsibleParty a, ResponsibleParty b) {
+        if (sameIdentifier(a.getNameIdentifier(), b.getNameIdentifier())) {
+            return true;
+        }
+        // Namesakes with different iDs or emails are different people
+        val idsAgree = a.getNameIdentifier().isBlank() || b.getNameIdentifier().isBlank();
+        val emailsAgree = a.getEmail().isBlank() || b.getEmail().isBlank() || a.getEmail().equalsIgnoreCase(b.getEmail());
+        return idsAgree && emailsAgree && !name(a).isEmpty() && name(a).equalsIgnoreCase(name(b));
+    }
+
+    // An ORCID in any form (bare, http, www.) is the same iD; other identifiers, such as ISNIs, compare as text
+    private static boolean sameIdentifier(String a, String b) {
+        if (a.isBlank()) {
+            return false;
+        }
+        val orcid = Orcid.id(a);
+        return orcid.isPresent() ? orcid.equals(Orcid.id(b)) : a.strip().equalsIgnoreCase(b.strip());
+    }
+
+    private static String name(ResponsibleParty party) {
+        return (party.getDisplayName().isBlank() ? party.getOrganisationName() : party.getDisplayName()).strip();
     }
 
     private static @NonNull List<ResponsibleParty> convertEmails(List<ResponsibleParty> parties) {
