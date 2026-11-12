@@ -43,6 +43,25 @@ describe('DistributionFormatView', () => {
     expect(model.get('version')).toBe('1')
   })
 
+  it('shows the media type that goes with the name, and clears it for an unlisted one', () => {
+    const { view } = build()
+
+    edit(view, 'name', 'csv')
+    expect(view.$('[data-name="type"]').val()).toBe('text/csv')
+
+    edit(view, 'name', 'GeoPackage')
+    expect(view.$('[data-name="type"]').val()).toBe('')
+  })
+
+  it('normalises smart punctuation in an unlisted name, as other fields do', () => {
+    const { model, view } = build()
+
+    edit(view, 'name', 'Mike\u2019s \u201Cdata\u201D \u2013 set')
+
+    expect(model.get('name')).toBe('Mike\'s "data" - set')
+    expect(view.$('[data-name="name"]').val()).toBe('Mike\'s "data" - set')
+  })
+
   it('still keeps the version as typed', () => {
     const { model, view } = build()
 

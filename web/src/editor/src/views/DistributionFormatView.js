@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/DistributionFormat'
+import { cleanText } from '../utils'
 import { ensureFormatDatalist, pickFormat } from '../utils/formatPicker'
 
 export default ObjectInputView.extend({
@@ -16,7 +17,7 @@ export default ObjectInputView.extend({
     if ($(event.target).data('name') !== 'name') {
       return ObjectInputView.prototype.modify.call(this, event)
     }
-    const { name, type } = pickFormat($(event.target).val())
+    const { name, type } = pickFormat(cleanText($(event.target).val().trim()))
     if (name) {
       $(event.target).val(name)
       this.model.set('name', name)
@@ -26,6 +27,7 @@ export default ObjectInputView.extend({
       this.model.unset('name')
       this.model.unset('type')
     }
+    this.$('[data-name="type"]').val(this.model.get('type') ?? '')
     return false // disable bubbling
   }
 })
