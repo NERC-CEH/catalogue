@@ -127,8 +127,9 @@ public class UploadController {
             if (isAdmin) {
                 addHubbubResponse(model, "datastore", datasetId, DATASTORE);
                 addHubbubResponse(model, "metadata", datasetId, METADATA);
-            } else if (model.containsAttribute(DROPBOX)) {
-                // Staff can move files to the datastore while the transfer is scheduled
+            } else if (model.containsAttribute(DROPBOX) && model.containsAttribute("expected")) {
+                // Staff can move files to the datastore while the transfer is scheduled. Only the
+                // expected files section uses these, so without an agreement Hubbub isn't asked
                 addDatastorePaths(model, datasetId);
             }
         } else if (dataTransfer.isInProgress() || isAdmin) {
@@ -165,6 +166,7 @@ public class UploadController {
         expected.set("files", mapper.valueToTree(orEmpty(agreed.files())));
         expected.set("fileGroups", mapper.valueToTree(orEmpty(agreed.fileGroups())));
         expected.put("fileNumber", agreed.fileNumber());
+        expected.put("hasNamingConvention", agreed.hasNamingConvention());
         expected.put("revising", agreed.revising());
         return mapper.writeValueAsString(expected);
     }
@@ -175,7 +177,9 @@ public class UploadController {
 
     /**
      * Only the paths of the datastore listing, so a depositor's page can count files staff have moved there
-     * without seeing their hashes, sizes or statuses. Paths of files no longer there are left out.
+     * without seeing their hashes, sizes or statuses. Paths of files no longer there are left out; a file
+     * with no status counts as there. The section is advisory, so any fault leaves the paths out rather
+     * than taking the page down.
      */
     private void addDatastorePaths(Model model, String datasetId) {
         try {
@@ -185,7 +189,7 @@ public class UploadController {
             }
             val data = orEmpty(response.getData());
             val paths = data.stream()
-                .filter(file -> !ABSENT_STATUSES.contains(file.getStatus()))
+                .filter(file -> file.getStatus() == null || !ABSENT_STATUSES.contains(file.getStatus()))
                 .map(HubbubResponse.FileInfo::getPath)
                 .toList();
             val meta = response.getMeta();
@@ -195,6 +199,8 @@ public class UploadController {
             model.addAttribute("datastorePaths", mapper.writeValueAsString(datastorePaths));
         } catch (RestClientException ex) {
             log.debug("{}, {} paths not added.\n{}", datasetId, DATASTORE, ex.getMessage());
+        } catch (RuntimeException ex) {
+            log.warn("{}: {} paths not added", datasetId, DATASTORE, ex);
         }
     }
 

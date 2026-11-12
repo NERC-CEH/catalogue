@@ -731,7 +731,7 @@ class UploadControllerTest extends AbstractMvcTest {
         file.setFormat("csv");
         file.setSize("2 MB");
         given(serviceAgreementService.agreedFiles(datasetId))
-            .willReturn(Optional.of(new AgreedFiles(List.of(file), null, "12", true)));
+            .willReturn(Optional.of(new AgreedFiles(List.of(file), null, "12", true, true)));
     }
 
     private void givenNoAgreement() {
@@ -791,6 +791,7 @@ class UploadControllerTest extends AbstractMvcTest {
                   "files": [{"name": "data/site.csv", "format": "csv", "size": "2 MB"}],
                   "fileGroups": [],
                   "fileNumber": "12",
+                  "hasNamingConvention": true,
                   "revising": true
                 }
                 """))
@@ -893,7 +894,7 @@ class UploadControllerTest extends AbstractMvcTest {
         givenPage(false);
         givenDataTransferIssue();
         givenDropbox();
-        givenNoAgreement();
+        givenAgreedFiles();
         givenDatastoreListing(
             3,
             datastoreFile("data/site.csv", "VALID"),
@@ -921,6 +922,7 @@ class UploadControllerTest extends AbstractMvcTest {
         givenPage(false);
         givenDataTransferIssue();
         givenDropbox();
+        givenAgreedFiles();
         givenDatastoreListing(5001, datastoreFile("data/site.csv", "VALID"));
 
         assertThat(
@@ -929,6 +931,50 @@ class UploadControllerTest extends AbstractMvcTest {
                 {"paths": ["data/site.csv"], "complete": false}
                 """))
         );
+    }
+
+    @Test
+    void datastoreFileWithoutStatusCountsAsPresent() {
+        givenPage(false);
+        givenDataTransferIssue();
+        givenDropbox();
+        givenAgreedFiles();
+        givenDatastoreListing(1, datastoreFile("data/site.csv", null));
+
+        assertThat(
+            json.readTree((String) getPageModel().get("datastorePaths")),
+            equalTo(json.readTree("""
+                {"paths": ["data/site.csv"], "complete": true}
+                """))
+        );
+    }
+
+    @Test
+    void pageStaysUpWhenDatastorePathsCannotBeRead() {
+        // The section is advisory, so a fault reading the listing leaves the paths out rather than the page
+        givenPage(false);
+        givenDataTransferIssue();
+        givenDropbox();
+        givenAgreedFiles();
+        given(uploadService.get(datasetId, DATASTORE, 1, 5000)).willThrow(new IllegalStateException("bad listing"));
+
+        val model = getPageModel();
+
+        assertThat(model, hasKey("expected"));
+        assertThat(model, not(hasKey("datastorePaths")));
+    }
+
+    @Test
+    void noAgreementMeansNoDatastorePathsRequest() {
+        givenPage(false);
+        givenDataTransferIssue();
+        givenDropbox();
+        givenNoAgreement();
+
+        val model = getPageModel();
+
+        assertThat(model, not(hasKey("datastorePaths")));
+        verify(uploadService, never()).get(datasetId, DATASTORE, 1, 5000);
     }
 
     @Test

@@ -498,7 +498,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return constraints.isEmpty() ? null : constraints;
     }
 
-    // One per distinct format in the file listing, ignoring case; the first spelling wins
+    // One per distinct format in the file listing and file groups, ignoring case; the first spelling wins
     private static List<DistributionInfo> distributionFormatsFrom(ServiceAgreement serviceAgreement) {
         val seen = new HashSet<String>();
         return Stream.concat(

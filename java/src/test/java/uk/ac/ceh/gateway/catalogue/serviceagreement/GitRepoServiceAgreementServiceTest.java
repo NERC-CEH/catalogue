@@ -17,11 +17,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.web.client.RestClientResponseException;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 import uk.ac.ceh.components.datastore.*;
 import uk.ac.ceh.components.datastore.git.GitDataRepository;
+import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.config.ServiceAgreementPublicationConfig;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.document.JacksonDocumentInfoMapper;
@@ -54,6 +57,7 @@ import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -1081,7 +1085,7 @@ public class GitRepoServiceAgreementServiceTest {
             assertThat(json, org.hamcrest.Matchers.not(containsString("revising")));
         }
         //and it is what is read back, not yet being revised
-        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false))));
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, false))));
     }
 
     @Test
@@ -1097,7 +1101,7 @@ public class GitRepoServiceAgreementServiceTest {
             List.of(file("other.txt")), List.of(fileGroup("x*.csv", 1)), "1"));
 
         //then the agreed listing is still the one agreed, marked as being revised
-        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", true))));
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, true))));
     }
 
     @Test
@@ -1121,7 +1125,7 @@ public class GitRepoServiceAgreementServiceTest {
         assertThrows(ServiceAgreementException.class, () -> service.publishServiceAgreement(user, ID));
 
         //then the snapshot is the newly agreed listing
-        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(newFiles, newGroups, "1", false))));
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(newFiles, newGroups, "1", false, false))));
     }
 
     @Test
@@ -1155,7 +1159,7 @@ public class GitRepoServiceAgreementServiceTest {
         service.publishServiceAgreement(user, ID);
 
         //then the earlier agreed listing is unchanged, and still shown as being revised
-        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", true))));
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, true))));
     }
 
     @Test
@@ -1167,7 +1171,7 @@ public class GitRepoServiceAgreementServiceTest {
         moveTo(service, "agreed");
 
         //then its current content is the last agreed version
-        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false))));
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, false))));
     }
 
     @Test
@@ -1214,5 +1218,101 @@ public class GitRepoServiceAgreementServiceTest {
 
         //then
         assertThrows(DataRepositoryException.class, () -> gitRepo.getData(FOLDER + ID + ".meta"));
+    }
+
+    @Test
+    @SneakyThrows
+    @ExtendWith(OutputCaptureExtension.class)
+    void absentAgreementIsQuietlyEmpty(CapturedOutput output) {
+        given(repo.getData(FOLDER + ID + ".meta")).willThrow(new GitFileNotFoundException("absent"));
+
+        assertThat(service.agreedFiles(ID), is(Optional.empty()));
+        assertThat(output.getOut(), not(containsString("WARN")));
+    }
+
+    @Test
+    @SneakyThrows
+    @ExtendWith(OutputCaptureExtension.class)
+    void unreadableAgreementIsEmptyAndWarned(CapturedOutput output) {
+        given(repo.getData(FOLDER + ID + ".meta")).willThrow(new DataRepositoryException("disk fault"));
+
+        assertThat(service.agreedFiles(ID), is(Optional.empty()));
+        assertThat(output.getOut(), containsString("WARN"));
+        assertThat(output.getOut(), containsString(ID));
+    }
+
+    @Test
+    @SneakyThrows
+    @ExtendWith(OutputCaptureExtension.class)
+    void unreadableSnapshotIsTreatedAsAbsentAndWarned(CapturedOutput output) {
+        //given an agreed agreement whose snapshot cannot be read for a reason other than its absence
+        val meta = mock(DataDocument.class);
+        val raw = mock(DataDocument.class);
+        given(repo.getData(FOLDER + ID + ".meta")).willReturn(meta);
+        given(meta.getInputStream()).willReturn(InputStream.nullInputStream());
+        given(metadataInfoMapper.readInfo(any())).willReturn(MetadataInfo.builder().state("agreed").build());
+        given(repo.getData(FOLDER + ID + ".agreed.json")).willThrow(new DataRepositoryException("disk fault"));
+        given(repo.getData(FOLDER + ID + ".raw")).willReturn(raw);
+        given(raw.getInputStream()).willReturn(InputStream.nullInputStream());
+        given(serviceAgreementMapper.readInfo(any())).willReturn(agreementWith(AGREED_FILES, AGREED_GROUPS, "14"));
+
+        //then the current content stands in, as for an agreement agreed before snapshots, and it is logged
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, false))));
+        assertThat(output.getOut(), containsString("WARN"));
+    }
+
+    @Test
+    @SneakyThrows
+    void snapshotKeepsWhetherThereIsANamingConvention() {
+        //given an agreement agreed with a prose naming convention
+        val service = gitBackedService();
+        val agreement = agreementWith(AGREED_FILES, AGREED_GROUPS, "14");
+        agreement.setFileNamingConvention("One file per site, named after the site");
+        service.create(user, ID, catalogueKey, agreement);
+        moveTo(service, "agreed");
+        givenDraftGeminiDocument();
+        service.publishServiceAgreement(user, ID);
+
+        //then the snapshot says so, without the prose itself
+        try (val stored = gitRepo.getData(FOLDER + ID + ".agreed.json").getInputStream()) {
+            val json = new String(stored.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+            assertThat(json, containsString("\"hasNamingConvention\":true"));
+            assertThat(json, not(containsString("named after the site")));
+        }
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", true, false))));
+    }
+
+    @Test
+    @SneakyThrows
+    void snapshotWithoutNamingConventionFieldReadsAsNone() {
+        //given a snapshot stored before hasNamingConvention was kept
+        val older = objectMapper.readValue("""
+            {"files": [], "fileGroups": [], "fileNumber": "3"}
+            """, AgreedFiles.class);
+
+        assertThat(older, is(new AgreedFiles(List.of(), List.of(), "3", false, false)));
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "\t"})
+    void blankNamingConventionIsNone(String convention) {
+        val agreement = agreementWith(AGREED_FILES, AGREED_GROUPS, "14");
+        agreement.setFileNamingConvention(convention);
+
+        assertThat(AgreedFiles.of(agreement, false).hasNamingConvention(), is(false));
+    }
+
+    @Test
+    @SneakyThrows
+    void agreedBeforeSnapshotsExistKeepsNamingConvention() {
+        //given an agreement agreed before snapshots were kept, with a prose naming convention
+        val service = gitBackedService();
+        val agreement = agreementWith(AGREED_FILES, AGREED_GROUPS, "14");
+        agreement.setFileNamingConvention("CP_<site>.csv");
+        service.create(user, ID, catalogueKey, agreement);
+        moveTo(service, "agreed");
+
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", true, false))));
     }
 }

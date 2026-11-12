@@ -16,6 +16,7 @@ import org.springframework.web.client.RestClientResponseException;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
+import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.config.ServiceAgreementPublicationConfig;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -479,7 +480,10 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         final MetadataInfo metadataInfo;
         try {
             metadataInfo = metadataInfoMapper.readInfo(repo.getData(FOLDER + id + ".meta").getInputStream());
-        } catch (DataRepositoryException noAgreement) {
+        } catch (GitFileNotFoundException noAgreement) {
+            return Optional.empty();
+        } catch (DataRepositoryException ex) {
+            log.warn("{}: service agreement unreadable, so no agreed files", id, ex);
             return Optional.empty();
         }
         val agreed = isAgreed(metadataInfo);
@@ -514,7 +518,10 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private Optional<DataDocument> agreedFilesDocument(String id) {
         try {
             return Optional.ofNullable(repo.getData(FOLDER + id + AGREED_FILES_SUFFIX));
-        } catch (DataRepositoryException noSnapshot) {
+        } catch (GitFileNotFoundException noSnapshot) {
+            return Optional.empty();
+        } catch (DataRepositoryException ex) {
+            log.warn("{}: agreed files snapshot unreadable, so treated as absent", id, ex);
             return Optional.empty();
         }
     }
