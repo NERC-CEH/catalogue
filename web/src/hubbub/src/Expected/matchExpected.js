@@ -28,6 +28,15 @@ export function patternToRegExp (pattern) {
  */
 export const asUploaded = name => name.toLowerCase().replaceAll(' ', '-')
 
+/**
+ * Whether one file name fits a file group's pattern, compared exactly as matchExpected compares
+ * uploads, so the agreement editor's "Try a file name" box and the upload page always agree.
+ */
+export function matchesPattern (pattern, name) {
+  if (!pattern || !name) return false
+  return patternToRegExp(asUploaded(pattern)).test(asUploaded(name))
+}
+
 const isDigits = value => typeof value === 'string' || typeof value === 'number'
   ? /^\d+$/.test(String(value).trim())
   : false
