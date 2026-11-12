@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.util.unit.DataSize;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -23,8 +24,13 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.AgreedFiles;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementService;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
@@ -48,11 +54,16 @@ public class UploadController {
     static final String DROPBOX = "dropbox";
     static final String METADATA = "supporting-documents";
 
+    /** Statuses of a listed file that is no longer there, so it doesn't count as uploaded (dri-one #536) */
+    static final Set<String> ABSENT_STATUSES =
+        Set.of("MISSING", "UNKNOWN_MISSING", "MOVED_UNKNOWN_MISSING", "ZIPPED_UNKNOWN_MISSING");
+
     private final UploadService uploadService;
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
     private final PermissionService permissionService;
     private final ObjectMapper mapper;
+    private final ObjectProvider<ServiceAgreementService> serviceAgreementService;
     @ToString.Include
     private final String maxFileSize;
 
@@ -62,6 +73,7 @@ public class UploadController {
         JiraService jiraService,
         PermissionService permissionService,
         ObjectMapper mapper,
+        ObjectProvider<ServiceAgreementService> serviceAgreementService,
         @Value("${spring.servlet.multipart.max-file-size}") String maxFileSize
     ) {
         this.uploadService = uploadService;
@@ -69,6 +81,7 @@ public class UploadController {
         this.jiraService = jiraService;
         this.permissionService = permissionService;
         this.mapper = mapper;
+        this.serviceAgreementService = serviceAgreementService;
         this.maxFileSize = maxFileSize;
         log.info("Creating");
     }
@@ -107,11 +120,16 @@ public class UploadController {
         // For the uploader to refuse an oversized file before sending it (dri-one #459)
         model.addAttribute("maxFileSizeBytes", DataSize.parse(maxFileSize).toBytes());
 
+        addExpectedFiles(model, datasetId);
+
         if (dataTransfer.isScheduled()) {
             addHubbubResponse(model, DROPBOX, datasetId, DROPBOX);
             if (isAdmin) {
                 addHubbubResponse(model, "datastore", datasetId, DATASTORE);
                 addHubbubResponse(model, "metadata", datasetId, METADATA);
+            } else if (model.containsAttribute(DROPBOX)) {
+                // Staff can move files to the datastore while the transfer is scheduled
+                addDatastorePaths(model, datasetId);
             }
         } else if (dataTransfer.isInProgress() || isAdmin) {
             addHubbubResponse(model, DROPBOX, datasetId, DROPBOX);
@@ -121,6 +139,57 @@ public class UploadController {
 
         log.debug("Model keys: {}", model.asMap().keySet());
         return "html/upload/hubbub/upload";
+    }
+
+    /**
+     * The agreement's last agreed file listing, for the page to check uploads against (dri-one #536). Read
+     * past the agreement's permissions: the page's own access check has already passed.
+     */
+    private void addExpectedFiles(Model model, String datasetId) {
+        val service = serviceAgreementService.getIfAvailable();
+        if (service == null) {
+            return;
+        }
+        service.agreedFiles(datasetId).ifPresent(agreed -> model.addAttribute("expected", expectedJson(agreed)));
+    }
+
+    /** Built by hand: the stored form leaves out revising, and the app's mapper drops empty lists */
+    private String expectedJson(AgreedFiles agreed) {
+        val expected = mapper.createObjectNode();
+        expected.set("files", mapper.valueToTree(orEmpty(agreed.files())));
+        expected.set("fileGroups", mapper.valueToTree(orEmpty(agreed.fileGroups())));
+        expected.put("fileNumber", agreed.fileNumber());
+        expected.put("revising", agreed.revising());
+        return mapper.writeValueAsString(expected);
+    }
+
+    private static <T> List<T> orEmpty(List<T> list) {
+        return list == null ? Collections.emptyList() : list;
+    }
+
+    /**
+     * Only the paths of the datastore listing, so a depositor's page can count files staff have moved there
+     * without seeing their hashes, sizes or statuses. Paths of files no longer there are left out.
+     */
+    private void addDatastorePaths(Model model, String datasetId) {
+        try {
+            val response = uploadService.get(datasetId, DATASTORE, 1, 5000);
+            if (response == null) {
+                return;
+            }
+            val data = orEmpty(response.getData());
+            val paths = data.stream()
+                .filter(file -> !ABSENT_STATUSES.contains(file.getStatus()))
+                .map(HubbubResponse.FileInfo::getPath)
+                .toList();
+            val meta = response.getMeta();
+            val datastorePaths = mapper.createObjectNode();
+            datastorePaths.set("paths", mapper.valueToTree(paths));
+            datastorePaths.put("complete", meta != null && data.size() == meta.getTotalFiles());
+            model.addAttribute("datastorePaths", mapper.writeValueAsString(datastorePaths));
+        } catch (RestClientException ex) {
+            log.debug("{}, {} paths not added.\n{}", datasetId, DATASTORE, ex.getMessage());
+        }
     }
 
     @SneakyThrows

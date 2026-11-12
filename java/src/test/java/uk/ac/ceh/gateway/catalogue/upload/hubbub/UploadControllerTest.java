@@ -28,20 +28,30 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.AgreedFiles;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.File;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementService;
+import tools.jackson.databind.json.JsonMapper;
 import uk.ac.ceh.gateway.catalogue.AbstractMvcTest;
 
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.containsString;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -69,6 +79,7 @@ class UploadControllerTest extends AbstractMvcTest {
     @MockitoBean(name="permission") private PermissionService permissionService;
     @MockitoBean private CatalogueService catalogueService;
     @MockitoBean private ProfileService profileService;
+    @MockitoBean private ServiceAgreementService serviceAgreementService;
     @Autowired private Configuration configuration;
 
     private final String datasetId = "164ef14f-95a5-45c7-8f36-d2000ba45516";
@@ -708,5 +719,224 @@ class UploadControllerTest extends AbstractMvcTest {
 
         //then
         verify(uploadService).validate(datasetId, DATASTORE,Optional.empty(), UPLOADER_USERNAME);
+    }
+
+    // dri-one #536: the page checks uploads against the agreement's last agreed file listing
+
+    private final JsonMapper json = JsonMapper.builder().build();
+
+    private void givenAgreedFiles() {
+        val file = new File();
+        file.setName("data/site.csv");
+        file.setFormat("csv");
+        file.setSize("2 MB");
+        given(serviceAgreementService.agreedFiles(datasetId))
+            .willReturn(Optional.of(new AgreedFiles(List.of(file), null, "12", true)));
+    }
+
+    private void givenNoAgreement() {
+        given(serviceAgreementService.agreedFiles(datasetId)).willReturn(Optional.empty());
+    }
+
+    private void givenInProgressDataTransferIssue() {
+        val status = new HashMap<String, Object>();
+        status.put("name", "In Progress");
+        val fields = new HashMap<String, Object>();
+        fields.put("status", status);
+        val dataTransfer = new JiraIssue();
+        dataTransfer.setFields(fields);
+        dataTransfer.setKey(jiraKey);
+        given(jiraService.retrieveDataTransferIssue(datasetId))
+            .willReturn(Optional.of(dataTransfer));
+    }
+
+    private HubbubResponse.FileInfo datastoreFile(String filePath, String fileStatus) {
+        return new HubbubResponse.FileInfo(
+            456L, datasetId, DATASTORE, "csv", "fc3facd3122cb0250f4bf82746d4bd13", 0.32,
+            lastModified, lastValidated, filePath, fileStatus, "sha256HASH", "text/csv"
+        );
+    }
+
+    private void givenDatastoreListing(int totalFiles, HubbubResponse.FileInfo... files) {
+        given(uploadService.get(datasetId, DATASTORE, 1, 5000))
+            .willReturn(new HubbubResponse(List.of(files), null, new HubbubResponse.Meta(1, 1, 5000, totalFiles)));
+    }
+
+    private void givenPage(boolean admin) {
+        givenUserCanUpload();
+        if (admin) {
+            givenUserIsAdmin();
+        } else {
+            givenUserIsNonAdmin();
+        }
+        givenGeminiDocument();
+        givenFreemarkerConfiguration();
+        givenDefaultCatalogue();
+    }
+
+    @SneakyThrows
+    private Map<String, Object> getPageModel() {
+        return mvc.perform(get("/upload/{datasetId}", datasetId))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getModelAndView()
+            .getModel();
+    }
+
+    private void assertExpectedFilesAdded(Map<String, Object> model) {
+        assertThat(
+            json.readTree((String) model.get("expected")),
+            equalTo(json.readTree("""
+                {
+                  "files": [{"name": "data/site.csv", "format": "csv", "size": "2 MB"}],
+                  "fileGroups": [],
+                  "fileNumber": "12",
+                  "revising": true
+                }
+                """))
+        );
+    }
+
+    @Test
+    void expectedFilesAddedForAgreedAgreementForAdmin() {
+        givenPage(true);
+        givenDataTransferIssue();
+        givenDatastore();
+        givenDropbox();
+        givenMetadata();
+        givenAgreedFiles();
+
+        assertExpectedFilesAdded(getPageModel());
+    }
+
+    @Test
+    void expectedFilesAddedForAgreedAgreementForNonAdmin() {
+        givenPage(false);
+        givenDataTransferIssue();
+        givenDropbox();
+        givenAgreedFiles();
+
+        assertExpectedFilesAdded(getPageModel());
+    }
+
+    @Test
+    void expectedFilesAbsentWithoutAgreementForAdmin() {
+        givenPage(true);
+        givenDataTransferIssue();
+        givenDatastore();
+        givenDropbox();
+        givenMetadata();
+        givenNoAgreement();
+
+        assertThat(getPageModel(), not(hasKey("expected")));
+    }
+
+    @Test
+    void expectedFilesAbsentWithoutAgreementForNonAdmin() {
+        givenPage(false);
+        givenDataTransferIssue();
+        givenDropbox();
+        givenNoAgreement();
+
+        assertThat(getPageModel(), not(hasKey("expected")));
+    }
+
+    @Test
+    void scheduledNonAdminGetsDatastorePathsOnly() {
+        givenPage(false);
+        givenDataTransferIssue();
+        givenDropbox();
+        givenNoAgreement();
+        givenDatastoreListing(
+            3,
+            datastoreFile("data/site.csv", "VALID"),
+            datastoreFile("data/gone.csv", "MISSING"),
+            datastoreFile("data/readded.csv", "MISSING_UNKNOWN")
+        );
+
+        val model = getPageModel();
+
+        assertThat(model, not(hasKey("datastore")));
+        val datastorePaths = (String) model.get("datastorePaths");
+        assertThat(
+            json.readTree(datastorePaths),
+            equalTo(json.readTree("""
+                {"paths": ["data/site.csv", "data/readded.csv"], "complete": true}
+                """))
+        );
+        assertThat(datastorePaths, not(containsString("hash")));
+        assertThat(datastorePaths, not(containsString("sha256")));
+        assertThat(datastorePaths, not(containsString("bytes")));
+    }
+
+    @Test
+    void datastorePathsIncompleteWhenListingIsPartial() {
+        givenPage(false);
+        givenDataTransferIssue();
+        givenDropbox();
+        givenDatastoreListing(5001, datastoreFile("data/site.csv", "VALID"));
+
+        assertThat(
+            json.readTree((String) getPageModel().get("datastorePaths")),
+            equalTo(json.readTree("""
+                {"paths": ["data/site.csv"], "complete": false}
+                """))
+        );
+    }
+
+    @Test
+    void adminGetsNoDatastorePaths() {
+        givenPage(true);
+        givenDataTransferIssue();
+        givenDatastore();
+        givenDropbox();
+        givenMetadata();
+
+        val model = getPageModel();
+
+        assertThat(model, hasKey("datastore"));
+        assertThat(model, not(hasKey("datastorePaths")));
+    }
+
+    @Test
+    void inProgressNonAdminGetsNoDatastorePaths() {
+        // They already have the full datastore listing
+        givenPage(false);
+        givenInProgressDataTransferIssue();
+        givenDatastore();
+        givenDropbox();
+        givenMetadata();
+
+        val model = getPageModel();
+
+        assertThat(model, hasKey("datastore"));
+        assertThat(model, not(hasKey("datastorePaths")));
+    }
+
+    @Test
+    void noListingsMeansNoDatastorePaths() {
+        givenPage(false);
+        given(jiraService.retrieveDataTransferIssue(datasetId)).willReturn(Optional.empty());
+        givenDatastoreListing(1, datastoreFile("data/site.csv", "VALID"));
+
+        val model = getPageModel();
+
+        assertThat(model, not(hasKey("dropbox")));
+        assertThat(model, not(hasKey("datastorePaths")));
+    }
+
+    @Test
+    @SneakyThrows
+    void userWhoCannotUploadIsStillForbidden() {
+        given(permissionService.userCanUpload(datasetId)).willReturn(false);
+        givenFreemarkerConfiguration();
+        givenDefaultCatalogue();
+        givenAgreedFiles();
+
+        mvc.perform(get("/upload/{datasetId}", datasetId))
+            .andExpect(status().isForbidden());
+
+        verify(serviceAgreementService, never()).agreedFiles(any());
+        verify(uploadService, never()).get(any(), any(), any(Integer.class), any(Integer.class));
     }
 }
