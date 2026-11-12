@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.ERROR;
+import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.WARNING;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.INFO;
 import static uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementService.FOLDER;
 
@@ -39,6 +40,9 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
     private final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9\\\\!#$%&'*+/=?^_`{|}~\\-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~\\-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$");
     private final String jiraPrefix;
     private final ImmutableSet<String> mandatoryContentTypes = ImmutableSet.of("generationMethods", "natureUnits", "qc", "dataStructure");
+
+    private final TypeRef<List<Map<String, Object>>> typeRefStringObject = new TypeRef<>() {
+    };
 
     private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<>() {
     };
@@ -271,8 +275,14 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             typeRefStringString
         );
 
-        if (files.isEmpty() && stringIsMissing(fileNamingConvention)) {
-            toReturn.add(new MetadataCheck("You must describe the files to be deposited (a list of files and/or a naming convention)", ERROR));
+        // fileGroups is absent from older agreements, so a missing path reads as empty
+        val fileGroups = parsed.read(
+            "$.fileGroups[*].['pattern','count']",
+            typeRefStringObject
+        );
+
+        if (files.isEmpty() && fileGroups.isEmpty() && stringIsMissing(fileNamingConvention)) {
+            toReturn.add(new MetadataCheck("You must describe the files to be deposited (a list of files, file groups and/or a naming convention)", ERROR));
         }
 
         if (stringIsMissing(fileNumber)) {
@@ -285,8 +295,8 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
 
             if (fieldIsMissing(file, "name")) {
                 toReturn.add(new MetadataCheck("File " + index + " name is missing ", ERROR));
-            } else if (!file.get("name").matches("^[\\w\\-_.]*$")) {
-                toReturn.add(new MetadataCheck("File " + index + " name should only consist of alphanumeric characters, underscores, dots, and hyphens", ERROR));
+            } else if (!isValidPath(file.get("name"), FILE_SEGMENT)) {
+                toReturn.add(new MetadataCheck("File " + index + " name should only consist of alphanumeric characters, underscores, dots, hyphens and / between folders", ERROR));
             }
 
             if (fieldIsMissing(file, "format")) {
@@ -298,7 +308,44 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             }
         }
 
+        int listedCount = files.size();
+        int groupIndex = 0;
+        for (val group: fileGroups) {
+            groupIndex++;
+            val pattern = group.get("pattern") == null ? null : group.get("pattern").toString();
+            val count = group.get("count") == null ? null : group.get("count").toString();
+
+            if (stringIsMissing(pattern)) {
+                toReturn.add(new MetadataCheck("File group " + groupIndex + " pattern is missing", ERROR));
+            } else if (!isValidPath(pattern, PATTERN_SEGMENT)) {
+                toReturn.add(new MetadataCheck("File group " + groupIndex + " pattern should only consist of alphanumeric characters, underscores, dots, hyphens, * and ? with / between folders", ERROR));
+            }
+
+            if (stringIsMissing(count)) {
+                toReturn.add(new MetadataCheck("File group " + groupIndex + " number of files is missing", ERROR));
+            } else if (count.trim().matches("\\d+")) {
+                listedCount += Integer.parseInt(count.trim());
+            }
+        }
+
+        if (!stringIsMissing(fileNumber) && fileNumber.trim().matches("\\d+")
+            && Integer.parseInt(fileNumber.trim()) != listedCount) {
+            toReturn.add(new MetadataCheck(
+                format("Number of files to be deposited (%s) differs from the files and file groups listed (%d)", fileNumber.trim(), listedCount),
+                WARNING
+            ));
+        }
+
         return toReturn;
+    }
+
+    private static final Pattern FILE_SEGMENT = Pattern.compile("[\\w\\-.]+");
+    private static final Pattern PATTERN_SEGMENT = Pattern.compile("[\\w\\-.*?]+");
+
+    /** One or more "/"-separated segments: none empty, none "." or "..". */
+    private static boolean isValidPath(String path, Pattern segment) {
+        return Arrays.stream(path.split("/", -1))
+            .allMatch(s -> segment.matcher(s).matches() && !s.equals(".") && !s.equals(".."));
     }
 
     List<MetadataCheck> checkSupportingDocs(DocumentContext parsed) {

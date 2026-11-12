@@ -24,6 +24,8 @@ import uk.ac.ceh.gateway.catalogue.quality.Results;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
+import org.hamcrest.Matcher;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -230,6 +232,76 @@ public class ServiceAgreementQualityServiceTest {
 
         //then
         assertThat(actual, not(empty()));
+    }
+
+    private List<MetadataCheck> checkFilesJson(String json) {
+        return this.service.checkFiles(JsonPath.parse(json, this.config));
+    }
+
+    private static Matcher<Iterable<? super MetadataCheck>> hasCheck(String message, Results.Severity severity) {
+        return hasItem(allOf(
+            hasProperty("test", equalTo(message)),
+            hasProperty("severity", equalTo(severity))
+        ));
+    }
+
+    private static String fileJson(String name) {
+        return "{\"fileNumber\": \"1\", \"files\": [{\"name\": \"" + name + "\", \"format\": \"csv\", \"size\": \"1mb\"}]}";
+    }
+
+    private static String groupJson(String group) {
+        return "{\"fileNumber\": \"2\", \"fileGroups\": [" + group + "]}";
+    }
+
+    private static final String NAME_ERROR = "File 1 name should only consist of alphanumeric characters, underscores, dots, hyphens and / between folders";
+
+    @Test
+    public void fileNameMayIncludeFolders() {
+        assertThat(checkFilesJson(fileJson("site1/2024.csv")), empty());
+    }
+
+    @Test
+    public void fileNameRejectsBadPaths() {
+        for (val name : List.of("/a.csv", "a/", "a//b.csv", "../a.csv", "a/./b.csv", "a b.csv")) {
+            assertThat(name, checkFilesJson(fileJson(name)), hasCheck(NAME_ERROR, ERROR));
+        }
+    }
+
+    @Test
+    public void fileGroupsSatisfyTheFileDescription() {
+        val actual = checkFilesJson(groupJson("{\"pattern\": \"a_*.csv\", \"count\": 2, \"format\": \"csv\", \"size\": \"1mb\"}"));
+        assertThat(actual, not(hasItem(hasProperty("test", startsWith("You must describe the files")))));
+        assertThat(actual, empty());
+    }
+
+    @Test
+    public void noFilesGroupsOrConventionIsAnError() {
+        assertThat(checkFilesJson("{\"fileNumber\": \"2\"}"), hasCheck(
+            "You must describe the files to be deposited (a list of files, file groups and/or a naming convention)", ERROR));
+    }
+
+    @Test
+    public void fileGroupNeedsPatternAndCount() {
+        assertThat(checkFilesJson(groupJson("{\"count\": 2}")), hasCheck("File group 1 pattern is missing", ERROR));
+        assertThat(checkFilesJson(groupJson("{\"pattern\": \"a*.csv\"}")), hasCheck("File group 1 number of files is missing", ERROR));
+    }
+
+    @Test
+    public void fileGroupPatternMayUseWildcards() {
+        val bad = "File group 1 pattern should only consist of alphanumeric characters, underscores, dots, hyphens, * and ? with / between folders";
+        assertThat(checkFilesJson(groupJson("{\"pattern\": \"site*/CP_??.csv\", \"count\": 2}")), not(hasCheck(bad, ERROR)));
+        assertThat(checkFilesJson(groupJson("{\"pattern\": \"site*/../x\", \"count\": 2}")), hasCheck(bad, ERROR));
+    }
+
+    @Test
+    public void fileNumberDiffersFromListing() {
+        val group = "\"fileGroups\": [{\"pattern\": \"a*.csv\", \"count\": 2}]";
+        val files = "\"files\": [{\"name\": \"a.csv\", \"format\": \"csv\", \"size\": \"1mb\"}, {\"name\": \"b.csv\", \"format\": \"csv\", \"size\": \"1mb\"}]";
+        val warning = "Number of files to be deposited (5) differs from the files and file groups listed (4)";
+        assertThat(checkFilesJson("{\"fileNumber\": \"5\", " + files + ", " + group + "}"), hasCheck(warning, WARNING));
+        assertThat(checkFilesJson("{\"fileNumber\": \"4\", " + files + ", " + group + "}"), empty());
+        assertThat(checkFilesJson("{\"fileNumber\": \"about 200\", " + files + ", " + group + "}"),
+            not(hasItem(hasProperty("test", startsWith("Number of files to be deposited (")))));
     }
 
     @Test
