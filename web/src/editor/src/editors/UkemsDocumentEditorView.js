@@ -127,7 +127,7 @@ export default EditorView.extend({
           ObjectInputView: DistributionFormatView,
           predefined: predefinedFormats(f => ({ name: f.name, type: f.type, version: 'unknown' })),
           helpText: `\
-<p><b>Name</b> is the filename (including extension) and is mandatory.</p>
+<p><b>Name</b> is the file format, chosen from the list or typed if it isn't there, and is mandatory.</p>
 <p><b>Type</b> is the machine-readable media type.  If you do not know it, leave it blank.</p>
 <p><b>Version</b> is mandatory; if it's not applicable, enter '<i>unknown</i>'</p>\
 `

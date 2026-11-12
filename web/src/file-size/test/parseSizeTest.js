@@ -38,6 +38,17 @@ describe('Reading a file size into bytes', () => {
     }
   })
 
+  it('gives nothing for a size too large to store exactly', () => {
+    for (const text of ['99999999 TB', '1-99999999 TB', '99999998-99999999 TB']) {
+      expect(parseSize(text), text).toBeNull()
+    }
+    expect(parseExactSize('99999999 TB')).toBeNull()
+  })
+
+  it('still reads the largest size that can be stored exactly', () => {
+    expect(parseSize(String(Number.MAX_SAFE_INTEGER))).toEqual({ bytes: Number.MAX_SAFE_INTEGER })
+  })
+
   it('gives nothing for a missing value', () => {
     expect(parseSize(undefined)).toBeNull()
     expect(parseSize(null)).toBeNull()

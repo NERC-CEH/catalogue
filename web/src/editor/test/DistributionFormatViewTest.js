@@ -43,6 +43,35 @@ describe('DistributionFormatView', () => {
     expect(model.get('version')).toBe('1')
   })
 
+  it('keeps a media type that is not on the list when the name is unlisted', () => {
+    const { model, view } = build({ name: 'Network Common Data Form', type: 'application/x-netcdf' })
+
+    edit(view, 'name', 'GeoPackage')
+
+    expect(model.get('name')).toBe('GeoPackage')
+    expect(model.get('type')).toBe('application/x-netcdf')
+    expect(view.$('[data-name="type"]').val()).toBe('application/x-netcdf')
+  })
+
+  it('replaces a media type that is not on the list when a listed name is chosen', () => {
+    const { model, view } = build({ name: 'Network Common Data Form', type: 'application/x-netcdf' })
+
+    edit(view, 'name', 'NetCDF')
+
+    expect(model.get('type')).toBe('application/netcdf')
+    expect(view.$('[data-name="type"]').val()).toBe('application/netcdf')
+  })
+
+  it('drops any media type when a listed format that has none is chosen', () => {
+    const { model, view } = build({ name: 'Network Common Data Form', type: 'application/x-netcdf' })
+
+    edit(view, 'name', 'shp')
+
+    expect(model.get('name')).toBe('Shapefile')
+    expect(model.has('type')).toBe(false)
+    expect(view.$('[data-name="type"]').val()).toBe('')
+  })
+
   it('shows the media type that goes with the name, and clears it for an unlisted one', () => {
     const { view } = build()
 

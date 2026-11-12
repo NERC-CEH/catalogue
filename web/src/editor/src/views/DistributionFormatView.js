@@ -3,6 +3,9 @@ import ObjectInputView from './ObjectInputView'
 import template from '../templates/DistributionFormat'
 import { cleanText } from '../utils'
 import { ensureFormatDatalist, pickFormat } from '../utils/formatPicker'
+import { FORMATS, findFormat } from '../formats'
+
+const isListedType = type => Boolean(type) && FORMATS.some(f => f.type === type)
 
 export default ObjectInputView.extend({
   template,
@@ -12,7 +15,8 @@ export default ObjectInputView.extend({
     return ObjectInputView.prototype.render.apply(this)
   },
 
-  // A listed format, or an extension of one, brings its media type; anything else has none to offer
+  // A listed format, or an extension of one, brings its media type. An unlisted name drops a type the
+  // list filled in, but keeps one entered some other way (the API or an import), as the box is read-only.
   modify (event) {
     if ($(event.target).data('name') !== 'name') {
       return ObjectInputView.prototype.modify.call(this, event)
@@ -22,7 +26,7 @@ export default ObjectInputView.extend({
       $(event.target).val(name)
       this.model.set('name', name)
       if (type) this.model.set('type', type)
-      else this.model.unset('type')
+      else if (findFormat(name) || isListedType(this.model.get('type'))) this.model.unset('type')
     } else {
       this.model.unset('name')
       this.model.unset('type')

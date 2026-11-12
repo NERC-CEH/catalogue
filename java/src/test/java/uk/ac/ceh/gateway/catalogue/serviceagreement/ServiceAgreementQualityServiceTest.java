@@ -266,7 +266,7 @@ public class ServiceAgreementQualityServiceTest {
 
     @Test
     public void fileWithNeitherBytesNorSizeIsAnError() {
-        assertThat(checkFilesJson(bytesFileJson("")), hasCheck("File1 size is missing", ERROR));
+        assertThat(checkFilesJson(bytesFileJson("")), hasCheck("File 1 size is missing", ERROR));
     }
 
     @Test

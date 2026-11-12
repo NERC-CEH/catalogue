@@ -306,7 +306,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             // byte fields win over the legacy size text, so either one satisfies the check
             val bytes = longOrNull(file.get("bytes"));
             if (bytes == null && objectFieldIsMissing(file, "size")) {
-                toReturn.add(new MetadataCheck("File" + index + " size is missing", ERROR));
+                toReturn.add(new MetadataCheck("File " + index + " size is missing", ERROR));
             } else if (bytes != null && bytes <= 0) {
                 toReturn.add(new MetadataCheck("File " + index + " size must be more than 0", WARNING));
             }
