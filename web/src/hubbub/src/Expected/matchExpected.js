@@ -21,9 +21,10 @@ export function patternToRegExp (pattern) {
 
 /**
  * A name as an upload through the page stores it: lower case and a hyphen for each space, as
- * UploadView.uploaded and UploadService.sanitisedFilename do. Applied to the agreement's side only,
- * so a name typed as `Site 1/Data.csv` matches the `site-1/data.csv` that arrives. JavaScript's
- * toLowerCase is locale-independent, like Java's toLowerCase(Locale.ROOT).
+ * UploadView.uploaded and UploadService.sanitisedFilename do. Applied to both sides before
+ * comparing: a name typed as `Site 1/Data.csv` matches the `site-1/data.csv` that arrives, and a
+ * zip's folder, a registered file or a cloud transfer, which keep their case, match too.
+ * JavaScript's toLowerCase is locale-independent, like Java's toLowerCase(Locale.ROOT).
  */
 export const asUploaded = name => name.toLowerCase().replaceAll(' ', '-')
 
@@ -34,8 +35,9 @@ const isDigits = value => typeof value === 'string' || typeof value === 'number'
 const toCount = value => isDigits(value) ? parseInt(String(value).trim(), 10) : null
 
 /**
- * Compare the agreed file listing with the uploaded files. Agreed names and patterns are first put
- * as an upload stores them (asUploaded); upload paths are compared as listed.
+ * Compare the agreed file listing with the uploaded files. Agreed names and patterns, and upload
+ * paths, are first put as an upload stores them (asUploaded); paths that are then the same count
+ * once. Unmatched paths are given as first listed.
  *
  * `expected` is `{ files, fileGroups, fileNumber }`, any of which may be absent, as may the
  * keys inside each file or group. `uploads` is `[{ path, status }]` from every listing that holds
@@ -47,34 +49,32 @@ export function matchExpected (expected, uploads, { complete }) {
   const files = (expected && expected.files) || []
   const groups = (expected && expected.fileGroups) || []
 
-  const present = new Set(
-    (uploads || []).filter(upload => !ABSENT_STATUSES.has(upload.status)).map(upload => upload.path)
-  )
+  // As put for comparing, to the path as first listed
+  const present = new Map()
+  for (const upload of uploads || []) {
+    if (!upload.path) continue
+    const path = asUploaded(upload.path)
+    if (!ABSENT_STATUSES.has(upload.status) && !present.has(path)) present.set(path, upload.path)
+  }
 
   const named = new Set(files.map(file => file.name).filter(Boolean).map(asUploaded))
-  const claimed = new Set()
 
   const fileResults = files.map(file => {
     if (!file.name) return { ...file, status: 'unknown' }
-    const name = asUploaded(file.name)
-    if (present.has(name)) {
-      claimed.add(name)
-      return { ...file, status: 'uploaded' }
-    }
+    if (present.has(asUploaded(file.name))) return { ...file, status: 'uploaded' }
     return { ...file, status: complete ? 'not-uploaded' : 'unknown' }
   })
 
   const matchers = groups.map(group => group.pattern ? patternToRegExp(asUploaded(group.pattern)) : null)
   const found = groups.map(() => 0)
   const unmatched = []
-  present.forEach(path => {
+  present.forEach((listed, path) => {
     if (named.has(path)) return
     const index = matchers.findIndex(matcher => matcher && matcher.test(path))
     if (index === -1) {
-      unmatched.push(path)
+      unmatched.push(listed)
     } else {
       found[index]++
-      claimed.add(path)
     }
   })
 
@@ -93,10 +93,11 @@ export function matchExpected (expected, uploads, { complete }) {
     files: fileResults,
     groups: groupResults,
     unmatched,
+    // Every uploaded data file, matched or not, against the agreement's number of files
     total: {
       expected: expectedTotal,
-      found: claimed.size,
-      differs: Boolean(complete) && expectedTotal !== null && claimed.size !== expectedTotal
+      found: present.size,
+      differs: Boolean(complete) && expectedTotal !== null && present.size !== expectedTotal
     }
   }
 }

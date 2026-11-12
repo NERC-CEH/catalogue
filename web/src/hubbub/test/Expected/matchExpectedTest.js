@@ -70,10 +70,26 @@ describe('matchExpected', function () {
       expect(result.groups[0]).toMatchObject({ pattern: 'CP_*_North.csv', found: 1, flag: null })
     })
 
-    it('leaves the upload paths as listed', function () {
-      const result = run({ files: [{ name: 'data.csv' }] }, [up('Data.csv')])
-      expect(result.files[0].status).toBe('not-uploaded')
-      expect(result.unmatched).toEqual(['Data.csv'])
+    it('puts listed paths the same way, as zip folders and registered files keep their case', function () {
+      const result = run({ files: [{ name: 'data_2024/site1.csv' }] }, [up('Data_2024/Site1.csv')])
+      expect(result.files[0].status).toBe('uploaded')
+      expect(result.unmatched).toEqual([])
+    })
+
+    it('matches listed paths with capitals and spaces against a group', function () {
+      const result = run({ fileGroups: [{ pattern: 'site-*/cp_*.csv', count: 1 }] }, [up('Site 1/CP_A.csv')])
+      expect(result.groups[0]).toMatchObject({ found: 1, flag: null })
+    })
+
+    it('shows unmatched paths as listed', function () {
+      const result = run({ files: [{ name: 'a.csv' }] }, [up('Data_2024/Other File.CSV')])
+      expect(result.unmatched).toEqual(['Data_2024/Other File.CSV'])
+    })
+
+    it('counts paths that differ only by case or spaces once, as first listed', function () {
+      const result = run({ fileGroups: [{ pattern: '*.csv', count: 1 }] }, [up('My Data.csv'), up('my-data.csv')])
+      expect(result.groups[0]).toMatchObject({ found: 1, flag: null })
+      expect(run({}, [up('My Data.csv'), up('my-data.csv')]).unmatched).toEqual(['My Data.csv'])
     })
 
     it('counts a lower-cased name as the agreement\'s, not as a group\'s', function () {
@@ -161,20 +177,32 @@ describe('matchExpected', function () {
     expect(result.unmatched).toEqual([])
   })
 
+  it('skips a listed file without a path', function () {
+    const result = run({}, [{ status: 'VALID' }, up('a.csv')])
+    expect(result.unmatched).toEqual(['a.csv'])
+    expect(result.total.found).toBe(1)
+  })
+
   it('copes with absent file lists and fileNumber', function () {
     const result = matchExpected({}, [up('a.csv')], { complete: true })
     expect(result.files).toEqual([])
     expect(result.groups).toEqual([])
     expect(result.unmatched).toEqual(['a.csv'])
-    expect(result.total).toEqual({ expected: null, found: 0, differs: false })
+    expect(result.total).toEqual({ expected: null, found: 1, differs: false })
   })
 
   it('compares the total only with a numeric fileNumber', function () {
     const expected = { files: [{ name: 'a.csv' }], fileNumber: ' 3 ' }
     const result = run(expected, [up('a.csv'), up('z.csv')])
-    expect(result.total).toEqual({ expected: 3, found: 1, differs: true })
+    expect(result.total).toEqual({ expected: 3, found: 2, differs: true })
     expect(run({ ...expected, fileNumber: '1' }, [up('a.csv')]).total.differs).toBe(false)
     expect(run(expected, [up('a.csv')], false).total).toEqual({ expected: 3, found: 1, differs: false })
+  })
+
+  it('counts every uploaded data file towards the total, matched or not', function () {
+    const uploads = [up('a.csv'), up('z.csv'), up('Z.csv'), up('gone.csv', 'MISSING')]
+    const result = run({ files: [{ name: 'a.csv' }], fileNumber: '2' }, uploads)
+    expect(result.total).toEqual({ expected: 2, found: 2, differs: false })
   })
 
   it('gives a null expected total for a non-numeric fileNumber', function () {

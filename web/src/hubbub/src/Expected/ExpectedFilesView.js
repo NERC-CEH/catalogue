@@ -16,6 +16,9 @@ const plural = (count, word) => `${count} ${word}${count === 1 ? '' : 's'}`
  * `sources` returns `{ uploads, complete, hasListings }`: the uploaded data files as
  * `[{ path, status }]`, whether every listing that could hold a file is fully loaded, and whether
  * the page has any listing. Without one nothing is said about arrivals.
+ *
+ * An agreement with a prose naming convention (`hasNamingConvention`) may describe files it doesn't
+ * list, so then no upload is called "not in the agreement" and the total isn't compared.
  */
 export default Backbone.View.extend({
 
@@ -27,6 +30,7 @@ export default Backbone.View.extend({
   render () {
     const { uploads, complete, hasListings } = this.sources()
     const result = matchExpected(this.expected, hasListings ? uploads : [], { complete: hasListings && complete })
+    const convention = Boolean(this.expected.hasNamingConvention)
     this.$el.html([
       this.expected.revising
         ? '<p class="expected-revising alert alert-info">The service agreement is being revised; this list is the last agreed version.</p>'
@@ -34,11 +38,14 @@ export default Backbone.View.extend({
       hasListings && !complete
         ? '<p class="expected-partial text-body-secondary">The counts cover the files loaded so far.</p>'
         : '',
-      '<p class="expected-naming small text-body-secondary">Uploaded names are stored in lower case with hyphens in place of spaces, and a zip file\'s contents are unpacked into a folder named after it: <code>data.zip</code> containing <code>site1/x.csv</code> gives <code>data/site1/x.csv</code>.</p>',
+      '<p class="expected-naming small text-body-secondary">Files uploaded through this page are stored with names in lower case and hyphens in place of spaces, and names are compared with the agreement ignoring case and treating spaces as hyphens. A zip file\'s contents are unpacked into a folder named after it: <code>data.zip</code> containing <code>site1/x.csv</code> gives <code>data/site1/x.csv</code>.</p>',
+      convention
+        ? '<p class="expected-convention text-body-secondary">Some files are described by the agreement\'s naming convention, so files not listed here may still be expected.</p>'
+        : '',
       this.table(result, hasListings),
-      hasListings ? this.unmatched(result.unmatched) : '',
-      hasListings && result.total.differs
-        ? `<p class="expected-total alert alert-warning">The agreement says ${result.total.expected} files will be deposited; ${plural(result.total.found, 'uploaded file')} ${result.total.found === 1 ? 'matches' : 'match'} it.</p>`
+      hasListings && !convention ? this.unmatched(result.unmatched) : '',
+      hasListings && !convention && result.total.differs
+        ? `<p class="expected-total alert alert-warning">The agreement says ${result.total.expected} files will be deposited; ${result.total.found} ${result.total.found === 1 ? 'has' : 'have'} been uploaded.</p>`
         : ''
     ].join(''))
     return this

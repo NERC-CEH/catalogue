@@ -117,7 +117,24 @@ describe('ExpectedFilesView', function () {
 
   it('says when the total differs from the agreement, and only then', function () {
     render(expected, { uploads: [{ path: 'site1/2024.csv', status: 'VALID' }], complete: true, hasListings: true })
-    expect(view.$('.expected-total').text()).toContain('4')
+    expect(view.$('.expected-total').text())
+      .toBe('The agreement says 4 files will be deposited; 1 has been uploaded.')
+
+    render(expected, {
+      uploads: ['site1/2024.csv', 'other.csv'].map(path => ({ path, status: 'VALID' })),
+      complete: true,
+      hasListings: true
+    })
+    expect(view.$('.expected-total').text())
+      .toBe('The agreement says 4 files will be deposited; 2 have been uploaded.')
+
+    // Uploads the agreement doesn't mention still count towards the total
+    render(expected, {
+      uploads: ['site1/2024.csv', 'readme.txt', 'extra/a.csv', 'extra/b.csv'].map(path => ({ path, status: 'VALID' })),
+      complete: true,
+      hasListings: true
+    })
+    expect(view.$('.expected-total').length).toBe(0)
 
     render(expected, {
       uploads: ['site1/2024.csv', 'readme.txt', 'site1/cp_a.csv', 'site2/cp_b.csv'].map(path => ({ path, status: 'VALID' })),
@@ -143,8 +160,43 @@ describe('ExpectedFilesView', function () {
     render(expected, { uploads: [], complete: false, hasListings: false })
 
     const note = view.$('.expected-naming').text()
-    expect(note).toContain('lower case with hyphens in place of spaces')
+    expect(note).toContain('stored with names in lower case and hyphens in place of spaces')
+    expect(note).toContain('compared with the agreement ignoring case and treating spaces as hyphens')
     expect(note).toContain('data.zip containing site1/x.csv gives data/site1/x.csv')
+  })
+
+  describe('with a prose naming convention', function () {
+    const withConvention = { ...expected, hasNamingConvention: true }
+    const uploads = [{ path: 'extra/notes.csv', status: 'VALID' }]
+
+    it('does not call unlisted uploads unexpected, nor compare the total', function () {
+      render(withConvention, { uploads, complete: true, hasListings: true })
+
+      expect(view.$('.expected-unmatched').length).toBe(0)
+      expect(view.$('.expected-total').length).toBe(0)
+      expect(view.$el.text()).not.toContain('not in the agreement')
+    })
+
+    it('says files not listed may still be expected', function () {
+      render(withConvention, { uploads, complete: true, hasListings: true })
+
+      expect(view.$('.expected-convention').text()).toBe(
+        'Some files are described by the agreement\'s naming convention, so files not listed here may still be expected.')
+    })
+
+    it('still ticks off what is listed', function () {
+      render(withConvention, { uploads: [{ path: 'site1/2024.csv', status: 'VALID' }], complete: true, hasListings: true })
+
+      expect(row('site1/2024.csv').find('.expected-status').text()).toBe('uploaded')
+      expect(row('readme.txt').find('.expected-status').text()).toBe('not yet uploaded')
+    })
+  })
+
+  it('says nothing of a naming convention without one', function () {
+    render(expected, { uploads: [{ path: 'extra/notes.csv', status: 'VALID' }], complete: true, hasListings: true })
+
+    expect(view.$('.expected-convention').length).toBe(0)
+    expect(view.$('.expected-unmatched').length).toBe(1)
   })
 
   it('ticks off a name typed with capitals once it arrives in lower case', function () {
