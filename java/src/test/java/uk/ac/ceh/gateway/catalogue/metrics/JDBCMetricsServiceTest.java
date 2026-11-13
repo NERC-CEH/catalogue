@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.metrics;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
@@ -971,6 +973,123 @@ class JDBCMetricsServiceTest {
     void shutdownFlushTimeoutMustBePositive() {
         org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
             () -> service.setShutdownFlushTimeoutMillis(0));
+    }
+
+    // ---------------------------------------------------------------- monitoring
+
+    @Test
+    void schemaReadyGaugeIsOneOnceTheSchemaIsMigrated() {
+        //given
+        val registry = new SimpleMeterRegistry();
+        val monitored = new JDBCMetricsService(dataSource, documentRepository, Clock.systemUTC(), registry);
+        assertThat(gauge(registry, "catalogue.metrics.schema.ready"), is(0.0));
+
+        //when
+        monitored.ensureSchema();
+
+        //then
+        assertThat(gauge(registry, "catalogue.metrics.schema.ready"), is(1.0));
+    }
+
+    @Test
+    void schemaReadyGaugeStaysZeroWhileTheDatabaseIsUnreachable() {
+        //given
+        val severed = new SeverableDataSource(postgresDataSource);
+        severed.sever();
+        val registry = new SimpleMeterRegistry();
+        val monitored = new JDBCMetricsService(severed, documentRepository, Clock.systemUTC(), registry);
+
+        //when
+        monitored.initialiseSchemaOnStartup();
+
+        //then
+        assertThat(gauge(registry, "catalogue.metrics.schema.ready"), is(0.0));
+    }
+
+    @SneakyThrows
+    @Test
+    void lastSuccessfulSyncIsSetByACompleteSync() {
+        //given
+        val clock = new MutableClock(Instant.parse("2026-11-11T09:00:00Z"));
+        val registry = new SimpleMeterRegistry();
+        val monitored = new JDBCMetricsService(dataSource, documentRepository, clock, registry);
+        given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
+        monitored.recordView(TEST_DOCUMENT, TEST_IP1);
+        assertThat(gauge(registry, "catalogue.metrics.last.successful.sync"), is(0.0));
+
+        //when
+        clock.advance(Duration.ofHours(1));
+        monitored.syncDB();
+
+        //then
+        assertThat(gauge(registry, "catalogue.metrics.last.successful.sync"),
+            is((double) Instant.parse("2026-11-11T10:00:00Z").getEpochSecond()));
+    }
+
+    @Test
+    void lastSuccessfulSyncIsNotSetWhenTheDatabaseIsUnreachable() {
+        //given
+        val severed = new SeverableDataSource(postgresDataSource);
+        severed.sever();
+        val registry = new SimpleMeterRegistry();
+        val monitored = new JDBCMetricsService(severed, documentRepository, Clock.systemUTC(), registry);
+        monitored.recordView(TEST_DOCUMENT, TEST_IP1);
+
+        //when
+        monitored.syncDB();
+
+        //then
+        assertThat(gauge(registry, "catalogue.metrics.last.successful.sync"), is(0.0));
+    }
+
+    @SneakyThrows
+    @Test
+    void writtenRecordsAreCountedPerType() {
+        //given
+        val registry = new SimpleMeterRegistry();
+        val monitored = new JDBCMetricsService(dataSource, documentRepository, Clock.systemUTC(), registry);
+        given(documentRepository.read(anyString())).willReturn(doc);
+        monitored.recordView(TEST_DOCUMENT, TEST_IP1);
+        monitored.recordView(OTHER_DOCUMENT, TEST_IP1);
+        monitored.recordDownload(TEST_DOCUMENT, TEST_IP1);
+
+        //when
+        monitored.syncDB();
+
+        //then one record per document and type
+        assertThat(records(registry, "view", "written"), is(2.0));
+        assertThat(records(registry, "download", "written"), is(1.0));
+        assertThat(records(registry, "view", "failed"), is(0.0));
+    }
+
+    @SneakyThrows
+    @Test
+    void failedWritesAreCountedAndTheSyncIsNotSuccessful() {
+        //given the schema is ready, then the database goes away
+        val severed = new SeverableDataSource(postgresDataSource);
+        val registry = new SimpleMeterRegistry();
+        val monitored = new JDBCMetricsService(severed, documentRepository, Clock.systemUTC(), registry);
+        assertThat(monitored.ensureSchema(), is(true));
+        given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
+        monitored.recordView(TEST_DOCUMENT, TEST_IP1);
+        severed.sever();
+
+        //when
+        monitored.syncDB();
+
+        //then
+        assertThat(records(registry, "view", "failed"), is(1.0));
+        assertThat(records(registry, "view", "written"), is(0.0));
+        assertThat(gauge(registry, "catalogue.metrics.last.successful.sync"), is(0.0));
+    }
+
+    private static double gauge(MeterRegistry registry, String name) {
+        return registry.get(name).gauge().value();
+    }
+
+    private static double records(MeterRegistry registry, String type, String result) {
+        val counter = registry.find("catalogue.metrics.records").tag("type", type).tag("result", result).counter();
+        return counter == null ? 0.0 : counter.count();
     }
 
     // ---------------------------------------------------------------- helpers

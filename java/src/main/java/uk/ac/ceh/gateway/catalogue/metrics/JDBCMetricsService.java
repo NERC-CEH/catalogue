@@ -1,5 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.metrics;
 
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Metrics;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -59,6 +62,8 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
 
     private final ReentrantLock syncLock = new ReentrantLock();
     private volatile long shutdownFlushTimeoutMillis;
+    private volatile long lastSuccessfulSync;
+    private final MeterRegistry meterRegistry;
 
     public static final String SCHEMA = "metrics";
     public static final String MIGRATIONS = "classpath:db/metrics";
@@ -111,7 +116,16 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
     JDBCMetricsService(@NonNull DataSource dataSource,
                        DocumentRepository documentRepository,
                        @NonNull Clock clock) {
+        this(dataSource, documentRepository, clock, Metrics.globalRegistry);
+    }
+
+    /** For tests, which need their own registry to read the monitoring values. */
+    JDBCMetricsService(@NonNull DataSource dataSource,
+                       DocumentRepository documentRepository,
+                       @NonNull Clock clock,
+                       @NonNull MeterRegistry meterRegistry) {
         log.info("Creating");
+        this.meterRegistry = meterRegistry;
         this.clock = clock;
         this.lastRun = clock.instant().getEpochSecond();
         this.documentRepository = documentRepository;
@@ -119,6 +133,23 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         this.flyway = flyway(dataSource).load();
         this.viewed = Collections.synchronizedMap(new HashMap<>());
         this.downloaded = Collections.synchronizedMap(new HashMap<>());
+        registerMonitoring();
+    }
+
+    /** Prometheus: catalogue_metrics_schema_ready and catalogue_metrics_last_successful_sync_seconds. */
+    private void registerMonitoring() {
+        Gauge.builder("catalogue.metrics.schema.ready", this, s -> s.schemaReady ? 1 : 0)
+            .description("1 when the metrics schema is migrated and usable")
+            .register(meterRegistry);
+        Gauge.builder("catalogue.metrics.last.successful.sync", this, s -> s.lastSuccessfulSync)
+            .description("Epoch seconds of the last complete hourly sync; 0 before the first")
+            .baseUnit("seconds")
+            .register(meterRegistry);
+    }
+
+    /** Prometheus: catalogue_metrics_records_total{type, result="written"|"failed"}. */
+    private void countRecord(String metricType, String result) {
+        meterRegistry.counter("catalogue.metrics.records", "type", metricType, "result", result).increment();
     }
 
     static FluentConfiguration flyway(DataSource dataSource) {
@@ -254,7 +285,9 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
     public void syncDB() {
         syncLock.lock();
         try {
-            writePendingCounts(Deadline.NONE);
+            if (writePendingCounts(Deadline.NONE)) {
+                lastSuccessfulSync = clock.instant().getEpochSecond();
+            }
         } finally {
             syncLock.unlock();
         }
@@ -396,6 +429,7 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
                                  long windowStart, long windowEnd, Deadline deadline) {
         int skippedDocuments = 0;
         int skippedAmount = 0;
+        boolean writeFailed = false;
         for (val entry : drained.entrySet()) {
             val doc = entry.getKey();
             val amount = entry.getValue();
@@ -428,7 +462,10 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
             }
             try {
                 insertCount(id.get(), metricType, amount, windowStart, windowEnd, title, recordType);
+                countRecord(metricType, "written");
             } catch (DataAccessException e) {
+                countRecord(metricType, "failed");
+                writeFailed = true;
                 log.error("Error writing {} {}(s) for {}", amount, metricType, doc, e);
             }
         }
@@ -437,7 +474,7 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
                 skippedAmount, metricType, skippedDocuments, drained.size());
             return false;
         }
-        return true;
+        return !writeFailed;
     }
 
     private void insertCount(UUID id, String metricType, int amount, long windowStart, long windowEnd,
