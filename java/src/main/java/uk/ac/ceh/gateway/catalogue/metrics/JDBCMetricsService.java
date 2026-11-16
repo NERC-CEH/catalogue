@@ -1,8 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.metrics;
 
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Metrics;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -97,6 +97,10 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         "UPDATE metrics.documents SET doc_title = ?, record_type = ? WHERE document_id = ? AND (doc_title, record_type) IS DISTINCT FROM (?, ?)";
     private static final String VIEW = "view";
     private static final String DOWNLOAD = "download";
+    private static final String WRITTEN = "written";
+    private static final String FAILED = "failed";
+    /** Cheap round trip proving the database is reachable when a sync had nothing to write. */
+    private static final String PING = "SELECT 1";
 
     /**
      * Separate caches per count, not one shared cache: {@link #totalViews} and {@link #totalDownloads}
@@ -108,18 +112,12 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
 
     @Autowired
     public JDBCMetricsService(@NonNull DataSource dataSource,
-                              DocumentRepository documentRepository) {
-        this(dataSource, documentRepository, Clock.systemUTC());
+                              DocumentRepository documentRepository,
+                              @NonNull MeterRegistry meterRegistry) {
+        this(dataSource, documentRepository, Clock.systemUTC(), meterRegistry);
     }
 
-    /** For tests, which need to control the window timestamps. */
-    JDBCMetricsService(@NonNull DataSource dataSource,
-                       DocumentRepository documentRepository,
-                       @NonNull Clock clock) {
-        this(dataSource, documentRepository, clock, Metrics.globalRegistry);
-    }
-
-    /** For tests, which need their own registry to read the monitoring values. */
+    /** For tests, which need to control the window timestamps and read the monitoring values. */
     JDBCMetricsService(@NonNull DataSource dataSource,
                        DocumentRepository documentRepository,
                        @NonNull Clock clock,
@@ -136,20 +134,39 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         registerMonitoring();
     }
 
-    /** Prometheus: catalogue_metrics_schema_ready and catalogue_metrics_last_successful_sync_seconds. */
+    /**
+     * Prometheus: catalogue_metrics_schema_ready, catalogue_metrics_last_successful_sync_seconds and
+     * catalogue_metrics_records_total.
+     * <p>
+     * {@code schema.ready} only ever goes from 0 to 1: once the schema is migrated it is not re-checked, so
+     * it stays 1 for the life of the pod even if PostgreSQL goes away. It is NOT a reachability signal; alert
+     * on database unreachability with HikariCP's pool metrics ({@code hikaricp_connections_timeout_total},
+     * {@code hikaricp_connections_pending}/{@code _active}) or a stale {@code last.successful.sync}.
+     */
     private void registerMonitoring() {
         Gauge.builder("catalogue.metrics.schema.ready", this, s -> s.schemaReady ? 1 : 0)
-            .description("1 when the metrics schema is migrated and usable")
+            .description("1 once the metrics schema has been migrated since startup; does not track reachability")
             .register(meterRegistry);
         Gauge.builder("catalogue.metrics.last.successful.sync", this, s -> s.lastSuccessfulSync)
-            .description("Epoch seconds of the last complete hourly sync; 0 before the first")
+            .description("Epoch seconds of the last hourly sync that reached the database; 0 before the first")
             .baseUnit("seconds")
             .register(meterRegistry);
+        // Registered at 0 up front so every series exists from startup: increase()/rate() need an earlier
+        // sample, so a counter created by its first increment would hide that first failure (or write).
+        for (val type : List.of(VIEW, DOWNLOAD)) {
+            for (val result : List.of(WRITTEN, FAILED)) {
+                recordsCounter(type, result);
+            }
+        }
+    }
+
+    private Counter recordsCounter(String metricType, String result) {
+        return meterRegistry.counter("catalogue.metrics.records", "type", metricType, "result", result);
     }
 
     /** Prometheus: catalogue_metrics_records_total{type, result="written"|"failed"}. */
     private void countRecord(String metricType, String result) {
-        meterRegistry.counter("catalogue.metrics.records", "type", metricType, "result", result).increment();
+        recordsCounter(metricType, result).increment();
     }
 
     static FluentConfiguration flyway(DataSource dataSource) {
@@ -279,8 +296,10 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
     }
 
     @Scheduled(
-        initialDelayString = "${metrics.sync.interval-millis}",
-        fixedDelayString = "${metrics.sync.interval-millis}"
+//        initialDelayString = "${metrics.sync.interval-millis}",
+//        fixedDelayString = "${metrics.sync.interval-millis}"
+    initialDelayString = "60000",
+    fixedDelayString = "60000"
     )
     public void syncDB() {
         syncLock.lock();
@@ -319,7 +338,7 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         }
         if (!locked) {
             log.warn("Shutdown: the scheduled metrics sync was still running after {}ms; counts for {} viewed "
-                + "and {} downloaded document(s) were not flushed and are lost",
+                    + "and {} downloaded document(s) were not flushed and are lost",
                 budgetMillis, viewed.size(), downloaded.size());
             return;
         }
@@ -348,20 +367,44 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         val windowStart = lastRun;
         val windowEnd = clock.instant().getEpochSecond();
         lastRun = windowEnd;
-        val viewsComplete = syncTable(VIEW, viewed, windowStart, windowEnd, deadline);
-        val downloadsComplete = syncTable(DOWNLOAD, downloaded, windowStart, windowEnd, deadline);
-        return viewsComplete && downloadsComplete;
+        val views = syncTable(VIEW, viewed, windowStart, windowEnd, deadline);
+        val downloads = syncTable(DOWNLOAD, downloaded, windowStart, windowEnd, deadline);
+        if (!views.complete() || !downloads.complete()) {
+            return false;
+        }
+        if (views.written() + downloads.written() == 0) {
+            // Nothing written (a quiet hour, or only unknown records): no database I/O has happened, and
+            // ensureSchema() does not touch the database once the schema is ready, so prove reachability
+            // before reporting success. Otherwise a quiet hour would advance lastSuccessfulSync during an outage.
+            return pingDatabase();
+        }
+        return true;
     }
 
-    private boolean syncTable(String metricType, Map<String, Set<String>> tableMap,
-                              long windowStart, long windowEnd, Deadline deadline) {
+    private boolean pingDatabase() {
+        try {
+            jdbcTemplate.queryForObject(PING, Integer.class);
+            return true;
+        } catch (DataAccessException e) {
+            log.warn("Metrics database unreachable during a sync with nothing to write: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    /** Outcome of syncing one metric type: whether every count was written, and how many rows were. */
+    private record SyncResult(boolean complete, int written) {
+        static final SyncResult NOTHING = new SyncResult(true, 0);
+    }
+
+    private SyncResult syncTable(String metricType, Map<String, Set<String>> tableMap,
+                                 long windowStart, long windowEnd, Deadline deadline) {
         Map<String, Integer> drained = new HashMap<>();
         synchronized (tableMap) {
             tableMap.forEach((doc, addrs) -> drained.put(doc, addrs.size()));
             tableMap.clear();
         }
         if (drained.isEmpty()) {
-            return true;
+            return SyncResult.NOTHING;
         }
         return syncDBHelper(metricType, drained, windowStart, windowEnd, deadline);
     }
@@ -425,8 +468,9 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         }
     }
 
-    private boolean syncDBHelper(String metricType, Map<String, Integer> drained,
-                                 long windowStart, long windowEnd, Deadline deadline) {
+    private SyncResult syncDBHelper(String metricType, Map<String, Integer> drained,
+                                    long windowStart, long windowEnd, Deadline deadline) {
+        int written = 0;
         int skippedDocuments = 0;
         int skippedAmount = 0;
         boolean writeFailed = false;
@@ -462,9 +506,10 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
             }
             try {
                 insertCount(id.get(), metricType, amount, windowStart, windowEnd, title, recordType);
-                countRecord(metricType, "written");
+                countRecord(metricType, WRITTEN);
+                written++;
             } catch (DataAccessException e) {
-                countRecord(metricType, "failed");
+                countRecord(metricType, FAILED);
                 writeFailed = true;
                 log.error("Error writing {} {}(s) for {}", amount, metricType, doc, e);
             }
@@ -472,9 +517,9 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
         if (skippedDocuments > 0) {
             log.warn("Metrics flush ran out of time: {} {}(s) across {} of {} document(s) were not written",
                 skippedAmount, metricType, skippedDocuments, drained.size());
-            return false;
+            return new SyncResult(false, written);
         }
-        return !writeFailed;
+        return new SyncResult(!writeFailed, written);
     }
 
     private void insertCount(UUID id, String metricType, int amount, long windowStart, long windowEnd,

@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.metrics;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.SneakyThrows;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -223,7 +224,7 @@ class MetricsCountCachingTest {
 
         @Bean
         MetricsService metricsService(SeverableDataSource dataSource, DocumentRepository documentRepository) {
-            val service = new JDBCMetricsService(dataSource, documentRepository);
+            val service = new JDBCMetricsService(dataSource, documentRepository, new SimpleMeterRegistry());
             assertThat(service.ensureSchema(), is(true));
             return service;
         }

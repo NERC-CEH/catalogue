@@ -103,7 +103,7 @@ class JDBCMetricsServiceTest {
     @BeforeEach
     void setup() {
         dataSource = new SeverableDataSource(postgresDataSource);
-        service = new JDBCMetricsService(dataSource, documentRepository);
+        service = new JDBCMetricsService(dataSource, documentRepository, new SimpleMeterRegistry());
         assertThat(service.ensureSchema(), is(true));
         jdbc = new JdbcTemplate(postgresDataSource);
         jdbc.execute("TRUNCATE metrics.metric_counts, metrics.documents");
@@ -347,7 +347,7 @@ class JDBCMetricsServiceTest {
         severed.sever();
 
         //when the service is constructed and the startup hook runs
-        val startingService = new JDBCMetricsService(severed, documentRepository);
+        val startingService = new JDBCMetricsService(severed, documentRepository, new SimpleMeterRegistry());
         val attemptsDuringConstruction = severed.connectionAttempts();
         startingService.initialiseSchemaOnStartup();
 
@@ -367,7 +367,7 @@ class JDBCMetricsServiceTest {
         //given the service started while the database was down
         val severed = new SeverableDataSource(postgresDataSource);
         severed.sever();
-        val recoveringService = new JDBCMetricsService(severed, documentRepository);
+        val recoveringService = new JDBCMetricsService(severed, documentRepository, new SimpleMeterRegistry());
         recoveringService.initialiseSchemaOnStartup();
         given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
         recoveringService.recordView(TEST_DOCUMENT, TEST_IP1);
@@ -387,7 +387,7 @@ class JDBCMetricsServiceTest {
         //given a service that started while the database was down, and has recorded a view and a download
         val severed = new SeverableDataSource(postgresDataSource);
         severed.sever();
-        val startingService = new JDBCMetricsService(severed, documentRepository);
+        val startingService = new JDBCMetricsService(severed, documentRepository, new SimpleMeterRegistry());
         startingService.initialiseSchemaOnStartup();
         startingService.recordView(TEST_DOCUMENT, TEST_IP1);
         startingService.recordDownload(TEST_DOCUMENT, TEST_IP1);
@@ -420,7 +420,7 @@ class JDBCMetricsServiceTest {
         //given a service created at a known instant, and a view recorded during its first hour
         val bootedAt = Instant.parse("2026-10-19T09:00:00Z");
         val clock = new MutableClock(bootedAt);
-        val freshService = new JDBCMetricsService(dataSource, documentRepository, clock);
+        val freshService = new JDBCMetricsService(dataSource, documentRepository, clock, new SimpleMeterRegistry());
         assertThat(freshService.ensureSchema(), is(true));
         given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
         freshService.recordView(TEST_DOCUMENT, TEST_IP1);
@@ -441,7 +441,7 @@ class JDBCMetricsServiceTest {
         //given
         val bootedAt = Instant.parse("2026-10-19T09:00:00Z");
         val clock = new MutableClock(bootedAt);
-        val freshService = new JDBCMetricsService(dataSource, documentRepository, clock);
+        val freshService = new JDBCMetricsService(dataSource, documentRepository, clock, new SimpleMeterRegistry());
         assertThat(freshService.ensureSchema(), is(true));
         given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
 
@@ -469,7 +469,7 @@ class JDBCMetricsServiceTest {
         severed.sever();
         val bootedAt = Instant.parse("2026-10-19T09:00:00Z");
         val clock = new MutableClock(bootedAt);
-        val startingService = new JDBCMetricsService(severed, documentRepository, clock);
+        val startingService = new JDBCMetricsService(severed, documentRepository, clock, new SimpleMeterRegistry());
         startingService.initialiseSchemaOnStartup();
         startingService.recordView(TEST_DOCUMENT, TEST_IP1);
 
@@ -493,7 +493,7 @@ class JDBCMetricsServiceTest {
         //given a service running in 2040
         val bootedAt = Instant.parse("2040-01-01T00:00:00Z");
         val clock = new MutableClock(bootedAt);
-        val freshService = new JDBCMetricsService(dataSource, documentRepository, clock);
+        val freshService = new JDBCMetricsService(dataSource, documentRepository, clock, new SimpleMeterRegistry());
         assertThat(freshService.ensureSchema(), is(true));
         given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
         freshService.recordView(TEST_DOCUMENT, TEST_IP1);
@@ -646,7 +646,7 @@ class JDBCMetricsServiceTest {
         jdbc.update("UPDATE metrics.flyway_schema_history SET checksum = checksum + 1 WHERE version = '1'");
         try {
             val counting = new SeverableDataSource(postgresDataSource);
-            val validating = new JDBCMetricsService(counting, documentRepository);
+            val validating = new JDBCMetricsService(counting, documentRepository, new SimpleMeterRegistry());
 
             assertThat(validating.ensureSchema(), is(false));
             val attemptsAfterFirstFailure = counting.connectionAttempts();
@@ -890,7 +890,7 @@ class JDBCMetricsServiceTest {
         //given a service that has synced once, then recorded more activity
         val bootedAt = Instant.parse("2026-10-19T09:00:00Z");
         val clock = new MutableClock(bootedAt);
-        val freshService = new JDBCMetricsService(dataSource, documentRepository, clock);
+        val freshService = new JDBCMetricsService(dataSource, documentRepository, clock, new SimpleMeterRegistry());
         freshService.setShutdownFlushTimeoutMillis(8_000);
         assertThat(freshService.ensureSchema(), is(true));
         given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
@@ -959,7 +959,7 @@ class JDBCMetricsServiceTest {
         //given a service whose database has been down since it started
         val severed = new SeverableDataSource(postgresDataSource);
         severed.sever();
-        val startingService = new JDBCMetricsService(severed, documentRepository);
+        val startingService = new JDBCMetricsService(severed, documentRepository, new SimpleMeterRegistry());
         startingService.setShutdownFlushTimeoutMillis(8_000);
         startingService.recordView(TEST_DOCUMENT, TEST_IP1);
 
@@ -1083,13 +1083,97 @@ class JDBCMetricsServiceTest {
         assertThat(gauge(registry, "catalogue.metrics.last.successful.sync"), is(0.0));
     }
 
+    @Test
+    void recordCountersExistAtZeroFromStartup() {
+        //given
+        val registry = new SimpleMeterRegistry();
+
+        //when
+        new JDBCMetricsService(dataSource, documentRepository, Clock.systemUTC(), registry);
+
+        //then every type x result series exists before any sync, so increase()/rate() see the first change
+        for (val type : List.of("view", "download")) {
+            for (val result : List.of("written", "failed")) {
+                assertThat(type + "/" + result,
+                    registry.get("catalogue.metrics.records").tag("type", type).tag("result", result).counter().count(),
+                    is(0.0));
+            }
+        }
+    }
+
+    @Test
+    void schemaReadyGaugeDoesNotTrackReachability() {
+        //given the schema is migrated, then the database goes away
+        val severed = new SeverableDataSource(postgresDataSource);
+        val registry = new SimpleMeterRegistry();
+        val monitored = new JDBCMetricsService(severed, documentRepository, Clock.systemUTC(), registry);
+        assertThat(monitored.ensureSchema(), is(true));
+
+        //when
+        severed.sever();
+
+        //then documented behaviour: "migrated since startup", not "reachable"
+        assertThat(gauge(registry, "catalogue.metrics.schema.ready"), is(1.0));
+    }
+
+    @Test
+    void aQuietSyncAdvancesLastSuccessfulSyncWhenTheDatabaseIsReachable() {
+        //given nothing recorded
+        val clock = new MutableClock(Instant.parse("2026-11-11T09:00:00Z"));
+        val registry = new SimpleMeterRegistry();
+        val monitored = new JDBCMetricsService(dataSource, documentRepository, clock, registry);
+        assertThat(monitored.ensureSchema(), is(true));
+
+        //when
+        clock.advance(Duration.ofHours(1));
+        monitored.syncDB();
+
+        //then
+        assertThat(gauge(registry, "catalogue.metrics.last.successful.sync"),
+            is((double) Instant.parse("2026-11-11T10:00:00Z").getEpochSecond()));
+    }
+
+    @Test
+    void aQuietSyncDoesNotAdvanceLastSuccessfulSyncWhenTheDatabaseIsUnreachable() {
+        //given the schema is ready, then the database goes away, and nothing is recorded
+        val severed = new SeverableDataSource(postgresDataSource);
+        val registry = new SimpleMeterRegistry();
+        val monitored = new JDBCMetricsService(severed, documentRepository, Clock.systemUTC(), registry);
+        assertThat(monitored.ensureSchema(), is(true));
+        severed.sever();
+
+        //when
+        monitored.syncDB();
+
+        //then
+        assertThat(gauge(registry, "catalogue.metrics.last.successful.sync"), is(0.0));
+    }
+
+    @SneakyThrows
+    @Test
+    void aSyncThatWritesNothingForUnknownRecordsDoesNotAdvanceLastSuccessfulSyncWhenTheDatabaseIsUnreachable() {
+        //given the schema is ready, only an unknown record was viewed, then the database goes away
+        val severed = new SeverableDataSource(postgresDataSource);
+        val registry = new SimpleMeterRegistry();
+        val monitored = new JDBCMetricsService(severed, documentRepository, Clock.systemUTC(), registry);
+        assertThat(monitored.ensureSchema(), is(true));
+        given(documentRepository.read(TEST_DOCUMENT)).willReturn(null);
+        monitored.recordView(TEST_DOCUMENT, TEST_IP1);
+        severed.sever();
+
+        //when
+        monitored.syncDB();
+
+        //then
+        assertThat(gauge(registry, "catalogue.metrics.last.successful.sync"), is(0.0));
+    }
+
     private static double gauge(MeterRegistry registry, String name) {
         return registry.get(name).gauge().value();
     }
 
     private static double records(MeterRegistry registry, String type, String result) {
-        val counter = registry.find("catalogue.metrics.records").tag("type", type).tag("result", result).counter();
-        return counter == null ? 0.0 : counter.count();
+        return registry.get("catalogue.metrics.records").tag("type", type).tag("result", result).counter().count();
     }
 
     // ---------------------------------------------------------------- helpers
