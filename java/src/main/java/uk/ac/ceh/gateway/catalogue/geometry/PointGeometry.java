@@ -17,6 +17,14 @@ public class PointGeometry implements GeometryType {
         this.lat = coordinates.get(1).asDouble();
     }
 
+    public double getLatitude() {
+        return lat;
+    }
+
+    public double getLongitude() {
+        return lon;
+    }
+    
     /**
      * This translates a simple geojson point to Well Known Text
      * It is assumed to be WGS84 lon lat
