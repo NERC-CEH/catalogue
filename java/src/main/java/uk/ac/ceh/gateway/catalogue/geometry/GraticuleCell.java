@@ -61,6 +61,14 @@ public record GraticuleCell(BigDecimal minLongitude, BigDecimal minLatitude, Big
         return minLatitude.add(sizeDegrees);
     }
 
+    public BigDecimal centreLongitude() {
+        return midpoint(minLongitude, maxLongitude());
+    }
+
+    public BigDecimal centreLatitude() {
+        return midpoint(minLatitude, maxLatitude());
+    }
+
     public BoundingBox toBoundingBox() {
         return BoundingBox.builder()
             .westBoundLongitude(minLongitude.toPlainString())

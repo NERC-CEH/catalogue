@@ -104,6 +104,17 @@ class GraticuleCellTest {
     }
 
     @Test
+    @DisplayName("has its centre halfway across, west and south of zero too")
+    void centre() {
+        //given, when
+        val cell = at("-2.7834", "-54.0123");
+
+        //then
+        assertThat(cell.centreLongitude(), comparesEqualTo(new BigDecimal("-2.75")));
+        assertThat(cell.centreLatitude(), comparesEqualTo(new BigDecimal("-54.05")));
+    }
+
+    @Test
     @DisplayName("renders a closed five-position ring")
     void geoJsonRing() {
         //given, when

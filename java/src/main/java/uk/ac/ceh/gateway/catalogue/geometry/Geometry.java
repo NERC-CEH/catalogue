@@ -2,6 +2,8 @@ package uk.ac.ceh.gateway.catalogue.geometry;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -15,6 +17,9 @@ import static com.google.common.base.Strings.nullToEmpty;
 
 @Value
 @Slf4j
+// Derived from geometryString on read: accepted and discarded on write, so a stored
+// or client-supplied value can never disagree with the geometry itself.
+@JsonIgnoreProperties(value = {"latitude", "longitude", "obfuscatedPoint"}, allowGetters = true)
 public class Geometry {
 
     private static final String TYPE_POINT = "point";
@@ -23,13 +28,11 @@ public class Geometry {
 
     String geometryString;
     Boolean locationConfidential;
-    ObfuscatedPoint obfuscatedPoint;
-   
-    @Value
-    public static class ObfuscatedPoint {
-        Float latitude;
-        Float longitude;
-    }
+
+    /**
+     * The centre of the graticule cell a confidential location was reduced to.
+     */
+    public record ObfuscatedPoint(double latitude, double longitude) {}
 
     @JsonIgnore
     GeometryType geometryType;
@@ -38,12 +41,10 @@ public class Geometry {
     @JsonCreator
     private Geometry(
         @JsonProperty("geometryString") String geometryString,
-        @JsonProperty("locationConfidential") Boolean locationConfidential,
-        @JsonProperty("obfuscatedPoint") ObfuscatedPoint obfuscatedPoint
+        @JsonProperty("locationConfidential") Boolean locationConfidential
     ) {
         this.geometryString = nullToEmpty(geometryString);
         this.locationConfidential = locationConfidential;
-        this.obfuscatedPoint = obfuscatedPoint;
         this.geometryType = parseGeometryType(this.geometryString);
     }
 
@@ -115,25 +116,50 @@ public class Geometry {
     }
 
     /**
-     * If the geometry is a point location
-     * return the lat and long
+     * @return the latitude of a point location, or null for any other shape. Also
+     *         null for a confidential location, so a precise point stored before
+     *         obfuscation ran on save is never published here.
      */
-    @JsonIgnore
-    @JsonProperty("latitude")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public Double getLatitude() {
-        if (geometryType instanceof PointGeometry point) {
-            return point.getLatitude();
-        }
-        return null;
+        return publicPoint().map(PointGeometry::getLatitude).orElse(null);
     }
 
-    @JsonIgnore
-    @JsonProperty("longitude")
+    /**
+     * @return the longitude of a point location; null as for {@link #getLatitude()}
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public Double getLongitude() {
-        if (geometryType instanceof PointGeometry point) {
-            return point.getLongitude();
-        }
-        return null;
+        return publicPoint().map(PointGeometry::getLongitude).orElse(null);
     }
 
+    /**
+     * Computed rather than stored, so every confidential record has one without
+     * being re-saved. Snapping is idempotent, so for a geometry already reduced on
+     * save this is the centre of that same cell, and for one that never was it is
+     * still only the centre of a cell.
+     *
+     * @return the centre of the cell a confidential location is published as, or
+     *         null if the location is not confidential or has no extent
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public ObfuscatedPoint getObfuscatedPoint() {
+        if (!Boolean.TRUE.equals(locationConfidential)) {
+            return null;
+        }
+        return getBoundingBox()
+            .map(GraticuleCell::covering)
+            .map(cell -> new ObfuscatedPoint(
+                cell.centreLatitude().doubleValue(),
+                cell.centreLongitude().doubleValue()
+            ))
+            .orElse(null);
+    }
+
+    private Optional<PointGeometry> publicPoint() {
+        if (Boolean.TRUE.equals(locationConfidential) || !(geometryType instanceof PointGeometry point)) {
+            return Optional.empty();
+        }
+        return Optional.of(point);
+    }
 }
