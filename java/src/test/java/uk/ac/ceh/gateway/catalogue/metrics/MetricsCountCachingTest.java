@@ -1,8 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.metrics;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
-import lombok.SneakyThrows;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

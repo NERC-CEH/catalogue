@@ -296,10 +296,8 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
     }
 
     @Scheduled(
-//        initialDelayString = "${metrics.sync.interval-millis}",
-//        fixedDelayString = "${metrics.sync.interval-millis}"
-    initialDelayString = "60000",
-    fixedDelayString = "60000"
+        initialDelayString = "${metrics.sync.interval-millis}",
+        fixedDelayString = "${metrics.sync.interval-millis}"
     )
     public void syncDB() {
         syncLock.lock();

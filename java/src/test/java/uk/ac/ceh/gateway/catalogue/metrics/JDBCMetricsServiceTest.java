@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
@@ -1166,6 +1167,18 @@ class JDBCMetricsServiceTest {
 
         //then
         assertThat(gauge(registry, "catalogue.metrics.last.successful.sync"), is(0.0));
+    }
+
+    @SneakyThrows
+    @Test
+    void syncRunsOnTheConfiguredInterval() {
+        //given the scheduled sync
+        val scheduled = JDBCMetricsService.class.getMethod("syncDB").getAnnotation(Scheduled.class);
+
+        //then it follows metrics.sync.interval-millis rather than a hard-coded delay: each window dedupes
+        //views/downloads by IP, so a shorter interval inflates the counts, not just how often they are written
+        assertThat(scheduled.initialDelayString(), is("${metrics.sync.interval-millis}"));
+        assertThat(scheduled.fixedDelayString(), is("${metrics.sync.interval-millis}"));
     }
 
     private static double gauge(MeterRegistry registry, String name) {
