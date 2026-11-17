@@ -90,6 +90,17 @@ class LocationObfuscationServiceTest {
     }
 
     @Test
+    @DisplayName("publishes the centre of the cell a confidential point was reduced to")
+    void obfuscatedPointIsCellCentre() {
+        //given, when
+        val facility = service.obfuscate(facilityWith(PRECISE_POINT, true));
+
+        //then
+        assertThat(facility.getGeometry().getObfuscatedPoint(),
+            is(equalTo(new Geometry.ObfuscatedPoint(52.65, 1.75))));
+    }
+
+    @Test
     @DisplayName("leaves a non-confidential point untouched")
     void nonConfidentialUntouched() {
         //given, when
