@@ -137,6 +137,7 @@ services:
       CATALOGUE_DATASOURCE_USERNAME: *catalogue_db_user
       CATALOGUE_DATASOURCE_PASSWORD: *catalogue_db_password
       SERVER_PORT: "8090"
+      MANAGEMENT_SERVER_PORT: "8091"
       SPRING_FREEMARKER_CACHE: "false"
       SPRING_FREEMARKER_TEMPLATE_LOADER_PATH: file:/app/templates
       SPRING_SERVLET_MULTIPART_LOCATION: /app/dropbox
