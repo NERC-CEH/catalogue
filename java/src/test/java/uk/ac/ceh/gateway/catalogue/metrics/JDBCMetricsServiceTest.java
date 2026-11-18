@@ -37,6 +37,11 @@ import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -880,6 +885,217 @@ class JDBCMetricsServiceTest {
 
         assertThat(service.getMetricsReport(null, null, null, null, null, "\\a", null), is(empty()));
         assertThat(service.getMetricsReport(null, null, null, null, null, "abcd\\0001", null), is(empty()));
+    }
+
+    /** endDate alone: a window must end, and start, on or before it. Binds two OffsetDateTimes. */
+    @Test
+    void reportEndDateOnlyExcludesLaterWindows() {
+        insert("view", 1721952000L, 1722038399L, DOC1, 1, "test1", "a");   // 26 July 2024
+        insert("view", 1722124800L, 1722211199L, DOC2, 2, "test2", "b");   // 28 July 2024
+        insert("view", 1722038400L, 1722211199L, DOC3, 3, "test3", "c");   // 27-28 July, straddles the end
+
+        val result = service.getMetricsReport(null, Instant.parse("2024-07-27T23:59:59Z"), null, null, null, null, null);
+
+        assertThat(result.toString(), equalTo("[" + row(DOC1, "test1", "a", 1, 0) + "]"));
+    }
+
+    /** startDate alone excludes a window that started before it, even if it ends after. */
+    @Test
+    void reportStartDateOnlyExcludesEarlierWindows() {
+        insert("view", 1721952000L, 1722038399L, DOC1, 1, "test1", "a");   // 26 July 2024
+        insert("view", 1722038400L, 1722124799L, DOC2, 2, "test2", "b");   // 27 July 2024
+
+        val result = service.getMetricsReport(Instant.parse("2024-07-27T00:00:00Z"), null, null, null, null, null, null);
+
+        assertThat(result.toString(), equalTo("[" + row(DOC2, "test2", "b", 2, 0) + "]"));
+    }
+
+    /** recordType IN on its own, with one value and with several; an empty list means no filter. */
+    @Test
+    void reportRecordTypeFilterOnItsOwn() {
+        insert("view", 1721952000L, 1722038399L, DOC1, 1, "test1", "dataset");
+        insert("view", 1721952000L, 1722038399L, DOC2, 1, "test2", "service");
+        insert("view", 1721952000L, 1722038399L, DOC3, 1, "test3", "aggregate");
+
+        assertThat(service.getMetricsReport(null, null, null, null, List.of("service"), null, null).toString(),
+            equalTo("[" + row(DOC2, "test2", "service", 1, 0) + "]"));
+        assertThat(service.getMetricsReport(null, null, null, null, List.of("dataset", "aggregate"), null, null).toString(),
+            equalTo("[" + row(DOC1, "test1", "dataset", 1, 0) + ", " + row(DOC3, "test3", "aggregate", 1, 0) + "]"));
+        assertThat(service.getMetricsReport(null, null, null, null, List.of(), null, null), hasSize(3));
+        assertThat(service.getMetricsReport(null, null, null, null, List.of("nonexistent"), null, null), is(empty()));
+    }
+
+    /** Ordering is ascending unless it is exactly "descending". */
+    @Test
+    void reportOrderingIsAscendingUnlessDescending() {
+        insert("download", 1721952000L, 1722038399L, DOC1, 5, "test1", "a");
+        insert("download", 1721952000L, 1722038399L, DOC2, 1, "test2", "b");
+
+        val expected = "[" + row(DOC2, "test2", "b", 0, 1) + ", " + row(DOC1, "test1", "a", 0, 5) + "]";
+        assertThat(service.getMetricsReport(null, null, "downloads", null, null, null, null).toString(), equalTo(expected));
+        assertThat(service.getMetricsReport(null, null, "downloads", "ascending", null, null, null).toString(), equalTo(expected));
+        assertThat(service.getMetricsReport(null, null, "downloads", "DESC", null, null, null).toString(), equalTo(expected));
+    }
+
+    /** A limit of zero is honoured (returns nothing), not treated as "no limit". */
+    @Test
+    void reportLimitOfZeroReturnsNothing() {
+        insert("view", 1721952000L, 1722038399L, DOC1, 1, "test1", "a");
+
+        assertThat(service.getMetricsReport(null, null, null, null, null, null, 0), is(empty()));
+    }
+
+    /** Every filter at once: each bound parameter has the type PostgreSQL expects in its position. */
+    @Test
+    void reportAppliesEveryFilterTogether() {
+        insert("view", 1721952000L, 1722038399L, DOC1, 4, "test1", "a");      // in range, type a
+        insert("download", 1721952000L, 1722038399L, DOC1, 1, "test1", "a");
+        insert("view", 1721952000L, 1722038399L, DOC2, 9, "test2", "b");      // wrong type
+        insert("view", 1722124800L, 1722211199L, DOC3, 9, "test3", "a");      // out of range
+        insert("view", 1721952000L, 1722038399L, DOC4, 2, "test4", "a");      // in range, type a
+
+        val result = service.getMetricsReport(
+            Instant.parse("2024-07-26T00:00:00Z"), Instant.parse("2024-07-27T23:59:59Z"),
+            "views", "descending", List.of("a"), "ABCD000", 5);
+
+        assertThat(result.toString(), equalTo("[" + row(DOC1, "test1", "a", 4, 1) + ", " + row(DOC4, "test4", "a", 2, 0) + "]"));
+    }
+
+    // ---------------------------------------------------------------- write path
+
+    /**
+     * The write is schema-qualified, so it must land in {@code metrics} whatever the connection's
+     * {@code search_path} is: a pool or role with a different default schema must not send the hourly
+     * insert somewhere else, or make it fail an hour after startup (dri-one #236).
+     */
+    @SneakyThrows
+    @Test
+    void writesLandInTheMetricsSchemaWhateverTheSearchPath() {
+        //given connections whose search_path does not include metrics
+        val elsewhere = new AbstractDataSource() {
+            @Override
+            public Connection getConnection() throws SQLException {
+                val connection = postgresDataSource.getConnection();
+                try (val statement = connection.createStatement()) {
+                    statement.execute("SET search_path TO pg_catalog");
+                }
+                return connection;
+            }
+
+            @Override
+            public Connection getConnection(String username, String password) throws SQLException {
+                return getConnection();
+            }
+        };
+        val writer = new JDBCMetricsService(elsewhere, documentRepository, new SimpleMeterRegistry());
+        assertThat(writer.ensureSchema(), is(true));
+        doc.setTitle("search path title");
+        doc.setType("dataset");
+        given(documentRepository.read(TEST_DOCUMENT)).willReturn(doc);
+
+        //when
+        writer.recordView(TEST_DOCUMENT, TEST_IP1);
+        writer.recordDownload(TEST_DOCUMENT, TEST_IP2);
+        writer.syncDB();
+
+        //then both rows, and the document row, are in metrics, readable through the same service
+        assertThat(getDocumentsAndAmounts("view"), contains(contains(TEST_DOCUMENT, 1)));
+        assertThat(getDocumentsAndAmounts("download"), contains(contains(TEST_DOCUMENT, 1)));
+        assertThat(getTitleAndType(), contains(contains("search path title", "dataset")));
+        assertThat(writer.totalViews(TEST_DOCUMENT), is(1));
+    }
+
+    // ---------------------------------------------------------------- recordView concurrent with syncDB
+
+    /**
+     * {@code syncDB} reads every record from the repository (network I/O) while it writes. A record page
+     * calling {@code recordView} meanwhile must not wait for that I/O, and its view must not be lost: it
+     * belongs to the next window (dri-one #234).
+     */
+    @SneakyThrows
+    @Test
+    void recordViewIsNotBlockedWhileASyncIsReadingTheRepository() {
+        //given a sync stuck reading the repository
+        val readStarted = new CountDownLatch(1);
+        val releaseRead = new CountDownLatch(1);
+        given(documentRepository.read(anyString())).willAnswer(invocation -> {
+            if (DOC1.equals(invocation.getArgument(0))) {
+                readStarted.countDown();
+                assertThat(releaseRead.await(30, TimeUnit.SECONDS), is(true));
+            }
+            return doc;
+        });
+        service.recordView(DOC1, TEST_IP1);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        try {
+            val sync = executor.submit(service::syncDB);
+            assertThat(readStarted.await(10, TimeUnit.SECONDS), is(true));
+
+            //when a page records views and downloads during the sync
+            val recorded = executor.submit(() -> {
+                service.recordView(DOC2, TEST_IP1);
+                service.recordView(DOC1, TEST_IP2);
+                service.recordDownload(DOC2, TEST_IP1);
+            });
+
+            //then it completes while the sync is still blocked
+            recorded.get(5, TimeUnit.SECONDS);
+            assertThat(sync.isDone(), is(false));
+            releaseRead.countDown();
+            sync.get(30, TimeUnit.SECONDS);
+        } finally {
+            releaseRead.countDown();
+            executor.shutdownNow();
+        }
+
+        //and the views recorded during it are written by the next sync, not lost or folded into this one
+        assertThat(getDocumentsAndAmounts("view"), contains(contains(DOC1, 1)));
+        service.syncDB();
+        assertThat(service.totalViews(DOC1), is(2));
+        assertThat(service.totalViews(DOC2), is(1));
+        assertThat(service.totalDownloads(DOC2), is(1));
+    }
+
+    /** Views recorded from many threads while syncs run are each written exactly once. */
+    @SneakyThrows
+    @Test
+    void concurrentViewsAndSyncsLoseAndDuplicateNothing() {
+        //given
+        given(documentRepository.read(anyString())).willReturn(doc);
+        val threads = 8;
+        val viewsPerThread = 250;
+        val running = new AtomicBoolean(true);
+        ExecutorService executor = Executors.newFixedThreadPool(threads + 1);
+        try {
+            val syncer = executor.submit(() -> {
+                while (running.get()) {
+                    service.syncDB();
+                }
+            });
+
+            //when every thread records distinct IPs against one document
+            val start = new CountDownLatch(1);
+            val recorders = IntStream.range(0, threads).mapToObj(t -> executor.submit(() -> {
+                start.await();
+                for (int i = 0; i < viewsPerThread; i++) {
+                    service.recordView(TEST_DOCUMENT, "10.%d.%d.%d".formatted(t, i / 256, i % 256));
+                }
+                return null;
+            })).toList();
+            start.countDown();
+            for (val recorder : recorders) {
+                recorder.get(60, TimeUnit.SECONDS);
+            }
+            running.set(false);
+            syncer.get(60, TimeUnit.SECONDS);
+        } finally {
+            running.set(false);
+            executor.shutdownNow();
+        }
+        service.syncDB();
+
+        //then the windows add up to exactly one view per distinct IP
+        assertThat(service.totalViews(TEST_DOCUMENT), is(threads * viewsPerThread));
     }
 
     // ---------------------------------------------------------------- shutdown flush
