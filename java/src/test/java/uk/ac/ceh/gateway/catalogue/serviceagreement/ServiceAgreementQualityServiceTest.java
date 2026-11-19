@@ -360,7 +360,31 @@ public class ServiceAgreementQualityServiceTest {
     public void fileNumberMismatchSkippedWithNamingConvention() {
         val json = "{\"fileNumber\": \"200\", \"fileNamingConvention\": \"200 files CP_*.csv\", "
             + "\"files\": [{\"name\": \"a.csv\", \"format\": \"csv\", \"size\": \"1mb\"}, {\"name\": \"b.csv\", \"format\": \"csv\", \"size\": \"1mb\"}]}";
-        assertThat(checkFilesJson(json), empty());
+        assertThat(checkFilesJson(json), not(hasItem(hasProperty("test", startsWith("Number of files to be deposited (")))));
+    }
+
+    private static final String CONVENTION_WARNING =
+        "The files are described by a previous naming convention; describe them as file groups so uploads can be checked";
+
+    @Test
+    public void namingConventionWithoutFileGroupsIsWarned() {
+        val conventionOnly = "{\"fileNumber\": \"200\", \"fileNamingConvention\": \"200 files CP_<site>.csv\"}";
+        assertThat(checkFilesJson(conventionOnly), contains(hasProperty("test", equalTo(CONVENTION_WARNING))));
+        assertThat(checkFilesJson(conventionOnly), hasCheck(CONVENTION_WARNING, WARNING));
+    }
+
+    @Test
+    public void namingConventionWithFileGroupsIsNotWarned() {
+        val json = "{\"fileNumber\": \"2\", \"fileNamingConvention\": \"CP_<site>.csv\", "
+            + "\"fileGroups\": [{\"pattern\": \"CP_*.csv\", \"count\": 2, \"size\": \"1mb\"}]}";
+        assertThat(checkFilesJson(json), not(hasCheck(CONVENTION_WARNING, WARNING)));
+    }
+
+    @Test
+    public void noNamingConventionIsNotWarned() {
+        assertThat(checkFilesJson(fileJson("a.csv")), not(hasCheck(CONVENTION_WARNING, WARNING)));
+        assertThat(checkFilesJson("{\"fileNumber\": \"1\", \"fileNamingConvention\": \"  \", "
+            + "\"files\": [{\"name\": \"a.csv\", \"format\": \"csv\", \"size\": \"1mb\"}]}"), not(hasCheck(CONVENTION_WARNING, WARNING)));
     }
 
     @Test

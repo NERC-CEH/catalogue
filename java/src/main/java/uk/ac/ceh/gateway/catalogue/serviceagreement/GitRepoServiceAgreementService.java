@@ -489,7 +489,14 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         val agreed = isAgreed(metadataInfo);
         val snapshot = readAgreedFilesSnapshot(id);
         if (snapshot.isPresent()) {
-            return Optional.of(snapshot.get().withRevising(!agreed));
+            val stored = snapshot.get().withRevising(!agreed);
+            if (agreed && stored.lacksNamingConventionText()) {
+                // Stored before the convention's text was kept. An agreed agreement can't be edited, so its
+                // current text is the agreed one; a draft's isn't, so a revised one stays without text.
+                val current = serviceAgreementMapper.readInfo(repo.getData(FOLDER + id + ".raw").getInputStream());
+                return Optional.of(stored.withNamingConvention(AgreedFiles.of(current, false).namingConvention()));
+            }
+            return Optional.of(stored);
         }
         if (agreed) {
             // Agreed before snapshots were kept: what it holds now is what was agreed

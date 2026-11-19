@@ -190,6 +190,35 @@ describe('ExpectedFilesView', function () {
       expect(row('site1/2024.csv').find('.expected-status').text()).toBe('uploaded')
       expect(row('readme.txt').find('.expected-status').text()).toBe('not yet uploaded')
     })
+
+    it('shows the convention, with its line breaks (dri-one #548)', function () {
+      render({ ...withConvention, namingConvention: 'CP_<REGION>.csv\n200 files' }, { uploads, complete: true, hasListings: true })
+
+      const shown = view.$('.expected-convention-text')
+      expect(shown.text()).toBe('CP_<REGION>.csv200 files')
+      expect(shown.find('br').length).toBe(1)
+    })
+
+    it('shows the convention without a listing too', function () {
+      render({ ...withConvention, namingConvention: 'CP_<REGION>.csv' }, { uploads: [], complete: false, hasListings: false })
+
+      expect(view.$('.expected-convention-text').text()).toBe('CP_<REGION>.csv')
+    })
+
+    it('shows the convention as text', function () {
+      const attack = '<img src=x onerror="window.__xss548=1">'
+      render({ ...withConvention, namingConvention: attack }, { uploads, complete: true, hasListings: true })
+
+      expect(view.$('img').length).toBe(0)
+      expect(view.$('.expected-convention-text').text()).toBe(attack)
+    })
+
+    it('keeps just the note for an older snapshot without the text', function () {
+      render({ ...withConvention, namingConvention: null }, { uploads, complete: true, hasListings: true })
+
+      expect(view.$('.expected-convention').length).toBe(1)
+      expect(view.$('.expected-convention-text').length).toBe(0)
+    })
   })
 
   it('says nothing of a naming convention without one', function () {

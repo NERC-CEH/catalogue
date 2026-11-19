@@ -39,7 +39,8 @@ const sizeFlags = flags => flags.filter(Boolean).map(flag => `; <span class="exp
  * the page has any listing. Without one nothing is said about arrivals.
  *
  * An agreement with a prose naming convention (`hasNamingConvention`) may describe files it doesn't
- * list, so then no upload is called "not in the agreement" and the total isn't compared.
+ * list, so then no upload is called "not in the agreement" and the total isn't compared. Its text
+ * (`namingConvention`) is shown when the snapshot has it (dri-one #548).
  */
 export default Backbone.View.extend({
 
@@ -63,6 +64,7 @@ export default Backbone.View.extend({
       convention
         ? '<p class="expected-convention text-body-secondary">Some files are described by the agreement\'s naming convention, so files not listed here may still be expected.</p>'
         : '',
+      convention ? this.conventionText(this.expected.namingConvention) : '',
       this.table(result, hasListings),
       hasListings && !convention ? this.unmatched(result.unmatched) : '',
       hasListings && !convention && result.total.differs
@@ -113,6 +115,12 @@ export default Backbone.View.extend({
         </tr></thead>
         <tbody>${files.join('')}${groups.join('')}</tbody>
       </table>`
+  },
+
+  // A snapshot stored before the text was kept has only the flag, so then just the note (dri-one #548)
+  conventionText (convention) {
+    if (typeof convention !== 'string' || convention.trim() === '') return ''
+    return `<blockquote class="expected-convention-text small border-start ps-2">${convention.split('\n').map(text).join('<br>')}</blockquote>`
   },
 
   // Folded away: a deposit described loosely could otherwise fill the page with them

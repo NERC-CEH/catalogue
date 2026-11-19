@@ -731,7 +731,7 @@ class UploadControllerTest extends AbstractMvcTest {
         file.setFormat("csv");
         file.setSize("2 MB");
         given(serviceAgreementService.agreedFiles(datasetId))
-            .willReturn(Optional.of(new AgreedFiles(List.of(file), null, "12", true, true)));
+            .willReturn(Optional.of(new AgreedFiles(List.of(file), null, "12", true, "One file per site", true)));
     }
 
     private void givenNoAgreement() {
@@ -792,6 +792,7 @@ class UploadControllerTest extends AbstractMvcTest {
                   "fileGroups": [],
                   "fileNumber": "12",
                   "hasNamingConvention": true,
+                  "namingConvention": "One file per site",
                   "revising": true
                 }
                 """))

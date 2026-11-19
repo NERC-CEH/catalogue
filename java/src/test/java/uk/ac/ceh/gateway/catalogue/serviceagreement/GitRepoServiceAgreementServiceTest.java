@@ -58,6 +58,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -1085,7 +1086,7 @@ public class GitRepoServiceAgreementServiceTest {
             assertThat(json, org.hamcrest.Matchers.not(containsString("revising")));
         }
         //and it is what is read back, not yet being revised
-        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, false))));
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, null, false))));
     }
 
     @Test
@@ -1101,7 +1102,7 @@ public class GitRepoServiceAgreementServiceTest {
             List.of(file("other.txt")), List.of(fileGroup("x*.csv", 1)), "1"));
 
         //then the agreed listing is still the one agreed, marked as being revised
-        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, true))));
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, null, true))));
     }
 
     @Test
@@ -1125,7 +1126,7 @@ public class GitRepoServiceAgreementServiceTest {
         assertThrows(ServiceAgreementException.class, () -> service.publishServiceAgreement(user, ID));
 
         //then the snapshot is the newly agreed listing
-        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(newFiles, newGroups, "1", false, false))));
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(newFiles, newGroups, "1", false, null, false))));
     }
 
     @Test
@@ -1159,7 +1160,7 @@ public class GitRepoServiceAgreementServiceTest {
         service.publishServiceAgreement(user, ID);
 
         //then the earlier agreed listing is unchanged, and still shown as being revised
-        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, true))));
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, null, true))));
     }
 
     @Test
@@ -1171,7 +1172,7 @@ public class GitRepoServiceAgreementServiceTest {
         moveTo(service, "agreed");
 
         //then its current content is the last agreed version
-        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, false))));
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, null, false))));
     }
 
     @Test
@@ -1257,13 +1258,13 @@ public class GitRepoServiceAgreementServiceTest {
         given(serviceAgreementMapper.readInfo(any())).willReturn(agreementWith(AGREED_FILES, AGREED_GROUPS, "14"));
 
         //then the current content stands in, as for an agreement agreed before snapshots, and it is logged
-        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, false))));
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", false, null, false))));
         assertThat(output.getOut(), containsString("WARN"));
     }
 
     @Test
     @SneakyThrows
-    void snapshotKeepsWhetherThereIsANamingConvention() {
+    void snapshotKeepsTheNamingConvention() {
         //given an agreement agreed with a prose naming convention
         val service = gitBackedService();
         val agreement = agreementWith(AGREED_FILES, AGREED_GROUPS, "14");
@@ -1273,13 +1274,14 @@ public class GitRepoServiceAgreementServiceTest {
         givenDraftGeminiDocument();
         service.publishServiceAgreement(user, ID);
 
-        //then the snapshot says so, without the prose itself
+        //then the snapshot keeps the prose, so the upload page can show it (dri-one #548)
         try (val stored = gitRepo.getData(FOLDER + ID + ".agreed.json").getInputStream()) {
             val json = new String(stored.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
             assertThat(json, containsString("\"hasNamingConvention\":true"));
-            assertThat(json, not(containsString("named after the site")));
+            assertThat(json, containsString("\"namingConvention\":\"One file per site, named after the site\""));
         }
-        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", true, false))));
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(
+            AGREED_FILES, AGREED_GROUPS, "14", true, "One file per site, named after the site", false))));
     }
 
     @Test
@@ -1290,7 +1292,65 @@ public class GitRepoServiceAgreementServiceTest {
             {"files": [], "fileGroups": [], "fileNumber": "3"}
             """, AgreedFiles.class);
 
-        assertThat(older, is(new AgreedFiles(List.of(), List.of(), "3", false, false)));
+        assertThat(older, is(new AgreedFiles(List.of(), List.of(), "3", false, null, false)));
+    }
+
+    /** Writes a snapshot as stored before the convention's text was kept: the flag only. */
+    @SneakyThrows
+    private void givenFlagOnlySnapshot() {
+        gitRepo.submitData(FOLDER + ID + ".agreed.json", o -> o.write("""
+                {"files": [], "fileGroups": [], "fileNumber": "3", "hasNamingConvention": true}
+                """.getBytes(java.nio.charset.StandardCharsets.UTF_8)))
+            .commit(user, "older snapshot");
+    }
+
+    @Test
+    @SneakyThrows
+    void flagOnlySnapshotTakesTheTextFromAStillAgreedAgreement() {
+        //given an agreement still agreed, whose snapshot predates keeping the text
+        val service = gitBackedService();
+        val agreement = agreementWith(AGREED_FILES, AGREED_GROUPS, "14");
+        agreement.setFileNamingConvention("CP_<site>.csv");
+        service.create(user, ID, catalogueKey, agreement);
+        moveTo(service, "agreed");
+        givenFlagOnlySnapshot();
+
+        //then its current text is what was agreed, since an agreed agreement can't be edited
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(
+            List.of(), List.of(), "3", true, "CP_<site>.csv", false))));
+    }
+
+    @Test
+    @SneakyThrows
+    void flagOnlySnapshotHasNoTextWhileRevising() {
+        //given an agreement sent back to draft, whose snapshot predates keeping the text
+        val service = gitBackedService();
+        val agreement = agreementWith(AGREED_FILES, AGREED_GROUPS, "14");
+        agreement.setFileNamingConvention("draft text, never agreed");
+        service.create(user, ID, catalogueKey, agreement);
+        givenFlagOnlySnapshot();
+
+        //then the draft's text is not passed off as the agreed one
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(
+            List.of(), List.of(), "3", true, null, true))));
+    }
+
+    @Test
+    @SneakyThrows
+    void updateWithoutTheNamingConventionRemovesIt() {
+        //given an agreement with a prose naming convention
+        val service = gitBackedService();
+        val agreement = agreementWith(AGREED_FILES, AGREED_GROUPS, "14");
+        agreement.setFileNamingConvention("CP_<site>.csv");
+        service.create(user, ID, catalogueKey, agreement);
+
+        //when the editor saves it with the convention removed
+        service.update(user, ID, agreementWith(AGREED_FILES, AGREED_GROUPS, "14"));
+
+        //then none is stored
+        try (val stored = gitRepo.getData(FOLDER + ID + ".raw").getInputStream()) {
+            assertThat(objectMapper.readValue(stored, ServiceAgreement.class).getFileNamingConvention(), is(nullValue()));
+        }
     }
 
     @ParameterizedTest
@@ -1300,7 +1360,9 @@ public class GitRepoServiceAgreementServiceTest {
         val agreement = agreementWith(AGREED_FILES, AGREED_GROUPS, "14");
         agreement.setFileNamingConvention(convention);
 
-        assertThat(AgreedFiles.of(agreement, false).hasNamingConvention(), is(false));
+        val agreed = AgreedFiles.of(agreement, false);
+        assertThat(agreed.hasNamingConvention(), is(false));
+        assertThat(agreed.namingConvention(), is(nullValue()));
     }
 
     @Test
@@ -1313,6 +1375,6 @@ public class GitRepoServiceAgreementServiceTest {
         service.create(user, ID, catalogueKey, agreement);
         moveTo(service, "agreed");
 
-        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", true, false))));
+        assertThat(service.agreedFiles(ID), is(Optional.of(new AgreedFiles(AGREED_FILES, AGREED_GROUPS, "14", true, "CP_<site>.csv", false))));
     }
 }
