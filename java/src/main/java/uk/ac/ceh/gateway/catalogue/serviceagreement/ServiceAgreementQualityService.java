@@ -285,6 +285,15 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             toReturn.add(new MetadataCheck("You must describe the files to be deposited (a list of files, file groups and/or a naming convention)", ERROR));
         }
 
+        // Prose from before file groups still describes the files, but the upload page can't check against it
+        // (dri-one #548), so nudge towards groups without blocking submission
+        if (!stringIsMissing(fileNamingConvention) && fileGroups.isEmpty()) {
+            toReturn.add(new MetadataCheck(
+                "The files are described by a previous naming convention; describe them as file groups so uploads can be checked",
+                WARNING
+            ));
+        }
+
         if (stringIsMissing(fileNumber)) {
             toReturn.add(new MetadataCheck("Number of files to be deposited is missing", ERROR));
         }

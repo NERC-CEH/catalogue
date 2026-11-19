@@ -4,7 +4,7 @@ import {
   AuthorView, CategoryView, EndUserLicenceView,
   FileGroupView, FileView, FundingView, KeywordThemeView, KeywordVocabularyView,
   ParentView,
-  PredefinedParentView, RightsHolderView,
+  PredefinedParentView, PreviousNamingConventionView, RightsHolderView,
   RadioView, SingleObjectView, SupportingDocView,
   TextareaView,
   TextOnlyView, TopicCategoryView
@@ -212,6 +212,11 @@ export default EditorView.extend({
           ObjectInputView: FileView,
           predefined: predefinedFormats(e => ({ format: e.name, formatType: e.type })),
           multiline: true
+        }),
+
+        new PreviousNamingConventionView({
+          model: this.model,
+          modelAttribute: 'fileNamingConvention'
         }),
 
         new TextOnlyView({

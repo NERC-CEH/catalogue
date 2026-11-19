@@ -167,6 +167,7 @@ public class UploadController {
         expected.set("fileGroups", mapper.valueToTree(orEmpty(agreed.fileGroups())));
         expected.put("fileNumber", agreed.fileNumber());
         expected.put("hasNamingConvention", agreed.hasNamingConvention());
+        expected.put("namingConvention", agreed.namingConvention());
         expected.put("revising", agreed.revising());
         return mapper.writeValueAsString(expected);
     }
