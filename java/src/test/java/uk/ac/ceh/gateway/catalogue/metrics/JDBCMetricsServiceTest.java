@@ -966,7 +966,7 @@ class JDBCMetricsServiceTest {
     /**
      * The write is schema-qualified, so it must land in {@code metrics} whatever the connection's
      * {@code search_path} is: a pool or role with a different default schema must not send the hourly
-     * insert somewhere else, or make it fail an hour after startup (dri-one #236).
+     * insert somewhere else, or make it fail an hour after startup.
      */
     @SneakyThrows
     @Test
@@ -1010,7 +1010,7 @@ class JDBCMetricsServiceTest {
     /**
      * {@code syncDB} reads every record from the repository (network I/O) while it writes. A record page
      * calling {@code recordView} meanwhile must not wait for that I/O, and its view must not be lost: it
-     * belongs to the next window (dri-one #234).
+     * belongs to the next window.
      */
     @SneakyThrows
     @Test
