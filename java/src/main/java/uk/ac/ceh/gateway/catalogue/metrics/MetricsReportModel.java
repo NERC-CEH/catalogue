@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.metrics;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
@@ -15,6 +16,11 @@ import java.util.Map;
 public class MetricsReportModel{
 
     public String catalogue;
+    /**
+     * Always sent, even when empty. The app's mapper leaves out empty lists (non_empty), so a report
+     * that found nothing had no metricsReport at all, and the page kept showing the previous rows.
+     */
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     public List<Map<String, String>> metricsReport;
 
     public MetricsReportModel(String catalogue, List<Map<String, String>> metricsReport) {

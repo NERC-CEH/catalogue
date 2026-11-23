@@ -24,6 +24,24 @@ public interface MetricsService {
 
     /** Total recorded downloads of {@code uuid}, or {@code null} if unavailable; see {@link #totalViews}. */
     @Nullable Integer totalDownloads(@NonNull String uuid);
+    /** Rows the report returns when the caller does not ask for a number (or asks for a negative one). */
+    int DEFAULT_REPORT_LIMIT = 100;
+
+    /** Most rows the report will ever return, whatever the caller asks for. */
+    int MAX_REPORT_LIMIT = 1000;
+
+    /** The report's row limit for a requested {@code noOfRecords}: the default if absent or negative, capped at {@link #MAX_REPORT_LIMIT}. */
+    static int reportLimit(@Nullable Integer noOfRecords) {
+        if (noOfRecords == null || noOfRecords < 0) {
+            return DEFAULT_REPORT_LIMIT;
+        }
+        return Math.min(noOfRecords, MAX_REPORT_LIMIT);
+    }
+
+    /**
+     * Views and downloads per document. {@code docId}, if given, is an exact document ID (not a
+     * substring), so it can use the index on the document key instead of forcing a scan.
+     */
     List<Map<String,String>> getMetricsReport(Instant startDate, Instant endDate, String orderBy, String ordering, List<String> recordType, String docId, Integer noOfRecords);
 
     /** True if any view or download is recorded for {@code uuid}, without deleting anything. */

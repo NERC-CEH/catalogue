@@ -746,7 +746,7 @@ class JDBCMetricsServiceTest {
         List<String> recordType = Arrays.asList("a", "c");
         String orderBy = "views";
         String ordering = "descending";
-        String docId = "abcd0001";
+        String docId = DOC1;
         Integer noOfRecords = 1;
 
         //when/then no record in the supplied dates
@@ -796,29 +796,33 @@ class JDBCMetricsServiceTest {
         result = service.getMetricsReport(startDate, endDate, orderBy, ordering, recordType, docId, null).toString();
         assertThat(result, equalTo("[" + row(DOC1, "test1", "a", 1, 0) + "]"));
 
-        docId = "abcd";
+        docId = DOC3;
         result = service.getMetricsReport(startDate, endDate, orderBy, ordering, recordType, docId, noOfRecords).toString();
         assertThat(result, equalTo("[" + row(DOC3, "test3", "c", 0, 2) + "]"));
     }
 
-    /** A document ID pasted in upper case must still match (ILIKE). */
+    /** A document ID pasted in upper case must still match: it is compared as a UUID. */
     @Test
     void reportDocumentFilterIgnoresCase() {
         //given a view of a lower-case document ID
         insert("view", 1721952000L, 1722038399L, DOC1, 1, "test1", "a");
 
-        //when the report is filtered on part of the ID in upper case
-        val result = service.getMetricsReport(null, null, null, null, null, "ABCD0001", null);
+        //when the report is filtered on the ID in upper case
+        val result = service.getMetricsReport(null, null, null, null, null, DOC1.toUpperCase(), null);
 
         //then the document is still found
         assertThat(result.toString(), equalTo("[" + row(DOC1, "test1", "a", 1, 0) + "]"));
     }
 
-    /** LIKE metacharacters in the document filter match literally, not as wildcards. */
+    /**
+     * The document filter is an exact, indexable match, not a substring search, so part of
+     * an ID — or a LIKE wildcard — matches nothing.
+     */
     @Test
-    void reportDocumentFilterTreatsWildcardsLiterally() {
+    void reportDocumentFilterIsAnExactMatch() {
         insert("view", 1721952000L, 1722038399L, DOC1, 1, "test1", "a");
 
+        assertThat(service.getMetricsReport(null, null, null, null, null, "abcd0001", null), is(empty()));
         assertThat(service.getMetricsReport(null, null, null, null, null, "_", null), is(empty()));
         assertThat(service.getMetricsReport(null, null, null, null, null, "%", null), is(empty()));
     }
@@ -857,13 +861,16 @@ class JDBCMetricsServiceTest {
         assertThat(jdbc.queryForObject("SELECT count(*) FROM metrics.documents", Integer.class), is(2));
     }
 
-    /** With no noOfRecords (or a negative one) the report is capped at 100 rows. */
+    /**
+     * With no noOfRecords (or a negative one) the report returns 100 rows, and it never returns more than
+     * {@link MetricsService#MAX_REPORT_LIMIT}.
+     */
     @Test
     void reportDefaultsToALimitOf100() {
         jdbc.execute("""
             WITH d AS (
                 INSERT INTO metrics.documents (document_id, doc_title, record_type)
-                SELECT gen_random_uuid(), 'bulk', 'dataset' FROM generate_series(1, 101)
+                SELECT gen_random_uuid(), 'bulk', 'dataset' FROM generate_series(1, 1001)
                 RETURNING document_id
             )
             INSERT INTO metrics.metric_counts (document_id, metric_type, counted_from, counted_until, amount)
@@ -873,12 +880,10 @@ class JDBCMetricsServiceTest {
         assertThat(service.getMetricsReport(null, null, null, null, null, null, null), hasSize(100));
         assertThat(service.getMetricsReport(null, null, null, null, null, null, -1), hasSize(100));
         assertThat(service.getMetricsReport(null, null, null, null, null, null, 101), hasSize(101));
+        assertThat(service.getMetricsReport(null, null, null, null, null, null, Integer.MAX_VALUE), hasSize(MetricsService.MAX_REPORT_LIMIT));
     }
 
-    /**
-     * A backslash is escaped too, so it matches literally. Unescaped, "\\a" would be LIKE's escaped "a"
-     * and "abcd\\0001" would be "abcd0001", and both would wrongly match DOC1.
-     */
+    /** A backslash can never turn a document filter into a match: it is not part of a valid ID. */
     @Test
     void reportDocumentFilterTreatsBackslashLiterally() {
         insert("view", 1721952000L, 1722038399L, DOC1, 1, "test1", "a");

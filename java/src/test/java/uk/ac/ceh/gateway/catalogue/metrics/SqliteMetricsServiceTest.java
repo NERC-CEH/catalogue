@@ -690,7 +690,7 @@ class SqliteMetricsServiceTest {
         assertThat(result, equalTo("[" +
             "{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}]"));
 
-        docId = "abcd";
+        docId = "abcd3";
         result = service.getMetricsReport(startDate, endDate, orderBy, ordering, recordType, docId, noOfRecords).toString();
         assertThat(result, equalTo("[" +
             "{document=abcd3, docTitle=test3, recordType=c, views=0, downloads=2}]"));
@@ -725,9 +725,9 @@ class SqliteMetricsServiceTest {
     }
 
     /**
-     * SQLite's {@code LIKE} ignores ASCII case and PostgreSQL's does not, so a document ID pasted in upper
-     * case used to match on SQLite and would find nothing on PostgreSQL. H2's {@code LIKE} is
-     * case-sensitive, like PostgreSQL's.
+     * Document IDs are stored lower-case and the filter is an exact, lower-cased match, so
+     * an ID pasted in upper case is still found. H2's comparisons are case-sensitive, like PostgreSQL's,
+     * so this would fail if the filter stopped lower-casing.
      */
     @SneakyThrows
     @Test
@@ -739,11 +739,32 @@ class SqliteMetricsServiceTest {
                 + "VALUES (1721952000, 1722038399, 1, 'abcd1', 'test1', 'a')");
         }
 
-        //when the report is filtered on part of the ID in upper case
-        val result = service.getMetricsReport(null, null, null, null, null, "ABCD", null);
+        //when the report is filtered on the whole ID in upper case
+        val result = service.getMetricsReport(null, null, null, null, null, "ABCD1", null);
 
         //then the document is still found
         assertThat(result.toString(), equalTo("[{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}]"));
+    }
+
+    /**
+     * The document filter is an exact match, so it can use the index on {@code document}.
+     * A substring {@code LIKE '%...%'} cannot, so part of an ID — or a LIKE wildcard — must match nothing.
+     */
+    @SneakyThrows
+    @Test
+    void reportDocumentFilterIsAnExactMatch() {
+        //given a view of a document
+        try (Connection connection = db.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate("INSERT INTO views (start_timestamp, end_timestamp, amount, document, doc_title, record_type) "
+                + "VALUES (1721952000, 1722038399, 1, 'abcd1', 'test1', 'a')");
+        }
+
+        //when/then part of its ID, or a wildcard, finds nothing
+        assertThat(service.getMetricsReport(null, null, null, null, null, "abcd", null), is(empty()));
+        assertThat(service.getMetricsReport(null, null, null, null, null, "bcd1", null), is(empty()));
+        assertThat(service.getMetricsReport(null, null, null, null, null, "%", null), is(empty()));
+        assertThat(service.getMetricsReport(null, null, null, null, null, "_bcd1", null), is(empty()));
     }
 
     /**
@@ -752,6 +773,8 @@ class SqliteMetricsServiceTest {
      * does not. So with no {@code orderBy} it orders by document, and an ordering on a count is broken by
      * document so that ties at the limit are decided the same way every time. Asserted on the SQL,
      * because H2's stable grouping order would hide the difference in the results.
+     *
+     * <p>The {@code LIMIT} is also capped at {@link MetricsService#MAX_REPORT_LIMIT}.</p>
      */
     @Test
     void reportIsAlwaysOrderedEndingOnDocument() {
@@ -760,14 +783,16 @@ class SqliteMetricsServiceTest {
         val reportService = new SqliteMetricsService(recording, documentRepository);
         reportService.ensureSchema();
 
-        //when the report is run without an order, then ordered by a count
+        //when the report is run without an order, then ordered by a count, then asking for too many rows
         reportService.getMetricsReport(null, null, null, null, null, null, null);
         reportService.getMetricsReport(null, null, "views", "descending", null, null, null);
+        reportService.getMetricsReport(null, null, null, null, null, null, Integer.MAX_VALUE);
 
-        //then both are ordered, the count ordering with document as the tie-break
+        //then all are ordered, the count ordering with document as the tie-break, and the limit is capped
         assertThat(recording.preparedSql(), contains(
             org.hamcrest.Matchers.endsWith("ORDER BY document LIMIT 100"),
-            org.hamcrest.Matchers.endsWith("ORDER BY views DESC, document LIMIT 100")));
+            org.hamcrest.Matchers.endsWith("ORDER BY views DESC, document LIMIT 100"),
+            org.hamcrest.Matchers.endsWith("ORDER BY document LIMIT " + MetricsService.MAX_REPORT_LIMIT)));
     }
 
     /**

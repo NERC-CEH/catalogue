@@ -594,8 +594,16 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
             params.addAll(recordType);
         }
         if (docId != null && !docId.isBlank()) {
-            where.append(" AND d.document_id::text ILIKE ?");
-            params.add("%" + docId.strip().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%");
+            // Exact match on the primary key, so the lookup is indexed. An ID that is not a UUID can
+            // match no document, so the database is not queried at all
+            UUID documentId;
+            try {
+                documentId = UUID.fromString(docId.strip());
+            } catch (IllegalArgumentException e) {
+                return List.of();
+            }
+            where.append(" AND d.document_id = ?");
+            params.add(documentId);
         }
 
         String order = "document";
@@ -606,7 +614,7 @@ public class JDBCMetricsService implements MetricsService, ApplicationListener<A
             };
             order = column + ("descending".equals(ordering) ? " DESC" : "") + ", document";
         }
-        params.add(noOfRecords != null && noOfRecords >= 0 ? noOfRecords : 100);
+        params.add(MetricsService.reportLimit(noOfRecords));
 
         String sql = """
             SELECT d.document_id::text AS document,

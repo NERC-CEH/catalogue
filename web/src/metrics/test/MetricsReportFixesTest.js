@@ -76,4 +76,54 @@ describe('Metrics report', () => {
       fakeServer.uninstall()
     }
   })
+
+  describe('a report that finds nothing', () => {
+    const answer = body => fakeServer.lastRequest().respondWith({ status: 200, responseText: JSON.stringify(body) })
+    const cells = results => results.$('tbody td').map((i, td) => td.textContent).get()
+
+    beforeEach(() => fakeServer.install())
+    afterEach(() => fakeServer.uninstall())
+
+    it('says no records match, in place of the old rows', () => {
+      const results = new MetricsReportResults({ el: '#mt', model: app })
+      app.set('docId', 'abcd0001-0000-4000-8000-000000000001')
+      answer({ metricsReport: [] })
+      expect(results.$('tbody').text()).not.toContain('Old record')
+      expect(cells(results)).toEqual(['No records match these filters.'])
+    })
+
+    it('replaces an error even when the rows are the same as before it', () => {
+      const results = new MetricsReportResults({ el: '#mt', model: app })
+      app.set('docId', 'a')
+      answer({ metricsReport: [] })
+      app.set('docId', 'b')
+      fakeServer.lastRequest().respondWith({ status: 500, responseText: 'boom' })
+      expect(results.$('tbody').text()).toContain('could not be produced')
+      app.set('docId', 'c')
+      answer({ metricsReport: [] })
+      expect(cells(results)).toEqual(['No records match these filters.'])
+    })
+
+    it('does not read a message row on the page as a record', () => {
+      $('#mt tbody').html('<tr><td colspan="5">No records match these filters.</td></tr>')
+      // eslint-disable-next-line no-new
+      new MetricsReportResults({ el: '#mt', model: app })
+      expect(app.get('metricsReport')).toEqual([])
+    })
+  })
+
+  it('clears the old rows when the server leaves an empty report out', () => {
+    fakeServer.install()
+    try {
+      const results = new MetricsReportResults({ el: '#mt', model: app })
+      app.set('docId', 'abcd0001-0000-4000-8000-000000000001')
+      // As the app's mapper sends it: non_empty drops the empty list
+      fakeServer.lastRequest().respondWith({ status: 200, responseText: '{"catalogue":"eidc"}' })
+      expect(app.get('metricsReport')).toEqual([])
+      expect(results.$('tbody').text()).not.toContain('Old record')
+      expect(results.$('tbody td').map((i, td) => td.textContent).get()).toEqual(['No records match these filters.'])
+    } finally {
+      fakeServer.uninstall()
+    }
+  })
 })

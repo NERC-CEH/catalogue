@@ -493,8 +493,8 @@ public class SqliteMetricsService implements MetricsService, ApplicationListener
      * with "operator does not exist" (SQLSTATE 42883). H2 and SQLite coerce the string silently, which is
      * why only a real PostgreSQL shows it — see {@code JDBCMetricsServicePostgresTest}.
      *
-     * <p>Two more differences from SQLite are handled here. The document filter lower-cases both sides,
-     * because SQLite's {@code LIKE} ignores ASCII case and PostgreSQL's does not. And the result is always
+     * <p>The document filter is an exact, lower-cased match (document IDs are stored lower-case), not a
+     * substring {@code LIKE}, so it can use an index. The result is always
      * ordered, ending on {@code document}: the query always has a {@code LIMIT}, SQLite's grouping happens
      * to come out in key order, and PostgreSQL's does not, so without it the rows returned — and which
      * ones a tie at the limit keeps — would be arbitrary.</p>
@@ -523,8 +523,9 @@ public class SqliteMetricsService implements MetricsService, ApplicationListener
             where.append(" AND end_timestamp <= ?");
         }
         if (docId != null && !docId.isBlank()) {
-            whereVal.add("%" + docId + "%");
-            where.append(" AND lower(document) LIKE lower(?)");
+            // Exact match, so the lookup can use an index on document rather than scan
+            whereVal.add(docId.strip().toLowerCase(Locale.ROOT));
+            where.append(" AND document = ?");
         }
         if (recordType != null && !recordType.isEmpty()) {
             where.append(" AND record_type IN (");
@@ -550,7 +551,7 @@ public class SqliteMetricsService implements MetricsService, ApplicationListener
         sqlBuilder.append("document");
 
         sqlBuilder.append(" LIMIT ");
-        sqlBuilder.append(noOfRecords != null && noOfRecords >= 0 ? noOfRecords : 100);
+        sqlBuilder.append(MetricsService.reportLimit(noOfRecords));
 
         log.debug("Metrics report sql: {}", sqlBuilder);
 

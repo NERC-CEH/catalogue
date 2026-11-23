@@ -18,6 +18,10 @@ export default Backbone.Model.extend({
 
   url () { return window.location.pathname },
 
+  parse (response) {
+    return { ...response, metricsReport: response?.metricsReport ?? [] }
+  },
+
   doSearch (model) {
     this.fetch({ cache: false, traditional: true, data: this.getState() })
   },
