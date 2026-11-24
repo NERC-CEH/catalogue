@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.metrics;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.http.MediaType;
@@ -26,5 +27,17 @@ public class MetricsReportModel{
     public MetricsReportModel(String catalogue, List<Map<String, String>> metricsReport) {
         this.catalogue = catalogue;
         this.metricsReport = metricsReport;
+    }
+
+    /** The page's default "No. of records", from the service so the two cannot drift. Not sent as JSON. */
+    @JsonIgnore
+    public int getDefaultReportLimit() {
+        return MetricsService.DEFAULT_REPORT_LIMIT;
+    }
+
+    /** The most rows the report will return, for the page's "No. of records" maximum. Not sent as JSON. */
+    @JsonIgnore
+    public int getMaxReportLimit() {
+        return MetricsService.MAX_REPORT_LIMIT;
     }
 }

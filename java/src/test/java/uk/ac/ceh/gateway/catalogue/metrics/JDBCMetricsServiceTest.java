@@ -957,13 +957,13 @@ class JDBCMetricsServiceTest {
         insert("download", 1721952000L, 1722038399L, DOC1, 1, "test1", "a");
         insert("view", 1721952000L, 1722038399L, DOC2, 9, "test2", "b");      // wrong type
         insert("view", 1722124800L, 1722211199L, DOC3, 9, "test3", "a");      // out of range
-        insert("view", 1721952000L, 1722038399L, DOC4, 2, "test4", "a");      // in range, type a
+        insert("view", 1721952000L, 1722038399L, DOC4, 2, "test4", "a");      // in range, type a, other document
 
         val result = service.getMetricsReport(
             Instant.parse("2024-07-26T00:00:00Z"), Instant.parse("2024-07-27T23:59:59Z"),
-            "views", "descending", List.of("a"), "ABCD000", 5);
+            "views", "descending", List.of("a"), DOC1, 5);
 
-        assertThat(result.toString(), equalTo("[" + row(DOC1, "test1", "a", 4, 1) + ", " + row(DOC4, "test4", "a", 2, 0) + "]"));
+        assertThat(result.toString(), equalTo("[" + row(DOC1, "test1", "a", 4, 1) + "]"));
     }
 
     // ---------------------------------------------------------------- write path
