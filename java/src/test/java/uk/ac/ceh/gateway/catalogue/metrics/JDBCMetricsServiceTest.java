@@ -56,7 +56,7 @@ import static org.mockito.Mockito.*;
  */
 @ExtendWith(MockitoExtension.class)
 class JDBCMetricsServiceTest {
-    private static final String IMAGE = "postgres:14.24-alpine";
+    private static final String IMAGE = "postgres:18.7-alpine";
 
     private static final String TEST_DOCUMENT = "123e4567-e89b-12d3-a456-426614174000";
     private static final String OTHER_DOCUMENT = "123e4567-e89b-12d3-a456-426614174999";

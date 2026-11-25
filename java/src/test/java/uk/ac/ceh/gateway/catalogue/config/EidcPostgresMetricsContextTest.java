@@ -50,7 +50,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 @CatalogueWebTest
 @DisplayName("EIDC production context, postgres metrics engine")
 class EidcPostgresMetricsContextTest {
-    private static final String IMAGE = "postgres:14.24-alpine";
+    private static final String IMAGE = "postgres:18.7-alpine";
     private static final String TEST_DOCUMENT = "123e4567-e89b-12d3-a456-426614174000";
 
     private static PostgreSQLContainer postgres;

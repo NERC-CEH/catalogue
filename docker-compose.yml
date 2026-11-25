@@ -40,14 +40,14 @@ services:
       - "5432:5432"
     profiles: [hubbub]
   catalogue-db:
-    image: postgres:14.24-alpine
+    image: postgres:18.7-alpine
     environment:
       POSTGRES_PASSWORD: &catalogue_db_password catalogue
       POSTGRES_USER: &catalogue_db_user catalogue
       POSTGRES_DB: catalogue
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - catalogue-db-data:/var/lib/postgresql/data
+      - catalogue-db-data:/var/lib/postgresql
     ports:
       - "5434:5432"
     healthcheck:
