@@ -52,7 +52,7 @@ import static uk.ac.ceh.gateway.catalogue.metrics.JDBCMetricsService.VIEW_TOTALS
 @SpringJUnitConfig(MetricsCountCachingTest.Config.class)
 @TestPropertySource(properties = "metrics.shutdown-flush.timeout-millis=8000")
 class MetricsCountCachingTest {
-    private static final String IMAGE = "postgres:14.24-alpine";
+    private static final String IMAGE = "postgres:18.7-alpine";
     private static final String TEST_DOCUMENT = "123e4567-e89b-12d3-a456-426614174000";
     private static final OffsetDateTime FROM = OffsetDateTime.of(2024, 7, 26, 0, 0, 0, 0, ZoneOffset.UTC);
 

@@ -20,7 +20,7 @@ test_java:
   # container cannot reach ports Docker maps on the host, so Testcontainers cannot connect to anything
   # it starts here. Same tag as staging's catalogue-db.
   services:
-    - name: postgres:14.24-alpine
+    - name: postgres:18.7-alpine
       alias: catalogue-db
   variables:
     POSTGRES_DB: catalogue
