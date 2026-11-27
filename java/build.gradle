@@ -1,6 +1,6 @@
 //file:noinspection GradlePackageUpdate
 plugins {
-    id 'org.springframework.boot' version '4.1.1'
+    id 'org.springframework.boot' version '4.1.3'
     id 'io.freefair.lombok' version '9.2.0'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'java'
@@ -149,6 +149,17 @@ dependencies {
     testImplementation 'org.testcontainers:testcontainers'
     testImplementation 'org.xmlunit:xmlunit-core'
     testImplementation 'org.xmlunit:xmlunit-matchers'
+
+    // Bouncy Castle is not managed by the Spring Boot BOM. It arrives transitively through Tika 3.3.1
+    // (spring-ai-tika-document-reader), which brings bcprov 1.84 with Critical CVE-2026-8763 (fixed in 1.85).
+    // Raise all four Bouncy Castle artifacts together, so bcpkix/bcutil/bcjmail never mismatch bcprov.
+    // Drop these constraints once Tika (via the Spring AI BOM) brings 1.85 or later itself (dri-one #556).
+    constraints {
+        implementation(libs.bouncycastle.bcprov)
+        implementation(libs.bouncycastle.bcpkix)
+        implementation(libs.bouncycastle.bcutil)
+        implementation(libs.bouncycastle.bcjmail)
+    }
 }
 
 tasks {
