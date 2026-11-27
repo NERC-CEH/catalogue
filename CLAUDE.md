@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Run the test suite scoped to what changed, especially after upgrades, refactors, or migrations:
   - Java changes → `./gradlew :java:test`
   - Frontend-only changes (`web/`) → `cd web && npm run test` and `npm run lint` (neostandard: StandardJS rules on ESLint 10)
-  - The specs run on Vitest in a real browser (Chromium via Playwright, `web/vitest.config.mjs`). CI runs `npm run test-coverage`, which fails below the coverage floor in `web/vitest.config.mjs`; every source file counts, so an untested one lowers the figures. Run it before shipping web changes. Specs import what they use from `vitest` (`vi` for spies, mocks and the clock) and use `fakeServer` from `web/src/test/support.js` for jQuery's XHR; the Java suite is not required
+  - The Java suite is not required for frontend-only changes; Vitest/coverage specifics are in `web/CLAUDE.md`
   - Mixed changes → run both
 - When fixing one test failure, check for similar patterns elsewhere (e.g., if one method needs a transaction wrapper, audit all similar methods)
 - Verify null-safety fixes cover both missing keys AND keys with null values
@@ -56,34 +56,16 @@ The application is available at http://localhost:8080.
 Use `docker compose watch` instead of `docker compose up` to enable automatic rebuilds when
 Dockerfiles, Gradle build files, or the entrypoint script change.
 
-**Optional services** use Docker Compose profiles:
-
-```bash
-docker compose --profile hubbub up --build   # include Hubbub upload service
-docker compose --profile legilo up --build   # include Legilo
-docker compose --profile fuseki  up --build  # include Fuseki SPARQL
-```
-
 ## Architecture
 
 This is a **multi-catalogue metadata management system** for environmental/scientific datasets (UKCEH). A single Spring Boot application serves multiple catalogues (EIDC, ASSIST, etc.), each with their own document types and permission rules.
 
-### Backend (Java/Spring Boot 4.1.1)
-
-**Layers:**
-- **Controllers** → **Services** → **Repository** (strict separation; services are tested independently of HTTP)
-- **Freemarker templates** (`templates/`) generate all output formats: HTML, XML, JSON-LD, Turtle, citations
+### Backend
 
 **Storage:** Metadata documents are persisted in a **Git repository** (`datastore/`) via the CEH Components datastore library. Every save is a Git commit. This is not a database — it's a Git-backed document store.
 
 **Search:** Metadata is indexed into **Solr** for faceted full-text search, and into **Apache Jena** for RDF/SPARQL and linked data endpoints. Both indexes are rebuilt from the Git store. Any change to `solr/documents/conf/managed-schema` requires a full Solr reindex to take effect.
 
 **Adding a new document type** — follow `docs/newDocumentType.md`: model class, Freemarker template, `CatalogueMediaTypes` + catalogue/services config, Solr indexer, and the editor in `web/src/startup/apps.js`. Its editor media type **must** also be added to `WebConfig.RECORD_JSON_MEDIA_TYPES`, or the editor's load/save get 406/415 (the JSON converter no longer accepts every `+json` type, dri-one #409).
-
-**Spring profiles** control optional features:
-- `hubbub` / `legilo` — file upload backends
-- `fuseki` — SPARQL/RDF support
-- `basic-search` / `enhanced-search` — search variants
-- `service-agreement`, `metrics`, etc.
 
 **Authentication** uses a `Remote-User` HTTP header (set by the nginx reverse proxy). In development, a "Dev Bar" in the UI allows masquerading as any user.
