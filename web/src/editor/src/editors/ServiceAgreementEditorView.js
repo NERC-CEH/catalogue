@@ -248,7 +248,7 @@ export default EditorView.extend({
 <p><span class="badge text-bg-secondary">Description only – not checked against uploads</span></p>
 <p>Describe in your own words any files not given in Files or File groups above, for example by a naming convention or folder layout. Give the size, or a size range, of each file and the total size of the files described.</p>
 <p>Example: 200 files CP_&lt;REGION&gt;_MInv_&lt;determinandLabel&gt;Stats_&lt;startDate-endDate&gt;.csv, where &lt;REGION&gt; is the region code, &lt;determinandLabel&gt; is the chemical determinand name and &lt;startDate-endDate&gt; is in the format YYYYMMDD-YYYYMMDD. Size range: 2-2.5 MB. Total size: 443.1 MB.</p>
-<p>The upload page doesn't check uploads against this description.</p>\
+<p>The upload page doesn't check uploads against this description, and while there is one, uploads not in Files or File groups aren't flagged and the total number of files isn't compared. Leave it empty if Files and File groups describe every file.</p>\
 `
         }), false),
 

@@ -49,6 +49,14 @@ describe('the service agreement naming convention', () => {
     expect(views[convention - 1].$el.text()).toContain('Description only – not checked against uploads')
   })
 
+  it('says that any description stops the upload page flagging unlisted files', () => {
+    const { views, at } = build()
+    const help = views[at('fileNamingConvention') - 1].$el.text()
+
+    expect(help).toContain("uploads not in Files or File groups aren't flagged and the total number of files isn't compared")
+    expect(help).toContain('Leave it empty if Files and File groups describe every file.')
+  })
+
   it('labels the box Naming convention', () => {
     const { views, at } = build()
     const help = views[at('fileNamingConvention') - 1]
