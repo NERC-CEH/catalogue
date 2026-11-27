@@ -20,6 +20,8 @@ WORKDIR /app
 RUN apk --no-cache upgrade
 COPY --chown=gradle:gradle java/lombok.config .
 COPY --chown=gradle:gradle java/build.gradle .
+# The dependency lock (java/gradle.lockfile), so the image is built from the locked versions
+COPY --chown=gradle:gradle java/gradle.lockfile .
 COPY --chown=gradle:gradle gradle/libs.versions.toml gradle/
 COPY --chown=gradle:gradle java/src src/
 RUN --mount=type=cache,target=/root/.gradle gradle bootJar --no-daemon
