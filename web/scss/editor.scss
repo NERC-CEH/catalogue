@@ -365,6 +365,21 @@ textarea.editor-textarea {
                     padding-bottom: 0 !important;
                 }
 
+                // Service agreement files: what the upload page checks (files, file groups) has a solid rule, and the
+                // naming convention, which only describes files, a dashed muted one
+                &--files-checked,
+                &--files-described {
+                    padding-inline-start: 0.75rem;
+                }
+
+                &--files-checked {
+                    border-inline-start: 4px solid var(--bs-primary);
+                }
+
+                &--files-described {
+                    border-inline-start: 4px dashed var(--bs-secondary-color);
+                }
+
                 // Sub-questions of the preceding question: each answer and its explanation share one indented panel
                 &--subquestion {
                     margin-inline-start: 2rem;

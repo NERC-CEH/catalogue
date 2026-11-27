@@ -366,11 +366,12 @@ public class ServiceAgreementQualityServiceTest {
     private static final String CONVENTION_WARNING =
         "The files are described by a previous naming convention; describe them as file groups so uploads can be checked";
 
+    // Depositors may describe files in prose as they always have (the convention is no longer "previous"), so a
+    // convention on its own is a complete description and draws no check
     @Test
-    public void namingConventionWithoutFileGroupsIsWarned() {
+    public void namingConventionOnItsOwnIsNotWarned() {
         val conventionOnly = "{\"fileNumber\": \"200\", \"fileNamingConvention\": \"200 files CP_<site>.csv\"}";
-        assertThat(checkFilesJson(conventionOnly), contains(hasProperty("test", equalTo(CONVENTION_WARNING))));
-        assertThat(checkFilesJson(conventionOnly), hasCheck(CONVENTION_WARNING, WARNING));
+        assertThat(checkFilesJson(conventionOnly), empty());
     }
 
     @Test
