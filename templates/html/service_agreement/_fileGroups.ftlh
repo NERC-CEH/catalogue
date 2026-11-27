@@ -1,4 +1,4 @@
-<#-- The groups of files described by a pattern, and any naming convention an older agreement still carries. -->
+<#-- The groups of files described by a pattern, and the naming convention describing any other files. -->
 <#if fileGroups?has_content>
     <p>File groups to be deposited</p>
     <div class="tbl tbl--collapse tbl--files">
@@ -38,7 +38,7 @@
 
 <#if fileNamingConvention?has_content>
     <div class="row key-value">
-        <div class="key">Previous naming convention</div>
+        <div class="key">Naming convention</div>
         <div class="value">
             <#list fileNamingConvention?split("\n") as line>
                 ${line}<#sep><br></#sep>

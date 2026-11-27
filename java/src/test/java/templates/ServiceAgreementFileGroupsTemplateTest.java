@@ -65,7 +65,7 @@ class ServiceAgreementFileGroupsTemplateTest {
         assertThat(actual, containsString("CP_*_MInv_*Stats_*.csv"));
         assertThat(actual, containsString("1200"));
         assertThat(actual, containsString("Chemistry statistics"));
-        assertThat(actual, not(containsString("Previous naming convention")));
+        assertThat(actual, not(containsString(">Naming convention<")));
     }
 
     @Test
@@ -81,14 +81,15 @@ class ServiceAgreementFileGroupsTemplateTest {
     }
 
     @Test
-    @DisplayName("shows an older agreement's naming convention as the previous one")
-    void showsPreviousNamingConvention() {
+    @DisplayName("shows the naming convention, escaped, under its own label")
+    void showsNamingConvention() {
         val agreement = new ServiceAgreement();
         agreement.setFileNamingConvention("200 files CP_<REGION>.csv");
 
         val actual = render(agreement);
 
-        assertThat(actual, containsString("Previous naming convention"));
+        assertThat(actual, containsString(">Naming convention<"));
+        assertThat(actual, not(containsString("Previous")));
         assertThat(actual, containsString("200 files CP_&lt;REGION&gt;.csv"));
         assertThat(actual, not(containsString("File groups to be deposited")));
     }
@@ -98,7 +99,7 @@ class ServiceAgreementFileGroupsTemplateTest {
     void showsNothing() {
         val actual = render(new ServiceAgreement());
 
-        assertThat(actual, not(containsString("Previous naming convention")));
+        assertThat(actual, not(containsString(">Naming convention<")));
         assertThat(actual, not(containsString("File groups to be deposited")));
     }
 
