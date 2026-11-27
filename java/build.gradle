@@ -30,6 +30,29 @@ configurations {
     mockitoAgent
 }
 
+// Lock every configuration, transitive dependencies included, to the exact versions in
+// java/gradle.lockfile. The build is then reproducible (the Spring Boot BOM and the version catalogue
+// no longer decide alone), a changed transitive version shows up in review, and dependency scanners
+// (Trivy, osv-scanner, Renovate) can read the full set. The Dockerfile copies the lockfile into the
+// build stage, so the image is built from the same versions.
+// After changing a version here or in gradle/libs.versions.toml, refresh the lock with:
+//   ./gradlew :java:resolveAndLockAll --write-locks
+dependencyLocking {
+    lockAllConfigurations()
+}
+
+tasks.register('resolveAndLockAll') {
+    notCompatibleWithConfigurationCache('Resolves every configuration at execution time')
+    doFirst {
+        if (!gradle.startParameter.writeDependencyLocks) {
+            throw new GradleException('Run with --write-locks: ./gradlew :java:resolveAndLockAll --write-locks')
+        }
+    }
+    doLast {
+        configurations.findAll { it.canBeResolved }.each { it.resolve() }
+    }
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)

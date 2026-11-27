@@ -5,6 +5,7 @@
 !gradle/libs.versions.toml
 !java/src
 !java/build.gradle
+!java/gradle.lockfile
 !java/lombok.config
 !schemas
 !templates

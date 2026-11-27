@@ -172,7 +172,9 @@ services:
     develop:
       watch:
         - action: rebuild
-          path: ./build.gradle
+          path: ./java/build.gradle
+        - action: rebuild
+          path: ./java/gradle.lockfile
         - action: rebuild
           path: ./gradle/libs.versions.toml
         - action: rebuild
