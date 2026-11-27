@@ -1,6 +1,9 @@
 <#import "../skeleton.ftlh" as skeleton>
 
 <@skeleton.master title="Metrics Report" catalogue=catalogues.defaultCatalogue()>
+  <style>
+    #metrics-report #docId:focus::placeholder { color: var(--bs-secondary-color); }
+  </style>
   <div id="metrics-report" class="container">
     <h1 class="my-5">${catalogue?upper_case} downloads and views</h1>
     <form id="metrics-form" action="/${catalogue}/metrics">
@@ -8,8 +11,11 @@
       <div class="row p-3">
         <div class="col-md-6">
           <div class="form-floating">
-            <input type="text" id="docId" name="docId" class="form-control"/>
+            <input type="text" id="docId" name="docId" class="form-control"
+                   placeholder="e.g. dcfc2081-f42c-4238-93dd-2ce64438b3ea"
+                   aria-describedby="docIdFeedback" autocomplete="off" spellcheck="false"/>
             <label for="docId">Document ID</label>
+            <div id="docIdFeedback" class="invalid-feedback"></div>
           </div>
         </div>
         <div class="col-md-6">

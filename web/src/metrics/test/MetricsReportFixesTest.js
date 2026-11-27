@@ -17,7 +17,7 @@ describe('Metrics report', () => {
       <form id="mf">
         <input name="startDate" value="2026-10-01">
         <input name="endDate" value="2026-10-13">
-        <input name="docId" value="abc">
+        <input name="docId" value="abcd1234-abcd-1234-abcd-1234abcd1234">
       </form>
       <table id="mt"><tbody><tr><td>old</td><td>Old record</td><td>dataset</td><td>1</td><td>2</td></tr></tbody></table>`)
     app = new MetricsReportApp()
@@ -29,7 +29,7 @@ describe('Metrics report', () => {
     vi.spyOn(app, 'fetch').mockImplementation(() => {})
     const form = new MetricsReportForm({ el: '#mf', model: app })
     form.onSubmit({ preventDefault: vi.fn() })
-    expect(app.getState().docId).toBe('abc')
+    expect(app.getState().docId).toBe('abcd1234-abcd-1234-abcd-1234abcd1234')
 
     $('input[name=docId]').val('')
     form.onSubmit({ preventDefault: vi.fn() })

@@ -5,6 +5,8 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -87,9 +89,9 @@ class MetricsReportControllerTest extends AbstractMvcTest {
         givenDefaultCatalogue();
 
         mvc.perform(get("/{catalogue}/metrics", "testCatalogue")
-            .param("startDate", "2026-10-01")
-            .param("endDate", "2026-10-13")
-            .accept(MediaType.TEXT_HTML))
+                .param("startDate", "2026-10-01")
+                .param("endDate", "2026-10-13")
+                .accept(MediaType.TEXT_HTML))
             .andExpect(status().isOk());
 
         verify(metricsService).getMetricsReport(
@@ -110,10 +112,10 @@ class MetricsReportControllerTest extends AbstractMvcTest {
         given(metricsService.getMetricsReport(null, null, null, null, null, null, MetricsService.DEFAULT_REPORT_LIMIT)).willReturn(mockReport);
 
         mvc.perform(get("/{catalogue}/metrics", catalogueId)
-            .with(csrf())
-            .accept(MediaType.TEXT_HTML))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.TEXT_HTML_VALUE));
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.TEXT_HTML_VALUE));
     }
 
     @Test
@@ -143,17 +145,17 @@ class MetricsReportControllerTest extends AbstractMvcTest {
         given(metricsService.getMetricsReport(startDate, endDate, orderBy, ordering, recordType, docId, noOfRecords)).willReturn(mockReport);
 
         mvc.perform(get("/{catalogue}/metrics", catalogueId)
-            .param("startDate", "2024-01-01")
-            .param("endDate", "2024-12-31")
-            .param("orderBy", orderBy)
-            .param("ordering", ordering)
-            .param("recordType", "dataset")
-            .param("docId", docId)
-            .param("noOfRecords", String.valueOf(noOfRecords))
-            .with(csrf())
-            .accept(MediaType.TEXT_HTML))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.TEXT_HTML_VALUE));
+                .param("startDate", "2024-01-01")
+                .param("endDate", "2024-12-31")
+                .param("orderBy", orderBy)
+                .param("ordering", ordering)
+                .param("recordType", "dataset")
+                .param("docId", docId)
+                .param("noOfRecords", String.valueOf(noOfRecords))
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.TEXT_HTML_VALUE));
     }
 
 
@@ -169,10 +171,10 @@ class MetricsReportControllerTest extends AbstractMvcTest {
         given(metricsService.getMetricsReport(null, null, null, null, null, null, MetricsService.DEFAULT_REPORT_LIMIT)).willReturn(mockReport);
 
         mvc.perform(get("/{catalogue}/metrics", catalogueId)
-            .with(csrf())
-            .accept(MediaType.TEXT_HTML))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.TEXT_HTML_VALUE));
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.TEXT_HTML_VALUE));
     }
 
     /** The principal {@code SecurityConfig}'s anonymous filter installs for a request with no Remote-User. */
@@ -258,24 +260,45 @@ class MetricsReportControllerTest extends AbstractMvcTest {
             eq("abcd0001-0000-4000-8000-000000000001"), eq(MetricsService.DEFAULT_REPORT_LIMIT));
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "abcd",                                     // partial
+        "abcd0001000040008000000000000001",         // no hyphens
+        "abcd0001-0000-4000-8000-00000000001",      // last group too short
+        "abcd0001-0000-4000-8000-0000000000012",    // last group too long
+        "abcd0001-0000-4000-8000-00000000000z",     // non-hex character
+        "1-2-3-4-5"                                 // UUID.fromString would accept this
+    })
     @SneakyThrows
-    @DisplayName("A partial docId gives an empty report, not an error, and runs no query")
-    void partialDocIdGivesEmptyReport() {
+    @DisplayName("A malformed docId is a 400 Bad Request and runs no query")
+    void malformedDocIdIsBadRequest(String docId) {
         givenDefaultCatalogue();
 
         mvc.perform(get("/{catalogue}/metrics", "testCatalogue")
-                .param("docId", "abcd")
+                .param("docId", docId)
                 .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.metricsReport").isArray())
-            .andExpect(jsonPath("$.metricsReport").isEmpty());
+            .andExpect(status().isBadRequest());
         mvc.perform(get("/{catalogue}/metrics", "testCatalogue")
-                .param("docId", "abcd")
+                .param("docId", docId)
+                .accept(MediaType.TEXT_HTML))
+            .andExpect(status().isBadRequest());
+
+        verify(metricsService, never()).getMetricsReport(any(), any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("A blank docId means any document")
+    void blankDocIdMeansAnyDocument() {
+        givenDefaultCatalogue();
+
+        mvc.perform(get("/{catalogue}/metrics", "testCatalogue")
+                .param("docId", "   ")
                 .accept(MediaType.TEXT_HTML))
             .andExpect(status().isOk());
 
-        verify(metricsService, never()).getMetricsReport(any(), any(), any(), any(), any(), any(), any());
+        verify(metricsService).getMetricsReport(isNull(), isNull(), isNull(), isNull(), isNull(), isNull(),
+            eq(MetricsService.DEFAULT_REPORT_LIMIT));
     }
 
     /**
